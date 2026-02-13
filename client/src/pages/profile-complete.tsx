@@ -9769,19 +9769,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Chatroom List Modal */}
+      {/* Chatroom List Modal - high z-index, scroll contained, pointer events for WebView */}
       <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
         <DialogContent 
-          className="max-w-2xl max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+          className="max-w-2xl max-h-[85vh] bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 flex flex-col"
           style={{
             position: 'fixed',
             left: '50%',
             top: '50%',
             transform: 'translate(-50%, -50%)',
-            zIndex: 100001,
-            display: 'grid',
+            zIndex: 2147483647,
+            display: 'flex',
+            flexDirection: 'column',
             visibility: 'visible',
-            opacity: 1
+            opacity: 1,
+            pointerEvents: 'auto',
+            touchAction: 'pan-y',
+            overscrollBehavior: 'contain',
           }}
           onPointerDownOutside={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
@@ -9798,7 +9802,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-3">
+          <div 
+            className="space-y-3 flex-1 overflow-y-auto overscroll-contain min-h-0"
+            style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'contain' }}
+          >
             {userChatrooms.length > 0 ? (
               userChatrooms.filter((chatroom: any) => chatroom && chatroom.id).map((chatroom: any) => (
                 <button

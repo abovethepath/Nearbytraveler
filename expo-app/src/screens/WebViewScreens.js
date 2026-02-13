@@ -17,15 +17,27 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import { useFocusEffect } from '@react-navigation/native';
-import { ExpoSpeechRecognitionModule } from 'expo-speech-recognition';
 import api from '../services/api';
+import Constants from 'expo-constants';
+
+// expo-speech-recognition is a native module - not available in Expo Go; requires dev build
+// Never load the module in Expo Go to avoid "Cannot find native module" crash
+function getSpeechModule() {
+  if (Constants.executionEnvironment === 'expo') return null; // Expo Go - module not available
+  try {
+    const mod = require('expo-speech-recognition');
+    return mod?.ExpoSpeechRecognitionModule ?? null;
+  } catch (e) {
+    return null;
+  }
+}
 import { useAuth } from '../services/AuthContext';
 
 // Set to your local client URL (e.g. 'http://192.168.1.x:5000') to test client/ fixes in Expo without deploying.
 const DEV_WEB_URL = null; // e.g. 'http://192.168.1.100:5000'
 const BASE_URL = (typeof __DEV__ !== 'undefined' && __DEV__ && DEV_WEB_URL) ? DEV_WEB_URL.replace(/\/$/, '') : 'https://nearbytraveler.org';
 const HOST = (BASE_URL || '').replace(/^https?:\/\//, '').split('/')[0] || 'nearbytraveler.org';
-const HEADER_HEIGHT = 100;
+const HEADER_HEIGHT = 56;
 
 const DARK = {
   bg: '#1c1c1e',
@@ -83,11 +95,13 @@ function WebViewWithChrome({ path, navigation }) {
   const loadUser = useCallback(() => {
     api.getUser().then((u) => {
       setUser(u);
-      // If auth/user returned minimal data without profileImage, fetch full profile
-      if (u?.id && !u?.profileImage) {
+      // If auth/user returned minimal data without profileImage, fetch full profile (API may use profilePhoto)
+      const profileImg = u?.profileImage || u?.profilePhoto;
+      if (u?.id && !profileImg) {
         api.getUserProfile(u.id).then((profile) => {
-          if (profile?.profileImage) {
-            setUser((prev) => (prev ? { ...prev, profileImage: profile.profileImage } : prev));
+          const img = profile?.profileImage || profile?.profilePhoto;
+          if (img) {
+            setUser((prev) => (prev ? { ...prev, profileImage: img } : prev));
           }
         }).catch(() => {});
       }
@@ -135,54 +149,81 @@ function WebViewWithChrome({ path, navigation }) {
     try {
       const data = JSON.parse(event.nativeEvent?.data || '{}');
       if (data.type === 'START_SPEECH_RECOGNITION') {
-        const sendResult = (text) => {
-          const escaped = JSON.stringify(text || '');
-          webViewRef.current?.injectJavaScript(
-            `(function(){var cb=window.__onNativeSpeechResult__;if(cb)cb(${escaped});})();true;`
-          );
-        };
         const sendError = (err) => {
-          const escaped = JSON.stringify(err || 'Voice unavailable');
-          webViewRef.current?.injectJavaScript(
-            `(function(){var cb=window.__onNativeSpeechError__;if(cb)cb(${escaped});})();true;`
-          );
+          try {
+            const escaped = JSON.stringify(err || 'Voice unavailable');
+            webViewRef.current?.injectJavaScript(
+              `(function(){var cb=window.__onNativeSpeechError__;if(cb)cb(${escaped});})();true;`
+            );
+          } catch (_) {}
+        };
+        const sendResult = (text) => {
+          try {
+            const escaped = JSON.stringify(text || '');
+            webViewRef.current?.injectJavaScript(
+              `(function(){var cb=window.__onNativeSpeechResult__;if(cb)cb(${escaped});})();true;`
+            );
+          } catch (_) {}
         };
         const sendEnd = () => {
-          webViewRef.current?.injectJavaScript(
-            `(function(){var cb=window.__onNativeSpeechEnd__;if(cb)cb();})();true;`
-          );
+          try {
+            webViewRef.current?.injectJavaScript(
+              `(function(){var cb=window.__onNativeSpeechEnd__;if(cb)cb();})();true;`
+            );
+          } catch (_) {}
         };
-        ExpoSpeechRecognitionModule.requestPermissionsAsync().then((result) => {
-          if (!result.granted) {
-            sendError('Microphone access was denied. Enable it in Settings.');
-            return;
-          }
-          let lastTranscript = '';
-          const resultSub = ExpoSpeechRecognitionModule.addListener('result', (ev) => {
-            const t = ev.results?.[0]?.transcript;
-            if (t && ev.isFinal) {
-              lastTranscript = t;
-              sendResult(t);
-            }
-          });
-          const errorSub = ExpoSpeechRecognitionModule.addListener('error', (ev) => {
-            resultSub.remove();
-            errorSub.remove();
-            endSub.remove();
-            try { ExpoSpeechRecognitionModule.stop(); } catch (_) {}
-            sendError(ev.message || ev.error || 'Voice unavailable');
-            sendEnd();
-          });
-          const endSub = ExpoSpeechRecognitionModule.addListener('end', () => {
-            resultSub.remove();
-            errorSub.remove();
-            endSub.remove();
-            sendEnd();
-          });
-          ExpoSpeechRecognitionModule.start({ lang: 'en-US', interimResults: true, continuous: true });
-        }).catch((e) => sendError(e?.message || 'Could not start voice input'));
+        const voiceUnavailableMsg = 'Voice input requires a development build. Use the keyboard to type.';
+        let ExpoSpeechRecognitionModule;
+        try {
+          ExpoSpeechRecognitionModule = getSpeechModule();
+        } catch (e) {
+          sendError(voiceUnavailableMsg);
+          return;
+        }
+        if (!ExpoSpeechRecognitionModule) {
+          sendError(voiceUnavailableMsg);
+          return;
+        }
+        try {
+          ExpoSpeechRecognitionModule.requestPermissionsAsync()
+            .then((result) => {
+              if (!result.granted) {
+                sendError('Microphone access was denied. Enable it in Settings.');
+                return;
+              }
+              let lastTranscript = '';
+              const resultSub = ExpoSpeechRecognitionModule.addListener('result', (ev) => {
+                const t = ev.results?.[0]?.transcript;
+                if (t && ev.isFinal) {
+                  lastTranscript = t;
+                  sendResult(t);
+                }
+              });
+              const errorSub = ExpoSpeechRecognitionModule.addListener('error', (ev) => {
+                resultSub.remove();
+                errorSub.remove();
+                endSub.remove();
+                try { ExpoSpeechRecognitionModule.stop(); } catch (_) {}
+                sendError(ev.message || ev.error || 'Voice unavailable');
+                sendEnd();
+              });
+              const endSub = ExpoSpeechRecognitionModule.addListener('end', () => {
+                resultSub.remove();
+                errorSub.remove();
+                endSub.remove();
+                sendEnd();
+              });
+              ExpoSpeechRecognitionModule.start({ lang: 'en-US', interimResults: true, continuous: true });
+            })
+            .catch((e) => sendError(e?.message || voiceUnavailableMsg));
+        } catch (nativeErr) {
+          sendError(nativeErr?.message || voiceUnavailableMsg);
+        }
       } else if (data.type === 'STOP_SPEECH_RECOGNITION') {
-        ExpoSpeechRecognitionModule.stop();
+        try {
+          const mod = getSpeechModule();
+          if (mod) try { mod.stop(); } catch (_) {}
+        } catch (_) {}
       } else if (data.type === 'LOGOUT') {
         logout().catch(() => {});
       }
@@ -201,7 +242,7 @@ function WebViewWithChrome({ path, navigation }) {
 
   return (
     <SafeAreaView style={containerStyle}>
-      {/* Native bar: back arrow, logo, user avatar. Pull-to-refresh in scroll area reloads the page. */}
+      {/* Native bar: back arrow, logo, user avatar. Compact header with minimal top padding. */}
       <View style={[headerStyle, { minHeight: HEADER_HEIGHT }]}>
         <TouchableOpacity
           style={styles.backButton}
@@ -226,15 +267,16 @@ function WebViewWithChrome({ path, navigation }) {
             resizeMode="contain"
           />
         </TouchableOpacity>
+        {/* Avatar: always visible, positioned on right. Fallback when user is null. */}
         <TouchableOpacity
           style={styles.avatarButton}
           onPress={onAvatarPress}
           activeOpacity={0.7}
           accessibilityLabel="Go to profile"
         >
-          {user?.profileImage ? (
+          {(user?.profileImage || user?.profilePhoto) ? (
             <Image
-              source={{ uri: user.profileImage.startsWith('http') ? user.profileImage : `${BASE_URL}${user.profileImage.startsWith('/') ? user.profileImage : '/' + user.profileImage}` }}
+              source={{ uri: (user.profileImage || user.profilePhoto).startsWith('http') ? (user.profileImage || user.profilePhoto) : `${BASE_URL}${(user.profileImage || user.profilePhoto).startsWith('/') ? (user.profileImage || user.profilePhoto) : '/' + (user.profileImage || user.profilePhoto)}` }}
               style={styles.avatarImage}
             />
           ) : (
@@ -300,15 +342,15 @@ export function GenericWebViewScreen({ navigation, route }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
-  backButton: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 12, minWidth: 80, flexShrink: 0 },
-  logoContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
-  logoImage: { height: 144, width: 640, maxWidth: '90%' },
-  avatarButton: { width: 60, minWidth: 60, height: 60, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
-  avatarImage: { width: 52, height: 52, borderRadius: 26 },
-  avatarFallback: { width: 52, height: 52, borderRadius: 26, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: '#F3F4F6', position: 'relative' },
+  backButton: { flexDirection: 'row', alignItems: 'center', paddingVertical: 4, paddingHorizontal: 8, minWidth: 72, flexShrink: 0 },
+  logoContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, minWidth: 0 },
+  logoImage: { height: 72, width: 320, maxWidth: '85%' },
+  avatarButton: { position: 'absolute', right: 8, top: 6, width: 44, height: 44, alignItems: 'center', justifyContent: 'center', zIndex: 20 },
+  avatarImage: { width: 40, height: 40, borderRadius: 20 },
+  avatarFallback: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' },
   avatarFallbackDark: { backgroundColor: '#EA580C' },
-  avatarFallbackText: { color: '#FFFFFF', fontSize: 20, fontWeight: '600' },
+  avatarFallbackText: { color: '#FFFFFF', fontSize: 18, fontWeight: '600' },
   backChevron: { color: '#F97316', fontSize: 28, fontWeight: '600', marginRight: 2, lineHeight: 32 },
   backText: { color: '#F97316', fontSize: 16, fontWeight: '600' },
   loadingOverlay: { position: 'absolute', left: 0, right: 0, top: HEADER_HEIGHT, bottom: 0, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 1 },

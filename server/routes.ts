@@ -20273,29 +20273,8 @@ Questions? Just reply to this message. Welcome aboard!
           eq(users.isActive, true)
         ));
 
-      // Find users with compatible interests or in the target city
-      // IMPORTANT: Only return matches if current user has at least one city pick
-      const compatibleUsers = userInterests.length > 0 ? allUsers.filter(user => {
-        // Include users from the target city
-        const isInTargetCity = user.location?.toLowerCase().includes(city.toLowerCase()) ||
-                              user.hometownCity?.toLowerCase().includes(city.toLowerCase());
-        
-        // Include users with shared interests
-        const hasSharedInterests = user.interests && userInterests.length > 0 &&
-          user.interests.some(interest => 
-            userInterests.some(userInt => 
-              interest.toLowerCase().includes('food') && userInt.activityName.toLowerCase().includes('food') ||
-              interest.toLowerCase().includes('music') && userInt.activityName.toLowerCase().includes('concert') ||
-              interest.toLowerCase().includes('museum') && userInt.activityName.toLowerCase().includes('museum') ||
-              interest.toLowerCase().includes('social') && userInt.activityName.toLowerCase().includes('meet')
-            )
-          );
-
-        return isInTargetCity || hasSharedInterests;
-      }) : []; // No matches if user has no city picks
-
-      // ===== ENHANCED MATCHING: Get city picks for all compatible users =====
-      // Get all city interests/picks for each compatible user (to calculate shared picks)
+      // ===== ENHANCED MATCHING: Get city picks for all users in this city =====
+      // Get all city interests/picks for each user (to calculate shared picks)
       const allUserCityInterests = await db
         .select({
           userId: userCityInterests.userId,
@@ -20322,6 +20301,31 @@ Questions? Just reply to this message. Welcome aboard!
       
       // Current user's picks (activity IDs for comparison)
       const currentUserPickIds = new Set(userInterests.map(i => i.activityId));
+      
+      // Build compatible users: anyone with at least one shared city pick (Things I Want To Do)
+      const userIdsWithSharedPicks = new Set<number>();
+      for (const [uid, picks] of Object.entries(interestsByUser)) {
+        const uidNum = parseInt(uid, 10);
+        if (uidNum === (userId ? parseInt(userId as string) : -1)) continue; // exclude self
+        const hasShared = picks.some(p => currentUserPickIds.has(p.activityId));
+        if (hasShared) userIdsWithSharedPicks.add(uidNum);
+      }
+      // Also include users in target city or with profile interest overlap (broader discovery)
+      const compatibleUsers = userInterests.length > 0 ? allUsers.filter(user => {
+        if (userIdsWithSharedPicks.has(user.id)) return true;
+        const isInTargetCity = user.location?.toLowerCase().includes(city.toLowerCase()) ||
+                              user.hometownCity?.toLowerCase().includes(city.toLowerCase());
+        const hasSharedInterests = user.interests && userInterests.length > 0 &&
+          user.interests.some((interest: string) =>
+            userInterests.some(userInt =>
+              interest.toLowerCase().includes('food') && userInt.activityName?.toLowerCase().includes('food') ||
+              interest.toLowerCase().includes('music') && userInt.activityName?.toLowerCase().includes('concert') ||
+              interest.toLowerCase().includes('museum') && userInt.activityName?.toLowerCase().includes('museum') ||
+              interest.toLowerCase().includes('social') && userInt.activityName?.toLowerCase().includes('meet')
+            )
+          );
+        return isInTargetCity || hasSharedInterests;
+      }) : [];
       
       // Get current user's profile interests
       const currentUserProfile = userId ? await db
@@ -20392,7 +20396,7 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       const response = {
-        users: finalUsers.slice(0, 20), // Return top 20 matches
+        users: finalUsers.slice(0, 50), // Return top 50 matches
         events: relevantEvents,
         userInterestCount: userInterests.length,
         matchingSummary: {
