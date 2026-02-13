@@ -1,18 +1,15 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking } from 'react-native';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Platform, useColorScheme, useWindowDimensions, ScrollView, RefreshControl, Image, BackHandler, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useFocusEffect } from '@react-navigation/native';
 import api from '../services/api';
 
-// expo-speech-recognition was removed - native module caused "Cannot find native module" crash in Expo Go
-// Voice input: use keyboard dictation (tap text field, then mic on keyboard)
 function getSpeechModule() {
   return null;
 }
 import { useAuth } from '../services/AuthContext';
 
-// Set to your local client URL (e.g. 'http://192.168.1.x:5000') to test client/ fixes in Expo without deploying.
-const DEV_WEB_URL = null; // e.g. 'http://192.168.1.100:5000'
+const DEV_WEB_URL = null;
 const BASE_URL = (typeof __DEV__ !== 'undefined' && __DEV__ && DEV_WEB_URL) ? DEV_WEB_URL.replace(/\/$/, '') : 'https://nearbytraveler.org';
 const HOST = (BASE_URL || '').replace(/^https?:\/\//, '').split('/')[0] || 'nearbytraveler.org';
 const HEADER_HEIGHT = 56;
@@ -25,13 +22,25 @@ const DARK = {
   textMuted: '#8e8e93',
 };
 
-/** Append ?native=ios (or &native=ios if path has query) so the website hides its bottom navbar. */
+const EXTERNAL_HOSTNAMES = ['lu.ma', 'www.lu.ma', 'partiful.com', 'www.partiful.com', 'eventbrite.com', 'www.eventbrite.com', 'wa.me', 'twitter.com', 'x.com', 'facebook.com', 'www.facebook.com', 'instagram.com', 'www.instagram.com'];
+
+const NATIVE_INJECT_JS = `
+  window.NearbyTravelerNative = true;
+  window.__NEARBY_NATIVE_IOS__ = true;
+  window.isNativeApp = true;
+  (function() {
+    var s = document.createElement('style');
+    s.textContent = ':root { --native-tabbar-height: 88px; } body { padding-bottom: 88px !important; }';
+    document.head.appendChild(s);
+  })();
+  true;
+`;
+
 function pathWithNativeIOS(path) {
   const hasQuery = path.indexOf('?') !== -1;
   return `${path}${hasQuery ? '&' : '?'}native=ios`;
 }
 
-/** Build WebView source with session cookie and ?native=ios so the site hides its bottom nav. */
 function webViewSource(path) {
   const uri = `${BASE_URL}${pathWithNativeIOS(path)}`;
   const cookie = api.getSessionCookie();
@@ -41,7 +50,6 @@ function webViewSource(path) {
   return { uri };
 }
 
-/** Return true to load in WebView, false to block (and we open in browser). Links to nearbytraveler.org stay in-app; others open in Safari. */
 function shouldLoadInWebView(requestUrl) {
   try {
     const url = (requestUrl || '').trim();
@@ -56,7 +64,20 @@ function shouldLoadInWebView(requestUrl) {
   }
 }
 
-/** Shared WebView with back button, logo, avatar, and pull-to-refresh. Used by GenericWebViewScreen and fixed-path screens. */
+function isExternalUrl(url) {
+  try {
+    const parsed = new URL(url);
+    return EXTERNAL_HOSTNAMES.some(host => parsed.hostname === host || parsed.hostname.endsWith('.' + host));
+  } catch {
+    return false;
+  }
+}
+
+function addNativeParam(url) {
+  const separator = url.includes('?') ? '&' : '?';
+  return url + separator + 'native=ios';
+}
+
 function WebViewWithChrome({ path, navigation }) {
   const colorScheme = useColorScheme();
   const dark = colorScheme === 'dark';
@@ -68,12 +89,10 @@ function WebViewWithChrome({ path, navigation }) {
   const [user, setUser] = useState(null);
   const webViewRef = useRef(null);
   const source = webViewSource(path);
-  const webViewHeight = Math.max(400, windowHeight - HEADER_HEIGHT - (Platform.OS === 'ios' ? 44 : 24));
 
   const loadUser = useCallback(() => {
     api.getUser().then((u) => {
       setUser(u);
-      // If auth/user returned minimal data without profileImage, fetch full profile (API may use profilePhoto)
       const profileImg = u?.profileImage || u?.profilePhoto;
       if (u?.id && !profileImg) {
         api.getUserProfile(u.id).then((profile) => {
@@ -97,7 +116,6 @@ function WebViewWithChrome({ path, navigation }) {
     );
   }, [user?.id]);
 
-  // Android hardware back: only let GO_BACK run when we can go back, to avoid "GO_BACK was not handled"
   useFocusEffect(
     useCallback(() => {
       if (Platform.OS !== 'android') return undefined;
@@ -106,7 +124,7 @@ function WebViewWithChrome({ path, navigation }) {
           navigation.goBack();
           return true;
         }
-        return true; // at root: consume event so no unhandled GO_BACK
+        return true;
       });
       return () => sub.remove();
     }, [navigation])
@@ -121,7 +139,13 @@ function WebViewWithChrome({ path, navigation }) {
   const onHttpError = useCallback((e) => { setError(e.nativeEvent?.statusCode ? `Error ${e.nativeEvent.statusCode}` : 'Request failed'); }, []);
   const onRetry = useCallback(() => { setError(null); setLoading(true); webViewRef.current?.reload(); }, []);
   const onRefresh = useCallback(() => { setRefreshing(true); setError(null); webViewRef.current?.reload(); }, []);
-  const onShouldStartLoadWithRequest = useCallback((req) => shouldLoadInWebView(req?.url), []);
+  const onShouldStartLoadWithRequest = useCallback((req) => {
+    if (isExternalUrl(req?.url)) {
+      Linking.openURL(req.url).catch(() => {});
+      return false;
+    }
+    return shouldLoadInWebView(req?.url);
+  }, []);
 
   const onMessage = useCallback((event) => {
     try {
@@ -210,40 +234,75 @@ function WebViewWithChrome({ path, navigation }) {
     }
   }, [logout]);
 
-  const containerStyle = dark ? [styles.container, { backgroundColor: DARK.bg }] : styles.container;
-  const headerStyle = dark ? [styles.header, { backgroundColor: DARK.bg, borderBottomColor: DARK.border }] : styles.header;
-  const loadingOverlayStyle = dark ? [styles.loadingOverlay, { backgroundColor: 'rgba(28,28,30,0.9)' }] : styles.loadingOverlay;
-  const errorContainerStyle = dark ? [styles.errorContainer, { backgroundColor: DARK.bg }] : styles.errorContainer;
-  const errorTextStyle = dark ? [styles.errorText, { color: DARK.textMuted }] : styles.errorText;
-  const scrollViewStyle = dark ? [styles.scrollView, { backgroundColor: DARK.bg }] : styles.scrollView;
-  const webviewStyle = dark ? [styles.webview, { height: webViewHeight, backgroundColor: DARK.bg }] : [styles.webview, { height: webViewHeight }];
+  const containerBg = dark ? DARK.bg : '#FFFFFF';
+  const headerBg = dark ? DARK.bg : '#FFFFFF';
+  const headerBorder = dark ? DARK.border : '#F3F4F6';
+  const profileImg = user?.profileImage || user?.profilePhoto;
+  const initials = (user?.fullName || user?.username || 'U').charAt(0).toUpperCase();
 
-const EXTERNAL_HOSTNAMES = ['lu.ma', 'www.lu.ma', 'partiful.com', 'www.partiful.com', 'eventbrite.com', 'www.eventbrite.com', 'wa.me', 'twitter.com', 'x.com', 'facebook.com', 'www.facebook.com', 'instagram.com', 'www.instagram.com'];
-
-const NATIVE_INJECT_JS = `
-  window.NearbyTravelerNative = true;
-  window.__NEARBY_NATIVE_IOS__ = true;
-  window.isNativeApp = true;
-  (function() {
-    var s = document.createElement('style');
-    s.textContent = ':root { --native-tabbar-height: 88px; } body { padding-bottom: 88px !important; }';
-    document.head.appendChild(s);
-  })();
-  true;
-`;
-
-function isExternalUrl(url) {
-  try {
-    const parsed = new URL(url);
-    return EXTERNAL_HOSTNAMES.some(host => parsed.hostname === host || parsed.hostname.endsWith('.' + host));
-  } catch {
-    return false;
+  if (error) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: containerBg }]}>
+        <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: headerBorder }]}>
+          <View style={styles.logoContainer}>
+            <Text style={{ fontSize: 16, fontWeight: '700', color: dark ? DARK.text : '#111827' }}>NearbyTraveler</Text>
+          </View>
+        </View>
+        <View style={[styles.errorContainer, { backgroundColor: containerBg }]}>
+          <Text style={[styles.errorText, dark && { color: DARK.textMuted }]}>{error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={onRetry}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
   }
-}
 
-function addNativeParam(url) {
-  const separator = url.includes('?') ? '&' : '?';
-  return url + separator + 'native=ios';
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: containerBg }]}>
+      <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: headerBorder }]}>
+        <TouchableOpacity style={styles.backButton} onPress={() => { if (navigation.canGoBack()) navigation.goBack(); }}>
+          <Text style={styles.backChevron}>‹</Text>
+          <Text style={styles.backText}>Back</Text>
+        </TouchableOpacity>
+        <View style={styles.logoContainer}>
+          <Text style={{ fontSize: 16, fontWeight: '700', color: dark ? DARK.text : '#111827' }}>NearbyTraveler</Text>
+        </View>
+        <TouchableOpacity style={styles.avatarButton} onPress={onAvatarPress}>
+          {profileImg ? (
+            <Image source={{ uri: profileImg }} style={styles.avatarImage} />
+          ) : (
+            <View style={[styles.avatarFallback, dark && styles.avatarFallbackDark]}>
+              <Text style={styles.avatarFallbackText}>{initials}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
+      {loading && (
+        <View style={[styles.loadingOverlay, dark && { backgroundColor: 'rgba(28,28,30,0.9)' }]}>
+          <ActivityIndicator size="large" color="#F97316" />
+        </View>
+      )}
+      <WebView
+        ref={webViewRef}
+        source={source}
+        style={[styles.webview, dark && { backgroundColor: DARK.bg }]}
+        injectedJavaScriptBeforeContentLoaded={NATIVE_INJECT_JS}
+        onLoadStart={onLoadStart}
+        onLoadEnd={onLoadEnd}
+        onError={onError}
+        onHttpError={onHttpError}
+        onMessage={onMessage}
+        onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+        allowsBackForwardNavigationGestures={false}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        startInLoadingState={false}
+        pullToRefreshEnabled={true}
+        sharedCookiesEnabled={true}
+      />
+    </SafeAreaView>
+  );
 }
 
 function NTWebView({ uri }) {
@@ -292,7 +351,7 @@ export function SettingsScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: '#F3F4F6', height: HEADER_HEIGHT },
   backButton: { flexDirection: 'row', alignItems: 'center', paddingVertical: 4, paddingHorizontal: 8, minWidth: 72, flexShrink: 0 },
   logoContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, minWidth: 0 },
   logoImage: { height: 108, width: 480, maxWidth: '90%' },
