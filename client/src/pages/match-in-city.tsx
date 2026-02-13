@@ -333,7 +333,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       });
     }
     
-    console.log('🏙️ getUserRelevantCities:', relevantCityNames);
     return [...new Set(relevantCityNames)]; // Remove duplicates
   };
 
@@ -345,13 +344,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     
     if (cityFromUrl) {
       // IMPORTANT: Use the city from URL - this is how trip planning links work
-      console.log('🔧 Found city in URL, setting selectedCity to:', cityFromUrl);
       setSelectedCity(cityFromUrl);
       // Clear URL params after using them (clean URL)
       window.history.replaceState({}, document.title, window.location.pathname);
     } else {
       // No city in URL - start fresh
-      console.log('🔧 No city in URL, starting with empty selection');
       setSelectedCity('');
     }
     
@@ -450,16 +447,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   useEffect(() => {
     // Build list of user's cities (hometown + travel destinations)
     const userCities = getUserCitiesWithData();
-    console.log('🏙️ MATCH: User cities built:', userCities.map(c => c.city));
-    console.log('🏙️ MATCH: All cities from DB:', allCities.length);
     
     if (userCities.length > 0) {
       // Always show user's own cities (hometown + travel destinations)
-      console.log('🏙️ MATCH: Showing', userCities.length, 'user cities (hometown + travel destinations)');
       setFilteredCities(userCities);
     } else if (allCities.length > 0) {
       // FALLBACK: Show all cities if user has no hometown or travel plans
-      console.log('🏙️ MATCH: No user cities found, showing all', allCities.length, 'cities');
       setFilteredCities(allCities);
     }
   }, [allCities, user, userProfile, travelPlans]);
@@ -497,9 +490,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         });
         
         setRealEvents(upcomingEvents);
-        console.log(`📅 REAL EVENTS: Loaded ${upcomingEvents.length} events in next 30 days for ${selectedCity}`);
       } else {
-        console.log('📅 REAL EVENTS: No events available');
         setRealEvents([]);
       }
     } catch (error) {
@@ -575,18 +566,15 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const handleSubInterestsChange = async (newSubInterests: string[]) => {
     setUserSubInterests(newSubInterests);
     // Local state only - no database persistence for city-specific sub-interests
-    console.log('City sub-interests updated locally:', newSubInterests);
   };
 
   // Hydrate initial selections from user profile
   useEffect(() => {
     // Skip hydration for new users who aren't logged in
     if (!user?.id || !userProfile?.activities || !selectedCity) {
-      console.log('🔄 SKIP HYDRATION: New user or no profile data');
       return;
     }
     
-    console.log('🔄 Hydrating activities from user profile for city:', selectedCity);
     
     // Extract activities for current city from user profile
     const cityPrefix = `${selectedCity}:`;
@@ -594,10 +582,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       .filter((activity: string) => activity.startsWith(cityPrefix))
       .map((activity: string) => activity.replace(cityPrefix, '').trim());
     
-    console.log('🔄 Found existing activities for city:', {
-      cityActivitiesFromProfile,
-      totalProfileActivities: userProfile.activities.length
-    });
     
     if (cityActivitiesFromProfile.length > 0) {
       // Cross-reference with cityActivities to get activityIds
@@ -624,10 +608,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       // Set the hydrated activities to pre-select pills
       setUserActivities(hydratedUserActivities);
       
-      console.log('✅ Hydrated activities for pills:', {
-        found: hydratedUserActivities.length,
-        fromProfile: cityActivitiesFromProfile.length
-      });
     } else {
       // No existing activities for this city, clear any previous selections
       setUserActivities([]);
@@ -640,11 +620,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     if (!user?.id) return;
     
     try {
-      console.log('🔄 Syncing activities to profile:', { selectedActivityNames, cityName });
       
       // Wait for profile query to be available, don't sync if loading
       if (!userProfile) {
-        console.log('⏳ Profile not loaded yet, skipping sync to prevent data loss');
         return;
       }
       
@@ -663,12 +641,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       );
       const updatedActivities = [...otherCityActivities, ...cityPrefixedActivities];
       
-      console.log('🔄 Profile update:', {
-        currentActivities: currentActivities.length,
-        selectedForThisCity: selectedActivityNames.length,
-        totalAfterUpdate: updatedActivities.length,
-        cityName
-      });
       
       // Update user profile
       await apiRequest('PUT', `/api/users/${user.id}`, {
@@ -678,7 +650,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       // Invalidate profile query to refresh UI
       queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
       
-      console.log('✅ Activities synced to profile successfully');
     } catch (error) {
       console.error('❌ Failed to sync activities to profile:', error);
       toast({
@@ -692,13 +663,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const fetchAllCities = async () => {
     setIsCitiesLoading(true);
     try {
-      console.log('🏙️ MATCH: Fetching cities from city stats API...');
       const apiBase = getApiBaseUrl();
       // Add refresh=true to clear any stale cache and get featured cities in order
       const response = await fetch(`${apiBase}/api/city-stats?refresh=true`);
       if (response.ok) {
         const citiesData = await response.json();
-        console.log('🏙️ MATCH: Loaded', citiesData.length, 'cities from API');
         
         const gradientOptions = [
           "from-orange-400/20 to-blue-600/20",
@@ -719,7 +688,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         // Store ALL cities - filtering happens in separate useEffect based on user data
         setAllCities(citiesWithPhotos);
         // Don't set filteredCities here - let the user-filter useEffect handle it
-        console.log('🏙️ MATCH: Cities loaded successfully:', citiesWithPhotos.length);
       } else {
         console.error('🏙️ MATCH: Failed to fetch cities from API');
         setAllCities([]);
@@ -736,15 +704,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
 
   const fetchCityActivities = async () => {
-    console.log('🎯 FETCHING ACTIVITIES FOR CITY:', selectedCity);
     try {
       const apiBase = getApiBaseUrl();
       const response = await fetch(`${apiBase}/api/city-activities/${encodeURIComponent(selectedCity)}`);
-      console.log('🎯 ACTIVITIES API RESPONSE:', response.status, response.ok);
       if (response.ok) {
         const activities = await response.json();
-        console.log('🎯 CITY ACTIVITIES FETCHED:', activities.length, 'activities for', selectedCity);
-        console.log('🎯 FIRST FEW ACTIVITIES:', activities.slice(0, 5));
         setCityActivities(activities);
       } else {
         console.error('🎯 ACTIVITIES API ERROR:', response.status);
@@ -778,20 +742,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
     
     if (!actualUser || !actualUser.id) {
-      console.log('🔧 NEW USER: No user logged in, starting with clean slate');
       setUserActivities([]);
       return;
     }
     
     const userId = actualUser.id;
-    console.log('🔧 FETCH USER ACTIVITIES: using userId =', userId, 'user object:', actualUser);
     
     try {
       const apiBase = getApiBaseUrl();
       const response = await fetch(`${apiBase}/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
       if (response.ok) {
         const activities = await response.json();
-        console.log('🎯 USER ACTIVITIES FETCHED:', activities.length, activities);
         setUserActivities(activities);
       }
     } catch (error) {
@@ -807,7 +768,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         const data = await response.json();
         // Handle both old format (array) and new format (object with users property)
         const users = Array.isArray(data) ? data : (data.users || []);
-        console.log('👥 MATCHING USERS FETCHED:', users.length);
         setMatchingUsers(users);
       }
     } catch (error) {
@@ -886,7 +846,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
 
     const isCurrentlyActive = userActivities.some(ua => ua.activityId === activity.id);
-    console.log('🎯 TOGGLE ACTIVITY:', activity.activityName, 'isCurrentlyActive:', isCurrentlyActive, 'userId:', userId);
 
     try {
       if (isCurrentlyActive) {
@@ -913,7 +872,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           return;
         }
         
-        console.log('🗑️ REMOVING: userActivityRecord.id =', userActivityRecord.id, 'activityId =', activity.id, 'userId =', userId);
         
         // Remove activity using the correct user_city_interests ID
         const apiBase = getApiBaseUrl();
@@ -924,17 +882,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           }
         });
         
-        console.log('🗑️ DELETE response status:', response.status, 'ok:', response.ok);
         
         if (response.ok) {
-          console.log('✅ Successfully removed activity');
           // Immediately update local state
           setUserActivities(prev => prev.filter(ua => ua.activityId !== activity.id));
           
           // If this is a user-created activity, also delete the underlying city_activity
           // so it doesn't show as a gray chip
           if (activity.source === 'user' && activity.createdByUserId === userId) {
-            console.log('🗑️ Also deleting user-created city_activity:', activity.id);
             try {
               await fetch(`${apiBase}/api/city-activities/${activity.id}`, {
                 method: 'DELETE',
@@ -981,7 +936,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         });
         if (response.ok) {
           const newInterest = await response.json();
-          console.log('✅ Successfully added activity:', newInterest);
           // Immediately update local state
           setUserActivities(prev => [...prev, newInterest]);
           // Refresh to sync with database
@@ -1011,15 +965,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   const updateActivity = async () => {
     if (!editingActivity) {
-      console.log('❌ UPDATE BLOCKED: no editingActivity');
       return;
     }
 
     const storedUser = localStorage.getItem('travelconnect_user');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
     const userId = actualUser?.id;
-    console.log('🔧 UPDATE: using userId =', userId);
-    console.log('✏️ UPDATING ACTIVITY:', editingActivity.id, 'from:', editingActivity.activityName, 'to:', editActivityName);
 
     try {
       const apiBase = getApiBaseUrl();
@@ -1035,11 +986,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         })
       });
 
-      console.log('✏️ UPDATE RESPONSE:', response.status, response.ok);
 
       if (response.ok) {
         const updatedActivity = await response.json();
-        console.log('✏️ UPDATED ACTIVITY DATA:', updatedActivity);
         
         toast({
           title: "Activity Updated",
@@ -1058,7 +1007,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         setEditActivityName('');
         setEditActivityDescription('');
         
-        console.log('✏️ EDIT FORM CLEARED AND STATE UPDATED');
       } else {
         const error = await response.json();
         console.error('❌ UPDATE ERROR RESPONSE:', error);
@@ -1087,8 +1035,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     const authUser = localStorage.getItem('user');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
     const userId = actualUser?.id;
-    console.log('🔧 DELETE: using userId =', userId);
-    console.log('🗑️ DELETING ACTIVITY:', activityId);
 
     try {
       const apiBase = getApiBaseUrl();
@@ -1135,7 +1081,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     const authUser = localStorage.getItem('user');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
     const userId = actualUser?.id;
-    console.log('➕ ADDING ACTIVITY:', newActivity, 'userId:', userId);
 
     try {
       const apiBase = getApiBaseUrl();
@@ -1158,7 +1103,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         setCityActivities(prev => [...prev, newActivityData]);
         
         // Automatically add the new activity to user's interests (make it green)
-        console.log('🎯 Auto-selecting new activity:', newActivityData.activityName);
         const interestResponse = await fetch(`${apiBase}/api/user-city-interests`, {
           method: 'POST',
           headers: {
@@ -1174,7 +1118,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         if (interestResponse.ok) {
           const newUserActivity = await interestResponse.json();
           setUserActivities(prev => [...prev, newUserActivity]);
-          console.log('✅ Auto-selected activity for user');
         }
         
         setNewActivity('');
@@ -1550,8 +1493,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     const userId = actualUser?.id;
     const isCurrentlySelected = userActivities.some(ua => ua.activityId === activityId);
     
-    console.log('🔄 TOGGLE ACTIVITY CLICKED!!!:', activityId, activityName, 'currently selected:', isCurrentlySelected);
-    console.log('🔄 TOGGLE: userId =', userId, 'city =', selectedCity);
 
     try {
       if (isCurrentlySelected) {
@@ -1630,7 +1571,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       (travelconnectUser ? JSON.parse(travelconnectUser) : null);
     const userId = actualUser?.id;
     
-    console.log('🗑️ DELETE ACTIVITY: userActivityId:', userActivityId, 'userId:', userId, 'actualUser:', actualUser);
     
     try {
       const apiBase = getApiBaseUrl();
@@ -1641,7 +1581,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         }
       });
 
-      console.log('🗑️ DELETE RESPONSE:', response.status, response.ok);
 
       if (response.ok) {
         setUserActivities(prev => prev.filter(ua => ua.id !== userActivityId));
@@ -2028,7 +1967,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const selectedCityData = allCities.find(c => c.city === selectedCity);
   const isActivityActive = (activityId: number) => {
     const isActive = userActivities.some(ua => ua.activityId === activityId);
-    console.log(`🔍 ACTIVITY ACTIVE CHECK: ${activityId} = ${isActive}, userActivities:`, userActivities.length);
     return isActive;
   };
 
@@ -2892,9 +2830,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               onClick={() => {
                                 toggleActivity(activity);
                               }}
-                              onMouseDown={(e) => {
-                                console.log('🖱️ PILL MOUSE DOWN!', activity.activityName);
-                              }}
                               data-testid="activity-pill"
                               type="button"
                               style={{ pointerEvents: 'auto', zIndex: 1 }}
@@ -2935,7 +2870,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                     className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      console.log('🔧 EDIT CLICKED for activity:', activity.activityName);
                                       setEditingActivity({ id: userActivity?.id || activity.id, name: activity.activityName, activityId: activity.id });
                                       setEditingActivityName(activity.activityName);
                                     }}
@@ -2948,7 +2882,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    console.log('🔧 DELETE CLICKED for activity:', activity.activityName);
                                     if (userActivity) {
                                       handleDeleteActivity(userActivity.id);
                                     } else {
@@ -3116,7 +3049,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-blue-100 dark:hover:shadow-blue-900/50'
                           }`}
                           onClick={async () => {
-                            console.log('🎯 Universal activity clicked:', activity);
                             
                             // Get authenticated user - check multiple sources
                             const storedUser = localStorage.getItem('travelconnect_user');
@@ -3138,7 +3070,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               }
                             }
                             
-                            console.log('🔧 AUTH CHECK:', { user, storedUser: !!storedUser, authStorageUser: !!authStorageUser, actualUser: !!actualUser });
                             
                             // This should never happen due to page-level auth protection
                             if (!actualUser?.id) {
@@ -3147,7 +3078,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             }
                             
                             const userId = actualUser.id;
-                            console.log('🔧 Using userId:', userId);
                             
                             try {
                               const apiBase = getApiBaseUrl();

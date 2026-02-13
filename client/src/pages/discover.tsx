@@ -84,7 +84,6 @@ export default function DiscoverPage() {
   // Redirect business users away from destination discovery page
   useEffect(() => {
     if (user?.userType === 'business') {
-      console.log('Business user detected on discover page, redirecting to business dashboard');
       setLocation('/business-dashboard');
     }
   }, [user, setLocation]);
