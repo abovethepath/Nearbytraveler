@@ -1850,50 +1850,29 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
               </div>
             )}
 
-            {/* Submit Button */}
+            {/* Submit Button - use onClick so submission always runs (fixes WebView/touch where type="submit" can be ignored) */}
             <div className="pt-4">
               <Button
-                type="submit"
+                type="button"
                 disabled={isSubmitting || createEventMutation.isPending}
                 className="w-full bg-gradient-to-r from-blue-500 to-gray-600 hover:from-blue-600 hover:to-gray-700 active:scale-95 font-semibold py-4 px-6 min-h-[52px] touch-manipulation text-lg"
-                style={{ 
+                style={{
                   color: 'black',
                   WebkitTapHighlightColor: 'rgba(59, 130, 246, 0.1)',
                   touchAction: 'manipulation',
                   userSelect: 'none'
                 }}
                 onClick={(e) => {
-                  console.log('🎯 Create Event Button clicked!', {
-                    isSubmitting,
-                    isPending: createEventMutation.isPending,
-                    disabled: isSubmitting || createEventMutation.isPending,
-                    buttonType: e.currentTarget.type,
-                    formElement: e.currentTarget.form
-                  });
-                  
-                  // Mobile Safari sometimes needs explicit form submission
-                  if (!isSubmitting && !createEventMutation.isPending) {
-                    console.log('🎯 Button not disabled, allowing normal form submission');
-                    
-                    // Fallback: If React form isn't submitting, manually trigger it
-                    setTimeout(() => {
-                      const form = e.currentTarget.form;
-                      if (form && !isSubmitting) {
-                        console.log('🎯 Manual form submission fallback');
-                        const formData = new FormData(form);
-                        console.log('🎯 Manual form data:', Object.fromEntries(formData));
-                        form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-                      }
-                    }, 100);
-                  }
-                }}
-                onTouchStart={(e) => {
-                  console.log('🎯 Touch started on Create Event button');
-                  e.currentTarget.style.transform = 'scale(0.98)';
-                }}
-                onTouchEnd={(e) => {
-                  console.log('🎯 Touch ended on Create Event button');
-                  e.currentTarget.style.transform = '';
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (isSubmitting || createEventMutation.isPending) return;
+                  handleSubmit(onSubmit, (validationErrors) => {
+                    toast({
+                      title: "Please fix the form",
+                      description: "Fill in all required fields (title, address, date, start time).",
+                      variant: "destructive"
+                    });
+                  })(e);
                 }}
               >
                 <span style={{ color: 'black' }}>

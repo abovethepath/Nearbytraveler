@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
@@ -12,15 +11,18 @@ import {
   useColorScheme,
   Linking,
   Platform,
+  BackHandler,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
+import { useFocusEffect } from '@react-navigation/native';
 import api from '../services/api';
 
 // Set to your local client URL (e.g. 'http://192.168.1.x:5000') to test client/ fixes in Expo without deploying.
 const DEV_WEB_URL = null; // e.g. 'http://192.168.1.100:5000'
 const BASE_URL = (typeof __DEV__ !== 'undefined' && __DEV__ && DEV_WEB_URL) ? DEV_WEB_URL.replace(/\/$/, '') : 'https://nearbytraveler.org';
 const HOST = (BASE_URL || '').replace(/^https?:\/\//, '').split('/')[0] || 'nearbytraveler.org';
-const HEADER_HEIGHT = 52;
+const HEADER_HEIGHT = 56;
 
 const DARK = {
   bg: '#1c1c1e',
@@ -73,6 +75,21 @@ function WebViewWithChrome({ path, navigation }) {
   const source = webViewSource(path);
   const webViewHeight = Math.max(400, windowHeight - HEADER_HEIGHT - (Platform.OS === 'ios' ? 44 : 24));
 
+  // Android hardware back: only let GO_BACK run when we can go back, to avoid "GO_BACK was not handled"
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS !== 'android') return undefined;
+      const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+          return true;
+        }
+        return true; // at root: consume event so no unhandled GO_BACK
+      });
+      return () => sub.remove();
+    }, [navigation])
+  );
+
   const onLoadStart = useCallback(() => { setLoading(true); setError(null); }, []);
   const onLoadEnd = useCallback(() => { setLoading(false); setRefreshing(false); }, []);
   const onError = useCallback((e) => {
@@ -94,12 +111,26 @@ function WebViewWithChrome({ path, navigation }) {
 
   return (
     <SafeAreaView style={containerStyle}>
-      <View style={headerStyle}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()} activeOpacity={0.7}>
+      {/* Native bar sits above the WebView; pull-to-refresh in the scroll area reloads the page. */}
+      <View style={[headerStyle, { minHeight: HEADER_HEIGHT }]}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => {
+            if (navigation.canGoBack()) {
+              navigation.goBack();
+            }
+          }}
+          activeOpacity={0.7}
+        >
           <Text style={styles.backChevron}>&#x2039;</Text>
           <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.refreshButton} onPress={onRefresh} disabled={refreshing}>
+        <TouchableOpacity
+          style={styles.refreshButton}
+          onPress={onRefresh}
+          disabled={refreshing}
+          accessibilityLabel="Reload page"
+        >
           <Text style={styles.refreshText}>{refreshing ? '…' : 'Refresh'}</Text>
         </TouchableOpacity>
       </View>

@@ -40,9 +40,10 @@ const TabIcon = ({ emoji, focused }) => (
 );
 
 // WebView stacks: one screen each with session cookie (GenericWebViewScreen uses api.getSessionCookie())
+// gestureEnabled: false prevents iOS swipe-back from dispatching GO_BACK when there's no screen to pop (avoids "GO_BACK was not handled")
 function WebViewStack({ path, tabLabel }) {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: false }}>
       <Stack.Screen name="WebViewPage" component={GenericWebViewScreen} initialParams={{ path }} />
     </Stack.Navigator>
   );
@@ -63,9 +64,15 @@ const CREATE_OPTIONS = [
 
 function CreateTabButton(props) {
   const navigation = useNavigation();
-  // From tab bar, getParent() is the root stack that contains MainTabs and WebView
-  const rootNav = navigation.getParent?.() ?? navigation;
-
+  const tabNav = navigation.getParent?.();
+  // Navigate to Create tab + push WebView so tab bar stays visible (bottom + top nav)
+  const goToCreateWebView = (path) => {
+    if (tabNav) {
+      tabNav.navigate('Create', { screen: 'CreateWebView', params: { path } });
+    } else {
+      navigation.navigate('CreateWebView', { path });
+    }
+  };
   const onPress = () => {
     if (Platform.OS === 'ios') {
       ActionSheetIOS.showActionSheetWithOptions(
@@ -75,7 +82,7 @@ function CreateTabButton(props) {
         },
         (buttonIndex) => {
           if (buttonIndex < CREATE_OPTIONS.length) {
-            rootNav.navigate('WebView', { path: CREATE_OPTIONS[buttonIndex].path });
+            goToCreateWebView(CREATE_OPTIONS[buttonIndex].path);
           }
         }
       );
@@ -86,7 +93,7 @@ function CreateTabButton(props) {
         [
           ...CREATE_OPTIONS.map((o) => ({
             text: o.label,
-            onPress: () => rootNav.navigate('WebView', { path: o.path }),
+            onPress: () => goToCreateWebView(o.path),
           })),
           { text: 'Cancel', style: 'cancel' },
         ]
@@ -102,6 +109,16 @@ function CreateTabButton(props) {
     >
       <Text style={styles.createButtonIcon}>+</Text>
     </TouchableOpacity>
+  );
+}
+
+// Create tab stack: placeholder + WebView. Keeps tab bar visible when viewing Plan Trip, Create Event, etc.
+function CreateStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: true }}>
+      <Stack.Screen name="CreatePlaceholder" component={CreatePlaceholderScreen} />
+      <Stack.Screen name="CreateWebView" component={GenericWebViewScreen} />
+    </Stack.Navigator>
   );
 }
 
@@ -162,7 +179,7 @@ function MainTabs() {
       </Tab.Screen>
       <Tab.Screen
         name="Create"
-        component={CreatePlaceholderScreen}
+        component={CreateStack}
         options={{
           tabBarLabel: 'CREATE',
           tabBarButton: (props) => (
@@ -196,7 +213,6 @@ function RootStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs" component={MainTabs} />
-      <Stack.Screen name="WebView" component={GenericWebViewScreen} />
     </Stack.Navigator>
   );
 }

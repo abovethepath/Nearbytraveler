@@ -47,6 +47,7 @@ const isVideoMedia = staticHeroMedia.match(/\.(mp4|webm|ogg)$/i);
 import ResponsiveUserGrid from "@/components/ResponsiveUserGrid";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 import MessagesWidget from "@/components/MessagesWidget";
 import EventsWidget from "@/components/EventsWidget";
@@ -1500,8 +1501,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 w-full max-w-full overflow-x-hidden">
 
-{/* Hero Toggle Button & Theme Toggle (when hero is hidden) */}
-{!isHeroVisible && (
+{/* Hero Toggle Button & Theme Toggle (when hero is hidden) - hidden in native iOS app */}
+{!isNativeIOSApp() && !isHeroVisible && (
   <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
     <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <Button
@@ -1519,8 +1520,8 @@ export default function Home() {
   </div>
 )}
 
-{/* HERO SECTION — Standardized Layout */}
-{isHeroVisible && (
+{/* HERO SECTION — Standardized Layout - hidden in native iOS app */}
+{!isNativeIOSApp() && isHeroVisible && (
 <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden bg-white dark:bg-gray-900">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="mb-4 flex items-center justify-end">

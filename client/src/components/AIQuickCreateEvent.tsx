@@ -89,6 +89,7 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
   const [isEditing, setIsEditing] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
+  const [inlineError, setInlineError] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const { toast } = useToast();
 
@@ -98,7 +99,7 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
     setSpeechSupported(!!SpeechRecognitionAPI);
   }, []);
 
-  const startListening = () => {
+  const startListening = async () => {
     const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognitionAPI) {
       toast({
@@ -110,6 +111,24 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
     }
 
     try {
+      // Request microphone permission first (required on iOS/Android WebView; avoids silent failure)
+      if (navigator.mediaDevices?.getUserMedia) {
+        try {
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (permErr: any) {
+          setIsListening(false);
+          const denied = permErr?.name === "NotAllowedError" || permErr?.message?.toLowerCase().includes("permission");
+          toast({
+            title: "Microphone access needed",
+            description: denied
+              ? "Please allow microphone access in your browser or device settings, then try again."
+              : "Could not access microphone. Please type your event details instead.",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+
       const recognition = new SpeechRecognitionAPI();
       recognition.continuous = true;
       recognition.interimResults = true;
@@ -117,14 +136,12 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         let finalTranscript = "";
-        let interimTranscript = "";
 
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
+          const result = event.results[i];
+          const transcript = result[0]?.transcript;
+          if (transcript && result.isFinal) {
             finalTranscript += transcript + " ";
-          } else {
-            interimTranscript += transcript;
           }
         }
 
@@ -136,16 +153,19 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
       recognition.onerror = (event: any) => {
         console.error("Speech recognition error:", event);
         setIsListening(false);
-        
+        recognitionRef.current = null;
+
         let errorMessage = "Voice input isn't available. Please type your event details instead.";
-        if (event.error === 'not-allowed') {
-          errorMessage = "Microphone access was denied. Please enable microphone permissions or type your event details.";
-        } else if (event.error === 'no-speech') {
-          errorMessage = "No speech detected. Please try again or type your event details.";
-        } else if (event.error === 'network') {
-          errorMessage = "Network error. Please check your connection or type your event details.";
+        if (event.error === "not-allowed") {
+          errorMessage = "Microphone access was denied. Enable microphone in Settings for this app, then try again.";
+        } else if (event.error === "no-speech") {
+          errorMessage = "No speech detected. Try again or type your event details.";
+        } else if (event.error === "network") {
+          errorMessage = "Network error. Check your connection or type your event details.";
+        } else if (event.error === "audio-capture") {
+          errorMessage = "Microphone not available. Please type your event details.";
         }
-        
+
         toast({
           title: "Voice unavailable",
           description: errorMessage,
@@ -155,21 +175,36 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
 
       recognition.onend = () => {
         setIsListening(false);
+        recognitionRef.current = null;
       };
 
       recognitionRef.current = recognition;
-      recognition.start();
+      try {
+        recognition.start();
+      } catch (startErr) {
+        console.error("recognition.start error:", startErr);
+        setIsListening(false);
+        recognitionRef.current = null;
+        toast({
+          title: "Voice unavailable",
+          description: "Could not start listening. Please allow microphone access or type your event details.",
+          variant: "destructive"
+        });
+        return;
+      }
       setIsListening(true);
-      
+
       toast({
         title: "Listening...",
         description: "Speak your event details. Tap the mic again to stop.",
       });
     } catch (error) {
       console.error("Speech recognition initialization error:", error);
+      setIsListening(false);
+      recognitionRef.current = null;
       toast({
         title: "Voice unavailable",
-        description: "Voice input isn't available in this app. Please type your event details instead.",
+        description: "Voice input isn't available. Please type your event details instead.",
         variant: "destructive"
       });
     }
@@ -192,37 +227,56 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
 
   const generateDraftMutation = useMutation({
     mutationFn: async (text: string) => {
-      // Get user ID from localStorage for authentication
-      const storedUser = localStorage.getItem('travelconnect_user');
+      setInlineError(null);
+      const storedUser = localStorage.getItem("travelconnect_user") || localStorage.getItem("user");
       const userId = storedUser ? JSON.parse(storedUser).id : null;
-      
+
       const headers: Record<string, string> = { "Content-Type": "application/json" };
-      if (userId) {
-        headers["X-User-Id"] = userId.toString();
+      if (userId) headers["X-User-Id"] = userId.toString();
+
+      let response: Response;
+      try {
+        response = await fetch(`${getApiBaseUrl()}/api/ai/event-draft`, {
+          method: "POST",
+          headers,
+          credentials: "include",
+          body: JSON.stringify({
+            text,
+            userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            defaultCity
+          })
+        });
+      } catch (networkErr: any) {
+        const msg = networkErr?.message?.includes("fetch") || networkErr?.name === "TypeError"
+          ? "Cannot reach the server. Check your connection and try again."
+          : "Something went wrong. Please try again.";
+        throw new Error(msg);
       }
-      
-      const response = await fetch(`${getApiBaseUrl()}/api/ai/event-draft`, {
-        method: "POST",
-        headers,
-        credentials: "include",
-        body: JSON.stringify({
-          text,
-          userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          defaultCity
-        })
-      });
-      
+
+      const raw = await response.text();
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to process description");
+        let serverMessage = "Failed to generate event. Please try again.";
+        try {
+          const data = raw ? JSON.parse(raw) : {};
+          if (typeof data.error === "string") serverMessage = data.error;
+        } catch {
+          /* use defaults below */
+        }
+        if (response.status === 401) serverMessage = "Please sign in to use AI event generation.";
+        else if (response.status >= 500 && serverMessage === "Failed to generate event. Please try again.") serverMessage = "Server temporarily unavailable. Try again in a moment.";
+        throw new Error(serverMessage);
       }
-      
-      return response.json() as Promise<AiEventDraft>;
+
+      try {
+        return JSON.parse(raw) as AiEventDraft;
+      } catch {
+        throw new Error("Invalid response from server. Please try again.");
+      }
     },
     onSuccess: (data) => {
+      setInlineError(null);
       setDraft(data);
       setIsEditing(false);
-      
       if (data.missing && data.missing.length > 0) {
         toast({
           title: "Almost there!",
@@ -231,19 +285,24 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
       }
     },
     onError: (error: Error) => {
+      const message = error.message || "Couldn't generate event. Please try again.";
+      setInlineError(message);
       toast({
         title: "Couldn't understand that",
-        description: error.message,
+        description: message,
         variant: "destructive"
       });
     }
   });
 
   const handleGenerate = () => {
+    setInlineError(null);
     if (inputText.trim().length < 10) {
+      const msg = "Please describe your event with more detail (at least 10 characters).";
+      setInlineError(msg);
       toast({
         title: "Need more details",
-        description: "Please describe your event with more detail (at least 10 characters)",
+        description: msg,
         variant: "destructive"
       });
       return;
@@ -322,7 +381,10 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
               <Textarea
                 placeholder={isListening ? "Listening... speak now!" : "Tell us about your event: What is it? When? Where? Any restrictions or themes?"}
                 value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
+                onChange={(e) => {
+                  setInputText(e.target.value);
+                  if (inlineError) setInlineError(null);
+                }}
                 className={`min-h-[120px] resize-none ${isListening ? "border-red-500 border-2" : ""}`}
                 disabled={generateDraftMutation.isPending}
               />
@@ -343,6 +405,27 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
               }
             </p>
           </div>
+
+          {inlineError && (
+            <div
+              className="rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/50 dark:border-red-600 p-3 text-red-800 dark:text-red-200 text-sm flex items-start gap-2"
+              role="alert"
+            >
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="font-medium">Couldn't generate event</p>
+                <p className="mt-0.5">{inlineError}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setInlineError(null)}
+                className="flex-shrink-0 p-1 rounded hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300"
+                aria-label="Dismiss"
+              >
+                <span className="sr-only">Dismiss</span>×
+              </button>
+            </div>
+          )}
 
           <Button
             onClick={handleGenerate}

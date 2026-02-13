@@ -529,7 +529,8 @@ The web app detects when it's running inside the native iOS WebView and adapts:
   2. `window.isNativeApp = true` — alternative flag
   3. **URL param `?native=ios`** — append to WebView URL (e.g. `https://nearbytraveler.org/profile?native=ios`). The Expo/hybrid app must append this to all WebView URLs so the site knows to hide its bottom nav.
   4. `window.webkit.messageHandlers` present (WKWebView bridge)
-- **Bottom navbar hidden**: When `isNativeIOSApp()` is true (including when `?native=ios` is in the URL), the website **hides its bottom navbar** (`MobileBottomNav` returns null) so only the native app's tab bar is shown—avoiding a double navbar in the hybrid iOS app.
+- **Web UI hidden in native app** (native has its own tab bar/nav): `MobileBottomNav`, `MobileTopNav` (hamburger), desktop `Navbar`, `ResponsiveNavbar`, hero sections on home and events pages — all return null or are not rendered when `isNativeIOSApp()` is true.
+- **Available Now badge** (user-card.tsx): Must show everywhere (web and native) when `isAvailableNow` is true — never hide it for native app.
 - **Native bridge**: `sendToNativeApp(action, data)` posts messages to `window.webkit.messageHandlers.nearbyTraveler` for native features (push tokens, haptics, camera, etc.)
 
 **For the native iOS app (Swift/Capacitor or Expo WebView) to signal it's a native app, do ONE of:**
@@ -540,6 +541,14 @@ webView.evaluateJavaScript("window.NearbyTravelerNative = true;")
 // Option 2: Append URL param
 let url = URL(string: "https://nearbytraveler.org?native=ios")
 ```
+
+## CRITICAL: Native-Only Changes (Desktop/Web Users Must Not Be Affected)
+When fixing iOS WebView issues or adding native-app-specific behavior:
+- **ALWAYS gate changes with `isNativeIOSApp()`** — desktop, tablet, and mobile web users must see the same experience as before
+- `isNativeIOSApp()` returns true ONLY when: `?native=ios` in URL, or `window.NearbyTravelerNative` / `window.__NEARBY_NATIVE_IOS__` set by the native shell
+- Regular visitors (desktop, tablet, mobile Safari) never trigger these — they see the full web UI
+- **Never** make broad UI changes that affect all users when the fix is only for the native iOS app
+- Examples: hiding hamburger, hero sections, bottom nav, ResponsiveNavbar — all must check `isNativeIOSApp()` first
 
 ## File Structure
 ```

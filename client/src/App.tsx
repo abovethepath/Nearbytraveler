@@ -178,6 +178,7 @@ import ComingSoon from "@/pages/coming-soon";
 
 
 import Navbar from "@/components/navbar";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 // Removed conflicting MobileNav - using MobileTopNav and MobileBottomNav instead
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { MobileTopNav } from "@/components/MobileTopNav";
@@ -1284,19 +1285,21 @@ function Router() {
         <>
           {console.log('🔍 APP ROUTING: Authentication evidence found, showing authenticated app for location:', location)}
           
-          {/* Mobile Navigation - OUTSIDE the flex container to prevent stacking context issues */}
-          <div className="md:hidden" style={{ position: 'relative', zIndex: 99999 }}>
-            <MobileTopNav />
-          </div>
+          {/* Mobile Navigation - hidden in native iOS app (native has its own tab bar/nav) */}
+          {!isNativeIOSApp() && (
+            <div className="md:hidden" style={{ position: 'relative', zIndex: 99999 }}>
+              <MobileTopNav />
+            </div>
+          )}
           
-          {/* Desktop Navigation */}
-          <div className="hidden md:block">
+          {/* Desktop Navigation - hidden in native iOS */}
+          <div className={isNativeIOSApp() ? "hidden" : "hidden md:block"}>
             <Navbar />
           </div>
           
-          {/* Main content - no stacking context blocking */}
+          {/* Main content - no stacking context blocking. In native app, no web nav so use minimal padding. */}
           <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden" style={{ position: 'relative', zIndex: 1 }}>
-            <main className="w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-20 overflow-x-hidden main-with-bottom-nav">
+            <main className={`w-full max-w-full overflow-x-hidden main-with-bottom-nav ${isNativeIOSApp() ? 'pt-0 pb-4' : 'pt-16 pb-24 md:pt-0 md:pb-20'}`}>
               <div className="w-full max-w-full overflow-x-hidden">
                 {renderPage()}
               </div>

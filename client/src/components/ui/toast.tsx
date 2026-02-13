@@ -18,7 +18,7 @@ const ToastViewport = React.forwardRef<
       className
     )}
     style={{ 
-      zIndex: 99999,
+      zIndex: 2147483646,
       position: 'fixed',
       top: '16px',
       left: '16px',

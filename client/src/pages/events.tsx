@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle, Star, Sparkles, ChevronDown, MessageCircle, History, Link2 } from "lucide-react";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
@@ -432,8 +433,8 @@ export default function Events() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 w-full max-w-[100vw] overflow-x-hidden box-border">
       {/* MobileNav removed - using global MobileTopNav and MobileBottomNav */}
       
-      {/* Show Hero Button - Only visible when hero is hidden */}
-      {!isHeroVisible && (
+      {/* Show Hero Button - Only visible when hero is hidden - hidden in native iOS app */}
+      {!isNativeIOSApp() && !isHeroVisible && (
         <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
             <Button
@@ -450,8 +451,8 @@ export default function Events() {
         </div>
       )}
 
-      {/* HERO SECTION — Standardized Layout */}
-      {isHeroVisible && (
+      {/* HERO SECTION — Standardized Layout - hidden in native iOS app */}
+      {!isNativeIOSApp() && isHeroVisible && (
         <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-4 flex items-center justify-between">

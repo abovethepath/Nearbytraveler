@@ -3130,10 +3130,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       });
       
       console.log('🤖 Response received:', response.status, response.ok);
-      const data = await response.json();
-      console.log('🤖 Response data:', data);
+      let data: { success?: boolean; bio?: string; message?: string } = {};
+      try {
+        const text = await response.text();
+        if (text) data = JSON.parse(text);
+      } catch {
+        // non-JSON response (e.g. 500 HTML)
+      }
       
-      if (data.success && data.bio) {
+      if (response.ok && data.success && data.bio) {
         profileForm.setValue('bio', data.bio);
         toast({
           title: "Bio generated!",
@@ -8419,20 +8424,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Profile Edit Modal */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
         <DialogContent 
-          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 dark:text-gray-100"
           style={{
             position: 'fixed',
             left: '50%',
             top: '50%',
             transform: 'translate(-50%, -50%)',
             zIndex: 100001,
-            display: 'grid',
             visibility: 'visible',
             opacity: 1
           }}
         >
-          <DialogHeader>
-            <div className="flex items-center justify-between pr-10">
+          <DialogHeader className="flex-shrink-0 pr-10">
+            <div className="flex items-center justify-between">
               <DialogTitle>Edit Profile</DialogTitle>
               <Button
                 type="button"
@@ -8455,8 +8459,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
           </DialogHeader>
           
-          {/* REMOVED: Moving section moved to bottom of form */}
-          
+          {/* Scrollable body so the form can scroll on mobile/WebView */}
+          <div
+            className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pb-4"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
           {/* Show loading state while form initializes to prevent freeze */}
           {!isFormReady ? (
             <div className="flex flex-col items-center justify-center py-12">
@@ -8658,15 +8665,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             type="button"
                             variant="outline"
                             size="sm"
-                            onTouchEnd={(e) => {
+                            onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               if (!isGeneratingBio) handleGenerateBio();
                             }}
-                            onClick={handleGenerateBio}
+                            onPointerDown={(e) => {
+                              e.stopPropagation();
+                            }}
                             disabled={isGeneratingBio}
                             className="text-xs h-7 px-2 gap-1 border-orange-300 text-orange-600 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-400 dark:hover:bg-orange-900/20"
-                            style={{ touchAction: 'manipulation' }}
+                            style={{ touchAction: 'manipulation', cursor: 'pointer' }}
                           >
                             <Sparkles className="w-3 h-3" />
                             {isGeneratingBio ? 'Generating...' : 'Generate bio for me'}
@@ -9200,6 +9209,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </form>
           </Form>
           )}
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -9751,7 +9761,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Chatroom List Modal */}
       <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
         <DialogContent 
-          className="max-w-2xl max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-900"
+          className="max-w-2xl max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
           style={{
             position: 'fixed',
             left: '50%',
@@ -9782,8 +9792,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   key={chatroom.id}
                   className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
                   onClick={() => {
+                    const path = `/chatroom/${chatroom.id}`;
                     setShowChatroomList(false);
-                    setLocation(`/chatroom/${chatroom.id}`);
+                    // In native WebView (Expo), client-side setLocation can be lost when dialog closes; force full URL so we actually land on the chatroom
+                    if (isNativeIOSApp()) {
+                      const search = window.location.search || '';
+                      window.location.href = `${window.location.origin}${path}${search}`;
+                    } else {
+                      setLocation(path);
+                    }
                   }}
                 >
                   <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
@@ -9820,7 +9837,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <Button 
                   onClick={() => {
                     setShowChatroomList(false);
-                    setLocation('/city-chatrooms');
+                    if (isNativeIOSApp()) {
+                      const search = window.location.search || '';
+                      window.location.href = `${window.location.origin}/city-chatrooms${search}`;
+                    } else {
+                      setLocation('/city-chatrooms');
+                    }
                   }}
                   className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-black"
                 >
@@ -9835,7 +9857,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               variant="outline" 
               onClick={() => {
                 setShowChatroomList(false);
-                setLocation('/city-chatrooms');
+                if (isNativeIOSApp()) {
+                  const search = window.location.search || '';
+                  window.location.href = `${window.location.origin}/city-chatrooms${search}`;
+                } else {
+                  setLocation('/city-chatrooms');
+                }
               }}
               className="w-full"
             >

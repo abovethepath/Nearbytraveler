@@ -20,6 +20,7 @@ import { AdaptiveThemeToggle } from "@/components/adaptive-theme-toggle";
 import { authStorage } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { getApiBaseUrl, invalidateUserCache } from "@/lib/queryClient";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 
 // Theme Toggle as Dropdown Menu Item
@@ -379,7 +380,10 @@ function Navbar() {
         </div>
       )}
       
-      <header ref={headerRef} className="sticky top-0 z-[1000] bg-white dark:bg-black shadow-sm">
+      <header
+        ref={headerRef}
+        className={`sticky top-0 z-[1000] bg-white dark:bg-black shadow-sm ${isNativeIOSApp() ? 'pt-3' : ''}`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-2">
             <div className="flex items-center justify-start flex-1 min-w-0">
@@ -387,8 +391,11 @@ function Navbar() {
                 <img 
                   src="/new-logo.png" 
                   alt="Nearby Traveler" 
-                  className={`w-auto cursor-pointer hover:opacity-80 transition-all duration-300 object-contain`}
-                  style={{ height: '52px', maxWidth: '280px' }}
+                  className="w-auto cursor-pointer hover:opacity-80 transition-all duration-300 object-contain"
+                  style={{
+                    height: isNativeIOSApp() ? '64px' : '52px',
+                    maxWidth: isNativeIOSApp() ? '320px' : '280px'
+                  }}
                   onLoad={() => console.log('Logo loaded successfully')}
                   onError={(e) => {
                     console.error('Logo failed to load from:', e.currentTarget.src);
@@ -431,7 +438,7 @@ function Navbar() {
                 {/* Mobile Menu Button - Simplified for Capacitor WebView */}
                 <button
                   type="button"
-                  className="md:hidden h-12 w-12 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer relative z-[1100]"
+                  className={`md:hidden p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer relative z-[1100] ${isNativeIOSApp() ? 'h-14 w-14' : 'h-12 w-12'}`}
                   onClick={() => {
                     console.log('🍔 Hamburger clicked');
                     setIsMobileMenuOpen(o => !o);
@@ -448,13 +455,13 @@ function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <button 
                     type="button"
-                    className="relative h-12 w-12 rounded-full p-0 flex items-center justify-center cursor-pointer z-[1100]"
+                    className={`relative rounded-full p-0 flex items-center justify-center cursor-pointer z-[1100] ${isNativeIOSApp() ? 'h-14 w-14' : 'h-12 w-12'}`}
                     style={{ WebkitTapHighlightColor: 'transparent', cursor: 'pointer' }}
                   >
                     <SimpleAvatar 
                       key={`navbar-avatar-${directUser?.id}-${avatarKey}-${navbarRefreshTrigger}`}
                       user={directUser} 
-                      size="md" 
+                      size={isNativeIOSApp() ? 'lg' : 'md'}
                       className="border-2 border-white shadow-sm pointer-events-none"
                     />
                   </button>
