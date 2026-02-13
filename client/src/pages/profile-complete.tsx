@@ -4613,13 +4613,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
                       {user.streetAddress && (
-                        <div className="flex items-start">
-                          <span className="font-medium text-gray-700 dark:text-gray-300 w-20 flex-shrink-0">Address:</span>
+                        <div className="flex items-start gap-2">
+                          <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Address:</span>
                           <a
                             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(user.streetAddress + (user.zipCode ? `, ${user.zipCode}` : '') + (user.city ? `, ${user.city}, ${user.state || ''}, ${user.country || ''}` : ''))}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline flex-1 break-words transition-colors font-medium"
+                            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline break-words transition-colors font-medium min-w-0"
                           >
                             {user.streetAddress}{user.zipCode && `, ${user.zipCode}`}
                           </a>
@@ -4627,11 +4627,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                       
                       {user.phoneNumber && (
-                        <div className="flex items-start">
-                          <span className="font-medium text-gray-700 dark:text-gray-300 w-20 flex-shrink-0">Phone:</span>
+                        <div className="flex items-start gap-2">
+                          <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Phone:</span>
                           <a
                             href={`tel:${user.phoneNumber}`}
-                            className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 underline flex-1 break-words transition-colors font-medium"
+                            className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 underline break-words transition-colors font-medium min-w-0"
                           >
                             {user.phoneNumber}
                           </a>
@@ -4639,11 +4639,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                       
                       {user.email && (
-                        <div className="flex items-start">
-                          <span className="font-medium text-gray-700 dark:text-gray-300 w-20 flex-shrink-0">Email:</span>
+                        <div className="flex items-start gap-2">
+                          <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Email:</span>
                           <a
                             href={`mailto:${user.email}`}
-                            className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 underline flex-1 break-words transition-colors font-medium"
+                            className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 underline break-words transition-colors font-medium min-w-0"
                           >
                             {user.email}
                           </a>
@@ -4651,13 +4651,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                       
                       {user.websiteUrl && (
-                        <div className="flex items-start">
-                          <span className="font-medium text-gray-700 dark:text-gray-300 w-20 flex-shrink-0">Website:</span>
+                        <div className="flex items-start gap-2">
+                          <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Website:</span>
                           <a 
                             href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline flex-1 break-words transition-colors font-medium"
+                            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline break-words transition-colors font-medium min-w-0"
                           >
                             {user.websiteUrl}
                           </a>
@@ -4724,9 +4724,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
                 {/* Basic Info — grid so lines never run together */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
-                  <div className="flex items-start">
-                    <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">From:</span>
-                    <span className="text-gray-900 dark:text-gray-100 flex-1 break-words">
+                  <div className="flex items-start gap-2">
+                    <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">From:</span>
+                    <span className="text-gray-900 dark:text-gray-100 break-words min-w-0">
                       {user?.userType === 'business'
                         ? (user?.location || user?.hometownCity || "Los Angeles, CA")
                         : (() => {
@@ -4738,24 +4738,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
 
                   {user?.userType !== 'business' && user?.gender && (
-                    <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Gender:</span>
-                      <span className="capitalize flex-1 break-words">{user?.gender?.replace('-', ' ')}</span>
+                    <div className="flex items-start gap-2">
+                      <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Gender:</span>
+                      <span className="capitalize text-gray-900 dark:text-gray-100 break-words min-w-0">{user?.gender?.replace('-', ' ')}</span>
                     </div>
                   )}
 
                   {/* Children Info for non-business users */}
                   {user?.userType !== 'business' && user?.childrenAges && user?.childrenAges !== 'None' && user?.childrenAges.trim() !== '' && (
-                    <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Children:</span>
-                      <span className="flex-1 break-words">Ages {user.childrenAges}</span>
+                    <div className="flex items-start gap-2">
+                      <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Children:</span>
+                      <span className="text-gray-900 dark:text-gray-100 break-words min-w-0">Ages {user.childrenAges}</span>
                     </div>
                   )}
 
                   {user.sexualPreferenceVisible && user.sexualPreference && (
-                    <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Preference:</span>
-                      <span className="flex-1 break-words">
+                    <div className="flex items-start gap-2">
+                      <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Preference:</span>
+                      <span className="text-gray-900 dark:text-gray-100 break-words min-w-0">
                         {Array.isArray(user.sexualPreference) 
                           ? user.sexualPreference.join(', ')
                           : typeof user.sexualPreference === 'string'
@@ -4767,17 +4767,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   )}
 
                   {user.userType !== 'business' && user.ageVisible && user.dateOfBirth && (
-                    <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Age:</span>
-                      <span className="flex-1 break-words">{calculateAge(user.dateOfBirth)} years old</span>
+                    <div className="flex items-start gap-2">
+                      <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Age:</span>
+                      <span className="text-gray-900 dark:text-gray-100 break-words min-w-0">{calculateAge(user.dateOfBirth)} years old</span>
                     </div>
                   )}
 
                   {/* Military Status for non-business users */}
                   {user.userType !== 'business' && (user.isVeteran || (user as any).is_veteran || user.isActiveDuty || (user as any).is_active_duty) && (
-                    <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
-                      <span className="flex-1 break-words flex items-center gap-2">
+                    <div className="flex items-start gap-2">
+                      <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Military:</span>
+                      <span className="text-gray-900 dark:text-gray-100 break-words min-w-0 flex items-center gap-2">
                         {(user.isVeteran || (user as any).is_veteran) && (
                           <span className="inline-flex items-center gap-1 text-sm font-medium text-green-700 dark:text-green-400">
                             <span className="text-green-600">✓</span>
@@ -4903,7 +4903,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               )}
                             </div>
                           </div>
-                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{deal.description}</p>
+                          <p className="text-gray-900 dark:text-gray-200 text-sm mb-3 line-clamp-2">{deal.description}</p>
                           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                             <span>Valid until {new Date(deal.validUntil).toLocaleDateString()}</span>
                             <span className="capitalize">{deal.category}</span>
