@@ -1,0 +1,49 @@
+Luma → Nearby Traveler (best option)
+
+You can integrate Luma events in 3 legit ways:
+	1.	Pull events via Luma’s official API
+
+	•	Luma has an official API with endpoints like List Events (by Calendar), Get Event, etc., plus webhooks so you can keep your DB in sync.  ￼
+	•	This is the cleanest “import into Nearby Traveler” approach: fetch events → map fields → display inside NT → link back to Luma for RSVP/checkout.
+
+	2.	Embed a Luma Calendar on your site
+
+	•	Luma supports embedding “all upcoming events” for a calendar directly on your website (Settings → Embed).  ￼
+
+	3.	Embed the Luma RSVP/checkout button per event
+
+	•	They provide an embed script/button that opens the Luma checkout widget for an event.  ￼
+
+Recommended NT approach:
+Use (1) API import for a native NT events feed + “Add to Super Calendar”, and optionally use (3) embedded checkout or a “RSVP on Luma” deep-link for the RSVP flow (so you don’t have to rebuild ticketing/guestlists immediately).
+
+⸻
+
+Partiful → Nearby Traveler (more limited)
+
+Partiful appears to be calendar-sync-first, not API-first:
+	•	Partiful lets users sync events by subscribing to a calendar link (Apple/Google/Outlook workflows).  ￼
+	•	They explicitly warn the Google calendar link is personal (“Do not share this link”).  ￼
+	•	Google Calendar updates from Partiful roughly every ~24 hours (so it’s not real-time).  ￼
+	•	There’s no obvious official public developer API docs; what you’ll find is unofficial reverse-engineering repos, which I wouldn’t build a business dependency on.  ￼
+
+Practical NT options for Partiful:
+	1.	Deep-link only: “View/RSVP on Partiful” buttons (fastest, safest).
+	2.	Host-provided ICS import: let hosts paste a calendar subscription URL they own/authorize → NT imports & refreshes it on a schedule.
+	3.	Partnership route: if Partiful offers partner access, that’s when you do a true API sync.
+
+⸻
+
+What I’d implement in Nearby Traveler (fast + scalable)
+
+Integrations page (Business/Ambassador):
+	•	“Connect Luma” → OAuth/API key → pick calendars → NT syncs events.
+	•	“Connect Partiful” → paste calendar/ICS link (with warnings about privacy + sync delay).
+
+Backend:
+	•	integrations table (provider, auth, calendar ids, refresh cadence)
+	•	external_events table (provider_event_id, title, start/end, location, url, image, host, tags, raw_payload)
+	•	Luma: webhook endpoint + periodic backfill
+	•	Partiful: periodic ICS fetch + diff updates
+
+If you want, paste what you mean by “Luma events js set up” (the snippet you found / the URL pattern you’re referring to), and I’ll tell you which of the 3 Luma paths it is and the quickest way to wire it into your current React/Express stack.
