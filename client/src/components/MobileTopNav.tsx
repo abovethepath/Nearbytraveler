@@ -9,7 +9,7 @@ import { authStorage } from "@/lib/auth";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export function MobileTopNav() {
-  if (isNativeIOSApp()) return null;
+  const isNative = isNativeIOSApp();
   const authContext = React.useContext(AuthContext);
   const { user, logout } = authContext;
   const [, setLocation] = useLocation();
@@ -165,6 +165,55 @@ export function MobileTopNav() {
       ]
     }
   ];
+
+  if (isNative) {
+    return (
+      <>
+        <div 
+          className="fixed top-0 right-0 z-[10000]"
+          style={{
+            paddingTop: 'env(safe-area-inset-top, 0px)',
+          }}
+        >
+          <div className="h-11 flex items-center px-4" style={{ minHeight: '44px' }}>
+            <button
+              type="button"
+              aria-label="Profile"
+              className="ios-touch-target flex items-center justify-center"
+              style={{
+                width: '44px',
+                height: '44px',
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+              onTouchEnd={handleAvatarTap}
+              onClick={handleAvatarTap}
+            >
+              <Avatar className="w-8 h-8 border-2 border-gray-200/80 dark:border-gray-600/80 pointer-events-none ring-1 ring-white/20">
+                <AvatarImage
+                  src={currentUser?.profileImage || undefined}
+                  alt={currentUser?.name || currentUser?.username || "User"}
+                  className="pointer-events-none"
+                />
+                <AvatarFallback className="text-sm bg-orange-500 text-white pointer-events-none">
+                  {currentUser?.name?.charAt(0)?.toUpperCase() ||
+                    currentUser?.username?.charAt(0)?.toUpperCase() ||
+                    "U"}
+                </AvatarFallback>
+              </Avatar>
+            </button>
+          </div>
+        </div>
+        <style>{`
+          .ios-touch-target {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            cursor: pointer;
+          }
+        `}</style>
+      </>
+    );
+  }
 
   return (
     <>
