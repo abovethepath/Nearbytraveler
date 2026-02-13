@@ -93,7 +93,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   const [showPrivateSettings, setShowPrivateSettings] = useState(false);
   const [additionalCities, setAdditionalCities] = useState<string[]>([]);
   const [showAdditionalCities, setShowAdditionalCities] = useState(false);
-  const [showAiQuickCreate, setShowAiQuickCreate] = useState(false);
+  const [showAiQuickCreate, setShowAiQuickCreate] = useState(true);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -106,8 +106,8 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
     }
   }, []);
 
-  // Get current user data
-  const currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
+  // Get current user data (check both keys - auth may use 'user' or 'travelconnect_user')
+  const currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || localStorage.getItem('user') || '{}');
   
   // Check for event template in localStorage
   const loadEventTemplate = () => {

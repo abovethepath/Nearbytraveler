@@ -740,15 +740,24 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   };
 
-  // Native iOS has its own tab bar (~80px) - reserve space so input is always visible
-  const inputBottomPadding = isNativeIOSApp() ? 'max(80px, env(safe-area-inset-bottom, 0px))' : 'max(16px, env(safe-area-inset-bottom, 0px))';
+  const isNative = isNativeIOSApp();
+  // Native: tab bar overlays bottom - reserve 90px so input is visible (not excessive). Web: safe-area.
+  const inputBottomPadding = isNative ? '90px' : 'max(16px, env(safe-area-inset-bottom, 0px))';
 
   return (
     <div 
       className="flex flex-col bg-gray-900 text-white overflow-hidden min-h-0"
       style={{ 
-        height: '100dvh',
-        minHeight: '100vh'
+        ...(isNative && {
+          position: 'fixed',
+          inset: 0,
+          height: '100%',
+          minHeight: '100%'
+        }),
+        ...(!isNative && {
+          height: '100dvh',
+          minHeight: '100vh'
+        })
       }}
     >
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
@@ -838,8 +847,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       
       {/* Main Chat Area */}
       <div className="flex flex-col flex-1 min-w-0">
-      {/* Header - flex-shrink-0 so chat name/participants always visible */}
-      <div className="flex items-center gap-1.5 px-2 py-1.5 bg-gray-800 border-b border-gray-700 flex-shrink-0">
+      {/* Header - flex-shrink-0 so chat name/participants always visible; compact when native */}
+      <div className={`flex items-center gap-1.5 px-2 bg-gray-800 border-b border-gray-700 flex-shrink-0 ${isNative ? 'py-1' : 'py-1.5'}`}>
         <Button
           variant="ghost"
           size="icon"

@@ -8,6 +8,14 @@ import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 
+/** Ensure profile image URL is absolute (for relative paths from API) */
+function toAbsoluteProfileUrl(url: string | null | undefined): string | undefined {
+  if (!url || typeof url !== 'string') return undefined;
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  const base = typeof window !== 'undefined' ? window.location.origin : '';
+  return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
+}
+
 export function MobileTopNav() {
   if (isNativeIOSApp()) return null;
   const authContext = React.useContext(AuthContext);
@@ -37,6 +45,19 @@ export function MobileTopNav() {
     }
     setCurrentUser(effectiveUser);
   }, [user]);
+
+  // Fetch full profile when we have user but no profileImage (auth may return minimal data)
+  useEffect(() => {
+    if (!currentUser?.id || currentUser?.profileImage) return;
+    fetch(`/api/users/${currentUser.id}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((profile) => {
+        if (profile?.profileImage) {
+          setCurrentUser((prev) => (prev ? { ...prev, profileImage: profile.profileImage } : prev));
+        }
+      })
+      .catch(() => {});
+  }, [currentUser?.id, currentUser?.profileImage]);
 
   // Listen for profile updates
   useEffect(() => {
@@ -158,9 +179,9 @@ export function MobileTopNav() {
             {isOpen ? <X className="w-6 h-6 pointer-events-none" /> : <Menu className="w-6 h-6 pointer-events-none" />}
           </button>
 
-          {/* Center: Logo */}
+          {/* Center: Logo - 3x larger for visibility */}
           <div className="flex-1 flex justify-center pointer-events-none">
-            <Logo variant="navbar" />
+            <Logo variant="navbar" className="h-16 sm:h-20 w-auto max-w-[90%]" />
           </div>
 
           {/* Right: Avatar */}
@@ -177,9 +198,9 @@ export function MobileTopNav() {
             onTouchEnd={handleAvatarTap}
             onClick={handleAvatarTap}
           >
-            <Avatar className="w-9 h-9 border-2 border-gray-200 dark:border-gray-600 pointer-events-none">
+            <Avatar className="w-12 h-12 border-2 border-gray-200 dark:border-gray-600 pointer-events-none">
               <AvatarImage
-                src={currentUser?.profileImage || undefined}
+                src={toAbsoluteProfileUrl(currentUser?.profileImage) || undefined}
                 alt={currentUser?.name || currentUser?.username || "User"}
                 className="pointer-events-none"
               />
@@ -242,7 +263,7 @@ export function MobileTopNav() {
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                   <div className="flex items-center gap-3">
                     <Avatar className="w-12 h-12 pointer-events-none">
-                      <AvatarImage src={currentUser.profileImage} className="pointer-events-none" />
+                      <AvatarImage src={toAbsoluteProfileUrl(currentUser.profileImage)} className="pointer-events-none" />
                       <AvatarFallback className="bg-orange-500 text-white pointer-events-none">
                         {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.username?.charAt(0)?.toUpperCase() || "U"}
                       </AvatarFallback>

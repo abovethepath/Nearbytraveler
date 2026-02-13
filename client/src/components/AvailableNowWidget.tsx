@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, Beer, ChevronDown, ChevronUp, Mountain, Bike, Waves, Compass, MessageCircle, Users, LogOut, ThumbsUp, Reply, Heart } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { useToast } from "@/hooks/use-toast";
@@ -636,7 +637,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         <div className="absolute inset-0 bg-black/95" />
         <div
           className="relative w-full max-w-lg mx-4 max-h-[85vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 border border-gray-200 dark:border-gray-700"
-          style={{ zIndex: 1000000 }}
+          style={{ zIndex: 1000000, WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}
           onClick={(e) => e.stopPropagation()}
         >
           <button
@@ -692,21 +693,22 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
                 How long are you available?
               </label>
-              <div className="relative">
-                <select
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  className="w-full h-10 px-3 pr-10 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500"
+              <Select value={duration} onValueChange={setDuration}>
+                <SelectTrigger
+                  className="w-full h-10 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white focus:ring-orange-500"
+                  style={{ touchAction: 'manipulation' }}
                 >
-                  <option value="1">1 hour</option>
-                  <option value="2">2 hours</option>
-                  <option value="4">4 hours</option>
-                  <option value="6">6 hours</option>
-                  <option value="8">8 hours</option>
-                  <option value="12">All day (12 hours)</option>
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              </div>
+                  <SelectValue placeholder="Select duration" />
+                </SelectTrigger>
+                <SelectContent className="z-[2147483647]">
+                  <SelectItem value="1">1 hour</SelectItem>
+                  <SelectItem value="2">2 hours</SelectItem>
+                  <SelectItem value="4">4 hours</SelectItem>
+                  <SelectItem value="6">6 hours</SelectItem>
+                  <SelectItem value="8">8 hours</SelectItem>
+                  <SelectItem value="12">All day (12 hours)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
               <MapPin className="w-3 h-3" />

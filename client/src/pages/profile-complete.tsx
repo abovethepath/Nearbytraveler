@@ -44,6 +44,7 @@ import { VouchButton } from "@/components/VouchButton";
 
 import { formatDateForDisplay, getCurrentTravelDestination, formatLocationCompact } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { NativeAppProfileMenu } from "@/components/NativeAppProfileMenu";
 import { METRO_AREAS } from "@shared/constants";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
@@ -4331,6 +4332,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Main Content Container - with overflow-x-hidden for rest of page */}
       <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden">
 
+      {/* Native app: Menu + Sign Out (replaces hamburger that's hidden in Expo) */}
+      {isNativeIOSApp() && isOwnProfile && (
+        <div className="px-4 sm:px-6 lg:px-10 pt-4 pb-2 max-w-7xl mx-auto">
+          <NativeAppProfileMenu
+            isBusiness={user?.userType === 'business'}
+            currentUserId={currentUser?.id}
+          />
+        </div>
+      )}
+
       {/* Navigation Tabs - Card Style with Border */}
       <div className="w-auto bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg mt-4">
         <div className="max-w-7xl mx-auto">
@@ -8569,11 +8580,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <FormLabel>Business Type</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value || ''}>
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger style={{ touchAction: 'manipulation' }}>
                               <SelectValue placeholder="Select business type" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
+                          <SelectContent className="z-[2147483647] dark:bg-gray-800 dark:border-gray-600">
                             {BUSINESS_TYPES.map((type) => (
                               <SelectItem key={type} value={type} className="dark:text-white dark:hover:bg-gray-700">
                                 {type}
@@ -8872,11 +8883,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           onValueChange={(value) => field.onChange(value === "none" ? "" : value)}
                         >
                           <FormControl>
-                            <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600">
+                            <SelectTrigger 
+                              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                              style={{ touchAction: 'manipulation' }}
+                            >
                               <SelectValue placeholder="Select gender" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className="z-[2147483647]">
                             <SelectItem value="none">Prefer not to say</SelectItem>
                             {GENDER_OPTIONS.map((gender) => (
                               <SelectItem key={gender} value={gender}>

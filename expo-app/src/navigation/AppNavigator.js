@@ -55,17 +55,17 @@ function CreatePlaceholderScreen() {
   return <View style={{ flex: 1, backgroundColor: dark ? TAB_BAR_BG_DARK : TAB_BAR_BG }} />;
 }
 
+// City Plans uses /match-in-city (not /city-plans which doesn't exist and falls back to home)
 const CREATE_OPTIONS = [
-  { label: 'Plan Trip', path: '/plan-trip' },
+  { label: 'City Plans', path: '/match-in-city' },
   { label: 'Create Event', path: '/create-event' },
-  { label: 'City Plans', path: '/city-plans' },
+  { label: 'Plan Trip', path: '/plan-trip' },
   { label: 'Create Hangout', path: '/quick-meetups?create=1' },
 ];
 
 function CreateTabButton(props) {
   const navigation = useNavigation();
   const tabNav = navigation.getParent?.();
-  // Navigate to Create tab + push WebView so tab bar stays visible (bottom + top nav)
   const goToCreateWebView = (path) => {
     if (tabNav) {
       tabNav.navigate('Create', { screen: 'CreateWebView', params: { path } });
