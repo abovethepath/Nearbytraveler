@@ -1,5 +1,5 @@
-﻿import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView, Alert, ActivityIndicator, Linking } from 'react-native';
 import { useAuth } from '../services/AuthContext';
 import api from '../services/api';
 
@@ -16,6 +16,21 @@ export default function EventDetailScreen({ route, navigation }) {
     try { await api.joinEvent(event.id); setJoined(true); Alert.alert('You are in!', 'You have joined this event.'); }
     catch (e) { Alert.alert('Error', 'Could not join event.'); }
     finally { setJoining(false); }
+  };
+
+  const handleExternalRsvp = () => {
+    if (event.externalRsvpUrl) {
+      Linking.openURL(event.externalRsvpUrl).catch(() => {
+        Alert.alert('Error', 'Could not open RSVP link.');
+      });
+    }
+  };
+
+  const getRsvpLabel = () => {
+    if (event.externalRsvpProvider === 'luma') return 'RSVP on Luma';
+    if (event.externalRsvpProvider === 'partiful') return 'RSVP on Partiful';
+    if (event.externalRsvpProvider === 'eventbrite') return 'RSVP on Eventbrite';
+    return 'RSVP Externally';
   };
 
   const formatDate = (dateStr) => {
@@ -35,6 +50,13 @@ export default function EventDetailScreen({ route, navigation }) {
           <View style={styles.infoRow}><Text style={styles.infoIcon}>&#x1F4CD;</Text><Text style={styles.infoText}>{event.venueName || event.location || event.city || 'TBD'}</Text></View>
           <View style={styles.infoRow}><Text style={styles.infoIcon}>&#x1F465;</Text><Text style={styles.infoText}>{event.participantCount || 0} people going</Text></View>
           {event.description ? <View style={styles.descriptionSection}><Text style={styles.sectionTitle}>About</Text><Text style={styles.description}>{event.description}</Text></View> : null}
+          {event.externalRsvpUrl && (
+            <TouchableOpacity style={styles.externalRsvpButton} onPress={handleExternalRsvp}>
+              <Text style={styles.externalRsvpIcon}>&#x1F517;</Text>
+              <Text style={styles.externalRsvpText}>{getRsvpLabel()}</Text>
+              <Text style={styles.externalRsvpArrow}>&#x2197;</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
       <View style={styles.bottomBar}>
@@ -64,6 +86,10 @@ const styles = StyleSheet.create({
   descriptionSection: { marginTop: 20, paddingTop: 20, borderTopWidth: 1, borderTopColor: '#F3F4F6' },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 10 },
   description: { fontSize: 15, color: '#4B5563', lineHeight: 24 },
+  externalRsvpButton: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3E8FF', paddingHorizontal: 16, paddingVertical: 14, borderRadius: 12, marginTop: 16, borderWidth: 1, borderColor: '#DDD6FE' },
+  externalRsvpIcon: { fontSize: 18, marginRight: 10 },
+  externalRsvpText: { fontSize: 15, fontWeight: '600', color: '#7C3AED', flex: 1 },
+  externalRsvpArrow: { fontSize: 16, color: '#7C3AED' },
   bottomBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderTopWidth: 1, borderTopColor: '#F3F4F6', backgroundColor: '#FFFFFF' },
   priceSection: {},
   priceLabel: { fontSize: 12, color: '#9CA3AF' },
