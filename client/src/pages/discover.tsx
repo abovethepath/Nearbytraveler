@@ -12,6 +12,7 @@ import { AuthContext } from "@/App";
 import { MobilePreview } from "@/components/MobilePreview";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 import { getApiBaseUrl } from "@/lib/queryClient";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 // MobileNav removed - using global mobile navigation
 
 
@@ -34,6 +35,7 @@ export default function DiscoverPage() {
   const { user } = useContext(AuthContext);
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
+  const isNative = isNativeIOSApp();
   
   // Fetch user profile for complete hometown/destination data
   const { data: userProfile } = useQuery<any>({
@@ -185,7 +187,7 @@ export default function DiscoverPage() {
       )}
 
       {/* Show Hero Button - Only visible when hero is hidden */}
-      {!isHeroVisible && !isMobile && (
+      {!isHeroVisible && !isMobile && !isNative && (
         <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
             <Button
@@ -203,7 +205,7 @@ export default function DiscoverPage() {
       )}
 
       {/* HERO SECTION — Standardized Layout */}
-      {isHeroVisible && !isMobile && (
+      {isHeroVisible && !isMobile && !isNative && (
         <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-4 flex items-center justify-between">
@@ -352,38 +354,38 @@ export default function DiscoverPage() {
 
         {/* ALL OTHER CITIES GRID - Clean Airbnb-style cards */}
         {sortedCities.filter(city => city.city !== 'Los Angeles Metro').length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
+          <div className={`grid grid-cols-2 gap-3 ${isNative ? '' : 'sm:gap-6 lg:grid-cols-3 lg:gap-8'}`}>
             {sortedCities.filter(city => city.city !== 'Los Angeles Metro').map((city, index) => (
               <Card
                 key={`${city.city}-${city.state}-${index}`}
                 className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-lg rounded-2xl"
                 onClick={() => setLocation(`/city/${encodeURIComponent(city.city)}`)}
               >
-                <div className="relative h-36 sm:h-56 overflow-hidden rounded-t-2xl">
+                <div className={`relative overflow-hidden rounded-t-2xl ${isNative ? 'h-28' : 'h-36 sm:h-56'}`}>
                   <div className={`w-full h-full bg-gradient-to-br ${getCityGradient(city.city, index + 1)} group-hover:scale-105 transition-transform duration-300 flex items-center justify-center`}>
-                    <MapPin className="w-12 h-12 text-white/60" />
+                    <MapPin className={`text-white/60 ${isNative ? 'w-8 h-8' : 'w-12 h-12'}`} />
                   </div>
                   
                   {/* Activity badges - Clean style */}
-                  <div className="absolute top-3 right-3 space-y-2">
+                  <div className="absolute top-2 right-2 space-y-1">
                     {city.eventCount > 5 && (
-                      <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
-                        <span className="text-purple-600 font-medium text-sm">🎉</span>
+                      <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full px-2 py-0.5 shadow-lg">
+                        <span className="text-purple-600 font-medium text-xs">🎉</span>
                       </div>
                     )}
                     {(city.localCount + city.travelerCount) > 10 && (
-                      <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
-                        <span className="text-blue-600 font-medium text-sm">👥</span>
+                      <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full px-2 py-0.5 shadow-lg">
+                        <span className="text-blue-600 font-medium text-xs">👥</span>
                       </div>
                     )}
                   </div>
                 </div>
                 
-                <CardContent className="p-3 sm:p-5">
-                  <h3 className="font-bold text-base sm:text-xl text-gray-900 dark:text-white mb-2">
+                <CardContent className={isNative ? 'p-2.5' : 'p-3 sm:p-5'}>
+                  <h3 className={`font-bold text-gray-900 dark:text-white mb-1 ${isNative ? 'text-sm' : 'text-base sm:text-xl mb-2'}`}>
                     {city.city}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-base leading-relaxed">
+                  <p className={`text-gray-600 dark:text-gray-300 leading-relaxed ${isNative ? 'text-[11px]' : 'text-xs sm:text-base'}`}>
                     {city.country === 'United States' 
                       ? `${city.city}, ${city.state || 'Unknown State'}, United States`
                       : city.state 
