@@ -4555,8 +4555,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       </div>
       
-      {/* Native iOS App Navigation Menu - Shows navigation items from hamburger menu */}
-      {isNativeIOSApp() && isOwnProfile && (
+      {/* Native iOS App Navigation Menu - Shows only when Menu tab is active */}
+      {isNativeIOSApp() && isOwnProfile && activeTab === 'menu' && (
         <div className="mx-4 mt-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
           <div className="px-4 pt-3 pb-2">
             <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Navigate</p>

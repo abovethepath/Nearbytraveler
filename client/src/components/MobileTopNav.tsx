@@ -264,7 +264,7 @@ export function MobileTopNav() {
           >
             <Avatar className="w-8 h-8 border-2 border-gray-200/80 dark:border-gray-600/80 pointer-events-none ring-1 ring-white/20">
               <AvatarImage
-                src={toAbsoluteProfileUrl(currentUser?.profileImage) || undefined}
+                src={currentUser?.profileImage || undefined}
                 alt={currentUser?.name || currentUser?.username || "User"}
                 className="pointer-events-none"
               />
