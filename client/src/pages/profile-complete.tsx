@@ -25,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon, Mail, ThumbsUp, Building2, Award } from "lucide-react";
 
-type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries' | 'vouches';
+type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries' | 'vouches' | 'menu';
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -778,6 +778,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     travel: React.useRef<HTMLDivElement>(null),
     countries: React.useRef<HTMLDivElement>(null),
     vouches: React.useRef<HTMLDivElement>(null),
+    menu: React.useRef<HTMLDivElement>(null),
   };
 
   function openTab(key: TabKey) {
@@ -4332,16 +4333,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Main Content Container - with overflow-x-hidden for rest of page */}
       <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden">
 
-      {/* Native app: Menu + Sign Out (replaces hamburger that's hidden in Expo) */}
-      {isNativeIOSApp() && isOwnProfile && (
-        <div className="px-4 sm:px-6 lg:px-10 pt-4 pb-2 max-w-7xl mx-auto">
-          <NativeAppProfileMenu
-            isBusiness={user?.userType === 'business'}
-            currentUserId={currentUser?.id}
-          />
-        </div>
-      )}
-
       {/* Navigation Tabs - Card Style with Border */}
       <div className="w-auto bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg mt-4">
         <div className="max-w-7xl mx-auto">
@@ -4468,6 +4459,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {countriesVisited.length}
                     </span>
                   )}
+                </button>
+              )}
+
+              {/* Menu Tab - Native app only, opens menu at bottom */}
+              {isNativeIOSApp() && isOwnProfile && (
+                <button
+                  role="tab"
+                  aria-selected={activeTab === 'menu'}
+                  aria-controls="panel-menu"
+                  onClick={() => openTab('menu')}
+                  className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
+                    activeTab === 'menu'
+                      ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
+                  }`}
+                  data-testid="tab-menu"
+                >
+                  Menu
                 </button>
               )}
 

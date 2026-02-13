@@ -18,18 +18,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import { useFocusEffect } from '@react-navigation/native';
 import api from '../services/api';
-import Constants from 'expo-constants';
 
-// expo-speech-recognition is a native module - not available in Expo Go; requires dev build
-// Never load the module in Expo Go to avoid "Cannot find native module" crash
+// expo-speech-recognition was removed - native module caused "Cannot find native module" crash in Expo Go
+// Voice input: use keyboard dictation (tap text field, then mic on keyboard)
 function getSpeechModule() {
-  if (Constants.executionEnvironment === 'expo') return null; // Expo Go - module not available
-  try {
-    const mod = require('expo-speech-recognition');
-    return mod?.ExpoSpeechRecognitionModule ?? null;
-  } catch (e) {
-    return null;
-  }
+  return null;
 }
 import { useAuth } from '../services/AuthContext';
 
@@ -242,7 +235,7 @@ function WebViewWithChrome({ path, navigation }) {
 
   return (
     <SafeAreaView style={containerStyle}>
-      {/* Native bar: back arrow, logo, user avatar. Compact header with minimal top padding. */}
+      {/* Native bar: back arrow, logo (centered), user avatar. Balanced layout for centering. */}
       <View style={[headerStyle, { minHeight: HEADER_HEIGHT }]}>
         <TouchableOpacity
           style={styles.backButton}
@@ -267,7 +260,7 @@ function WebViewWithChrome({ path, navigation }) {
             resizeMode="contain"
           />
         </TouchableOpacity>
-        {/* Avatar: always visible, positioned on right. Fallback when user is null. */}
+        {/* Avatar: in flex flow so it's always visible. Same width as back for balanced centering. */}
         <TouchableOpacity
           style={styles.avatarButton}
           onPress={onAvatarPress}
@@ -342,11 +335,11 @@ export function GenericWebViewScreen({ navigation, route }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: '#F3F4F6', position: 'relative' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
   backButton: { flexDirection: 'row', alignItems: 'center', paddingVertical: 4, paddingHorizontal: 8, minWidth: 72, flexShrink: 0 },
   logoContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, minWidth: 0 },
-  logoImage: { height: 72, width: 320, maxWidth: '85%' },
-  avatarButton: { position: 'absolute', right: 8, top: 6, width: 44, height: 44, alignItems: 'center', justifyContent: 'center', zIndex: 20 },
+  logoImage: { height: 108, width: 480, maxWidth: '90%' },
+  avatarButton: { width: 72, minWidth: 72, height: 44, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   avatarImage: { width: 40, height: 40, borderRadius: 20 },
   avatarFallback: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' },
   avatarFallbackDark: { backgroundColor: '#EA580C' },
