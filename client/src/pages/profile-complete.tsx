@@ -784,11 +784,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   function openTab(key: TabKey) {
     setActiveTab(key);
     setLoadedTabs(prev => new Set([...prev, key]));
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        tabRefs[key].current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    });
+    let attempts = 0;
+    const tryScroll = () => {
+      const el = tabRefs[key].current;
+      if (el && el.offsetHeight > 0) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (attempts < 10) {
+        attempts++;
+        setTimeout(tryScroll, 50);
+      }
+    };
+    setTimeout(tryScroll, 80);
   }
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
