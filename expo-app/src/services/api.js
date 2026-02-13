@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import offlineStorage from './offlineStorage';
 
-const BASE_URL = 'https://nearbytraveler.org';
+const DEV_API_URL = 'https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev';
+const BASE_URL = (typeof __DEV__ !== 'undefined' && __DEV__ && DEV_API_URL) ? DEV_API_URL : 'https://nearbytraveler.org';
 const SESSION_KEY = 'nt_session_id';
 
 let sessionCookie = null;
