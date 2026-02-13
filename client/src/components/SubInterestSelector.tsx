@@ -48,20 +48,13 @@ export default function SubInterestSelector({
   
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-orange-500" />
-          <h3 className="font-medium text-sm text-gray-900 dark:text-white">
-            Get More Specific
-          </h3>
-          {showOptionalLabel && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">(Optional)</span>
-          )}
-        </div>
-        {selectedSubInterests.length > 0 && (
-          <Badge variant="secondary" className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
-            {selectedSubInterests.length} selected
-          </Badge>
+      <div className="flex items-center gap-2">
+        <Sparkles className="w-4 h-4 text-orange-500" />
+        <h3 className="font-medium text-sm text-gray-900 dark:text-white">
+          Get More Specific
+        </h3>
+        {showOptionalLabel && (
+          <span className="text-xs text-gray-500 dark:text-gray-400">(Optional)</span>
         )}
       </div>
       
@@ -90,11 +83,6 @@ export default function SubInterestSelector({
                   <span className="font-medium text-sm text-gray-900 dark:text-white">
                     {category.label}
                   </span>
-                  {selectedCount > 0 && (
-                    <Badge className="bg-orange-500 text-white text-xs px-1.5 py-0.5">
-                      {selectedCount}
-                    </Badge>
-                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   {selectedCount > 0 && (
