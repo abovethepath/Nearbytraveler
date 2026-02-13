@@ -10077,28 +10077,19 @@ Questions? Just reply to this message. Welcome aboard!
       if (sessionUser?.id) {
         currentUserId = sessionUser.id;
       } else {
-        // Check header-based auth (used by frontend localStorage auth)
-        const userDataHeader = req.headers['x-user-data'] as string;
-        if (userDataHeader) {
-          try {
-            const userData = JSON.parse(userDataHeader);
-            currentUserId = userData.id;
-          } catch (e) {
-            // Invalid header data
+        const userIdHeader = req.headers['x-user-id'] as string;
+        if (userIdHeader && !isNaN(parseInt(userIdHeader))) {
+          currentUserId = parseInt(userIdHeader);
+        } else {
+          const userDataHeader = req.headers['x-user-data'] as string;
+          if (userDataHeader) {
+            try {
+              const userData = JSON.parse(userDataHeader);
+              currentUserId = userData.id;
+            } catch (e) {
+            }
           }
         }
-      }
-      
-      // DEBUG: Log authentication details
-      if (process.env.NODE_ENV === 'development') {
-        console.log('🔐 Member list auth check:', {
-          chatroomId,
-          hasSession: !!(req as any).session,
-          hasSessionUser: !!sessionUser,
-          hasHeaderAuth: !!req.headers['x-user-data'],
-          userId: currentUserId,
-          session: req.session?.id?.substring(0, 10) + '...'
-        });
       }
       
       if (!currentUserId) {

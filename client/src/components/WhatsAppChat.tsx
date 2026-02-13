@@ -741,8 +741,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   };
 
   const isNative = isNativeIOSApp();
-  // Native: tab bar overlays bottom - reserve 90px so input is visible (not excessive). Web: safe-area.
-  const inputBottomPadding = isNative ? '90px' : 'max(16px, env(safe-area-inset-bottom, 0px))';
+  const inputBottomPadding = isNative ? '12px' : 'max(16px, env(safe-area-inset-bottom, 0px))';
 
   return (
     <div 
@@ -750,9 +749,11 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       style={{ 
         ...(isNative && {
           position: 'fixed',
-          inset: 0,
-          height: '100%',
-          minHeight: '100%'
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))',
+          height: 'auto',
         }),
         ...(!isNative && {
           height: '100dvh',
@@ -858,21 +859,20 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           <ArrowLeft className="w-4 h-4" />
         </Button>
         
-        {/* WhatsApp-style member avatars for chatrooms, meetups, and events */}
+        {/* WhatsApp-style member avatars - hidden on small screens to give title more room */}
         {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 && (
-          <div className="flex -space-x-2">
+          <div className="hidden sm:flex -space-x-2">
             {members.slice(0, 4).map((member, index) => (
               <div
                 key={member.id}
                 onClick={() => {
-                  // Store chat return info before navigating
                   localStorage.setItem('returnToChat', JSON.stringify({
                     chatId,
                     chatType,
                     title,
                     subtitle,
                     eventId,
-                    timestamp: Date.now() // For event chats, store the eventId so we can navigate back properly
+                    timestamp: Date.now()
                   }));
                   navigate(`/profile/${member.id}`);
                 }}
@@ -901,7 +901,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         
         <div className="flex-1 min-w-0 overflow-hidden">
           <div className="flex items-center gap-1.5">
-            <h1 className="font-semibold text-sm truncate">{title}</h1>
+            <h1 className="font-semibold text-sm line-clamp-1 break-all">{title}</h1>
             {/* Show green once messages are loaded (chat is usable), not just WebSocket */}
             <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
               messagesLoaded || isWsConnected 

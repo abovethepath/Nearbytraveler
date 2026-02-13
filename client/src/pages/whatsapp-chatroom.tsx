@@ -36,7 +36,7 @@ export default function WhatsAppChatroom() {
   });
 
   const { data: membershipCheck, isLoading: checkingMembership } = useQuery<{ isMember: boolean }>({
-    queryKey: [`/api/chatrooms/${chatroomId}/members`, 'membership-check'],
+    queryKey: [`/api/chatrooms/${chatroomId}/members`, 'membership-check', currentUserId],
     enabled: isValidChatroomId && !!currentUserId && !hasJoined,
     queryFn: async () => {
       try {
@@ -53,7 +53,8 @@ export default function WhatsAppChatroom() {
       } catch {
         return { isMember: false };
       }
-    }
+    },
+    retry: 2,
   });
 
   const joinMutation = useMutation({
