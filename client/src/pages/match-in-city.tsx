@@ -169,7 +169,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [similarActivity, setSimilarActivity] = useState<{id: number, name: string} | null>(null);
 
   // Pagination for city activities
-  const [displayedActivitiesLimit, setDisplayedActivitiesLimit] = useState(30);
+  const [displayedActivitiesLimit, setDisplayedActivitiesLimit] = useState(100);
   
   // AI Features State
   const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
@@ -207,7 +207,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         setDismissedAIActivities(new Set());
       }
       // Reset the activities display limit when changing cities
-      setDisplayedActivitiesLimit(30);
+      setDisplayedActivitiesLimit(100);
     }
   }, [selectedCity]);
   
@@ -921,7 +921,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           });
         }
       } else {
-        // Add activity
+        // Add activity - optimistic update so pill highlights immediately (fixes double-click)
+        const optId = `opt-${activity.id}-${Date.now()}`;
+        const optimisticRecord = { id: optId, userId, activityId: activity.id, cityName: selectedCity, activityName: activity.activityName };
+        setUserActivities(prev => [...prev, optimisticRecord]);
         const apiBase = getApiBaseUrl();
         const response = await fetch(`${apiBase}/api/user-city-interests`, {
           method: 'POST',
@@ -940,9 +943,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           setUserActivities(prev => [...prev, newInterest]);
           // Refresh to sync with database
           await fetchUserActivities();
-          // CRITICAL: Invalidate profile page cache so changes appear immediately
           queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
         } else {
+          setUserActivities(prev => prev.filter(ua => ua.id !== optId));
           const error = await response.json();
           console.error('❌ POST failed:', error);
           toast({
@@ -2085,11 +2088,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               <div className="md:hidden sticky top-0 z-30 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm py-3 -mx-8 px-4 mb-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                   {[
-                    { id: 'selected', label: `✓ Your Plans`, count: userActivities.filter(ua => ua.cityName === selectedCity).length },
-                    { id: 'popular', label: '⭐ Popular', count: cityActivities.filter(a => (a as any).isFeatured || (a as any).source === 'featured').length },
-                    { id: 'events', label: '📅 Events', count: realEvents.length },
-                    { id: 'ai', label: '✨ AI Ideas', count: cityActivities.filter(a => !((a as any).isFeatured || (a as any).source === 'featured') && a.category !== 'universal').length },
-                    { id: 'preferences', label: '✈️ Preferences', count: 20 },
+                    { id: 'selected', label: '✓ Your Plans' },
+                    { id: 'popular', label: '⭐ Popular' },
+                    { id: 'events', label: '📅 Events' },
+                    { id: 'ai', label: '✨ AI Ideas' },
+                    { id: 'preferences', label: '✈️ Preferences' },
                   ].map((section) => (
                     <button
                       key={section.id}
@@ -2497,7 +2500,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       {/* Mobile-only Jump to Match Preferences button */}
                       <div className="md:hidden mt-4 text-center">
                         <button
-                          onClick={() => setActiveMobileSection('preferences')}
+                          type="button"
+                          onClick={() => {
+                            setActiveMobileSection('preferences');
+                            requestAnimationFrame(() => {
+                              document.getElementById('match-preferences')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            });
+                          }}
                           className="text-sm text-blue-600 dark:text-blue-400 font-medium hover:underline flex items-center justify-center gap-1 mx-auto"
                         >
                           <span>✈️</span> Jump to Match Preferences
@@ -2646,25 +2655,35 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           return (
                             <div key={suggestion.existingActivity.id} className="relative group">
                               <button
+                                type="button"
                                 onClick={async () => {
                                   if (isAlreadySelected) return;
                                   
                                   const actualUser = user || JSON.parse(localStorage.getItem('user') || '{}');
                                   if (!actualUser?.id) return;
                                   
+                                  const act = suggestion.existingActivity;
+                                  const optId = `opt-sug-${act.id}-${Date.now()}`;
+                                  setUserActivities(prev => [...prev, { id: optId, userId: actualUser.id, activityId: act.id, cityName: selectedCity, activityName: suggestion.name }]);
                                   try {
                                     const apiBase = getApiBaseUrl();
-                                    // Add existing activity to user's interests
-                                    await fetch(`${apiBase}/api/user-city-interests`, {
+                                    const response = await fetch(`${apiBase}/api/user-city-interests`, {
                                       method: 'POST',
                                       headers: { 'Content-Type': 'application/json', 'x-user-id': actualUser.id.toString() },
-                                      body: JSON.stringify({ userId: actualUser.id, activityId: suggestion.existingActivity.id, cityName: selectedCity })
+                                      body: JSON.stringify({ userId: actualUser.id, activityId: act.id, cityName: selectedCity })
                                     });
-                                    
-                                    fetchUserActivities();
-                                    fetchCityActivities();
-                                    toast({ title: "Added!", description: suggestion.name });
+                                    if (response.ok) {
+                                      const result = await response.json();
+                                      const toAdd = result.activityId ? result : { ...result, activityId: act.id, activityName: suggestion.name, cityName: selectedCity };
+                                      setUserActivities(prev => prev.map(ua => ua.id === optId ? toAdd : ua));
+                                      fetchUserActivities();
+                                      fetchCityActivities();
+                                      toast({ title: "Added!", description: suggestion.name });
+                                    } else {
+                                      setUserActivities(prev => prev.filter(ua => ua.id !== optId));
+                                    }
                                   } catch (error) {
+                                    setUserActivities(prev => prev.filter(ua => ua.id !== optId));
                                     console.error('Error adding suggestion:', error);
                                   }
                                 }}
@@ -2801,8 +2820,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         return (
                           <>
                             {displayedActivities.map((activity, index) => {
-                        const isSelected = userActivities.some(ua => ua.activityId === activity.id);
-                        const userActivity = userActivities.find(ua => ua.activityId === activity.id);
+                        const isSelected = userActivities.some(ua => 
+                          ua.activityId === activity.id || 
+                          (ua.activityName && activity.activityName && ua.activityName.toLowerCase().trim() === activity.activityName.toLowerCase().trim() && ua.cityName === selectedCity)
+                        );
+                        const userActivity = userActivities.find(ua => ua.activityId === activity.id || (ua.activityName === activity.activityName && ua.cityName === selectedCity));
                         
                         // Get current user ID - check multiple sources
                         const storedUser = localStorage.getItem('travelconnect_user');
@@ -2827,7 +2849,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                     ? 'bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 text-gray-700 dark:text-gray-100 border-purple-200 dark:border-purple-500 hover:border-purple-300 dark:hover:border-purple-400'
                                     : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-blue-100 dark:hover:shadow-blue-900/50'
                               }`}
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                                 toggleActivity(activity);
                               }}
                               data-testid="activity-pill"
@@ -3024,7 +3048,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 })()}
 
                 {/* SECTION 3: Universal Travel Activities - Always show these for every city */}
-                <div className={`mt-8 md:block ${activeMobileSection === 'preferences' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
+                <div id="match-preferences" className={`mt-8 md:block ${activeMobileSection === 'preferences' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
                   <div className="text-center mb-6">
                     <h3 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2 px-2">✈️ Universal Match Preferences</h3>
                     <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm px-2">Match with travelers & locals who want to do these same things in {selectedCity}</p>
@@ -3043,6 +3067,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       return (
                         <button
                           key={activity}
+                          type="button"
                           className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
                             isSelected 
                               ? 'bg-gradient-to-r from-blue-600 to-orange-600 text-white border-blue-400 shadow-blue-200'
@@ -3082,7 +3107,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             try {
                               const apiBase = getApiBaseUrl();
                               if (!isSelected) {
-                                // Single API call - backend handles find-or-create
+                                // Optimistic update - highlight pill immediately (fixes jump + no highlight)
+                                const optId = `opt-uni-${activity.replace(/\s/g, '_')}-${Date.now()}`;
+                                setUserActivities(prev => [...prev, { id: optId, activityName: activity, cityName: selectedCity }]);
                                 const response = await fetch(`${apiBase}/api/user-city-interests`, {
                                   method: 'POST',
                                   headers: {
@@ -3098,7 +3125,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 if (response.ok) {
                                   const result = await response.json();
                                   if (!result.removed) {
-                                    // Successfully added
+                                    const toAdd = result.activityName ? result : { ...result, activityName: activity, cityName: selectedCity };
+                                    setUserActivities(prev => prev.map(ua => ua.id === optId ? toAdd : ua));
                                     await fetchUserActivities();
                                     
                                     // Sync to user profile
@@ -3108,7 +3136,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                       const selectedNames = allActivities.map((ua: any) => ua.activityName);
                                       syncActivitiesToProfile(selectedNames, selectedCity);
                                     }
+                                  } else {
+                                    setUserActivities(prev => prev.filter(ua => ua.id !== optId));
                                   }
+                                } else {
+                                  setUserActivities(prev => prev.filter(ua => ua.id !== optId));
                                 }
                               } else {
                                 // Use backend toggle - same endpoint, it will detect existing and remove
@@ -3154,7 +3186,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 <div className={`mt-8 md:hidden ${activeMobileSection === 'selected' ? 'block' : 'hidden'}`}>
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent mb-2">✓ Your Selected Plans</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">{userActivities.filter(ua => ua.cityName === selectedCity).length} plans for {selectedCity}</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">Things you want to do in {selectedCity}</p>
                     <div className="w-24 h-1 bg-gradient-to-r from-green-500 to-blue-500 mx-auto rounded-full mt-2"></div>
                   </div>
                   {userActivities.filter(ua => ua.cityName === selectedCity).length > 0 ? (
@@ -3196,7 +3228,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             <div className="flex items-center gap-2 mb-4 px-2">
               <Users className="w-5 h-5 text-blue-600" />
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">🤝 People Who Match</h2>
-              <span className="text-sm text-gray-500 dark:text-gray-400">({matchingUsers.length})</span>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">

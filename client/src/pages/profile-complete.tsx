@@ -25,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon, Mail, ThumbsUp, Building2, Award } from "lucide-react";
 
-type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries' | 'vouches';
+type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries' | 'vouches' | 'menu';
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -43,12 +43,13 @@ import ConnectButton from "@/components/ConnectButton";
 import { VouchButton } from "@/components/VouchButton";
 
 import { formatDateForDisplay, getCurrentTravelDestination, formatLocationCompact } from "@/lib/dateUtils";
+import { isNativeIOSApp } from "@/lib/nativeApp";
+import { NativeAppProfileMenu } from "@/components/NativeAppProfileMenu";
 import { METRO_AREAS } from "@shared/constants";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
 import { isTopChoiceInterest } from "@/lib/topChoicesUtils";
-import { isNativeIOSApp } from "@/lib/nativeApp";
 import { BUSINESS_TYPES, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS, BUSINESS_INTERESTS, BUSINESS_ACTIVITIES } from "@shared/base-options";
 
 // Helper function to check if two cities are in the same metro area
@@ -777,6 +778,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     travel: React.useRef<HTMLDivElement>(null),
     countries: React.useRef<HTMLDivElement>(null),
     vouches: React.useRef<HTMLDivElement>(null),
+    menu: React.useRef<HTMLDivElement>(null),
   };
 
   function openTab(key: TabKey) {
@@ -3130,10 +3132,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       });
       
       console.log('🤖 Response received:', response.status, response.ok);
-      const data = await response.json();
-      console.log('🤖 Response data:', data);
+      let data: { success?: boolean; bio?: string; message?: string } = {};
+      try {
+        const text = await response.text();
+        if (text) data = JSON.parse(text);
+      } catch {
+        // non-JSON response (e.g. 500 HTML)
+      }
       
-      if (data.success && data.bio) {
+      if (response.ok && data.success && data.bio) {
         profileForm.setValue('bio', data.bio);
         toast({
           title: "Bio generated!",
@@ -3466,6 +3473,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       
       // CRITICAL: Clear localStorage cache to prevent stale data
       invalidateUserCache();
+      
+      // Update profile-bundle cache immediately so the red "fill out bio" bar disappears without waiting for refetch
+      queryClient.setQueryData(
+        [`/api/users/${effectiveUserId}/profile-bundle`, currentUser?.id],
+        (prev: any) => (prev ? { ...prev, user: { ...prev.user, ...updatedUser } } : { user: updatedUser })
+      );
       
       // Update all caches
       queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
@@ -3819,8 +3832,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
 
-      {/* Profile Completion Warning - OUTSIDE overflow container for full bleed */}
-      {isProfileIncomplete() && (
+      {/* Profile Completion Warning - hidden in native app (Apple) to avoid covering profile */}
+      {isProfileIncomplete() && !isNativeIOSApp() && (
         <div className="w-full bg-red-600 text-white px-4 py-3">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -4304,12 +4317,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700
                                border-0 shadow-md rounded-lg
                                inline-flex items-center justify-center gap-2
-                               px-6 py-2 transition-all"
-                    style={{ color: 'black' }}
+                               px-6 py-2 transition-all text-black dark:text-white dark:border dark:border-gray-400"
                     data-testid="button-chatrooms"
                   >
-                    <MessageCircle className="w-4 h-4" style={{ color: 'black' }} />
-                    <span style={{ color: 'black' }}>Go to Chatrooms</span>
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Go to Chatrooms</span>
                   </Button>
                 )}
                 <Button
@@ -4317,12 +4329,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   className="bg-gradient-to-r from-orange-600 to-blue-600 hover:from-orange-700 hover:to-blue-700
                              border-0 shadow-md rounded-lg
                              inline-flex items-center justify-center gap-2
-                             px-6 py-2 transition-all"
-                  style={{ color: 'black' }}
+                             px-6 py-2 transition-all text-black dark:text-white dark:border dark:border-gray-400"
                   data-testid="button-share-qr"
                 >
-                  <Share2 className="w-4 h-4" style={{ color: 'black' }} />
-                  <span style={{ color: 'black' }}>Invite Friends</span>
+                  <Share2 className="w-4 h-4" />
+                  <span>Invite Friends</span>
                 </Button>
               </div>
             )}
@@ -4472,6 +4483,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </button>
               )}
 
+              {/* Menu Tab - Native app only, opens menu at bottom */}
+              {isNativeIOSApp() && isOwnProfile && (
+                <button
+                  role="tab"
+                  aria-selected={activeTab === 'menu'}
+                  aria-controls="panel-menu"
+                  onClick={() => openTab('menu')}
+                  className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
+                    activeTab === 'menu'
+                      ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
+                  }`}
+                  data-testid="tab-menu"
+                >
+                  Menu
+                </button>
+              )}
+
               {/* Vouches Tab - Only shows if user has at least 1 vouch */}
               {user?.userType !== 'business' && (userVouches?.length || 0) > 0 && (
                 <button
@@ -4599,18 +4628,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log("EDIT CLICK - Button pressed");
                         setIsEditMode(true);
                       }}
-                      onMouseDown={(e) => {
-                        console.log("EDIT MOUSEDOWN - Button mousedown");
-                      }}
-                      className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border-0 ${isProfileIncomplete() ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white'}`}
-                      style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
+                      className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-transparent dark:border-gray-400 ${isProfileIncomplete() ? 'bg-red-500 hover:bg-red-600 text-white dark:ring-2 dark:ring-red-400' : 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white dark:ring-2 dark:ring-gray-400'}`}
+                      style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer', touchAction: 'manipulation' }}
                       data-testid="button-edit-profile"
                     >
-                      <Edit2 className="w-4 h-4 text-white" />
-                      <span className="hidden sm:inline text-white">Edit Profile</span>
+                      <span className="text-white font-medium">Edit</span>
                     </button>
                   )}
                 </div>
@@ -6523,7 +6547,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                   <button 
                     type="button"
-                    className="flex items-center justify-between cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                    className="flex items-center justify-between cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/30 dark:border dark:border-gray-600 rounded-lg p-2 -m-2 transition-colors w-full text-left"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -8489,13 +8513,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </Card>
       )}
 
-      {/* Profile Edit Modal */}
+      {/* Profile Edit Modal - inset+margin keeps dialog on-screen in WebView; z-index above overlay so content is clickable */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
         <DialogContent 
           className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-700"
         >
-          <DialogHeader>
-            <div className="flex items-center justify-between pr-10">
+          <DialogHeader className="flex-shrink-0 pr-10">
+            <div className="flex items-center justify-between">
               <DialogTitle>Edit Profile</DialogTitle>
               <Button
                 type="button"
@@ -8518,8 +8542,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
           </DialogHeader>
           
-          {/* REMOVED: Moving section moved to bottom of form */}
-          
+          {/* Scrollable body so the form can scroll on mobile/WebView */}
+          <div
+            className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pb-4"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
           {/* Show loading state while form initializes to prevent freeze */}
           {!isFormReady ? (
             <div className="flex flex-col items-center justify-center py-12">
@@ -8628,11 +8655,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <FormLabel>Business Type</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value || ''}>
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger style={{ touchAction: 'manipulation' }}>
                               <SelectValue placeholder="Select business type" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
+                          <SelectContent className="z-[2147483647] dark:bg-gray-800 dark:border-gray-600">
                             {BUSINESS_TYPES.map((type) => (
                               <SelectItem key={type} value={type} className="dark:text-white dark:hover:bg-gray-700">
                                 {type}
@@ -8721,15 +8748,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             type="button"
                             variant="outline"
                             size="sm"
-                            onTouchEnd={(e) => {
+                            onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               if (!isGeneratingBio) handleGenerateBio();
                             }}
-                            onClick={handleGenerateBio}
+                            onPointerDown={(e) => {
+                              e.stopPropagation();
+                            }}
                             disabled={isGeneratingBio}
                             className="text-xs h-7 px-2 gap-1 border-orange-300 text-orange-600 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-400 dark:hover:bg-orange-900/20"
-                            style={{ touchAction: 'manipulation' }}
+                            style={{ touchAction: 'manipulation', cursor: 'pointer' }}
                           >
                             <Sparkles className="w-3 h-3" />
                             {isGeneratingBio ? 'Generating...' : 'Generate bio for me'}
@@ -8929,11 +8958,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           onValueChange={(value) => field.onChange(value === "none" ? "" : value)}
                         >
                           <FormControl>
-                            <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600">
+                            <SelectTrigger 
+                              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                              style={{ touchAction: 'manipulation' }}
+                            >
                               <SelectValue placeholder="Select gender" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className="z-[2147483647]">
                             <SelectItem value="none">Prefer not to say</SelectItem>
                             {GENDER_OPTIONS.map((gender) => (
                               <SelectItem key={gender} value={gender}>
@@ -9263,6 +9295,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </form>
           </Form>
           )}
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -9811,7 +9844,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Chatroom List Modal */}
+      {/* Chatroom List Modal - high z-index, scroll contained, pointer events for WebView */}
       <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
         <DialogContent 
           className="max-w-2xl max-h-[80vh] bg-white dark:bg-gray-900"
@@ -9826,6 +9859,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             opacity: 1,
             pointerEvents: 'auto' as const
           }}
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onInteractOutside={(e) => e.preventDefault()}
         >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -9842,12 +9877,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="space-y-3 overflow-y-auto" style={{ maxHeight: '60vh', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'contain' } as React.CSSProperties}>
             {userChatrooms.length > 0 ? (
               userChatrooms.filter((chatroom: any) => chatroom && chatroom.id).map((chatroom: any) => (
-                <div 
+                <button
                   key={chatroom.id}
-                  className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
-                  onClick={() => {
+                  type="button"
+                  className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors w-full text-left"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const path = `/chatroom/${chatroom.id}`;
+                    // Navigate FIRST so we don't lose navigation when dialog closes
+                    if (isNativeIOSApp()) {
+                      const search = window.location.search || '';
+                      window.location.href = `${window.location.origin}${path}${search}`;
+                    } else {
+                      setLocation(path);
+                    }
                     setShowChatroomList(false);
-                    setLocation(`/chatroom/${chatroom.id}`);
                   }}
                 >
                   <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
@@ -9872,7 +9917,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 mt-1" />
-                </div>
+                </button>
               ))
             ) : (
               <div className="text-center py-8">
@@ -9884,7 +9929,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <Button 
                   onClick={() => {
                     setShowChatroomList(false);
-                    setLocation('/city-chatrooms');
+                    if (isNativeIOSApp()) {
+                      const search = window.location.search || '';
+                      window.location.href = `${window.location.origin}/city-chatrooms${search}`;
+                    } else {
+                      setLocation('/city-chatrooms');
+                    }
                   }}
                   className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-black"
                 >
@@ -9899,7 +9949,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               variant="outline" 
               onClick={() => {
                 setShowChatroomList(false);
-                setLocation('/city-chatrooms');
+                if (isNativeIOSApp()) {
+                  const search = window.location.search || '';
+                  window.location.href = `${window.location.origin}/city-chatrooms${search}`;
+                } else {
+                  setLocation('/city-chatrooms');
+                }
               }}
               className="w-full"
             >

@@ -116,12 +116,12 @@ export default function UserCard({
 
   return (
     <button 
-      className={`w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border shadow-sm hover:shadow-md transition-all text-left lg:rounded-2xl ${isAvailableNow ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
+      className={`w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border shadow-sm hover:shadow-md transition-all text-left ${compact ? 'rounded-lg' : 'lg:rounded-2xl'} ${isAvailableNow ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
-      {/* Photo section - square on mobile, taller on desktop */}
-      <div className="relative aspect-square lg:aspect-[3/4]">
+      {/* Photo section - square when compact, else taller on desktop */}
+      <div className={`relative ${compact ? 'aspect-square' : 'aspect-square lg:aspect-[3/4]'}`}>
         {user.profileImage ? (
           <img 
             src={user.profileImage} 
@@ -134,7 +134,7 @@ export default function UserCard({
             className="absolute inset-0 w-full h-full flex items-center justify-center"
             style={{ background: getUserGradient() }}
           >
-            <span className="text-4xl font-bold text-white/90">
+            <span className={`font-bold text-white/90 ${compact ? 'text-2xl' : 'text-4xl'}`}>
               {user.name?.charAt(0) || user.username?.charAt(0) || '?'}
             </span>
           </div>
@@ -158,10 +158,10 @@ export default function UserCard({
           </div>
         )}
         
-        {/* Available Now badge */}
+        {/* Available Now badge - show when user is available (web and native app) */}
         {isAvailableNow && (
           <div className="absolute bottom-1.5 left-1.5 right-1.5">
-            <span className="status-badge flex items-center justify-center gap-1 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg animate-pulse w-full">
+            <span className="status-badge animate-pulsate-green flex items-center justify-center gap-1 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg w-full">
               <span className="status-badge w-1.5 h-1.5 bg-white rounded-full"></span>
               Available Now
             </span>
@@ -169,32 +169,34 @@ export default function UserCard({
         )}
       </div>
       
-      {/* Info box - compact on mobile, spacious on desktop */}
-      <div className="p-2 lg:p-4 bg-white dark:bg-gray-800">
-        {/* Mobile: simple stacked layout */}
-        <div className="lg:hidden">
-          <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+      {/* Info box - compact when compact prop, else spacious on desktop */}
+      <div className={`bg-white dark:bg-gray-800 ${compact ? 'p-1.5' : 'p-2 lg:p-4'}`}>
+        {/* Mobile / compact: simple stacked layout */}
+        <div className={compact ? '' : 'lg:hidden'}>
+          <div className={`font-semibold text-gray-900 dark:text-white truncate ${compact ? 'text-xs' : 'text-sm'}`}>
             {displayName}
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
             {displayCity}
           </div>
-          <div className="mt-1.5 space-y-0.5">
-            {thingsInCommon > 0 && (
-              <div className="text-xs font-medium text-orange-500 truncate">
-                {thingsInCommon} things in common
-              </div>
-            )}
-            {mutualFriends > 0 && (
-              <div className="text-xs text-cyan-600 dark:text-cyan-400 truncate">
-                {mutualFriends} mutual friends
-              </div>
-            )}
-          </div>
+          {!compact && (
+            <div className="mt-1.5 space-y-0.5">
+              {thingsInCommon > 0 && (
+                <div className="text-xs font-medium text-orange-500 truncate">
+                  {thingsInCommon} things in common
+                </div>
+              )}
+              {mutualFriends > 0 && (
+                <div className="text-xs text-cyan-600 dark:text-cyan-400 truncate">
+                  {mutualFriends} mutual friends
+                </div>
+              )}
+            </div>
+          )}
         </div>
         
-        {/* Desktop: fixed 4-row grid with social proof first */}
-        <div className="hidden lg:grid lg:grid-rows-4 gap-0 leading-tight min-h-[88px]">
+        {/* Desktop (non-compact only): fixed 4-row grid with social proof first */}
+        <div className={compact ? 'hidden' : 'hidden lg:grid lg:grid-rows-4 gap-0 leading-tight min-h-[88px]'}>
           <div className="text-sm font-semibold truncate text-orange-500">
             {thingsInCommon > 0 ? `${thingsInCommon} things in common` : '\u00A0'}
           </div>

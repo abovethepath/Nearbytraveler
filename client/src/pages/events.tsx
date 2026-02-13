@@ -12,13 +12,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle, Star, Sparkles, ChevronDown, MessageCircle, History, Link2 } from "lucide-react";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import BackButton from "@/components/back-button";
 import CreateEvent from "@/pages/create-event";
-import { isNativeIOSApp } from "@/lib/nativeApp";
 
 import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { formatDateForDisplay } from "@/lib/dateUtils";

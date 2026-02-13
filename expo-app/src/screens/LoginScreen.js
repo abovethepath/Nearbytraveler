@@ -10,22 +10,29 @@ const { width } = Dimensions.get('window');
 
 export default function LoginScreen({ navigation }) {
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
+
+  // Can be username OR email
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      setError('Please enter your email and password');
+    const cleanedIdentifier = (identifier || '').trim();
+    const cleanedPassword = (password || '').trim();
+
+    if (!cleanedIdentifier || !cleanedPassword) {
+      setError('Please enter your username or email and password');
       return;
     }
+
     setError('');
     setLoading(true);
     try {
-      await login(email.trim(), password);
+      // Pass identifier to AuthContext; it will authenticate using username or email.
+      await login(cleanedIdentifier, cleanedPassword);
     } catch (e) {
-      setError(e.message || 'Invalid credentials. Please try again.');
+      setError(e?.message || 'Invalid credentials. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -59,12 +66,12 @@ export default function LoginScreen({ navigation }) {
                 style={styles.input}
                 placeholder="Enter your email or username"
                 placeholderTextColor="#9CA3AF"
-                value={email}
-                onChangeText={setEmail}
+                value={identifier}
+                onChangeText={setIdentifier}
                 autoCapitalize="none"
                 autoCorrect={false}
-                keyboardType="email-address"
-                textContentType="emailAddress"
+                keyboardType="default"
+                textContentType="username"
               />
             </View>
 
@@ -132,5 +139,5 @@ const styles = StyleSheet.create({
   forgotText: { color: '#F97316', fontSize: 14, fontWeight: '500' },
   registerSection: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6 },
   registerPrompt: { color: '#6B7280', fontSize: 15 },
-  registerLink: { color: '#F97316', fontSize: 15, fontWeight: '700' },
+  registerLink: { color: '#F97316', fontSize: 15, fontWeight: '700' }
 });

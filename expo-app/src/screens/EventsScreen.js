@@ -54,7 +54,7 @@ export default function EventsScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}><Text style={styles.headerTitle}>Events</Text><Text style={styles.headerSubtitle}>&#x1F4CD; {city}</Text></View>
-      {loading ? <View style={styles.centered}><ActivityIndicator size="large" color="#F97316" /></View> : (
+      {loading ? <View style={styles.centered}><ActivityIndicator size={36} color="#F97316" /></View> : (
         <FlatList data={events} keyExtractor={(item) => String(item.id)} renderItem={({ item }) => <EventCard event={item} onPress={handleEventPress} />}
           contentContainerStyle={styles.listContent} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F97316" />}
           ListEmptyComponent={<View style={styles.emptyState}><Text style={styles.emptyIcon}>&#x1F4C5;</Text><Text style={styles.emptyTitle}>No upcoming events</Text><Text style={styles.emptySubtitle}>Check back later for events in {city}</Text></View>}

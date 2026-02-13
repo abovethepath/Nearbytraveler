@@ -352,7 +352,7 @@ export default function DiscoverPage() {
           </div>
         )}
 
-        {/* ALL OTHER CITIES GRID - Clean Airbnb-style cards */}
+        {/* ALL OTHER CITIES GRID - 2 per row on mobile like user cards */}
         {sortedCities.filter(city => city.city !== 'Los Angeles Metro').length > 0 && (
           <div className={`grid grid-cols-2 gap-3 ${isNative ? '' : 'sm:gap-6 lg:grid-cols-3 lg:gap-8'}`}>
             {sortedCities.filter(city => city.city !== 'Los Angeles Metro').map((city, index) => (

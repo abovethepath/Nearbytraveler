@@ -246,7 +246,7 @@ export function MobileTopNav() {
           </button>
 
           <div className="flex-1 flex justify-center pointer-events-none">
-            <Logo variant="navbar" />
+            <Logo variant="navbar" className="h-16 sm:h-20 w-auto max-w-[90%]" />
           </div>
 
           <button
@@ -264,7 +264,7 @@ export function MobileTopNav() {
           >
             <Avatar className="w-8 h-8 border-2 border-gray-200/80 dark:border-gray-600/80 pointer-events-none ring-1 ring-white/20">
               <AvatarImage
-                src={currentUser?.profileImage || undefined}
+                src={toAbsoluteProfileUrl(currentUser?.profileImage) || undefined}
                 alt={currentUser?.name || currentUser?.username || "User"}
                 className="pointer-events-none"
               />

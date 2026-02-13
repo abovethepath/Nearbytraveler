@@ -4,6 +4,7 @@ import { isNativeIOSApp } from "@/lib/nativeApp";
 export default function ResponsiveNavbar() {
   if (isNativeIOSApp()) return null;
   const [open, setOpen] = useState(false);
+  if (isNativeIOSApp()) return null;
 
   return (
     <header className="w-full border-b bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">

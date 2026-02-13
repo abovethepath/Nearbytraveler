@@ -80,15 +80,19 @@ function QuickMeetupsPage() {
     duration: '1hour'
   });
 
-  // Read URL parameter and auto-select meetup for management
+  // Read URL parameters: ?id= for manage, ?create=1 for open create form (e.g. from "+" → Create Hangout)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const create = params.get('create');
+    if (create === '1' || create === 'true') {
+      setShowCreateForm(true);
+      window.history.replaceState({}, '', '/quick-meetups');
+    }
     const meetupId = params.get('id');
     if (meetupId) {
       const id = parseInt(meetupId, 10);
       if (!isNaN(id)) {
         setSelectedMeetupId(id);
-        // Clear URL parameter to avoid confusion on page refresh
         window.history.replaceState({}, '', '/quick-meetups');
       }
     }

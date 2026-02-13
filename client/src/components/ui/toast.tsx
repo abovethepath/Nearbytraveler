@@ -18,7 +18,7 @@ const ToastViewport = React.forwardRef<
       className
     )}
     style={{ 
-      zIndex: 99999,
+      zIndex: 2147483647,
       position: 'fixed',
       top: '16px',
       left: '16px',
@@ -36,7 +36,7 @@ const toastVariants = cva(
       variant: {
         default: "border bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700",
         destructive:
-          "destructive group border-red-500 bg-red-600 text-white shadow-2xl ring-4 ring-red-400 ring-opacity-90 font-bold backdrop-blur-sm z-[99999] relative transform scale-105 pointer-events-auto",
+          "destructive group border-red-500 bg-red-600 text-white shadow-2xl ring-4 ring-red-400 ring-opacity-90 font-bold backdrop-blur-sm relative transform scale-105 pointer-events-auto",
       },
     },
     defaultVariants: {
@@ -54,7 +54,7 @@ const Toast = React.forwardRef<
     <ToastPrimitives.Root
       ref={ref}
       className={cn(toastVariants({ variant }), className)}
-      style={{ zIndex: 99999, position: 'relative' }}
+      style={{ zIndex: 2147483647, position: 'relative' }}
       {...props}
     />
   )

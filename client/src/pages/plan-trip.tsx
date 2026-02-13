@@ -85,7 +85,7 @@ export default function PlanTrip() {
 
   const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
     const saved = localStorage.getItem('hidePlanTripHero');
-    return saved !== 'true';
+    return saved === 'false';
   });
   const toggleHeroVisibility = () => {
     const newValue = !isHeroVisible;
@@ -449,8 +449,9 @@ export default function PlanTrip() {
         
         try {
           const response = await apiRequest("POST", "/api/travel-plans", travelPlanData);
-          console.log('✅ CREATE SUCCESS:', response);
-          return response;
+          const created = await response.json();
+          console.log('✅ CREATE SUCCESS:', created);
+          return created;
         } catch (error) {
           console.error('❌ CREATE ERROR:', error);
           throw error;
@@ -484,7 +485,7 @@ export default function PlanTrip() {
         if (newTripId && selectedCompanions.length > 0) {
           Promise.all(
             selectedCompanions.map(companionId =>
-              apiRequest("POST", `/api/travel-plans/${newTripId}/companions`, { companionId })
+              apiRequest("POST", `/api/travel-plans/${newTripId}/crew/companions`, { companionId })
             )
           ).catch(err => console.error("Error linking companions to trip:", err));
         }
@@ -625,7 +626,7 @@ export default function PlanTrip() {
         userId: user?.id
       };
 
-      const response = await apiRequest("/api/hidden-gems/discover", "POST", {
+      const res = await apiRequest("POST", "/api/hidden-gems/discover", {
         destination: destination,
         preferences: {
           categories: tripPlan.interests,
@@ -635,7 +636,8 @@ export default function PlanTrip() {
         userProfile
       });
 
-      const gems = Array.isArray(response) ? response : [];
+      const data = await res.json();
+      const gems = Array.isArray(data) ? data : [];
       setHiddenGems(gems);
       toast({
         title: "Hidden gems discovered!",
@@ -1041,7 +1043,7 @@ export default function PlanTrip() {
                   /* Companion selection for new trips */
                   <div className="space-y-4">
                     <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                      Who's coming with you? Add friends, family, or kids traveling with you.
+                      Add kids or family members traveling with you (e.g. "My Son", "Sarah"). For friends with accounts, you&apos;ll invite them after creating the trip—no username needed.
                     </p>
 
                     {/* Existing companions to select */}
@@ -1095,7 +1097,7 @@ export default function PlanTrip() {
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <Input
-                            placeholder="Name (e.g., Sarah, My Son)"
+                            placeholder="Label (e.g., My Son, Sarah)"
                             value={newCompanionLabel}
                             onChange={(e) => setNewCompanionLabel(e.target.value)}
                             className="text-sm"
@@ -1147,9 +1149,15 @@ export default function PlanTrip() {
                       </p>
                     )}
 
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
-                      💡 After creating the trip, you can also invite friends/family with accounts via invite link
-                    </p>
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-1">
+                      <p className="text-xs font-medium text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
+                        <Link2 className="w-3.5 h-3.5" />
+                        Inviting friends with accounts?
+                      </p>
+                      <p className="text-[11px] text-gray-600 dark:text-gray-400">
+                        After you create the trip, use &quot;Invite&quot; to get a shareable link. Send it via text or email—they join with one tap. No username or search needed.
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
@@ -1157,9 +1165,14 @@ export default function PlanTrip() {
               {/* Action Buttons - Mobile Responsive */}
               <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
                 <Button 
-                  type="submit" 
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-colors text-sm sm:text-base md:text-lg h-12 sm:h-14 break-words" 
+                  type="button"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-colors text-sm sm:text-base md:text-lg h-12 sm:h-14 break-words touch-manipulation" 
                   disabled={createTravelPlan.isPending}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleSubmit(e);
+                  }}
                 >
                   <span className="break-words">{createTravelPlan.isPending ? 
                     (isEditMode ? "Updating Trip..." : "Creating Trip...") : 

@@ -155,6 +155,12 @@ app.use((req, _res, next) => {
   next();
 });
 
+// Allow Expo/React Native app: origin can be null, exp://..., or localhost
+const allowedOrigins = [
+  "https://nearbytraveler.org",
+  "https://nearbytraveler.onrender.com",
+  "http://localhost:5000",
+];
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -175,7 +181,7 @@ app.use(
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Client"],
   }),
 );
 

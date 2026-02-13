@@ -1150,11 +1150,18 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           sessionID: (req as any).sessionID?.substring(0, 10) + '...',
           setCookieHeader: res.getHeader('Set-Cookie')
         });
-        return res.status(200).json({ ok: true, user: { id: user.id, username: user.username } });
+        // React Native cannot read Set-Cookie; send sessionId in body so app can send Cookie header
+        const isMobile = req.get('X-Client') === 'ReactNative';
+        const body: { ok: boolean; user: { id: string; username: string }; sessionId?: string } = { ok: true, user: { id: user.id, username: user.username } };
+        if (isMobile && (req as any).sessionID) body.sessionId = (req as any).sessionID;
+        return res.status(200).json(body);
       } catch (saveError: any) {
         console.error("❌ Session save failed:", saveError?.message);
         // Still return success - session might work on next request
-        return res.status(200).json({ ok: true, user: { id: user.id, username: user.username } });
+        const isMobile = req.get('X-Client') === 'ReactNative';
+        const body: { ok: boolean; user: { id: string; username: string }; sessionId?: string } = { ok: true, user: { id: user.id, username: user.username } };
+        if (isMobile && (req as any).sessionID) body.sessionId = (req as any).sessionID;
+        return res.status(200).json(body);
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -4707,7 +4714,7 @@ Questions? Just reply to this message!
         console.log("🔐 Extended session to 30 days for keepLoggedIn");
       }
 
-      // ========== FAST RESPONSE: Return success immediately ==========
+      // ---------- FAST RESPONSE: Return success immediately ----------
       // User account is created - send success response NOW
       // All other tasks will run in the background
       console.log(`✅ REGISTRATION SUCCESS: User ${user.username} created (ID: ${user.id}) - returning response immediately`);
@@ -4719,7 +4726,7 @@ Questions? Just reply to this message!
         redirectTo: "/account-success"
       });
 
-      // ========== BACKGROUND TASKS: Run after response is sent ==========
+      // ---------- BACKGROUND TASKS: Run after response is sent ----------
       // These tasks run asynchronously - failures don't affect user experience
       const referralCode = (userData as any).referralCode || req.body.referralCode;
       const connectionNote = (userData as any).connectionNote || req.body.connectionNote;
@@ -5002,7 +5009,7 @@ Questions? Just reply to this message!
     }
   };
 
-  // ====== REGISTRATION ENDPOINT COMPLETE ======
+  // ---------- REGISTRATION ENDPOINT COMPLETE ----------
 
   // Registration endpoint
   app.post("/api/register", handleRegistration);
@@ -6579,7 +6586,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ============ NOTIFICATIONS API ============
+  // ---------- NOTIFICATIONS API ----------
 
   // GET user notifications
   app.get("/api/notifications/:userId", async (req, res) => {
@@ -7219,7 +7226,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ============ STEALTH MODE - Hide from specific users ============
+  // ---------- STEALTH MODE - Hide from specific users ----------
 
   // POST /api/users/hide - Hide yourself from a specific user (stealth mode)
   app.post("/api/users/hide", async (req, res) => {
@@ -7852,7 +7859,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ===== TRAVEL CREW ENDPOINTS =====
+  // ---------- TRAVEL CREW ENDPOINTS ----------
 
   // Get companions for current user
   app.get("/api/companions", async (req, res) => {
@@ -8402,9 +8409,9 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ===== END TRAVEL CREW ENDPOINTS =====
+  // ---------- END TRAVEL CREW ENDPOINTS ----------
 
-  // ===== EVENT COMPANION PARTICIPATION ENDPOINTS =====
+  // ---------- EVENT COMPANION PARTICIPATION ENDPOINTS ----------
 
   // Get companions attending an event
   app.get("/api/events/:id/companions", async (req, res) => {
@@ -8533,7 +8540,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ===== END EVENT COMPANION PARTICIPATION ENDPOINTS =====
+  // ---------- END EVENT COMPANION PARTICIPATION ENDPOINTS ----------
 
   // CRITICAL: Update existing travel plan
   app.put("/api/travel-plans/:id", async (req, res) => {
@@ -15085,7 +15092,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ===== NEW QUICK MEET API ROUTES (Stage 1: Aliases for backward compatibility) =====
+  // ---------- NEW QUICK MEET API ROUTES (Stage 1: Aliases for backward compatibility) ----------
   // These new routes provide the updated "quick meet" terminology while maintaining
   // identical functionality to the legacy "quick-meetups" endpoints below.
 
@@ -15650,11 +15657,11 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ===== LEGACY QUICK MEETUPS API ROUTES (deprecated, will be removed in future versions) =====
+  // ---------- LEGACY QUICK MEETUPS API ROUTES (deprecated, will be removed in future versions) ----------
   // These endpoints are deprecated in favor of the new "quick meet" terminology above.
   // They are kept for backward compatibility but will be removed in a future release.
 
-  // ===== QUICK DEALS API ROUTES =====
+  // ---------- QUICK DEALS API ROUTES ----------
   
   // CREATE quick deal endpoint
   app.post("/api/quick-deals", async (req, res) => {
@@ -19302,7 +19309,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // === AI EVENT DRAFT FROM NATURAL LANGUAGE ===
+  // ---------- AI EVENT DRAFT FROM NATURAL LANGUAGE ----------
   
   // POST extract structured event data from natural language description
   app.post("/api/ai/event-draft", async (req, res) => {
@@ -19366,7 +19373,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // === AI CITY MATCH FEATURES ===
+  // ---------- AI CITY MATCH FEATURES ----------
   
   // POST generate AI activity suggestions for a city based on user's interests
   app.post("/api/ai/activity-suggestions", async (req, res) => {
@@ -20285,51 +20292,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Find users with compatible interests or in the target city
       // IMPORTANT: Only return matches if current user has at least one city pick
-      // Get ALL city picks for this city to find users with shared picks
-      const allCityPicksForMatching = await db
-        .select({
-          userId: userCityInterests.userId,
-          activityId: userCityInterests.activityId,
-          activityName: userCityInterests.activityName
-        })
-        .from(userCityInterests)
-        .where(and(
-          ilike(userCityInterests.cityName, `%${city}%`),
-          eq(userCityInterests.isActive, true)
-        ));
-      
-      // Users who share city picks with current user
-      const currentUserActivityIds = new Set(userInterests.map(i => i.activityId));
-      const usersWithSharedPicks = new Set<number>();
-      for (const pick of allCityPicksForMatching) {
-        if (currentUserActivityIds.has(pick.activityId) && pick.userId !== (userId ? parseInt(userId as string) : -1)) {
-          usersWithSharedPicks.add(pick.userId);
-        }
-      }
-
-      const compatibleUsers = userInterests.length > 0 ? allUsers.filter(user => {
-        // Include users who share city picks (most important)
-        if (usersWithSharedPicks.has(user.id)) return true;
-        
-        // Include users from the target city
-        const isInTargetCity = user.location?.toLowerCase().includes(city.toLowerCase()) ||
-                              user.hometownCity?.toLowerCase().includes(city.toLowerCase());
-        
-        // Include users with shared interests
-        const hasSharedInterests = user.interests && userInterests.length > 0 &&
-          user.interests.some(interest => 
-            userInterests.some(userInt => 
-              interest.toLowerCase().includes('food') && userInt.activityName.toLowerCase().includes('food') ||
-              interest.toLowerCase().includes('music') && userInt.activityName.toLowerCase().includes('concert') ||
-              interest.toLowerCase().includes('museum') && userInt.activityName.toLowerCase().includes('museum') ||
-              interest.toLowerCase().includes('social') && userInt.activityName.toLowerCase().includes('meet')
-            )
-          );
-
-        return isInTargetCity || hasSharedInterests;
-      }) : []; // No matches if user has no city picks
-
-      // ===== ENHANCED MATCHING: Get city picks for all compatible users =====
+      // ---------- ENHANCED MATCHING: Get city picks for all compatible users ----------
       // Get all city interests/picks for each compatible user (to calculate shared picks)
       const allUserCityInterests = await db
         .select({
@@ -20357,6 +20320,31 @@ Questions? Just reply to this message. Welcome aboard!
       
       // Current user's picks (activity IDs for comparison)
       const currentUserPickIds = new Set(userInterests.map(i => i.activityId));
+      
+      // Build compatible users: anyone with at least one shared city pick (Things I Want To Do)
+      const userIdsWithSharedPicks = new Set<number>();
+      for (const [uid, picks] of Object.entries(interestsByUser)) {
+        const uidNum = parseInt(uid, 10);
+        if (uidNum === (userId ? parseInt(userId as string) : -1)) continue; // exclude self
+        const hasShared = picks.some(p => currentUserPickIds.has(p.activityId));
+        if (hasShared) userIdsWithSharedPicks.add(uidNum);
+      }
+      // Also include users in target city or with profile interest overlap (broader discovery)
+      const compatibleUsers = userInterests.length > 0 ? allUsers.filter(user => {
+        if (userIdsWithSharedPicks.has(user.id)) return true;
+        const isInTargetCity = user.location?.toLowerCase().includes(city.toLowerCase()) ||
+                              user.hometownCity?.toLowerCase().includes(city.toLowerCase());
+        const hasSharedInterests = user.interests && userInterests.length > 0 &&
+          user.interests.some((interest: string) =>
+            userInterests.some(userInt =>
+              interest.toLowerCase().includes('food') && userInt.activityName?.toLowerCase().includes('food') ||
+              interest.toLowerCase().includes('music') && userInt.activityName?.toLowerCase().includes('concert') ||
+              interest.toLowerCase().includes('museum') && userInt.activityName?.toLowerCase().includes('museum') ||
+              interest.toLowerCase().includes('social') && userInt.activityName?.toLowerCase().includes('meet')
+            )
+          );
+        return isInTargetCity || hasSharedInterests;
+      }) : [];
       
       // Get current user's profile interests
       const currentUserProfile = userId ? await db
@@ -20643,9 +20631,9 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ========================================
+  // ----------------------------------------
   // ITINERARY CRUD API ROUTES
-  // ========================================
+  // ----------------------------------------
 
   // Get itineraries for a travel plan
   app.get("/api/itineraries/travel-plan/:travelPlanId", async (req, res) => {
@@ -20729,9 +20717,9 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ========================================
+  // ----------------------------------------
   // EMAIL TEST ROUTES
-  // ========================================
+  // ----------------------------------------
   
   // Test welcome email endpoint
   app.post("/api/test-welcome-email", async (req, res) => {
@@ -20753,9 +20741,9 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ========================================
+  // ----------------------------------------
   // VOUCH SYSTEM ROUTES
-  // ========================================
+  // ----------------------------------------
 
   // Get vouches received by a user
   app.get("/api/users/:userId/vouches", async (req, res) => {
@@ -20841,9 +20829,9 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ========================================
+  // ----------------------------------------
   // BUSINESS SUBSCRIPTION ROUTES
-  // ========================================
+  // ----------------------------------------
 
   // Get business subscription status
   app.get("/api/business/subscription-status", async (req, res) => {
@@ -20891,9 +20879,9 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ========================================
+  // ----------------------------------------
   // ADMIN ROUTES
-  // ========================================
+  // ----------------------------------------
 
   // Get all users for admin dashboard (excluding passwords)
   app.get("/api/admin/users", async (req, res) => {
@@ -20927,13 +20915,13 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ========================================
+  // ----------------------------------------
   // AUTHENTICATION ROUTES
-  // ========================================
+  // ----------------------------------------
 
 
   // Logout route - properly destroy server session (alias for /api/auth/logout)
-  // ==================== AVAILABLE NOW (Hangout Mode) ====================
+  // ---------- AVAILABLE NOW (Hangout Mode) ----------
 
   app.get("/api/available-now", async (req: any, res) => {
     try {
@@ -21278,7 +21266,7 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/available-now/active-ids", async (req: any, res) => {
     try {
       const now = new Date();
-      const currentUserId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
+      const currentUserId = req.session?.user?.id || req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       const results = await db.select({ userId: availableNow.userId })
         .from(availableNow)
         .where(and(
@@ -21311,7 +21299,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ==================== AVAILABLE NOW GROUP CHAT ====================
+  // ---------- AVAILABLE NOW GROUP CHAT ----------
 
   // Get group chat for current user's active Available Now session
   app.get("/api/available-now/group-chat", async (req: any, res) => {
@@ -21559,9 +21547,9 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // ==================== VIRAL FEATURES API ====================
+  // ---------- VIRAL FEATURES API ----------
 
-  // === LIVE LOCATION SHARES ===
+  // ---------- LIVE LOCATION SHARES ----------
 
   // Create a live location share ("I'm at [place]")
   app.post("/api/live-shares", async (req: any, res) => {
@@ -21756,7 +21744,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // === MICRO-EXPERIENCES ===
+  // ---------- MICRO-EXPERIENCES ----------
 
   // Create a micro-experience
   app.post("/api/micro-experiences", async (req: any, res) => {
@@ -21964,7 +21952,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // === ACTIVITY TEMPLATES ===
+  // ---------- ACTIVITY TEMPLATES ----------
 
   // Get all activity templates
   app.get("/api/activity-templates", async (req: any, res) => {
@@ -22031,7 +22019,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // === MEETUP SHARE CARDS ===
+  // ---------- MEETUP SHARE CARDS ----------
 
   // Create a meetup share card
   app.post("/api/share-cards", async (req: any, res) => {
@@ -22164,7 +22152,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // === COMMUNITY TAGS ===
+  // ---------- COMMUNITY TAGS ----------
 
   // Get all community tags
   app.get("/api/community-tags", async (req: any, res) => {
@@ -22334,7 +22322,7 @@ Questions? Just reply to this message. Welcome aboard!
     });
   });
 
-  // ==================== EVENT INTEGRATIONS (Luma / Partiful) ====================
+  // ---------- EVENT INTEGRATIONS (Luma / Partiful) ----------
 
   app.get("/api/integrations", async (req: Request, res: Response) => {
     try {

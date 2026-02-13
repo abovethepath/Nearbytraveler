@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Loader2, Calendar, MapPin, Users, AlertCircle, Check, Edit2, Tag, Mic, MicOff } from "lucide-react";
-import { getApiBaseUrl } from "@/lib/queryClient";
+import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 // Web Speech API types
 interface SpeechRecognitionEvent extends Event {
@@ -89,6 +90,7 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
   const [isEditing, setIsEditing] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
+  const [inlineError, setInlineError] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const { toast } = useToast();
 
@@ -98,18 +100,44 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
     setSpeechSupported(!!SpeechRecognitionAPI);
   }, []);
 
-  const startListening = () => {
-    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const startListening = async () => {
+    const inNativeIOS = isNativeIOSApp();
+    const SpeechRecognitionAPI = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    // In native iOS app: try native bridge first (expo-speech-recognition)
+    if (inNativeIOS && typeof (window as any).ReactNativeWebView?.postMessage === "function") {
+      try {
+        setIsListening(true);
+        setInlineError(null);
+        (window as any).__onNativeSpeechResult__ = (text: string) => {
+          if (text) setInputText(prev => prev + (prev ? " " : "") + text);
+        };
+        (window as any).__onNativeSpeechError__ = (err: string) => {
+          setIsListening(false);
+          const msg = "Tap the text area below, then use the microphone on your keyboard to dictate.";
+          setInlineError(msg);
+          toast({ title: "Use keyboard dictation", description: msg, variant: "destructive" });
+        };
+        (window as any).__onNativeSpeechEnd__ = () => setIsListening(false);
+        (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: "START_SPEECH_RECOGNITION" }));
+        toast({ title: "Listening...", description: "Speak your event details. Tap the mic again to stop." });
+        return;
+      } catch {
+        // Fall through to Web Speech API
+      }
+    }
+
     if (!SpeechRecognitionAPI) {
-      toast({
-        title: "Voice not available",
-        description: "Voice input isn't supported in this app. Please type your event details instead.",
-        variant: "destructive"
-      });
+      const msg = inNativeIOS
+        ? "Tap the text area below, then use the microphone on your keyboard to dictate."
+        : "Voice input isn't supported. Please type your event details or use keyboard dictation.";
+      setInlineError(msg);
+      toast({ title: "Voice not available", description: msg, variant: "destructive" });
       return;
     }
 
     try {
+      // Call recognition.start() directly - let Speech API request permission (avoids double-prompt on iOS)
       const recognition = new SpeechRecognitionAPI();
       recognition.continuous = true;
       recognition.interimResults = true;
@@ -117,14 +145,12 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         let finalTranscript = "";
-        let interimTranscript = "";
 
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
+          const result = event.results[i];
+          const transcript = result[0]?.transcript;
+          if (transcript && result.isFinal) {
             finalTranscript += transcript + " ";
-          } else {
-            interimTranscript += transcript;
           }
         }
 
@@ -136,16 +162,25 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
       recognition.onerror = (event: any) => {
         console.error("Speech recognition error:", event);
         setIsListening(false);
-        
-        let errorMessage = "Voice input isn't available. Please type your event details instead.";
-        if (event.error === 'not-allowed') {
-          errorMessage = "Microphone access was denied. Please enable microphone permissions or type your event details.";
-        } else if (event.error === 'no-speech') {
-          errorMessage = "No speech detected. Please try again or type your event details.";
-        } else if (event.error === 'network') {
-          errorMessage = "Network error. Please check your connection or type your event details.";
+        recognitionRef.current = null;
+
+        const inNativeIOS = isNativeIOSApp();
+        let errorMessage: string;
+        if (inNativeIOS) {
+          errorMessage = "Voice isn't supported in the app. Tap the text area below, then use the microphone on your keyboard to dictate.";
+        } else if (event.error === "not-allowed") {
+          errorMessage = "Microphone access was denied. Enable microphone in Settings, then try again.";
+        } else if (event.error === "no-speech") {
+          errorMessage = "No speech detected. Try again or type your event details.";
+        } else if (event.error === "network") {
+          errorMessage = "Network error. Check your connection or type your event details.";
+        } else if (event.error === "audio-capture") {
+          errorMessage = "Microphone not available. Please type your event details.";
+        } else {
+          errorMessage = "Voice input isn't available. Please type your event details instead.";
         }
-        
+
+        setInlineError(errorMessage);
         toast({
           title: "Voice unavailable",
           description: errorMessage,
@@ -155,29 +190,48 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
 
       recognition.onend = () => {
         setIsListening(false);
+        recognitionRef.current = null;
       };
 
       recognitionRef.current = recognition;
-      recognition.start();
+      try {
+        recognition.start();
+      } catch (startErr) {
+        console.error("recognition.start error:", startErr);
+        setIsListening(false);
+        recognitionRef.current = null;
+        const msg = isNativeIOSApp()
+          ? "Tap the text area below, then use the microphone on your keyboard to dictate."
+          : "Could not start listening. Please allow microphone access or type your event details.";
+        setInlineError(msg);
+        toast({ title: "Voice unavailable", description: msg, variant: "destructive" });
+        return;
+      }
       setIsListening(true);
-      
+
       toast({
         title: "Listening...",
         description: "Speak your event details. Tap the mic again to stop.",
       });
     } catch (error) {
       console.error("Speech recognition initialization error:", error);
-      toast({
-        title: "Voice unavailable",
-        description: "Voice input isn't available in this app. Please type your event details instead.",
-        variant: "destructive"
-      });
+      setIsListening(false);
+      recognitionRef.current = null;
+      const msg = isNativeIOSApp()
+        ? "Tap the text area below, then use the microphone on your keyboard to dictate."
+        : "Voice input isn't available. Please type your event details instead.";
+      setInlineError(msg);
+      toast({ title: "Voice unavailable", description: msg, variant: "destructive" });
     }
   };
 
   const stopListening = () => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
+      recognitionRef.current = null;
+      setIsListening(false);
+    } else if (isNativeIOSApp() && typeof (window as any).ReactNativeWebView?.postMessage === "function") {
+      (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: "STOP_SPEECH_RECOGNITION" }));
       setIsListening(false);
     }
   };
@@ -192,37 +246,50 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
 
   const generateDraftMutation = useMutation({
     mutationFn: async (text: string) => {
-      // Get user ID from localStorage for authentication
-      const storedUser = localStorage.getItem('travelconnect_user');
-      const userId = storedUser ? JSON.parse(storedUser).id : null;
-      
-      const headers: Record<string, string> = { "Content-Type": "application/json" };
-      if (userId) {
-        headers["X-User-Id"] = userId.toString();
+      setInlineError(null);
+      const body = {
+        text,
+        userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        defaultCity
+      };
+      try {
+        const res = await apiRequest("POST", "/api/ai/event-draft", body);
+        const data = await res.json();
+        return data as AiEventDraft;
+      } catch (err: any) {
+        const msg = err?.message || "";
+        if (msg.includes("fetch") || err?.name === "TypeError") {
+          throw new Error("Cannot reach the server. Check your connection and try again.");
+        }
+        if (msg.includes("401") || msg.toLowerCase().includes("unauthorized")) {
+          throw new Error("Please sign in to use AI event generation.");
+        }
+        if (msg.includes("422") || msg.includes("400")) {
+          try {
+            const colonIdx = msg.indexOf(": ");
+            const jsonPart = colonIdx >= 0 ? msg.slice(colonIdx + 2).trim() : "";
+            const parsed = jsonPart ? JSON.parse(jsonPart) : {};
+            const serverErr = parsed?.error;
+            if (typeof serverErr === "string") {
+              if (serverErr.toLowerCase().includes("temporarily unavailable") || serverErr.toLowerCase().includes("not configured")) {
+                throw new Error("AI features aren't configured. Please fill out the form below manually.");
+              }
+              throw new Error(serverErr);
+            }
+          } catch (parseErr: any) {
+            throw parseErr;
+          }
+        }
+        if (msg.includes("500") || msg.includes("timed out")) {
+          throw new Error("Server temporarily unavailable. Try again in a moment.");
+        }
+        throw new Error(msg || "Failed to generate event. Please try again.");
       }
-      
-      const response = await fetch(`${getApiBaseUrl()}/api/ai/event-draft`, {
-        method: "POST",
-        headers,
-        credentials: "include",
-        body: JSON.stringify({
-          text,
-          userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          defaultCity
-        })
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to process description");
-      }
-      
-      return response.json() as Promise<AiEventDraft>;
     },
     onSuccess: (data) => {
+      setInlineError(null);
       setDraft(data);
       setIsEditing(false);
-      
       if (data.missing && data.missing.length > 0) {
         toast({
           title: "Almost there!",
@@ -231,19 +298,24 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
       }
     },
     onError: (error: Error) => {
+      const message = error.message || "Couldn't generate event. Please try again.";
+      setInlineError(message);
       toast({
         title: "Couldn't understand that",
-        description: error.message,
+        description: message,
         variant: "destructive"
       });
     }
   });
 
   const handleGenerate = () => {
+    setInlineError(null);
     if (inputText.trim().length < 10) {
+      const msg = "Please describe your event with more detail (at least 10 characters).";
+      setInlineError(msg);
       toast({
         title: "Need more details",
-        description: "Please describe your event with more detail (at least 10 characters)",
+        description: msg,
         variant: "destructive"
       });
       return;
@@ -295,7 +367,7 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
                 <Sparkles className="w-4 h-4 text-orange-500" />
                 Describe your event in your own words
               </Label>
-              {speechSupported && (
+              {(speechSupported || isNativeIOSApp()) && (
                 <Button
                   type="button"
                   variant={isListening ? "destructive" : "outline"}
@@ -322,7 +394,10 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
               <Textarea
                 placeholder={isListening ? "Listening... speak now!" : "Tell us about your event: What is it? When? Where? Any restrictions or themes?"}
                 value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
+                onChange={(e) => {
+                  setInputText(e.target.value);
+                  if (inlineError) setInlineError(null);
+                }}
                 className={`min-h-[120px] resize-none ${isListening ? "border-red-500 border-2" : ""}`}
                 disabled={generateDraftMutation.isPending}
               />
@@ -337,12 +412,35 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
               )}
             </div>
             <p className="text-xs text-gray-500">
-              {speechSupported 
-                ? "Type or tap Voice to speak your event details. Include: date, time, location, event name."
-                : "Include: date, time, location/address, event name, and any special requirements. Tip: Tap the 🎙️ on your keyboard for voice dictation!"
+              {(speechSupported || isNativeIOSApp())
+                ? "Type or tap Voice to speak your event details. Include: date, time, location, event name. In the app, you can also tap the text area and use the keyboard mic to dictate."
+                : "Include: date, time, location/address, event name, and any special requirements. Tip: Tap the mic on your keyboard for voice dictation!"
               }
             </p>
           </div>
+
+          {inlineError && (
+            <div
+              className="rounded-lg border-2 border-red-500 bg-red-50 dark:bg-red-950/50 dark:border-red-500 p-4 text-red-800 dark:text-red-200 text-sm flex items-start gap-2"
+              role="alert"
+            >
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-600" />
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-base">
+                  {inlineError.toLowerCase().includes("microphone") || inlineError.toLowerCase().includes("voice") ? "Voice unavailable" : "Couldn't generate event"}
+                </p>
+                <p className="mt-1">{inlineError}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setInlineError(null)}
+                className="flex-shrink-0 p-1 rounded hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300"
+                aria-label="Dismiss"
+              >
+                <span className="sr-only">Dismiss</span>×
+              </button>
+            </div>
+          )}
 
           <Button
             onClick={handleGenerate}
