@@ -4,6 +4,13 @@ import { WebView } from 'react-native-webview';
 
 const EXTERNAL_HOSTNAMES = ['lu.ma', 'www.lu.ma', 'partiful.com', 'www.partiful.com', 'eventbrite.com', 'www.eventbrite.com', 'wa.me', 'twitter.com', 'x.com', 'facebook.com', 'www.facebook.com', 'instagram.com', 'www.instagram.com'];
 
+const NATIVE_INJECT_JS = `
+  window.NearbyTravelerNative = true;
+  window.__NEARBY_NATIVE_IOS__ = true;
+  window.isNativeApp = true;
+  true;
+`;
+
 function isExternalUrl(url) {
   try {
     const parsed = new URL(url);
@@ -13,11 +20,17 @@ function isExternalUrl(url) {
   }
 }
 
+function addNativeParam(url) {
+  const separator = url.includes('?') ? '&' : '?';
+  return url + separator + 'native=ios';
+}
+
 function NTWebView({ uri }) {
   return (
     <WebView
-      source={{ uri }}
+      source={{ uri: addNativeParam(uri) }}
       style={styles.webview}
+      injectedJavaScriptBeforeContentLoaded={NATIVE_INJECT_JS}
       onShouldStartLoadWithRequest={(request) => {
         if (isExternalUrl(request.url)) {
           Linking.openURL(request.url).catch(() => {});
