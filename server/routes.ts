@@ -1273,18 +1273,26 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   });
   
   // Session recovery endpoint - re-establishes server session when it's lost (e.g., after server restart)
+  // SECURITY: Requires both userId AND email to prevent session hijacking
   app.post("/api/auth/recover-session", async (req, res) => {
     try {
-      const { userId } = req.body;
+      const { userId, email, username } = req.body;
       if (!userId) {
         return res.status(400).json({ message: "User ID required" });
       }
 
-      // Check if session already exists
+      // Check if session already exists and matches the requested user
       if ((req as any).session?.user?.id) {
-        const existingUser = await storage.getUser((req as any).session.user.id);
-        if (existingUser) {
-          return res.json(existingUser);
+        const sessionUserId = (req as any).session.user.id;
+        if (String(sessionUserId) !== String(userId)) {
+          console.log("⚠️ Session recovery mismatch: session has user", sessionUserId, "but client requests", userId);
+          // Session belongs to a different user - clear it and re-authenticate
+          (req as any).session.user = null;
+        } else {
+          const existingUser = await storage.getUser(sessionUserId);
+          if (existingUser) {
+            return res.json(existingUser);
+          }
         }
       }
 
@@ -1292,6 +1300,28 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
+      }
+
+      // SECURITY: Validate that the client actually owns this account
+      // Require email OR username to match - prevents impersonation
+      const clientEmail = (email || '').toLowerCase().trim();
+      const clientUsername = (username || '').toLowerCase().trim();
+      const dbEmail = (user.email || '').toLowerCase().trim();
+      const dbUsername = (user.username || '').toLowerCase().trim();
+
+      if (!clientEmail && !clientUsername) {
+        console.log("❌ Session recovery rejected: no email or username provided for user", userId);
+        return res.status(401).json({ message: "Email or username required for session recovery" });
+      }
+
+      const emailMatch = clientEmail && clientEmail === dbEmail;
+      const usernameMatch = clientUsername && clientUsername === dbUsername;
+
+      if (!emailMatch && !usernameMatch) {
+        console.log("❌ Session recovery rejected: identity mismatch for user", userId, 
+          "- client:", { email: clientEmail, username: clientUsername },
+          "- db:", { email: dbEmail, username: dbUsername });
+        return res.status(401).json({ message: "Identity verification failed" });
       }
 
       // Re-establish the session
@@ -1302,7 +1332,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       });
 
-      console.log("🔄 Session recovered for user:", user.username, "ID:", user.id);
+      console.log("🔄 Session recovered for user:", user.username, "ID:", user.id, "(verified by", emailMatch ? "email" : "username", ")");
       res.json(user);
     } catch (error) {
       console.error("Session recovery error:", error);

@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 
-import { queryClient } from "./lib/queryClient";
+import { queryClient, invalidateUserCache } from "./lib/queryClient";
 import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -316,26 +316,36 @@ function Router() {
 
       if (foundUser) {
         // Try to recover the server session using localStorage data
+        // SECURITY: Include email and username for identity verification
         try {
           console.log('🔄 Attempting session recovery for:', foundUser.username);
           const recoveryResponse = await fetch('/api/auth/recover-session', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ userId: foundUser.id })
+            body: JSON.stringify({ userId: foundUser.id, email: foundUser.email, username: foundUser.username })
           });
           if (recoveryResponse.ok) {
             const recoveredUser = await recoveryResponse.json();
-            console.log('✅ Session recovered successfully:', recoveredUser.username);
-            setUser(recoveredUser);
-            authStorage.setUser(recoveredUser);
+            // CRITICAL: Verify the recovered user matches what we requested
+            if (String(recoveredUser.id) !== String(foundUser.id)) {
+              console.log('⚠️ Session recovery returned WRONG user! Expected:', foundUser.id, 'Got:', recoveredUser.id);
+              authStorage.clearUser();
+              setUser(null);
+            } else {
+              console.log('✅ Session recovered successfully:', recoveredUser.username);
+              setUser(recoveredUser);
+              authStorage.setUser(recoveredUser);
+            }
           } else {
-            console.log('⚠️ Session recovery failed, using localStorage data');
-            setUser(foundUser);
+            console.log('⚠️ Session recovery failed - clearing stale data, requiring fresh login');
+            authStorage.clearUser();
+            setUser(null);
           }
         } catch (recoveryError) {
-          console.log('⚠️ Session recovery error, using localStorage data:', recoveryError);
-          setUser(foundUser);
+          console.log('⚠️ Session recovery error - clearing stale data:', recoveryError);
+          authStorage.clearUser();
+          setUser(null);
         }
       } else {
         console.log('❌ NO USER DATA FOUND - STAYING LOGGED OUT');
@@ -489,6 +499,10 @@ function Router() {
       },
       login: (userData: User, token?: string) => {
         console.log('AuthContext login called with:', userData?.username || 'null');
+        // CRITICAL: Clear ALL old user data first to prevent stale data from previous user
+        authStorage.clearUser();
+        invalidateUserCache();
+        // Now store the new user
         authStorage.setUser(userData);
         if (token) {
           localStorage.setItem('auth_token', token);

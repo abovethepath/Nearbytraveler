@@ -29,16 +29,30 @@ async function attemptSessionRecovery(): Promise<boolean> {
       const user = JSON.parse(storedUser);
       if (!user?.id) return false;
 
+      if (!user?.email && !user?.username) {
+        console.log('❌ Session recovery skipped: no email or username for identity verification');
+        return false;
+      }
+
       console.log('🔄 Auto-recovering session for:', user.username);
       const response = await fetch('/api/auth/recover-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ userId: user.id })
+        body: JSON.stringify({ userId: user.id, email: user.email, username: user.username })
       });
       
       if (response.ok) {
-        console.log('✅ Session auto-recovered successfully');
+        const recoveredUser = await response.json();
+        if (recoveredUser?.id && String(recoveredUser.id) !== String(user.id)) {
+          console.log('⚠️ Session recovery returned different user! Clearing stale data.');
+          localStorage.removeItem('user');
+          localStorage.removeItem('travelconnect_user');
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('authUser');
+          return false;
+        }
+        console.log('✅ Session auto-recovered successfully for:', recoveredUser?.username);
         return true;
       }
       return false;

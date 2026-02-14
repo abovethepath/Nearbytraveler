@@ -99,23 +99,32 @@ function Navbar() {
 
     const refreshUserData = async () => {
       try {
+        // ALWAYS check server session first - it's the source of truth
         const sessionRes = await fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' });
-        let correctUserId = directUser.id;
         if (sessionRes.ok) {
           const sessionUser = await sessionRes.json();
           if (sessionUser?.id) {
-            correctUserId = sessionUser.id;
+            // CRITICAL: If server says we're a different user than localStorage thinks,
+            // trust the SERVER and update everything to match
+            if (String(sessionUser.id) !== String(directUser.id)) {
+              console.log('⚠️ Navbar: Server user mismatch! Server:', sessionUser.username, '(', sessionUser.id, ') vs Local:', directUser.username, '(', directUser.id, ')');
+            }
+            // Always use the server user data - it's authoritative
+            setUser(sessionUser);
+            setDirectUser(sessionUser);
+            authStorage.setUser(sessionUser);
+
+            window.dispatchEvent(new CustomEvent('avatarRefresh'));
+            return;
           }
         }
-
-        const response = await fetch(`${getApiBaseUrl()}/api/users/${correctUserId}?t=${Date.now()}`);
+        // If server session check failed, try refreshing with local user id as fallback
+        const response = await fetch(`${getApiBaseUrl()}/api/users/${directUser.id}?t=${Date.now()}`);
         if (response.ok) {
           const freshUserData = await response.json();
-
           setUser(freshUserData);
           setDirectUser(freshUserData);
           authStorage.setUser(freshUserData);
-          localStorage.setItem('travelconnect_user', JSON.stringify(freshUserData));
 
           window.dispatchEvent(new CustomEvent('avatarRefresh'));
         }

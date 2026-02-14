@@ -65,10 +65,22 @@ export default function Auth() {
         
         // Check if login was successful (backend returns {ok: true, user: {...}})
         if (data.ok && data.user) {
-          // Store auth data
-          authStorage.setUser(data.user);
+          // CRITICAL: Clear ALL old user data first to prevent stale data contamination
+          authStorage.clearUser();
+          localStorage.removeItem('current_user');
+          localStorage.removeItem('auth_token');
+          
+          // Now fetch the full user data from the server session (source of truth)
+          const fullUserRes = await fetch('/api/auth/user', { credentials: 'include' });
+          let fullUser = data.user;
+          if (fullUserRes.ok) {
+            fullUser = await fullUserRes.json();
+          }
+          
+          // Store fresh auth data
+          authStorage.setUser(fullUser);
           localStorage.setItem('auth_token', 'authenticated');
-          localStorage.setItem('current_user', JSON.stringify(data.user));
+          localStorage.setItem('current_user', JSON.stringify(fullUser));
           
           // Invalidate auth queries to refresh user state
           queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
