@@ -1,0 +1,89 @@
+Got it — if the Preview is constantly “going off” / reloading / not loading, that’s almost always one of these in Replit:
+
+Two workflows are racing and Replit keeps restarting things
+
+The server is crash-looping (still exiting somewhere)
+
+Vite dev HMR is thrashing because the backend keeps bouncing or websocket can’t stay connected
+
+A real runtime error is causing the frontend to blank and reload
+
+Here’s the fastest path to stop the chaos right now (no theory).
+
+Do this in Replit (2 minutes)
+1) Stop running everything except one workflow
+
+In Replit:
+
+Go to Tools → Workflows (or the left sidebar Workflows).
+
+Stop both “Start Clean” and “Start application”.
+
+Then start ONLY “Start Clean”.
+
+If there’s a “Run” button that auto-starts the wrong one, click Start Clean manually and ignore the other.
+
+✅ Goal: exactly one process should be running.
+
+2) Hard refresh the Preview
+
+Preview can get stuck in a reload loop.
+
+Click the Preview “…” menu → Reload
+
+Then do a browser hard refresh:
+
+Windows: Ctrl + Shift + R
+
+Mac: Cmd + Shift + R
+
+3) Confirm the port conflict isn’t still happening
+
+Open the Console/Logs panel and look for either:
+
+EADDRINUSE
+
+listen EADDRINUSE 0.0.0.0:5000
+
+process.exit
+
+nodemon restarting
+
+vite restarting repeatedly
+
+If you see EADDRINUSE, you still have more than one server trying to bind (or a zombie process).
+
+If it’s still looping after that, do this next (guaranteed signal)
+4) Open Preview in a new tab
+
+In the Preview toolbar, click the open-in-new-tab icon (square with arrow).
+
+If the new tab works but embedded preview doesn’t, it’s a Preview pane issue (not your app).
+
+5) Grab the exact 20 lines that matter
+
+Paste the last ~20 lines of the Replit console right after it fails to load.
+
+Specifically I’m looking for one of these signatures:
+
+Port conflict: EADDRINUSE :5000
+
+Crash: process.exit(1) or “exited with code 1”
+
+Vite loop: repeated vite start logs / websocket spam
+
+Runtime exception: TypeError: Cannot read properties of undefined etc.
+
+Without that snippet, anyone (Cursor/Replit/Me) is guessing.
+
+One more thing: don’t implement “kill whatever is on port 5000”
+
+I know you’re frustrated and want it to just work, but that approach can make the reload loop worse by killing the good server repeatedly.
+
+The correct “make it load” move is: one workflow only + remove any remaining process.exit on bind errors.
+
+Paste this to your Replit agent (this will fix Preview loops 90% of the time)
+
+“Preview is reload-looping. Stop all workflows, then run ONLY Start Clean. Remove/disable Start application so it never runs. Search repo for process.exit(1) and remove any in server startup / bind error handlers. If any remaining EADDRINUSE occurs, log and return—don’t exit.”
+
+If you paste the last 20 lines of logs, I’ll tell you immediately which bucket it is and the exact next step.
