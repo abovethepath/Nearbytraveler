@@ -534,7 +534,7 @@ export default function Messages() {
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-fullpage' : 'h-screen'}`}>
+    <div className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-screen'}`}>
       {/* Left Sidebar - Conversations (Always visible on desktop, hidden when chat open on mobile) */}
       <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-gray-100 dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500`}>
         <div className={`border-b border-gray-200 dark:border-gray-700 ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'}`}>
@@ -646,7 +646,7 @@ export default function Messages() {
       </div>
 
       {/* Main Chat Area - WhatsApp Desktop Style */}
-      <div className="flex-1 flex flex-col min-h-full bg-white dark:bg-gray-900">
+      <div className="flex-1 flex flex-col h-full min-h-0 bg-white dark:bg-gray-900">
         {/* Loading state when conversation is selected but user data not loaded yet */}
         {selectedConversation && !selectedUser && (connectionsLoading || messagesLoading || conversations.length === 0) ? (
           <div className="flex-1 flex items-center justify-center">

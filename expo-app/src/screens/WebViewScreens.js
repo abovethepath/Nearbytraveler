@@ -33,7 +33,7 @@ const NATIVE_INJECT_JS = `
   (function() {
     var s = document.createElement('style');
     s.id = 'native-ios-css';
-    s.textContent = ':root { --native-tabbar-height: 88px; } body { padding-bottom: 88px !important; } .mobile-top-nav, .mobile-bottom-nav, .desktop-navbar, [data-testid="button-mobile-menu"], .ios-nav-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; } body[data-native-ios] .mobile-top-nav, body[data-native-ios] .mobile-bottom-nav, body[data-native-ios] .desktop-navbar { display: none !important; }';
+    s.textContent = ':root { --native-tabbar-height: 88px; --native-bottom-inset: 88px; } .mobile-top-nav, .mobile-bottom-nav, .desktop-navbar, [data-testid="button-mobile-menu"], .ios-nav-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; } body[data-native-ios] .mobile-top-nav, body[data-native-ios] .mobile-bottom-nav, body[data-native-ios] .desktop-navbar { display: none !important; }';
     if (document.head) document.head.appendChild(s);
     else document.addEventListener('DOMContentLoaded', function() { document.head.appendChild(s); });
     function setBodyAttr() {

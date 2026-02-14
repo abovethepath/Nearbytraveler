@@ -1838,6 +1838,7 @@ body.native-ios-app {
   --native-top-inset: env(safe-area-inset-top, 0px);
   --native-bottom-inset: 88px;
   padding-bottom: 0 !important;
+  overflow: hidden !important;
 }
 
 body[data-native-ios="true"] .native-ios-fullpage,
@@ -1846,4 +1847,17 @@ body.native-ios-app .native-ios-fullpage {
   height: calc(100dvh - var(--native-bottom-inset, 88px)) !important;
   max-height: calc(100vh - var(--native-bottom-inset, 88px)) !important;
   max-height: calc(100dvh - var(--native-bottom-inset, 88px)) !important;
+}
+
+body[data-native-ios="true"] .native-ios-messages,
+body.native-ios-app .native-ios-messages {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: var(--native-bottom-inset, 88px) !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: hidden !important;
+  z-index: 50 !important;
 }
