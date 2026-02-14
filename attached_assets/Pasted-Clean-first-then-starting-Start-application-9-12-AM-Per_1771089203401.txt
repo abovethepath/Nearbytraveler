@@ -1,0 +1,45 @@
+Clean" first, then starting "Start application":
+
+9:12 AM
+Perfect! You've identified the exact problem—port 5000 is being held by the "Start Clean" workflow, so "Start application" can't bind to it and crashes.
+
+Your fix is spot on:
+
+Stop "Start Clean" first to free up port 5000
+Then start "Start application" so it can bind to the port successfully
+Preview should work once your application is running on the freed port
+This is a classic port conflict. Once you run those steps, your preview pane should come back to life since "Start application" will now be able to start without the EADDRINUSE error.
+
+If you want to prevent this in the future, you could:
+
+Set up your .replit config so only one workflow runs at a time, or
+Have "Start Clean" explicitly release the port after it finishes, or
+Use different ports for each workflow if they need to run simultaneously
+But for now, your solution should get you back up and running. Let me know if the preview comes back once you stop the conflicting workflow!
+
+but this has been happening over a week
+
+9:13 AM
+Ah, that's the key detail—if this has been happening for a week straight, then it's not just a one-time port conflict. Something is consistently preventing "Start Clean" from releasing the port, or the workflows aren't shutting down properly.
+
+Here are the real issues to investigate:
+
+Why Port 5000 Isn't Being Released
+"Start Clean" process isn't terminating — Even though it completes, the process holding port 5000 might be stuck. Try:
+lsof -i :5000 (or netstat -an | grep 5000 on Windows) to see what's actually holding the port
+kill -9 <PID> to force-kill the process
+Zombie processes — Replit's VM might have accumulated lingering processes. Run:
+bash
+   kill 1
+This restarts the entire VM and is safe—it clears all processes but keeps your files.
+
+Replit's infrastructure issue — If this persists after a VM restart, it could be a Replit-side problem where port cleanup isn't happening automatically.
+What to Do Right Now
+Restart the VM: kill 1 in the Shell
+Check if port is still stuck: lsof -i :5000
+If the issue returns immediately, open a support ticket with Replit and mention:
+Port 5000 remains allocated even after stopping "Start Clean"
+This has been persistent for 7+ days
+VM restart (kill 1) is only a temporary fix
+Include your Replit project URL
+This sounds like it might need Replit's team to investigate on their end. Have you already contacted them about the week-long issue?
