@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Users, Globe, Heart, Shield, Zap, MapPin, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import Footer from "@/components/footer";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export default function About() {
   const scrollToTop = () => {
@@ -12,24 +13,25 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-full mx-auto">
-          <div className="flex justify-between items-center h-24">
-            <Logo variant="navbar" />
-            <Link href="/">
-              <Button 
-                variant="outline" 
-                className="flex items-center gap-2 hover:bg-gray-50"
-                onClick={scrollToTop}
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
-            </Link>
+      {!isNativeIOSApp() && (
+        <header className="bg-white shadow-sm border-b border-gray-200">
+          <div className="max-w-full mx-auto">
+            <div className="flex justify-between items-center h-24">
+              <Logo variant="navbar" />
+              <Link href="/">
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-2 hover:bg-gray-50"
+                  onClick={scrollToTop}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back
+                </Button>
+              </Link>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* Hero Section */}
       <section className="py-16">

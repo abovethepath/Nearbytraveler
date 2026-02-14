@@ -2,6 +2,7 @@ import Logo from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 import { 
   User, 
   MapPin, 
@@ -116,23 +117,24 @@ export default function SuccessTips() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-end items-center h-24">
-            <Link href="/">
-              <Button 
-                variant="outline" 
-                className="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
-                onClick={scrollToTop}
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
-            </Link>
+      {!isNativeIOSApp() && (
+        <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-end items-center h-24">
+              <Link href="/">
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                  onClick={scrollToTop}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back
+                </Button>
+              </Link>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* Step-by-Step Guide */}
       <section className="py-16">

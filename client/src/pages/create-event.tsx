@@ -23,6 +23,7 @@ import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { authStorage } from "@/lib/auth";
 import { AIQuickCreateEvent } from "@/components/AIQuickCreateEvent";
 import { Sparkles } from "lucide-react";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 // Categories removed - users can describe their event in the description field!
 
@@ -657,8 +658,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
 
   return (
     <div>
-      {/* Header with Navigation - Hidden when in modal mode */}
-      {!isModal && (
+      {!isModal && !isNativeIOSApp() && (
         <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">

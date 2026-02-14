@@ -6,6 +6,7 @@ import { Users, Star, Building2, Calendar, Trophy, Shield, AlertTriangle, ArrowL
 import { Link } from "wouter";
 import Footer from "@/components/footer";
 import { AuthContext } from "@/App";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export default function AmbassadorProgram() {
   const { user } = useContext(AuthContext);
@@ -26,23 +27,25 @@ export default function AmbassadorProgram() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-full mx-auto">
-          <div className="flex justify-between items-center h-24 px-4 sm:px-6 lg:px-8">
-            <Logo variant="navbar" />
-            <Link href={user ? `/profile/${user.username}` : "/"}>
-              <Button 
-                variant="outline" 
-                className="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800"
-                onClick={scrollToTop}
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
-            </Link>
+      {!isNativeIOSApp() && (
+        <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-full mx-auto">
+            <div className="flex justify-between items-center h-24 px-4 sm:px-6 lg:px-8">
+              <Logo variant="navbar" />
+              <Link href={user ? `/profile/${user.username}` : "/"}>
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={scrollToTop}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back
+                </Button>
+              </Link>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
