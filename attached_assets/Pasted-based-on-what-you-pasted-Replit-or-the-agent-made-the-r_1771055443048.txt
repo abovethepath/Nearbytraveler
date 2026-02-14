@@ -1,0 +1,66 @@
+based on what you pasted, Replit (or the agent) made the right kind of fixes for “constant crashing,” and they’re the exact two fixes I would’ve prioritized.
+
+✅ Fix #1 (server): removing process.exit(1) on unhandled errors
+
+If your server was doing process.exit(1) on uncaughtException / unhandledRejection, that means one random async error can kill the whole backend. That absolutely feels like “the app crashes all the time.”
+
+Changing that to log + keep running is a good fix as long as you also…
+
+✅ Fix #2 (server): making Express catch async route errors
+
+They said you have hundreds of async route handlers, and Express won’t catch thrown async errors unless you:
+
+use express-async-errors, or
+
+wrap handlers manually
+
+Adding express-async-errors is a legit, standard solution and directly prevents unhandled rejections from bubbling to the process-level handler.
+
+So that’s also a good fix.
+
+✅ Fix #3 (frontend/iOS): wrapping unsafe JSON.parse
+
+This is a very common “white screen / reload loop / crashy WebView” issue:
+
+bad localStorage value → JSON.parse throws → React dies
+
+Protecting JSON.parse calls with try/catch (or a safeParse helper) is also a good fix.
+
+The one big caution (important)
+
+A fix like “don’t exit the process” can also hide real bugs if you don’t log/alert properly.
+
+So the fix is good only if you now have:
+
+clear logging of the error + stack
+
+ideally alerting (Sentry, etc.)
+
+and a clean error response (so the client doesn’t spin forever)
+
+If they only removed exits but didn’t ensure you see the errors, you’ll get a “server stays up” but “features randomly don’t work” situation.
+
+How you can tell if it actually fixed your crashes
+
+Two quick reality checks:
+
+Are you actually running the updated code?
+If you didn’t redeploy the backend / rebuild the iOS app, you’re still on the old crashy version.
+
+Do the crashes stop or just change form?
+If it was server exits: crashes should go way down immediately.
+If it was iOS JSON.parse: the “blank screen” should reduce a lot.
+
+Bottom line
+
+From what you pasted: Yes, it was a good fix and it addresses the most common “constant crash” causes in your exact architecture.
+
+If you want, paste the actual code diff for:
+
+where process.exit(1) was removed (server entry)
+
+where express-async-errors was imported
+
+1–2 examples of the JSON.parse changes
+
+…and I’ll tell you if anything was done in a risky way (like swallowing errors silently) or if it’s solid.

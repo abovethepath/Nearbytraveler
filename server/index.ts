@@ -771,11 +771,9 @@ app.use((req, res, next) => {
   httpServerWithWebSocket.on("error", (error: any) => {
     console.error("Server error:", error);
     if (error.code === "EADDRINUSE") {
-      console.error(`Port ${port} is already in use. Exiting...`);
-      process.exit(1);
+      console.error(`Port ${port} is already in use. Will retry or wait for port to free up.`);
     } else {
-      console.error("Server failed to start:", error.message);
-      process.exit(1);
+      console.error("Server error (non-fatal):", error.message);
     }
   });
 
