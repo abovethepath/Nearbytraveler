@@ -64,7 +64,7 @@ export default function DMChat() {
     return fullName.trim().split(' ')[0] || '';
   };
 
-  const displayName = getFirstName(otherUser.name) || otherUser.username;
+  const displayName = otherUser.username || getFirstName(otherUser.name) || 'User';
 
   return (
     <WhatsAppChat

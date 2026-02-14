@@ -1315,7 +1315,7 @@ function Router() {
           </div>
           
           {/* Main content - no stacking context blocking. In native app, no web nav so use minimal padding. */}
-          <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden" style={{ position: 'relative', zIndex: 1 }}>
+          <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden" style={{ position: 'relative', zIndex: isNativeIOSApp() ? 'auto' : 1 }}>
             <main className={`w-full max-w-full overflow-x-hidden main-with-bottom-nav ${isNativeIOSApp() ? 'pt-0 pb-0' : 'pt-16 pb-24 md:pt-0 md:pb-20'}`}>
               <div className="w-full max-w-full overflow-x-hidden">
                 {renderPage()}
