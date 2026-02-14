@@ -838,7 +838,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       )}
       
       {/* Main Chat Area */}
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex flex-col flex-1 min-w-0 min-h-0 h-full overflow-hidden">
       {/* Header - flex-shrink-0 so chat name/participants always visible; compact when native */}
       <div className="flex items-center gap-1.5 px-2 py-1.5 bg-gray-800 border-b border-gray-700 flex-shrink-0">
         <Button
