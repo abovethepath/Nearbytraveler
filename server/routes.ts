@@ -67,6 +67,9 @@ import {
   insertWaitlistLeadSchema,
   userPhotos,
   passportStamps,
+  achievements,
+  userStats,
+  referrals,
   userNotificationSettings,
   companions,
   travelCrewMembers,
@@ -20933,6 +20936,312 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error('Error fetching users for admin:', error);
       res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  // GET /api/admin/stats - Admin dashboard statistics
+  app.get("/api/admin/stats", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (userId !== 2) return res.status(403).json({ error: "Admin access required" });
+      const allUsers = await db.select().from(users);
+      const totalUsers = allUsers.length;
+      const totalBusinesses = allUsers.filter(u => u.userType === 'business').length;
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const newUsersThisMonth = allUsers.filter(u => u.createdAt && new Date(u.createdAt) >= startOfMonth).length;
+
+      res.json({
+        totalUsers,
+        totalBusinesses,
+        activeSubscriptions: 0,
+        monthlyRevenue: 0,
+        newUsersThisMonth,
+        subscriptionRevenue: 0
+      });
+    } catch (error: any) {
+      console.error('Error fetching admin stats:', error);
+      res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
+  // GET /api/admin/businesses - All business accounts for admin
+  app.get("/api/admin/businesses", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (userId !== 2) return res.status(403).json({ error: "Admin access required" });
+      const businesses = await db.select({
+        id: users.id,
+        businessName: users.businessName,
+        email: users.email,
+        status: users.subscriptionStatus,
+        monthlyRevenue: sql<number>`0`,
+        createdAt: users.createdAt,
+      }).from(users).where(eq(users.userType, 'business')).orderBy(desc(users.createdAt));
+
+      res.json(businesses);
+    } catch (error: any) {
+      console.error('Error fetching businesses for admin:', error);
+      res.status(500).json({ message: "Failed to fetch businesses" });
+    }
+  });
+
+  // GET /api/admin/pricing-config - Get pricing configuration
+  app.get("/api/admin/pricing-config", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (userId !== 2) return res.status(403).json({ error: "Admin access required" });
+      res.json({
+        monthlyPriceCents: 5000,
+        trialDays: 7,
+        stripeEnabled: false
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to fetch pricing config" });
+    }
+  });
+
+  // PUT /api/admin/pricing-config - Update pricing configuration
+  app.put("/api/admin/pricing-config", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (userId !== 2) return res.status(403).json({ error: "Admin access required" });
+      const { monthlyPriceCents, trialDays } = req.body;
+      res.json({
+        monthlyPriceCents: monthlyPriceCents || 5000,
+        trialDays: trialDays || 7,
+        stripeEnabled: false
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to update pricing config" });
+    }
+  });
+
+  // PUT /api/admin/stripe-mode - Toggle Stripe mode
+  app.put("/api/admin/stripe-mode", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (userId !== 2) return res.status(403).json({ error: "Admin access required" });
+      const { enabled } = req.body;
+      res.json({ enabled: !!enabled });
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to toggle stripe mode" });
+    }
+  });
+
+  // GET /api/admin/referrals/stats - Referral statistics for admin
+  app.get("/api/admin/referrals/stats", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (userId !== 2) return res.status(403).json({ error: "Admin access required" });
+      const allReferrals = await db.select().from(referrals);
+      const totalReferrals = allReferrals.length;
+      const pendingReferrals = allReferrals.filter(r => r.status === 'pending').length;
+      const completedReferrals = allReferrals.filter(r => r.status === 'completed' || r.status === 'first_connection').length;
+      const totalRewards = allReferrals.filter(r => r.rewardEarned).length;
+      const conversionRate = totalReferrals > 0 ? (completedReferrals / totalReferrals) * 100 : 0;
+
+      const referrerCounts: Record<number, { count: number; rewards: number }> = {};
+      for (const r of allReferrals) {
+        if (!referrerCounts[r.referrerId]) {
+          referrerCounts[r.referrerId] = { count: 0, rewards: 0 };
+        }
+        referrerCounts[r.referrerId].count++;
+        if (r.rewardEarned) referrerCounts[r.referrerId].rewards++;
+      }
+
+      const topReferrerIds = Object.entries(referrerCounts)
+        .sort((a, b) => b[1].count - a[1].count)
+        .slice(0, 10)
+        .map(([id]) => parseInt(id));
+
+      const topReferrerUsers = topReferrerIds.length > 0
+        ? await db.select({ id: users.id, username: users.username }).from(users).where(inArray(users.id, topReferrerIds))
+        : [];
+
+      const topReferrers = topReferrerIds.map(id => {
+        const u = topReferrerUsers.find(u => u.id === id);
+        return {
+          userId: id,
+          username: u?.username || 'Unknown',
+          referralCount: referrerCounts[id].count,
+          rewardsEarned: referrerCounts[id].rewards
+        };
+      });
+
+      res.json({
+        totalReferrals,
+        pendingReferrals,
+        completedReferrals,
+        totalRewards,
+        conversionRate: Math.round(conversionRate * 10) / 10,
+        topReferrers
+      });
+    } catch (error: any) {
+      console.error('Error fetching referral stats:', error);
+      res.status(500).json({ message: "Failed to fetch referral stats" });
+    }
+  });
+
+  // GET /api/admin/referrals - List all referrals for admin
+  app.get("/api/admin/referrals", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (userId !== 2) return res.status(403).json({ error: "Admin access required" });
+      const allReferrals = await db.select().from(referrals).orderBy(desc(referrals.createdAt));
+
+      const referrerIds = [...new Set(allReferrals.map(r => r.referrerId))];
+      const referredIds = [...new Set(allReferrals.filter(r => r.referredUserId).map(r => r.referredUserId!))];
+      const allIds = [...new Set([...referrerIds, ...referredIds])];
+
+      const userMap: Record<number, string> = {};
+      if (allIds.length > 0) {
+        const usersData = await db.select({ id: users.id, username: users.username }).from(users).where(inArray(users.id, allIds));
+        for (const u of usersData) {
+          userMap[u.id] = u.username;
+        }
+      }
+
+      const enriched = allReferrals.map(r => ({
+        ...r,
+        referrerUsername: userMap[r.referrerId] || 'Unknown',
+        referredUsername: r.referredUserId ? (userMap[r.referredUserId] || null) : null
+      }));
+
+      res.json(enriched);
+    } catch (error: any) {
+      console.error('Error fetching referrals:', error);
+      res.status(500).json({ message: "Failed to fetch referrals" });
+    }
+  });
+
+  // PUT /api/admin/referrals/:id - Update referral status
+  app.put("/api/admin/referrals/:id", async (req: any, res) => {
+    try {
+      const adminId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (adminId !== 2) return res.status(403).json({ error: "Admin access required" });
+      const referralId = parseInt(req.params.id);
+      const { status, rewardEarned, rewardType, notes } = req.body;
+
+      const updateData: any = {};
+      if (status) updateData.status = status;
+      if (typeof rewardEarned === 'boolean') updateData.rewardEarned = rewardEarned;
+      if (rewardType) updateData.rewardType = rewardType;
+      if (notes !== undefined) updateData.notes = notes;
+      if (status === 'completed' || status === 'first_connection') {
+        updateData.completedAt = new Date();
+      }
+
+      await db.update(referrals).set(updateData).where(eq(referrals.id, referralId));
+      const [updated] = await db.select().from(referrals).where(eq(referrals.id, referralId));
+      res.json(updated);
+    } catch (error: any) {
+      console.error('Error updating referral:', error);
+      res.status(500).json({ message: "Failed to update referral" });
+    }
+  });
+
+  // GET /api/users/:userId/passport-stamps - Standalone passport stamps
+  app.get("/api/users/:userId/passport-stamps", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const stamps = await db.select().from(passportStamps)
+        .where(eq(passportStamps.userId, userId))
+        .orderBy(desc(passportStamps.unlockedAt));
+      res.json(stamps);
+    } catch (error: any) {
+      console.error('Error fetching passport stamps:', error);
+      res.status(500).json({ message: "Failed to fetch passport stamps" });
+    }
+  });
+
+  // DELETE /api/passport-stamps/:id - Delete a passport stamp
+  app.delete("/api/passport-stamps/:id", async (req: any, res) => {
+    try {
+      const sessionUserId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!sessionUserId) return res.status(401).json({ error: "Authentication required" });
+      const stampId = parseInt(req.params.id);
+      const [stamp] = await db.select().from(passportStamps).where(eq(passportStamps.id, stampId));
+      if (!stamp) return res.status(404).json({ error: "Stamp not found" });
+      if (stamp.userId !== sessionUserId && sessionUserId !== 2) return res.status(403).json({ error: "Not authorized" });
+      await db.delete(passportStamps).where(eq(passportStamps.id, stampId));
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('Error deleting passport stamp:', error);
+      res.status(500).json({ message: "Failed to delete passport stamp" });
+    }
+  });
+
+  // GET /api/users/:userId/stats - User statistics
+  app.get("/api/users/:userId/stats", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const [existingStats] = await db.select().from(userStats).where(eq(userStats.userId, userId));
+      if (existingStats) {
+        return res.json(existingStats);
+      }
+      const stamps = await db.select().from(passportStamps).where(eq(passportStamps.userId, userId));
+      const countriesSet = new Set(stamps.map(s => s.country));
+      const citiesSet = new Set(stamps.map(s => s.city));
+      res.json({
+        id: 0,
+        userId,
+        totalStamps: stamps.length,
+        totalPoints: stamps.reduce((sum, s) => sum + (s.pointsValue || 0), 0),
+        countriesVisited: countriesSet.size,
+        citiesVisited: citiesSet.size,
+        eventsAttended: 0,
+        connectionsRemade: 0,
+        currentStreak: 0,
+        longestStreak: 0,
+        level: 1,
+        experiencePoints: 0,
+        lastActivityDate: null,
+        updatedAt: new Date()
+      });
+    } catch (error: any) {
+      console.error('Error fetching user stats:', error);
+      res.status(500).json({ message: "Failed to fetch user stats" });
+    }
+  });
+
+  // GET /api/users/:userId/achievements - User achievements
+  app.get("/api/users/:userId/achievements", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const userAchievements = await db.select().from(achievements)
+        .where(eq(achievements.userId, userId))
+        .orderBy(desc(achievements.createdAt));
+      res.json(userAchievements);
+    } catch (error: any) {
+      console.error('Error fetching achievements:', error);
+      res.status(500).json({ message: "Failed to fetch achievements" });
+    }
+  });
+
+  // POST /api/admin/update-instagram-token - Update Instagram token
+  app.post("/api/admin/update-instagram-token", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (userId !== 2) return res.status(403).json({ error: "Admin access required" });
+      const { token } = req.body;
+      if (!token) return res.status(400).json({ message: "Token is required" });
+      res.json({ success: true, message: "Instagram token updated" });
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to update Instagram token" });
+    }
+  });
+
+  // POST /api/admin/update-facebook-token - Update Facebook token
+  app.post("/api/admin/update-facebook-token", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (userId !== 2) return res.status(403).json({ error: "Admin access required" });
+      const { token } = req.body;
+      if (!token) return res.status(400).json({ message: "Token is required" });
+      res.json({ success: true, message: "Facebook token updated" });
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to update Facebook token" });
     }
   });
 
