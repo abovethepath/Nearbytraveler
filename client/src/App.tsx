@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 
-import { queryClient, invalidateUserCache } from "./lib/queryClient";
+import { queryClient, invalidateUserCache, getApiBaseUrl } from "./lib/queryClient";
 import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -259,7 +259,7 @@ function Router() {
     const checkServerAuth = async () => {
       try {
         console.log('🔍 Checking server-side authentication...');
-        const response = await fetch('/api/auth/user', {
+        const response = await fetch(`${getApiBaseUrl()}/api/auth/user`, {
           credentials: 'include' // Include cookies/session
         });
         
@@ -318,7 +318,7 @@ function Router() {
         // SECURITY: Include email and username for identity verification
         try {
           console.log('🔄 Attempting session recovery for:', foundUser.username);
-          const recoveryResponse = await fetch('/api/auth/recover-session', {
+          const recoveryResponse = await fetch(`${getApiBaseUrl()}/api/auth/recover-session`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
