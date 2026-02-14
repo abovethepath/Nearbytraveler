@@ -2545,6 +2545,22 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   </div>
                 </div>
 
+                {/* SAVE & FIND MATCHES BUTTON */}
+                <div className="my-8 text-center">
+                  <Button
+                    onClick={() => {
+                      fetchMatchingUsers();
+                      toast({ title: "Plans saved!", description: `Finding matches in ${selectedCity}...` });
+                      const matchSection = document.querySelector('[data-testid="matching-users-section"]');
+                      if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
+                    className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
+                  >
+                    <Check className="w-5 h-5 mr-2" />
+                    Save & Find Matches
+                  </Button>
+                </div>
+
                 {/* SECTION 3: YOUR PLANS - User's selected + user-created activities */}
                 {(() => {
                   const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
