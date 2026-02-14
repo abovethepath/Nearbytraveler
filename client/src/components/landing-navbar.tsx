@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import Logo from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function LandingNavbar() {
@@ -12,14 +11,8 @@ export default function LandingNavbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 lg:h-auto gap-4" style={{display: 'flex', minHeight: '64px'}}>
           
-          {/* Logo Section - Mobile only */}
-          <div className="flex-shrink-0 flex items-center justify-start md:hidden" style={{display: 'flex', alignItems: 'center'}}>
-            <Link href="/" className="flex items-center text-left">
-              <div>
-                <Logo variant="landing" />
-              </div>
-            </Link>
-          </div>
+          {/* Logo removed from landing navbar */}
+          <div className="flex-shrink-0" />
 
           {/* Navigation Links - Flexible Width with Smart Sizing */}
           <div className="hidden lg:flex items-center justify-center flex-1 max-w-2xl">
