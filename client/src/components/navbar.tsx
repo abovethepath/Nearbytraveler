@@ -78,68 +78,53 @@ function Navbar() {
     return () => window.removeEventListener('keydown', handleKeydown);
   }, [toggleTheme]);
 
-  // Bulletproof user data access - get from multiple sources
   const [directUser, setDirectUser] = useState<any>(null);
 
-  // Check all possible user data sources
   useEffect(() => {
-    const getUserData = () => {
-      // Try context first
-      if (user && user.username) {
-        setDirectUser(user);
-        return;
-      }
+    if (user && user.username) {
+      setDirectUser(user);
+      return;
+    }
 
-      // Try authStorage system (most reliable)
-      const storedUser = authStorage.getUser();
-      if (storedUser && storedUser.username) {
-        setDirectUser(storedUser);
-        // Also update context if it's empty
-        if (!user && setUser) {
-          setUser(storedUser);
-        }
-        return;
-      }
-
-      // No user data found
+    const storedUser = authStorage.getUser();
+    if (storedUser && storedUser.username) {
+      setDirectUser(storedUser);
+    } else {
       setDirectUser(null);
+    }
+  }, [user, location]);
+
+  useEffect(() => {
+    if (!directUser?.id) return;
+
+    const refreshUserData = async () => {
+      try {
+        const sessionRes = await fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' });
+        let correctUserId = directUser.id;
+        if (sessionRes.ok) {
+          const sessionUser = await sessionRes.json();
+          if (sessionUser?.id) {
+            correctUserId = sessionUser.id;
+          }
+        }
+
+        const response = await fetch(`${getApiBaseUrl()}/api/users/${correctUserId}?t=${Date.now()}`);
+        if (response.ok) {
+          const freshUserData = await response.json();
+
+          setUser(freshUserData);
+          setDirectUser(freshUserData);
+          authStorage.setUser(freshUserData);
+          localStorage.setItem('travelconnect_user', JSON.stringify(freshUserData));
+
+          window.dispatchEvent(new CustomEvent('avatarRefresh'));
+        }
+      } catch (error) {
+        console.log('Failed to refresh user data:', error);
+      }
     };
 
-    getUserData();
-  }, [user, location]); // Add location to trigger refresh on page changes
-
-  // Removed debug logging to prevent performance issues
-
-  // Force refresh user data and clear cached avatar
-  useEffect(() => {
-    if (directUser?.id) {
-      // Clear React Query cache
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${directUser.id}`] });
-
-      // Force fetch fresh user data and update context
-      const refreshUserData = async () => {
-        try {
-          const response = await fetch(`${getApiBaseUrl()}/api/users/${directUser.id}?t=${Date.now()}`);
-          if (response.ok) {
-            const freshUserData = await response.json();
-            console.log('🔄 Navbar: Fresh user data fetched:', freshUserData.username, 'has image:', !!freshUserData.profileImage);
-            
-            // Update ALL user data sources immediately
-            setUser(freshUserData);
-            setDirectUser(freshUserData);
-            authStorage.setUser(freshUserData);
-            localStorage.setItem('travelconnect_user', JSON.stringify(freshUserData));
-
-            // Trigger avatar refresh event for all components
-            window.dispatchEvent(new CustomEvent('avatarRefresh'));
-          }
-        } catch (error) {
-          console.log('Failed to refresh user data:', error);
-        }
-      };
-
-      refreshUserData();
-    }
+    refreshUserData();
   }, [directUser?.id, queryClient, setUser]);
 
   // recalc top on load/resize & when warning banners appear/disappear

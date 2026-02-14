@@ -7,6 +7,7 @@ import { useLocation } from "wouter";
 import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 export function MobileTopNav() {
   const isNative = isNativeIOSApp();
@@ -35,6 +36,27 @@ export function MobileTopNav() {
       }
     }
     setCurrentUser(effectiveUser);
+
+    if (effectiveUser?.id) {
+      const verifyUser = async () => {
+        try {
+          const sessionRes = await fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' });
+          if (sessionRes.ok) {
+            const sessionUser = await sessionRes.json();
+            if (sessionUser?.id && sessionUser.id !== effectiveUser.id) {
+              const freshRes = await fetch(`${getApiBaseUrl()}/api/users/${sessionUser.id}?t=${Date.now()}`);
+              if (freshRes.ok) {
+                const freshUser = await freshRes.json();
+                setCurrentUser(freshUser);
+                authStorage.setUser(freshUser);
+                localStorage.setItem('travelconnect_user', JSON.stringify(freshUser));
+              }
+            }
+          }
+        } catch {}
+      };
+      verifyUser();
+    }
   }, [user]);
 
   useEffect(() => {
