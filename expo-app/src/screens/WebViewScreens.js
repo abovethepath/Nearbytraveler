@@ -101,6 +101,7 @@ function WebViewWithChrome({ path, navigation }) {
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [user, setUser] = useState(null);
+  const [canGoBackWeb, setCanGoBackWeb] = useState(false);
   const webViewRef = useRef(null);
   const source = webViewSource(path);
 
@@ -134,6 +135,10 @@ function WebViewWithChrome({ path, navigation }) {
     useCallback(() => {
       if (Platform.OS !== 'android') return undefined;
       const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (canGoBackWeb && webViewRef.current) {
+          webViewRef.current.goBack();
+          return true;
+        }
         if (navigation.canGoBack()) {
           navigation.goBack();
           return true;
@@ -141,7 +146,7 @@ function WebViewWithChrome({ path, navigation }) {
         return true;
       });
       return () => sub.remove();
-    }, [navigation])
+    }, [navigation, canGoBackWeb])
   );
 
   const onLoadStart = useCallback(() => { setLoading(true); setError(null); }, []);
@@ -275,7 +280,13 @@ function WebViewWithChrome({ path, navigation }) {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: containerBg }]}>
       <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: headerBorder }]}>
-        <TouchableOpacity style={styles.backButton} onPress={() => { if (navigation.canGoBack()) navigation.goBack(); }}>
+        <TouchableOpacity style={styles.backButton} onPress={() => {
+          if (canGoBackWeb && webViewRef.current) {
+            webViewRef.current.goBack();
+          } else if (navigation.canGoBack()) {
+            navigation.goBack();
+          }
+        }}>
           <Text style={styles.backChevron}>‹</Text>
           <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
@@ -308,6 +319,7 @@ function WebViewWithChrome({ path, navigation }) {
         onHttpError={onHttpError}
         onMessage={onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+        onNavigationStateChange={(navState) => { setCanGoBackWeb(navState.canGoBack); }}
         allowsBackForwardNavigationGestures={false}
         javaScriptEnabled={true}
         domStorageEnabled={true}
