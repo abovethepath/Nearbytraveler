@@ -380,19 +380,19 @@ function Navbar() {
                   alt="Nearby Traveler" 
                   className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
                   style={{
-                    height: isNativeIOSApp() ? '30px' : '24px',
-                    maxWidth: isNativeIOSApp() ? '120px' : '100px',
+                    height: isNativeIOSApp() ? '24px' : '20px',
+                    maxWidth: isNativeIOSApp() ? '100px' : '80px',
                     width: 'auto',
                     objectFit: 'contain',
                     display: 'block'
                   }}
                 />
               </Link>
-              <span className="hidden lg:inline ml-2 text-red-600 font-bold text-xs flex-shrink-0">BETA</span>
+              <span className="hidden sm:inline ml-1 text-red-600 font-bold text-xs flex-shrink-0">BETA</span>
             </div>
-            <div className="flex items-center space-x-4 md:space-x-8 ml-auto">
+            <div className="flex items-center space-x-3 md:space-x-6 ml-auto">
               {/* Desktop Navigation */}
-              <nav className="hidden md:flex space-x-3 lg:space-x-5">
+              <nav className="hidden md:flex space-x-2 lg:space-x-4">
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
