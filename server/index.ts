@@ -764,8 +764,7 @@ app.use((req, res, next) => {
     // DO NOT throw here - this prevents process crashes
   });
 
-  // Always use port 5000 for Replit preview compatibility
-  const port = 5000;
+  const port = parseInt(process.env.PORT || "3000", 10);
 
   // Add server error handling
   httpServerWithWebSocket.on("error", (error: any) => {
