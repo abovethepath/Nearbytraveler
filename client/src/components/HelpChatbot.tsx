@@ -138,9 +138,14 @@ export function HelpChatbot() {
       )}
 
       {isOpen && (
+        <>
         <div 
-          className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[9999] w-[360px] max-w-[calc(100vw-32px)] h-[450px] md:h-[500px] max-h-[calc(100vh-140px)] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
-          style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}
+          className="fixed inset-0 z-[9998] bg-black/80"
+          onClick={() => setIsOpen(false)}
+        />
+        <div 
+          className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[9999] w-[360px] max-w-[calc(100vw-32px)] h-[450px] md:h-[500px] max-h-[calc(100vh-140px)] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-300 dark:border-gray-600 flex flex-col overflow-hidden"
+          style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
         >
           <div className="bg-gradient-to-r from-blue-500 to-orange-500 px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -255,6 +260,7 @@ export function HelpChatbot() {
             </div>
           </form>
         </div>
+        </>
       )}
     </>
   );
