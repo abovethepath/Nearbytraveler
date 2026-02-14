@@ -969,8 +969,7 @@ function Router() {
     }
 
     if (location.startsWith('/messages/') && location.split('/')[2]) {
-      const userId = location.split('/')[2];
-      return <Messages />;
+      return <DMChat />;
     }
 
     if (location.startsWith('/city-chatrooms/')) {
