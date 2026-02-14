@@ -26,11 +26,13 @@ export default function Requests() {
   
   // Get current user ID from localStorage or context
   const getCurrentUserId = () => {
-    const storedUser = localStorage.getItem('travelconnect_user');
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      return user.id;
-    }
+    try {
+      const storedUser = localStorage.getItem('travelconnect_user');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        return user.id;
+      }
+    } catch { }
     return null;
   };
 

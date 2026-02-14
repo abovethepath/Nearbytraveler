@@ -18,7 +18,12 @@ export default function TravelIntentQuiz() {
   const getUserFromStorage = () => {
     try {
       const userData = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-      return userData ? JSON.parse(userData) : null;
+      if (!userData) return null;
+      try {
+        return JSON.parse(userData);
+      } catch {
+        return null;
+      }
     } catch {
       return null;
     }

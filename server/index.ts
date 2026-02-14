@@ -2,6 +2,7 @@
 import "./instrument";
 import * as Sentry from "@sentry/node";
 
+import "express-async-errors";
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import helmet from "helmet";
@@ -58,11 +59,9 @@ import { registerRoutes } from "./routes";
 // Load environment variables
 dotenv.config();
 
-// Add global error handlers to prevent silent failures
 process.on("uncaughtException", (error) => {
   console.error("Uncaught Exception:", error);
   console.error("Stack:", error.stack);
-  process.exit(1);
 });
 
 process.on("unhandledRejection", (reason, promise) => {
@@ -71,7 +70,6 @@ process.on("unhandledRejection", (reason, promise) => {
     "Stack:",
     reason instanceof Error ? reason.stack : "No stack available",
   );
-  process.exit(1);
 });
 
 process.on("SIGTERM", () => {

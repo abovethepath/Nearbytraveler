@@ -37,7 +37,7 @@ export default function ExternalEventDetails() {
       // Parse event data from URL parameters or localStorage
       const eventData = localStorage.getItem(`external-event-${params.eventId}`);
       if (eventData) {
-        setEvent(JSON.parse(eventData));
+        try { setEvent(JSON.parse(eventData)); } catch { }
       }
       setLoading(false);
     }

@@ -18,7 +18,12 @@ export default function TravelMemoriesPage() {
   const currentUser = user || (() => {
     try {
       const stored = localStorage.getItem('travelconnect_user');
-      return stored ? JSON.parse(stored) : null;
+      if (!stored) return null;
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return null;
+      }
     } catch {
       return null;
     }

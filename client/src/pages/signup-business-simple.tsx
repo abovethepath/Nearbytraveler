@@ -87,7 +87,12 @@ export default function SignupBusinessSimple() {
   const getAccountData = () => {
     try {
       const stored = sessionStorage.getItem('accountData');
-      return stored ? JSON.parse(stored) : null;
+      if (!stored) return null;
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return null;
+      }
     } catch {
       return null;
     }

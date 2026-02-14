@@ -856,7 +856,8 @@ function Router() {
       if (isCommonAppRoute && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token'))) {
         console.log('🔧 MOBILE FIX: User has auth data, but was going to be shown landing, routing to authenticated section');
         // Force re-evaluation as authenticated user by bypassing this unauthenticated section
-        const authUser = user || JSON.parse(localStorage.getItem('travelconnect_user') || localStorage.getItem('user') || '{}');
+        let authUser = user;
+        if (!authUser) { try { authUser = JSON.parse(localStorage.getItem('travelconnect_user') || localStorage.getItem('user') || '{}'); } catch { authUser = null; } }
         if (authUser && (authUser.id || authUser.username)) {
           // Temporarily set user if it's missing from state but exists in storage
           if (!user && authUser) {

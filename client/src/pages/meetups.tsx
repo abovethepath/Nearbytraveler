@@ -129,7 +129,9 @@ export default function MeetupsPage() {
     mutationFn: async (quickMeetId: number) => {
       // Get user from multiple sources for reliability
       const localStorageUser = localStorage.getItem('user');
-      const currentUser = user || (localStorageUser ? JSON.parse(localStorageUser) : null);
+      let parsedLocalUser = null;
+      try { parsedLocalUser = localStorageUser ? JSON.parse(localStorageUser) : null; } catch { }
+      const currentUser = user || parsedLocalUser;
       
       if (!currentUser?.id) {
         throw new Error("Please log in to join quick meets");
@@ -212,7 +214,9 @@ export default function MeetupsPage() {
     console.log("Original user variable:", user);
     
     // Use the most reliable user source
-    const currentUser = user || (localStorageUser ? JSON.parse(localStorageUser) : null);
+    let parsedUser2 = null;
+    try { parsedUser2 = localStorageUser ? JSON.parse(localStorageUser) : null; } catch { }
+    const currentUser = user || parsedUser2;
     console.log("Final currentUser:", currentUser);
     
     if (!currentUser?.id) {

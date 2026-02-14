@@ -49,7 +49,12 @@ export default function ReferralWidget() {
   };
 
   // Get current user from localStorage
-  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  let currentUser: any = {};
+  try {
+    currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  } catch {
+    currentUser = {};
+  }
   const username = currentUser.username || '';
 
   // Fetch business referrals

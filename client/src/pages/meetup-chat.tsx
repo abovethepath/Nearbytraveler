@@ -17,7 +17,8 @@ export default function MeetupChat() {
   const [, setLocation] = useLocation();
   const meetupId = params?.meetupId ? parseInt(params.meetupId) : null;
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  let user: any = {};
+  try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { }
 
   const { data: meetup, isLoading, isError, error } = useQuery<Meetup>({
     queryKey: [`/api/quick-meets/${meetupId}`],

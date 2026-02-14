@@ -77,7 +77,8 @@ export default function BusinessRegistration() {
     // Load basic registration data from sessionStorage
     const savedData = sessionStorage.getItem('businessRegistrationData');
     if (savedData) {
-      const basicData = JSON.parse(savedData);
+      let basicData: any = {};
+      try { basicData = JSON.parse(savedData); } catch { basicData = {}; }
       setFormData(prev => ({
         ...prev,
         ...basicData

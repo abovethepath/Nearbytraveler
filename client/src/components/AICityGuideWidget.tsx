@@ -68,7 +68,12 @@ export function AICityGuideWidget({ cityName, compact = false }: AICityGuideWidg
     // Use consistent localStorage key with rest of app
     const storedUser = localStorage.getItem('travelconnect_user');
     const authUser = localStorage.getItem('user');
-    const actualUser = storedUser ? JSON.parse(storedUser) : (authUser ? JSON.parse(authUser) : null);
+    let actualUser = null;
+    try {
+      actualUser = storedUser ? JSON.parse(storedUser) : (authUser ? JSON.parse(authUser) : null);
+    } catch {
+      actualUser = null;
+    }
     const userId = actualUser?.id;
     
     setLoading(true);

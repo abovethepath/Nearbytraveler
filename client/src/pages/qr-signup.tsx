@@ -49,8 +49,12 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
         // Check if user is already logged in
         const storedUser = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
         if (storedUser) {
-          const user = JSON.parse(storedUser);
-          setCurrentUser(user);
+          try {
+            const user = JSON.parse(storedUser);
+            setCurrentUser(user);
+          } catch {
+            // If parsing fails, continue without setting user
+          }
         }
 
         // Fetch referrer info
@@ -70,12 +74,17 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
 
         // If user is logged in, check existing connection status
         if (storedUser) {
-          const user = JSON.parse(storedUser);
+          let user;
+          try {
+            user = JSON.parse(storedUser);
+          } catch {
+            user = null;
+          }
           
           // Check if scanning own QR code
-          if (user.id === data.referrer.id) {
+          if (user && user.id === data.referrer.id) {
             setConnectionStatus('self');
-          } else {
+          } else if (user) {
             // Check connection status
             try {
               const statusResponse = await fetch(`${getApiBaseUrl()}/api/connections/status/${user.id}/${data.referrer.id}`);

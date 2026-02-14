@@ -14,7 +14,8 @@ export default function ChatroomPage() {
   const params = useParams();
   const chatroomId = parseInt(params.id || '0');
 
-  const user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
+  let user: any = {};
+  try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}'); } catch { }
 
   const { data: chatroomArray } = useQuery<ChatroomDetails[]>({
     queryKey: [`/api/chatrooms/${chatroomId}`],

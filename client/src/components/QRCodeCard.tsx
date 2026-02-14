@@ -36,7 +36,15 @@ export default function QRCodeCard() {
           return;
         }
 
-        const user: User = JSON.parse(storedUser);
+        let user: User;
+        try {
+          user = JSON.parse(storedUser);
+        } catch {
+          console.error('❌ QR: Failed to parse user data');
+          setError('Invalid user data');
+          setLoading(false);
+          return;
+        }
         console.log('✅ QR: User loaded:', user.username);
         setCurrentUser(user);
 

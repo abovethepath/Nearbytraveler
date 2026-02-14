@@ -52,7 +52,12 @@ export function UserListModal({ isOpen, onClose, city, state, country, userType,
   }, [isLoading, error, users, isOpen, city, userType]);
   
   // Get current user for connection requests
-  const currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
+  let currentUser: any = {};
+  try {
+    currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
+  } catch {
+    currentUser = {};
+  }
 
   // Fetch users based on location and type
   const { data: users = [], isLoading, error } = useQuery({

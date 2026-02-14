@@ -153,7 +153,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     
     console.log('📡 WhatsApp Chat: Fetching messages via HTTP fallback for chatId:', chatId, 'chatType:', chatType);
     try {
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      let user: any = {};
+      try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { user = {}; }
       const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`, {
         headers: {
           'x-user-id': (currentUserId || user.id || '').toString()
@@ -295,7 +296,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     // WebSocket will update with real-time messages once connected
     const loadMessagesImmediately = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        let user: any = {};
+        try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { user = {}; }
         const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`, {
           headers: {
             'x-user-id': (currentUserId || user.id || '').toString()
@@ -330,7 +332,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
       ws.onopen = () => {
         console.log('🟢 WhatsApp Chat: WebSocket connected');
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        let user: any = {};
+        try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { user = {}; }
         
         // Authenticate
         console.log('🔐 WhatsApp Chat: Authenticating with userId:', currentUserId, 'chatId:', chatId, 'chatType:', chatType);
@@ -523,7 +526,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       // HTTP fallback when WebSocket not ready
       console.log('📡 Sending message via HTTP fallback...');
       try {
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        let user: any = {};
+        try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { user = {}; }
         let endpoint = '';
         let body: any = { content, messageType: 'text', replyToId };
         

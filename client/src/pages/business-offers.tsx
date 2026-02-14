@@ -93,7 +93,8 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
   const [viewingOffer, setViewingOffer] = useState<BusinessOffer | null>(null);
 
   // Get user data to determine their location context
-  const user = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
+  let user: any = {};
+  try { user = JSON.parse(localStorage.getItem('travelconnect_user') || '{}'); } catch { }
   
   // Get user's current location context (travel destination or hometown)
   const { data: userProfile } = useQuery({
@@ -166,14 +167,14 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
   const { data: userRedemptionsData = [] } = useQuery({
     queryKey: ['/api/user-redemptions'],
     queryFn: async () => {
-      const user = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
-      if (!user.id) return [];
-      const res = await fetch(`${getApiBaseUrl()}/api/users/${user.id}/offer-redemptions`);
+      let u: any = {};
+      try { u = JSON.parse(localStorage.getItem('travelconnect_user') || '{}'); } catch { return []; }
+      if (!u.id) return [];
+      const res = await fetch(`${getApiBaseUrl()}/api/users/${u.id}/offer-redemptions`);
       const data = await res.json();
-      // Ensure we always return an array
       return Array.isArray(data) ? data : [];
     },
-    enabled: !!JSON.parse(localStorage.getItem('travelconnect_user') || '{}').id
+    enabled: !!user.id
   });
   
   // Ensure userRedemptions is always an array
@@ -210,8 +211,9 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
 
   const handleRedeemOffer = async (offerId: number) => {
     try {
-      const user = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
-      if (!user.id) {
+      let redeemUser: any = {};
+      try { redeemUser = JSON.parse(localStorage.getItem('travelconnect_user') || '{}'); } catch { }
+      if (!redeemUser.id) {
         toast({
           title: "Login Required",
           description: "Please log in to redeem offers",

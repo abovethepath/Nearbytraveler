@@ -26,7 +26,8 @@ async function attemptSessionRecovery(): Promise<boolean> {
       const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
       if (!storedUser) return false;
       
-      const user = JSON.parse(storedUser);
+      let user;
+      try { user = JSON.parse(storedUser); } catch { return false; }
       if (!user?.id) return false;
 
       if (!user?.email && !user?.username) {
@@ -76,7 +77,7 @@ function getCachedUser() {
   if (!cachedUser || now - cacheTimestamp > CACHE_DURATION) {
     // Check both localStorage keys for consistency - some components use 'user', others use 'travelconnect_user'
     const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-    cachedUser = storedUser ? JSON.parse(storedUser) : null;
+    try { cachedUser = storedUser ? JSON.parse(storedUser) : null; } catch { cachedUser = null; }
     cacheTimestamp = now;
   }
   return cachedUser;

@@ -26,7 +26,12 @@ export default function EventCard({ event, compact = false, featured = false }: 
   // Get current user
   const getCurrentUser = () => {
     const storedUser = localStorage.getItem('travelconnect_user');
-    return storedUser ? JSON.parse(storedUser) : null;
+    if (!storedUser) return null;
+    try {
+      return JSON.parse(storedUser);
+    } catch {
+      return null;
+    }
   };
   
   const currentUser = getCurrentUser();

@@ -41,7 +41,12 @@ export function CustomerUploadedPhotos({ businessId, isOwnProfile }: CustomerUpl
   const queryClient = useQueryClient();
   
   // Get current user from localStorage
-  const currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
+  let currentUser: any = {};
+  try {
+    currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
+  } catch {
+    currentUser = {};
+  }
 
   // Fetch customer photos for this business
   const { data: customerPhotos = [], isLoading } = useQuery({

@@ -190,7 +190,13 @@ function TravelBlogPaused() {
 
   // Get current user from localStorage as fallback
   const authStorageUser = localStorage.getItem('user');
-  const fallbackUser = authStorageUser ? JSON.parse(authStorageUser) : null;
+  const fallbackUser = authStorageUser ? (() => {
+    try {
+      return JSON.parse(authStorageUser);
+    } catch {
+      return null;
+    }
+  })() : null;
   const currentUser = user || fallbackUser;
 
   // Form for creating blog posts

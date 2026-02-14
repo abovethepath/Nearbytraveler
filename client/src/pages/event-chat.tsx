@@ -32,7 +32,8 @@ export default function EventChat() {
   const { toast } = useToast();
   const eventId = params?.eventId ? parseInt(params.eventId) : null;
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  let user: any = {};
+  try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { }
 
   const { data: event, isLoading, isError, error, failureCount } = useQuery<Event>({
     queryKey: [`/api/events/${eventId}`],

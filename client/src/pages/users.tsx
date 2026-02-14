@@ -50,7 +50,8 @@ export default function UsersPage() {
       
       // Get current user for authentication
       const userData = localStorage.getItem('travelconnect_user');
-      const currentUser = userData ? JSON.parse(userData) : null;
+      let currentUser = null;
+      try { currentUser = userData ? JSON.parse(userData) : null; } catch { }
       
       const response = await fetch(url, {
         method: 'GET',

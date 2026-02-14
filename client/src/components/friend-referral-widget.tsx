@@ -19,7 +19,12 @@ export default function FriendReferralWidget() {
   const [isSending, setIsSending] = useState(false);
 
   // Get current user from localStorage
-  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  let currentUser: any = {};
+  try {
+    currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  } catch {
+    currentUser = {};
+  }
   const username = currentUser.username || '';
   const userFirstName = currentUser.name?.split(' ')[0] || username;
 
