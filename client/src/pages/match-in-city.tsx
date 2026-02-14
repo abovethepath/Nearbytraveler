@@ -2049,10 +2049,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               <div className="md:hidden sticky top-0 z-30 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm py-3 -mx-8 px-4 mb-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                   {[
-                    { id: 'selected', label: '✓ My Plans' },
                     { id: 'popular', label: '🎯 Things to Do' },
+                    { id: 'preferences', label: '✈️ Connect On' },
+                    { id: 'selected', label: '✓ My Plans' },
                     { id: 'events', label: '📅 Events' },
-                    { id: 'preferences', label: '✈️ Match Preferences' },
                   ].map((section) => (
                     <button
                       key={section.id}
@@ -2108,145 +2108,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       </button>
                     )}
                   </div>
-                </div>
-              </div>
-
-              {/* SECTION 1: YOUR PLANS - User's selected + user-created activities */}
-              {(() => {
-                const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
-                const storedUser = localStorage.getItem('travelconnect_user');
-                const authUser = localStorage.getItem('user');
-                const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
-                const currentUserId = actualUser?.id;
-                
-                // Mobile: only show if this section is active or showing all
-                const isMobileVisible = activeMobileSection === 'selected' || activeMobileSection === 'all';
-                
-                return (
-                  <div id="mobile-section-selected" className={`mb-8 md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
-                    {/* Header with action buttons */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-                      <div>
-                        <h3 className="text-xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
-                          Your Plans
-                        </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Things you want to do in {selectedCity}</p>
-                      </div>
-                      <div className="flex gap-2 items-center">
-                        <Button
-                          onClick={() => setShowAddPickModal(true)}
-                          size="sm"
-                          className="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white"
-                        >
-                          <Plus className="w-4 h-4 mr-1" />
-                          Add a City Plan
-                        </Button>
-                        <Button
-                          onClick={() => setLocation(`/create-event?city=${encodeURIComponent(selectedCity)}`)}
-                          size="sm"
-                          variant="outline"
-                          className="border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-600 dark:text-blue-400 dark:hover:bg-blue-900/30"
-                        >
-                          <Plus className="w-4 h-4 mr-1" />
-                          Add an Event
-                        </Button>
-                        {/* Overflow menu for cleanup actions */}
-                        {userPicksForCity.length > 0 && (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="bg-white dark:bg-gray-900">
-                              <DropdownMenuItem 
-                                onClick={handleClearAllPicks}
-                                className="text-red-600 dark:text-red-400 cursor-pointer"
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Clear all plans
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem 
-                                onClick={handleResetToPopular}
-                                className="cursor-pointer"
-                              >
-                                <RotateCcw className="w-4 h-4 mr-2" />
-                                Reset to Popular
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* User's picks display */}
-                    {userPicksForCity.length > 0 ? (
-                      <div className="p-4 bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-xl border border-green-200 dark:border-green-700">
-                        <div className="flex flex-wrap gap-2">
-                          {userPicksForCity.map((ua) => {
-                            const activity = cityActivities.find(ca => ca.id === ua.activityId);
-                            const activityName = ua.activityName || activity?.activityName || 'Unknown';
-                            // Check if user-created: from activity data, or from userActivity source field, or if creator matches current user
-                            const isUserCreated = (activity?.createdByUserId === currentUserId) || 
-                                                  (activity?.source === 'user' && activity?.createdByUserId === currentUserId) ||
-                                                  (ua.source === 'user' && ua.createdByUserId === currentUserId);
-                            const categoryInfo = CITY_PICK_CATEGORIES.find(c => c.id === activity?.category);
-                            
-                            return (
-                              <div key={ua.id} className="group relative">
-                                <div className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg text-sm font-medium shadow-md">
-                                  {categoryInfo && <span className="text-xs">{categoryInfo.emoji}</span>}
-                                  <span>{activityName}</span>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      if (isUserCreated && activity) {
-                                        // Delete user-created pick
-                                        if (confirm(`Delete "${activityName}"? This will remove it completely.`)) {
-                                          handleDeleteCityActivity(activity.id);
-                                        }
-                                      } else {
-                                        // Unselect (not delete)
-                                        handleUnselectPick(ua.id, activityName);
-                                      }
-                                    }}
-                                    className="ml-1 p-0.5 rounded-full hover:bg-white/20 transition-colors"
-                                    title={isUserCreated ? "Delete plan" : "Remove from your plans"}
-                                  >
-                                    <X className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="p-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 text-center">
-                        <p className="text-gray-500 dark:text-gray-400 text-sm">
-                          No plans yet. Select from below or add your own!
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })()}
-
-              {/* SECTION: Specific Interests - Sub-interests for better matching */}
-              <div className="mb-8">
-                <div className="border border-orange-200 dark:border-orange-700 rounded-lg p-4 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20">
-                  <SubInterestSelector
-                    selectedSubInterests={userSubInterests}
-                    onSubInterestsChange={handleSubInterestsChange}
-                    showOptionalLabel={false}
-                  />
-                  {subInterestsLoading && (
-                    <div className="flex items-center gap-2 mt-2 text-sm text-orange-600">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Saving...
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -2424,10 +2285,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 </DialogContent>
               </Dialog>
               
-              {/* Dynamic City Activities - Featured + AI + Universal */}
+              {/* Dynamic City Activities - City-Specific First, Then Universal, Then Deeper */}
               <div className="space-y-8">
                 
-                {/* COMBINED SECTION: Things to Do in {City} - Featured + AI Activities merged */}
+                {/* SECTION 1: Things to Do in {City} - Featured + AI Activities (FIRST) */}
                 {(() => {
                   const universalActivities = getTravelActivities();
                   const isSimilarToUniversal = (activityName: string) => {
@@ -2592,7 +2453,244 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 })()}
 
 
-                {/* SECTION: Events in Next 30 Days - Real Events from APIs (moved to bottom) */}
+                {/* SECTION 2: Universal Match Preferences - Activities that work in ANY city */}
+                <div id="mobile-section-preferences" className={`mt-8 md:block ${activeMobileSection === 'preferences' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
+                  <div className="text-center mb-6">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2 px-2">✈️ Connect On</h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm px-2">Universal activities to match with travelers & locals in any city</p>
+                    <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-orange-500 mx-auto rounded-full mt-2"></div>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+                    {(() => {
+                      const travelActivities = getTravelActivities()
+                        .filter(a => !activitySearchFilter || a.toLowerCase().includes(activitySearchFilter.toLowerCase()));
+                      
+                      return travelActivities.map((activity) => {
+                      const isSelected = userActivities.some(ua => ua.activityName === activity && ua.cityName === selectedCity);
+                      
+                      return (
+                        <button
+                          key={activity}
+                          type="button"
+                          className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
+                            isSelected 
+                              ? 'bg-gradient-to-r from-blue-600 to-orange-600 text-white border-blue-400 shadow-blue-200'
+                              : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-blue-100 dark:hover:shadow-blue-900/50'
+                          }`}
+                          onClick={async () => {
+                            const storedUser = localStorage.getItem('travelconnect_user');
+                            const authStorageUser = localStorage.getItem('user');
+                            let actualUser = user;
+                            if (!actualUser && storedUser) {
+                              try { actualUser = JSON.parse(storedUser); } catch (e) {}
+                            }
+                            if (!actualUser && authStorageUser) {
+                              try { actualUser = JSON.parse(authStorageUser); } catch (e) {}
+                            }
+                            if (!actualUser?.id) return;
+                            const userId = actualUser.id;
+                            try {
+                              const apiBase = getApiBaseUrl();
+                              if (!isSelected) {
+                                const optId = `opt-uni-${activity.replace(/\s/g, '_')}-${Date.now()}`;
+                                setUserActivities(prev => [...prev, { id: optId, activityName: activity, cityName: selectedCity }]);
+                                const response = await fetch(`${apiBase}/api/user-city-interests`, {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json', 'x-user-id': userId.toString() },
+                                  body: JSON.stringify({ activityName: activity, cityName: selectedCity })
+                                });
+                                if (response.ok) {
+                                  const result = await response.json();
+                                  if (!result.removed) {
+                                    const toAdd = result.activityName ? result : { ...result, activityName: activity, cityName: selectedCity };
+                                    setUserActivities(prev => prev.map(ua => ua.id === optId ? toAdd : ua));
+                                    await fetchUserActivities();
+                                    const updatedActivities = await fetch(`${apiBase}/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
+                                    if (updatedActivities.ok) {
+                                      const allActivities = await updatedActivities.json();
+                                      syncActivitiesToProfile(allActivities.map((ua: any) => ua.activityName), selectedCity);
+                                    }
+                                  } else {
+                                    setUserActivities(prev => prev.filter(ua => ua.id !== optId));
+                                  }
+                                } else {
+                                  setUserActivities(prev => prev.filter(ua => ua.id !== optId));
+                                }
+                              } else {
+                                const response = await fetch(`${apiBase}/api/user-city-interests`, {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json', 'x-user-id': userId.toString() },
+                                  body: JSON.stringify({ activityName: activity, cityName: selectedCity })
+                                });
+                                if (response.ok) {
+                                  await fetchUserActivities();
+                                  const updatedActivities = await fetch(`${apiBase}/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
+                                  if (updatedActivities.ok) {
+                                    const allActivities = await updatedActivities.json();
+                                    syncActivitiesToProfile(allActivities.map((ua: any) => ua.activityName), selectedCity);
+                                  }
+                                }
+                              }
+                            } catch (error) {
+                              console.error('Error handling universal activity:', error);
+                            }
+                          }}
+                          data-testid={`universal-activity-${activity.replace(/\s+/g, '-').toLowerCase()}`}
+                        >
+                          {activity}
+                        </button>
+                      );
+                    });
+                    })()}
+                  </div>
+                </div>
+
+                {/* SAVE & PROCEED BUTTON */}
+                <div className="my-8 text-center">
+                  <div className="p-6 bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-2xl border border-green-200 dark:border-green-700">
+                    {(() => {
+                      const planCount = userActivities.filter(ua => ua.cityName === selectedCity).length;
+                      return (
+                        <>
+                          <p className="text-gray-700 dark:text-gray-300 mb-3 text-sm">
+                            {planCount > 0 
+                              ? `You have ${planCount} plan${planCount !== 1 ? 's' : ''} selected for ${selectedCity}`
+                              : `Select activities above to start matching in ${selectedCity}`
+                            }
+                          </p>
+                          <Button
+                            onClick={() => {
+                              if (planCount > 0) {
+                                fetchMatchingUsers();
+                                toast({ title: "Plans saved!", description: `Your ${planCount} plans for ${selectedCity} are saved. Finding matches...` });
+                                const matchSection = document.querySelector('[data-testid="matching-users-section"]');
+                                if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              } else {
+                                toast({ title: "No plans selected", description: "Select some activities above first!", variant: "destructive" });
+                              }
+                            }}
+                            className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
+                            disabled={planCount === 0}
+                          >
+                            <Check className="w-5 h-5 mr-2" />
+                            Save & Find Matches ({planCount})
+                          </Button>
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                {/* SECTION 3: YOUR PLANS - User's selected + user-created activities */}
+                {(() => {
+                  const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
+                  const storedUser3 = localStorage.getItem('travelconnect_user');
+                  const authUser3 = localStorage.getItem('user');
+                  const actualUser3 = user || (storedUser3 ? JSON.parse(storedUser3) : null) || (authUser3 ? JSON.parse(authUser3) : null);
+                  const currentUserId3 = actualUser3?.id;
+                  
+                  const isMobileVisible = activeMobileSection === 'selected' || activeMobileSection === 'all';
+                  
+                  return (
+                    <div id="mobile-section-selected" className={`md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                        <div>
+                          <h3 className="text-xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+                            Your Plans
+                          </h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Things you want to do in {selectedCity}</p>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                          <Button
+                            onClick={() => setShowAddPickModal(true)}
+                            size="sm"
+                            className="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white"
+                          >
+                            <Plus className="w-4 h-4 mr-1" />
+                            Add a City Plan
+                          </Button>
+                          <Button
+                            onClick={() => setLocation(`/create-event?city=${encodeURIComponent(selectedCity)}`)}
+                            size="sm"
+                            variant="outline"
+                            className="border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-600 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                          >
+                            <Plus className="w-4 h-4 mr-1" />
+                            Add an Event
+                          </Button>
+                          {userPicksForCity.length > 0 && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="bg-white dark:bg-gray-900">
+                                <DropdownMenuItem onClick={handleClearAllPicks} className="text-red-600 dark:text-red-400 cursor-pointer">
+                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  Clear all plans
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={handleResetToPopular} className="cursor-pointer">
+                                  <RotateCcw className="w-4 h-4 mr-2" />
+                                  Reset to Popular
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {userPicksForCity.length > 0 ? (
+                        <div className="p-4 bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-xl border border-green-200 dark:border-green-700">
+                          <div className="flex flex-wrap gap-2">
+                            {userPicksForCity.map((ua) => {
+                              const activity = cityActivities.find(ca => ca.id === ua.activityId);
+                              const activityName = ua.activityName || activity?.activityName || 'Unknown';
+                              const isUserCreated = (activity?.createdByUserId === currentUserId3) || 
+                                                    (activity?.source === 'user' && activity?.createdByUserId === currentUserId3) ||
+                                                    (ua.source === 'user' && ua.createdByUserId === currentUserId3);
+                              const categoryInfo = CITY_PICK_CATEGORIES.find(c => c.id === activity?.category);
+                              
+                              return (
+                                <div key={ua.id} className="group relative">
+                                  <div className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg text-sm font-medium shadow-md">
+                                    {categoryInfo && <span className="text-xs">{categoryInfo.emoji}</span>}
+                                    <span>{activityName}</span>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (isUserCreated && activity) {
+                                          if (confirm(`Delete "${activityName}"? This will remove it completely.`)) {
+                                            handleDeleteCityActivity(activity.id);
+                                          }
+                                        } else {
+                                          handleUnselectPick(ua.id, activityName);
+                                        }
+                                      }}
+                                      className="ml-1 p-0.5 rounded-full hover:bg-white/20 transition-colors"
+                                      title={isUserCreated ? "Delete plan" : "Remove from your plans"}
+                                    >
+                                      <X className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 text-center">
+                          <p className="text-gray-500 dark:text-gray-400 text-sm">
+                            No plans yet — select activities above to get started!
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {/* SECTION 4: Events in Next 30 Days */}
                 {(() => {
                   // Mobile: only show if this section is active or showing all
                   const isMobileVisible = activeMobileSection === 'events' || activeMobileSection === 'all';
@@ -2698,141 +2796,22 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   );
                 })()}
 
-                {/* SECTION 3: Universal Travel Activities - Always show these for every city */}
-                <div id="mobile-section-preferences" className={`mt-8 md:block ${activeMobileSection === 'preferences' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
-                  <div className="text-center mb-6">
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2 px-2">✈️ Universal Match Preferences</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm px-2">Match with travelers & locals who want to do these same things in {selectedCity}</p>
-                    <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-orange-500 mx-auto rounded-full mt-2"></div>
-                  </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-                    {(() => {
-                      // Use the proper TRAVEL_ACTIVITIES from base-options.ts
-                      const travelActivities = getTravelActivities()
-                        .filter(a => !activitySearchFilter || a.toLowerCase().includes(activitySearchFilter.toLowerCase()));
-                      
-                      return travelActivities.map((activity, index) => {
-                      // Check if user already has this activity in their interests
-                      const isSelected = userActivities.some(ua => ua.activityName === activity && ua.cityName === selectedCity);
-                      
-                      return (
-                        <button
-                          key={activity}
-                          type="button"
-                          className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
-                            isSelected 
-                              ? 'bg-gradient-to-r from-blue-600 to-orange-600 text-white border-blue-400 shadow-blue-200'
-                              : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-blue-100 dark:hover:shadow-blue-900/50'
-                          }`}
-                          onClick={async () => {
-                            
-                            // Get authenticated user - check multiple sources
-                            const storedUser = localStorage.getItem('travelconnect_user');
-                            const authStorageUser = localStorage.getItem('user');
-                            
-                            let actualUser = user;
-                            if (!actualUser && storedUser) {
-                              try {
-                                actualUser = JSON.parse(storedUser);
-                              } catch (e) {
-                                console.error('Failed to parse stored user:', e);
-                              }
-                            }
-                            if (!actualUser && authStorageUser) {
-                              try {
-                                actualUser = JSON.parse(authStorageUser);
-                              } catch (e) {
-                                console.error('Failed to parse auth storage user:', e);
-                              }
-                            }
-                            
-                            
-                            // This should never happen due to page-level auth protection
-                            if (!actualUser?.id) {
-                              console.error('❌ CRITICAL: No user ID found despite page-level auth');
-                              return;
-                            }
-                            
-                            const userId = actualUser.id;
-                            
-                            try {
-                              const apiBase = getApiBaseUrl();
-                              if (!isSelected) {
-                                // Optimistic update - highlight pill immediately (fixes jump + no highlight)
-                                const optId = `opt-uni-${activity.replace(/\s/g, '_')}-${Date.now()}`;
-                                setUserActivities(prev => [...prev, { id: optId, activityName: activity, cityName: selectedCity }]);
-                                const response = await fetch(`${apiBase}/api/user-city-interests`, {
-                                  method: 'POST',
-                                  headers: {
-                                    'Content-Type': 'application/json',
-                                    'x-user-id': userId.toString()
-                                  },
-                                  body: JSON.stringify({
-                                    activityName: activity,
-                                    cityName: selectedCity
-                                  })
-                                });
-                                
-                                if (response.ok) {
-                                  const result = await response.json();
-                                  if (!result.removed) {
-                                    const toAdd = result.activityName ? result : { ...result, activityName: activity, cityName: selectedCity };
-                                    setUserActivities(prev => prev.map(ua => ua.id === optId ? toAdd : ua));
-                                    await fetchUserActivities();
-                                    
-                                    // Sync to user profile
-                                    const updatedActivities = await fetch(`${apiBase}/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
-                                    if (updatedActivities.ok) {
-                                      const allActivities = await updatedActivities.json();
-                                      const selectedNames = allActivities.map((ua: any) => ua.activityName);
-                                      syncActivitiesToProfile(selectedNames, selectedCity);
-                                    }
-                                  } else {
-                                    setUserActivities(prev => prev.filter(ua => ua.id !== optId));
-                                  }
-                                } else {
-                                  setUserActivities(prev => prev.filter(ua => ua.id !== optId));
-                                }
-                              } else {
-                                // Use backend toggle - same endpoint, it will detect existing and remove
-                                const response = await fetch(`${apiBase}/api/user-city-interests`, {
-                                  method: 'POST',
-                                  headers: {
-                                    'Content-Type': 'application/json',
-                                    'x-user-id': userId.toString()
-                                  },
-                                  body: JSON.stringify({
-                                    activityName: activity,
-                                    cityName: selectedCity
-                                  })
-                                });
-                                
-                                if (response.ok) {
-                                  await fetchUserActivities();
-                                  
-                                  // Sync to user profile
-                                  const updatedActivities = await fetch(`${apiBase}/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
-                                  if (updatedActivities.ok) {
-                                    const allActivities = await updatedActivities.json();
-                                    const selectedNames = allActivities.map((ua: any) => ua.activityName);
-                                    syncActivitiesToProfile(selectedNames, selectedCity);
-                                  }
-                                }
-                              }
-                            } catch (error) {
-                              console.error('Error handling universal activity:', error);
-                            }
-                          }}
-                          data-testid={`universal-activity-${activity.replace(/\s+/g, '-').toLowerCase()}`}
-                        >
-                          {activity}
-                        </button>
-                      );
-                    });
-                    })()}
+                {/* SECTION 5: Deeper Interests - Sub-interests for more specific matching */}
+                <div className="mt-8">
+                  <div className="border border-orange-200 dark:border-orange-700 rounded-lg p-4 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20">
+                    <SubInterestSelector
+                      selectedSubInterests={userSubInterests}
+                      onSubInterestsChange={handleSubInterestsChange}
+                      showOptionalLabel={false}
+                    />
+                    {subInterestsLoading && (
+                      <div className="flex items-center gap-2 mt-2 text-sm text-orange-600">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Saving...
+                      </div>
+                    )}
                   </div>
                 </div>
-
 
               </div>
             </div>
