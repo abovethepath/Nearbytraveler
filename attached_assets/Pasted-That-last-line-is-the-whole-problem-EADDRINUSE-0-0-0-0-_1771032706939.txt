@@ -1,0 +1,113 @@
+That last line is the whole problem:
+EADDRINUSE 0.0.0.0:5000 = something is already running on port 5000, and your dev server is trying to start a second listener on the same port (often because you already have one npm run dev running, or Vite + API are both trying to bind to 5000).
+Here’s the fastest way to fix it (pick the path that matches where you’re running this):
+If this is Replit
+
+
+Stop the current running process
+
+
+
+
+Click Stop (square button) in Replit (or stop the existing “Run” tab).
+
+
+
+
+Make sure there isn’t a second “Run” still alive
+
+
+
+
+Replit sometimes leaves a prior process alive if you opened multiple tabs or restarted weirdly.
+
+
+If there’s a “Shell”: run:
+
+
+lsof -i :5000
+
+If it shows a PID, kill it:
+kill -9 <PID>
+
+
+
+Start again:
+
+
+npm run dev
+
+If this is Render / Railway / production hosting
+In production, you generally must not hardcode port 5000. Hosts assign a port via process.env.PORT.
+In your server/index.ts (or wherever you call listen), do this:
+const PORT = Number(process.env.PORT) || 5000;
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server listening on ${PORT}`);
+});
+
+Then redeploy.
+✅ This prevents EADDRINUSE when the platform expects you to bind to its port.
+If this is local (Windows / Mac)
+Run one of these to see what’s using 5000:
+Mac/Linux
+lsof -i :5000
+
+Windows (PowerShell)
+netstat -ano | findstr :5000
+
+Then kill it:
+Mac/Linux
+kill -9 <PID>
+
+Windows
+taskkill /PID <PID> /F
+
+A very common root cause in your setup
+Your logs show:
+
+
+API server starts
+
+
+then “Setting up Vite development server…”
+
+
+then crash on listen :5000
+
+
+That often happens when:
+
+
+your API server is already listening on 5000 and
+
+
+Vite dev server (or a second node process) is also configured to use 5000, or
+
+
+you started npm run dev twice (super common in Replit/Cursor/preview setups).
+
+
+Quick safe fix: move Vite off 5000
+In vite.config.ts, set:
+export default defineConfig({
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
+});
+
+Keep your API on 5000, keep Vite on 5173.
+
+What I’d do right now (most likely to work for you)
+
+
+Stop everything (Replit Stop button or kill the PID).
+
+
+Start clean once: npm run dev
+
+
+If it still happens, change Vite to 5173 as above.
+
+
+If you paste the part of your server/index.ts where you call listen(...) and your vite.config.ts server section, I’ll tell you exactly which one is binding to 5000 and the minimal edit to stop the conflict.
