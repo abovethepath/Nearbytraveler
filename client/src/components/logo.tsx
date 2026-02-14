@@ -9,17 +9,17 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
   const getVariantSize = () => {
     switch (variant) {
       case "landing":
-        return "h-10 sm:h-12 md:h-14 lg:h-16 w-auto";
-      case "navbar":
         return "h-8 sm:h-9 md:h-10 lg:h-10 w-auto";
+      case "navbar":
+        return "h-10 sm:h-10 md:h-10 lg:h-10 w-auto";
       case "black-navbar":
         return "h-8 w-auto";
       case "footer":
-        return "h-8 w-auto md:h-10 sm:h-8";
+        return "h-8 w-auto";
       case "header":
-        return "h-10 sm:h-12 md:h-14 lg:h-14 w-auto";
+        return "h-8 sm:h-9 md:h-10 lg:h-10 w-auto";
       default:
-        return "h-10 w-auto";
+        return "h-9 w-auto";
     }
   };
 
