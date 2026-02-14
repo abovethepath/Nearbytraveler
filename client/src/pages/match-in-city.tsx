@@ -2096,7 +2096,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   ].map((section) => (
                     <button
                       key={section.id}
-                      onClick={() => setActiveMobileSection(section.id as typeof activeMobileSection)}
+                      onClick={() => {
+                        setActiveMobileSection(section.id as typeof activeMobileSection);
+                        setTimeout(() => {
+                          const el = document.getElementById(`mobile-section-${section.id}`);
+                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 50);
+                      }}
                       className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
                         activeMobileSection === section.id
                           ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-lg'
@@ -2107,7 +2113,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     </button>
                   ))}
                   <button
-                    onClick={() => setActiveMobileSection('all')}
+                    onClick={() => {
+                      setActiveMobileSection('all');
+                      setTimeout(() => {
+                        const el = document.getElementById('mobile-section-selected');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }, 50);
+                    }}
                     className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
                       activeMobileSection === 'all'
                         ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg'
@@ -2151,7 +2163,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 const isMobileVisible = activeMobileSection === 'selected' || activeMobileSection === 'all';
                 
                 return (
-                  <div className={`mb-8 md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
+                  <div id="mobile-section-selected" className={`mb-8 md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
                     {/* Header with action buttons */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                       <div>
@@ -2466,7 +2478,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   const isMobileVisible = activeMobileSection === 'popular' || activeMobileSection === 'all';
                   
                   return (
-                    <div className={`md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
+                    <div id="mobile-section-popular" className={`md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
                       <div className="text-center mb-6">
                         <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-2">⭐ Popular in {selectedCity}</h3>
                         <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Must-see spots and local favorites</p>
@@ -2504,7 +2516,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           onClick={() => {
                             setActiveMobileSection('preferences');
                             requestAnimationFrame(() => {
-                              document.getElementById('match-preferences')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              document.getElementById('mobile-section-preferences')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                             });
                           }}
                           className="text-sm text-blue-600 dark:text-blue-400 font-medium hover:underline flex items-center justify-center gap-1 mx-auto"
@@ -2711,7 +2723,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 })()}
 
                 {/* SECTION 2: More {City} Ideas - AI-Generated Activities */}
-                <div className={`md:block ${activeMobileSection === 'ai' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
+                <div id="mobile-section-ai" className={`md:block ${activeMobileSection === 'ai' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
                   <div className="text-center mb-6">
                     <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">✨ More {selectedCity} Ideas</h3>
                     <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm mb-4">AI-generated unique experiences for this city</p>
@@ -2953,7 +2965,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   const displayEvents = showAllEvents ? realEvents : realEvents.slice(0, 6);
                   
                   return (
-                    <div className={`mt-8 md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
+                    <div id="mobile-section-events" className={`mt-8 md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
                       <div className="text-center mb-6">
                         <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">📅 Events in Next 30 Days</h3>
                         <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Click to add to Your Plans • Use "Tickets" button for details</p>
@@ -3048,7 +3060,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 })()}
 
                 {/* SECTION 3: Universal Travel Activities - Always show these for every city */}
-                <div id="match-preferences" className={`mt-8 md:block ${activeMobileSection === 'preferences' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
+                <div id="mobile-section-preferences" className={`mt-8 md:block ${activeMobileSection === 'preferences' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
                   <div className="text-center mb-6">
                     <h3 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2 px-2">✈️ Universal Match Preferences</h3>
                     <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm px-2">Match with travelers & locals who want to do these same things in {selectedCity}</p>
