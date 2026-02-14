@@ -117,7 +117,7 @@ export function ReportUserButton({
           className="fixed inset-0 z-[100000] flex items-center justify-center p-4"
           onClick={closeModal}
         >
-          <div className="fixed inset-0 bg-black/80" />
+          <div className="fixed inset-0 bg-black/95" />
           <div 
             className="relative z-[100001] w-full max-w-md bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 my-auto"
             onClick={(e) => e.stopPropagation()}

@@ -70,7 +70,7 @@ export function TravelCrewChat({ travelPlanId, userId, onClose }: TravelCrewChat
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95">
       <div className="bg-white dark:bg-gray-900 rounded-xl w-full max-w-lg h-[500px] flex flex-col shadow-xl">
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">

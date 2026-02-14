@@ -224,7 +224,7 @@ export default function ReferralWidget() {
 
       {/* Send Invitation Dialog */}
       {showInviteForm && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/95">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 w-full max-w-md mx-4">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold dark:text-white">Send Referral Invitation</h2>

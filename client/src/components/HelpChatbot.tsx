@@ -140,7 +140,7 @@ export function HelpChatbot() {
       {isOpen && (
         <>
         <div 
-          className="fixed inset-0 z-[9998] bg-black/80"
+          className="fixed inset-0 z-[9998] bg-black/95"
           onClick={() => setIsOpen(false)}
         />
         <div 

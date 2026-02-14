@@ -39,7 +39,7 @@ export function CustomModal({ isOpen, onClose, children, className, title }: Cus
     >
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/95"
         onClick={onClose}
       />
       

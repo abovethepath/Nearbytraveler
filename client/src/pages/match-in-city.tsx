@@ -2897,7 +2897,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
       {/* Edit Activity Modal */}
       {editingActivity && (
-        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/95 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md border border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Edit Activity</h3>
             <Input

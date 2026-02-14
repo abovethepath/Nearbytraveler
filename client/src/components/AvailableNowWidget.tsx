@@ -907,7 +907,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     {selectedMessage && showGroupChat && createPortal(
       <>
         <div 
-          className="fixed inset-0 bg-black/60"
+          className="fixed inset-0 bg-black/95"
           style={{ zIndex: 9999998 }}
           onClick={() => setSelectedMessage(null)}
         />

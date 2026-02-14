@@ -7852,7 +7852,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {photos.length > 0 && selectedPhotoIndex >= 0 && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div 
-            className="fixed inset-0 bg-black/80" 
+            className="fixed inset-0 bg-black/95" 
             onClick={() => setSelectedPhotoIndex(-1)}
           />
           <div className="relative bg-white dark:bg-gray-800 rounded-lg max-w-4xl max-h-[90vh] p-6 m-4 overflow-hidden">
@@ -9460,7 +9460,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Simplified Cover Photo Selector Dialog */}
       {showCoverPhotoSelector && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto no-scrollbar">
             <div className="p-4 border-b flex justify-between items-center">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Choose Cover Photo</h2>
@@ -9574,7 +9574,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             setShowWriteReferenceModal(false);
           }}
         >
-          <div className="fixed inset-0 bg-black/80" />
+          <div className="fixed inset-0 bg-black/95" />
           <div 
             className="relative z-[100001] w-full max-w-md bg-white dark:bg-gray-900 rounded-lg shadow-xl p-5"
             onClick={(e) => e.stopPropagation()}
