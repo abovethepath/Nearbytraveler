@@ -105,6 +105,18 @@ export default function ProfilePageResponsive() {
     refetchInterval: 30000,
   });
 
+  const { data: cityInterests = [] } = useQuery<any[]>({
+    queryKey: ['/api/user-city-interests', user.id],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/user-city-interests/${user.id}`, {
+        credentials: 'include'
+      });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!user.id,
+  });
+
   const isAvailableNow = user?.id ? availableNowIds.includes(user.id) : false;
 
   // Extract user data
@@ -230,6 +242,38 @@ export default function ProfilePageResponsive() {
             </div>
           </aside>
         </section>
+
+        {/* City Plans Section - shows what user selected on the city match page */}
+        {cityInterests.length > 0 && (
+          <section className="mt-8">
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4 md:p-6 bg-white dark:bg-gray-800">
+              <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">City Plans</h2>
+              {(() => {
+                const citiesMap: Record<string, string[]> = {};
+                cityInterests.forEach((ci: any) => {
+                  const city = ci.cityName || 'Unknown';
+                  if (!citiesMap[city]) citiesMap[city] = [];
+                  if (ci.activityName) citiesMap[city].push(ci.activityName);
+                });
+                return Object.entries(citiesMap).map(([city, activities]) => (
+                  <div key={city} className="mb-3 last:mb-0">
+                    <h3 className="font-medium text-sm mb-1.5 text-gray-900 dark:text-gray-100">{city}</h3>
+                    <div className="flex flex-wrap gap-1.5">
+                      {activities.slice(0, 8).map((activity, index) => (
+                        <span key={index} className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 px-2.5 py-1 rounded-full">
+                          {activity}
+                        </span>
+                      ))}
+                      {activities.length > 8 && (
+                        <span className="text-xs text-gray-500 px-2 py-1">+{activities.length - 8} more</span>
+                      )}
+                    </div>
+                  </div>
+                ));
+              })()}
+            </div>
+          </section>
+        )}
 
         {/* Additional Info Section */}
         {(user.secretActivities || (user.events && user.events.length > 0)) && (

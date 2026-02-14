@@ -42,44 +42,6 @@ const looksLikeEvent = (text: string): boolean => {
   return datePatterns.some(pattern => pattern.test(text));
 };
 
-// Universal → categories mapping for finding city-specific activities
-const UNIVERSAL_TO_CATEGORIES: Record<string, string[]> = {
-  "Guided Tours": ["Tourism", "Culture", "Local", "Sightseeing"],
-  "Hiking & Nature": ["Outdoor", "Nature", "Parks"],
-  "Beach / Waterfront": ["Outdoor", "Beach", "Nature"],
-  "Museums & Galleries": ["Culture", "Tourism", "Art"],
-  "Nightlife & Dancing": ["Nightlife", "Entertainment"],
-  "Restaurants & Local Eats": ["Food", "Local", "Dining"],
-  "Coffee & Brunch": ["Food", "Dining", "Local"],
-  "Live Music": ["Entertainment", "Nightlife", "Events"],
-  "History & Architecture": ["Culture", "Tourism", "Local"],
-  "Local Markets": ["Shopping", "Food", "Local"],
-  "Bars / Happy Hour": ["Nightlife", "Food"],
-  "Street Food / Food Trucks": ["Food", "Local"],
-  "Scenic / Photography Spots": ["Tourism", "Outdoor", "Nature"],
-  "Biking / Cycling": ["Outdoor", "Sports"],
-  "Fitness / Workouts": ["Sports", "Outdoor"],
-};
-
-// Keywords that help match universals to city activities (for keyword-based fallback)
-const UNIVERSAL_KEYWORDS: Record<string, string[]> = {
-  "Guided Tours": ["tour", "walk", "hike", "guide"],
-  "Hiking & Nature": ["hike", "trail", "park", "nature", "garden", "observatory"],
-  "Beach / Waterfront": ["beach", "pier", "boardwalk", "waterfront", "harbor", "marina"],
-  "Museums & Galleries": ["museum", "gallery", "art", "center", "exhibit"],
-  "Nightlife & Dancing": ["club", "bar", "nightlife", "lounge", "dance"],
-  "Restaurants & Local Eats": ["restaurant", "diner", "eatery", "food", "market", "kitchen"],
-  "Coffee & Brunch": ["coffee", "cafe", "brunch", "bakery", "roastery"],
-  "Live Music": ["music", "venue", "jazz", "concert", "hall"],
-  "History & Architecture": ["historic", "architecture", "old town", "heritage", "landmark"],
-  "Local Markets": ["market", "flea", "artisan", "farmers"],
-  "Bars / Happy Hour": ["bar", "pub", "cocktail", "wine", "beer", "speakeasy"],
-  "Street Food / Food Trucks": ["food truck", "street food"],
-  "Scenic / Photography Spots": ["view", "vista", "skyline", "sunset", "overlook", "scenic"],
-  "Biking / Cycling": ["bike", "cycling", "path", "trail"],
-  "Fitness / Workouts": ["run", "gym", "fitness", "yoga"],
-};
-
 // Normalize string for comparison
 const normalizeName = (name: string) => name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
 import { 
@@ -98,7 +60,6 @@ import {
   Sparkles,
   MessageCircle,
   Map,
-  Lightbulb,
   Loader2,
   MoreHorizontal,
   RotateCcw,
@@ -2088,11 +2049,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               <div className="md:hidden sticky top-0 z-30 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm py-3 -mx-8 px-4 mb-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                   {[
-                    { id: 'selected', label: '✓ Your Plans' },
-                    { id: 'popular', label: '⭐ Popular' },
+                    { id: 'selected', label: '✓ My Plans' },
+                    { id: 'popular', label: '🎯 Things to Do' },
                     { id: 'events', label: '📅 Events' },
-                    { id: 'ai', label: '✨ AI Ideas' },
-                    { id: 'preferences', label: '✈️ Preferences' },
+                    { id: 'preferences', label: '✈️ Match Preferences' },
                   ].map((section) => (
                     <button
                       key={section.id}
@@ -2467,491 +2427,170 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               {/* Dynamic City Activities - Featured + AI + Universal */}
               <div className="space-y-8">
                 
-                {/* SECTION 1: Popular in {City} - Featured Activities */}
+                {/* COMBINED SECTION: Things to Do in {City} - Featured + AI Activities merged */}
                 {(() => {
-                  const featuredActivities = cityActivities
-                    .filter(a => (a as any).isFeatured || (a as any).source === 'featured')
-                    .filter(a => !activitySearchFilter || a.activityName.toLowerCase().includes(activitySearchFilter.toLowerCase()));
-                  if (featuredActivities.length === 0 && !activitySearchFilter) return null;
+                  const universalActivities = getTravelActivities();
+                  const isSimilarToUniversal = (activityName: string) => {
+                    const normalized = activityName.toLowerCase().trim();
+                    return universalActivities.some(universal => {
+                      const universalNormalized = universal.toLowerCase().trim();
+                      return normalized === universalNormalized || 
+                             normalized.includes(universalNormalized) || 
+                             universalNormalized.includes(normalized);
+                    });
+                  };
                   
-                  // Mobile: only show if this section is active or showing all
-                  const isMobileVisible = activeMobileSection === 'popular' || activeMobileSection === 'all';
+                  const storedUser2 = localStorage.getItem('travelconnect_user');
+                  const actualUser2 = user || (storedUser2 ? JSON.parse(storedUser2) : null);
+                  const currentUserId2 = actualUser2?.id;
+                  
+                  const allCityActivities = cityActivities
+                    .filter(activity => {
+                      if (activity.category === 'universal') return false;
+                      if (isSimilarToUniversal(activity.activityName)) return false;
+                      if (activity.createdByUserId === 1 && dismissedAIActivities.has(activity.id)) return false;
+                      const activityDate = (activity as any).activityDate;
+                      if (activityDate) {
+                        const pickDate = new Date(activityDate);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        if (pickDate < today) return false;
+                      }
+                      if (activitySearchFilter && !activity.activityName.toLowerCase().includes(activitySearchFilter.toLowerCase())) return false;
+                      return true;
+                    })
+                    .sort((a, b) => {
+                      const aFeat = ((a as any).isFeatured || (a as any).source === 'featured') ? 1 : 0;
+                      const bFeat = ((b as any).isFeatured || (b as any).source === 'featured') ? 1 : 0;
+                      if (aFeat !== bFeat) return bFeat - aFeat;
+                      const aRank = (a as any).rank || 999;
+                      const bRank = (b as any).rank || 999;
+                      return aRank - bRank;
+                    });
+                  
+                  if (allCityActivities.length === 0 && !activitySearchFilter) return null;
+                  
+                  const isMobileVisible = activeMobileSection === 'popular' || activeMobileSection === 'ai' || activeMobileSection === 'all';
+                  const totalCount = allCityActivities.length;
+                  const displayedActivities = allCityActivities.slice(0, displayedActivitiesLimit);
+                  const hasMore = totalCount > displayedActivitiesLimit;
                   
                   return (
                     <div id="mobile-section-popular" className={`md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
                       <div className="text-center mb-6">
-                        <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-2">⭐ Popular in {selectedCity}</h3>
-                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Must-see spots and local favorites</p>
+                        <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-2">🎯 Things to Do in {selectedCity}</h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Popular spots, local favorites, and unique ideas — tap to add to your plans</p>
                         <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-yellow-500 to-orange-500 mx-auto rounded-full mt-2"></div>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        {featuredActivities
-                          .sort((a, b) => ((a as any).rank || 0) - ((b as any).rank || 0))
-                          .map((activity) => {
-                            const isSelected = userActivities.some(ua => ua.activityId === activity.id);
-                            return (
-                              <button
-                                key={activity.id}
-                                className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
-                                  isSelected 
-                                    ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-yellow-400 shadow-yellow-200'
-                                    : 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 text-gray-700 dark:text-gray-100 border-yellow-200 dark:border-yellow-600 hover:border-yellow-300 dark:hover:border-yellow-500'
-                                }`}
-                                onClick={() => toggleActivity(activity)}
-                                data-testid={`featured-activity-${activity.id}`}
-                              >
-                                <span className="flex items-center justify-center gap-1.5">
-                                  <span className="text-xs">⭐</span>
-                                  {activity.activityName}
-                                </span>
-                              </button>
-                            );
-                          })}
-                      </div>
-                      
-                      {/* Mobile-only Jump to Match Preferences button */}
-                      <div className="md:hidden mt-4 text-center">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setActiveMobileSection('preferences');
-                            requestAnimationFrame(() => {
-                              document.getElementById('mobile-section-preferences')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            });
-                          }}
-                          className="text-sm text-blue-600 dark:text-blue-400 font-medium hover:underline flex items-center justify-center gap-1 mx-auto"
-                        >
-                          <span>✈️</span> Jump to Match Preferences
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                {/* SUGGESTED FOR YOU - Contextual follow-ups based on selections */}
-                {(() => {
-                  // Get user's selected universal preferences for this city
-                  const selectedUniversals = userActivities
-                    .filter(ua => ua.cityName === selectedCity)
-                    .map(ua => ua.activityName)
-                    .filter(name => getTravelActivities().includes(name));
-                  
-                  if (selectedUniversals.length === 0) return null;
-                  
-                  // Get featured activities (Popular section) to exclude
-                  const featuredActivityIds = new Set(
-                    cityActivities
-                      .filter(a => (a as any).isFeatured || (a as any).source === 'featured')
-                      .map(a => a.id)
-                  );
-                  
-                  // Track user's already-selected activity IDs
-                  const userSelectedIds = new Set(
-                    userActivities.filter(ua => ua.cityName === selectedCity).map(ua => ua.activityId)
-                  );
-                  
-                  // Track already-suggested to avoid duplicates
-                  const suggestedIds = new Set<number>();
-                  const suggestedNormalized = new Set<string>();
-                  
-                  // Generate suggestions - prefer named city-specific items first
-                  const suggestions: { name: string; because: string; existingActivity: any }[] = [];
-                  
-                  for (const universal of selectedUniversals) {
-                    if (suggestions.length >= 10) break;
-                    
-                    const categories = UNIVERSAL_TO_CATEGORIES[universal] || [];
-                    const keywords = UNIVERSAL_KEYWORDS[universal] || [];
-                    
-                    // Find city activities matching this universal by category or keywords
-                    // Use scoring: +3 category match, +2 exact keyword match, +1 partial match
-                    const scoredActivities = cityActivities
-                      .map(ca => {
-                        // Skip if already in Popular section
-                        if (featuredActivityIds.has(ca.id)) return null;
-                        // Skip if already selected by user
-                        if (userSelectedIds.has(ca.id)) return null;
-                        // Skip if already suggested
-                        if (suggestedIds.has(ca.id)) return null;
-                        // Skip universal activities (they belong in preferences section)
-                        if (ca.category === 'universal') return null;
-                        
-                        let score = 0;
-                        const nameNorm = normalizeName(ca.activityName);
-                        
-                        // +3 for category match
-                        if (ca.category && categories.some(cat => 
-                          cat.toLowerCase() === ca.category?.toLowerCase()
-                        )) {
-                          score += 3;
-                        }
-                        
-                        // +2 for exact keyword match in name
-                        if (keywords.some(kw => {
-                          const kwNorm = kw.toLowerCase();
-                          // Exact word match (not substring)
-                          return nameNorm.split(/\s+/).some(word => word === kwNorm || word.startsWith(kwNorm));
-                        })) {
-                          score += 2;
-                        }
-                        
-                        // Must have some match to be included
-                        if (score === 0) return null;
-                        
-                        return { activity: ca, score };
-                      })
-                      .filter((item): item is { activity: any; score: number } => item !== null)
-                      .sort((a, b) => {
-                        // Sort by score first
-                        if (a.score !== b.score) return b.score - a.score;
-                        // Then featured first
-                        const aFeat = (a.activity as any).isFeatured ? 1 : 0;
-                        const bFeat = (b.activity as any).isFeatured ? 1 : 0;
-                        if (aFeat !== bFeat) return bFeat - aFeat;
-                        // Then by rank
-                        return ((a.activity as any).rank || 999) - ((b.activity as any).rank || 999);
-                      });
-                    
-                    const matchingActivities = scoredActivities.map(s => s.activity);
-                    
-                    // Add up to 2 suggestions per universal to keep variety
-                    let addedForUniversal = 0;
-                    for (const activity of matchingActivities) {
-                      if (suggestions.length >= 10 || addedForUniversal >= 2) break;
-                      
-                      const nameNorm = normalizeName(activity.activityName);
-                      // Skip synonyms/duplicates
-                      if (suggestedNormalized.has(nameNorm)) continue;
-                      
-                      suggestedIds.add(activity.id);
-                      suggestedNormalized.add(nameNorm);
-                      suggestions.push({
-                        name: activity.activityName,
-                        because: universal,
-                        existingActivity: activity
-                      });
-                      addedForUniversal++;
-                    }
-                  }
-                  
-                  // If no suggestions but user has selections, show fallback hint
-                  if (suggestions.length === 0) {
-                    return (
-                      <div className="mb-6 text-center">
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Want more ideas? Tap <span className="font-medium text-purple-600 dark:text-purple-400">"Suggest 6 more"</span> below.
-                        </p>
-                      </div>
-                    );
-                  }
-                  
-                  // Get unique trigger universals for display
-                  const triggerUniversals = [...new Set(suggestions.map(s => s.because))];
-                  
-                  return (
-                    <div className="mb-8 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-4 sm:p-6 border border-green-200 dark:border-green-700">
-                      <div className="text-center mb-4">
-                        <h3 className="text-lg font-bold text-green-700 dark:text-green-300 mb-1">
-                          <Lightbulb className="inline-block w-5 h-5 mr-1 -mt-1" />
-                          Suggested for you
-                        </h3>
-                        <p className="text-green-600 dark:text-green-400 text-sm">
-                          Because you picked: {triggerUniversals.slice(0, 2).join(', ')}
-                          {triggerUniversals.length > 2 && ` +${triggerUniversals.length - 2} more`}
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-2 justify-center">
-                        {suggestions.map((suggestion, index) => {
-                          const isAlreadySelected = userSelectedIds.has(suggestion.existingActivity.id);
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                        {displayedActivities.map((activity) => {
+                          const isSelected = userActivities.some(ua => 
+                            ua.activityId === activity.id || 
+                            (ua.activityName && activity.activityName && ua.activityName.toLowerCase().trim() === activity.activityName.toLowerCase().trim() && ua.cityName === selectedCity)
+                          );
+                          const isFeatured = (activity as any).isFeatured || (activity as any).source === 'featured';
+                          const isAICreated = activity.createdByUserId === 1;
+                          const isUserCreated = activity.createdByUserId === currentUserId2;
+                          const userActivity = userActivities.find(ua => ua.activityId === activity.id || (ua.activityName === activity.activityName && ua.cityName === selectedCity));
                           
                           return (
-                            <div key={suggestion.existingActivity.id} className="relative group">
+                            <div key={activity.id} className="group relative">
                               <button
-                                type="button"
-                                onClick={async () => {
-                                  if (isAlreadySelected) return;
-                                  
-                                  const actualUser = user || JSON.parse(localStorage.getItem('user') || '{}');
-                                  if (!actualUser?.id) return;
-                                  
-                                  const act = suggestion.existingActivity;
-                                  const optId = `opt-sug-${act.id}-${Date.now()}`;
-                                  setUserActivities(prev => [...prev, { id: optId, userId: actualUser.id, activityId: act.id, cityName: selectedCity, activityName: suggestion.name }]);
-                                  try {
-                                    const apiBase = getApiBaseUrl();
-                                    const response = await fetch(`${apiBase}/api/user-city-interests`, {
-                                      method: 'POST',
-                                      headers: { 'Content-Type': 'application/json', 'x-user-id': actualUser.id.toString() },
-                                      body: JSON.stringify({ userId: actualUser.id, activityId: act.id, cityName: selectedCity })
-                                    });
-                                    if (response.ok) {
-                                      const result = await response.json();
-                                      const toAdd = result.activityId ? result : { ...result, activityId: act.id, activityName: suggestion.name, cityName: selectedCity };
-                                      setUserActivities(prev => prev.map(ua => ua.id === optId ? toAdd : ua));
-                                      fetchUserActivities();
-                                      fetchCityActivities();
-                                      toast({ title: "Added!", description: suggestion.name });
-                                    } else {
-                                      setUserActivities(prev => prev.filter(ua => ua.id !== optId));
-                                    }
-                                  } catch (error) {
-                                    setUserActivities(prev => prev.filter(ua => ua.id !== optId));
-                                    console.error('Error adding suggestion:', error);
-                                  }
-                                }}
-                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 ${
-                                  isAlreadySelected 
-                                    ? 'bg-green-500 text-white border-green-400'
-                                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-green-300 dark:border-green-600 hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/30'
+                                className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
+                                  isSelected 
+                                    ? 'bg-gradient-to-r from-green-500 to-teal-500 text-white border-green-400 shadow-green-200'
+                                    : isFeatured
+                                      ? 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 text-gray-700 dark:text-gray-100 border-yellow-200 dark:border-yellow-600 hover:border-yellow-300'
+                                      : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300'
                                 }`}
+                                onClick={() => toggleActivity(activity)}
+                                type="button"
                               >
-                                <span className="flex items-center gap-1.5">
-                                  {isAlreadySelected ? '✓' : <Plus className="w-3 h-3" />}
-                                  {suggestion.name}
+                                <span className="flex items-center justify-center gap-1.5">
+                                  {isSelected && <span className="text-xs">✓</span>}
+                                  {!isSelected && isFeatured && <span className="text-xs">⭐</span>}
+                                  {!isSelected && isAICreated && <span className="text-xs">✨</span>}
+                                  {activity.activityName}
+                                  {(activity as any).activityDate && (
+                                    <span className="text-xs opacity-80">
+                                      • {new Date((activity as any).activityDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                    </span>
+                                  )}
                                 </span>
                               </button>
-                              {/* "Why?" tooltip */}
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
-                                You picked {suggestion.because}
-                              </div>
+                              {isAICreated && !isSelected && (
+                                <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <button
+                                    className="w-5 h-5 bg-gray-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-gray-600"
+                                    onClick={(e) => { e.stopPropagation(); dismissAIActivity(activity.id); }}
+                                    title="Hide this suggestion"
+                                  >
+                                    <X className="w-2.5 h-2.5" />
+                                  </button>
+                                </div>
+                              )}
+                              {isUserCreated && (
+                                <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                  <button
+                                    className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (userActivity) handleDeleteActivity(userActivity.id);
+                                      else handleDeleteCityActivity(activity.id);
+                                    }}
+                                  >
+                                    <X className="w-2.5 h-2.5" />
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           );
                         })}
                       </div>
+                      
+                      <div className="flex items-center justify-center gap-3 mt-4">
+                        {hasMore && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setDisplayedActivitiesLimit(prev => prev + 30)}
+                          >
+                            Show {Math.min(30, totalCount - displayedActivitiesLimit)} more
+                          </Button>
+                        )}
+                        <Button
+                          onClick={async () => {
+                            try {
+                              setIsLoading(true);
+                              toast({ title: "Generating Ideas", description: `Finding unique ${selectedCity} experiences...` });
+                              const apiBase = getApiBaseUrl();
+                              const response = await fetch(`${apiBase}/api/city-activities/${selectedCity}/enhance`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                              });
+                              if (response.ok) {
+                                toast({ title: "New Ideas Added!", description: `Found unique ${selectedCity} experiences` });
+                                fetchCityActivities();
+                              } else {
+                                throw new Error('Failed');
+                              }
+                            } catch (error) {
+                              toast({ title: "Error", description: "Failed to generate ideas", variant: "destructive" });
+                            } finally {
+                              setIsLoading(false);
+                            }
+                          }}
+                          size="sm"
+                          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? 'Finding ideas...' : '✨ Suggest more ideas'}
+                        </Button>
+                      </div>
                     </div>
                   );
                 })()}
 
-                {/* SECTION 2: More {City} Ideas - AI-Generated Activities */}
-                <div id="mobile-section-ai" className={`md:block ${activeMobileSection === 'ai' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
-                  <div className="text-center mb-6">
-                    <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">✨ More {selectedCity} Ideas</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm mb-4">AI-generated unique experiences for this city</p>
-                    <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full"></div>
-                    
-                    {/* AI Enhancement Button */}
-                    <Button
-                      onClick={async () => {
-                        try {
-                          setIsLoading(true);
-                          toast({
-                            title: "Generating Ideas",
-                            description: `Finding unique ${selectedCity} experiences...`,
-                          });
-                          
-                          const apiBase = getApiBaseUrl();
-                          const response = await fetch(`${apiBase}/api/city-activities/${selectedCity}/enhance`, {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                            },
-                          });
-                          
-                          if (response.ok) {
-                            toast({
-                              title: "New Ideas Added!",
-                              description: `Found unique ${selectedCity} experiences`,
-                            });
-                            fetchCityActivities(); // Refresh the list
-                          } else {
-                            throw new Error('Failed to generate activities');
-                          }
-                        } catch (error) {
-                          toast({
-                            title: "Error",
-                            description: "Failed to generate ideas",
-                            variant: "destructive",
-                          });
-                        } finally {
-                          setIsLoading(false);
-                        }
-                      }}
-                      size="sm"
-                      className="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                      data-testid="button-enhance-ai-activities"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? 'Finding ideas...' : 'Suggest 6 more ideas'}
-                    </Button>
-                  </div>
-                  
-                  {cityActivities.length > 0 && (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                      {(() => {
-                        // Universal activities list for comparison - use TRAVEL_ACTIVITIES
-                        const universalActivities = getTravelActivities();
-                        
-                        // Check if a city activity is too similar to a universal activity
-                        const isSimilarToUniversal = (activityName: string) => {
-                          const normalized = activityName.toLowerCase().trim();
-                          return universalActivities.some(universal => {
-                            const universalNormalized = universal.toLowerCase().trim();
-                            // Check for exact match or if one contains the other
-                            return normalized === universalNormalized || 
-                                   normalized.includes(universalNormalized) || 
-                                   universalNormalized.includes(normalized);
-                          });
-                        };
-                        
-                        // Filter out universal category, featured, similar to universal, and dismissed AI activities
-                        // Only show AI and user-created activities in this section
-                        const filteredActivities = cityActivities
-                          .filter(activity => {
-                            // Exclude featured (they have their own section)
-                            if ((activity as any).isFeatured || (activity as any).source === 'featured') return false;
-                            if (activity.category === 'universal') return false;
-                            if (isSimilarToUniversal(activity.activityName)) return false;
-                            // Filter out dismissed AI activities
-                            if (activity.createdByUserId === 1 && dismissedAIActivities.has(activity.id)) return false;
-                            // Hide dated plans after their date has passed
-                            const activityDate = (activity as any).activityDate;
-                            if (activityDate) {
-                              const pickDate = new Date(activityDate);
-                              const today = new Date();
-                              today.setHours(0, 0, 0, 0);
-                              if (pickDate < today) return false; // Hide expired dated plans
-                            }
-                            // Apply search filter
-                            if (activitySearchFilter && !activity.activityName.toLowerCase().includes(activitySearchFilter.toLowerCase())) return false;
-                            return true;
-                          })
-                          .sort((a, b) => {
-                            // AI-created (createdByUserId === 1) activities first
-                            const aIsAI = a.createdByUserId === 1;
-                            const bIsAI = b.createdByUserId === 1;
-                            if (aIsAI && !bIsAI) return -1;
-                            if (!aIsAI && bIsAI) return 1;
-                            return 0;
-                          });
-                        
-                        // Limit displayed activities and track total count
-                        const totalFilteredCount = filteredActivities.length;
-                        const displayedActivities = filteredActivities.slice(0, displayedActivitiesLimit);
-                        const hasMore = totalFilteredCount > displayedActivitiesLimit;
-                        
-                        return (
-                          <>
-                            {displayedActivities.map((activity, index) => {
-                        const isSelected = userActivities.some(ua => 
-                          ua.activityId === activity.id || 
-                          (ua.activityName && activity.activityName && ua.activityName.toLowerCase().trim() === activity.activityName.toLowerCase().trim() && ua.cityName === selectedCity)
-                        );
-                        const userActivity = userActivities.find(ua => ua.activityId === activity.id || (ua.activityName === activity.activityName && ua.cityName === selectedCity));
-                        
-                        // Get current user ID - check multiple sources
-                        const storedUser = localStorage.getItem('travelconnect_user');
-                        const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-                        const currentUserId = actualUser?.id;
-                        
-                        // Check if this activity was created by current user (for EDIT permission)
-                        const isUserCreated = activity.createdByUserId === currentUserId;
-                        
-                        // AI-created activities can be dismissed (not deleted from DB, just hidden)
-                        const isAICreated = activity.createdByUserId === 1;
-                        // User-created activities can be edited/deleted
-                        const canShowUserActions = !isAICreated && activity.createdByUserId && activity.createdByUserId > 1;
-                        
-                        return (
-                          <div key={activity.id} className="group relative">
-                            <button
-                              className={`w-full px-5 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-2 ${
-                                isSelected 
-                                  ? 'bg-gradient-to-r from-blue-600 to-orange-600 text-white border-blue-400 shadow-blue-200'
-                                  : isAICreated
-                                    ? 'bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 text-gray-700 dark:text-gray-100 border-purple-200 dark:border-purple-500 hover:border-purple-300 dark:hover:border-purple-400'
-                                    : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-blue-100 dark:hover:shadow-blue-900/50'
-                              }`}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                toggleActivity(activity);
-                              }}
-                              data-testid="activity-pill"
-                              type="button"
-                              style={{ pointerEvents: 'auto', zIndex: 1 }}
-                            >
-                              <span className="relative z-10 flex items-center justify-center gap-1.5">
-                                {isAICreated && <span className="text-xs">✨</span>}
-                                {activity.activityName}
-                                {(activity as any).activityDate && (
-                                  <span className="text-xs opacity-80">
-                                    • {new Date((activity as any).activityDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                  </span>
-                                )}
-                              </span>
-                            </button>
-                            
-                            {/* DISMISS button for AI-created activities */}
-                            {isAICreated && (
-                              <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <button
-                                  className="w-5 h-5 bg-gray-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-gray-600"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    dismissAIActivity(activity.id);
-                                  }}
-                                  title="Dismiss this AI suggestion"
-                                >
-                                  <X className="w-2.5 h-2.5" />
-                                </button>
-                              </div>
-                            )}
-                            
-                            {/* Edit/Delete buttons - ONLY show for USER-created activities (NOT AI/system activities) */}
-                            {canShowUserActions && (
-                              <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
-                                {/* EDIT button - only for activity creator */}
-                                {isUserCreated && (
-                                  <button
-                                    className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setEditingActivity({ id: userActivity?.id || activity.id, name: activity.activityName, activityId: activity.id });
-                                      setEditingActivityName(activity.activityName);
-                                    }}
-                                  >
-                                    <Edit className="w-2.5 h-2.5" />
-                                  </button>
-                                )}
-                                {/* DELETE button - available to ALL users for user-created activities only */}
-                                <button
-                                  className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (userActivity) {
-                                      handleDeleteActivity(userActivity.id);
-                                    } else {
-                                      // Delete city activity if user hasn't selected it
-                                      handleDeleteCityActivity(activity.id);
-                                    }
-                                  }}
-                                >
-                                  <X className="w-2.5 h-2.5" />
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                      
-                      {/* Show more button if there are more activities */}
-                      {hasMore && (
-                        <div className="col-span-full flex justify-center mt-4">
-                          <Button
-                            variant="outline"
-                            onClick={() => setDisplayedActivitiesLimit(prev => prev + 30)}
-                            className="text-sm font-medium"
-                          >
-                            Show {Math.min(30, totalFilteredCount - displayedActivitiesLimit)} more ({totalFilteredCount - displayedActivitiesLimit} remaining)
-                          </Button>
-                        </div>
-                      )}
-                    </>
-                  );
-                    })()}
-                    </div>
-                  )}
-                </div>
 
                 {/* SECTION: Events in Next 30 Days - Real Events from APIs (moved to bottom) */}
                 {(() => {
@@ -3194,39 +2833,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   </div>
                 </div>
 
-                {/* SECTION 4: Selected Items - Mobile Only View */}
-                <div className={`mt-8 md:hidden ${activeMobileSection === 'selected' ? 'block' : 'hidden'}`}>
-                  <div className="text-center mb-6">
-                    <h3 className="text-2xl font-bold bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent mb-2">✓ Your Selected Plans</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">Things you want to do in {selectedCity}</p>
-                    <div className="w-24 h-1 bg-gradient-to-r from-green-500 to-blue-500 mx-auto rounded-full mt-2"></div>
-                  </div>
-                  {userActivities.filter(ua => ua.cityName === selectedCity).length > 0 ? (
-                    <div className="grid grid-cols-2 gap-3">
-                      {userActivities.filter(ua => ua.cityName === selectedCity).map((activity) => (
-                        <div key={activity.id} className="group relative">
-                          <div className="px-4 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg border-2 border-green-400">
-                            <span className="flex items-center justify-center gap-1.5">
-                              <span className="text-xs">✓</span>
-                              {activity.activityName}
-                            </span>
-                          </div>
-                          <button
-                            className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
-                            onClick={() => handleDeleteActivity(activity.id)}
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      <p>No plans selected yet.</p>
-                      <p className="text-sm mt-2">Tap on activities in other sections to add them!</p>
-                    </div>
-                  )}
-                </div>
 
               </div>
             </div>
