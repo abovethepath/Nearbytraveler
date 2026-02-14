@@ -21,7 +21,6 @@ body {
   padding-bottom: var(--sab);
   padding-left: var(--sal);
   padding-right: var(--sar);
-  overscroll-behavior-y: none;
 }
 
 /* iOS momentum scrolling for all scrollable areas */

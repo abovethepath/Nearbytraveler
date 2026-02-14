@@ -71,13 +71,6 @@ export default function LandingStreamlined() {
 
   // Theme toggle available - removed forced light mode
 
-  // Smooth scroll behavior
-  useEffect(() => {
-    document.documentElement.style.scrollBehavior = 'smooth';
-    return () => {
-      document.documentElement.style.scrollBehavior = '';
-    };
-  }, []);
 
   // Intersection Observer for fade-in animations
   useEffect(() => {
