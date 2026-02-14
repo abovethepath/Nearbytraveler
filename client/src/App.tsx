@@ -77,7 +77,7 @@ function JoinPageWithSignIn() {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-6">
-              <Logo variant="header" className="w-full max-w-sm" />
+              <Logo variant="header" />
             </div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-blue-600 bg-clip-text text-transparent mb-2">
               Join Nearby Traveler

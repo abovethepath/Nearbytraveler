@@ -9,7 +9,7 @@ export default function ComingSoon() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900 dark:to-orange-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-white/90 dark:bg-gray-800/90 rounded-xl p-8 shadow-xl backdrop-blur-sm border border-gray-200 dark:border-gray-700 text-center">
-          <Logo className="w-16 h-16 mx-auto mb-6" />
+          <Logo variant="default" />
           
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Coming Soon!

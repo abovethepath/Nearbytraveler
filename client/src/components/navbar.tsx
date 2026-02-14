@@ -386,10 +386,10 @@ function Navbar() {
                 <img 
                   src="/new-logo.png" 
                   alt="Nearby Traveler" 
-                  className="w-auto cursor-pointer hover:opacity-80 transition-all duration-300 object-contain"
+                  className="w-auto cursor-pointer hover:opacity-80 transition-opacity object-contain"
                   style={{
-                    height: isNativeIOSApp() ? '64px' : '52px',
-                    maxWidth: isNativeIOSApp() ? '320px' : '280px'
+                    height: '32px',
+                    maxWidth: '200px'
                   }}
                   onLoad={() => console.log('Logo loaded successfully')}
                   onError={(e) => {

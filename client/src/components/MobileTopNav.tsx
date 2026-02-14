@@ -223,7 +223,7 @@ export function MobileTopNav() {
           </button>
 
           <div className="flex-1 flex justify-center pointer-events-none">
-            <Logo variant="navbar" className="h-16 sm:h-20 w-auto max-w-[90%]" />
+            <Logo variant="navbar" />
           </div>
 
           <button
