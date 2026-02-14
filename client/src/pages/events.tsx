@@ -798,10 +798,12 @@ export default function Events() {
                                 })()}
                               </div>
 
-                              {/* Interest Button */}
-                              <div className="flex justify-center mb-3" onClick={(e) => e.stopPropagation()}>
-                                <InterestButton event={event} userId={user?.id} />
-                              </div>
+                              {/* Interest Button - hide for event creators */}
+                              {!createdEvents.some(e => e.id === event.id) && (
+                                <div className="flex justify-center mb-3" onClick={(e) => e.stopPropagation()}>
+                                  <InterestButton event={event} userId={user?.id} />
+                                </div>
+                              )}
 
                               {/* Management buttons for created events */}
                               {createdEvents.some(e => e.id === event.id) ? (
