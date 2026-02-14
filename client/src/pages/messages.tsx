@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { authStorage } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -32,7 +31,8 @@ function getInitialTargetUserId(): number | null {
 }
 
 export default function Messages() {
-  const user = authStorage.getUser();
+  const user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
+  const hasUser = !!(user && user.id);
   const { toast } = useToast();
   const [selectedConversation, setSelectedConversation] = useState<number | null>(getInitialTargetUserId);
   const [newMessage, setNewMessage] = useState('');
@@ -502,29 +502,14 @@ export default function Messages() {
     console.log('🎯 Selected user:', selectedUser?.username || 'None');
   }, [selectedConversation, selectedUser]);
 
-  // Enhanced authentication check with emergency recovery
-  if (!user) {
-    console.log('🚨 Messages - No user found, attempting recovery...');
-    
-    // Force refresh user data
-    React.useEffect(() => {
-      authStorage.forceRefreshUser().then(refreshedUser => {
-        if (refreshedUser) {
-          window.location.reload();
-        }
-      });
-    }, []);
-    
+  if (!hasUser) {
     return (
       <div className={`flex items-center justify-center bg-white dark:bg-gray-900 ${isNativeIOSApp() ? 'native-ios-fullpage' : 'min-h-screen'}`}>
-        <div className="text-gray-900 dark:text-white">Recovering authentication...</div>
+        <div className="text-gray-900 dark:text-white">Please log in to view messages</div>
       </div>
     );
   }
 
-  console.log('✅ Messages - User authenticated:', user.username, 'ID:', user.id);
-
-  // Show loading only if no target user and still loading
   if ((connectionsLoading || messagesLoading) && !targetUserId) {
     return (
       <div className="h-screen bg-white dark:bg-gray-900 flex items-center justify-center">

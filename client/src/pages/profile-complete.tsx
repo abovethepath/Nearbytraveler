@@ -3595,7 +3595,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Removed old shared connectMutation - now using individual ConnectButton components
 
   const handleMessage = () => {
-    setLocation(`/messages?userId=${user?.id}`);
+    setLocation(`/messages/${user?.id}`);
   };
 
   const handleWriteReference = () => {
