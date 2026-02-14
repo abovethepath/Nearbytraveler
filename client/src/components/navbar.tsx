@@ -374,11 +374,13 @@ function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-1">
             <div className="flex items-center justify-start flex-1 min-w-0">
-              <Link href="/" className="flex items-center gap-1 logo-container text-left flex-shrink-0">
-                <div className="bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent font-bold flex items-center whitespace-nowrap text-xs">
-                  NearbyTraveler
-                </div>
-                <span className="text-red-600 font-bold text-xs">BETA</span>
+              <Link href="/" className="flex items-center space-x-1 logo-container text-left flex-shrink-0">
+                <img 
+                  src="/new-logo.png" 
+                  alt="Nearby Traveler" 
+                  className="h-8 w-auto object-contain"
+                />
+                <span className="text-red-600 font-bold text-xs hidden sm:inline">BETA</span>
               </Link>
             </div>
             <div className="flex items-center space-x-3 md:space-x-6 ml-auto">
