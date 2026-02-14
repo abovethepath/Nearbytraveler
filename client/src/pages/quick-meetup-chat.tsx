@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 interface QuickMeetup {
   id: number;
@@ -12,7 +13,12 @@ interface QuickMeetup {
   city: string;
   expiresAt: string;
   participantCount: number;
-  chatroomId: number;
+}
+
+interface MeetupChatroom {
+  id: number;
+  meetupId: number;
+  name: string;
 }
 
 export default function QuickMeetupChat() {
@@ -21,19 +27,34 @@ export default function QuickMeetupChat() {
   const { toast } = useToast();
   const meetupId = params?.meetupId ? parseInt(params.meetupId) : null;
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
 
-  const { data: meetup, isLoading, isError, error, failureCount } = useQuery<QuickMeetup>({
-    queryKey: [`/api/quick-meets/${meetupId}`],
+  const { data: meetup, isLoading: meetupLoading, isError: meetupError, error, failureCount } = useQuery<QuickMeetup>({
+    queryKey: ['/api/quick-meets', meetupId],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/quick-meets/${meetupId}`);
+      if (!res.ok) throw new Error(`${res.status}`);
+      return res.json();
+    },
     enabled: !!meetupId,
     retry: 2,
     retryDelay: 1000
   });
 
-  // Auto-redirect on 404 errors (expired/deleted meetups)
-  // Only redirect after all retry attempts are exhausted
+  const { data: chatroom, isLoading: chatroomLoading } = useQuery<MeetupChatroom>({
+    queryKey: ['/api/quick-meetup-chatrooms', meetupId],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/quick-meetup-chatrooms/${meetupId}`);
+      if (!res.ok) throw new Error(`${res.status}`);
+      return res.json();
+    },
+    enabled: !!meetupId && !!meetup,
+    retry: 2,
+    retryDelay: 1000
+  });
+
   useEffect(() => {
-    if (isError && error && failureCount >= 2) {
+    if (meetupError && error && failureCount >= 2) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       if (errorMessage.includes('404') || errorMessage.includes('not found')) {
         toast({
@@ -44,7 +65,7 @@ export default function QuickMeetupChat() {
         setLocation('/quick-meetups');
       }
     }
-  }, [isError, error, failureCount, toast, setLocation]);
+  }, [meetupError, error, failureCount, toast, setLocation]);
 
   if (!meetupId) {
     return (
@@ -58,15 +79,15 @@ export default function QuickMeetupChat() {
     );
   }
 
-  if (isLoading) {
+  if (meetupLoading || chatroomLoading) {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading...</div>;
   }
 
-  if (isError || !meetup) {
+  if (meetupError || !meetup) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">
-          {isError ? `Error loading meetup: ${error instanceof Error ? error.message : 'Unknown error'}` : 'Meetup not found'}
+          {meetupError ? `Error loading meetup: ${error instanceof Error ? error.message : 'Unknown error'}` : 'Meetup not found'}
         </p>
         <Button onClick={() => setLocation('/quick-meetups')} variant="outline" data-testid="button-back-to-quick-meetups-error">
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -76,7 +97,7 @@ export default function QuickMeetupChat() {
     );
   }
 
-  if (!meetup.chatroomId) {
+  if (!chatroom?.id) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">Chatroom not found</p>
@@ -90,10 +111,10 @@ export default function QuickMeetupChat() {
 
   return (
     <WhatsAppChat
-      chatId={meetup.chatroomId}
+      chatId={chatroom.id}
       chatType="meetup"
       title={meetup.title}
-      subtitle={`${meetup.participantCount} participants`}
+      subtitle={`${meetup.participantCount || 1} participants`}
       currentUserId={user.id}
     />
   );
