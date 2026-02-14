@@ -5816,7 +5816,6 @@ Questions? Just reply to this message. Welcome aboard!
         vouchesData,
         photosData,
         travelMemoriesData,
-        passportStampsData,
         platformStatsData,
         profileEventsData,
         eventsGoingData,
@@ -5847,9 +5846,7 @@ Questions? Just reply to this message. Welcome aboard!
         db.select().from(travelPlans).where(
           and(eq(travelPlans.userId, userId), eq(travelPlans.status, 'completed'))
         ),
-        // 9. Passport stamps
-        db.select().from(passportStamps).where(eq(passportStamps.userId, userId)),
-        // 10. Platform stats (cached globally)
+        // 9. Platform stats (cached globally)
         (async () => {
           const userCount = await db.select({ count: count() }).from(users).where(eq(users.isActive, true));
           const connectionCount = await db.select({ count: count() }).from(connections).where(eq(connections.status, 'accepted'));
@@ -5922,7 +5919,7 @@ Questions? Just reply to this message. Welcome aboard!
         vouches: vouchesData,
         photos: photosData,
         travelMemories: travelMemoriesData,
-        passportStamps: passportStampsData,
+        passportStamps: [],
         platformStats: platformStatsData,
         profileEvents: profileEventsData,
         eventsGoing: eventsGoingData,
@@ -21141,36 +21138,6 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // GET /api/users/:userId/passport-stamps - Standalone passport stamps
-  app.get("/api/users/:userId/passport-stamps", async (req, res) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      const stamps = await db.select().from(passportStamps)
-        .where(eq(passportStamps.userId, userId))
-        .orderBy(desc(passportStamps.unlockedAt));
-      res.json(stamps);
-    } catch (error: any) {
-      console.error('Error fetching passport stamps:', error);
-      res.status(500).json({ message: "Failed to fetch passport stamps" });
-    }
-  });
-
-  // DELETE /api/passport-stamps/:id - Delete a passport stamp
-  app.delete("/api/passport-stamps/:id", async (req: any, res) => {
-    try {
-      const sessionUserId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
-      if (!sessionUserId) return res.status(401).json({ error: "Authentication required" });
-      const stampId = parseInt(req.params.id);
-      const [stamp] = await db.select().from(passportStamps).where(eq(passportStamps.id, stampId));
-      if (!stamp) return res.status(404).json({ error: "Stamp not found" });
-      if (stamp.userId !== sessionUserId && sessionUserId !== 2) return res.status(403).json({ error: "Not authorized" });
-      await db.delete(passportStamps).where(eq(passportStamps.id, stampId));
-      res.json({ success: true });
-    } catch (error: any) {
-      console.error('Error deleting passport stamp:', error);
-      res.status(500).json({ message: "Failed to delete passport stamp" });
-    }
-  });
 
   // GET /api/users/:userId/stats - User statistics
   app.get("/api/users/:userId/stats", async (req, res) => {
@@ -21180,16 +21147,13 @@ Questions? Just reply to this message. Welcome aboard!
       if (existingStats) {
         return res.json(existingStats);
       }
-      const stamps = await db.select().from(passportStamps).where(eq(passportStamps.userId, userId));
-      const countriesSet = new Set(stamps.map(s => s.country));
-      const citiesSet = new Set(stamps.map(s => s.city));
       res.json({
         id: 0,
         userId,
-        totalStamps: stamps.length,
-        totalPoints: stamps.reduce((sum, s) => sum + (s.pointsValue || 0), 0),
-        countriesVisited: countriesSet.size,
-        citiesVisited: citiesSet.size,
+        totalStamps: 0,
+        totalPoints: 0,
+        countriesVisited: 0,
+        citiesVisited: 0,
         eventsAttended: 0,
         connectionsRemade: 0,
         currentStreak: 0,

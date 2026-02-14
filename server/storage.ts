@@ -145,12 +145,6 @@ export interface IStorage {
   deleteMoodEntry(): Promise<any>;
   getTravelPlanMoodEntries(): Promise<any>;
   getEventMoodEntries(): Promise<any>;
-  createPassportStamp(): Promise<any>;
-  getUserPassportStamps(): Promise<any>;
-  getPassportStampsByCountry(): Promise<any>;
-  getPassportStampsByCategory(): Promise<any>;
-  updatePassportStamp(): Promise<any>;
-  deletePassportStamp(): Promise<any>;
   getUserStats(): Promise<any>;
   updateUserStats(): Promise<any>;
   getLeaderboard(): Promise<any>;
@@ -3938,12 +3932,6 @@ export class DatabaseStorage implements IStorage {
   async deleteMoodEntry(): Promise<any> { return true; }
   async getTravelPlanMoodEntries(): Promise<any> { return []; }
   async getEventMoodEntries(): Promise<any> { return []; }
-  async createPassportStamp(): Promise<any> { return {}; }
-  async getUserPassportStamps(): Promise<any> { return []; }
-  async getPassportStampsByCountry(): Promise<any> { return []; }
-  async getPassportStampsByCategory(): Promise<any> { return []; }
-  async updatePassportStamp(): Promise<any> { return undefined; }
-  async deletePassportStamp(): Promise<any> { return true; }
   async getUserStats(): Promise<any> { return undefined; }
   async updateUserStats(): Promise<any> { return {}; }
   async getLeaderboard(): Promise<any> { return []; }

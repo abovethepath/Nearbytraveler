@@ -38,7 +38,6 @@ import Connect from "@/pages/connect";
 import Requests from "@/pages/requests";
 import Explore from "@/pages/explore";
 
-import Passport from "@/pages/passport";
 
 import Auth from "@/pages/auth";
 import JoinNowWidgetNew from "@/components/join-now-widget-new";
@@ -1101,7 +1100,8 @@ function Router() {
       case '/requests':
         return <Requests />;
       case '/passport':
-        return <Passport userId={effectiveUser?.id || 0} />;
+        setLocation('/home');
+        return null;
       case '/photos':
         return <Photos />;
       case '/upload-photos':

@@ -330,7 +330,7 @@ import { StealthToggleInline } from "@/components/stealth-toggle-inline";
 
 
 
-import type { User, UserPhoto, PassportStamp, TravelPlan } from "@shared/schema";
+import type { User, UserPhoto, TravelPlan } from "@shared/schema";
 import { insertUserReferenceSchema } from "@shared/schema";
 import { getAllInterests, getAllActivities, getAllLanguages, validateSelections, getHometownInterests, getTravelInterests, getProfileInterests, migrateLegacyOptions } from "../../../shared/base-options";
 import { getTopChoicesInterests } from "../lib/topChoicesUtils";
@@ -2029,8 +2029,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const photos = (profileBundle?.photos || []) as UserPhoto[];
   const photosLoading = bundleLoading;
 
-  // BUNDLE-DERIVED: Passport stamps from profile bundle
-  const stamps = (profileBundle?.passportStamps || []) as PassportStamp[];
 
   // BUNDLE-DERIVED: References from profile bundle (already defined above as userReferences)
   const references = userReferences;
@@ -3587,7 +3585,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Get countries visited from user profile data
   const countriesVisited = user?.countriesVisited || [];
-  const citiesVisited = Array.from(new Set(stamps.map(stamp => `${stamp.city}, ${stamp.country}`)));
+  const citiesVisited: string[] = [];
 
   // Languages spoken (mock data - would be from user profile)
   const languages = ["English", "Spanish", "Portuguese"];
