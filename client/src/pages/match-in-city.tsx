@@ -2545,42 +2545,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   </div>
                 </div>
 
-                {/* SAVE & PROCEED BUTTON */}
-                <div className="my-8 text-center">
-                  <div className="p-6 bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-2xl border border-green-200 dark:border-green-700">
-                    {(() => {
-                      const planCount = userActivities.filter(ua => ua.cityName === selectedCity).length;
-                      return (
-                        <>
-                          <p className="text-gray-700 dark:text-gray-300 mb-3 text-sm">
-                            {planCount > 0 
-                              ? `You have ${planCount} plan${planCount !== 1 ? 's' : ''} selected for ${selectedCity}`
-                              : `Select activities above to start matching in ${selectedCity}`
-                            }
-                          </p>
-                          <Button
-                            onClick={() => {
-                              if (planCount > 0) {
-                                fetchMatchingUsers();
-                                toast({ title: "Plans saved!", description: `Your ${planCount} plans for ${selectedCity} are saved. Finding matches...` });
-                                const matchSection = document.querySelector('[data-testid="matching-users-section"]');
-                                if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                              } else {
-                                toast({ title: "No plans selected", description: "Select some activities above first!", variant: "destructive" });
-                              }
-                            }}
-                            className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
-                            disabled={planCount === 0}
-                          >
-                            <Check className="w-5 h-5 mr-2" />
-                            Save & Find Matches ({planCount})
-                          </Button>
-                        </>
-                      );
-                    })()}
-                  </div>
-                </div>
-
                 {/* SECTION 3: YOUR PLANS - User's selected + user-created activities */}
                 {(() => {
                   const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
