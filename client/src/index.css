@@ -1818,14 +1818,19 @@ button[type="submit"],
 body[data-native-ios="true"] .mobile-top-nav,
 body[data-native-ios="true"] .mobile-bottom-nav,
 body[data-native-ios="true"] .desktop-navbar,
+body[data-native-ios="true"] .ios-nav-bar,
 body.native-ios-app .mobile-top-nav,
 body.native-ios-app .mobile-bottom-nav,
-body.native-ios-app .desktop-navbar {
+body.native-ios-app .desktop-navbar,
+body.native-ios-app .ios-nav-bar {
   display: none !important;
   visibility: hidden !important;
   height: 0 !important;
   overflow: hidden !important;
   pointer-events: none !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
 }
 
 body[data-native-ios="true"],
