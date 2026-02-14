@@ -746,7 +746,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
   return (
     <div 
-      className={`flex flex-col bg-gray-900 text-white overflow-hidden min-h-0 ${isNativeIOSApp() ? 'native-ios-fullpage' : ''}`}
+      className={`flex flex-col bg-gray-900 text-white overflow-hidden min-h-0 ${isNativeIOSApp() ? 'native-ios-messages' : ''}`}
       style={isNativeIOSApp() ? {} : { 
         height: '100dvh',
         minHeight: '100vh'
