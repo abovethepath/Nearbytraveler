@@ -319,26 +319,18 @@ function Navbar() {
     // Business users get a completely different, simplified navbar
     if (directUser?.userType === 'business') {
       return [
-        { path: "/", label: "Home", icon: "🏠" },
         { path: "/business-dashboard", label: "Dashboard", icon: "📊" },
         { path: "/deals", label: "Deals", icon: "🏷️" },
         { path: "/connect", label: "Connect", icon: "💝" },
-        { path: "/messages", label: "Messages", icon: "💬" },
-        { path: profilePath, label: "Profile", icon: "👤" },
       ];
     }
 
-    // Traveler/local users get streamlined navigation
     return [
-      { path: "/", label: "Home", icon: "🏠" },
       { path: "/explore", label: "Explore", icon: "⚡" },
-      { path: "/plan-trip", label: "Trip Plan", icon: "✈️" },
       { path: "/discover", label: "Cities", icon: "🌍" },
       { path: "/events", label: "Events", icon: "📅" },
       { path: "/match-in-city", label: "City Plans", icon: "🎯" },
       { path: "/connect", label: "Connect", icon: "💝" },
-      { path: "/messages", label: "Messages", icon: "💬" },
-      { path: profilePath, label: "Profile", icon: "👤" },
     ];
   };
 
@@ -482,65 +474,49 @@ function Navbar() {
                     </DropdownMenuItem>
                   )}
                   
-                  {/* Avatar dropdown now matches main navigation exactly */}
-                  {navItems.map((item) => (
-                    <DropdownMenuItem 
-                      key={item.path}
-                      onClick={() => {
-                        setLocation(item.path);
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}
-                    >
-                      <span className="mr-2">{item.icon}</span>
-                      <span>{item.label}</span>
-                    </DropdownMenuItem>
-                  ))}
+                  {/* Quick access items not in top nav or bottom nav */}
+                  <DropdownMenuItem onClick={() => {
+                    setLocation('/');
+                    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                  }}>
+                    <Home className="mr-2 h-4 w-4" />
+                    <span>Home</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    setLocation('/messages');
+                    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                  }}>
+                    <MessageCircle className="mr-2 h-4 w-4" />
+                    <span>Messages</span>
+                  </DropdownMenuItem>
 
-                  {/* Business-specific navigation items */}
                   {directUser?.userType === 'business' && (
                     <>
                       <DropdownMenuItem onClick={() => {
                         setLocation('/events');
                         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
                       }}>
-                        <span className="mr-2">📅</span>
+                        <Calendar className="mr-2 h-4 w-4" />
                         <span>My Events</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => {
                         setLocation('/create-event');
                         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
                       }}>
-                        <span className="mr-2">✨</span>
+                        <Sparkles className="mr-2 h-4 w-4" />
                         <span>Create Event</span>
                       </DropdownMenuItem>
                     </>
                   )}
 
-                  {/* Additional navigation items for traveler/local users */}
                   {directUser?.userType !== 'business' && (
                     <>
                       <DropdownMenuItem onClick={() => {
                         setLocation('/plan-trip');
                         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
                       }}>
-                        <span className="mr-2">✈️</span>
+                        <MapPin className="mr-2 h-4 w-4" />
                         <span>Plan Trip</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/business-offers');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
-                        <span className="mr-2">🏷️</span>
-                        <span>Deals & Offers</span>
-                      </DropdownMenuItem>
-
-
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/getting-started');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
-                        <Star className="mr-2 h-4 w-4" />
-                        <span>Success Tips</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => {
                         setLocation('/meetups');
@@ -553,15 +529,15 @@ function Navbar() {
                         setLocation('/city-chatrooms');
                         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
                       }}>
-                        <Users className="mr-2 h-4 w-4" />
+                        <MessageCircle className="mr-2 h-4 w-4" />
                         <span>City Chatrooms</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => {
-                        setLocation('/settings');
+                        setLocation('/business-offers');
                         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
                       }}>
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
+                        <Star className="mr-2 h-4 w-4" />
+                        <span>Deals & Offers</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => {
                         setLocation('/ambassador-program');
@@ -572,6 +548,14 @@ function Navbar() {
                       </DropdownMenuItem>
                     </>
                   )}
+
+                  <DropdownMenuItem onClick={() => {
+                    setLocation('/settings');
+                    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                  }}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
 
                   {directUser?.isAdmin && (
                     <>
