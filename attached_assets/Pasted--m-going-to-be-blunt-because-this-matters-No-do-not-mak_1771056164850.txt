@@ -1,0 +1,79 @@
+’m going to be blunt because this matters:
+
+No — do not “make the server kill whatever is on port 5000.”
+That’s a bad fix. It can kill the current healthy server, cause restart loops, and it’s not portable (and often not even permitted in hosted environments). It also makes debugging harder and can accidentally kill the wrong process.
+
+What’s actually happening
+
+“Start Clean” is already serving the app → so your app is not “down.”
+
+“Start application” fails because port 5000 is already in use → that’s normal.
+
+The “crashes” you’re feeling are almost certainly either:
+
+the server still exiting somewhere (leftover process.exit(1)), or
+
+the frontend/iOS webview crashing (JS errors), or
+
+Replit auto-restarting workflows and you’re misreading the failed workflow as a crash.
+
+A failed workflow ≠ the app crashed, if another workflow is still serving.
+
+The right fix (simple and stable)
+✅ Pick ONE workflow to run the server. Disable the other.
+
+If “Start Clean” is working, make that the only one that runs.
+
+You don’t need retry logic. You don’t need port-killing. You need one server process.
+
+Best practice on Replit:
+
+Keep Start Clean as the only “Run” workflow
+
+Make Start application either removed/disabled, or changed to something else (build/test)
+
+If you truly can’t edit .replit
+
+Then you still don’t kill processes. Instead:
+
+✅ Make the server handle EADDRINUSE by logging and not exiting
+
+If the server is sometimes the one failing to bind (like on restarts), then do:
+
+on EADDRINUSE: log “Port in use, server already running” and do not crash
+
+optionally try the next port only in dev
+
+This prevents a crash loop without murdering processes.
+
+What to tell Cursor/Replit agent (copy/paste)
+
+Tell them this exact instruction:
+
+“Do NOT add logic that kills whatever is on port 5000. Remove any process-kill approach. Instead: make sure only one workflow starts the server. If we can’t edit .replit, update server startup so that on EADDRINUSE it logs and returns without process.exit(1). Also remove any remaining process.exit(1) in server/index.ts and server/vite.ts.”
+
+Why “kill port 5000 process” is risky
+
+It can kill the currently healthy server and create a loop
+
+In production hosting it can violate sandbox permissions
+
+It hides the real bug (why two things are starting)
+
+It’s a band-aid that will break elsewhere (Render/Railway)
+
+One quick check you can do right now
+
+If the app is “crashing,” but:
+
+Start Clean still shows running
+
+and you can still hit pages and get 200
+
+…then you’re not crashing the backend; you’re dealing with frontend/runtime issues (JS parse errors, API exceptions, etc.) and the workflow failure is noise.
+
+If you paste the actual Replit logs right at the moment you say it “crashed” (not the agent narration), I’ll tell you in one message whether it’s:
+
+workflow noise,
+
+server exit,
