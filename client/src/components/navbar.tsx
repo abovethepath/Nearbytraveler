@@ -380,8 +380,8 @@ function Navbar() {
                   alt="Nearby Traveler" 
                   className="w-auto cursor-pointer hover:opacity-80 transition-all duration-300 object-contain"
                   style={{
-                    height: isNativeIOSApp() ? '40px' : '32px',
-                    maxWidth: isNativeIOSApp() ? '200px' : '180px'
+                    height: isNativeIOSApp() ? '36px' : '24px',
+                    maxWidth: isNativeIOSApp() ? '180px' : '150px'
                   }}
                   onLoad={() => console.log('Logo loaded successfully')}
                   onError={(e) => {
@@ -393,11 +393,11 @@ function Navbar() {
                   }}
                 />
               </Link>
-              <span className="ml-3 text-red-600 font-bold text-base">BETA VERSION</span>
+              <span className="hidden lg:inline ml-3 text-red-600 font-bold text-sm">BETA</span>
             </div>
             <div className="flex items-center space-x-4 md:space-x-8 ml-auto">
               {/* Desktop Navigation */}
-              <nav className="hidden md:flex space-x-6">
+              <nav className="hidden md:flex space-x-3 lg:space-x-5">
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
