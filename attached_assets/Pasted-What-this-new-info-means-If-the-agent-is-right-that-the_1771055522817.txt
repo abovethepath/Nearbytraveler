@@ -1,0 +1,89 @@
+What this new info means
+
+If the agent is right that there are still process.exit(1) calls in:
+
+server/index.ts around the server “error” event (often EADDRINUSE, socket bind failures, etc.)
+
+server/vite.ts (dev server glue)
+
+…then the earlier “we removed process.exit” fix was incomplete. And yes: any one of those remaining exits can still hard-kill the server, which matches “it crashed again.”
+
+Also: the “two workflows fighting for port 5000” is a real Replit-specific failure mode:
+
+One workflow starts the server on 5000
+
+Another workflow also tries to start on 5000 → gets EADDRINUSE
+
+If your code responds to that with process.exit(1), it guarantees restarts/crash loops
+
+Is “workflows conflicting” the root cause?
+
+It can be a major trigger, but it’s not the whole story:
+
+The workflow conflict causes EADDRINUSE
+
+Your code’s process.exit(1) turns that into a full crash
+
+Replit restarts → repeat
+
+So the “fix” must be two-part:
+
+Stop running two workflows that start the same server
+
+Do not call process.exit(1) for recoverable errors like port conflicts in dev
+
+The correct fix (what to tell Replit/Cursor to do)
+
+Tell them to do exactly this:
+
+1) Ensure only ONE workflow runs the web server
+
+Pick either Start Clean or Start application.
+
+Disable/delete the other workflow or make it do something else (like build-only).
+
+Only one process should bind to port 5000.
+
+2) Remove/replace ALL remaining process.exit(1) that fire on runtime errors
+
+Specifically:
+
+In server/index.ts: the server.on("error", …) handler should log and return (or retry) for EADDRINUSE, not exit.
+
+In server/vite.ts: never exit the whole server because Vite middleware complained. Log it.
+
+A safe pattern is:
+
+If error code is EADDRINUSE: log a clear message, and in Replit dev, just return (or increment port, but returning is fine).
+
+For other fatal errors: log stack + optionally exit only in production (and ideally let the platform restart you).
+
+3) Make sure errors are visible
+
+If you don’t add logging/alerts, you’ll “stop crashing” but still have broken requests silently. Minimum:
+
+console.error(err) with stack
+
+return JSON error response
+
+The fastest way to confirm (no guessing)
+
+You don’t need a whole investigation. You just need the exact crash line.
+
+Next time it “crashes,” copy/paste:
+
+the last ~30 lines of Replit logs right after it dies
+
+especially anything containing: EADDRINUSE, server.on('error'), process.exit, vite, uncaughtException, unhandledRejection
+
+If the log shows EADDRINUSE + process.exit(1) → slam dunk: that’s the crash loop.
+
+Bottom line
+
+The concept of the fix was good.
+
+But based on what you pasted, the fix was not fully applied because some process.exit(1) remained, and those are enough to keep the crash problem alive.
+
+The workflow conflict is a real trigger, but the real “why it dies” is still: code exiting the process.
+
+If you paste just the snippet of server/index.ts around the “lines 775/778” area (the server.on("error") block), I’ll rewrite it cleanly so it stops killing your server and still logs properly.
