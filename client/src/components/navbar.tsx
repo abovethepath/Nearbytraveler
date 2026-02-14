@@ -374,26 +374,19 @@ function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-2">
             <div className="flex items-center justify-start flex-1 min-w-0">
-              <Link href="/" className="flex items-center space-x-2 logo-container text-left">
+              <Link href="/" className="flex items-center logo-container text-left flex-shrink-0" style={{ maxWidth: isNativeIOSApp() ? '120px' : '100px', height: isNativeIOSApp() ? '30px' : '24px' }}>
                 <img 
                   src="/new-logo.png" 
                   alt="Nearby Traveler" 
-                  className="w-auto cursor-pointer hover:opacity-80 transition-all duration-300 object-contain"
+                  className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
                   style={{
-                    height: isNativeIOSApp() ? '30px' : '24px',
-                    maxWidth: isNativeIOSApp() ? '120px' : '100px'
-                  }}
-                  onLoad={() => console.log('Logo loaded successfully')}
-                  onError={(e) => {
-                    console.error('Logo failed to load from:', e.currentTarget.src);
-                    // Try fallback text
-                    const fallback = document.createElement('div');
-                    fallback.innerHTML = '<span class="text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent">NearbyTraveler</span>';
-                    e.currentTarget.parentNode?.replaceChild(fallback, e.currentTarget);
+                    height: '100%',
+                    width: 'auto',
+                    objectFit: 'contain'
                   }}
                 />
               </Link>
-              <span className="hidden lg:inline ml-3 text-red-600 font-bold text-sm">BETA</span>
+              <span className="hidden lg:inline ml-2 text-red-600 font-bold text-xs flex-shrink-0">BETA</span>
             </div>
             <div className="flex items-center space-x-4 md:space-x-8 ml-auto">
               {/* Desktop Navigation */}
