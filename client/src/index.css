@@ -250,10 +250,10 @@ body {
     overflow-x: hidden !important;
   }
   
-  /* Fix gradient sections that might overflow */
+  /* Fix gradient sections that might overflow horizontally */
   [class*="bg-gradient"] {
     max-width: 100% !important;
-    overflow: hidden;
+    overflow-x: hidden;
   }
   
   /* Ensure avatars don't get clipped */
