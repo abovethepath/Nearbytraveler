@@ -107,17 +107,19 @@ function WebViewWithChrome({ path, navigation }) {
 
   const loadUser = useCallback(() => {
     api.getUser().then((u) => {
-      setUser(u);
-      const profileImg = u?.profileImage || u?.profilePhoto;
-      if (u?.id && !profileImg) {
-        api.getUserProfile(u.id).then((profile) => {
-          const img = profile?.profileImage || profile?.profilePhoto;
-          if (img) {
-            setUser((prev) => (prev ? { ...prev, profileImage: img } : prev));
-          }
-        }).catch(() => {});
+      if (u && u.id) {
+        setUser(u);
+        const profileImg = u.profileImage || u.profilePhoto;
+        if (!profileImg) {
+          api.getUserProfile(u.id).then((profile) => {
+            const img = profile?.profileImage || profile?.profilePhoto;
+            if (img) {
+              setUser((prev) => (prev ? { ...prev, profileImage: img } : prev));
+            }
+          }).catch(() => {});
+        }
       }
-    }).catch(() => setUser(null));
+    }).catch(() => {});
   }, []);
 
   useEffect(() => { loadUser(); }, [loadUser]);
