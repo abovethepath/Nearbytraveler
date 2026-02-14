@@ -374,21 +374,12 @@ function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-1">
             <div className="flex items-center justify-start flex-1 min-w-0">
-              <Link href="/" className="flex items-center logo-container text-left flex-shrink-0">
-                <img 
-                  src="/new-logo.png" 
-                  alt="Nearby Traveler" 
-                  className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
-                  style={{
-                    height: isNativeIOSApp() ? '28px' : '24px',
-                    maxWidth: isNativeIOSApp() ? '140px' : '120px',
-                    width: 'auto',
-                    objectFit: 'contain',
-                    display: 'block'
-                  }}
-                />
+              <Link href="/" className="flex items-center gap-1 logo-container text-left flex-shrink-0">
+                <div className="bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent font-bold flex items-center whitespace-nowrap text-xs">
+                  NearbyTraveler
+                </div>
+                <span className="text-red-600 font-bold text-xs">BETA</span>
               </Link>
-              <span className="hidden sm:inline ml-1 text-red-600 font-bold text-xs flex-shrink-0">BETA</span>
             </div>
             <div className="flex items-center space-x-3 md:space-x-6 ml-auto">
               {/* Desktop Navigation */}
