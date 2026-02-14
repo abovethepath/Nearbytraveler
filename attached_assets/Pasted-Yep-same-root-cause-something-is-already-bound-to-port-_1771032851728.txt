@@ -1,0 +1,105 @@
+Yep — same root cause: something is already bound to port 5000, and this run tries to bind again.
+
+Given your log sequence (“✅ Vite development setup successful” and then it crashes on listen 0.0.0.0:5000), there are two common scenarios:
+
+A previous node process is still running and holding :5000
+
+Your code is calling app.listen(5000) twice (often once in a “dev/Vite setup” path and again later)
+
+Here’s the fastest way to isolate + fix without guessing.
+
+1) Find and kill what’s using port 5000 (Linux/Replit)
+
+Run this in the Shell:
+
+lsof -iTCP:5000 -sTCP:LISTEN -n -P
+
+
+You’ll see something like node 12345 ... LISTEN.
+
+Kill it:
+
+kill -9 12345
+
+
+Then run again:
+
+npm run dev
+
+If lsof isn’t available, use:
+ss -lptn 'sport = :5000'
+
+
+or:
+
+netstat -tulpn | grep :5000
+
+2) Make your server never hardcode 5000 (prevents this on hosts)
+
+In server/index.ts (or wherever you call listen), make sure it’s only:
+
+const PORT = Number(process.env.PORT) || 5000;
+
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server listening on ${PORT}`);
+});
+
+
+If you already have this, great—move to step 3.
+
+3) Check if you’re accidentally listening twice
+
+Search your repo for .listen(:
+
+grep -R "listen(" -n server src | head -n 50
+
+
+What you’re looking for:
+
+more than one place calling app.listen(...) / server.listen(...)
+
+a “dev” function that starts a server and then later you start it again
+
+Typical bug pattern (what to fix)
+
+You’ll find something like:
+
+setupVite() starts something that binds to 5000 and
+
+later server.listen(5000) runs anyway
+
+Fix: Only your Node server should bind to the API port. Vite should be on 5173 (or another port).
+
+In vite.config.ts:
+
+export default defineConfig({
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
+});
+
+
+And in your express server, keep API on process.env.PORT || 5000.
+
+4) If you’re on Replit specifically (most likely)
+
+Replit often leaves an old run alive even after you “rerun”.
+
+Do this:
+
+Click Stop
+
+In Shell run the lsof command above + kill PID
+
+Start again
+
+The quickest “tell me exactly what to change” path
+
+Paste just these two snippets (no more):
+
+The bottom ~30 lines of your server/index.ts where it calls listen
+
+Your vite.config.ts server:{...} section (if any)
+
+And I’ll point to the exact duplicate listen (or port conflict) and the minimal edit to fix it permanently.
