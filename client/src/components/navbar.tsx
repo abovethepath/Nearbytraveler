@@ -380,8 +380,8 @@ function Navbar() {
                   alt="Nearby Traveler" 
                   className="w-auto cursor-pointer hover:opacity-80 transition-all duration-300 object-contain"
                   style={{
-                    height: isNativeIOSApp() ? '64px' : '52px',
-                    maxWidth: isNativeIOSApp() ? '320px' : '280px'
+                    height: isNativeIOSApp() ? '40px' : '32px',
+                    maxWidth: isNativeIOSApp() ? '200px' : '180px'
                   }}
                   onLoad={() => console.log('Logo loaded successfully')}
                   onError={(e) => {
