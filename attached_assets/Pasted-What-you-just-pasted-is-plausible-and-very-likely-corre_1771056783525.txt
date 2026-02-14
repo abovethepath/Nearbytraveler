@@ -1,0 +1,76 @@
+What you just pasted is plausible and very likely correct for Replit: the Preview pane often attaches to the workflow that’s configured as the “webview” (the one with waitForPort / outputType: webview). If that workflow is failed, Preview can look dead even while another workflow is happily serving 200s in the background.
+
+So: as a diagnosis, yes — that explanation makes sense.
+But here’s the key: it doesn’t mean your “crashes” were fixed. It only means you fixed a Preview wiring problem.
+
+Was this a good fix?
+✅ Good fix for Preview not loading
+
+If:
+
+curl localhost:5000 works (200)
+
+Preview shows blank
+
+“Start application” is the workflow tied to webview and is failed
+
+Then stopping the other workflow and running only the webview workflow is the right move.
+
+⚠️ But it’s not a “stability fix”
+
+If the app “crashes all the time” outside Preview, you still need to confirm:
+
+there are no remaining process.exit(1) crash triggers
+
+you’re not getting repeated runtime exceptions
+
+the server isn’t restarting under load/errors
+
+How to confirm in 30 seconds (no tools, no guessing)
+
+In Replit, with only Start application running:
+
+Open Logs and look for repeats of:
+
+EADDRINUSE
+
+exited with code 1
+
+process.exit
+
+“restarting…”
+
+In the Preview tab, open DevTools console (right click → Inspect) and see if you’re getting:
+
+WebSocket connection failed only (that can be normal)
+
+or actual JS errors like TypeError, JSON.parse exceptions, etc.
+
+If you paste the last 30 lines of logs from the moment it “goes off” again, I can tell you instantly whether it’s:
+
+Preview/workflow wiring,
+
+backend crash-loop,
+
+or frontend runtime crash.
+
+What you should tell the agent right now
+
+Tell them to implement this “rule” permanently:
+
+Only one workflow should be the webview workflow
+
+That workflow should be the one you actually use (Start application)
+
+The other (Start Clean) should be disabled OR changed to non-webview build/test so it never competes for port 5000
+
+If they can edit .replit, that’s the real permanent fix. If they can’t, the practical fix is: “Don’t run Start Clean ever.”
+
+One red flag in what you pasted
+
+They said: “Preview connects to whichever workflow has waitForPort and outputType=webview.”
+That means your config is causing confusion. This is fixable cleanly in .replit.
+
+Even if you “can’t edit .replit,” whoever controls the repo ultimately can.
+
+If your Preview is working right now, tell me one thing: are you still getting “crashes” in the iPhone app / live site, or was the main pain just the Preview blank screen?
