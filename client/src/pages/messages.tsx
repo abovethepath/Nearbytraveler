@@ -18,10 +18,23 @@ import { useToast } from '@/hooks/use-toast';
 import { UniversalBackButton } from '@/components/UniversalBackButton';
 import { isNativeIOSApp } from '@/lib/nativeApp';
 
+function getInitialTargetUserId(): number | null {
+  try {
+    const loc = window.location;
+    const parts = loc.pathname.split('/');
+    const pathId = parts[2];
+    if (pathId && !isNaN(parseInt(pathId))) return parseInt(pathId);
+    const params = new URLSearchParams(loc.search);
+    const qId = params.get('userId') || params.get('user');
+    if (qId && !isNaN(parseInt(qId))) return parseInt(qId);
+  } catch {}
+  return null;
+}
+
 export default function Messages() {
   const user = authStorage.getUser();
   const { toast } = useToast();
-  const [selectedConversation, setSelectedConversation] = useState<number | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<number | null>(getInitialTargetUserId);
   const [newMessage, setNewMessage] = useState('');
   const [connectionSearch, setConnectionSearch] = useState('');
   const [instantMessages, setInstantMessages] = useState<any[]>([]);
