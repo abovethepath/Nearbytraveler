@@ -22577,6 +22577,179 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  app.get("/api/community-events", async (req: Request, res: Response) => {
+    try {
+      const { city, provider, limit: limitStr } = req.query;
+      const limit = Math.min(parseInt(limitStr as string) || 50, 100);
+
+      if (!city) {
+        return res.status(400).json({ error: "City parameter is required" });
+      }
+
+      const conditions: any[] = [
+        eq(externalEvents.syncStatus, "synced"),
+        gte(externalEvents.startTime, new Date()),
+        ilike(externalEvents.city, `%${city}%`),
+      ];
+
+      if (provider) {
+        conditions.push(eq(externalEvents.provider, provider as string));
+      }
+
+      const results = await db
+        .select({
+          id: externalEvents.id,
+          provider: externalEvents.provider,
+          providerEventId: externalEvents.providerEventId,
+          title: externalEvents.title,
+          description: externalEvents.description,
+          startTime: externalEvents.startTime,
+          endTime: externalEvents.endTime,
+          venueName: externalEvents.venueName,
+          address: externalEvents.address,
+          city: externalEvents.city,
+          state: externalEvents.state,
+          country: externalEvents.country,
+          imageUrl: externalEvents.imageUrl,
+          url: externalEvents.url,
+          organizerName: externalEvents.organizerName,
+          category: externalEvents.category,
+          isFree: externalEvents.isFree,
+          priceInfo: externalEvents.priceInfo,
+          attendeeCount: externalEvents.attendeeCount,
+          sharedByUsername: users.username,
+          sharedByName: users.name,
+          sharedByAvatar: users.profileImage,
+          integrationDisplayName: eventIntegrations.displayName,
+        })
+        .from(externalEvents)
+        .innerJoin(eventIntegrations, eq(externalEvents.integrationId, eventIntegrations.id))
+        .innerJoin(users, eq(eventIntegrations.userId, users.id))
+        .where(and(...conditions))
+        .orderBy(asc(externalEvents.startTime))
+        .limit(limit);
+
+      res.json(results);
+    } catch (err: any) {
+      console.error("Error fetching community events:", err);
+      res.status(500).json({ error: "Failed to fetch community events" });
+    }
+  });
+
+  app.post("/api/community-events/seed-samples", async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id || req.session?.user?.id;
+      if (!userId) return res.status(401).json({ error: "Authentication required" });
+
+      const [currentUser] = await db.select({ role: users.role }).from(users).where(eq(users.id, userId));
+      if (!currentUser || currentUser.role !== 'admin') {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+
+      const { city } = req.body;
+      if (!city) return res.status(400).json({ error: "City is required" });
+
+      let [integration] = await db
+        .select()
+        .from(eventIntegrations)
+        .where(
+          and(
+            eq(eventIntegrations.userId, userId),
+            eq(eventIntegrations.provider, "luma")
+          )
+        );
+
+      if (!integration) {
+        [integration] = await db
+          .insert(eventIntegrations)
+          .values({
+            userId,
+            provider: "luma",
+            displayName: "Sample Luma Events",
+            status: "active",
+            syncIntervalMinutes: 60,
+          })
+          .returning();
+      }
+
+      const now = new Date();
+      const sampleEvents = [
+        {
+          integrationId: integration.id,
+          provider: "luma",
+          providerEventId: `sample_luma_${Date.now()}_1`,
+          title: "Sunset Rooftop Social Mixer",
+          description: "Join fellow travelers and locals for drinks, music, and incredible sunset views. Great networking opportunity!",
+          startTime: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000),
+          endTime: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000),
+          venueName: "The Rooftop at Standard",
+          city,
+          isFree: false,
+          priceInfo: "$15",
+          attendeeCount: 47,
+          syncStatus: "synced",
+        },
+        {
+          integrationId: integration.id,
+          provider: "luma",
+          providerEventId: `sample_luma_${Date.now()}_2`,
+          title: "Morning Coffee & Co-Working Meetup",
+          description: "Start your day with great coffee and meet other digital nomads and remote workers in the area.",
+          startTime: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
+          endTime: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000),
+          venueName: "Blue Bottle Coffee",
+          city,
+          isFree: true,
+          attendeeCount: 23,
+          syncStatus: "synced",
+        },
+        {
+          integrationId: integration.id,
+          provider: "partiful",
+          providerEventId: `sample_partiful_${Date.now()}_3`,
+          title: "International Food Crawl",
+          description: "Explore the best local food spots with a group of food-loving travelers. We'll hit 4 restaurants in 3 hours!",
+          startTime: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000),
+          endTime: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000),
+          venueName: "Grand Central Market",
+          city,
+          isFree: false,
+          priceInfo: "$25 (includes tastings)",
+          attendeeCount: 18,
+          syncStatus: "synced",
+        },
+        {
+          integrationId: integration.id,
+          provider: "luma",
+          providerEventId: `sample_luma_${Date.now()}_4`,
+          title: "Weekend Hiking & Beach Cleanup",
+          description: "Combine adventure with giving back! Join us for a scenic hike followed by a community beach cleanup.",
+          startTime: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000),
+          endTime: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000 + 5 * 60 * 60 * 1000),
+          venueName: "Runyon Canyon Park",
+          city,
+          isFree: true,
+          attendeeCount: 35,
+          syncStatus: "synced",
+        },
+      ];
+
+      for (const evt of sampleEvents) {
+        await db.insert(externalEvents).values(evt);
+      }
+
+      await db
+        .update(eventIntegrations)
+        .set({ eventCount: sampleEvents.length, lastSyncAt: new Date() })
+        .where(eq(eventIntegrations.id, integration.id));
+
+      res.json({ ok: true, seeded: sampleEvents.length, city });
+    } catch (err: any) {
+      console.error("Error seeding sample events:", err);
+      res.status(500).json({ error: "Failed to seed sample events" });
+    }
+  });
+
   // Return the configured HTTP server with WebSocket support  
   return httpServer;
 }

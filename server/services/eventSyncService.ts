@@ -1,8 +1,10 @@
 import { db } from "../db";
 import { eventIntegrations, externalEvents } from "../../shared/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, gte, asc, inArray } from "drizzle-orm";
 import { LumaClient } from "./lumaClient";
 import { ICSParser } from "./icsParser";
+
+const MAX_EVENTS_PER_INTEGRATION = 30;
 
 export class EventSyncService {
   async syncIntegration(integrationId: number): Promise<{ synced: number; errors: string[] }> {
@@ -81,6 +83,11 @@ export class EventSyncService {
         }
       }
 
+      const pruned = await this.enforceEventCap(integration.id);
+      if (pruned > 0) {
+        synced = Math.min(synced, MAX_EVENTS_PER_INTEGRATION);
+      }
+
       await db
         .update(eventIntegrations)
         .set({
@@ -155,6 +162,11 @@ export class EventSyncService {
         }
       }
 
+      const pruned = await this.enforceEventCap(integration.id);
+      if (pruned > 0) {
+        synced = Math.min(synced, MAX_EVENTS_PER_INTEGRATION);
+      }
+
       await db
         .update(eventIntegrations)
         .set({
@@ -174,6 +186,40 @@ export class EventSyncService {
     }
 
     return { synced, errors };
+  }
+
+  private async enforceEventCap(integrationId: number): Promise<number> {
+    const futureEvents = await db
+      .select({ id: externalEvents.id })
+      .from(externalEvents)
+      .where(
+        and(
+          eq(externalEvents.integrationId, integrationId),
+          eq(externalEvents.syncStatus, "synced"),
+          gte(externalEvents.startTime, new Date())
+        )
+      )
+      .orderBy(asc(externalEvents.startTime));
+
+    if (futureEvents.length <= MAX_EVENTS_PER_INTEGRATION) {
+      return 0;
+    }
+
+    const keepIds = futureEvents.slice(0, MAX_EVENTS_PER_INTEGRATION).map(e => e.id);
+    const excessIds = futureEvents.slice(MAX_EVENTS_PER_INTEGRATION).map(e => e.id);
+
+    if (excessIds.length > 0) {
+      await db
+        .delete(externalEvents)
+        .where(
+          and(
+            eq(externalEvents.integrationId, integrationId),
+            inArray(externalEvents.id, excessIds)
+          )
+        );
+    }
+
+    return excessIds.length;
   }
 
   async syncAllDue(): Promise<void> {

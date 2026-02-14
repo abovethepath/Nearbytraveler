@@ -25,6 +25,7 @@ import { formatDateForDisplay } from "@/lib/dateUtils";
 import { PublicationSchedule } from "@/components/PublicationSchedule";
 import { InterestButton } from "@/components/InterestButton";
 import eventsBgImage from "@assets/event-photo.png";
+import ExternalEventCard, { type CommunityEvent } from "@/components/ExternalEventCard";
 // MobileNav removed - using global mobile navigation
 
 // Helper function to format event location properly
@@ -245,6 +246,18 @@ export default function Events() {
 
 
 
+
+  const { data: communityEvents = [], isLoading: communityLoading } = useQuery<CommunityEvent[]>({
+    queryKey: ["/api/community-events", cityToQuery],
+    queryFn: async () => {
+      if (!cityToQuery) return [];
+      const response = await fetch(`${getApiBaseUrl()}/api/community-events?city=${encodeURIComponent(cityToQuery)}&limit=20`);
+      if (!response.ok) return [];
+      return response.json();
+    },
+    enabled: !!cityToQuery,
+    staleTime: 300000,
+  });
 
   // Removed premium event integrations (AllEvents, Ticketmaster, StubHub, Local RSS) - keeping only Community Events + Meetups
 
@@ -1176,6 +1189,25 @@ export default function Events() {
         </div>
         )}
 
+
+        {selectedTab === 'explore' && communityEvents.length > 0 && (
+          <div className="space-y-4 mt-8">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <Star className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Community Events</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Events shared by community members via Luma & Partiful</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {communityEvents.map((event) => (
+                <ExternalEventCard key={`community-${event.id}`} event={event} />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Create Event Dialog */}
         {showCreateEvent && (
