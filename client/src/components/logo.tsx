@@ -9,7 +9,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
   const getVariantSize = () => {
     switch (variant) {
       case "landing":
-        return "h-20 sm:h-24 md:h-32 lg:h-40 xl:h-44 w-auto";
+        return "h-20 w-auto";
       case "navbar":
         return "h-20 sm:h-20 md:h-16 lg:h-16 xl:h-16 w-auto";
       case "black-navbar":
