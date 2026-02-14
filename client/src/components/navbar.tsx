@@ -380,8 +380,8 @@ function Navbar() {
                   alt="Nearby Traveler" 
                   className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
                   style={{
-                    height: isNativeIOSApp() ? '24px' : '20px',
-                    maxWidth: isNativeIOSApp() ? '100px' : '80px',
+                    height: isNativeIOSApp() ? '28px' : '24px',
+                    maxWidth: isNativeIOSApp() ? '140px' : '120px',
                     width: 'auto',
                     objectFit: 'contain',
                     display: 'block'
