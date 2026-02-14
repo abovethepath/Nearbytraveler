@@ -80,9 +80,12 @@ export default function UserCard({
   const getTravelCity = () => {
     if ((user as any).travelPlans && Array.isArray((user as any).travelPlans)) {
       const now = new Date();
+      now.setHours(0, 0, 0, 0);
       const currentTrip = (user as any).travelPlans.find((plan: any) => {
         const start = new Date(plan.startDate);
+        start.setHours(0, 0, 0, 0);
         const end = new Date(plan.endDate);
+        end.setHours(23, 59, 59, 999);
         return now >= start && now <= end;
       });
       if (currentTrip?.destinationCity) return currentTrip.destinationCity;
