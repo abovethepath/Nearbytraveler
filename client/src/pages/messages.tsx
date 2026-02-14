@@ -662,7 +662,7 @@ export default function Messages() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => navigate('/messages')}
+                  onClick={() => window.history.back()}
                   className="lg:hidden text-gray-600 dark:text-gray-400"
                 >
                   <ArrowLeft className="w-5 h-5" />
