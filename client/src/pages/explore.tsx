@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Clock, Users, Zap, Coffee, Camera, UtensilsCrossed, Dumbbell, Music, Mountain, Palette, Globe, ArrowRight, Share2, Sparkles, Timer, Plus, Send, Heart, Star } from "lucide-react";
+import { getMetroAreaName } from "../../../shared/metro-areas";
 
 function UserAvatar({ user, size = "sm" }: { user: any; size?: string }) {
   const sizeClass = size === "sm" ? "w-8 h-8 text-xs" : size === "md" ? "w-10 h-10 text-sm" : "w-12 h-12 text-base";
@@ -48,7 +49,8 @@ export default function Explore() {
   const queryClient = useQueryClient();
   const storedUser = localStorage.getItem("user");
   const currentUser = storedUser ? JSON.parse(storedUser) : null;
-  const userCity = currentUser?.hometownCity || currentUser?.travelDestination || "";
+  const rawCity = currentUser?.hometownCity || currentUser?.travelDestination || "";
+  const userCity = rawCity ? getMetroAreaName(rawCity) : "";
   const userCountry = currentUser?.hometownCountry || currentUser?.country || "United States";
 
   const [activeTab, setActiveTab] = useState("live");
@@ -315,7 +317,7 @@ export default function Explore() {
               <Dialog open={showCreateLiveShare} onOpenChange={setShowCreateLiveShare}>
                 <DialogTrigger asChild>
                   <Button className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white h-14 text-lg">
-                    <MapPin className="w-5 h-5 mr-2" /> I'm at [place] right now
+                    <MapPin className="w-5 h-5 mr-2" /> I'm here in {userCity || "my city"} right now
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="bg-white dark:bg-gray-900">
