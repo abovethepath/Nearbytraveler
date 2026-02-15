@@ -415,21 +415,21 @@ export default function Explore() {
         )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5 mb-4">
-            <TabsTrigger value="live" className="text-xs sm:text-sm">
-              <MapPin className="w-3 h-3 mr-1" /> Live
+          <TabsList className="flex w-full overflow-x-auto mb-4 gap-1">
+            <TabsTrigger value="live" className="text-xs sm:text-sm flex-1 min-w-0 px-2 sm:px-3">
+              <MapPin className="w-3 h-3 mr-1 shrink-0" /> <span className="truncate">Live</span>
             </TabsTrigger>
-            <TabsTrigger value="experiences" className="text-xs sm:text-sm">
-              <Sparkles className="w-3 h-3 mr-1" /> Activities
+            <TabsTrigger value="experiences" className="text-xs sm:text-sm flex-1 min-w-0 px-2 sm:px-3">
+              <Sparkles className="w-3 h-3 mr-1 shrink-0" /> <span className="truncate">Activities</span>
             </TabsTrigger>
-            <TabsTrigger value="templates" className="text-xs sm:text-sm">
-              <Star className="w-3 h-3 mr-1" /> Templates
+            <TabsTrigger value="templates" className="text-xs sm:text-sm flex-1 min-w-0 px-2 sm:px-3">
+              <Star className="w-3 h-3 mr-1 shrink-0" /> <span className="truncate">Templates</span>
             </TabsTrigger>
-            <TabsTrigger value="communities" className="text-xs sm:text-sm">
-              <Globe className="w-3 h-3 mr-1" /> Communities
+            <TabsTrigger value="communities" className="text-xs sm:text-sm flex-1 min-w-0 px-2 sm:px-3">
+              <Globe className="w-3 h-3 mr-1 shrink-0" /> <span className="truncate">Groups</span>
             </TabsTrigger>
-            <TabsTrigger value="cards" className="text-xs sm:text-sm">
-              <Share2 className="w-3 h-3 mr-1" /> Stories
+            <TabsTrigger value="cards" className="text-xs sm:text-sm flex-1 min-w-0 px-2 sm:px-3">
+              <Share2 className="w-3 h-3 mr-1 shrink-0" /> <span className="truncate">Stories</span>
             </TabsTrigger>
           </TabsList>
 
@@ -901,43 +901,43 @@ export default function Explore() {
                 <p className="text-gray-400 text-sm">Please try again later</p>
               </div>
             ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {communityTagsList.map((tag: any) => {
                 const isJoined = myTagIds.has(tag.id);
                 return (
                   <Card key={tag.id} className={`border transition-all ${isJoined ? "border-orange-400 dark:border-orange-600 bg-orange-50/50 dark:bg-orange-950/20" : "border-gray-200 dark:border-gray-700 hover:border-orange-300"}`}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="text-2xl cursor-pointer" onClick={() => isJoined ? setLocation(`/community/${tag.id}`) : null}>{tag.icon}</div>
-                        <div className="flex-1 cursor-pointer" onClick={() => isJoined ? setLocation(`/community/${tag.id}`) : null}>
-                          <h4 className="font-bold text-sm flex items-center gap-1">
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="flex items-start gap-2 sm:gap-3 mb-2">
+                        <div className="text-xl sm:text-2xl cursor-pointer shrink-0" onClick={() => isJoined ? setLocation(`/community/${tag.id}`) : null}>{tag.icon}</div>
+                        <div className="flex-1 min-w-0 cursor-pointer" onClick={() => isJoined ? setLocation(`/community/${tag.id}`) : null}>
+                          <h4 className="font-bold text-sm flex items-center gap-1 truncate">
                             {tag.displayName}
-                            {tag.isPrivate && <Lock className="w-3 h-3 text-gray-400" />}
+                            {tag.isPrivate && <Lock className="w-3 h-3 text-gray-400 shrink-0" />}
                           </h4>
                           <p className="text-xs text-gray-500">{tag.memberCount || 0} members{tag.isUserCreated && " · User created"}</p>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 shrink-0">
                           {isJoined ? (
                             <>
-                              <Button size="sm" variant="ghost" className="text-xs px-2" onClick={() => setLocation(`/community/${tag.id}`)}>
+                              <Button size="sm" variant="ghost" className="text-xs px-1.5 sm:px-2 h-7" onClick={() => setLocation(`/community/${tag.id}`)}>
                                 Open
                               </Button>
-                              <Button size="sm" variant="outline" className="text-xs px-2" onClick={() => leaveCommunityMutation.mutate(tag.id)}>
+                              <Button size="sm" variant="outline" className="text-xs px-1.5 sm:px-2 h-7" onClick={() => leaveCommunityMutation.mutate(tag.id)}>
                                 Leave
                               </Button>
                             </>
                           ) : tag.isPrivate ? (
-                            <Button size="sm" className="text-xs bg-orange-500 hover:bg-orange-600 text-white" onClick={() => setPrivateCommunityId(tag.id)}>
+                            <Button size="sm" className="text-xs px-2 h-7 bg-orange-500 hover:bg-orange-600 text-white" onClick={() => setPrivateCommunityId(tag.id)}>
                               <Lock className="w-3 h-3 mr-1" /> Join
                             </Button>
                           ) : (
-                            <Button size="sm" className="text-xs bg-orange-500 hover:bg-orange-600 text-white" onClick={() => joinCommunityMutation.mutate({ tagId: tag.id })}>
+                            <Button size="sm" className="text-xs px-2 h-7 bg-orange-500 hover:bg-orange-600 text-white" onClick={() => joinCommunityMutation.mutate({ tagId: tag.id })}>
                               Join
                             </Button>
                           )}
                         </div>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{tag.description}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{tag.description}</p>
                       <div className="flex items-center justify-between mt-2">
                         {tag.color && <div className="flex-1 h-1 rounded-full mr-2" style={{ backgroundColor: tag.color }} />}
                         {tag.isUserCreated && (
