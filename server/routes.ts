@@ -485,6 +485,42 @@ function getLAMetroCities(): string[] {
   return [];
 }
 
+// Helper: Get all cities to search for a given city (includes metro area expansion)
+// If city is part of a metro area OR IS a metro area name, returns all cities in that metro
+// If not a metro city, returns just the original city
+function getExpandedCityList(city: string): string[] {
+  // First check if it's a metro area name directly (e.g., "Los Angeles Metro")
+  const metroCities = getMetroCities(city);
+  if (metroCities.length > 0) {
+    return [...new Set([city, ...metroCities])];
+  }
+  // Check if the city belongs to a metro area
+  const metroName = getMetroAreaName(city);
+  if (metroName !== city) {
+    const allMetroCities = getMetroCities(metroName);
+    return [...new Set([city, metroName, ...allMetroCities])];
+  }
+  return [city];
+}
+
+// Helper: Build a Drizzle SQL OR condition that matches any city in a metro area
+function metroAwareCityFilter(column: any, city: string): any {
+  const cities = getExpandedCityList(city);
+  if (cities.length === 1) {
+    return ilike(column, `%${cities[0]}%`);
+  }
+  return or(...cities.map(c => ilike(column, `%${c}%`)));
+}
+
+// Helper: Build exact match (not ILIKE) metro-aware filter
+function metroAwareCityExact(column: any, city: string): any {
+  const cities = getExpandedCityList(city);
+  if (cities.length === 1) {
+    return eq(column, cities[0]);
+  }
+  return or(...cities.map(c => eq(column, c)));
+}
+
 // Instagram posting helper functions
 async function handleInstagramPost(event: any, organizerId: number) {
   try {
@@ -2242,19 +2278,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS: ${city} consolidated to ${consolidatedCity}`);
       
-      // COMPLETELY REWRITTEN CITY STATS - FIXED FOR ALL CITIES
-      let searchCities = [city];
-      
-      // Apply specific city mappings for accurate user counting
-      if (city === 'Los Angeles Metro') {
-        // Use all 76 LA Metro cities from shared constants for complete coverage
-        const { METRO_AREAS } = await import('../shared/constants');
-        searchCities = METRO_AREAS['Los Angeles'].cities;
-      } else if (city === 'Nashville Metro') {
-        searchCities = ['Nashville', 'Nashville Metro'];
-      } else if (city === 'New York City') {
-        searchCities = ['New York City', 'New York', 'NYC'];
-      }
+      // Use metro-aware city expansion for all metro areas
+      let searchCities = getExpandedCityList(city);
       
       if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS FIXED: Searching for users in cities:`, searchCities);
         
@@ -2766,8 +2791,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .where(
           and(
             or(
-              ilike(travelPlans.destinationCity, `%${city}%`),
-              ilike(travelPlans.destination, `%${city}%`)
+              metroAwareCityFilter(travelPlans.destinationCity, city),
+              metroAwareCityFilter(travelPlans.destination, city)
             ),
             lte(travelPlans.startDate, today),
             gte(travelPlans.endDate, today)
@@ -2778,16 +2803,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       let query = db.select().from(users);
       const conditions = [];
       
-      // Check if this is a metro city that should be consolidated to Los Angeles
-      const { METRO_AREAS } = await import('../shared/constants');
-      const isLAMetroCity = METRO_AREAS['Los Angeles'].cities.includes(city);
+      // Use metro-aware expansion for all metro areas
+      const expandedCities = getExpandedCityList(city);
+      const isMetroSearch = expandedCities.length > 1;
       
-      if (isLAMetroCity || city === 'Los Angeles Metro') {
-        // Search for ALL LA metro cities (locals/residents)
-        const allLACities = METRO_AREAS['Los Angeles'].cities;
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 LA METRO SEARCH: Searching for users in ALL LA metro cities:`, allLACities.length, 'cities');
+      if (isMetroSearch) {
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO SEARCH: Searching for users in ${expandedCities.length} cities for ${city}`);
         
-        const locationConditions = allLACities.map(metroCity => 
+        const locationConditions = expandedCities.map(metroCity => 
           or(
             ilike(users.location, `%${metroCity}%`),
             ilike(users.hometownCity, `%${metroCity}%`)
@@ -5436,17 +5459,9 @@ Questions? Just reply to this message. Welcome aboard!
         if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH LOCATION: Searching for users in:', location);
         if (process.env.NODE_ENV === 'development') console.log('🌴 SEARCH CITY EXTRACTED:', searchCity);
         
-        // LA Metro consolidation - if searching for any LA Metro city, include all 76 cities
-        let citiesToSearch = [searchCity];
-        const { METRO_AREAS } = await import('../shared/constants');
-        const isLAMetroCity = METRO_AREAS['Los Angeles'].cities.includes(searchCity);
-        
-        if (isLAMetroCity || searchCity === 'Los Angeles') {
-          citiesToSearch = METRO_AREAS['Los Angeles'].cities;
-          if (process.env.NODE_ENV === 'development') console.log('🌴 LA METRO DETECTED: Expanding search to all', citiesToSearch.length, 'LA Metro cities');
-        } else {
-          if (process.env.NODE_ENV === 'development') console.log('🎯 ADVANCED SEARCH EXACT CITY:', searchCity);
-        }
+        // Metro-aware city expansion (works for ALL metro areas, not just LA)
+        let citiesToSearch = getExpandedCityList(searchCity);
+        if (process.env.NODE_ENV === 'development') console.log('🌴 METRO SEARCH:', searchCity, '→', citiesToSearch.length, 'cities');
         
         if (process.env.NODE_ENV === 'development') console.log('🌴 CITIES TO SEARCH:', citiesToSearch.slice(0, 5), '... (total:', citiesToSearch.length, ')');
         
@@ -6703,40 +6718,17 @@ Questions? Just reply to this message. Welcome aboard!
         
         if (process.env.NODE_ENV === 'development') console.log(`🌍 USERS: Filtering by location: ${searchLocation}, searchCity: ${searchCity}`);
         
-        // Check if this is a metro city that should be consolidated to Los Angeles
-        const { METRO_AREAS } = await import('../shared/constants');
-        // Case-insensitive check for LA Metro cities
-        const isLAMetroCity = METRO_AREAS['Los Angeles'].cities.some(city => 
-          city.toLowerCase() === searchCity.toLowerCase()
+        // Metro-aware city expansion (works for ALL metro areas)
+        const expandedCities = getExpandedCityList(searchCity);
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 USERS SEARCH: ${searchCity} → ${expandedCities.length} cities`);
+        
+        const locationConditions = expandedCities.map(city => 
+          or(
+            ilike(users.location, `%${city}%`),
+            ilike(users.hometownCity, `%${city}%`)
+          )
         );
-        
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`🔍 LA METRO CHECK: searchCity="${searchCity}", isLAMetroCity=${isLAMetroCity}`);
-        }
-        
-        if (isLAMetroCity || searchCity.toLowerCase() === 'los angeles metro' || searchCity.toLowerCase() === 'los angeles') {
-          // Search for ALL LA metro cities
-          const allLACities = METRO_AREAS['Los Angeles'].cities;
-          if (process.env.NODE_ENV === 'development') console.log(`🌍 LA METRO SEARCH: Searching for users in ALL LA metro cities:`, allLACities.length, 'cities');
-          
-          const locationConditions = allLACities.map(city => 
-            or(
-              ilike(users.location, `%${city}%`),
-              ilike(users.hometownCity, `%${city}%`)
-            )
-          );
-          const locationCondition = or(...locationConditions);
-          conditions.push(locationCondition);
-          if (process.env.NODE_ENV === 'development') console.log(`🌍 LA METRO CONDITION: Added location condition for ${allLACities.length} cities`);
-        } else {
-          // Regular city search - use more precise matching
-          const locationCondition = or(
-            ilike(users.location, `%${searchCity}%`),
-            ilike(users.hometownCity, `%${searchCity}%`)
-          );
-          conditions.push(locationCondition);
-          if (process.env.NODE_ENV === 'development') console.log(`🌍 REGULAR SEARCH: Added location condition for: ${searchCity}`);
-        }
+        conditions.push(or(...locationConditions));
       }
       
       // INTERESTS FILTER
@@ -10330,9 +10322,9 @@ Questions? Just reply to this message. Welcome aboard!
         )
       ];
       
-      // Add city filter if provided
+      // Add city filter if provided (metro-aware)
       if (city && typeof city === 'string' && city.trim() !== '') {
-        searchConditions.push(ilike(events.city, `%${city}%`));
+        searchConditions.push(metroAwareCityFilter(events.city, city.trim()));
       }
       
       const searchResults = await db.select().from(events)
@@ -10434,22 +10426,9 @@ Questions? Just reply to this message. Welcome aboard!
         const cityName = city.toString();
         console.log(`🎪 EVENTS: Getting events for city: ${cityName}`);
         
-        // Apply metro consolidation for ALL metro areas using shared helper (case-insensitive)
-        const { getMetroArea, METRO_AREAS } = await import('../shared/constants');
-        const metroAreaName = getMetroArea(cityName); // Returns "Los Angeles Metro" for Venice/Santa Monica/etc., null for non-metro cities
-        
-        let searchCities = [cityName];
-        
-        if (metroAreaName) {
-          // Find the metro area config and search all its cities
-          const metroConfig = Object.values(METRO_AREAS).find(m => m.metroName === metroAreaName);
-          if (metroConfig) {
-            searchCities = metroConfig.cities;
-            console.log(`🌍 METRO EVENTS: City "${cityName}" → Metro "${metroAreaName}" → Searching ${searchCities.length} cities:`, searchCities.slice(0, 5).join(', '), '...');
-          }
-        } else {
-          console.log(`🎯 EVENTS EXACT: "${cityName}" not in metro area, searching exact city only`);
-        }
+        // Apply metro-aware city expansion
+        let searchCities = getExpandedCityList(cityName);
+        console.log(`🌍 EVENTS: City "${cityName}" → Searching ${searchCities.length} cities`);
         
         if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Final searchCities array:`, searchCities);
         
