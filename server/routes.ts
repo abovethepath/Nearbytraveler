@@ -21893,12 +21893,25 @@ Questions? Just reply to this message. Welcome aboard!
       const now = new Date();
       const currentUserId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
 
+      // Build city filter with metro area support
+      let cityFilter: any = undefined;
+      if (city) {
+        const metroCities = getMetroCities(city);
+        if (metroCities.length > 0) {
+          // Metro area - match any city in the metro
+          const allCitiesToMatch = [...metroCities, city];
+          cityFilter = or(...allCitiesToMatch.map(c => ilike(liveLocationShares.city, c)));
+        } else {
+          cityFilter = ilike(liveLocationShares.city, city);
+        }
+      }
+
       let query = db.select()
         .from(liveLocationShares)
         .where(and(
           eq(liveLocationShares.isActive, true),
           gte(liveLocationShares.expiresAt, now),
-          city ? ilike(liveLocationShares.city, city) : undefined
+          cityFilter
         ))
         .orderBy(desc(liveLocationShares.createdAt));
 
@@ -22110,11 +22123,19 @@ Questions? Just reply to this message. Welcome aboard!
       const now = new Date();
       const currentUserId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
 
-      const conditions = [
+      const conditions: any[] = [
         eq(microExperiences.isActive, true),
         gte(microExperiences.expiresAt, now),
       ];
-      if (city) conditions.push(ilike(microExperiences.city, city));
+      if (city) {
+        const metroCities = getMetroCities(city);
+        if (metroCities.length > 0) {
+          const allCitiesToMatch = [...metroCities, city];
+          conditions.push(or(...allCitiesToMatch.map(c => ilike(microExperiences.city, c))));
+        } else {
+          conditions.push(ilike(microExperiences.city, city));
+        }
+      }
       if (category) conditions.push(eq(microExperiences.category, category));
       if (energyLevel) conditions.push(eq(microExperiences.energyLevel, energyLevel));
 
