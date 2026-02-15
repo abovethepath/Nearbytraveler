@@ -126,6 +126,11 @@ export default function Explore() {
 
   const { data: communityTagsList = [], isLoading: loadingTags, isError: errorTags } = useQuery<any[]>({
     queryKey: ["/api/community-tags"],
+    queryFn: async () => {
+      const res = await fetch("/api/community-tags?includePrivate=true");
+      if (!res.ok) return [];
+      return res.json();
+    },
   });
 
   const { data: myCommunityTags = [] } = useQuery<any[]>({
