@@ -15,6 +15,7 @@ import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import { getTravelActivities } from "@shared/base-options";
 import { METRO_AREAS } from "@shared/constants";
+import { getMetroAreaName } from "@shared/metro-areas";
 import SubInterestSelector from "@/components/SubInterestSelector";
 
 // City Plan categories for user-created plans
@@ -241,54 +242,43 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const getUserRelevantCities = () => {
     const relevantCityNames: string[] = [];
     
-    // Add hometown from profile (more complete data than auth user)
     const profile: any = userProfile || user;
     if (profile?.hometownCity) {
-      const hometownLower = profile.hometownCity.toLowerCase();
-      relevantCityNames.push(hometownLower);
-      // Also add metro area name if applicable
-      const metroName = getMetroName(profile.hometownCity);
-      if (metroName) {
-        relevantCityNames.push(metroName.toLowerCase());
+      const displayCity = getMetroAreaName(profile.hometownCity);
+      relevantCityNames.push(displayCity.toLowerCase());
+      if (displayCity !== profile.hometownCity) {
+        relevantCityNames.push(profile.hometownCity.toLowerCase());
       }
     }
     
-    // Add current destination from profile
     if (profile?.destinationCity) {
-      const destLower = profile.destinationCity.toLowerCase();
-      relevantCityNames.push(destLower);
-      // Also add metro area name if applicable
-      const metroName = getMetroName(profile.destinationCity);
-      if (metroName) {
-        relevantCityNames.push(metroName.toLowerCase());
+      const displayDest = getMetroAreaName(profile.destinationCity);
+      relevantCityNames.push(displayDest.toLowerCase());
+      if (displayDest !== profile.destinationCity) {
+        relevantCityNames.push(profile.destinationCity.toLowerCase());
       }
     }
     
-    // Add all travel plan destinations (show trips until a few days after they end)
     if (travelPlans && Array.isArray(travelPlans)) {
       const now = new Date();
-      const gracePeriodDays = 3; // Show trips for 3 days after they end
+      const gracePeriodDays = 3;
       
       travelPlans.forEach((plan: any) => {
-        // Skip trips that ended more than gracePeriodDays ago
         if (plan.endDate) {
           const endDate = new Date(plan.endDate);
           const gracePeriodEnd = new Date(endDate);
           gracePeriodEnd.setDate(gracePeriodEnd.getDate() + gracePeriodDays);
           if (now > gracePeriodEnd) {
-            return; // Skip this past trip
+            return;
           }
         }
         
-        // Use destinationCity if available, fall back to destination field
-        const cityName = plan.destinationCity || plan.destination;
-        if (cityName && plan.userId === user?.id) {
-          const planCityLower = cityName.toLowerCase();
-          relevantCityNames.push(planCityLower);
-          // Also add metro area name if applicable
-          const metroName = getMetroName(cityName);
-          if (metroName) {
-            relevantCityNames.push(metroName.toLowerCase());
+        const rawCityName = plan.destinationCity || plan.destination;
+        if (rawCityName && plan.userId === user?.id) {
+          const displayCity = getMetroAreaName(rawCityName);
+          relevantCityNames.push(displayCity.toLowerCase());
+          if (displayCity !== rawCityName) {
+            relevantCityNames.push(rawCityName.toLowerCase());
           }
         }
       });
@@ -328,20 +318,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       "from-blue-300/20 to-orange-500/20",
     ];
     
-    // Add hometown
+    // Add hometown (use metro area name if applicable)
     if (profile?.hometownCity) {
-      const cityName = profile.hometownCity;
-      const cityLower = cityName.toLowerCase();
+      const displayCity = getMetroAreaName(profile.hometownCity);
+      const cityLower = displayCity.toLowerCase();
       if (!addedCityNames.has(cityLower)) {
         addedCityNames.add(cityLower);
-        // Check if exists in allCities
         const existingCity = allCities.find(c => c.city.toLowerCase() === cityLower);
         if (existingCity) {
           cities.push({ ...existingCity, isHometown: true });
         } else {
-          // Create placeholder for hometown
           cities.push({
-            city: cityName,
+            city: displayCity,
             country: profile.hometownCountry || '',
             state: profile.hometownState || '',
             gradient: gradientOptions[0],
@@ -368,20 +356,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           }
         }
         
-        // Use destinationCity if available, fall back to destination field
-        const cityName = plan.destinationCity || plan.destination;
-        if (cityName && plan.userId === user?.id) {
-          const cityLower = cityName.toLowerCase();
+        const rawCityName = plan.destinationCity || plan.destination;
+        if (rawCityName && plan.userId === user?.id) {
+          const displayCity = getMetroAreaName(rawCityName);
+          const cityLower = displayCity.toLowerCase();
           if (!addedCityNames.has(cityLower)) {
             addedCityNames.add(cityLower);
-            // Check if exists in allCities
             const existingCity = allCities.find(c => c.city.toLowerCase() === cityLower);
             if (existingCity) {
               cities.push({ ...existingCity, isTravelDestination: true });
             } else {
-              // Create placeholder for travel destination
               cities.push({
-                city: cityName,
+                city: displayCity,
                 country: plan.destinationCountry || '',
                 state: plan.destinationState || '',
                 gradient: gradientOptions[(index + 1) % gradientOptions.length],
