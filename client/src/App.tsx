@@ -37,6 +37,7 @@ import BusinessCustomLanding from "@/pages/business-custom-landing";
 import Connect from "@/pages/connect";
 import Requests from "@/pages/requests";
 import Explore from "@/pages/explore";
+import CommunityDetail from "@/pages/community-detail";
 
 
 import Auth from "@/pages/auth";
@@ -1184,6 +1185,12 @@ function Router() {
         if (location.startsWith('/events/')) {
           const eventId = location.split('/')[2];
           return <EventDetails eventId={eventId} />;
+        }
+        if (location.startsWith('/community/')) {
+          const communityId = location.split('/')[2];
+          if (communityId) {
+            return <CommunityDetail communityId={parseInt(communityId)} />;
+          }
         }
         if (location.startsWith('/city/')) {
           const pathParts = location.split('/');

@@ -2866,6 +2866,14 @@ export const communityTags = pgTable("community_tags", {
   description: text("description"),
   memberCount: integer("member_count").default(0),
   isActive: boolean("is_active").notNull().default(true),
+  createdBy: integer("created_by").references(() => users.id),
+  isUserCreated: boolean("is_user_created").notNull().default(false),
+  isPrivate: boolean("is_private").notNull().default(false),
+  password: text("password"),
+  isFlagged: boolean("is_flagged").notNull().default(false),
+  flagReason: text("flag_reason"),
+  flaggedBy: integer("flagged_by").references(() => users.id),
+  flaggedAt: timestamp("flagged_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -2881,10 +2889,30 @@ export const insertCommunityTagSchema = createInsertSchema(communityTags).omit({
   id: true,
   createdAt: true,
   memberCount: true,
+  isFlagged: true,
+  flagReason: true,
+  flaggedBy: true,
+  flaggedAt: true,
 });
 export type CommunityTag = typeof communityTags.$inferSelect;
 export type InsertCommunityTag = z.infer<typeof insertCommunityTagSchema>;
 export type UserCommunityTag = typeof userCommunityTags.$inferSelect;
+
+export const communityPosts = pgTable("community_posts", {
+  id: serial("id").primaryKey(),
+  communityId: integer("community_id").notNull().references(() => communityTags.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  content: text("content").notNull(),
+  postType: text("post_type").notNull().default("update"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCommunityPostSchema = createInsertSchema(communityPosts).omit({
+  id: true,
+  createdAt: true,
+});
+export type CommunityPost = typeof communityPosts.$inferSelect;
+export type InsertCommunityPost = z.infer<typeof insertCommunityPostSchema>;
 
 export const eventIntegrations = pgTable("event_integrations", {
   id: serial("id").primaryKey(),

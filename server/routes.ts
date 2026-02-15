@@ -82,7 +82,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, eventIntegrations, externalEvents } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, eventIntegrations, externalEvents } from "../shared/schema";
 import { alias } from "drizzle-orm/pg-core";
 
 // Helper function to compute public display name based on user preference
@@ -22415,16 +22415,158 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/community-tags", async (req: any, res) => {
     try {
       const category = req.query.category as string;
+      const includePrivate = req.query.includePrivate === "true";
       const conditions = [eq(communityTags.isActive, true)];
       if (category) conditions.push(eq(communityTags.category, category));
+      if (!includePrivate) conditions.push(eq(communityTags.isPrivate, false));
 
-      const tags = await db.select().from(communityTags)
+      const tags = await db.select({
+        id: communityTags.id,
+        name: communityTags.name,
+        displayName: communityTags.displayName,
+        category: communityTags.category,
+        icon: communityTags.icon,
+        color: communityTags.color,
+        description: communityTags.description,
+        memberCount: communityTags.memberCount,
+        isActive: communityTags.isActive,
+        createdBy: communityTags.createdBy,
+        isUserCreated: communityTags.isUserCreated,
+        isPrivate: communityTags.isPrivate,
+        isFlagged: communityTags.isFlagged,
+        createdAt: communityTags.createdAt,
+      }).from(communityTags)
         .where(and(...conditions))
         .orderBy(desc(communityTags.memberCount));
 
       res.json(tags);
     } catch (error: any) {
       res.json([]);
+    }
+  });
+
+  // Create a user community
+  app.post("/api/community-tags", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { displayName, category, icon, color, description, isPrivate, password } = req.body;
+      if (!displayName || !category) return res.status(400).json({ error: "Name and category are required" });
+
+      const name = displayName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      if (!name) return res.status(400).json({ error: "Invalid community name" });
+
+      const [existing] = await db.select().from(communityTags).where(eq(communityTags.name, name));
+      if (existing) return res.status(400).json({ error: "A community with this name already exists" });
+
+      if (isPrivate && !password) return res.status(400).json({ error: "Private communities require a password" });
+
+      const [newTag] = await db.insert(communityTags).values({
+        name,
+        displayName,
+        category: category || "general",
+        icon: icon || "🏷️",
+        color: color || "#F97316",
+        description: description || "",
+        isUserCreated: true,
+        createdBy: userId,
+        isPrivate: isPrivate || false,
+        password: isPrivate ? password : null,
+        memberCount: 1,
+      }).returning();
+
+      await db.insert(userCommunityTags).values({ userId, tagId: newTag.id });
+
+      res.json(newTag);
+    } catch (error: any) {
+      console.error("Create community error:", error);
+      res.status(500).json({ error: "Failed to create community" });
+    }
+  });
+
+  // Flag a community
+  app.post("/api/community-tags/:id/flag", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const tagId = parseInt(req.params.id);
+      const { reason } = req.body;
+
+      await db.update(communityTags)
+        .set({
+          isFlagged: true,
+          flagReason: reason || "Reported by user",
+          flaggedBy: userId,
+          flaggedAt: new Date(),
+        })
+        .where(eq(communityTags.id, tagId));
+
+      res.json({ ok: true, message: "Community has been flagged for review" });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to flag community" });
+    }
+  });
+
+  // Admin: get flagged communities
+  app.get("/api/community-tags/flagged", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const [user] = await db.select({ isAdmin: users.isAdmin }).from(users).where(eq(users.id, userId));
+      if (!user?.isAdmin) return res.status(403).json({ error: "Admin access required" });
+
+      const flagged = await db.select().from(communityTags).where(eq(communityTags.isFlagged, true));
+      res.json(flagged);
+    } catch (error: any) {
+      res.json([]);
+    }
+  });
+
+  // Admin: resolve flag (deactivate or clear flag)
+  app.post("/api/community-tags/:id/resolve-flag", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const [user] = await db.select({ isAdmin: users.isAdmin }).from(users).where(eq(users.id, userId));
+      if (!user?.isAdmin) return res.status(403).json({ error: "Admin access required" });
+
+      const tagId = parseInt(req.params.id);
+      const { action } = req.body;
+
+      if (action === "deactivate") {
+        await db.update(communityTags).set({ isActive: false, isFlagged: false }).where(eq(communityTags.id, tagId));
+      } else {
+        await db.update(communityTags).set({ isFlagged: false, flagReason: null, flaggedBy: null, flaggedAt: null }).where(eq(communityTags.id, tagId));
+      }
+
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to resolve flag" });
+    }
+  });
+
+  // Delete community (only creator or admin)
+  app.delete("/api/community-tags/:id", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const tagId = parseInt(req.params.id);
+      const [tag] = await db.select().from(communityTags).where(eq(communityTags.id, tagId));
+      if (!tag) return res.status(404).json({ error: "Community not found" });
+
+      const [user] = await db.select({ isAdmin: users.isAdmin }).from(users).where(eq(users.id, userId));
+      if (tag.createdBy !== userId && !user?.isAdmin) return res.status(403).json({ error: "Only the creator or an admin can delete this community" });
+
+      await db.delete(userCommunityTags).where(eq(userCommunityTags.tagId, tagId));
+      await db.delete(communityTags).where(eq(communityTags.id, tagId));
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to delete community" });
     }
   });
 
@@ -22456,6 +22598,16 @@ Questions? Just reply to this message. Welcome aboard!
 
       const tagId = parseInt(req.params.id);
       const visibility = req.body.visibility || "public";
+      const password = req.body.password;
+
+      // Check the community exists
+      const [tag] = await db.select().from(communityTags).where(eq(communityTags.id, tagId));
+      if (!tag) return res.status(404).json({ error: "Community not found" });
+
+      // Check password for private communities
+      if (tag.isPrivate && tag.password && tag.password !== password) {
+        return res.status(403).json({ error: "Incorrect password" });
+      }
 
       // Check not already joined
       const [existing] = await db.select()
@@ -22540,6 +22692,92 @@ Questions? Just reply to this message. Welcome aboard!
       res.json(memberUsers);
     } catch (error: any) {
       res.json([]);
+    }
+  });
+
+  // Get community posts/feed
+  app.get("/api/community-tags/:id/posts", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const tagId = parseInt(req.params.id);
+
+      // Check user is a member
+      if (userId) {
+        const [membership] = await db.select().from(userCommunityTags)
+          .where(and(eq(userCommunityTags.userId, userId), eq(userCommunityTags.tagId, tagId)));
+        if (!membership) return res.status(403).json({ error: "You must be a member to view posts" });
+      }
+
+      const posts = await db.select({
+        id: communityPosts.id,
+        communityId: communityPosts.communityId,
+        userId: communityPosts.userId,
+        content: communityPosts.content,
+        postType: communityPosts.postType,
+        createdAt: communityPosts.createdAt,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+        avatarColor: users.avatarColor,
+        displayNamePreference: users.displayNamePreference,
+      })
+        .from(communityPosts)
+        .innerJoin(users, eq(communityPosts.userId, users.id))
+        .where(eq(communityPosts.communityId, tagId))
+        .orderBy(desc(communityPosts.createdAt))
+        .limit(50);
+
+      res.json(posts);
+    } catch (error: any) {
+      res.json([]);
+    }
+  });
+
+  // Create a community post
+  app.post("/api/community-tags/:id/posts", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const tagId = parseInt(req.params.id);
+      const { content, postType } = req.body;
+      if (!content || content.trim().length === 0) return res.status(400).json({ error: "Post content is required" });
+
+      // Check user is a member
+      const [membership] = await db.select().from(userCommunityTags)
+        .where(and(eq(userCommunityTags.userId, userId), eq(userCommunityTags.tagId, tagId)));
+      if (!membership) return res.status(403).json({ error: "You must be a member to post" });
+
+      const [post] = await db.insert(communityPosts).values({
+        communityId: tagId,
+        userId,
+        content: content.trim(),
+        postType: postType || "update",
+      }).returning();
+
+      res.json(post);
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to create post" });
+    }
+  });
+
+  // Delete a community post (author or admin only)
+  app.delete("/api/community-tags/:communityId/posts/:postId", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const postId = parseInt(req.params.postId);
+      const [post] = await db.select().from(communityPosts).where(eq(communityPosts.id, postId));
+      if (!post) return res.status(404).json({ error: "Post not found" });
+
+      const [user] = await db.select({ isAdmin: users.isAdmin }).from(users).where(eq(users.id, userId));
+      if (post.userId !== userId && !user?.isAdmin) return res.status(403).json({ error: "Not authorized" });
+
+      await db.delete(communityPosts).where(eq(communityPosts.id, postId));
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to delete post" });
     }
   });
 

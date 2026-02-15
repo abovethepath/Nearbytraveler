@@ -11,7 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Clock, Users, Zap, Coffee, Camera, UtensilsCrossed, Dumbbell, Music, Mountain, Palette, Globe, ArrowRight, Share2, Sparkles, Timer, Plus, Send, Heart, Star, ChevronRight } from "lucide-react";
+import { MapPin, Clock, Users, Zap, Coffee, Camera, UtensilsCrossed, Dumbbell, Music, Mountain, Palette, Globe, ArrowRight, Share2, Sparkles, Timer, Plus, Send, Heart, Star, ChevronRight, Flag, Lock, Trash2, AlertTriangle } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { getMetroAreaName } from "../../../shared/metro-areas";
 
 function UserAvatar({ user, size = "sm" }: { user: any; size?: string }) {
@@ -65,6 +66,20 @@ export default function Explore() {
   const [lsActivity, setLsActivity] = useState("");
   const [lsNote, setLsNote] = useState("");
   const [lsDuration, setLsDuration] = useState("60");
+
+  // Community creation state
+  const [showCreateCommunity, setShowCreateCommunity] = useState(false);
+  const [ccName, setCcName] = useState("");
+  const [ccCategory, setCcCategory] = useState("general");
+  const [ccIcon, setCcIcon] = useState("🏷️");
+  const [ccColor, setCcColor] = useState("#F97316");
+  const [ccDesc, setCcDesc] = useState("");
+  const [ccIsPrivate, setCcIsPrivate] = useState(false);
+  const [ccPassword, setCcPassword] = useState("");
+  const [privateCommunityId, setPrivateCommunityId] = useState<number | null>(null);
+  const [privatePassword, setPrivatePassword] = useState("");
+  const [flagCommunityId, setFlagCommunityId] = useState<number | null>(null);
+  const [flagReason, setFlagReason] = useState("");
 
   // Micro-experience form state
   const [meTitle, setMeTitle] = useState("");
@@ -201,14 +216,23 @@ export default function Explore() {
   });
 
   const joinCommunityMutation = useMutation({
-    mutationFn: async (tagId: number) => {
-      const res = await apiRequest("POST", `/api/community-tags/${tagId}/join`);
+    mutationFn: async ({ tagId, password }: { tagId: number; password?: string }) => {
+      const res = await apiRequest("POST", `/api/community-tags/${tagId}/join`, password ? { password } : {});
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to join");
+      }
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/community-tags"] });
       queryClient.invalidateQueries({ queryKey: ["/api/community-tags/mine"] });
+      setPrivateCommunityId(null);
+      setPrivatePassword("");
       toast({ title: "Joined community!" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Can't join", description: error?.message || "Failed to join community", variant: "destructive" });
     },
   });
 
@@ -221,6 +245,51 @@ export default function Explore() {
       queryClient.invalidateQueries({ queryKey: ["/api/community-tags"] });
       queryClient.invalidateQueries({ queryKey: ["/api/community-tags/mine"] });
       toast({ title: "Left community" });
+    },
+  });
+
+  const createCommunityMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/community-tags", data);
+      if (!res.ok) {
+        const d = await res.json();
+        throw new Error(d.error || "Failed to create community");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/community-tags"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/community-tags/mine"] });
+      setShowCreateCommunity(false);
+      setCcName(""); setCcCategory("general"); setCcIcon("🏷️"); setCcColor("#F97316"); setCcDesc(""); setCcIsPrivate(false); setCcPassword("");
+      toast({ title: "Community created!" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error?.message || "Failed to create community", variant: "destructive" });
+    },
+  });
+
+  const flagCommunityMutation = useMutation({
+    mutationFn: async ({ tagId, reason }: { tagId: number; reason: string }) => {
+      const res = await apiRequest("POST", `/api/community-tags/${tagId}/flag`, { reason });
+      return res.json();
+    },
+    onSuccess: () => {
+      setFlagCommunityId(null);
+      setFlagReason("");
+      toast({ title: "Community flagged", description: "An admin will review this community" });
+    },
+  });
+
+  const deleteCommunityMutation = useMutation({
+    mutationFn: async (tagId: number) => {
+      const res = await apiRequest("DELETE", `/api/community-tags/${tagId}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/community-tags"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/community-tags/mine"] });
+      toast({ title: "Community deleted" });
     },
   });
 
@@ -736,20 +805,79 @@ export default function Explore() {
 
           {/* ===== COMMUNITIES TAB ===== */}
           <TabsContent value="communities" className="space-y-4">
-            <div className="mb-4">
-              <h3 className="font-bold text-lg mb-1">Find Your People</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Join communities to connect with like-minded travelers and locals</p>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-bold text-lg mb-1">Find Your People</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Join or create communities to connect with like-minded people</p>
+              </div>
+              <Dialog open={showCreateCommunity} onOpenChange={setShowCreateCommunity}>
+                <DialogTrigger asChild>
+                  <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+                    <Plus className="w-4 h-4 mr-1" /> Create
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-white dark:bg-gray-900">
+                  <DialogHeader>
+                    <DialogTitle>Create a Community</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-3">
+                    <Input placeholder="Community name" value={ccName} onChange={(e) => setCcName(e.target.value)} />
+                    <Textarea placeholder="Description - what's this community about?" value={ccDesc} onChange={(e) => setCcDesc(e.target.value)} className="h-16" />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Select value={ccCategory} onValueChange={setCcCategory}>
+                        <SelectTrigger><SelectValue placeholder="Category" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="general">General</SelectItem>
+                          <SelectItem value="identity">Identity</SelectItem>
+                          <SelectItem value="lifestyle">Lifestyle</SelectItem>
+                          <SelectItem value="interest">Interest</SelectItem>
+                          <SelectItem value="travel">Travel</SelectItem>
+                          <SelectItem value="local">Local</SelectItem>
+                          <SelectItem value="professional">Professional</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Input placeholder="Icon emoji" value={ccIcon} onChange={(e) => setCcIcon(e.target.value)} className="text-center text-xl" maxLength={4} />
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" checked={ccIsPrivate} onChange={(e) => setCcIsPrivate(e.target.checked)} className="rounded" />
+                        <Lock className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm">Private (password required to join)</span>
+                      </label>
+                    </div>
+                    {ccIsPrivate && (
+                      <Input placeholder="Set a password for this community" type="password" value={ccPassword} onChange={(e) => setCcPassword(e.target.value)} />
+                    )}
+                    <Button onClick={() => {
+                      if (!ccName.trim()) { toast({ title: "Enter a community name", variant: "destructive" }); return; }
+                      createCommunityMutation.mutate({
+                        displayName: ccName.trim(),
+                        category: ccCategory,
+                        icon: ccIcon || "🏷️",
+                        color: ccColor,
+                        description: ccDesc.trim(),
+                        isPrivate: ccIsPrivate,
+                        password: ccIsPrivate ? ccPassword : undefined,
+                      });
+                    }} className="w-full bg-orange-500 hover:bg-orange-600" disabled={createCommunityMutation.isPending}>
+                      {createCommunityMutation.isPending ? "Creating..." : "Create Community"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
 
-            {/* My communities */}
+            {/* My communities - clickable to go to detail page */}
             {myCommunityTags.length > 0 && (
               <div className="mb-6">
                 <h4 className="font-bold text-sm text-gray-700 dark:text-gray-300 mb-2">Your Communities</h4>
                 <div className="flex flex-wrap gap-2">
                   {myCommunityTags.map((tag: any) => (
-                    <Badge key={tag.id} variant="outline" className="py-1.5 px-3 text-sm cursor-pointer hover:bg-red-50 dark:hover:bg-red-950"
-                      onClick={() => leaveCommunityMutation.mutate(tag.id)}>
-                      {tag.icon} {tag.displayName} ✕
+                    <Badge key={tag.id} variant="outline" className="py-1.5 px-3 text-sm cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-950"
+                      onClick={() => setLocation(`/community/${tag.id}`)}>
+                      {tag.isPrivate && <Lock className="w-3 h-3 mr-1" />}
+                      {tag.icon} {tag.displayName}
+                      <ChevronRight className="w-3 h-3 ml-1" />
                     </Badge>
                   ))}
                 </div>
@@ -775,31 +903,81 @@ export default function Explore() {
                   <Card key={tag.id} className={`border transition-all ${isJoined ? "border-orange-400 dark:border-orange-600 bg-orange-50/50 dark:bg-orange-950/20" : "border-gray-200 dark:border-gray-700 hover:border-orange-300"}`}>
                     <CardContent className="p-4">
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="text-2xl">{tag.icon}</div>
-                        <div className="flex-1">
-                          <h4 className="font-bold text-sm">{tag.displayName}</h4>
-                          <p className="text-xs text-gray-500">{tag.memberCount || 0} members</p>
+                        <div className="text-2xl cursor-pointer" onClick={() => isJoined ? setLocation(`/community/${tag.id}`) : null}>{tag.icon}</div>
+                        <div className="flex-1 cursor-pointer" onClick={() => isJoined ? setLocation(`/community/${tag.id}`) : null}>
+                          <h4 className="font-bold text-sm flex items-center gap-1">
+                            {tag.displayName}
+                            {tag.isPrivate && <Lock className="w-3 h-3 text-gray-400" />}
+                          </h4>
+                          <p className="text-xs text-gray-500">{tag.memberCount || 0} members{tag.isUserCreated && " · User created"}</p>
                         </div>
-                        {isJoined ? (
-                          <Button size="sm" variant="outline" className="text-xs" onClick={() => leaveCommunityMutation.mutate(tag.id)}>
-                            Leave
-                          </Button>
-                        ) : (
-                          <Button size="sm" className="text-xs bg-orange-500 hover:bg-orange-600 text-white" onClick={() => joinCommunityMutation.mutate(tag.id)}>
-                            Join
+                        <div className="flex items-center gap-1">
+                          {isJoined ? (
+                            <>
+                              <Button size="sm" variant="ghost" className="text-xs px-2" onClick={() => setLocation(`/community/${tag.id}`)}>
+                                Open
+                              </Button>
+                              <Button size="sm" variant="outline" className="text-xs px-2" onClick={() => leaveCommunityMutation.mutate(tag.id)}>
+                                Leave
+                              </Button>
+                            </>
+                          ) : tag.isPrivate ? (
+                            <Button size="sm" className="text-xs bg-orange-500 hover:bg-orange-600 text-white" onClick={() => setPrivateCommunityId(tag.id)}>
+                              <Lock className="w-3 h-3 mr-1" /> Join
+                            </Button>
+                          ) : (
+                            <Button size="sm" className="text-xs bg-orange-500 hover:bg-orange-600 text-white" onClick={() => joinCommunityMutation.mutate({ tagId: tag.id })}>
+                              Join
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{tag.description}</p>
+                      <div className="flex items-center justify-between mt-2">
+                        {tag.color && <div className="flex-1 h-1 rounded-full mr-2" style={{ backgroundColor: tag.color }} />}
+                        {tag.isUserCreated && (
+                          <Button size="sm" variant="ghost" className="text-xs text-gray-400 px-1 h-6" onClick={() => setFlagCommunityId(tag.id)}>
+                            <Flag className="w-3 h-3" />
                           </Button>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{tag.description}</p>
-                      {tag.color && (
-                        <div className="mt-2 h-1 rounded-full" style={{ backgroundColor: tag.color }} />
-                      )}
                     </CardContent>
                   </Card>
                 );
               })}
             </div>
             )}
+
+            {/* Private community password dialog */}
+            <Dialog open={privateCommunityId !== null} onOpenChange={(open) => { if (!open) { setPrivateCommunityId(null); setPrivatePassword(""); } }}>
+              <DialogContent className="bg-white dark:bg-gray-900">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2"><Lock className="w-5 h-5" /> Private Community</DialogTitle>
+                </DialogHeader>
+                <p className="text-sm text-gray-500">This community requires a password to join.</p>
+                <Input placeholder="Enter password" type="password" value={privatePassword} onChange={(e) => setPrivatePassword(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter" && privateCommunityId) joinCommunityMutation.mutate({ tagId: privateCommunityId, password: privatePassword }); }} />
+                <Button onClick={() => { if (privateCommunityId) joinCommunityMutation.mutate({ tagId: privateCommunityId, password: privatePassword }); }}
+                  className="w-full bg-orange-500 hover:bg-orange-600" disabled={joinCommunityMutation.isPending}>
+                  {joinCommunityMutation.isPending ? "Joining..." : "Join Community"}
+                </Button>
+              </DialogContent>
+            </Dialog>
+
+            {/* Flag community dialog */}
+            <Dialog open={flagCommunityId !== null} onOpenChange={(open) => { if (!open) { setFlagCommunityId(null); setFlagReason(""); } }}>
+              <DialogContent className="bg-white dark:bg-gray-900">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2"><AlertTriangle className="w-5 h-5 text-red-500" /> Report Community</DialogTitle>
+                </DialogHeader>
+                <p className="text-sm text-gray-500">Tell us why this community should be reviewed.</p>
+                <Textarea placeholder="Reason for flagging..." value={flagReason} onChange={(e) => setFlagReason(e.target.value)} className="h-20" />
+                <Button onClick={() => { if (flagCommunityId) flagCommunityMutation.mutate({ tagId: flagCommunityId, reason: flagReason }); }}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white" disabled={flagCommunityMutation.isPending}>
+                  {flagCommunityMutation.isPending ? "Submitting..." : "Submit Report"}
+                </Button>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
 
           {/* ===== SHARE CARDS TAB ===== */}
