@@ -82,7 +82,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, eventIntegrations, externalEvents } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents } from "../shared/schema";
 import { alias } from "drizzle-orm/pg-core";
 
 // Helper function to compute public display name based on user preference
@@ -22778,6 +22778,160 @@ Questions? Just reply to this message. Welcome aboard!
       res.json({ ok: true });
     } catch (error: any) {
       res.status(500).json({ error: "Failed to delete post" });
+    }
+  });
+
+  // Toggle like on a community post
+  app.post("/api/community-posts/:postId/like", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const postId = parseInt(req.params.postId);
+
+      const [existing] = await db.select().from(communityPostLikes)
+        .where(and(eq(communityPostLikes.postId, postId), eq(communityPostLikes.userId, userId)));
+
+      if (existing) {
+        await db.delete(communityPostLikes).where(eq(communityPostLikes.id, existing.id));
+        res.json({ liked: false });
+      } else {
+        await db.insert(communityPostLikes).values({ postId, userId });
+        res.json({ liked: true });
+      }
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to toggle like" });
+    }
+  });
+
+  // Get likes for posts (batch)
+  app.get("/api/community-posts/likes", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const postIds = (req.query.postIds as string || "").split(",").map(Number).filter(Boolean);
+      if (postIds.length === 0) return res.json({});
+
+      const likeCounts = await db.select({
+        postId: communityPostLikes.postId,
+        count: count(),
+      }).from(communityPostLikes)
+        .where(inArray(communityPostLikes.postId, postIds))
+        .groupBy(communityPostLikes.postId);
+
+      const userLikes = userId ? await db.select({ postId: communityPostLikes.postId })
+        .from(communityPostLikes)
+        .where(and(inArray(communityPostLikes.postId, postIds), eq(communityPostLikes.userId, userId))) : [];
+
+      const userLikedSet = new Set(userLikes.map(l => l.postId));
+      const result: Record<number, { count: number; liked: boolean }> = {};
+      for (const id of postIds) {
+        const found = likeCounts.find(l => l.postId === id);
+        result[id] = { count: found ? Number(found.count) : 0, liked: userLikedSet.has(id) };
+      }
+      res.json(result);
+    } catch (error: any) {
+      res.json({});
+    }
+  });
+
+  // Get replies for a post
+  app.get("/api/community-posts/:postId/replies", async (req: any, res) => {
+    try {
+      const postId = parseInt(req.params.postId);
+      const replies = await db.select({
+        id: communityPostReplies.id,
+        postId: communityPostReplies.postId,
+        userId: communityPostReplies.userId,
+        content: communityPostReplies.content,
+        createdAt: communityPostReplies.createdAt,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+        avatarColor: users.avatarColor,
+      }).from(communityPostReplies)
+        .innerJoin(users, eq(communityPostReplies.userId, users.id))
+        .where(eq(communityPostReplies.postId, postId))
+        .orderBy(asc(communityPostReplies.createdAt))
+        .limit(100);
+      res.json(replies);
+    } catch (error: any) {
+      res.json([]);
+    }
+  });
+
+  // Create a reply on a post
+  app.post("/api/community-posts/:postId/replies", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const postId = parseInt(req.params.postId);
+      const { content } = req.body;
+      if (!content || content.trim().length === 0) return res.status(400).json({ error: "Reply content is required" });
+
+      const [reply] = await db.insert(communityPostReplies).values({
+        postId, userId, content: content.trim(),
+      }).returning();
+
+      const [replyWithUser] = await db.select({
+        id: communityPostReplies.id,
+        postId: communityPostReplies.postId,
+        userId: communityPostReplies.userId,
+        content: communityPostReplies.content,
+        createdAt: communityPostReplies.createdAt,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+        avatarColor: users.avatarColor,
+      }).from(communityPostReplies)
+        .innerJoin(users, eq(communityPostReplies.userId, users.id))
+        .where(eq(communityPostReplies.id, reply.id));
+
+      res.json(replyWithUser);
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to create reply" });
+    }
+  });
+
+  // Delete a reply (author or admin)
+  app.delete("/api/community-posts/replies/:replyId", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const replyId = parseInt(req.params.replyId);
+
+      const [reply] = await db.select().from(communityPostReplies).where(eq(communityPostReplies.id, replyId));
+      if (!reply) return res.status(404).json({ error: "Reply not found" });
+
+      const [user] = await db.select({ isAdmin: users.isAdmin }).from(users).where(eq(users.id, userId));
+      if (reply.userId !== userId && !user?.isAdmin) return res.status(403).json({ error: "Not authorized" });
+
+      await db.delete(communityPostReplies).where(eq(communityPostReplies.id, replyId));
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to delete reply" });
+    }
+  });
+
+  // Get reply counts for posts (batch)
+  app.get("/api/community-posts/reply-counts", async (req: any, res) => {
+    try {
+      const postIds = (req.query.postIds as string || "").split(",").map(Number).filter(Boolean);
+      if (postIds.length === 0) return res.json({});
+
+      const replyCounts = await db.select({
+        postId: communityPostReplies.postId,
+        count: count(),
+      }).from(communityPostReplies)
+        .where(inArray(communityPostReplies.postId, postIds))
+        .groupBy(communityPostReplies.postId);
+
+      const result: Record<number, number> = {};
+      for (const id of postIds) {
+        const found = replyCounts.find(r => r.postId === id);
+        result[id] = found ? Number(found.count) : 0;
+      }
+      res.json(result);
+    } catch (error: any) {
+      res.json({});
     }
   });
 

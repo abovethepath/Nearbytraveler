@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Users, MessageSquare, Send, Lock, Trash2, Clock } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, Users, MessageSquare, Send, Lock, Trash2, Clock, Heart, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
 
 function UserAvatar({ user, size = "sm" }: { user: any; size?: string }) {
   const sizeClass = size === "sm" ? "w-8 h-8 text-xs" : size === "md" ? "w-10 h-10 text-sm" : "w-12 h-12 text-base";
@@ -36,6 +36,90 @@ function timeAgo(dateStr: string) {
   return `${days}d ago`;
 }
 
+function PostReplies({ postId, currentUser }: { postId: number; currentUser: any }) {
+  const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+  const [replyText, setReplyText] = useState("");
+
+  const { data: replies = [] } = useQuery<any[]>({
+    queryKey: ["/api/community-posts", postId, "replies"],
+    queryFn: async () => {
+      const res = await fetch(`/api/community-posts/${postId}/replies`);
+      if (!res.ok) return [];
+      return res.json();
+    },
+  });
+
+  const createReplyMutation = useMutation({
+    mutationFn: async (content: string) => {
+      const res = await apiRequest("POST", `/api/community-posts/${postId}/replies`, { content });
+      if (!res.ok) throw new Error("Failed to reply");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/community-posts", postId, "replies"] });
+      queryClient.invalidateQueries({ queryKey: ["reply-counts"] });
+      setReplyText("");
+    },
+  });
+
+  const deleteReplyMutation = useMutation({
+    mutationFn: async (replyId: number) => {
+      await apiRequest("DELETE", `/api/community-posts/replies/${replyId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/community-posts", postId, "replies"] });
+      queryClient.invalidateQueries({ queryKey: ["reply-counts"] });
+    },
+  });
+
+  return (
+    <div className="mt-3 pl-4 border-l-2 border-gray-200 dark:border-gray-700 space-y-3">
+      {replies.map((reply: any) => (
+        <div key={reply.id} className="flex items-start gap-2">
+          <div className="cursor-pointer" onClick={() => setLocation(`/profile/${reply.userId}`)}>
+            <UserAvatar user={{ profileImage: reply.profileImage, username: reply.username, avatarColor: reply.avatarColor }} size="sm" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-xs cursor-pointer hover:underline" onClick={() => setLocation(`/profile/${reply.userId}`)}>
+                {reply.username}
+              </span>
+              <span className="text-xs text-gray-400">{timeAgo(reply.createdAt)}</span>
+              {reply.userId === currentUser?.id && (
+                <button className="text-gray-400 hover:text-red-500 ml-auto" onClick={() => deleteReplyMutation.mutate(reply.id)}>
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 whitespace-pre-wrap">{reply.content}</p>
+          </div>
+        </div>
+      ))}
+
+      <div className="flex gap-2 items-center">
+        <Input
+          placeholder="Write a reply..."
+          value={replyText}
+          onChange={(e) => setReplyText(e.target.value)}
+          className="text-xs h-8"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && replyText.trim()) {
+              e.preventDefault();
+              createReplyMutation.mutate(replyText.trim());
+            }
+          }}
+        />
+        <Button size="sm" variant="ghost" className="h-8 px-2 text-orange-500 hover:text-orange-600"
+          disabled={!replyText.trim() || createReplyMutation.isPending}
+          onClick={() => { if (replyText.trim()) createReplyMutation.mutate(replyText.trim()); }}>
+          <Send className="w-3 h-3" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function CommunityDetail({ communityId }: { communityId: number }) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -44,6 +128,7 @@ export default function CommunityDetail({ communityId }: { communityId: number }
   const currentUser = storedUser ? JSON.parse(storedUser) : null;
   const [activeSection, setActiveSection] = useState<"feed" | "members">("feed");
   const [newPost, setNewPost] = useState("");
+  const [expandedReplies, setExpandedReplies] = useState<Set<number>>(new Set());
 
   const { data: community, isLoading } = useQuery<any>({
     queryKey: ["/api/community-tags", communityId],
@@ -71,6 +156,30 @@ export default function CommunityDetail({ communityId }: { communityId: number }
       return res.json();
     },
     refetchInterval: 15000,
+  });
+
+  const postIds = posts.map((p: any) => p.id);
+
+  const { data: likesData = {} } = useQuery<Record<number, { count: number; liked: boolean }>>({
+    queryKey: ["post-likes", postIds.join(",")],
+    queryFn: async () => {
+      if (postIds.length === 0) return {};
+      const res = await fetch(`/api/community-posts/likes?postIds=${postIds.join(",")}`);
+      if (!res.ok) return {};
+      return res.json();
+    },
+    enabled: postIds.length > 0,
+  });
+
+  const { data: replyCounts = {} } = useQuery<Record<number, number>>({
+    queryKey: ["reply-counts", postIds.join(",")],
+    queryFn: async () => {
+      if (postIds.length === 0) return {};
+      const res = await fetch(`/api/community-posts/reply-counts?postIds=${postIds.join(",")}`);
+      if (!res.ok) return {};
+      return res.json();
+    },
+    enabled: postIds.length > 0,
   });
 
   const createPostMutation = useMutation({
@@ -101,6 +210,42 @@ export default function CommunityDetail({ communityId }: { communityId: number }
       toast({ title: "Post deleted" });
     },
   });
+
+  const likeMutation = useMutation({
+    mutationFn: async (postId: number) => {
+      const res = await apiRequest("POST", `/api/community-posts/${postId}/like`);
+      return res.json();
+    },
+    onMutate: async (postId: number) => {
+      const key = ["post-likes", postIds.join(",")];
+      await queryClient.cancelQueries({ queryKey: key });
+      const prev = queryClient.getQueryData<Record<number, { count: number; liked: boolean }>>(key);
+      if (prev && prev[postId]) {
+        const updated = { ...prev };
+        const wasLiked = updated[postId].liked;
+        updated[postId] = { count: updated[postId].count + (wasLiked ? -1 : 1), liked: !wasLiked };
+        queryClient.setQueryData(key, updated);
+      }
+      return { prev };
+    },
+    onError: (_err, _postId, context) => {
+      if (context?.prev) {
+        queryClient.setQueryData(["post-likes", postIds.join(",")], context.prev);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["post-likes"] });
+    },
+  });
+
+  const toggleReplies = (postId: number) => {
+    setExpandedReplies(prev => {
+      const next = new Set(prev);
+      if (next.has(postId)) next.delete(postId);
+      else next.add(postId);
+      return next;
+    });
+  };
 
   if (isLoading) {
     return (
@@ -162,22 +307,18 @@ export default function CommunityDetail({ communityId }: { communityId: number }
           <div className="space-y-4">
             <Card className="border border-gray-200 dark:border-gray-700">
               <CardContent className="p-4">
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <Textarea
-                      placeholder="Share something with the community..."
-                      value={newPost}
-                      onChange={(e) => setNewPost(e.target.value)}
-                      className="min-h-[60px] resize-none"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey && newPost.trim()) {
-                          e.preventDefault();
-                          createPostMutation.mutate(newPost.trim());
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
+                <Textarea
+                  placeholder="Share something with the community..."
+                  value={newPost}
+                  onChange={(e) => setNewPost(e.target.value)}
+                  className="min-h-[60px] resize-none"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey && newPost.trim()) {
+                      e.preventDefault();
+                      createPostMutation.mutate(newPost.trim());
+                    }
+                  }}
+                />
                 <div className="flex justify-end mt-2">
                   <Button size="sm" className="bg-orange-500 hover:bg-orange-600"
                     onClick={() => { if (newPost.trim()) createPostMutation.mutate(newPost.trim()); }}
@@ -201,36 +342,67 @@ export default function CommunityDetail({ communityId }: { communityId: number }
               </div>
             ) : (
               <div className="space-y-3">
-                {posts.map((post: any) => (
-                  <Card key={post.id} className="border border-gray-200 dark:border-gray-700">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="cursor-pointer" onClick={() => setLocation(`/profile/${post.userId}`)}>
-                          <UserAvatar user={{ profileImage: post.profileImage, username: post.username, avatarColor: post.avatarColor }} size="md" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="font-bold text-sm cursor-pointer hover:underline" onClick={() => setLocation(`/profile/${post.userId}`)}>
-                                {post.username}
-                              </span>
-                              <span className="text-xs text-gray-400 flex items-center gap-1">
-                                <Clock className="w-3 h-3" /> {timeAgo(post.createdAt)}
-                              </span>
+                {posts.map((post: any) => {
+                  const likeInfo = likesData[post.id] || { count: 0, liked: false };
+                  const replyCount = replyCounts[post.id] || 0;
+                  const showReplies = expandedReplies.has(post.id);
+
+                  return (
+                    <Card key={post.id} className="border border-gray-200 dark:border-gray-700">
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div className="cursor-pointer" onClick={() => setLocation(`/profile/${post.userId}`)}>
+                            <UserAvatar user={{ profileImage: post.profileImage, username: post.username, avatarColor: post.avatarColor }} size="md" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-sm cursor-pointer hover:underline" onClick={() => setLocation(`/profile/${post.userId}`)}>
+                                  {post.username}
+                                </span>
+                                <span className="text-xs text-gray-400 flex items-center gap-1">
+                                  <Clock className="w-3 h-3" /> {timeAgo(post.createdAt)}
+                                </span>
+                              </div>
+                              {(post.userId === currentUser?.id) && (
+                                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-500 h-6 w-6 p-0"
+                                  onClick={() => deletePostMutation.mutate(post.id)}>
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              )}
                             </div>
-                            {(post.userId === currentUser?.id) && (
-                              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-500 h-6 w-6 p-0"
-                                onClick={() => deletePostMutation.mutate(post.id)}>
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
+                            <p className="text-sm text-gray-700 dark:text-gray-300 mt-1 whitespace-pre-wrap">{post.content}</p>
+
+                            <div className="flex items-center gap-4 mt-3 pt-2 border-t border-gray-100 dark:border-gray-800">
+                              <button
+                                className={`flex items-center gap-1.5 text-xs transition-colors ${likeInfo.liked ? "text-red-500" : "text-gray-400 hover:text-red-400"}`}
+                                onClick={() => likeMutation.mutate(post.id)}
+                              >
+                                <Heart className={`w-4 h-4 ${likeInfo.liked ? "fill-red-500" : ""}`} />
+                                <span>{likeInfo.count > 0 ? likeInfo.count : ""}</span>
+                              </button>
+
+                              <button
+                                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-orange-500 transition-colors"
+                                onClick={() => toggleReplies(post.id)}
+                              >
+                                <MessageCircle className="w-4 h-4" />
+                                <span>{replyCount > 0 ? replyCount : ""}</span>
+                                {replyCount > 0 && (
+                                  showReplies ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                                )}
+                              </button>
+                            </div>
+
+                            {showReplies && (
+                              <PostReplies postId={post.id} currentUser={currentUser} />
                             )}
                           </div>
-                          <p className="text-sm text-gray-700 dark:text-gray-300 mt-1 whitespace-pre-wrap">{post.content}</p>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </div>
