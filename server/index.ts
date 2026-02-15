@@ -352,9 +352,56 @@ app.get("/api/quick-deals", async (req, res) => {
   }
 });
 
-// REMOVED: Duplicate city-stats endpoint that ignored travel plans - using proper implementation in routes.ts
-
-// REMOVED: Conflicting search endpoint - using the proper one in routes.ts instead
+// CRITICAL: users-by-location endpoint registered here (not in routes.ts) to avoid route registration timing issues
+app.get("/api/users-by-location/:city/:userType", async (req, res) => {
+  try {
+    const { city, userType } = req.params;
+    const searchCity = decodeURIComponent(city);
+    
+    const { getMetroCities, getMetroAreaName } = await import("../shared/metro-areas");
+    
+    // Inline getExpandedCityList logic
+    let expandedCities: string[];
+    const metroCities = getMetroCities(searchCity);
+    if (metroCities.length > 0) {
+      expandedCities = [...new Set([searchCity, ...metroCities])];
+    } else {
+      const metroName = getMetroAreaName(searchCity);
+      if (metroName !== searchCity) {
+        const allMetroCities = getMetroCities(metroName);
+        expandedCities = [...new Set([searchCity, metroName, ...allMetroCities])];
+      } else {
+        expandedCities = [searchCity];
+      }
+    }
+    console.log(`🌍 users-by-location [CRITICAL]: searching ${expandedCities.length} cities for "${searchCity}" (type: ${userType})`);
+    
+    const cityConditions = expandedCities.map(c =>
+      or(
+        ilike(users.hometownCity, `%${c}%`),
+        ilike(users.location, `%${c}%`)
+      )
+    );
+    
+    const conditions: any[] = [or(...cityConditions)];
+    
+    if (userType && userType !== 'all') {
+      conditions.push(eq(users.userType, userType));
+    }
+    
+    conditions.push(eq(users.isActive, true));
+    
+    const results = await db.select().from(users).where(and(...conditions));
+    
+    const safeResults = results.map(({ password, ...rest }) => rest);
+    
+    console.log(`🌍 users-by-location [CRITICAL]: found ${safeResults.length} ${userType} users for "${searchCity}"`);
+    res.json(safeResults);
+  } catch (error: any) {
+    console.error("Error in users-by-location endpoint:", error);
+    res.status(500).json({ message: "Failed to fetch users by location", error: error.message });
+  }
+});
 
 console.log("✅ CRITICAL API ROUTES REGISTERED BEFORE OTHER MIDDLEWARE");
 

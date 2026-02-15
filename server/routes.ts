@@ -2503,73 +2503,36 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   
   if (process.env.NODE_ENV === 'development') console.log("Chatrooms initialization DISABLED to prevent phantom rooms");
 
-  // CRITICAL: Get users by location and type endpoint with LA Metro consolidation - must come before parameterized routes
+  // CRITICAL: Get users by location and type - simple direct DB query (same approach as /api/users)
   app.get("/api/users-by-location/:city/:userType", async (req, res) => {
     try {
       const { city, userType } = req.params;
-      const { state, country } = req.query;
-      
-      if (process.env.NODE_ENV === 'development') console.log(`Users by location endpoint: ${city}, ${userType}, state: ${state}, country: ${country}`);
-      
-      // Apply global metropolitan area consolidation to search location
       const searchCity = decodeURIComponent(city);
-      const consolidatedSearchCity = consolidateToMetropolitanArea(searchCity, state as string, country as string);
       
-      // Build location string for search
-      let searchLocation = searchCity;
-      if (state) searchLocation += `, ${state}`;
-      if (country) searchLocation += `, ${country}`;
+      const expandedCities = getExpandedCityList(searchCity);
+      console.log(`🌍 users-by-location: searching ${expandedCities.length} cities for "${searchCity}" (type: ${userType})`);
       
-      // If searching for a metro area city, search for the main metropolitan city
-      let finalSearchLocation = searchLocation;
-      if (consolidatedSearchCity !== searchCity) {
-        finalSearchLocation = searchLocation.replace(searchCity, consolidatedSearchCity);
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO: Redirecting search from ${searchCity} to ${consolidatedSearchCity}`);
-      }
-      
-      // Get users from primary search
-      let users = await storage.getUsersByLocationAndType(
-        consolidatedSearchCity,
-        state as string || null,
-        country as string || null,
-        userType
+      const cityConditions = expandedCities.map(c =>
+        or(
+          ilike(users.hometownCity, `%${c}%`),
+          ilike(users.location, `%${c}%`)
+        )
       );
       
-      // If searching for a metropolitan area, also search for all cities in that metro area
-      if (consolidatedSearchCity !== searchCity) {
-        const allMetroUsers = [];
-        const allUserIds = new Set(users.map(user => user.id));
-        
-        for (const metroCity of getMetropolitanAreaCities(consolidatedSearchCity, state as string, country as string)) {
-          if (metroCity !== consolidatedSearchCity) {
-            const metroUsers = await storage.getUsersByLocationAndType(
-              metroCity,
-              state as string || null,
-              country as string || null,
-              userType
-            );
-            
-            // Add only users we haven't seen yet
-            for (const user of metroUsers) {
-              if (!allUserIds.has(user.id)) {
-                allUserIds.add(user.id);
-                allMetroUsers.push(user);
-              }
-            }
-          }
-        }
-        
-        // Combine all metro area users while preserving original city names
-        users = [...users, ...allMetroUsers];
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 METRO: Combined ${users.length} users from all ${consolidatedSearchCity} metro cities`);
-        
-        // Keep original city names - users maintain their individual identities
+      const conditions: any[] = [or(...cityConditions)];
+      
+      if (userType && userType !== 'all') {
+        conditions.push(eq(users.userType, userType));
       }
       
-      if (process.env.NODE_ENV === 'development') console.log(`Found ${users.length} users for location: ${finalSearchLocation}, type: ${userType}`);
-      res.json(users);
+      const results = await db.select().from(users).where(and(...conditions));
+      
+      const safeResults = results.map(({ password, ...rest }) => rest);
+      
+      console.log(`🌍 users-by-location: found ${safeResults.length} ${userType} users for "${searchCity}"`);
+      res.json(safeResults);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error in users-by-location endpoint:", error);
+      console.error("Error in users-by-location endpoint:", error);
       res.status(500).json({ message: "Failed to fetch users by location", error });
     }
   });
