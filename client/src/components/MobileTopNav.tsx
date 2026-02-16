@@ -78,32 +78,18 @@ export function MobileTopNav() {
 
   useEffect(() => {
     if (isOpen) {
-      const scrollY = window.scrollY;
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.left = "0";
-      document.body.style.right = "0";
       document.body.style.overflow = "hidden";
       return () => {
-        document.body.style.position = "";
-        document.body.style.top = "";
-        document.body.style.left = "";
-        document.body.style.right = "";
         document.body.style.overflow = "";
-        window.scrollTo(0, scrollY);
       };
     }
   }, [isOpen]);
 
-  const handleMenuToggle = (e: React.TouchEvent | React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleMenuToggle = () => {
     setIsOpen(prev => !prev);
   };
 
-  const handleAvatarTap = (e: React.TouchEvent | React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleAvatarTap = () => {
     setIsOpen(false);
     const profilePath = currentUser?.id ? `/profile/${currentUser.id}` : "/profile";
     setLocation(profilePath);
@@ -216,7 +202,6 @@ export function MobileTopNav() {
               touchAction: 'manipulation',
               WebkitTapHighlightColor: 'transparent',
             }}
-            onTouchEnd={handleMenuToggle}
             onClick={handleMenuToggle}
           >
             {isOpen ? <X className="w-[22px] h-[22px] pointer-events-none" /> : <Menu className="w-[22px] h-[22px] pointer-events-none" />}
@@ -236,7 +221,6 @@ export function MobileTopNav() {
               touchAction: 'manipulation',
               WebkitTapHighlightColor: 'transparent',
             }}
-            onTouchEnd={handleAvatarTap}
             onClick={handleAvatarTap}
           >
             <Avatar className="w-8 h-8 border-2 border-gray-200/80 dark:border-gray-600/80 pointer-events-none ring-1 ring-white/20">
@@ -259,9 +243,7 @@ export function MobileTopNav() {
         <>
           <div
             className="fixed inset-0 z-[10001] md:hidden ios-menu-backdrop"
-            style={{ touchAction: 'none' }}
             onClick={() => setIsOpen(false)}
-            onTouchMove={(e) => e.preventDefault()}
           />
 
           <nav
@@ -278,7 +260,6 @@ export function MobileTopNav() {
                 type="button"
                 className="ios-touch-target flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800"
                 style={{ width: '30px', height: '30px', touchAction: 'manipulation' }}
-                onTouchEnd={(e) => { e.preventDefault(); setIsOpen(false); }}
                 onClick={() => setIsOpen(false)}
               >
                 <X className="w-4 h-4 text-gray-500 dark:text-gray-400 pointer-events-none" />
@@ -286,14 +267,12 @@ export function MobileTopNav() {
             </div>
 
             <div
-              className="flex-1 overflow-y-auto overscroll-contain ios-scroll-container"
+              className="flex-1 overflow-y-auto overscroll-contain"
               style={{
                 WebkitOverflowScrolling: 'touch',
-                touchAction: 'pan-y',
                 overscrollBehavior: 'contain',
                 minHeight: 0,
               }}
-              onTouchMove={(e) => e.stopPropagation()}
             >
               {currentUser && (
                 <div className="px-4 py-4 border-b border-gray-200/60 dark:border-gray-700/60">
@@ -334,7 +313,6 @@ export function MobileTopNav() {
                           minHeight: '44px',
                           borderBottom: idx < group.items.length - 1 ? '0.5px solid rgba(0,0,0,0.08)' : 'none',
                         }}
-                        onTouchEnd={(e) => { e.preventDefault(); navigate(item.path); }}
                         onClick={() => navigate(item.path)}
                       >
                         <div className="w-7 h-7 rounded-md bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
@@ -354,7 +332,6 @@ export function MobileTopNav() {
                     type="button"
                     className="w-full flex items-center gap-3 px-4 text-left text-[15px] text-red-500 dark:text-red-400 active:bg-red-50 dark:active:bg-red-900/20 transition-colors"
                     style={{ touchAction: 'manipulation', minHeight: '44px' }}
-                    onTouchEnd={(e) => { e.preventDefault(); handleLogout(); }}
                     onClick={handleLogout}
                   >
                     <div className="w-7 h-7 rounded-md bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
