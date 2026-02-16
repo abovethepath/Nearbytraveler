@@ -32,7 +32,6 @@ interface CityPageProps {
 export default function CityPage({ cityName }: CityPageProps) {
   const [location, setLocation] = useLocation();
   const [filter, setFilter] = useState("all");
-  const [eventTab, setEventTab] = useState<"current" | "past">("current");
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [showAllEvents, setShowAllEvents] = useState(false);
   const [sortBy, setSortBy] = useState("recent");
@@ -242,13 +241,7 @@ export default function CityPage({ cityName }: CityPageProps) {
   // Paginate users - show top 3 for preview, 9 when expanded, all when fully expanded
   const displayedUsers = showAllUsers ? filteredUsers : filteredUsers.slice(0, 3);
 
-  // Separate current and past events - with preview limits
-  const allCurrentEvents = events.filter((event: Event) => new Date(event.date) >= new Date());
-  const allPastEvents = events.filter((event: Event) => new Date(event.date) < new Date());
-  
-  // Show events based on preview mode
-  const currentEvents = showAllEvents ? allCurrentEvents : allCurrentEvents.slice(0, 3);
-  const pastEvents = showAllEvents ? allPastEvents : allPastEvents.slice(0, 3);
+  const currentEvents = showAllEvents ? events : events.slice(0, 3);
 
   if (!decodedCityName) {
     return (
@@ -555,59 +548,24 @@ export default function CityPage({ cityName }: CityPageProps) {
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">Events in {decodedCityName}</h2>
                     <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Discover local events and activities</p>
                   </div>
-                  <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <Button
-                      variant={eventTab === "current" ? "default" : "outline"}
-                      onClick={() => setEventTab("current")}
-                      className={`flex-1 sm:flex-none text-sm ${eventTab === "current" ? "bg-gradient-to-r from-blue-600 to-orange-500 text-white" : ""}`}
-                    >
-                      Current ({currentEvents.length})
-                    </Button>
-                    <Button
-                      variant={eventTab === "past" ? "default" : "outline"}
-                      onClick={() => setEventTab("past")}
-                      className={`flex-1 sm:flex-none text-sm ${eventTab === "past" ? "bg-gradient-to-r from-blue-600 to-orange-500 text-white" : ""}`}
-                    >
-                      Past ({pastEvents.length})
-                    </Button>
-                  </div>
                 </div>
 
-                {/* Events Grid */}
-                {eventTab === "current" ? (
-                  currentEvents.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-                      {currentEvents.map((event: Event) => (
-                        <EventCard key={event.id} event={event} />
-                      ))}
-                    </div>
-                  ) : (
-                    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                      <CardContent className="p-6 sm:p-8 text-center">
-                        <Calendar className="w-10 sm:w-12 h-10 sm:h-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">No current events in {decodedCityName}</p>
-                      </CardContent>
-                    </Card>
-                  )
+                {currentEvents.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                    {currentEvents.map((event: Event) => (
+                      <EventCard key={event.id} event={event} />
+                    ))}
+                  </div>
                 ) : (
-                  pastEvents.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-                      {pastEvents.map((event: Event) => (
-                        <EventCard key={event.id} event={event} />
-                      ))}
-                    </div>
-                  ) : (
-                    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                      <CardContent className="p-6 sm:p-8 text-center">
-                        <Calendar className="w-10 sm:w-12 h-10 sm:h-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">No past events in {decodedCityName}</p>
-                      </CardContent>
-                    </Card>
-                  )
+                  <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                    <CardContent className="p-6 sm:p-8 text-center">
+                      <Calendar className="w-10 sm:w-12 h-10 sm:h-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">No upcoming events in {decodedCityName}</p>
+                    </CardContent>
+                  </Card>
                 )}
                 
-                {/* View All Events Controls - Preview Mode */}
-                {((eventTab === "current" && allCurrentEvents.length > 3) || (eventTab === "past" && allPastEvents.length > 3)) && (
+                {events.length > 3 && (
                   <div className="flex justify-center mt-6">
                     {!showAllEvents ? (
                       <Button
@@ -616,7 +574,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                         className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600"
                       >
                         <Calendar className="w-4 h-4 mr-2" />
-                        View All {eventTab === "current" ? allCurrentEvents.length : allPastEvents.length} {eventTab === "current" ? "Current" : "Past"} Events
+                        View All {events.length} Events
                       </Button>
                     ) : (
                       <Button
