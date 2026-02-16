@@ -6532,14 +6532,44 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </div>
                   </button>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Connections</span>
-                    <span className="font-semibold dark:text-white">{userConnections.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Active Travel Plans</span>
-                    <span className="font-semibold dark:text-white">{(travelPlans || []).filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
-                  </div>
+                  <button
+                    type="button"
+                    className="flex items-center justify-between cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                    onClick={() => {
+                      const connectionsSection = document.querySelector('[data-testid="contacts-content"]');
+                      if (connectionsSection) {
+                        connectionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }}
+                  >
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Users className="w-4 h-4 text-green-500" />
+                      Connections
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold dark:text-white">{userConnections.length}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    className="flex items-center justify-between cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                    onClick={() => {
+                      const travelPlansSection = document.querySelector('[data-testid="travel-plans-widget"]');
+                      if (travelPlansSection) {
+                        travelPlansSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }}
+                  >
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-purple-500" />
+                      Active Travel Plans
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold dark:text-white">{(travelPlans || []).filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </button>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-300">Cumulative Trips Taken</span>
                     <span className="font-semibold dark:text-white">{(travelPlans || []).filter(plan => plan.status === 'completed').length}</span>
