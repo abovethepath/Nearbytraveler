@@ -519,7 +519,7 @@ export default function Messages() {
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-screen'}`}>
+    <div className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-[calc(100vh-10rem)] md:h-screen'}`}>
       {/* Left Sidebar - Conversations (Always visible on desktop, hidden when chat open on mobile) */}
       <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-gray-100 dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500`}>
         <div className={`border-b border-gray-200 dark:border-gray-700 ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'}`}>
