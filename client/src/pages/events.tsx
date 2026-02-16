@@ -71,17 +71,18 @@ export default function Events() {
     localStorage.setItem('hideEventsHeroSection', String(!newValue));
   };
 
-  // Add/remove body class for modal
   React.useEffect(() => {
     if (showCreateEvent) {
       document.body.classList.add('create-event-modal-open');
       document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.classList.remove('create-event-modal-open');
-        document.body.style.overflow = 'auto';
-      };
+    } else {
+      document.body.classList.remove('create-event-modal-open');
+      document.body.style.overflow = '';
     }
-    return () => {}; // Always return a function
+    return () => {
+      document.body.classList.remove('create-event-modal-open');
+      document.body.style.overflow = '';
+    };
   }, [showCreateEvent]);
 
   // Get current user from localStorage
