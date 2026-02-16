@@ -8813,7 +8813,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <FormItem>
                           <FormLabel>Do you have children?</FormLabel>
                           <FormControl>
-                            <div className="space-y-2 border rounded-md p-3">
+                            <div className="border rounded-md p-3">
                               <div className="flex items-center space-x-2">
                                 <Checkbox
                                   id="have-children"
@@ -8821,7 +8821,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   onCheckedChange={(checked) => {
                                     field.onChange(!!checked);
                                   }}
-                                  className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+                                  className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
                                   data-testid="checkbox-have-children"
                                 />
                                 <label 
@@ -8980,7 +8980,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <FormItem>
                         <FormLabel>Sexual Preference (Select all that apply)</FormLabel>
                         <FormControl>
-                          <div className="space-y-2 border rounded-md p-3">
+                          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 border rounded-md p-3">
                             {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
                               <div key={preference} className="flex items-center space-x-2">
                                 <Checkbox
@@ -8994,7 +8994,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       field.onChange(currentValue.filter((p: string) => p !== preference));
                                     }
                                   }}
-                                  className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+                                  className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
                                 />
                                 <label 
                                   htmlFor={`preference-${preference}`} 
