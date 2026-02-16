@@ -538,11 +538,10 @@ export default function Deals() {
             <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-gray-500 text-white border-0 mt-2">
               {(() => {
                 const activeCity = selectedCity || effectiveUser?.hometownCity || '';
-                const dealCount = filteredDeals.length;
                 if (!activeCity) {
-                  return `All cities (${allDeals.length} deals)`;
+                  return `All cities (${activeDeals.length} deals)`;
                 }
-                return `${activeCity} (${dealCount} deals)`;
+                return `${activeCity} (${activeDeals.length} deals)`;
               })()}
             </div>
           </CardContent>
