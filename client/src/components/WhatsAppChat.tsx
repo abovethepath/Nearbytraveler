@@ -388,9 +388,29 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             break;
 
           case 'message:new':
-            console.log('💬 WhatsApp Chat: New message received');
-            setMessages(prev => [...prev, data.payload]);
-            scrollToBottom();
+            console.log('💬 WhatsApp Chat: New message received, chatType:', data.chatType, 'chatroomId:', data.chatroomId, 'expected chatType:', chatType, 'expected chatId:', chatId);
+            if (data.chatType === chatType) {
+              if (chatType === 'dm') {
+                const msgSenderId = data.payload?.senderId || data.senderId;
+                const msgReceiverId = data.payload?.receiverId;
+                const isParticipant = 
+                  (msgSenderId === currentUserId && msgReceiverId === chatId) ||
+                  (msgSenderId === chatId && msgReceiverId === currentUserId);
+                if (isParticipant) {
+                  setMessages(prev => {
+                    if (prev.some(m => m.id === data.payload.id)) return prev;
+                    return [...prev, data.payload];
+                  });
+                  scrollToBottom();
+                }
+              } else if (data.chatroomId === chatId) {
+                setMessages(prev => {
+                  if (prev.some(m => m.id === data.payload.id)) return prev;
+                  return [...prev, data.payload];
+                });
+                scrollToBottom();
+              }
+            }
             break;
 
           case 'message:edit':

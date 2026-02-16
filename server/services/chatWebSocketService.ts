@@ -250,15 +250,29 @@ export class ChatWebSocketService {
         timestamp: Date.now(),
       };
 
+      console.log('📨 DM: Sending message from', ws.userId, 'to', receiverId, '- message ID:', newMessage.id);
+
       // Send to receiver
       const receiverWs = this.connectedUsers.get(receiverId);
       if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
         receiverWs.send(JSON.stringify(dmEvent));
+        console.log('📨 DM: Delivered to receiver', receiverId);
+      } else {
+        console.log('📨 DM: Receiver', receiverId, 'not online');
       }
 
-      // Echo back to sender
+      // Echo back to sender - try direct ws first, then fall back to connectedUsers map
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(dmEvent));
+        console.log('📨 DM: Echoed to sender via direct ws');
+      } else {
+        const senderWs = this.connectedUsers.get(ws.userId!);
+        if (senderWs && senderWs.readyState === WebSocket.OPEN) {
+          senderWs.send(JSON.stringify(dmEvent));
+          console.log('📨 DM: Echoed to sender via connectedUsers map');
+        } else {
+          console.log('⚠️ DM: Could not echo to sender - no open connection');
+        }
       }
 
       return;
@@ -1310,9 +1324,16 @@ export class ChatWebSocketService {
     }));
   }
 
-  // Handle user disconnect
-  handleDisconnect(userId: number) {
-    this.connectedUsers.delete(userId);
+  // Handle user disconnect - only remove if the disconnecting WS is the current one
+  handleDisconnect(userId: number, ws?: AuthenticatedWebSocket) {
+    if (ws) {
+      const currentWs = this.connectedUsers.get(userId);
+      if (currentWs === ws) {
+        this.connectedUsers.delete(userId);
+      }
+    } else {
+      this.connectedUsers.delete(userId);
+    }
     console.log(`🔴 User ${userId} disconnected from chat WebSocket`);
   }
 

@@ -18772,6 +18772,11 @@ Questions? Just reply to this message. Welcome aboard!
 
   wss.on('connection', (ws: AuthenticatedWebSocket) => {
     if (process.env.NODE_ENV === 'development') console.log('🔗 New WebSocket connection');
+    ws.isAlive = true;
+
+    ws.on('pong', () => {
+      ws.isAlive = true;
+    });
 
     ws.on('message', async (message) => {
       try {
@@ -18889,7 +18894,11 @@ Questions? Just reply to this message. Welcome aboard!
 
     ws.on('close', () => {
       if (ws.userId && ws.isAuthenticated) {
-        connectedUsers.delete(ws.userId);
+        const currentWs = connectedUsers.get(ws.userId);
+        if (currentWs === ws) {
+          connectedUsers.delete(ws.userId);
+        }
+        chatWebSocketService.handleDisconnect(ws.userId, ws);
         if (process.env.NODE_ENV === 'development') console.log(`🔴 User ${ws.username} (${ws.userId}) disconnected`);
       }
     });
