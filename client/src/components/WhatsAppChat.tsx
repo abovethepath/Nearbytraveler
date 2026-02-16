@@ -722,7 +722,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   };
 
   return (
-    <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
+    <div className="flex h-[calc(100vh-10rem)] md:h-[calc(100vh-5rem)] bg-gray-900 text-white overflow-hidden">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-r border-gray-700">
@@ -862,9 +862,9 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </div>
         )}
         
-        <div className="flex-1 min-w-0 overflow-hidden">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <h1 className="font-semibold text-sm truncate">{title}</h1>
+            <h1 className="font-semibold text-sm break-words line-clamp-2">{title}</h1>
             {/* Show green once messages are loaded (chat is usable), not just WebSocket */}
             <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
               messagesLoaded || isWsConnected 
