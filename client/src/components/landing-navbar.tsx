@@ -105,7 +105,7 @@ export default function LandingNavbar() {
               <Link 
                 key={item.href}
                 href={item.href} 
-                className="flex items-center gap-3 px-4 py-3 text-[15px] text-gray-700 dark:text-gray-300 rounded-xl active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
+                className="flex items-center gap-3 px-4 py-3 text-[15px] text-gray-900 dark:text-gray-900 rounded-xl active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
                 style={{ minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                 onClick={() => setMobileMenuOpen(false)}
               >
