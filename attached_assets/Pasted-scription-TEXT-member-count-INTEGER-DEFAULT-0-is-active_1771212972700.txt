@@ -1,0 +1,12 @@
+scription TEXT, member_count INTEGER DEFAULT 0, is_active BOOLEAN DEFAULT true, created_at TIMESTAMP DEFAULT NOW(), created_by INTEGER REFERENCES users(id), is_user_created BOOLEAN DEFAULT false, is_private BOOLEAN DEFAULT false, password TEXT, is_flagged BOOLEAN DEFAULT false, flag_reason TEXT, flagged_by INTEGER, flagged_at TIMESTAMP);"
+CREATE TABLE
+render@srv-d5v8vaffte5s73ci5msg-6b99858ffc-s4ddz:~/project/src$ 
+render@srv-d5v8vaffte5s73ci5msg-6b99858ffc-s4ddz:~/project/src$ psql $DATABASE_URL -c "CREATE TABLE IF NOT EXISTS user_community_tags (id SERIpsql $DATABASE_URL -c "CREATE TABLE IF NOT EXISTS user_community_tags (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, tag_id INTEGER NOT NULL REFERENCES community_tags(id) ON DELETE CASCADE, joined_at TIMESTAMP DEFAULT NOW());"
+CREATE TABLE
+render@srv-d5v8vaffte5s73ci5msg-6b99858ffc-s4ddz:~/project/src$ psql $DATABASE_URL -c "CREATE TABLE IF NOT EXISTS community_posts (id SERIAL PRIMARY KEY, community_id INTEGER NOT NULL REFERpsql $DATABASE_URL -c "CREATE TABLE IF NOT EXISTS community_posts (id SERIAL PRIMARY KEY, community_id INTEGER NOT NULL REFERENCES community_tags(id), user_id INTEGER NOT NULL REFERENCES users(id), content TEXT NOT NULL, post_type TEXT NOT NULL DEFAULT 'update', created_at TIMESTAMP DEFAULT NOW());"
+CREATE TABLE
+render@srv-d5v8vaffte5s73ci5msg-6b99858ffc-s4ddz:~/project/src$ psql $DATABASE_URL -c "CREATE TABLE IF NOT EXISTS community_post_likes (id SERIAL PRIMARY KEY, post_id INTEGER NOT NULL REFERpsql $DATABASE_URL -c "CREATE TABLE IF NOT EXISTS community_post_likes (id SERIAL PRIMARY KEY, post_id INTEGER NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, created_at TIMESTAMP DEFAULT NOW());"
+CREATE TABLE
+render@srv-d5v8vaffte5s73ci5msg-6b99858ffc-s4ddz:~/project/src$ psql $DATABASE_URL -c "CREATE TABLE IF NOT EXISTS community_post_replies (id SERIAL PRIMARY KEY, post_id INTEGER NOT NULL REFpsql $DATABASE_URL -c "CREATE TABLE IF NOT EXISTS community_post_replies (id SERIAL PRIMARY KEY, post_id INTEGER NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, content TEXT NOT NULL, created_at TIMESTAMP DEFAULT NOW());"
+CREATE TABLE
+render@srv-d5v8vaffte5s73ci5msg-6b99858ffc-s4ddz:~/project/src$ 
