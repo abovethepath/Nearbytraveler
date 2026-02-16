@@ -407,7 +407,7 @@ body {
 
 /* Fix common mobile overflow culprits */
 @media (max-width: 768px) {
-  .container, main, section, article, div, nav, header, footer {
+  .container, main, #root {
     max-width: 100vw !important;
     overflow-x: hidden;
   }
