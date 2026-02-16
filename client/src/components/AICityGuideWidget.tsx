@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles, RefreshCw, MapPin, Clock, Lightbulb, Gem, Utensils, Shield, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -96,7 +95,7 @@ export function AICityGuideWidget({ cityName, compact = false }: AICityGuideWidg
         if (data.overview) {
           setCityGuide(data);
           toast({
-            title: data.cached ? "City Guide Loaded" : "City Guide Generated!",
+            title: "City Guide Ready!",
             description: `${cityName} guide is ready`,
           });
         } else {
@@ -131,21 +130,16 @@ export function AICityGuideWidget({ cityName, compact = false }: AICityGuideWidg
   return (
     <Card className="bg-gradient-to-br from-green-50 via-teal-50 to-emerald-50 dark:from-green-900/30 dark:via-teal-900/30 dark:to-emerald-900/30 border-green-200 dark:border-green-700">
       <CardContent className="p-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-green-600 dark:text-green-400" />
-            <h3 className="text-lg font-bold text-green-900 dark:text-green-100">AI City Guide</h3>
-            {cityGuide?.cached && (
-              <Badge variant="outline" className="text-xs bg-green-100 dark:bg-green-800/50 text-green-700 dark:text-green-300 border-green-300">
-                Cached
-              </Badge>
-            )}
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex items-center gap-2 min-w-0">
+            <Sparkles className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0" />
+            <h3 className="text-lg font-bold text-green-900 dark:text-green-100 truncate">AI City Guide</h3>
           </div>
           <Button
             size="sm"
             onClick={() => generateGuide(!!cityGuide)}
             disabled={loading}
-            className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+            className="shrink-0 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
           >
             {loading ? (
               <>
@@ -155,7 +149,7 @@ export function AICityGuideWidget({ cityName, compact = false }: AICityGuideWidg
             ) : (
               <>
                 <Sparkles className="h-4 w-4 mr-2" />
-                {cityGuide ? 'Refresh Guide' : 'Generate Guide'}
+                {cityGuide ? 'Update Guide' : 'Generate Guide'}
               </>
             )}
           </Button>
