@@ -8571,11 +8571,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                         <FormControl>
-                          <input
-                            type="checkbox"
-                            checked={field.value}
-                            onChange={field.onChange}
-                            className="mt-1 h-4 w-4 border-blue-300 rounded text-blue-600 focus:ring-blue-500"
+                          <Checkbox
+                            checked={!!field.value}
+                            onCheckedChange={field.onChange}
+                            className="mt-1 border-blue-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                           />
                         </FormControl>
                         <div className="space-y-1 leading-none">
@@ -8598,11 +8597,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                         <FormControl>
-                          <input
-                            type="checkbox"
-                            checked={field.value}
-                            onChange={field.onChange}
-                            className="mt-1 h-4 w-4 border-blue-300 rounded text-blue-600 focus:ring-blue-500"
+                          <Checkbox
+                            checked={!!field.value}
+                            onCheckedChange={field.onChange}
+                            className="mt-1 border-blue-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                           />
                         </FormControl>
                         <div className="space-y-1 leading-none">
@@ -8817,16 +8815,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <FormControl>
                             <div className="space-y-2 border rounded-md p-3">
                               <div className="flex items-center space-x-2">
-                                <input
-                                  type="checkbox"
+                                <Checkbox
                                   id="have-children"
                                   checked={!!field.value}
-                                  onChange={(e) => {
-                                    const checked = e.target.checked;
-                                    field.onChange(checked);
-                                    // Don't clear children ages - keep them for matching purposes
+                                  onCheckedChange={(checked) => {
+                                    field.onChange(!!checked);
                                   }}
-                                  className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
+                                  className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
                                   data-testid="checkbox-have-children"
                                 />
                                 <label 
@@ -8988,19 +8983,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <div className="space-y-2 border rounded-md p-3">
                             {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
                               <div key={preference} className="flex items-center space-x-2">
-                                <input
-                                  type="checkbox"
+                                <Checkbox
                                   id={`preference-${preference}`}
                                   checked={field.value?.includes(preference) || false}
-                                  onChange={(e) => {
+                                  onCheckedChange={(checked) => {
                                     const currentValue = field.value || [];
-                                    if (e.target.checked) {
+                                    if (checked) {
                                       field.onChange([...currentValue, preference]);
                                     } else {
                                       field.onChange(currentValue.filter((p: string) => p !== preference));
                                     }
                                   }}
-                                  className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
+                                  className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
                                 />
                                 <label 
                                   htmlFor={`preference-${preference}`} 
@@ -9080,11 +9074,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
                         </div>
                         <FormControl>
-                          <input
-                            type="checkbox"
-                            checked={field.value}
-                            onChange={(e) => field.onChange(e.target.checked)}
-                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-purple-600 rounded"
+                          <Checkbox
+                            checked={!!field.value}
+                            onCheckedChange={(checked) => field.onChange(!!checked)}
+                            className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
                           />
                         </FormControl>
                       </div>
@@ -9095,11 +9088,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           render={({ field: publicField }) => (
                             <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
                               <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={publicField.value}
-                                  onChange={(e) => publicField.onChange(e.target.checked)}
-                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                <Checkbox
+                                  checked={!!publicField.value}
+                                  onCheckedChange={(checked) => publicField.onChange(!!checked)}
+                                  className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
@@ -9129,11 +9121,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
                         </div>
                         <FormControl>
-                          <input
-                            type="checkbox"
-                            checked={field.value}
-                            onChange={(e) => field.onChange(e.target.checked)}
-                            className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-pink-600 rounded"
+                          <Checkbox
+                            checked={!!field.value}
+                            onCheckedChange={(checked) => field.onChange(!!checked)}
+                            className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-pink-600 data-[state=checked]:border-pink-600"
                           />
                         </FormControl>
                       </div>
@@ -9144,11 +9135,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           render={({ field: publicField }) => (
                             <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
                               <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={publicField.value}
-                                  onChange={(e) => publicField.onChange(e.target.checked)}
-                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                <Checkbox
+                                  checked={!!publicField.value}
+                                  onCheckedChange={(checked) => publicField.onChange(!!checked)}
+                                  className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
@@ -9178,12 +9168,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
                         </div>
                         <FormControl>
-                          <input
-                            type="checkbox"
-                            checked={field.value}
-                            onChange={(e) => field.onChange(e.target.checked)}
-                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-purple-600 rounded"
-                            style={{ accentColor: '#8B5CF6' }}
+                          <Checkbox
+                            checked={!!field.value}
+                            onCheckedChange={(checked) => field.onChange(!!checked)}
+                            className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
                           />
                         </FormControl>
                       </div>
@@ -9194,11 +9182,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           render={({ field: publicField }) => (
                             <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
                               <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={publicField.value}
-                                  onChange={(e) => publicField.onChange(e.target.checked)}
-                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                <Checkbox
+                                  checked={!!publicField.value}
+                                  onCheckedChange={(checked) => publicField.onChange(!!checked)}
+                                  className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">

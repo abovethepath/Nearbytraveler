@@ -490,12 +490,11 @@ export default function SignupLocal() {
                       <p>✓ I will help make this a safe, welcoming community.</p>
                     </div>
                     <label className="flex items-start gap-3 cursor-pointer bg-gray-50 dark:bg-gray-600 p-3 rounded-lg border border-gray-200 dark:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         id="pledge-checkbox"
                         checked={formData.pledgeAccepted}
-                        onChange={(e) => setFormData(prev => ({ ...prev, pledgeAccepted: e.target.checked }))}
-                        className="mt-0.5 w-5 h-5 text-blue-600 border-2 border-gray-300 dark:border-gray-400 rounded focus:ring-blue-500 focus:ring-2"
+                        onCheckedChange={(checked) => setFormData(prev => ({ ...prev, pledgeAccepted: !!checked }))}
+                        className="mt-0.5 h-5 w-5 border-2 border-gray-300 dark:border-gray-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                         data-testid="checkbox-pledge"
                       />
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-200">

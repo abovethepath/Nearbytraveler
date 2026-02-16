@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -754,11 +755,10 @@ export default function SignupBusinessSimple() {
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
-                              <input
-                                type="checkbox"
-                                checked={field.value}
-                                onChange={field.onChange}
-                                className="mt-1 w-5 h-5 text-blue-600 border-2 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                              <Checkbox
+                                checked={!!field.value}
+                                onCheckedChange={field.onChange}
+                                className="mt-1 h-5 w-5 border-2 border-gray-300 dark:border-gray-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                                 data-testid="checkbox-pledge"
                               />
                             </FormControl>
