@@ -133,7 +133,7 @@ export default function EventHistory() {
   };
 
   const handleViewProfile = (userId: number) => {
-    navigate(`/users/${userId}`);
+    navigate(`/profile/${userId}`);
   };
 
   return (
