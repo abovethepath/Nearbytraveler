@@ -25,6 +25,7 @@ import Navbar from "@/components/navbar";
 import type { Event } from "@shared/schema";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import { Search } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Custom hook to update page meta tags for better sharing
 const useEventMeta = (event: any) => {
@@ -1195,12 +1196,11 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
               </div>
 
               <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
+                <Checkbox
                   id="isPublic"
-                  checked={formData.isPublic}
-                  onChange={(e) => setFormData(prev => ({ ...prev, isPublic: e.target.checked }))}
-                  className="rounded"
+                  checked={!!formData.isPublic}
+                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isPublic: !!checked }))}
+                  className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                 />
                 <Label htmlFor="isPublic">Make this event public</Label>
               </div>
@@ -1301,12 +1301,11 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2 text-sm">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         id="postToNearbytravelerFacebook"
-                        checked={postToNearbytravelerFacebook}
-                        onChange={(e) => setPostToNearbytravelerFacebook(e.target.checked)}
-                        className="rounded"
+                        checked={!!postToNearbytravelerFacebook}
+                        onCheckedChange={(checked) => setPostToNearbytravelerFacebook(!!checked)}
+                        className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                       />
                       <label htmlFor="postToNearbytravelerFacebook" className="text-gray-600 dark:text-gray-400">
                         Also post to @nearbytraveler Facebook page

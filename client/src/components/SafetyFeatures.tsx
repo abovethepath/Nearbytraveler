@@ -9,6 +9,7 @@ import { useAuth } from '@/App';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface EmergencyContact {
   id: number;
@@ -220,12 +221,11 @@ export function SafetyFeatures({ isOwnProfile = false }: { isOwnProfile?: boolea
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     id="isPrimary"
-                    checked={newContact.isPrimary}
-                    onChange={(e) => setNewContact(prev => ({ ...prev, isPrimary: e.target.checked }))}
-                    className="rounded"
+                    checked={!!newContact.isPrimary}
+                    onCheckedChange={(checked) => setNewContact(prev => ({ ...prev, isPrimary: !!checked }))}
+                    className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                   />
                   <label htmlFor="isPrimary" className="text-sm">
                     Primary emergency contact

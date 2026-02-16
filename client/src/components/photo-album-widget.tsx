@@ -699,12 +699,11 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
 
           {/* Privacy Setting */}
           <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
+            <Checkbox
               id="albumIsPublic"
-              checked={newMemory.isPublic}
-              onChange={(e) => setNewMemory(prev => ({ ...prev, isPublic: e.target.checked }))}
-              className="rounded border-gray-300"
+              checked={!!newMemory.isPublic}
+              onCheckedChange={(checked) => setNewMemory(prev => ({ ...prev, isPublic: !!checked }))}
+              className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
             />
             <label htmlFor="albumIsPublic" className="text-sm text-gray-700 dark:text-gray-300">
               Make this album public (visible to other travelers)
@@ -1308,12 +1307,11 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
               </div>
 
               <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
+                <Checkbox
                   id="editAlbumIsPublic"
-                  checked={editingAlbum.isPublic}
-                  onChange={(e) => setEditingAlbum({...editingAlbum, isPublic: e.target.checked})}
-                  className="rounded border-gray-300"
+                  checked={!!editingAlbum.isPublic}
+                  onCheckedChange={(checked) => setEditingAlbum({...editingAlbum, isPublic: !!checked})}
+                  className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                 />
                 <label htmlFor="editAlbumIsPublic" className="text-sm text-gray-700 dark:text-gray-300">
                   Make this album public (visible to other travelers)

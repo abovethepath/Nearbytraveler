@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Heart, MapPin, Camera, Palette, Save, Trash2, Eye } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface MoodBoardItem {
   id: number;
@@ -168,7 +169,7 @@ export default function TravelMoodBoard() {
                 <Textarea name="description" placeholder="Description (optional)" />
                 <Input name="destination" placeholder="Destination (optional)" />
                 <label htmlFor="mood-board-public" className="flex items-center space-x-2 cursor-pointer">
-                  <input id="mood-board-public" type="checkbox" name="isPublic" />
+                  <Checkbox id="mood-board-public" name="isPublic" className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
                   <span>Make public</span>
                 </label>
                 <Button type="submit" disabled={createMoodBoard.isPending}>

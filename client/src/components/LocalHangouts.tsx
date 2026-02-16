@@ -9,6 +9,7 @@ import { useAuth } from '@/App';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface Hangout {
   id: number;
@@ -343,12 +344,11 @@ export function LocalHangouts({ city, isOwnProfile = false }: { city?: string; i
             </div>
 
             <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
+              <Checkbox
                 id="isPublic"
-                checked={newHangout.isPublic}
-                onChange={(e) => setNewHangout(prev => ({ ...prev, isPublic: e.target.checked }))}
-                className="rounded"
+                checked={!!newHangout.isPublic}
+                onCheckedChange={(checked) => setNewHangout(prev => ({ ...prev, isPublic: !!checked }))}
+                className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
               />
               <label htmlFor="isPublic" className="text-sm">
                 Public hangout (visible to all community members)

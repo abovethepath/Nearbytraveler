@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { CustomModal } from '@/components/ui/custom-modal';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface TravelMemory {
   id: number;
@@ -608,12 +609,11 @@ export function TravelMemoryTimeline({ userId, isOwnProfile = false }: TravelMem
 
           {/* Privacy Setting */}
           <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
+            <Checkbox
               id="isPublic"
-              checked={newMemory.isPublic}
-              onChange={(e) => setNewMemory(prev => ({ ...prev, isPublic: e.target.checked }))}
-              className="rounded border-gray-300"
+              checked={!!newMemory.isPublic}
+              onCheckedChange={(checked) => setNewMemory(prev => ({ ...prev, isPublic: !!checked }))}
+              className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
             />
             <label htmlFor="isPublic" className="text-sm text-gray-700 dark:text-gray-300">
               Make this memory public (visible to other travelers)

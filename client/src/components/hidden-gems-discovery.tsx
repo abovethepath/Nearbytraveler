@@ -11,6 +11,7 @@ import { MapPin, Clock, DollarSign, Star, Bookmark, Calendar, Compass, Sparkles 
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import SmartLocationInput from "@/components/SmartLocationInput";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface HiddenGem {
   id: string;
@@ -399,12 +400,11 @@ export default function HiddenGemsDiscovery() {
                 </div>
                 
                 <div className="flex items-center space-x-2 pt-6">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     id="excludePopular"
-                    checked={excludePopular}
-                    onChange={(e) => setExcludePopular(e.target.checked)}
-                    className="h-4 w-4"
+                    checked={!!excludePopular}
+                    onCheckedChange={(checked) => setExcludePopular(!!checked)}
+                    className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                   />
                   <Label htmlFor="excludePopular" className="dark:text-white">Exclude popular tourist spots</Label>
                 </div>

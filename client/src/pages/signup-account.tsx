@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { formatIncompletePhoneNumber } from "libphonenumber-js";
 import { getApiBaseUrl } from "@/lib/queryClient";
 
@@ -420,12 +421,11 @@ export default function SignupAccount() {
               </div>
 
               <div className="flex items-center space-x-2 mt-4">
-                <input
-                  type="checkbox"
+                <Checkbox
                   id="keepLoggedIn"
-                  checked={keepLoggedIn}
-                  onChange={(e) => setKeepLoggedIn(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  checked={!!keepLoggedIn}
+                  onCheckedChange={(checked) => setKeepLoggedIn(!!checked)}
+                  className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                 />
                 <Label htmlFor="keepLoggedIn" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
                   Keep me logged in

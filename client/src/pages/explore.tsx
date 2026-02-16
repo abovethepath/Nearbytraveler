@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Clock, Users, Zap, Coffee, Camera, UtensilsCrossed, Dumbbell, Music, Mountain, Palette, Globe, ArrowRight, Share2, Sparkles, Timer, Plus, Send, Heart, Star, ChevronRight, Flag, Lock, Trash2, AlertTriangle } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { getMetroAreaName } from "../../../shared/metro-areas";
 
 function UserAvatar({ user, size = "sm" }: { user: any; size?: string }) {
@@ -845,7 +846,7 @@ export default function Explore() {
                     </div>
                     <div className="flex items-center gap-3">
                       <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" checked={ccIsPrivate} onChange={(e) => setCcIsPrivate(e.target.checked)} className="rounded" />
+                        <Checkbox checked={!!ccIsPrivate} onCheckedChange={(checked) => setCcIsPrivate(!!checked)} className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
                         <Lock className="w-4 h-4 text-gray-500" />
                         <span className="text-sm">Private (password required to join)</span>
                       </label>

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Calendar, Clock, MapPin, DollarSign, Share2, Copy, Edit, Trash2, Save, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -330,10 +331,10 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                     />
                   </div>
                   <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={newItinerary.isPublic}
-                      onChange={(e) => setNewItinerary(prev => ({ ...prev, isPublic: e.target.checked }))}
+                    <Checkbox
+                      checked={!!newItinerary.isPublic}
+                      onCheckedChange={(checked) => setNewItinerary(prev => ({ ...prev, isPublic: !!checked }))}
+                      className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                     />
                     <Label className="text-black dark:text-white">Make this itinerary public</Label>
                   </div>
