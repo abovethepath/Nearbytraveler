@@ -3883,7 +3883,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         )}
 
         <div className="max-w-7xl mx-auto relative z-10">
-          {/* allow wrapping so CTAs drop below on small screens */}
           <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6 relative z-20">
 
             {/* Avatar + camera (bigger, no scrollbars) */}
@@ -4216,9 +4215,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               )}
             </div>
 
-            {/* CTAs — wrap on mobile */}
+            {/* CTAs — own row below username */}
             {!isOwnProfile ? (
-              <div className="flex items-center gap-3 flex-wrap min-w-0 relative z-50 pointer-events-auto" style={{ position: 'relative', zIndex: 9999 }}>
+              <div className="w-full flex items-center gap-3 flex-wrap min-w-0 relative z-50 pointer-events-auto mt-2" style={{ position: 'relative', zIndex: 9999 }}>
                 <button 
                   type="button"
                   className="inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 px-6 py-2 rounded-lg shadow-md transition-all text-black font-medium cursor-pointer"
