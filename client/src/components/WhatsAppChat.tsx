@@ -722,7 +722,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   };
 
   return (
-    <div className="flex h-[calc(100vh-10rem)] md:h-[calc(100vh-5rem)] bg-gray-900 text-white overflow-hidden">
+    <div className="flex bg-gray-900 text-white overflow-hidden h-[calc(100dvh-10.5rem)] md:h-[calc(100dvh-8.5rem)]">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-r border-gray-700">
