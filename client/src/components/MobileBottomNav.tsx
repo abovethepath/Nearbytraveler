@@ -4,8 +4,6 @@ import { Home, Plus, MessageCircle, User, Calendar, Search, X, MapPin, Zap, User
 import { AuthContext } from "@/App";
 import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import { useQuery } from "@tanstack/react-query";
-import { isNativeIOSApp } from "@/lib/nativeApp";
-
 function useIsDarkMode() {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
   useEffect(() => {
@@ -19,8 +17,6 @@ function useIsDarkMode() {
 }
 
 export function MobileBottomNav() {
-  if (isNativeIOSApp()) return null;
-  
   const [location, setLocation] = useLocation();
   const [showActionMenu, setShowActionMenu] = useState(false);
   const isDark = useIsDarkMode();

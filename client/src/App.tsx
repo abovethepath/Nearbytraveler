@@ -1321,8 +1321,8 @@ function Router() {
             <Navbar />
           </div>
           
-          {/* Main content - no stacking context blocking. In native app, no web nav so use minimal padding. */}
-          <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden" style={{ position: 'relative', zIndex: isNativeIOSApp() ? 'auto' : 1 }}>
+          {/* Main content */}
+          <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden">
             <main className={`w-full max-w-full overflow-x-hidden main-with-bottom-nav ${isNativeIOSApp() ? 'pt-0 pb-0' : 'pt-16 pb-24 md:pt-0 md:pb-20'}`}>
               <div className="w-full max-w-full overflow-x-hidden">
                 {renderPage()}
@@ -1331,10 +1331,8 @@ function Router() {
           </div>
 
           {/* Bottom Navigation - show on all screen sizes for authenticated users */}
-          {(user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
-            <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999 }}>
-              <MobileBottomNav />
-            </div>
+          {!isNativeIOSApp() && (user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
+            <MobileBottomNav />
           )}
 
           {/* REMOVED: Instant Messaging Components - obsolete functionality */}

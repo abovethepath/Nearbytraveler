@@ -372,29 +372,23 @@ export function MobileTopNav() {
 
       <style>{`
         .ios-nav-bar {
-          background: rgba(255, 255, 255, 0.88);
-          backdrop-filter: saturate(180%) blur(20px);
-          -webkit-backdrop-filter: saturate(180%) blur(20px);
-          border-bottom: 0.5px solid rgba(0, 0, 0, 0.12);
+          background: #ffffff;
+          border-bottom: 1px solid #e5e7eb;
         }
         .dark .ios-nav-bar {
-          background: rgba(17, 24, 39, 0.88);
-          border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+          background: #111827;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         .ios-menu-backdrop {
-          background: rgba(0, 0, 0, 0.4);
-          backdrop-filter: blur(4px);
-          -webkit-backdrop-filter: blur(4px);
+          background: rgba(0, 0, 0, 0.5);
         }
         .ios-slide-menu {
-          background: rgba(248, 250, 252, 0.98);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
+          background: #f8fafc;
           box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
           animation: iosSlideIn 0.3s cubic-bezier(0.32, 0.72, 0, 1);
         }
         .dark .ios-slide-menu {
-          background: rgba(17, 24, 39, 0.98);
+          background: #111827;
         }
         @keyframes iosSlideIn {
           from { transform: translateX(-100%); opacity: 0.8; }
