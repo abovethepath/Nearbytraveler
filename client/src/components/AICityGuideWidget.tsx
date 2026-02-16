@@ -130,16 +130,16 @@ export function AICityGuideWidget({ cityName, compact = false }: AICityGuideWidg
   return (
     <Card className="bg-gradient-to-br from-green-50 via-teal-50 to-emerald-50 dark:from-green-900/30 dark:via-teal-900/30 dark:to-emerald-900/30 border-green-200 dark:border-green-700">
       <CardContent className="p-4">
-        <div className="flex items-center justify-between gap-2 mb-4">
-          <div className="flex items-center gap-2 min-w-0">
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-3">
             <Sparkles className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0" />
-            <h3 className="text-lg font-bold text-green-900 dark:text-green-100 truncate">AI City Guide</h3>
+            <h3 className="text-lg font-bold text-green-900 dark:text-green-100">AI City Guide</h3>
           </div>
           <Button
             size="sm"
             onClick={() => generateGuide(!!cityGuide)}
             disabled={loading}
-            className="shrink-0 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+            className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
           >
             {loading ? (
               <>
