@@ -1,0 +1,64 @@
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+[✓] Pulling schema from database...
++ activity_templates table will be created
++ community_post_likes table will be created
++ community_post_replies table will be created
++ community_posts table will be created
++ community_tags table will be created
++ companions table will be created
++ event_companion_participants table will be created
++ hidden_from_users table will be created
++ live_location_shares table will be created
++ live_share_reactions table will be created
++ meetup_share_cards table will be created
++ micro_experience_participants table will be created
++ micro_experiences table will be created
++ travel_crew_companions table will be created
++ travel_crew_invites table will be created
++ travel_crew_members table will be created
++ travel_crew_messages table will be created
++ user_community_tags table will be created
+--- all table conflicts resolved ---
+
+
+
+· You're about to add chatroom_access_requests_chatroom_id_user_id_unique unique constraint to the table, which contains 2 items. If this statement fails, you will receive an error from the database. Do you want to truncate chatroom_access_requests table?
+
+· You're about to add city_guides_city_name_unique unique constraint to the table, which contains 1 items. If this statement fails, you will receive an error from the database. Do you want to truncate city_guides table?
+
+· You're about to add users_referral_code_unique unique constraint to the table, which contains 28 items. If this statement fails, you will receive an error from the database. Do you want to truncate users table?
+
+· You're about to add waitlist_leads_email_unique unique constraint to the table, which contains 147 items. If this statement fails, you will receive an error from the database. Do you want to truncate waitlist_leads table?
+
+ Warning  Found data-loss statements:
+· You're about to delete citychatrooms table with 2 items
+· You're about to change message_type column type from varchar(50) to text with 15 items
+· You're about to change edited_at column type from timestamp with time zone to timestamp with 15 items
+· You're about to change created_at column type from timestamp with time zone to timestamp with 15 items
+· You're about to change location column type from text to jsonb with 15 items
+· You're about to change role column type from varchar(50) to text with 89 items
+· You're about to change joined_at column type from timestamp with time zone to timestamp with 89 items
+· You're about to change last_read_at column type from timestamp with time zone to timestamp with 89 items
+· You're about to change children_ages column type from varchar(100) to text with 28 items
+· You're about to change destination_city column type from varchar to text with 28 items
+· You're about to change destination_state column type from varchar to text with 28 items
+· You're about to change destination_country column type from varchar to text with 28 items
+· You're about to delete is_ai_generated column in events table with 13 items
+· You're about to delete media_type column in chatroom_messages table with 15 items
+· You're about to delete reply_to_message_id column in chatroom_messages table with 15 items
+· You're about to delete currentLatitude column in users table with 28 items
+· You're about to delete currentLongitude column in users table with 28 items
+· You're about to delete lastLocationUpdate column in users table with 28 items
+· You're about to delete locationSharingEnabled column in users table with 28 items
+· You're about to delete hometownCity column in users table with 28 items
+· You're about to delete hometownState column in users table with 28 items
+· You're about to delete hometownCountry column in users table with 28 items
+· You're about to delete profileImage column in users table with 28 items
+· You're about to delete subInterests column in users table with 28 items
+· You're about to delete phone column in waitlist_leads table with 147 items
+· You're about to delete phone_number column in waitlist_leads table with 147 items
+
+THIS ACTION WILL CAUSE DATA LOSS AND CANNOT BE REVERTED
+
+Do you still want to push changes?
+❯ No, abort
