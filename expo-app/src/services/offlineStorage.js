@@ -66,6 +66,16 @@ const offlineStorage = {
     return await this.getCachedData(CACHE_KEYS.PROFILE);
   },
 
+  // Clear only profile cache (use on 401 to avoid showing wrong user)
+  async clearProfileCache() {
+    try {
+      await AsyncStorage.removeItem(CACHE_KEYS.PROFILE);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  },
+
   // Check if online
   async isOnline() {
     try {

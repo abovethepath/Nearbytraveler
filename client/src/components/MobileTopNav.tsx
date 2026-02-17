@@ -17,47 +17,39 @@ export function MobileTopNav() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
+  // CRITICAL: Session is the ONLY source of truth for avatar. Never trust localStorage first.
+  // Prevents showing wrong user (e.g. admin) when a different user is logged in.
   useEffect(() => {
-    let effectiveUser = null;
-    if (user?.username) {
-      effectiveUser = user;
-    } else {
-      const storedUser = authStorage.getUser();
-      if (storedUser?.username) {
-        effectiveUser = storedUser;
-      } else {
-        try {
-          const raw = localStorage.getItem("user") || localStorage.getItem("travelconnect_user");
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            if (parsed?.username) effectiveUser = parsed;
+    let cancelled = false;
+    const fetchSessionUser = async () => {
+      try {
+        const sessionRes = await fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' });
+        if (cancelled) return;
+        if (sessionRes.ok) {
+          const sessionUser = await sessionRes.json();
+          if (sessionUser?.id) {
+            setCurrentUser(sessionUser);
+            authStorage.setUser(sessionUser);
+            return;
           }
-        } catch {}
+        }
+        setCurrentUser(null);
+      } catch {
+        if (!cancelled) setCurrentUser(null);
       }
-    }
-    setCurrentUser(effectiveUser);
+    };
+    fetchSessionUser();
+    return () => { cancelled = true; };
+  }, []);
 
-    if (effectiveUser?.id) {
-      const verifyUser = async () => {
-        try {
-          const sessionRes = await fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' });
-          if (sessionRes.ok) {
-            const sessionUser = await sessionRes.json();
-            if (sessionUser?.id && sessionUser.id !== effectiveUser.id) {
-              const freshRes = await fetch(`${getApiBaseUrl()}/api/users/${sessionUser.id}?t=${Date.now()}`);
-              if (freshRes.ok) {
-                const freshUser = await freshRes.json();
-                setCurrentUser(freshUser);
-                authStorage.setUser(freshUser);
-                localStorage.setItem('travelconnect_user', JSON.stringify(freshUser));
-              }
-            }
-          }
-        } catch {}
-      };
-      verifyUser();
+  // Sync from AuthContext when it updates (e.g. after login)
+  useEffect(() => {
+    if (!user) {
+      setCurrentUser(null);
+    } else if (user?.id && user?.username && (!currentUser || String(currentUser.id) === String(user.id))) {
+      setCurrentUser(user);
     }
-  }, [user]);
+  }, [user?.id, user?.username, user, currentUser?.id]);
 
   useEffect(() => {
     const handleUpdate = (e: any) => {
@@ -91,10 +83,32 @@ export function MobileTopNav() {
     setIsOpen(prev => !prev);
   };
 
-  const handleAvatarTap = () => {
+  const handleAvatarTap = async (e: React.TouchEvent | React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setIsOpen(false);
-    const profilePath = currentUser?.id ? `/profile/${currentUser.id}` : "/profile";
-    setLocation(profilePath);
+    if (!currentUser?.id) {
+      setLocation("/profile");
+      return;
+    }
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' });
+      if (res.ok) {
+        const sessionUser = await res.json();
+        if (sessionUser?.id && String(sessionUser.id) !== String(currentUser.id)) {
+          authStorage.clearUser();
+          window.location.href = '/signin';
+          return;
+        }
+      } else {
+        authStorage.clearUser();
+        window.location.href = '/signin';
+        return;
+      }
+    } catch {
+      // On error, still navigate
+    }
+    setLocation(`/profile/${currentUser.id}`);
   };
 
   const navigate = (path: string) => {

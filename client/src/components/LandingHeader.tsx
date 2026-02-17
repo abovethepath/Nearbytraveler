@@ -10,7 +10,7 @@ export default function LandingHeader() {
       <div className="xl:hidden bg-orange-500 text-black py-3 px-4 shadow-lg">
         <div className="max-w-6xl mx-auto flex items-center justify-center gap-3">
           <Button
-            onClick={() => setLocation("/signup")}
+            onClick={() => setLocation("/join")}
             className="flex-1 max-w-md bg-black text-orange-400 font-bold text-base px-4 py-3 rounded-xl hover:bg-gray-800 transition-all duration-200 active:scale-95 shadow-lg"
             style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '44px' }}
           >
@@ -29,7 +29,7 @@ export default function LandingHeader() {
 
       <div className="hidden xl:block bg-orange-500 text-black py-3 px-4 text-center">
         <Button
-          onClick={() => setLocation("/signup")}
+          onClick={() => setLocation("/join")}
           className="bg-black text-orange-400 font-bold text-xl px-8 py-3 rounded-xl hover:bg-gray-800 transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg"
         >
           SIGN UP - CONNECT TODAY!

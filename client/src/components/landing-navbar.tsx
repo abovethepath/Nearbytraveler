@@ -52,7 +52,7 @@ export default function LandingNavbar() {
               Sign In
             </button>
             <button 
-              onClick={() => setLocation('/signup')}
+              onClick={() => setLocation('/join')}
               className="navbar-btn-black-text px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap border-2"
               style={{ backgroundColor: '#fb923c', borderColor: '#fb923c' }}
             >
@@ -119,7 +119,7 @@ export default function LandingNavbar() {
               <button 
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  setLocation('/signup');
+                  setLocation('/join');
                 }}
                 className="text-center px-4 py-3.5 rounded-xl text-[15px] font-semibold text-white transition-all active:scale-[0.98] shadow-sm"
                 style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)', minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}

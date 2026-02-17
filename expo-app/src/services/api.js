@@ -117,7 +117,14 @@ const api = {
         credentials: 'include',
       });
       if (!r.ok) {
-        // Try cached profile if network fails
+        // 401 = no session - never use cached profile (could be wrong user)
+        if (r.status === 401) {
+          sessionCookie = null;
+          try { await AsyncStorage.removeItem(SESSION_KEY); } catch (e) {}
+          await offlineStorage.clearProfileCache();
+          return null;
+        }
+        // Other errors: try cache only for offline
         return await offlineStorage.getCachedProfile();
       }
       const data = await r.json();
@@ -155,7 +162,28 @@ const api = {
     extractCookie(r);
     const d = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(d.message || 'Registration failed');
+    if (d.sessionId) {
+      sessionCookie = `nt.sid=${d.sessionId}`;
+      try {
+        await AsyncStorage.setItem(SESSION_KEY, d.sessionId);
+      } catch (e) {}
+    }
+    if (d.user) {
+      await offlineStorage.cacheProfile(d.user);
+    }
     return d;
+  },
+
+  /** Run post-registration bootstrap (chatroom auto-join, etc.). Call after register(). */
+  async bootstrapAfterRegister() {
+    const r = await fetch(`${BASE_URL}/api/bootstrap/after-register`, {
+      method: 'POST',
+      headers: getHeaders(),
+      credentials: 'include',
+      body: JSON.stringify({}),
+    });
+    if (!r.ok) return { ok: false };
+    return r.json().catch(() => ({ ok: false }));
   },
 
   async getEvents(city = 'Los Angeles') {

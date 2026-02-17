@@ -16,9 +16,12 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../services/AuthContext';
 
 import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import SignupStep1Screen from '../screens/SignupStep1Screen';
+import SignupStep2Screen from '../screens/SignupStep2Screen';
+import SignupStep3Screen from '../screens/SignupStep3Screen';
+import SignupStep3BusinessScreen from '../screens/SignupStep3BusinessScreen';
 import { GenericWebViewScreen } from '../screens/WebViewScreens';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -126,7 +129,10 @@ function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="Register" component={SignupStep1Screen} />
+      <Stack.Screen name="SignupStep2" component={SignupStep2Screen} />
+      <Stack.Screen name="SignupStep3" component={SignupStep3Screen} />
+      <Stack.Screen name="SignupStep3Business" component={SignupStep3BusinessScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
     </Stack.Navigator>
   );

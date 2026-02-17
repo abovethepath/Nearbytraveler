@@ -104,7 +104,7 @@ export default function Home() {
     localStorage.setItem('hideHeroSection', String(!newValue));
   };
 
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser, logout } = useContext(AuthContext);
 
   // Function to handle section loading
   const handleSectionView = (sectionName: string) => {
@@ -1500,6 +1500,19 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 w-full max-w-full overflow-x-hidden">
+
+{/* Native app: Sign Out link at top for users who land via QR code */}
+{isNativeIOSApp() && user && (
+  <div className="flex justify-end px-4 py-2 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <a
+      href="/signout"
+      onClick={(e) => { e.preventDefault(); logout('/signin'); }}
+      className="text-sm text-orange-600 dark:text-orange-400 hover:underline font-medium"
+    >
+      Sign Out
+    </a>
+  </div>
+)}
 
 {/* Hero Toggle Button & Theme Toggle (when hero is hidden) */}
 {!isNativeIOSApp() && !isHeroVisible && (

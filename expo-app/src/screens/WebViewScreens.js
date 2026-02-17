@@ -155,7 +155,9 @@ function WebViewWithChrome({ path, navigation }) {
   const onLoadEnd = useCallback(() => { setLoading(false); setRefreshing(false); }, []);
   const onError = useCallback((e) => {
     setLoading(false); setRefreshing(false);
-    setError(e.nativeEvent?.description || 'Failed to load page');
+    const desc = (e.nativeEvent?.description || '').toLowerCase();
+    const isConnectionError = desc.includes('connect') || desc.includes('network') || desc.includes('offline') || desc.includes('internet') || desc.includes('err_connection') || desc.includes('nsurlerrordomain');
+    setError(isConnectionError ? 'Unable to connect. Please check your internet connection and try again.' : (e.nativeEvent?.description || 'Failed to load page'));
   }, []);
   const onHttpError = useCallback((e) => { setError(e.nativeEvent?.statusCode ? `Error ${e.nativeEvent.statusCode}` : 'Request failed'); }, []);
   const onRetry = useCallback(() => { setError(null); setLoading(true); webViewRef.current?.reload(); }, []);
@@ -295,15 +297,42 @@ function WebViewWithChrome({ path, navigation }) {
         <View style={styles.logoContainer}>
           <Text style={{ fontSize: 16, fontWeight: '700', color: dark ? DARK.text : '#111827' }}>NearbyTraveler</Text>
         </View>
-        <TouchableOpacity style={styles.avatarButton} onPress={onAvatarPress}>
-          {profileImg ? (
-            <Image source={{ uri: profileImg }} style={styles.avatarImage} />
+        <View style={styles.headerRight}>
+          {user ? (
+            <TouchableOpacity
+              style={[styles.signOutButton, dark && { borderColor: DARK.border }]}
+              onPress={async () => {
+                await logout();
+                setUser(null);
+                webViewRef.current?.injectJavaScript(
+                  `window.location.href='${BASE_URL}/join?native=ios';true;`
+                );
+              }}
+            >
+              <Text style={[styles.signOutText, dark && { color: DARK.textMuted }]}>Sign out</Text>
+            </TouchableOpacity>
           ) : (
-            <View style={[styles.avatarFallback, dark && styles.avatarFallbackDark]}>
-              <Text style={styles.avatarFallbackText}>{initials}</Text>
-            </View>
+            <TouchableOpacity
+              style={[styles.signOutButton, dark && { borderColor: DARK.border }]}
+              onPress={() => {
+                webViewRef.current?.injectJavaScript(
+                  `window.location.href='${BASE_URL}/join?native=ios';true;`
+                );
+              }}
+            >
+              <Text style={[styles.signOutText, dark && { color: DARK.textMuted }]}>Sign in</Text>
+            </TouchableOpacity>
           )}
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.avatarButton} onPress={onAvatarPress}>
+            {profileImg ? (
+              <Image source={{ uri: profileImg }} style={styles.avatarImage} />
+            ) : (
+              <View style={[styles.avatarFallback, dark && styles.avatarFallbackDark]}>
+                <Text style={styles.avatarFallbackText}>{initials}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
       {loading && (
         <View style={[styles.loadingOverlay, dark && { backgroundColor: 'rgba(28,28,30,0.9)' }]}>
@@ -355,6 +384,115 @@ export function GenericWebViewScreen({ route, navigation }) {
   return <WebViewWithChrome path={path} navigation={navigation} />;
 }
 
+/**
+ * Join/Sign-up WebView - loads /join which has the correct 3-step flow:
+ * Step 1: Choose user type (Local/Traveler/Business)
+ * Step 2: Create account (SignupAccount)
+ * Step 3: Complete profile (SignupLocal or SignupTraveling)
+ * Replaces the old single-form RegisterScreen.
+ * Uses incognito + no shared cookies so stale sessions don't redirect to home.
+ */
+export function JoinWebViewScreen({ navigation }) {
+  const colorScheme = useColorScheme();
+  const dark = colorScheme === 'dark';
+  const { checkAuth } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const webViewRef = useRef(null);
+  const signupCompletedRef = useRef(false);
+  // Use /join with NO cookies - incognito + no shared cookies = clean slate so we always see the 3-step flow
+  const joinUri = `${BASE_URL}${pathWithNativeIOS('/join')}`;
+  const source = { uri: joinUri };
+
+  const onLoadStart = useCallback(() => { setLoading(true); setError(null); }, []);
+  const onLoadEnd = useCallback(() => setLoading(false), []);
+  const onError = useCallback((e) => {
+    setLoading(false);
+    const desc = (e.nativeEvent?.description || '').toLowerCase();
+    const isConnectionError = desc.includes('connect') || desc.includes('network') || desc.includes('offline') || desc.includes('internet') || desc.includes('err_connection') || desc.includes('nsurlerrordomain');
+    setError(isConnectionError ? 'Unable to connect. Please check your internet connection and try again.' : (e.nativeEvent?.description || 'Failed to load page'));
+  }, []);
+  const onShouldStartLoadWithRequest = useCallback((request) => {
+    const url = request?.url || '';
+    if (!url.includes(BASE_URL)) return true;
+    const pathname = (url.replace(BASE_URL, '').split('?')[0] || '/').replace(/\/$/, '') || '/';
+    if (!signupCompletedRef.current && (pathname === '/' || pathname === '/home')) {
+      webViewRef.current?.injectJavaScript(`window.location.href='${joinUri}';true;`);
+      return false;
+    }
+    return true;
+  }, [joinUri]);
+
+  const onNavigationStateChange = useCallback((navState) => {
+    const url = navState?.url || '';
+    if (!url.includes(BASE_URL)) return;
+    const pathname = (url.replace(BASE_URL, '').split('?')[0] || '/').replace(/\/$/, '') || '/';
+    if (pathname === '/account-success') {
+      signupCompletedRef.current = true;
+      checkAuth?.();
+    } else if (signupCompletedRef.current && (pathname === '/' || pathname === '/home')) {
+      checkAuth?.();
+    }
+  }, [checkAuth]);
+
+  const containerBg = dark ? DARK.bg : '#FFFFFF';
+  const headerBg = dark ? DARK.bg : '#FFFFFF';
+  const headerBorder = dark ? DARK.border : '#F3F4F6';
+
+  if (error) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: containerBg }]}>
+        <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: headerBorder }]}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Text style={[styles.backChevron, { marginRight: 4 }]}>‹</Text>
+            <Text style={styles.backText}>Back</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={[styles.errorContainer, { backgroundColor: containerBg }]}>
+          <Text style={[styles.errorText, dark && { color: DARK.textMuted }]}>{error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={() => { setError(null); setLoading(true); webViewRef.current?.reload(); }}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: containerBg }]}>
+      <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: headerBorder }]}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Text style={[styles.backChevron, { marginRight: 4 }]}>‹</Text>
+          <Text style={styles.backText}>Back</Text>
+        </TouchableOpacity>
+        <View style={styles.logoContainer}>
+          <Text style={{ fontSize: 16, fontWeight: '700', color: dark ? DARK.text : '#111827' }}>Create Account</Text>
+        </View>
+      </View>
+      {loading && (
+        <View style={[styles.loadingOverlay, dark && { backgroundColor: 'rgba(28,28,30,0.9)' }]}>
+          <ActivityIndicator size="large" color="#F97316" />
+        </View>
+      )}
+      <WebView
+        ref={webViewRef}
+        source={source}
+        style={[styles.webview, dark && { backgroundColor: DARK.bg }]}
+        injectedJavaScriptBeforeContentLoaded={NATIVE_INJECT_JS}
+        onLoadStart={onLoadStart}
+        onLoadEnd={onLoadEnd}
+        onError={onError}
+        onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+        onNavigationStateChange={onNavigationStateChange}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        incognito={true}
+        sharedCookiesEnabled={false}
+      />
+    </SafeAreaView>
+  );
+}
+
 export function EditProfileScreen({ navigation }) {
   return <WebViewWithChrome path="/profile/edit" navigation={navigation} />;
 }
@@ -383,7 +521,10 @@ const styles = StyleSheet.create({
   backButton: { flexDirection: 'row', alignItems: 'center', paddingVertical: 4, paddingHorizontal: 8, minWidth: 72, flexShrink: 0 },
   logoContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, minWidth: 0 },
   logoImage: { height: 108, width: 480, maxWidth: '90%' },
-  avatarButton: { width: 72, minWidth: 72, height: 44, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  signOutButton: { paddingVertical: 6, paddingHorizontal: 12, borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 8 },
+  signOutText: { fontSize: 14, fontWeight: '600', color: '#6B7280' },
+  avatarButton: { width: 44, height: 44, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   avatarImage: { width: 40, height: 40, borderRadius: 20 },
   avatarFallback: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' },
   avatarFallbackDark: { backgroundColor: '#EA580C' },

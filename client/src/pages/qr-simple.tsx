@@ -4,8 +4,9 @@ export default function QRSimplePage() {
   const [qrUrl, setQrUrl] = useState('');
   
   useEffect(() => {
-    // Simple QR code generation without external library first
-    const signupUrl = `${window.location.origin}/join`;
+    // Always use production URL for QR codes - window.location.origin would be localhost/replit
+    // which fails when scanned from a phone (Safari cannot connect to server)
+    const signupUrl = 'https://nearbytraveler.org/join';
     const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(signupUrl)}`;
     setQrUrl(qrApiUrl);
   }, []);
@@ -85,7 +86,7 @@ export default function QRSimplePage() {
         </div>
         
         <p style={{ marginTop: '16px', fontSize: '12px', color: '#666' }}>
-          <strong>Links to:</strong> {window.location.origin}/join
+          <strong>Links to:</strong> https://nearbytraveler.org/join
         </p>
       </div>
     </div>

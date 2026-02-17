@@ -112,75 +112,41 @@ function Navbar() {
 
   const [directUser, setDirectUser] = useState<any>(null);
 
+  // CRITICAL: Session is the ONLY source of truth for avatar. Never trust localStorage first.
+  // Fetch /api/auth/user on mount and whenever we need to verify - prevents showing wrong user (e.g. admin)
   useEffect(() => {
-    if (user && user.username) {
-      setDirectUser(user);
-      return;
-    }
-
-    const storedUser = authStorage.getUser();
-    if (storedUser && storedUser.username) {
-      setDirectUser(storedUser);
-    } else {
-      setDirectUser(null);
-    }
-  }, [user, location]);
-
-  useEffect(() => {
-    if (!directUser?.id) return;
-
-    const refreshUserData = async () => {
+    let cancelled = false;
+    const fetchSessionUser = async () => {
       try {
-        // ALWAYS check server session first - it's the source of truth
-        const sessionRes = await fetch(`${getApiBaseUrl()}/api/auth/user`, {
-          credentials: "include",
-        });
+        const sessionRes = await fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' });
+        if (cancelled) return;
         if (sessionRes.ok) {
           const sessionUser = await sessionRes.json();
           if (sessionUser?.id) {
-            // CRITICAL: If server says we're a different user than localStorage thinks,
-            // trust the SERVER and update everything to match
-            if (String(sessionUser.id) !== String(directUser.id)) {
-              console.log(
-                "⚠️ Navbar: Server user mismatch! Server:",
-                sessionUser.username,
-                "(",
-                sessionUser.id,
-                ") vs Local:",
-                directUser.username,
-                "(",
-                directUser.id,
-                ")",
-              );
-            }
-            // Always use the server user data - it's authoritative
             setUser(sessionUser);
             setDirectUser(sessionUser);
             authStorage.setUser(sessionUser);
-
             window.dispatchEvent(new CustomEvent("avatarRefresh"));
             return;
           }
         }
-        // If server session check failed, try refreshing with local user id as fallback
-        const response = await fetch(
-          `${getApiBaseUrl()}/api/users/${directUser.id}?t=${Date.now()}`,
-        );
-        if (response.ok) {
-          const freshUserData = await response.json();
-          setUser(freshUserData);
-          setDirectUser(freshUserData);
-          authStorage.setUser(freshUserData);
-
-          window.dispatchEvent(new CustomEvent("avatarRefresh"));
-        }
+        setDirectUser(null);
       } catch (error) {
-        console.log("Failed to refresh user data:", error);
+        if (!cancelled) setDirectUser(null);
       }
     };
+    fetchSessionUser();
+    return () => { cancelled = true; };
+  }, [location, setUser]);
 
-    refreshUserData();
-  }, [directUser?.id, queryClient, setUser]);
+  // Sync from AuthContext when it updates (e.g. after login) - but only if IDs match
+  useEffect(() => {
+    if (!user) {
+      setDirectUser(null);
+    } else if (user?.id && user?.username && (!directUser || String(directUser.id) === String(user.id))) {
+      setDirectUser(user);
+    }
+  }, [user?.id, user?.username, user, directUser?.id]);
 
   // recalc top on load/resize & when warning banners appear/disappear
   useEffect(() => {
@@ -410,6 +376,36 @@ function Navbar() {
 
   const navItems = getNavItems();
 
+  // Verify session before navigating to own profile - prevents wrong user navigation
+  const navigateToMyProfile = async () => {
+    if (!directUser?.id) return;
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' });
+      if (res.ok) {
+        const sessionUser = await res.json();
+        if (sessionUser?.id && String(sessionUser.id) !== String(directUser.id)) {
+          console.warn('⚠️ Session mismatch! Clearing and redirecting to login.');
+          authStorage.clearUser();
+          invalidateUserCache();
+          setUser(null);
+          setDirectUser(null);
+          window.location.href = '/signin';
+          return;
+        }
+      } else {
+        authStorage.clearUser();
+        setUser(null);
+        setDirectUser(null);
+        window.location.href = '/signin';
+        return;
+      }
+    } catch {
+      // On error, still navigate - session might be temporarily unavailable
+    }
+    setLocation(`/profile/${directUser.id}`);
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+  };
+
   // Fetch user's travel plans for the Connect modal
   const { data: userTravelPlans } = useQuery({
     queryKey: [`/api/travel-plans/${directUser?.id}`],
@@ -425,6 +421,18 @@ function Navbar() {
 
   return (
     <>
+      {/* Profile Completion Reminder Bar */}
+      {profileNeedsCompletion && (
+        <div className="bg-red-600 text-white py-2 px-4 text-center text-sm font-medium overflow-hidden">
+          <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 overflow-hidden">
+            <span>⚠️ Complete your profile to unlock all features</span>
+            <Button variant="secondary" size="sm" className="ml-2 bg-white text-red-600 hover:bg-gray-100" onClick={navigateToMyProfile}>
+              Complete Profile
+            </Button>
+          </div>
+        </div>
+      )}
+      
       <header
         ref={headerRef}
         className={`sticky top-0 z-[1000] bg-white dark:bg-black shadow-sm desktop-navbar ${isNativeIOSApp() ? "pt-3" : ""}`}
@@ -511,16 +519,7 @@ function Navbar() {
                   forceMount
                 >
                   {/* My Profile - Most important, at the top */}
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setLocation(`/profile/${directUser?.id}`);
-                      setTimeout(
-                        () => window.scrollTo({ top: 0, behavior: "smooth" }),
-                        100,
-                      );
-                    }}
-                    className="font-medium"
-                  >
+                  <DropdownMenuItem onClick={navigateToMyProfile} className="font-medium">
                     <User className="mr-2 h-4 w-4" />
                     <span>My Profile</span>
                   </DropdownMenuItem>

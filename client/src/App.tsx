@@ -166,6 +166,7 @@ import SharedTrip from "@/pages/shared-trip";
 import JoinTrip from "@/pages/join-trip";
 import TravelBlog from "@/pages/travel-blog";
 import QuickLogin from "@/pages/quick-login";
+import SignOutPage from "@/pages/signout";
 import MatchInCity from "@/pages/match-in-city";
 import QRSignup from "@/pages/qr-signup";
 import ShareQR from "@/pages/share-qr";
@@ -196,7 +197,7 @@ export const AuthContext = React.createContext<{
   user: User | null;
   setUser: (user: User | null) => void;
   login: (userData: User, token?: string) => void;
-  logout: () => void;
+  logout: (redirectTo?: string) => void;
   isAuthenticated: boolean;
 }>({
   user: null,
@@ -281,76 +282,22 @@ function Router() {
           setIsLoading(false);
           return;
         } else {
-          console.log('❌ No server session found, checking localStorage...');
+          console.log('❌ No server session found (401) - clearing stale localStorage to prevent wrong user');
         }
       } catch (error) {
         console.log('❌ Server auth check failed:', error);
       }
 
-      // Fallback to localStorage check
-      const possibleKeys = ['user', 'travelconnect_user', 'currentUser', 'authUser'];
-      let foundUser = null;
-
-      for (const key of possibleKeys) {
-        try {
-          const stored = localStorage.getItem(key);
-          if (stored && stored !== 'undefined' && stored !== 'null') {
-            const parsed = JSON.parse(stored);
-            if (parsed && parsed.id && parsed.username) {
-              console.log(`🎯 FOUND USER DATA in ${key}:`, parsed.username, 'ID:', parsed.id);
-              foundUser = parsed;
-
-              // Standardize to 'user' key
-              if (key !== 'user') {
-                localStorage.setItem('user', JSON.stringify(parsed));
-                localStorage.removeItem(key);
-              }
-              break;
-            }
-          }
-        } catch (error) {
-          console.error(`Error parsing ${key}:`, error);
-          localStorage.removeItem(key);
-        }
-      }
-
-      if (foundUser) {
-        // Try to recover the server session using localStorage data
-        // SECURITY: Include email and username for identity verification
-        try {
-          console.log('🔄 Attempting session recovery for:', foundUser.username);
-          const recoveryResponse = await fetch(`${getApiBaseUrl()}/api/auth/recover-session`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ userId: foundUser.id, email: foundUser.email, username: foundUser.username })
-          });
-          if (recoveryResponse.ok) {
-            const recoveredUser = await recoveryResponse.json();
-            // CRITICAL: Verify the recovered user matches what we requested
-            if (String(recoveredUser.id) !== String(foundUser.id)) {
-              console.log('⚠️ Session recovery returned WRONG user! Expected:', foundUser.id, 'Got:', recoveredUser.id);
-              authStorage.clearUser();
-              setUser(null);
-            } else {
-              console.log('✅ Session recovered successfully:', recoveredUser.username);
-              setUser(recoveredUser);
-              authStorage.setUser(recoveredUser);
-            }
-          } else {
-            console.log('⚠️ Session recovery failed - clearing stale data, requiring fresh login');
-            authStorage.clearUser();
-            setUser(null);
-          }
-        } catch (recoveryError) {
-          console.log('⚠️ Session recovery error - clearing stale data:', recoveryError);
-          authStorage.clearUser();
-          setUser(null);
-        }
-      } else {
-        console.log('❌ NO USER DATA FOUND - STAYING LOGGED OUT');
-        setUser(null);
-      }
+      // CRITICAL: When session returns 401, NEVER trust localStorage. It may have wrong user
+      // (e.g. admin on shared Replit, stale data). Clear everything and require fresh login.
+      authStorage.clearUser();
+      localStorage.removeItem('user');
+      localStorage.removeItem('travelconnect_user');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('authUser');
+      localStorage.removeItem('current_user');
+      localStorage.removeItem('auth_token');
+      setUser(null);
 
       // Always set loading to false after auth check - no delay needed
       setIsLoading(false);
@@ -389,21 +336,8 @@ function Router() {
     return undefined;
   }, [user]);
 
-  // Hydrate user from storage when loading so we keep current route instead of flashing Home
-  useLayoutEffect(() => {
-    if (!isLoading) return;
-    const raw = localStorage.getItem("user") || localStorage.getItem("travelconnect_user");
-    if (!raw) return;
-    try {
-      const parsed = JSON.parse(raw) as User;
-      if (parsed?.id && parsed?.username) {
-        setUser(parsed);
-        setIsLoading(false);
-      }
-    } catch {
-      // ignore
-    }
-  }, [isLoading]);
+  // REMOVED: Hydration from localStorage - it could show wrong user (e.g. admin) before
+  // session check completes. Session is the only source of truth; wait for checkServerAuth.
 
   // Scroll to top when location changes
   useEffect(() => {
@@ -427,7 +361,7 @@ function Router() {
         authStorage.setUser(newUser);
         setUser(newUser);
       },
-      logout: async () => {
+      logout: async (redirectTo = '/') => {
         console.log('🚪 AuthContext logout called - starting logout process');
         console.log('Current user before logout:', user?.username);
 
@@ -489,12 +423,12 @@ function Router() {
 
           // Force complete page refresh to clear all cached authentication
           // Only use href assignment - reload() after href causes race condition
-          window.location.href = '/';
+          window.location.href = redirectTo;
 
         } catch (error) {
           console.error('❌ Error during logout:', error);
           // Fallback - force complete refresh anyway
-          window.location.href = '/';
+          window.location.href = redirectTo;
         }
       },
       login: (userData: User, token?: string) => {
@@ -575,6 +509,12 @@ function Router() {
       console.log('⚠️ Unknown signup route, redirecting to account signup');
       window.location.href = '/signup/account';
       return null;
+    }
+
+    // Sign-out route - clears session and redirects to sign-in (for native app users, QR code flows)
+    if (location === '/signout') {
+      console.log('🚪 Sign-out route - clearing session');
+      return <SignOutPage />;
     }
 
     // IMPROVED AUTHENTICATION CHECK: Multiple fallbacks to ensure authenticated users stay authenticated

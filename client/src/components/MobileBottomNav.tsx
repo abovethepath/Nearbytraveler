@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Home, Plus, MessageCircle, User, Calendar, Search, X, MapPin, Zap, Users } from "lucide-react";
+import { Home, Plus, MessageSquare, User, Calendar, Search, X, MapPin, Zap, Users } from "lucide-react";
 import { AuthContext } from "@/App";
 import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import { useQuery } from "@tanstack/react-query";
@@ -48,12 +48,12 @@ export function MobileBottomNav() {
   const navItems = isBusinessUser ? [
     { icon: Home, label: "Dashboard", path: "/" },
     { icon: Search, label: "Search", action: "search" },
-    { icon: MessageCircle, label: "Messages", path: "/messages" },
+    { icon: MessageSquare, label: "Messages", path: "/messages" },
     { icon: User, label: "Business", path: user ? `/profile/${user.id}` : "/profile" },
   ] : [
     { icon: Home, label: "Home", path: "/" },
     { icon: Search, label: "Search", action: "search" },
-    { icon: MessageCircle, label: "Messages", path: "/messages" },
+    { icon: MessageSquare, label: "Messages", path: "/messages" },
     { icon: User, label: "Profile", path: user ? `/profile/${user.id}` : "/profile" },
   ];
   
@@ -200,6 +200,7 @@ export function MobileBottomNav() {
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           background: isDark ? '#1c1c1e' : '#f8f8f8',
           borderTop: `1px solid ${isDark ? '#38383a' : '#e5e5e5'}`,
+          overflow: 'visible',
         }}
       >
         <div style={{ 
@@ -336,17 +337,20 @@ export function MobileBottomNav() {
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
+                  overflow: 'visible',
                 }}
                 aria-label={item.label}
               >
-                <div style={{ position: 'relative' }}>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '28px', overflow: 'visible' }}>
                   <Icon 
                     style={{ 
                       width: '22px', 
                       height: '22px', 
+                      minWidth: '22px',
                       marginBottom: '2px',
                       color: isActive ? '#f97316' : (isDark ? '#8e8e93' : '#9ca3af'),
                       strokeWidth: isActive ? 2.5 : 1.8,
+                      flexShrink: 0,
                     }}
                   />
                   {isMessagesItem && unreadCount > 0 && (
