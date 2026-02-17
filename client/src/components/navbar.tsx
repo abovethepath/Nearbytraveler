@@ -429,18 +429,6 @@ function Navbar() {
         ref={headerRef}
         className={`sticky top-0 z-[1000] bg-white dark:bg-black shadow-sm desktop-navbar ${isNativeIOSApp() ? "pt-3" : ""}`}
       >
-        {profileNeedsCompletion && (
-          <div className="bg-red-600 text-white py-2 px-4 text-center text-sm font-medium overflow-hidden">
-            <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 overflow-hidden">
-              <span>⚠️ Complete your profile to unlock all features</span>
-              <Link href={`/profile/${directUser?.id || ''}`}>
-                <Button variant="secondary" size="sm" className="ml-2 bg-white text-red-600 hover:bg-gray-100">
-                  Complete Profile
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-3">
             <Logo variant="navbar" />
