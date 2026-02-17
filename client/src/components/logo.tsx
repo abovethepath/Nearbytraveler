@@ -13,22 +13,25 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
     window.scrollTo(0, 0);
   };
 
+  let sizeClass = "h-8 w-auto";
+  
+  if (variant === "landing") sizeClass = "h-12 w-auto";
+  if (variant === "header") sizeClass = "h-48 w-auto";
+  if (variant === "footer") sizeClass = "h-8 w-auto";
+  if (variant === "black-navbar") sizeClass = "h-10 w-auto";
+
+  const finalClass = className || sizeClass;
+
   return (
-    <div style={{ overflow: "hidden", width: variant === "navbar" ? "100px" : "150px", height: "auto" }}>
-      <img
-        src={`/new-logo.png?t=${Date.now()}`}
-        alt="Nearby Traveler"
-        onClick={handleClick}
-        style={{ 
-          cursor: "pointer", 
-          display: "block",
-          width: "100%",
-          height: "auto"
-        }}
-        onError={() => {
-          console.error("Logo failed to load");
-        }}
-      />
-    </div>
+    <img
+      src={`/new-logo.png?t=${Date.now()}`}
+      alt="Nearby Traveler"
+      className={finalClass}
+      onClick={handleClick}
+      style={{ cursor: "pointer", display: "block" }}
+      onError={() => {
+        console.error("Logo failed to load");
+      }}
+    />
   );
 }
