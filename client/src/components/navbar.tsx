@@ -429,12 +429,12 @@ function Navbar() {
         ref={headerRef}
         className={`sticky top-0 z-[1000] bg-white dark:bg-black shadow-sm desktop-navbar ${isNativeIOSApp() ? "pt-3" : ""}`}
       >
-        <div className="bg-red-600 text-white py-1 px-4 text-center text-xs font-semibold tracking-wide">
-          BETA
-        </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-3">
-            <Logo variant="navbar" />
+            <div className="flex items-center gap-2">
+              <Logo variant="navbar" />
+              <span className="bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase leading-none">Beta</span>
+            </div>
             <div className="flex items-center space-x-3 md:space-x-6 ml-auto">
               {/* Desktop Navigation */}
               <nav className="hidden md:flex space-x-2 lg:space-x-4">
