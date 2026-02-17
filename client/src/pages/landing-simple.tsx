@@ -5,6 +5,7 @@ import Footer from "@/components/footer";
 import { MapPin, Users, Bell } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
+import Logo from "@/components/logo";
 
 export default function LandingSimple() {
   const [, setLocation] = useLocation();
@@ -24,9 +25,9 @@ export default function LandingSimple() {
       {/* Compact header */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <button onClick={() => { setLocation('/'); window.scrollTo(0, 0); }} className="flex items-center">
-            <img src="/new-logo.png" alt="Nearby Traveler" className="h-9 w-auto object-contain" />
-          </button>
+          <div className="flex items-center">
+            <Logo variant="landing" />
+          </div>
           <Button
             onClick={() => handleJoin('nav')}
             size="sm"
