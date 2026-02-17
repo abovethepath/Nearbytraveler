@@ -6736,19 +6736,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <CardContent>
                 {sortedUserConnections.length > 0 ? (
                   <div className="space-y-3">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     {sortedUserConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
                       <div
                         key={connection.id}
-                        className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 flex flex-col items-center text-center gap-2"
+                        className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 flex items-start gap-3"
                       >
                         <SimpleAvatar
                           user={connection.connectedUser}
                           size="md"
-                          className="w-16 h-16 sm:w-14 sm:h-14 rounded-full border-2 object-cover cursor-pointer"
+                          className="w-12 h-12 rounded-full border-2 object-cover cursor-pointer flex-shrink-0"
                           onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
                         />
-                        <div className="w-full">
+                        <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate text-gray-900 dark:text-white">
                             {connection.connectedUser?.username}
                           </p>
@@ -6758,9 +6758,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               : "New member"}
                           </p>
                           
-                          {/* Connection Note - How We Met (Own Profile Only) */}
                           {isOwnProfile && (
-                            <div className="mt-2 w-full">
+                            <div className="mt-2">
                               {editingConnectionNote === connection.id ? (
                                 <div className="space-y-2">
                                   <Input
@@ -6833,27 +6832,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                           )}
                           
-                          {/* PRIVACY FIX: Connection notes are private - only the person who wrote them can see them */}
-                          {/* Notes are NOT shown to others viewing this profile */}
-                          
-                          {/* Stealth Mode Toggle - Hide yourself from this contact */}
                           {isOwnProfile && connection.connectedUser?.id && (
                             <StealthToggleInline 
                               targetUserId={connection.connectedUser.id}
                               targetUsername={connection.connectedUser.username}
                             />
                           )}
+                          
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="mt-2 h-7 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
+                            onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
+                          >
+                            View
+                          </Button>
                         </div>
-
-                        {/* Show the button on ≥sm only; on mobile the whole tile is tappable */}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="hidden sm:inline-flex h-8 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
-                          onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
-                        >
-                          View
-                        </Button>
                       </div>
                     ))}
                   </div>
