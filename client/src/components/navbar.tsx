@@ -11,7 +11,29 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Globe, Bell, Settings, LogOut, Users, Bot, Home, Calendar, MapPin, MessageCircle, UserCheck, BarChart3, Star, Search, User, Sparkles, Mail, Menu, X, Moon, Sun } from "lucide-react";
+import {
+  Globe,
+  Bell,
+  Settings,
+  LogOut,
+  Users,
+  Bot,
+  Home,
+  Calendar,
+  MapPin,
+  MessageCircle,
+  UserCheck,
+  BarChart3,
+  Star,
+  Search,
+  User,
+  Sparkles,
+  Mail,
+  Menu,
+  X,
+  Moon,
+  Sun,
+} from "lucide-react";
 import Logo from "@/components/logo";
 import ConnectModal from "@/components/connect-modal";
 import NotificationBell from "@/components/notification-bell";
@@ -22,21 +44,31 @@ import { useToast } from "@/hooks/use-toast";
 import { getApiBaseUrl, invalidateUserCache } from "@/lib/queryClient";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 
-
 // Theme Toggle as Dropdown Menu Item
 function ThemeToggleMenuItem() {
-  const { theme, setTheme, resolvedTheme, isSystemTheme, toggleTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme, isSystemTheme, toggleTheme } =
+    useTheme();
 
   const getThemeDisplay = () => {
     if (isSystemTheme) {
       return {
-        icon: resolvedTheme === "dark" ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />,
-        text: `Auto (${resolvedTheme === "dark" ? "Dark" : "Light"})`
+        icon:
+          resolvedTheme === "dark" ? (
+            <Moon className="mr-2 h-4 w-4" />
+          ) : (
+            <Sun className="mr-2 h-4 w-4" />
+          ),
+        text: `Auto (${resolvedTheme === "dark" ? "Dark" : "Light"})`,
       };
     }
     return {
-      icon: theme === "dark" ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />,
-      text: theme === "dark" ? "Switch to Light" : "Switch to Dark"
+      icon:
+        theme === "dark" ? (
+          <Sun className="mr-2 h-4 w-4" />
+        ) : (
+          <Moon className="mr-2 h-4 w-4" />
+        ),
+      text: theme === "dark" ? "Switch to Light" : "Switch to Dark",
     };
   };
 
@@ -68,14 +100,14 @@ function Navbar() {
   // Keyboard shortcut for theme toggle
   useEffect(() => {
     const handleKeydown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === 't') {
+      if ((event.metaKey || event.ctrlKey) && event.key === "t") {
         event.preventDefault();
         toggleTheme();
       }
     };
 
-    window.addEventListener('keydown', handleKeydown);
-    return () => window.removeEventListener('keydown', handleKeydown);
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
   }, [toggleTheme]);
 
   const [directUser, setDirectUser] = useState<any>(null);
@@ -100,36 +132,50 @@ function Navbar() {
     const refreshUserData = async () => {
       try {
         // ALWAYS check server session first - it's the source of truth
-        const sessionRes = await fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' });
+        const sessionRes = await fetch(`${getApiBaseUrl()}/api/auth/user`, {
+          credentials: "include",
+        });
         if (sessionRes.ok) {
           const sessionUser = await sessionRes.json();
           if (sessionUser?.id) {
             // CRITICAL: If server says we're a different user than localStorage thinks,
             // trust the SERVER and update everything to match
             if (String(sessionUser.id) !== String(directUser.id)) {
-              console.log('⚠️ Navbar: Server user mismatch! Server:', sessionUser.username, '(', sessionUser.id, ') vs Local:', directUser.username, '(', directUser.id, ')');
+              console.log(
+                "⚠️ Navbar: Server user mismatch! Server:",
+                sessionUser.username,
+                "(",
+                sessionUser.id,
+                ") vs Local:",
+                directUser.username,
+                "(",
+                directUser.id,
+                ")",
+              );
             }
             // Always use the server user data - it's authoritative
             setUser(sessionUser);
             setDirectUser(sessionUser);
             authStorage.setUser(sessionUser);
 
-            window.dispatchEvent(new CustomEvent('avatarRefresh'));
+            window.dispatchEvent(new CustomEvent("avatarRefresh"));
             return;
           }
         }
         // If server session check failed, try refreshing with local user id as fallback
-        const response = await fetch(`${getApiBaseUrl()}/api/users/${directUser.id}?t=${Date.now()}`);
+        const response = await fetch(
+          `${getApiBaseUrl()}/api/users/${directUser.id}?t=${Date.now()}`,
+        );
         if (response.ok) {
           const freshUserData = await response.json();
           setUser(freshUserData);
           setDirectUser(freshUserData);
           authStorage.setUser(freshUserData);
 
-          window.dispatchEvent(new CustomEvent('avatarRefresh'));
+          window.dispatchEvent(new CustomEvent("avatarRefresh"));
         }
       } catch (error) {
-        console.log('Failed to refresh user data:', error);
+        console.log("Failed to refresh user data:", error);
       }
     };
 
@@ -138,11 +184,15 @@ function Navbar() {
 
   // recalc top on load/resize & when warning banners appear/disappear
   useEffect(() => {
-    const measure = () => setMenuTop(headerRef.current?.getBoundingClientRect().height ?? 0);
+    const measure = () =>
+      setMenuTop(headerRef.current?.getBoundingClientRect().height ?? 0);
     measure();
     window.addEventListener("resize", measure);
     const id = setInterval(measure, 300); // cheap guard if header height changes (banners)
-    return () => { window.removeEventListener("resize", measure); clearInterval(id); };
+    return () => {
+      window.removeEventListener("resize", measure);
+      clearInterval(id);
+    };
   }, []);
 
   // close on route change
@@ -151,31 +201,35 @@ function Navbar() {
   // Listen for profile updates to refresh user data
   useEffect(() => {
     const handleProfileUpdate = (event: any) => {
-      console.log('Navbar avatar refresh triggered:', event.type, event.detail?.id);
+      console.log(
+        "Navbar avatar refresh triggered:",
+        event.type,
+        event.detail?.id,
+      );
       if (event.detail && event.detail.id) {
         const updatedUser = event.detail;
-        
+
         // Update direct user immediately
         setDirectUser(updatedUser);
-        
-        // Update all storage systems  
+
+        // Update all storage systems
         if (setUser) setUser(updatedUser);
         authStorage.setUser(updatedUser);
-        localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
-        
-        console.log('🔄 Navbar: Using event user data directly');
+        localStorage.setItem("travelconnect_user", JSON.stringify(updatedUser));
+
+        console.log("🔄 Navbar: Using event user data directly");
       }
     };
 
     // Listen for multiple event types to catch all profile updates
-    window.addEventListener('userDataUpdated', handleProfileUpdate);
-    window.addEventListener('profileUpdated', handleProfileUpdate);
-    window.addEventListener('profilePhotoUpdated', handleProfileUpdate);
-    
+    window.addEventListener("userDataUpdated", handleProfileUpdate);
+    window.addEventListener("profileUpdated", handleProfileUpdate);
+    window.addEventListener("profilePhotoUpdated", handleProfileUpdate);
+
     return () => {
-      window.removeEventListener('userDataUpdated', handleProfileUpdate);
-      window.removeEventListener('profileUpdated', handleProfileUpdate);
-      window.removeEventListener('profilePhotoUpdated', handleProfileUpdate);
+      window.removeEventListener("userDataUpdated", handleProfileUpdate);
+      window.removeEventListener("profileUpdated", handleProfileUpdate);
+      window.removeEventListener("profilePhotoUpdated", handleProfileUpdate);
     };
   }, [setUser]);
 
@@ -186,7 +240,11 @@ function Navbar() {
 
       // Automatically clear any image over 200KB to prevent performance issues
       if (imageLength > 200000) {
-        console.warn('Avatar too large (' + imageLength + ' chars), auto-clearing for performance');
+        console.warn(
+          "Avatar too large (" +
+            imageLength +
+            " chars), auto-clearing for performance",
+        );
 
         // Clear from context immediately
         const cleanUser = { ...directUser, profileImage: null };
@@ -195,8 +253,8 @@ function Navbar() {
 
         // Clear from server
         fetch(`${getApiBaseUrl()}/api/users/profile-photo`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
         }).catch(() => {});
 
         return;
@@ -211,15 +269,23 @@ function Navbar() {
   // Listen for profile updates and refresh avatar - ENHANCED VERSION
   useEffect(() => {
     const handleUpdate = async (event: any) => {
-      console.log('Navbar avatar refresh triggered:', event.type, event.detail?.id);
+      console.log(
+        "Navbar avatar refresh triggered:",
+        event.type,
+        event.detail?.id,
+      );
 
       // Force complete navbar refresh
       setAvatarKey(Date.now());
-      setNavbarRefreshTrigger(prev => prev + 1);
+      setNavbarRefreshTrigger((prev) => prev + 1);
 
       // If event contains user data, use it directly
-      if (event.detail && typeof event.detail === 'object' && event.detail.profileImage !== undefined) {
-        console.log('🔄 Navbar: Using event user data directly');
+      if (
+        event.detail &&
+        typeof event.detail === "object" &&
+        event.detail.profileImage !== undefined
+      ) {
+        console.log("🔄 Navbar: Using event user data directly");
         setDirectUser(event.detail);
         setUser(event.detail);
         authStorage.setUser(event.detail);
@@ -229,10 +295,17 @@ function Navbar() {
       // Fetch fresh user data if this is the current user
       if (directUser?.id) {
         try {
-          const response = await fetch(`${getApiBaseUrl()}/api/users/${directUser.id}?t=${Date.now()}`);
+          const response = await fetch(
+            `${getApiBaseUrl()}/api/users/${directUser.id}?t=${Date.now()}`,
+          );
           if (response.ok) {
             const freshUserData = await response.json();
-            console.log('🔄 Navbar: Fresh data fetched:', freshUserData.username, 'has image:', !!freshUserData.profileImage);
+            console.log(
+              "🔄 Navbar: Fresh data fetched:",
+              freshUserData.username,
+              "has image:",
+              !!freshUserData.profileImage,
+            );
 
             // Update ALL user data sources
             setDirectUser(freshUserData);
@@ -240,46 +313,46 @@ function Navbar() {
             authStorage.setUser(freshUserData);
           }
         } catch (error) {
-          console.log('Failed to fetch fresh user data:', error);
+          console.log("Failed to fetch fresh user data:", error);
         }
       }
 
       // Also invalidate queries for other components
       if (directUser?.id) {
-        queryClient.invalidateQueries({ queryKey: ['/api/users'] });
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${directUser.id}`] });
+        queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+        queryClient.invalidateQueries({
+          queryKey: [`/api/users/${directUser.id}`],
+        });
       }
     };
 
-    window.addEventListener('profilePhotoUpdated', handleUpdate);
-    window.addEventListener('userDataUpdated', handleUpdate);
-    window.addEventListener('refreshNavbar', handleUpdate);
-    window.addEventListener('forceNavbarRefresh', handleUpdate);
+    window.addEventListener("profilePhotoUpdated", handleUpdate);
+    window.addEventListener("userDataUpdated", handleUpdate);
+    window.addEventListener("refreshNavbar", handleUpdate);
+    window.addEventListener("forceNavbarRefresh", handleUpdate);
 
     return () => {
-      window.removeEventListener('profilePhotoUpdated', handleUpdate);
-      window.removeEventListener('userDataUpdated', handleUpdate);
-      window.removeEventListener('refreshNavbar', handleUpdate);
-      window.removeEventListener('forceNavbarRefresh', handleUpdate);
+      window.removeEventListener("profilePhotoUpdated", handleUpdate);
+      window.removeEventListener("userDataUpdated", handleUpdate);
+      window.removeEventListener("refreshNavbar", handleUpdate);
+      window.removeEventListener("forceNavbarRefresh", handleUpdate);
     };
   }, [queryClient, directUser?.id, setUser]);
 
-
-
   // LOGOUT SYSTEM - Bulletproof version according to guide
   const handleLogout = async () => {
-    console.log('🚪 Starting bulletproof logout process');
+    console.log("🚪 Starting bulletproof logout process");
 
     try {
       // Step 1: Call server logout to destroy session
       try {
         await fetch(`${getApiBaseUrl()}/api/auth/logout`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' }
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
         });
       } catch (err) {
-        console.warn('Server logout failed, continuing with client cleanup');
+        console.warn("Server logout failed, continuing with client cleanup");
       }
 
       // Step 2: Clear ALL client-side auth data
@@ -291,8 +364,8 @@ function Navbar() {
       invalidateUserCache();
 
       // Step 4: Clear cookies
-      document.cookie.split(';').forEach(c => {
-        const name = c.split('=')[0].trim();
+      document.cookie.split(";").forEach((c) => {
+        const name = c.split("=")[0].trim();
         document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
       });
 
@@ -301,23 +374,24 @@ function Navbar() {
       setUser(null);
 
       // Step 6: Hard redirect - replace prevents back button returning to auth'd page
-      window.location.replace('/');
-
+      window.location.replace("/");
     } catch (error) {
-      console.error('❌ Logout error:', error);
+      console.error("❌ Logout error:", error);
       localStorage.clear();
       sessionStorage.clear();
       invalidateUserCache();
-      window.location.replace('/');
+      window.location.replace("/");
     }
   };
 
   // Filter nav items based on user type
   const getNavItems = () => {
-    const profilePath = directUser?.id ? `/profile/${directUser.id}` : '/profile';
+    const profilePath = directUser?.id
+      ? `/profile/${directUser.id}`
+      : "/profile";
 
     // Business users get a completely different, simplified navbar
-    if (directUser?.userType === 'business') {
+    if (directUser?.userType === "business") {
       return [
         { path: "/business-dashboard", label: "Dashboard", icon: "📊" },
         { path: "/deals", label: "Deals", icon: "🏷️" },
@@ -344,32 +418,16 @@ function Navbar() {
 
   // Check if profile needs completion (bio, gender, sexual preference)
   // Business users are excluded - they complete different fields during signup
-  const profileNeedsCompletion = directUser && 
-    directUser.userType !== 'business' && (
-      !directUser.bio || 
-      !directUser.gender ||
-      !directUser.sexualPreference
-    );
+  const profileNeedsCompletion =
+    directUser &&
+    directUser.userType !== "business" &&
+    (!directUser.bio || !directUser.gender || !directUser.sexualPreference);
 
   return (
     <>
-      {/* Profile Completion Reminder Bar */}
-      {profileNeedsCompletion && (
-        <div className="bg-red-600 text-white py-2 px-4 text-center text-sm font-medium overflow-hidden">
-          <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 overflow-hidden">
-            <span>⚠️ Complete your profile to unlock all features</span>
-            <Link href={`/profile/${directUser?.id || ''}`}>
-              <Button variant="secondary" size="sm" className="ml-2 bg-white text-red-600 hover:bg-gray-100">
-                Complete Profile
-              </Button>
-            </Link>
-          </div>
-        </div>
-      )}
-      
       <header
         ref={headerRef}
-        className={`sticky top-0 z-[1000] bg-white dark:bg-black shadow-sm desktop-navbar ${isNativeIOSApp() ? 'pt-3' : ''}`}
+        className={`sticky top-0 z-[1000] bg-white dark:bg-black shadow-sm desktop-navbar ${isNativeIOSApp() ? "pt-3" : ""}`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-1">
@@ -397,7 +455,7 @@ function Navbar() {
 
               <div className="flex items-center space-x-2 md:space-x-3">
                 {directUser?.id && <NotificationBell userId={directUser.id} />}
-                
+
                 {/* Desktop Theme Toggle */}
                 <div className="hidden md:block">
                   <AdaptiveThemeToggle />
@@ -406,151 +464,247 @@ function Navbar() {
                 {/* Mobile Menu Button - Simplified for Capacitor WebView */}
                 <button
                   type="button"
-                  className={`md:hidden p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer relative z-[1100] ${isNativeIOSApp() ? 'h-14 w-14' : 'h-12 w-12'}`}
+                  className={`md:hidden p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer relative z-[1100] ${isNativeIOSApp() ? "h-14 w-14" : "h-12 w-12"}`}
                   onClick={() => {
-                    console.log('🍔 Hamburger clicked');
-                    setIsMobileMenuOpen(o => !o);
+                    console.log("🍔 Hamburger clicked");
+                    setIsMobileMenuOpen((o) => !o);
                   }}
                   aria-controls="mobile-menu"
                   aria-expanded={isMobileMenuOpen}
-                  aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
-                  style={{ WebkitTapHighlightColor: 'transparent', cursor: 'pointer' }}
+                  aria-label={
+                    isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"
+                  }
+                  style={{
+                    WebkitTapHighlightColor: "transparent",
+                    cursor: "pointer",
+                  }}
                 >
-                  {isMobileMenuOpen ? <X className="h-7 w-7 pointer-events-none" /> : <Menu className="h-7 w-7 pointer-events-none" />}
+                  {isMobileMenuOpen ? (
+                    <X className="h-7 w-7 pointer-events-none" />
+                  ) : (
+                    <Menu className="h-7 w-7 pointer-events-none" />
+                  )}
                 </button>
               </div>
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
-                  <button 
+                  <button
                     type="button"
-                    className={`relative rounded-full p-0 flex items-center justify-center cursor-pointer z-[1100] ${isNativeIOSApp() ? 'h-14 w-14' : 'h-12 w-12'}`}
-                    style={{ WebkitTapHighlightColor: 'transparent', cursor: 'pointer' }}
+                    className={`relative rounded-full p-0 flex items-center justify-center cursor-pointer z-[1100] ${isNativeIOSApp() ? "h-14 w-14" : "h-12 w-12"}`}
+                    style={{
+                      WebkitTapHighlightColor: "transparent",
+                      cursor: "pointer",
+                    }}
                   >
-                    <SimpleAvatar 
+                    <SimpleAvatar
                       key={`navbar-avatar-${directUser?.id}-${avatarKey}-${navbarRefreshTrigger}`}
-                      user={directUser} 
-                      size={isNativeIOSApp() ? 'lg' : 'md'}
+                      user={directUser}
+                      size={isNativeIOSApp() ? "lg" : "md"}
                       className="border-2 border-white shadow-sm pointer-events-none"
                     />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 z-[9999] bg-white dark:bg-gray-800 border shadow-lg" align="end" forceMount>
+                <DropdownMenuContent
+                  className="w-56 z-[9999] bg-white dark:bg-gray-800 border shadow-lg"
+                  align="end"
+                  forceMount
+                >
                   {/* My Profile - Most important, at the top */}
-                  <DropdownMenuItem onClick={() => {
-                    setLocation(`/profile/${directUser?.id}`);
-                    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                  }} className="font-medium">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setLocation(`/profile/${directUser?.id}`);
+                      setTimeout(
+                        () => window.scrollTo({ top: 0, behavior: "smooth" }),
+                        100,
+                      );
+                    }}
+                    className="font-medium"
+                  >
                     <User className="mr-2 h-4 w-4" />
                     <span>My Profile</span>
                   </DropdownMenuItem>
-                  
+
                   {/* Welcome item */}
-                  {directUser?.userType !== 'business' && (
-                    <DropdownMenuItem onClick={() => {
-                      setLocation('/welcome');
-                      setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                    }}>
+                  {directUser?.userType !== "business" && (
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setLocation("/welcome");
+                        setTimeout(
+                          () => window.scrollTo({ top: 0, behavior: "smooth" }),
+                          100,
+                        );
+                      }}
+                    >
                       <Star className="mr-2 h-4 w-4" />
                       <span>Welcome</span>
                     </DropdownMenuItem>
                   )}
-                  
+
                   {/* Quick access items not in top nav or bottom nav */}
-                  <DropdownMenuItem onClick={() => {
-                    setLocation('/');
-                    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                  }}>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setLocation("/");
+                      setTimeout(
+                        () => window.scrollTo({ top: 0, behavior: "smooth" }),
+                        100,
+                      );
+                    }}
+                  >
                     <Home className="mr-2 h-4 w-4" />
                     <span>Home</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => {
-                    setLocation('/messages');
-                    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                  }}>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setLocation("/messages");
+                      setTimeout(
+                        () => window.scrollTo({ top: 0, behavior: "smooth" }),
+                        100,
+                      );
+                    }}
+                  >
                     <MessageCircle className="mr-2 h-4 w-4" />
                     <span>Messages</span>
                   </DropdownMenuItem>
 
-                  {directUser?.userType === 'business' && (
+                  {directUser?.userType === "business" && (
                     <>
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/events');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setLocation("/events");
+                          setTimeout(
+                            () =>
+                              window.scrollTo({ top: 0, behavior: "smooth" }),
+                            100,
+                          );
+                        }}
+                      >
                         <Calendar className="mr-2 h-4 w-4" />
                         <span>My Events</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/create-event');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setLocation("/create-event");
+                          setTimeout(
+                            () =>
+                              window.scrollTo({ top: 0, behavior: "smooth" }),
+                            100,
+                          );
+                        }}
+                      >
                         <Sparkles className="mr-2 h-4 w-4" />
                         <span>Create Event</span>
                       </DropdownMenuItem>
                     </>
                   )}
 
-                  {directUser?.userType !== 'business' && (
+                  {directUser?.userType !== "business" && (
                     <>
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/plan-trip');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setLocation("/plan-trip");
+                          setTimeout(
+                            () =>
+                              window.scrollTo({ top: 0, behavior: "smooth" }),
+                            100,
+                          );
+                        }}
+                      >
                         <MapPin className="mr-2 h-4 w-4" />
                         <span>Plan Trip</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/meetups');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setLocation("/meetups");
+                          setTimeout(
+                            () =>
+                              window.scrollTo({ top: 0, behavior: "smooth" }),
+                            100,
+                          );
+                        }}
+                      >
                         <Users className="mr-2 h-4 w-4" />
                         <span>Quick Meetups</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/city-chatrooms');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setLocation("/city-chatrooms");
+                          setTimeout(
+                            () =>
+                              window.scrollTo({ top: 0, behavior: "smooth" }),
+                            100,
+                          );
+                        }}
+                      >
                         <MessageCircle className="mr-2 h-4 w-4" />
                         <span>City Chatrooms</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/business-offers');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setLocation("/business-offers");
+                          setTimeout(
+                            () =>
+                              window.scrollTo({ top: 0, behavior: "smooth" }),
+                            100,
+                          );
+                        }}
+                      >
                         <Star className="mr-2 h-4 w-4" />
                         <span>Deals & Offers</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/ambassador-program');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setLocation("/ambassador-program");
+                          setTimeout(
+                            () =>
+                              window.scrollTo({ top: 0, behavior: "smooth" }),
+                            100,
+                          );
+                        }}
+                      >
                         <Star className="mr-2 h-4 w-4 text-orange-500" />
                         <span>Ambassador Program</span>
                       </DropdownMenuItem>
                     </>
                   )}
 
-                  <DropdownMenuItem onClick={() => {
-                    setLocation('/settings');
-                    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                  }}>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setLocation("/settings");
+                      setTimeout(
+                        () => window.scrollTo({ top: 0, behavior: "smooth" }),
+                        100,
+                      );
+                    }}
+                  >
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </DropdownMenuItem>
 
                   {directUser?.isAdmin && (
                     <>
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/admin-dashboard');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setLocation("/admin-dashboard");
+                          setTimeout(
+                            () =>
+                              window.scrollTo({ top: 0, behavior: "smooth" }),
+                            100,
+                          );
+                        }}
+                      >
                         <BarChart3 className="mr-2 h-4 w-4" />
                         <span>Admin Dashboard</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/admin-settings');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setLocation("/admin-settings");
+                          setTimeout(
+                            () =>
+                              window.scrollTo({ top: 0, behavior: "smooth" }),
+                            100,
+                          );
+                        }}
+                      >
                         <Settings className="mr-2 h-4 w-4" />
                         <span>Admin Settings</span>
                       </DropdownMenuItem>
@@ -568,6 +722,23 @@ function Navbar() {
           </div>
         </div>
 
+        {/* Profile Completion Reminder Bar - Now INSIDE header, below the black navbar */}
+        {profileNeedsCompletion && (
+          <div className="bg-red-600 text-white py-2 px-4 text-center text-sm font-medium overflow-hidden border-t border-red-700">
+            <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 overflow-hidden">
+              <span>⚠️ Complete your profile to unlock all features</span>
+              <Link href={`/profile/${directUser?.id || ""}`}>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="ml-2 bg-white text-red-600 hover:bg-gray-100"
+                >
+                  Complete Profile
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* 
@@ -576,124 +747,146 @@ function Navbar() {
         Keeping this code commented for reference in case desktop hamburger menu is needed in future.
       */}
       {/* Desktop-only mobile menu - only render when NOT on mobile to avoid portal interference */}
-      {false && createPortal(
-        <div
-          id="mobile-menu"
-          className={`md:hidden fixed inset-x-0 transition-opacity duration-200 ${
-            isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
-          style={{ top: menuTop, zIndex: 9999 }}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
-            <div className="px-4 py-6 space-y-4">
-              {navItems.map((item) => (
+      {false &&
+        createPortal(
+          <div
+            id="mobile-menu"
+            className={`md:hidden fixed inset-x-0 transition-opacity duration-200 ${
+              isMobileMenuOpen
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
+            }`}
+            style={{ top: menuTop, zIndex: 9999 }}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
+              <div className="px-4 py-6 space-y-4">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    href={item.path}
+                    className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+                      location === item.path
+                        ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setLocation(item.path);
+                    }}
+                  >
+                    <span className="mr-3">{item.icon}</span>
+                    {item.label}
+                  </Link>
+                ))}
+
+                {/* Additional mobile menu items not in main nav */}
+                {directUser?.userType !== "business" && (
+                  <>
+                    <Link
+                      href="/discover"
+                      className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+                        location === "/discover"
+                          ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                          : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      }`}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        setLocation("/discover");
+                      }}
+                    >
+                      <span className="mr-3">🌍</span>Discover Cities
+                    </Link>
+                    <Link
+                      href="/quick-meetups"
+                      className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+                        location === "/quick-meetups"
+                          ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                          : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      }`}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        setLocation("/quick-meetups");
+                      }}
+                    >
+                      <span className="mr-3">⚡</span>Quick Meetups
+                    </Link>
+                    <Link
+                      href="/city-chatrooms"
+                      className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+                        location === "/city-chatrooms"
+                          ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                          : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      }`}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        setLocation("/city-chatrooms");
+                      }}
+                    >
+                      <span className="mr-3">💬</span>City Chatrooms
+                    </Link>
+                  </>
+                )}
+
+                {/* Add Deals for business users */}
+                {directUser?.userType === "business" && (
+                  <Link
+                    href="/deals"
+                    className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+                      location === "/deals"
+                        ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setLocation("/deals");
+                    }}
+                  >
+                    <span className="mr-3">🏷️</span>Deals
+                  </Link>
+                )}
+
+                {/* Settings for all users */}
                 <Link
-                  key={item.path}
-                  href={item.path}
+                  href="/settings"
                   className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
-                    location === item.path
+                    location === "/settings"
                       ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
                       : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
-                  onClick={() => { setIsMobileMenuOpen(false); setLocation(item.path); }}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setLocation("/settings");
+                  }}
                 >
-                  <span className="mr-3">{item.icon}</span>{item.label}
+                  <span className="mr-3">⚙️</span>Settings
                 </Link>
-              ))}
-              
-              {/* Additional mobile menu items not in main nav */}
-              {directUser?.userType !== 'business' && (
-                <>
-                  <Link
-                    href="/discover"
-                    className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
-                      location === '/discover'
-                        ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
-                    onClick={() => { setIsMobileMenuOpen(false); setLocation('/discover'); }}
-                  >
-                    <span className="mr-3">🌍</span>Discover Cities
-                  </Link>
-                  <Link
-                    href="/quick-meetups"
-                    className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
-                      location === '/quick-meetups'
-                        ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
-                    onClick={() => { setIsMobileMenuOpen(false); setLocation('/quick-meetups'); }}
-                  >
-                    <span className="mr-3">⚡</span>Quick Meetups
-                  </Link>
-                  <Link
-                    href="/city-chatrooms"
-                    className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
-                      location === '/city-chatrooms'
-                        ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
-                    onClick={() => { setIsMobileMenuOpen(false); setLocation('/city-chatrooms'); }}
-                  >
-                    <span className="mr-3">💬</span>City Chatrooms
-                  </Link>
-                </>
-              )}
-              
-              {/* Add Deals for business users */}
-              {directUser?.userType === 'business' && (
-                <Link
-                  href="/deals"
-                  className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
-                    location === '/deals'
-                      ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                      : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
-                  }`}
-                  onClick={() => { setIsMobileMenuOpen(false); setLocation('/deals'); }}
+
+                {/* Sign Out button for mobile */}
+                <button
+                  type="button"
+                  className="w-full text-left block py-3 px-4 rounded-lg text-lg font-medium transition-colors text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsMobileMenuOpen(false);
+                    setTimeout(() => handleLogout(), 100); // Defer logout until after menu closes
+                  }}
                 >
-                  <span className="mr-3">🏷️</span>Deals
-                </Link>
-              )}
-              
-              {/* Settings for all users */}
-              <Link
-                href="/settings"
-                className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
-                  location === '/settings'
-                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
-                }`}
-                onClick={() => { setIsMobileMenuOpen(false); setLocation('/settings'); }}
-              >
-                <span className="mr-3">⚙️</span>Settings
-              </Link>
-              
-              {/* Sign Out button for mobile */}
-              <button
-                type="button"
-                className="w-full text-left block py-3 px-4 rounded-lg text-lg font-medium transition-colors text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsMobileMenuOpen(false);
-                  setTimeout(() => handleLogout(), 100); // Defer logout until after menu closes
-                }}
-              >
-                <span className="mr-3">🚪</span>Sign Out
-              </button>
+                  <span className="mr-3">🚪</span>Sign Out
+                </button>
+              </div>
             </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body,
+        )}
 
       {/* Connect Modal */}
-      <ConnectModal 
+      <ConnectModal
         isOpen={showConnectModal}
         onClose={() => setShowConnectModal(false)}
-        userTravelPlans={userTravelPlans as any[] || []}
+        userTravelPlans={(userTravelPlans as any[]) || []}
       />
     </>
   );
