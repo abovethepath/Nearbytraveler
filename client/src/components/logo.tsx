@@ -11,7 +11,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
       case "landing":
         return "h-10 w-auto";
       case "navbar":
-        return "h-8 w-auto";
+        return "h-11 w-auto";
       case "black-navbar":
         return "h-14 w-auto";
       case "footer":
@@ -36,7 +36,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
       src="/new-logo.png?v=2"
       alt="Nearby Traveler"
       className={`${finalClassName} cursor-pointer hover:opacity-80 transition-opacity object-contain`}
-      style={variant === "navbar" ? { height: '32px', width: 'auto', maxHeight: '32px' } : undefined}
+      style={variant === "navbar" ? { height: '44px', width: 'auto', maxHeight: '44px' } : undefined}
       onClick={handleClick}
       onError={(e) => {
         const target = e.target as HTMLImageElement;
