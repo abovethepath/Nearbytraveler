@@ -31,6 +31,11 @@ const NATIVE_INJECT_JS = `
   window.__nativeIOSDetected = true;
   try { sessionStorage.setItem('native_ios', 'true'); } catch(e) {}
   (function() {
+    var p = (window.location.pathname || '/').replace(/\\/$/, '') || '/';
+    if (p === '/' || p === '/landing' || p.indexOf('/landing') === 0) {
+      window.location.replace(window.location.origin + '/home?native=ios');
+      return;
+    }
     var s = document.createElement('style');
     s.id = 'native-ios-css';
     s.textContent = ':root { --native-tabbar-height: 88px; --native-bottom-inset: 88px; } .mobile-top-nav, .mobile-bottom-nav, .desktop-navbar, [data-testid="button-mobile-menu"], .ios-nav-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; } body[data-native-ios] .mobile-top-nav, body[data-native-ios] .mobile-bottom-nav, body[data-native-ios] .desktop-navbar { display: none !important; }';

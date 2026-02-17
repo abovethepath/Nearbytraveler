@@ -1,23 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform,
-  ActivityIndicator, ScrollView,
+  ActivityIndicator, ScrollView, useColorScheme,
+  Pressable, Keyboard,
 } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ORANGE = '#F97316';
 const SIGNUP_DATA_KEY = 'signup_data';
 
+const DARK = {
+  bg: '#1c1c1e',
+  text: '#ffffff',
+  textMuted: '#8e8e93',
+  inputBg: '#2c2c2e',
+  inputBorder: '#38383a',
+  errorBg: '#3d1f1f',
+  errorBorder: '#5c2a2a',
+};
+
 export default function SignupStep2Screen({ navigation, route }) {
   const { userType } = route?.params || {};
+  const colorScheme = useColorScheme();
+  const dark = colorScheme === 'dark';
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const passwordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
 
   const getUserTypeLabel = () => {
     switch (userType) {
@@ -83,43 +101,53 @@ export default function SignupStep2Screen({ navigation, route }) {
     return null;
   }
 
+  const containerStyle = { backgroundColor: dark ? DARK.bg : '#FFFFFF' };
+  const stepLabelStyle = { color: dark ? DARK.textMuted : '#6B7280' };
+  const titleStyle = { color: dark ? DARK.text : '#111827' };
+  const subtitleStyle = { color: dark ? DARK.textMuted : '#6B7280' };
+  const errorContainerStyle = dark ? { backgroundColor: DARK.errorBg, borderColor: DARK.errorBorder } : {};
+  const inputLabelStyle = { color: dark ? DARK.text : '#374151' };
+  const inputStyle = dark ? { backgroundColor: DARK.inputBg, borderColor: DARK.inputBorder, color: DARK.text, selectionColor: 'rgba(249,115,22,0.4)' } : { selectionColor: 'rgba(59,130,246,0.4)' };
+  const placeholderColor = dark ? '#8e8e93' : '#9CA3AF';
+  const eyeIconColor = dark ? '#8e8e93' : '#6B7280';
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, containerStyle]}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardView}>
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="always">
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
               <Text style={styles.backText}>‹ Back</Text>
             </TouchableOpacity>
-            <Text style={styles.stepLabel}>Step 2 of 3</Text>
+            <Text style={[styles.stepLabel, stepLabelStyle]}>Step 2 of 3</Text>
           </View>
 
-          <Text style={styles.title}>Create your account</Text>
-          <Text style={styles.subtitle}>As {getUserTypeLabel()}</Text>
+          <Text style={[styles.title, titleStyle]}>Create your account</Text>
+          <Text style={[styles.subtitle, subtitleStyle]}>As {getUserTypeLabel()}</Text>
 
           {error ? (
-            <View style={styles.errorContainer}>
+            <View style={[styles.errorContainer, errorContainerStyle]}>
               <Text style={styles.errorText}>{error}</Text>
             </View>
           ) : null}
 
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Full Name *</Text>
+            <Text style={[styles.inputLabel, inputLabelStyle]}>Full Name *</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, inputStyle]}
               placeholder="Your name"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={placeholderColor}
               value={name}
               onChangeText={setName}
               autoCapitalize="words"
             />
           </View>
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Username * (min 6 characters)</Text>
+            <Text style={[styles.inputLabel, inputLabelStyle]}>Username * (min 6 characters)</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, inputStyle]}
               placeholder="Choose a username (6-12 chars)"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={placeholderColor}
               value={username}
               onChangeText={(t) => setUsername(t.replace(/\s/g, '_').slice(0, 12))}
               maxLength={12}
@@ -128,11 +156,11 @@ export default function SignupStep2Screen({ navigation, route }) {
             />
           </View>
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Email *</Text>
+            <Text style={[styles.inputLabel, inputLabelStyle]}>Email *</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, inputStyle]}
               placeholder="your@email.com"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={placeholderColor}
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -140,26 +168,71 @@ export default function SignupStep2Screen({ navigation, route }) {
             />
           </View>
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Password * (min 8 characters)</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Create a password"
-              placeholderTextColor="#9CA3AF"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
+            <Text style={[styles.inputLabel, inputLabelStyle]}>Password * (min 8 characters)</Text>
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={() => passwordRef.current?.focus()}
+              style={styles.passwordTapArea}
+            >
+              <View style={styles.passwordInputWrapper}>
+                <TextInput
+                  ref={passwordRef}
+                  style={[styles.input, inputStyle, styles.passwordInput]}
+                  placeholder="Create a password"
+                  placeholderTextColor={placeholderColor}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                />
+                <TouchableOpacity
+                  style={styles.eyeButton}
+                  onPress={() => setShowPassword(!showPassword)}
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                >
+                  <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color={eyeIconColor} />
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+            <Pressable
+              onPress={() => {
+                Keyboard.dismiss();
+                setTimeout(() => passwordRef.current?.focus(), 100);
+              }}
+              style={({ pressed }) => [
+                styles.passwordHintRow,
+                { paddingVertical: 14, minHeight: 52, justifyContent: 'center', opacity: pressed ? 0.7 : 1 },
+              ]}
+            >
+              <Text style={[styles.passwordHint, dark && { color: DARK.textMuted }]}>Use a strong password. </Text>
+              <Text style={styles.createOwnLink}>Tap here to create your own</Text>
+            </Pressable>
           </View>
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Confirm Password *</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Confirm your password"
-              placeholderTextColor="#9CA3AF"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-            />
+            <Text style={[styles.inputLabel, inputLabelStyle]}>Confirm Password *</Text>
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={() => confirmPasswordRef.current?.focus()}
+              style={styles.passwordTapArea}
+            >
+              <View style={styles.passwordInputWrapper}>
+                <TextInput
+                  ref={confirmPasswordRef}
+                  style={[styles.input, inputStyle, styles.passwordInput]}
+                  placeholder="Confirm your password"
+                  placeholderTextColor={placeholderColor}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry={!showConfirmPassword}
+                />
+                <TouchableOpacity
+                  style={styles.eyeButton}
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                >
+                  <Ionicons name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color={eyeIconColor} />
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity
@@ -194,6 +267,13 @@ const styles = StyleSheet.create({
   inputContainer: { marginBottom: 16 },
   inputLabel: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 8 },
   input: { backgroundColor: '#F9FAFB', borderWidth: 1.5, borderColor: '#E5E7EB', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, color: '#111827' },
+  passwordTapArea: { marginBottom: 4 },
+  passwordInputWrapper: { position: 'relative' },
+  passwordInput: { paddingRight: 48 },
+  eyeButton: { position: 'absolute', right: 12, top: 0, bottom: 0, justifyContent: 'center' },
+  passwordHintRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 4, marginTop: 6 },
+  passwordHint: { fontSize: 13, color: '#6B7280' },
+  createOwnLink: { fontSize: 13, color: ORANGE, fontWeight: '600' },
   continueButton: { backgroundColor: ORANGE, borderRadius: 12, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
   continueButtonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
 });

@@ -1,9 +1,19 @@
-const { getDefaultConfig } = require("expo/metro-config");
+const { getDefaultConfig } = require('expo/metro-config');
+const path = require('path');
 
-const config = getDefaultConfig(__dirname);
+const projectRoot = __dirname;
+const monorepoRoot = path.resolve(projectRoot, '..');
 
-// Fix for Windows: prevent Expo from creating node:sea externals folders
-config.resolver = config.resolver || {};
-config.resolver.unstable_enablePackageExports = false;
+const config = getDefaultConfig(projectRoot);
+
+// Allow resolving shared/ from parent directory (single source of truth for COUNTRIES)
+config.watchFolders = [monorepoRoot];
+config.resolver.nodeModulesPaths = [
+  path.resolve(projectRoot, 'node_modules'),
+  path.resolve(monorepoRoot, 'node_modules'),
+];
+config.resolver.extraNodeModules = {
+  shared: path.resolve(monorepoRoot, 'shared'),
+};
 
 module.exports = config;

@@ -460,6 +460,12 @@ function Router() {
     console.log('🔍 ROUTING DEBUG - isAuthenticated:', authValue.isAuthenticated, 'location:', location, 'user:', effectiveUser);
     console.log('🔍 Current window.location.pathname:', window.location.pathname);
 
+    // NATIVE APP: Never show landing page - redirect to /home
+    if (isNativeIOSApp() && (location === '/' || location === '' || location.startsWith('/landing'))) {
+      setLocation('/home');
+      return null;
+    }
+
     // Don't interfere with API routes - let browser handle them naturally
     if (location.startsWith('/api/')) {
       console.log('🔄 API ROUTE DETECTED - not interfering with browser navigation');

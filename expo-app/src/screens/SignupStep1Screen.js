@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  SafeAreaView, ScrollView,
+  SafeAreaView, ScrollView, useColorScheme, Image,
 } from 'react-native';
 
 const ORANGE = '#F97316';
 const BLUE = '#3B82F6';
 const TEAL = '#14B8A6';
+
+const DARK = {
+  bg: '#1c1c1e',
+  text: '#ffffff',
+  textMuted: '#8e8e93',
+  cardBg: '#2c2c2e',
+  cardBorder: '#38383a',
+  iconBg: '#38383a',
+  disabledBg: '#38383a',
+};
 
 const USER_TYPES = [
   { type: 'local', icon: '📍', title: 'Nearby Local', subtitle: "I live here & want to meet travelers", color: BLUE },
@@ -16,26 +26,39 @@ const USER_TYPES = [
 
 export default function SignupStep1Screen({ navigation }) {
   const [userType, setUserType] = useState('');
+  const colorScheme = useColorScheme();
+  const dark = colorScheme === 'dark';
 
   const handleContinue = () => {
     if (!userType) return;
     navigation.navigate('SignupStep2', { userType });
   };
 
+  const containerStyle = { backgroundColor: dark ? DARK.bg : '#FFFFFF' };
+  const stepLabelStyle = { color: dark ? DARK.textMuted : '#6B7280' };
+  const titleStyle = { color: dark ? DARK.text : '#111827' };
+  const subtitleStyle = { color: dark ? DARK.textMuted : '#6B7280' };
+  const optionCardBase = dark ? { backgroundColor: DARK.cardBg, borderColor: DARK.cardBorder } : {};
+  const optionIconBase = dark ? { backgroundColor: DARK.iconBg } : {};
+  const optionTitleBase = dark ? { color: DARK.text } : {};
+  const optionSubtitleBase = dark ? { color: DARK.textMuted } : {};
+  const continueDisabledStyle = dark ? { backgroundColor: DARK.disabledBg } : {};
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, containerStyle]}>
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Text style={styles.backText}>‹ Back</Text>
           </TouchableOpacity>
-          <Text style={styles.stepLabel}>Step 1 of 3</Text>
+          <Text style={[styles.stepLabel, stepLabelStyle]}>Step 1 of 3</Text>
         </View>
 
         <View style={styles.titleSection}>
-          <Text style={styles.logoIcon}>🌍</Text>
-          <Text style={styles.title}>Join Nearby Traveler</Text>
-          <Text style={styles.subtitle}>Choose how you want to connect</Text>
+          <Image source={require('../../assets/logo.png')} style={styles.siteLogo} resizeMode="contain" />
+          <Image source={require('../../assets/icon.png')} style={styles.appIcon} resizeMode="contain" />
+          <Text style={[styles.title, titleStyle]}>Join Nearby Traveler</Text>
+          <Text style={[styles.subtitle, subtitleStyle]}>Choose how you want to connect</Text>
         </View>
 
         <View style={styles.optionsSection}>
@@ -44,16 +67,16 @@ export default function SignupStep1Screen({ navigation }) {
             return (
               <TouchableOpacity
                 key={type}
-                style={[styles.optionCard, isSelected && { backgroundColor: color, borderColor: color }]}
+                style={[styles.optionCard, optionCardBase, isSelected && { backgroundColor: color, borderColor: color }]}
                 onPress={() => setUserType(type)}
                 activeOpacity={0.8}
               >
-                <View style={[styles.optionIcon, isSelected && styles.optionIconSelected]}>
+                <View style={[styles.optionIcon, optionIconBase, isSelected && styles.optionIconSelected]}>
                   <Text style={styles.optionIconText}>{icon}</Text>
                 </View>
                 <View style={styles.optionText}>
-                  <Text style={[styles.optionTitle, isSelected && styles.optionTitleSelected]}>{title}</Text>
-                  <Text style={[styles.optionSubtitle, isSelected && styles.optionSubtitleSelected]}>{subtitle}</Text>
+                  <Text style={[styles.optionTitle, optionTitleBase, isSelected && styles.optionTitleSelected]}>{title}</Text>
+                  <Text style={[styles.optionSubtitle, optionSubtitleBase, isSelected && styles.optionSubtitleSelected]}>{subtitle}</Text>
                 </View>
                 {isSelected && <Text style={styles.checkmark}>✓</Text>}
               </TouchableOpacity>
@@ -62,7 +85,7 @@ export default function SignupStep1Screen({ navigation }) {
         </View>
 
         <TouchableOpacity
-          style={[styles.continueButton, !userType && styles.continueButtonDisabled]}
+          style={[styles.continueButton, !userType && [styles.continueButtonDisabled, continueDisabledStyle]]}
           onPress={handleContinue}
           disabled={!userType}
         >
@@ -83,7 +106,8 @@ const styles = StyleSheet.create({
   backText: { color: ORANGE, fontSize: 17, fontWeight: '600' },
   stepLabel: { flex: 1, textAlign: 'right', color: '#6B7280', fontSize: 14 },
   titleSection: { alignItems: 'center', marginBottom: 32 },
-  logoIcon: { fontSize: 48, marginBottom: 12 },
+  siteLogo: { width: 160, height: 52, marginBottom: 8 },
+  appIcon: { width: 48, height: 48, marginBottom: 12 },
   title: { fontSize: 26, fontWeight: '700', color: '#111827', marginBottom: 8 },
   subtitle: { fontSize: 16, color: '#6B7280', textAlign: 'center' },
   optionsSection: { gap: 12, marginBottom: 32 },

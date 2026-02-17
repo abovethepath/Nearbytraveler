@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { getAllInterests, getAllActivities, getAllLanguages, validateSelections, getHometownInterests } from "../../../shared/base-options";
 import { validateCustomInput, filterCustomEntries } from "@/lib/contentFilter";
@@ -54,9 +54,6 @@ export default function SignupTraveling() {
     customActivities: "",
     customEvents: "",
     customLanguages: "",
-    
-    // Community Pledge
-    pledgeAccepted: false
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -613,42 +610,21 @@ export default function SignupTraveling() {
                 </div>
               </div>
 
-              {/* Community Pledge */}
-              <div className="bg-white dark:bg-gray-700 p-5 rounded-xl border-2 border-blue-200 dark:border-blue-700 shadow-sm">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-2xl">🌍</span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3">The NearbyTraveler Pledge</h3>
-                    <div className="space-y-2 text-gray-600 dark:text-gray-300 mb-4 text-sm">
-                      <p>✓ I believe in real human connection.</p>
-                      <p>✓ I will show up with kindness, respect, and openness.</p>
-                      <p>✓ I will help make this a safe, welcoming community.</p>
-                    </div>
-                    <label className="flex items-start gap-3 cursor-pointer bg-gray-50 dark:bg-gray-600 p-3 rounded-lg border border-gray-200 dark:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors">
-                      <Checkbox
-                        id="pledge-checkbox"
-                        checked={formData.pledgeAccepted}
-                        onCheckedChange={(checked) => setFormData(prev => ({ ...prev, pledgeAccepted: !!checked }))}
-                        className="mt-0.5 h-5 w-5 border-2 border-gray-300 dark:border-gray-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                        data-testid="checkbox-pledge"
-                      />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                        I agree to the NearbyTraveler Pledge
-                      </span>
-                    </label>
-                  </div>
-                </div>
-              </div>
+              {/* Terms agreement */}
+              <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
+                By completing your profile, you agree to our{" "}
+                <Link href="/terms" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                  Terms and Conditions
+                </Link>
+              </p>
 
               {/* Submit Button */}
               <div className="pt-4">
                 <Button
                   type="submit"
-                  disabled={isLoading || getTotalInterestsCount() < 7 || !formData.pledgeAccepted}
+                  disabled={isLoading || getTotalInterestsCount() < 7}
                   className={`w-full py-6 text-lg font-bold rounded-xl shadow-lg transition-all ${
-                    getTotalInterestsCount() >= 7 && formData.pledgeAccepted
+                    getTotalInterestsCount() >= 7
                       ? 'bg-gradient-to-r from-orange-500 to-blue-600 hover:from-orange-600 hover:to-blue-700 text-white hover:shadow-xl hover:scale-[1.02]'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
@@ -659,17 +635,12 @@ export default function SignupTraveling() {
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                       Creating Your Account...
                     </div>
-                  ) : getTotalInterestsCount() >= 7 && formData.pledgeAccepted ? (
+                  ) : getTotalInterestsCount() >= 7 ? (
                     "Complete Signup →"
                   ) : (
                     `Select ${7 - getTotalInterestsCount()} more interests`
                   )}
                 </Button>
-                {!formData.pledgeAccepted && getTotalInterestsCount() >= 7 && (
-                  <p className="text-orange-600 text-sm mt-3 text-center font-medium">
-                    ↑ Please accept the pledge above to continue
-                  </p>
-                )}
               </div>
             </form>
           </CardContent>
