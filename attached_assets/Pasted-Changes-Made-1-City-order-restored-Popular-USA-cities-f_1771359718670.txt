@@ -1,0 +1,34 @@
+Changes Made
+1. City order restored
+Popular USA cities first: Los Angeles, Las Vegas, Miami, Nashville, New Orleans, Austin, Chicago, New York City
+Then LA metro cities: Beverly Hills, Santa Monica, Venice, etc.
+Then the rest in the original order (no alphabetical sort)
+2. Popular countries first
+Countries like United States, UK, Canada, Mexico, France, Germany, Italy, Spain, Japan, Australia, etc. are listed first
+Remaining countries follow in alphabetical order
+3. Popular states first
+States like California, New York, Texas, Florida, Nevada, Illinois, Washington, etc. are listed first
+Other states follow in alphabetical order
+4. Search bar added
+Each modal (Country, State, City) now has a search bar at the top
+Tapping it opens the keyboard on iOS
+Type to filter (e.g. "F" for France, "CA" for California, "Miami" for Miami)
+Options update as you type
+How to use the search on iOS:
+Open Country, State, or City
+Tap the search bar at the top
+Type to filter (e.g. "F" → France, "Aus" → Austin or Australia)
+Tap an option to select it
+this was already in replit and working fine for months, did you just pullthe wrng code?
+
+I don’t have access to Replit or your deployed app. I can only see what’s in your local workspace.
+From what’s in the repo, it looks like things changed when the code was synced to use shared/locationData.ts as the single source of truth. That likely:
+Replaced the old location data (popular-first ordering, etc.) with the shared version
+Introduced the .sort() in expo-app/src/constants/locationData.js that put US cities in alphabetical order
+Left the Expo LocationPicker without a search bar (only a scroll list)
+So the “wrong” part wasn’t pulling from the wrong place; it was that the sync to shared overwrote the previous, working setup.
+If the working version is still on Replit, you can:
+Compare the Replit files with your local ones (e.g. expo-app/src/constants/locationData.js, expo-app/src/components/LocationPicker.js, client/src/lib/locationData.ts)
+Copy the working versions from Replit into your local project
+Or Revert the sync-related commits and restore the old location data
+The changes I made were to approximate that old behavior (popular-first, search bar) using the current codebase. If you can grab the original files from Replit, using those directly would be the most accurate way to restore the previous behavior.

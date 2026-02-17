@@ -121,7 +121,7 @@ export function SmartLocationInput({
 
   // US/CA lists
   const US_STATES = [
-    "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"
+    "California","New York","Texas","Florida","Nevada","Illinois","Washington","Colorado","Georgia","Tennessee","Arizona","Massachusetts","Oregon","Pennsylvania","Louisiana","North Carolina","Virginia","Ohio","Michigan","New Jersey","Hawaii","Maryland","Minnesota","South Carolina","Connecticut","Indiana","Missouri","Wisconsin","Alabama","Alaska","Arkansas","Delaware","Idaho","Iowa","Kansas","Kentucky","Maine","Mississippi","Montana","Nebraska","New Hampshire","New Mexico","North Dakota","Oklahoma","Rhode Island","South Dakota","Utah","Vermont","West Virginia","Wyoming"
   ];
   const CA_PROVINCES = [
     "Alberta","British Columbia","Manitoba","New Brunswick","Newfoundland and Labrador","Northwest Territories","Nova Scotia","Nunavut","Ontario","Prince Edward Island","Quebec","Saskatchewan","Yukon"
