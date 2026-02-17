@@ -4737,13 +4737,19 @@ Questions? Just reply to this message!
       // User account is created - send success response NOW
       // All other tasks will run in the background
       console.log(`✅ REGISTRATION SUCCESS: User ${user.username} created (ID: ${user.id}) - returning response immediately`);
-      
-      // Send success response FIRST - user sees instant success
-      res.status(201).json({
+
+      const isReactNative = req.get?.("X-Client") === "ReactNative";
+      const responsePayload: Record<string, unknown> = {
         message: "Registration successful",
         user: userWithoutPassword,
         redirectTo: "/account-success"
-      });
+      };
+      if (isReactNative && (req as any).sessionID) {
+        responsePayload.sessionId = (req as any).sessionID;
+      }
+
+      // Send success response FIRST - user sees instant success
+      res.status(201).json(responsePayload);
 
       // ---------- BACKGROUND TASKS: Run after response is sent ----------
       // These tasks run asynchronously - failures don't affect user experience
