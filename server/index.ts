@@ -1,4 +1,8 @@
-// Initialize Sentry error monitoring FIRST (before any other imports)
+// Load env vars FIRST (before db and other imports that need them)
+import dotenv from "dotenv";
+dotenv.config();
+
+// Initialize Sentry error monitoring
 import "./instrument";
 import * as Sentry from "@sentry/node";
 
@@ -24,7 +28,6 @@ function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 import path from "path";
-import dotenv from "dotenv";
 import { db, checkDatabaseHealth, getDatabaseStatus } from "./db";
 import {
   users,
@@ -55,9 +58,6 @@ import {
 } from "drizzle-orm";
 import passwordResetRouter from "./routes/passwordReset";
 import { registerRoutes } from "./routes";
-
-// Load environment variables
-dotenv.config();
 
 process.on("uncaughtException", (error) => {
   console.error("Uncaught Exception:", error);

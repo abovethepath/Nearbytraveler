@@ -173,7 +173,7 @@ function MainTabs() {
           tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} />,
         }}
       >
-        {() => <WebViewStack path="/" tabLabel="Home" />}
+        {() => <WebViewStack path="/home" tabLabel="Home" />}
       </Tab.Screen>
       <Tab.Screen
         name="Explore"

@@ -1,21 +1,39 @@
-﻿import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform,
-  ActivityIndicator, ScrollView, Dimensions,
+  ActivityIndicator, ScrollView, Dimensions, useColorScheme,
 } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useAuth } from '../services/AuthContext';
 
 const { width } = Dimensions.get('window');
 
+const DARK = {
+  bg: '#1c1c1e',
+  bgSecondary: '#2c2c2e',
+  border: '#38383a',
+  text: '#ffffff',
+  textMuted: '#8e8e93',
+  inputBg: '#2c2c2e',
+  inputBorder: '#38383a',
+  errorBg: '#3d1f1f',
+  errorBorder: '#5c2a2a',
+  logoBg: '#2c2c2e',
+};
+
 export default function LoginScreen({ navigation }) {
   const { login } = useAuth();
+  const colorScheme = useColorScheme();
+  const dark = colorScheme === 'dark';
 
   // Can be username OR email
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const passwordRef = useRef(null);
 
   const handleLogin = async () => {
     const cleanedIdentifier = (identifier || '').trim();
@@ -38,34 +56,45 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  const containerStyle = { backgroundColor: dark ? DARK.bg : '#FFFFFF' };
+  const logoContainerStyle = { backgroundColor: dark ? DARK.logoBg : '#FFF7ED' };
+  const appNameStyle = { color: dark ? DARK.text : '#111827' };
+  const taglineStyle = { color: dark ? DARK.textMuted : '#6B7280' };
+  const errorContainerStyle = { backgroundColor: dark ? DARK.errorBg : '#FEF2F2', borderColor: dark ? DARK.errorBorder : '#FECACA' };
+  const inputLabelStyle = { color: dark ? DARK.text : '#374151' };
+  const inputStyle = { backgroundColor: dark ? DARK.inputBg : '#F9FAFB', borderColor: dark ? DARK.inputBorder : '#E5E7EB', color: dark ? DARK.text : '#111827', selectionColor: dark ? 'rgba(249,115,22,0.4)' : 'rgba(59,130,246,0.4)' };
+  const placeholderColor = dark ? '#8e8e93' : '#9CA3AF';
+  const eyeIconColor = dark ? '#8e8e93' : '#6B7280';
+  const registerPromptStyle = { color: dark ? DARK.textMuted : '#6B7280' };
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, containerStyle]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           <View style={styles.brandSection}>
-            <View style={styles.logoContainer}>
+            <View style={[styles.logoContainer, logoContainerStyle]}>
               <Text style={styles.logoIcon}>&#x1F30D;</Text>
             </View>
-            <Text style={styles.appName}>Nearby Traveler</Text>
-            <Text style={styles.tagline}>Connect with travelers & locals nearby</Text>
+            <Text style={[styles.appName, appNameStyle]}>Nearby Traveler</Text>
+            <Text style={[styles.tagline, taglineStyle]}>Connect with travelers & locals nearby</Text>
           </View>
 
           <View style={styles.formSection}>
             {error ? (
-              <View style={styles.errorContainer}>
+              <View style={[styles.errorContainer, errorContainerStyle]}>
                 <Text style={styles.errorText}>{error}</Text>
               </View>
             ) : null}
 
             <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Email or Username</Text>
+              <Text style={[styles.inputLabel, inputLabelStyle]}>Email or Username</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, inputStyle]}
                 placeholder="Enter your email or username"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={placeholderColor}
                 value={identifier}
                 onChangeText={setIdentifier}
                 autoCapitalize="none"
@@ -76,16 +105,28 @@ export default function LoginScreen({ navigation }) {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your password"
-                placeholderTextColor="#9CA3AF"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                textContentType="password"
-              />
+              <Text style={[styles.inputLabel, inputLabelStyle]}>Password</Text>
+              <TouchableOpacity activeOpacity={1} onPress={() => passwordRef.current?.focus()} style={styles.passwordTapArea}>
+                <View style={styles.passwordInputWrapper}>
+                  <TextInput
+                    ref={passwordRef}
+                    style={[styles.input, inputStyle, styles.passwordInput]}
+                    placeholder="Enter your password"
+                    placeholderTextColor={placeholderColor}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                    textContentType="password"
+                  />
+                  <TouchableOpacity
+                    style={styles.eyeButton}
+                    onPress={() => setShowPassword(!showPassword)}
+                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                  >
+                    <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color={eyeIconColor} />
+                  </TouchableOpacity>
+                </View>
+              </TouchableOpacity>
             </View>
 
             <TouchableOpacity
@@ -106,7 +147,7 @@ export default function LoginScreen({ navigation }) {
           </View>
 
           <View style={styles.registerSection}>
-            <Text style={styles.registerPrompt}>Don't have an account?</Text>
+            <Text style={[styles.registerPrompt, registerPromptStyle]}>Don't have an account?</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
               <Text style={styles.registerLink}>Sign Up</Text>
             </TouchableOpacity>
@@ -132,6 +173,10 @@ const styles = StyleSheet.create({
   inputContainer: { marginBottom: 18 },
   inputLabel: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 8 },
   input: { backgroundColor: '#F9FAFB', borderWidth: 1.5, borderColor: '#E5E7EB', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, color: '#111827' },
+  passwordTapArea: { marginBottom: 4 },
+  passwordInputWrapper: { position: 'relative' },
+  passwordInput: { paddingRight: 48 },
+  eyeButton: { position: 'absolute', right: 12, top: 0, bottom: 0, justifyContent: 'center' },
   loginButton: { backgroundColor: '#F97316', borderRadius: 12, paddingVertical: 16, alignItems: 'center', marginTop: 8, shadowColor: '#F97316', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
   loginButtonDisabled: { opacity: 0.7 },
   loginButtonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
