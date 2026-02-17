@@ -2,24 +2,30 @@ import { useLocation } from "wouter";
 
 interface LogoProps {
   className?: string;
-  variant?: "landing" | "navbar" | "default" | "footer" | "black-navbar" | "header";
+  variant?:
+    | "landing"
+    | "navbar"
+    | "default"
+    | "footer"
+    | "black-navbar"
+    | "header";
 }
 
 export default function Logo({ className, variant = "default" }: LogoProps) {
   const getVariantSize = () => {
     switch (variant) {
       case "landing":
-        return "h-10 w-auto";
+        return "h-12 w-auto";
       case "navbar":
-        return "h-10 w-auto";
+        return "h-8 w-auto";
       case "black-navbar":
-        return "h-14 w-auto";
-      case "footer":
         return "h-10 w-auto";
+      case "footer":
+        return "h-8 w-auto";
       case "header":
         return "h-40 sm:h-44 md:h-48 lg:h-52 w-auto";
       default:
-        return "h-10 w-auto";
+        return "h-8 w-auto";
     }
   };
 
@@ -31,24 +37,36 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
     window.scrollTo(0, 0);
   };
 
+  const getMaxHeight = () => {
+    switch (variant) {
+      case "navbar": return 32;
+      case "footer": return 32;
+      case "landing": return 48;
+      case "black-navbar": return 40;
+      case "header": return undefined;
+      default: return 32;
+    }
+  };
+
   return (
-    <div className={`${finalClassName} flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity`} onClick={handleClick}>
-      <img
-        src="/new-logo.png"
-        alt="Nearby Traveler"
-        className="h-full w-auto object-contain"
-        onError={(e) => {
-          const target = e.target as HTMLImageElement;
-          target.style.display = 'none';
+    <img
+      src="/new-logo.png"
+      alt="Nearby Traveler"
+      className={`${finalClassName} cursor-pointer hover:opacity-80 transition-opacity object-contain`}
+      style={getMaxHeight() ? { maxHeight: `${getMaxHeight()}px` } : undefined}
+      onClick={handleClick}
+      onError={(e) => {
+        const target = e.target as HTMLImageElement;
+        target.style.display = "none";
 
-          const textLogo = document.createElement('div');
-          textLogo.className = 'flex items-center gap-1';
-          textLogo.innerHTML = '<span style="color:#3B82F6;font-weight:700;font-size:inherit;">Nearby</span><span style="color:#F97316;font-weight:700;font-size:inherit;">Traveler</span>';
-          textLogo.style.cursor = 'pointer';
-
-          target.parentElement?.replaceChild(textLogo, target);
-        }}
-      />
-    </div>
+        const textLogo = document.createElement("span");
+        textLogo.style.cssText =
+          "font-size:14px;font-weight:700;cursor:pointer;";
+        textLogo.innerHTML =
+          '<span style="color:#3B82F6">Nearby</span><span style="color:#F97316">Traveler</span>';
+        textLogo.onclick = handleClick;
+        target.parentElement?.appendChild(textLogo);
+      }}
+    />
   );
 }
