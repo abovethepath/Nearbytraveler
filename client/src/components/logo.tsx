@@ -2,7 +2,13 @@ import { useLocation } from "wouter";
 
 interface LogoProps {
   className?: string;
-  variant?: "landing" | "navbar" | "default" | "footer" | "black-navbar" | "header";
+  variant?:
+    | "landing"
+    | "navbar"
+    | "default"
+    | "footer"
+    | "black-navbar"
+    | "header";
 }
 
 export default function Logo({ className, variant = "default" }: LogoProps) {
@@ -14,7 +20,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
   };
 
   let sizeClass = "h-8 w-auto";
-  
+
   if (variant === "landing") sizeClass = "h-12 w-auto";
   if (variant === "header") sizeClass = "h-48 w-auto";
   if (variant === "footer") sizeClass = "h-8 w-auto";
@@ -24,14 +30,11 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
 
   return (
     <img
-      src={`/new-logo.png?t=${Date.now()}`}
+      src="/new-logo.png"
       alt="Nearby Traveler"
       className={finalClass}
       onClick={handleClick}
-      style={{ cursor: "pointer", display: "block" }}
-      onError={() => {
-        console.error("Logo failed to load");
-      }}
+      style={{ cursor: "pointer" }}
     />
   );
 }
