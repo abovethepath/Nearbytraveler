@@ -33,9 +33,10 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
 
   return (
     <img
-      src="/new-logo.png"
+      src="/new-logo.png?v=2"
       alt="Nearby Traveler"
       className={`${finalClassName} cursor-pointer hover:opacity-80 transition-opacity object-contain`}
+      style={variant === "navbar" ? { height: '32px', width: 'auto', maxHeight: '32px' } : undefined}
       onClick={handleClick}
       onError={(e) => {
         const target = e.target as HTMLImageElement;
