@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform,
-  ActivityIndicator, ScrollView, useColorScheme,
+  ActivityIndicator, ScrollView, useColorScheme, Linking,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -43,6 +43,7 @@ export default function SignupStep3Screen({ navigation, route }) {
   const [travelReturnDate, setTravelReturnDate] = useState(null);
   const [showReturnDatePicker, setShowReturnDatePicker] = useState(false);
   const [interests, setInterests] = useState([]);
+  const [customInterestsText, setCustomInterestsText] = useState('');
   const [isNewToTown, setIsNewToTown] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -86,8 +87,13 @@ export default function SignupStep3Screen({ navigation, route }) {
       setError('Hometown city and country are required.');
       return;
     }
-    if (interests.length < 7) {
-      setError('Please choose at least 7 interests.');
+    const customList = customInterestsText
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const totalInterests = interests.length + customList.length;
+    if (totalInterests < 7) {
+      setError('Please choose at least 7 interests (from the list and/or add your own).');
       return;
     }
 
@@ -136,7 +142,7 @@ export default function SignupStep3Screen({ navigation, route }) {
       interests,
       activities: [],
       events: [],
-      customInterests: '',
+      customInterests: customInterestsText.trim(),
       languagesSpoken: ['English'],
     };
 
@@ -333,8 +339,13 @@ export default function SignupStep3Screen({ navigation, route }) {
             </>
           ) : null}
 
-          <Text style={[styles.interestsTitle, interestsTitleStyle]}>Interests * (choose at least 7)</Text>
-          <Text style={[styles.interestsSubtitle, interestsSubtitleStyle]}>Selected: {interests.length}</Text>
+          <Text style={[styles.interestsTitle, interestsTitleStyle]}>Interests * (minimum 7)</Text>
+          <Text style={[styles.interestsSubtitle, interestsSubtitleStyle]}>
+            We match you with others based on common interests—choose as many as apply to you.
+          </Text>
+          <Text style={[styles.interestsSubtitle, interestsSubtitleStyle, { marginBottom: 8 }]}>
+            Selected: {interests.length + customInterestsText.split(',').map((s) => s.trim()).filter(Boolean).length}
+          </Text>
           <View style={styles.interestsGrid}>
             {SIGNUP_INTERESTS.map((item) => {
               const isSelected = interests.includes(item);
@@ -350,6 +361,43 @@ export default function SignupStep3Screen({ navigation, route }) {
                 </TouchableOpacity>
               );
             })}
+          </View>
+
+          <View style={[styles.inputContainer, { marginTop: 8 }]}>
+            <Text style={[styles.inputLabel, inputLabelStyle]}>Add your own (comma-separated)</Text>
+            <TextInput
+              style={[styles.input, inputStyle]}
+              placeholder="e.g. Surfing, Jazz clubs, Food tours"
+              placeholderTextColor={placeholderColor}
+              value={customInterestsText}
+              onChangeText={setCustomInterestsText}
+              multiline
+              numberOfLines={2}
+            />
+          </View>
+
+          <View style={{ marginTop: 16, marginBottom: 8, alignItems: 'center' }}>
+            <Text style={[styles.interestsSubtitle, interestsSubtitleStyle, { textAlign: 'center' }]}>
+              By completing your profile, you agree to our{' '}
+              <Text
+                style={{ color: '#3B82F6', fontWeight: '600' }}
+                onPress={() => Linking.openURL('https://nearbytraveler.org/terms')}
+              >
+                Terms and Conditions
+              </Text>
+            </Text>
+          </View>
+
+          <View style={{ marginTop: 16, marginBottom: 8, alignItems: 'center' }}>
+            <Text style={[styles.interestsSubtitle, interestsSubtitleStyle, { textAlign: 'center' }]}>
+              By completing your profile, you agree to our{' '}
+              <Text
+                style={{ color: '#3B82F6', fontWeight: '600' }}
+                onPress={() => Linking.openURL('https://nearbytraveler.org/terms')}
+              >
+                Terms and Conditions
+              </Text>
+            </Text>
           </View>
 
           <TouchableOpacity

@@ -55,7 +55,8 @@ export default function SignupStep1Screen({ navigation }) {
         </View>
 
         <View style={styles.titleSection}>
-          <Image source={require('../../assets/icon.png')} style={styles.logoImage} resizeMode="contain" />
+          <Image source={require('../../assets/logo.png')} style={styles.siteLogo} resizeMode="contain" />
+          <Image source={require('../../assets/icon.png')} style={styles.appIcon} resizeMode="contain" />
           <Text style={[styles.title, titleStyle]}>Join Nearby Traveler</Text>
           <Text style={[styles.subtitle, subtitleStyle]}>Choose how you want to connect</Text>
         </View>
@@ -105,7 +106,8 @@ const styles = StyleSheet.create({
   backText: { color: ORANGE, fontSize: 17, fontWeight: '600' },
   stepLabel: { flex: 1, textAlign: 'right', color: '#6B7280', fontSize: 14 },
   titleSection: { alignItems: 'center', marginBottom: 32 },
-  logoImage: { width: 72, height: 72, marginBottom: 12 },
+  siteLogo: { width: 160, height: 52, marginBottom: 8 },
+  appIcon: { width: 48, height: 48, marginBottom: 12 },
   title: { fontSize: 26, fontWeight: '700', color: '#111827', marginBottom: 8 },
   subtitle: { fontSize: 16, color: '#6B7280', textAlign: 'center' },
   optionsSection: { gap: 12, marginBottom: 32 },

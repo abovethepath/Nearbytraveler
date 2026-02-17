@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform,
-  ActivityIndicator, ScrollView, Modal, FlatList, useColorScheme,
+  ActivityIndicator, ScrollView, Modal, FlatList, useColorScheme, Linking,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../services/api';
@@ -380,6 +380,18 @@ export default function SignupStep3BusinessScreen({ navigation, route }) {
               onChangeText={setCountry}
               autoCapitalize="words"
             />
+          </View>
+
+          <View style={{ marginTop: 16, marginBottom: 8, alignItems: 'center' }}>
+            <Text style={[styles.subtitle, { color: dark ? DARK.textMuted : '#6B7280', textAlign: 'center', fontSize: 13 }]}>
+              By completing your profile, you agree to our{' '}
+              <Text
+                style={{ color: '#3B82F6', fontWeight: '600' }}
+                onPress={() => Linking.openURL('https://nearbytraveler.org/terms')}
+              >
+                Terms and Conditions
+              </Text>
+            </Text>
           </View>
 
           <TouchableOpacity

@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform,
-  ActivityIndicator, ScrollView, Dimensions, useColorScheme,
+  ActivityIndicator, ScrollView, Dimensions, useColorScheme, Image,
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useAuth } from '../services/AuthContext';
@@ -76,7 +76,7 @@ export default function LoginScreen({ navigation }) {
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           <View style={styles.brandSection}>
             <View style={[styles.logoContainer, logoContainerStyle]}>
-              <Text style={styles.logoIcon}>&#x1F30D;</Text>
+              <Image source={require('../../assets/logo.png')} style={styles.logoImage} resizeMode="contain" />
             </View>
             <Text style={[styles.appName, appNameStyle]}>Nearby Traveler</Text>
             <Text style={[styles.tagline, taglineStyle]}>Connect with travelers & locals nearby</Text>
@@ -163,8 +163,8 @@ const styles = StyleSheet.create({
   keyboardView: { flex: 1 },
   scrollContent: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 28, paddingVertical: 40 },
   brandSection: { alignItems: 'center', marginBottom: 40 },
-  logoContainer: { width: 80, height: 80, borderRadius: 20, backgroundColor: '#FFF7ED', justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
-  logoIcon: { fontSize: 40 },
+  logoContainer: { width: 200, height: 64, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
+  logoImage: { width: 180, height: 56 },
   appName: { fontSize: 28, fontWeight: '700', color: '#111827', marginBottom: 8 },
   tagline: { fontSize: 16, color: '#6B7280', textAlign: 'center' },
   formSection: { marginBottom: 32 },

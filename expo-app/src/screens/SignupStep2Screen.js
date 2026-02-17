@@ -3,6 +3,7 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform,
   ActivityIndicator, ScrollView, useColorScheme,
+  Pressable, Keyboard,
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -192,14 +193,19 @@ export default function SignupStep2Screen({ navigation, route }) {
                 </TouchableOpacity>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => passwordRef.current?.focus()}
-              style={[styles.passwordHintRow, { paddingVertical: 12, minHeight: 44, justifyContent: 'center' }]}
-              activeOpacity={0.7}
+            <Pressable
+              onPress={() => {
+                Keyboard.dismiss();
+                setTimeout(() => passwordRef.current?.focus(), 100);
+              }}
+              style={({ pressed }) => [
+                styles.passwordHintRow,
+                { paddingVertical: 14, minHeight: 52, justifyContent: 'center', opacity: pressed ? 0.7 : 1 },
+              ]}
             >
               <Text style={[styles.passwordHint, dark && { color: DARK.textMuted }]}>Use a strong password. </Text>
-              <Text style={styles.createOwnLink}>Or tap here to create your own</Text>
-            </TouchableOpacity>
+              <Text style={styles.createOwnLink}>Tap here to create your own</Text>
+            </Pressable>
           </View>
           <View style={styles.inputContainer}>
             <Text style={[styles.inputLabel, inputLabelStyle]}>Confirm Password *</Text>

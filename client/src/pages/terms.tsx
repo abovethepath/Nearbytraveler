@@ -68,6 +68,16 @@ export default function Terms() {
                 Nearby Traveler is built on trust, respect, and authentic connections between travelers, locals, and businesses. All members must follow these community standards to maintain a safe and welcoming environment.
               </p>
 
+              <div className="mb-6">
+                <h3 className="text-xl font-medium text-gray-800 mb-3">The NearbyTraveler Pledge</h3>
+                <p className="text-gray-700 mb-2">By using our platform, you agree to:</p>
+                <ul className="list-disc pl-6 space-y-1 text-gray-700">
+                  <li>Believe in real human connection</li>
+                  <li>Show up with kindness, respect, and openness</li>
+                  <li>Help make this a safe, welcoming community</li>
+                </ul>
+              </div>
+
               <div className="space-y-6">
                 <div>
                   <h3 className="text-xl font-medium text-gray-800 mb-4">Expected Behavior</h3>
