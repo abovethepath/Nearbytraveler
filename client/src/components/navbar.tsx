@@ -433,7 +433,7 @@ function Navbar() {
           <div className="flex justify-between items-center py-3">
             <div className="flex items-center gap-2">
               <Logo variant="navbar" />
-              <span className="bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase leading-none">Beta</span>
+              <span className="text-red-600 text-xs font-bold uppercase leading-none">Beta</span>
             </div>
             <div className="flex items-center space-x-3 md:space-x-6 ml-auto">
               {/* Desktop Navigation */}
