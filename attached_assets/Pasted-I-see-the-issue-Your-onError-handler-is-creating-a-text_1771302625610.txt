@@ -1,4 +1,6 @@
-import { useLocation } from "wouter";
+I see the issue. Your onError handler is creating a text fallback, but it's not being styled properly for the navbar. The problem is that the text logo doesn't have the same sizing/positioning as the image.
+Here's the fixed version:
+tsximport { useLocation } from "wouter";
 
 interface LogoProps {
   className?: string;
@@ -32,23 +34,33 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
   };
 
   return (
-    <div className={`${finalClassName} flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity`} onClick={handleClick}>
+    <div className={`${finalClassName} flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity`}>
       <img
         src="/new-logo.png"
         alt="Nearby Traveler"
         className="h-full w-auto object-contain"
+        onClick={handleClick}
         onError={(e) => {
           const target = e.target as HTMLImageElement;
           target.style.display = 'none';
-
+          
           const textLogo = document.createElement('div');
           textLogo.className = 'flex items-center gap-1';
           textLogo.innerHTML = '<span style="color:#3B82F6;font-weight:700;font-size:inherit;">Nearby</span><span style="color:#F97316;font-weight:700;font-size:inherit;">Traveler</span>';
           textLogo.style.cursor = 'pointer';
-
+          textLogo.onclick = handleClick;
+          
           target.parentElement?.replaceChild(textLogo, target);
         }}
       />
     </div>
   );
 }
+Key changes:
+
+Wrapped in a div with flex layout to properly contain both image and text fallback
+Text fallback now uses display: flex so it centers properly
+Uses replaceChild instead of appendChild to avoid duplicates
+Uses font-size: inherit so text scales with parent
+
+Try this and let me know if the navbar logo displays correctly now!
