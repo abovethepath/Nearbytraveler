@@ -31,12 +31,13 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
     window.scrollTo(0, 0);
   };
 
+  const logoSrc = variant === "navbar" ? "/new-logo-navbar.png?v=1" : "/new-logo.png?v=2";
+
   return (
     <img
-      src="/new-logo.png?v=2"
+      src={logoSrc}
       alt="Nearby Traveler"
       className={`${finalClassName} cursor-pointer hover:opacity-80 transition-opacity object-contain`}
-      style={variant === "navbar" ? { height: '44px', width: 'auto', maxHeight: '44px' } : undefined}
       onClick={handleClick}
       onError={(e) => {
         const target = e.target as HTMLImageElement;
