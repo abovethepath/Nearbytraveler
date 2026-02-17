@@ -13,12 +13,13 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
     window.scrollTo(0, 0);
   };
 
-  let sizeClass = "h-8 w-auto";
+  let sizeClass = "h-10 w-auto";
   
-  if (variant === "landing") sizeClass = "h-12 w-auto";
+  if (variant === "navbar") sizeClass = "h-10 w-auto";
+  if (variant === "landing") sizeClass = "h-14 w-auto";
   if (variant === "header") sizeClass = "h-48 w-auto";
-  if (variant === "footer") sizeClass = "h-8 w-auto";
-  if (variant === "black-navbar") sizeClass = "h-10 w-auto";
+  if (variant === "footer") sizeClass = "h-10 w-auto";
+  if (variant === "black-navbar") sizeClass = "h-12 w-auto";
 
   const finalClass = className || sizeClass;
 
