@@ -489,59 +489,7 @@ const referenceSchema = z.object({
 
 
 
-const COUNTRIES_OPTIONS = [
-  // North America
-  "United States", "Canada", "Mexico",
-  
-  // Caribbean Islands
-  "Antigua and Barbuda", "Bahamas", "Barbados", "Belize", "Cuba", "Dominica", 
-  "Dominican Republic", "Grenada", "Haiti", "Jamaica", "Saint Kitts and Nevis",
-  "Saint Lucia", "Saint Vincent and the Grenadines", "Trinidad and Tobago",
-  "Aruba", "Curacao", "Sint Maarten", "British Virgin Islands", "US Virgin Islands",
-  "Turks and Caicos", "Cayman Islands", "Anguilla", "Montserrat", "Guadeloupe",
-  "Martinique", "Puerto Rico",
-  
-  // Central America
-  "Costa Rica", "El Salvador", "Guatemala", "Honduras", "Nicaragua", "Panama",
-  
-  // South America
-  "Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Ecuador", "French Guiana",
-  "Guyana", "Paraguay", "Peru", "Suriname", "Uruguay", "Venezuela",
-  
-  // Europe
-  "United Kingdom", "Ireland", "France", "Germany", "Italy", "Spain", "Portugal", 
-  "Netherlands", "Belgium", "Switzerland", "Austria", "Czech Republic", "Poland", 
-  "Hungary", "Greece", "Turkey", "Norway", "Sweden", "Denmark", "Finland", "Iceland",
-  "Russia", "Ukraine", "Belarus", "Lithuania", "Latvia", "Estonia", "Romania", 
-  "Bulgaria", "Serbia", "Croatia", "Slovenia", "Slovakia", "Bosnia and Herzegovina",
-  "Montenegro", "North Macedonia", "Albania", "Moldova", "Malta", "Cyprus", "Luxembourg",
-  "Liechtenstein", "Monaco", "San Marino", "Vatican City", "Andorra",
-  
-  // Asia
-  "China", "Japan", "South Korea", "North Korea", "Mongolia", "Thailand", "Vietnam", 
-  "Cambodia", "Laos", "Myanmar", "Malaysia", "Singapore", "Indonesia", "Philippines",
-  "Brunei", "East Timor", "India", "Pakistan", "Bangladesh", "Sri Lanka", "Nepal",
-  "Bhutan", "Maldives", "Afghanistan", "Iran", "Iraq", "Saudi Arabia", "Yemen", "Oman",
-  "United Arab Emirates", "Qatar", "Bahrain", "Kuwait", "Jordan", "Lebanon", "Syria",
-  "Israel", "Palestine", "Georgia", "Armenia", "Azerbaijan", "Kazakhstan", "Uzbekistan",
-  "Turkmenistan", "Kyrgyzstan", "Tajikistan",
-  
-  // Africa
-  "Egypt", "Libya", "Tunisia", "Algeria", "Morocco", "Sudan", "South Sudan", "Ethiopia",
-  "Eritrea", "Djibouti", "Somalia", "Kenya", "Tanzania", "Uganda", "Rwanda", "Burundi",
-  "Democratic Republic of Congo", "Republic of Congo", "Central African Republic", "Chad",
-  "Cameroon", "Nigeria", "Niger", "Mali", "Burkina Faso", "Ghana", "Togo", "Benin",
-  "Ivory Coast", "Liberia", "Sierra Leone", "Guinea", "Guinea-Bissau", "Senegal",
-  "Gambia", "Mauritania", "Cape Verde", "Sao Tome and Principe", "Equatorial Guinea",
-  "Gabon", "Angola", "Zambia", "Malawi", "Mozambique", "Zimbabwe", "Botswana", "Namibia",
-  "South Africa", "Lesotho", "Eswatini", "Madagascar", "Mauritius", "Seychelles", "Comoros",
-  
-  // Oceania
-  "Australia", "New Zealand", "Papua New Guinea", "Fiji", "Solomon Islands", "Vanuatu",
-  "Samoa", "Tonga", "Tuvalu", "Kiribati", "Nauru", "Palau", "Marshall Islands", 
-  "Micronesia", "Cook Islands", "Niue", "Tokelau", "American Samoa", "French Polynesia",
-  "New Caledonia", "Guam", "Northern Mariana Islands"
-];
+const COUNTRIES_OPTIONS = COUNTRIES;
 
 const LANGUAGES_OPTIONS = [
   "English", "Spanish", "French", "German", "Italian", "Portuguese", "Russian", "Ukrainian",
