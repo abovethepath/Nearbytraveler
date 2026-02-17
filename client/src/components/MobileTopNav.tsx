@@ -91,6 +91,7 @@ export function MobileTopNav() {
       setLocation("/profile");
       return;
     }
+    // Navigate to profile - do NOT sign out on API errors (network issues, etc.)
     try {
       const res = await fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' });
       if (res.ok) {
@@ -100,13 +101,10 @@ export function MobileTopNav() {
           window.location.href = '/signin';
           return;
         }
-      } else {
-        authStorage.clearUser();
-        window.location.href = '/signin';
-        return;
       }
+      // On 401 or error: still navigate to profile, don't sign out
     } catch {
-      // On error, still navigate
+      // On network error: navigate to profile, don't sign out
     }
     setLocation(`/profile/${currentUser.id}`);
   };
@@ -246,9 +244,7 @@ export function MobileTopNav() {
                 className="pointer-events-none"
               />
               <AvatarFallback className="text-sm bg-orange-500 text-white pointer-events-none">
-                {currentUser?.name?.charAt(0)?.toUpperCase() ||
-                  currentUser?.username?.charAt(0)?.toUpperCase() ||
-                  "U"}
+                {(currentUser?.name || currentUser?.fullName || currentUser?.displayName || currentUser?.username || '').charAt(0)?.toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
           </button>
@@ -296,7 +292,7 @@ export function MobileTopNav() {
                     <Avatar className="w-14 h-14 pointer-events-none ring-2 ring-orange-200 dark:ring-orange-800">
                       <AvatarImage src={currentUser.profileImage} className="pointer-events-none" />
                       <AvatarFallback className="bg-orange-500 text-white text-lg pointer-events-none">
-                        {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.username?.charAt(0)?.toUpperCase() || "U"}
+                        {(currentUser.name || currentUser.fullName || currentUser.displayName || currentUser.username || '').charAt(0)?.toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">

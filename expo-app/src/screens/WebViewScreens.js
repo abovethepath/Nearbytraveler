@@ -261,7 +261,7 @@ function WebViewWithChrome({ path, navigation }) {
   const headerBg = dark ? DARK.bg : '#FFFFFF';
   const headerBorder = dark ? DARK.border : '#F3F4F6';
   const profileImg = user?.profileImage || user?.profilePhoto;
-  const initials = (user?.name || user?.fullName || user?.username || 'U').charAt(0).toUpperCase();
+  const initials = (user?.name || user?.fullName || user?.displayName || user?.username || 'U').charAt(0).toUpperCase();
 
   if (error) {
     return (
@@ -298,31 +298,6 @@ function WebViewWithChrome({ path, navigation }) {
           <Text style={{ fontSize: 16, fontWeight: '700', color: dark ? DARK.text : '#111827' }}>NearbyTraveler</Text>
         </View>
         <View style={styles.headerRight}>
-          {user ? (
-            <TouchableOpacity
-              style={[styles.signOutButton, dark && { borderColor: DARK.border }]}
-              onPress={async () => {
-                await logout();
-                setUser(null);
-                webViewRef.current?.injectJavaScript(
-                  `window.location.href='${BASE_URL}/join?native=ios';true;`
-                );
-              }}
-            >
-              <Text style={[styles.signOutText, dark && { color: DARK.textMuted }]}>Sign out</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={[styles.signOutButton, dark && { borderColor: DARK.border }]}
-              onPress={() => {
-                webViewRef.current?.injectJavaScript(
-                  `window.location.href='${BASE_URL}/join?native=ios';true;`
-                );
-              }}
-            >
-              <Text style={[styles.signOutText, dark && { color: DARK.textMuted }]}>Sign in</Text>
-            </TouchableOpacity>
-          )}
           <TouchableOpacity style={styles.avatarButton} onPress={onAvatarPress}>
             {profileImg ? (
               <Image source={{ uri: profileImg }} style={styles.avatarImage} />

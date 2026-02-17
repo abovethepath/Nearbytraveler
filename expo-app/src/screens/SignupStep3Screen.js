@@ -4,6 +4,7 @@ import {
   SafeAreaView, KeyboardAvoidingView, Platform,
   ActivityIndicator, ScrollView,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../services/api';
 import { useAuth } from '../services/AuthContext';
@@ -16,7 +17,8 @@ export default function SignupStep3Screen({ navigation, route }) {
   const { userType } = route?.params || {};
   const { setUser } = useAuth();
   const [signupData, setSignupData] = useState(null);
-  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [hometownCity, setHometownCity] = useState('');
   const [hometownState, setHometownState] = useState('');
   const [hometownCountry, setHometownCountry] = useState('United States');
@@ -25,6 +27,7 @@ export default function SignupStep3Screen({ navigation, route }) {
   const [destinationCountry, setDestinationCountry] = useState('');
   const [travelReturnDate, setTravelReturnDate] = useState('');
   const [interests, setInterests] = useState([]);
+  const [isNewToTown, setIsNewToTown] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -58,7 +61,7 @@ export default function SignupStep3Screen({ navigation, route }) {
     const country = hometownCountry.trim() || 'United States';
 
     if (!dateOfBirth) {
-      setError('Date of birth is required.');
+      setError('Please select your date of birth.');
       return;
     }
     if (!city || !country) {
@@ -99,14 +102,14 @@ export default function SignupStep3Screen({ navigation, route }) {
     const registrationData = {
       userType: effectiveUserType,
       isCurrentlyTraveling: isTraveler,
-      isNewToTown: false,
+      isNewToTown: !isTraveler ? isNewToTown : false,
       email: signupData.email,
       password: signupData.password,
       username: signupData.username,
       name: signupData.name,
       phoneNumber: '',
       keepLoggedIn: true,
-      dateOfBirth,
+      dateOfBirth: dateOfBirth ? dateOfBirth.toISOString().split('T')[0] : '',
       hometownCity: city,
       hometownState: hometownState.trim() || '',
       hometownCountry: country,
@@ -181,13 +184,30 @@ export default function SignupStep3Screen({ navigation, route }) {
 
           <View style={styles.inputContainer}>
             <Text style={styles.inputLabel}>Date of Birth *</Text>
-            <TextInput
+            <TouchableOpacity
               style={styles.input}
-              placeholder="YYYY-MM-DD"
-              placeholderTextColor="#9CA3AF"
-              value={dateOfBirth}
-              onChangeText={setDateOfBirth}
-            />
+              onPress={() => setShowDatePicker(true)}
+              activeOpacity={0.7}
+            >
+              <Text style={{ color: dateOfBirth ? '#111827' : '#9CA3AF', fontSize: 16 }}>
+                {dateOfBirth ? dateOfBirth.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Tap to select your birth date'}
+              </Text>
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={dateOfBirth || new Date(2000, 0, 1)}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                onChange={(evt, selectedDate) => {
+                  setShowDatePicker(Platform.OS === 'ios');
+                  if (selectedDate) {
+                    setDateOfBirth(selectedDate);
+                  }
+                }}
+                maximumDate={(() => { const d = new Date(); d.setFullYear(d.getFullYear() - 18); return d; })()}
+                minimumDate={new Date(1900, 0, 1)}
+              />
+            )}
           </View>
           <View style={styles.inputContainer}>
             <Text style={styles.inputLabel}>Hometown City *</Text>
@@ -222,6 +242,22 @@ export default function SignupStep3Screen({ navigation, route }) {
               autoCapitalize="words"
             />
           </View>
+
+          {!isTraveler ? (
+            <View style={[styles.inputContainer, { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EFF6FF', padding: 14, borderRadius: 12, borderWidth: 1, borderColor: '#BFDBFE' }]}>
+              <TouchableOpacity
+                style={{ width: 24, height: 24, borderRadius: 6, borderWidth: 2, borderColor: isNewToTown ? ORANGE : '#9CA3AF', backgroundColor: isNewToTown ? ORANGE : 'transparent', marginRight: 12, justifyContent: 'center', alignItems: 'center' }}
+                onPress={() => setIsNewToTown(!isNewToTown)}
+                activeOpacity={0.7}
+              >
+                {isNewToTown ? <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>✓</Text> : null}
+              </TouchableOpacity>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.inputLabel, { marginBottom: 4 }]}>Are you new here?</Text>
+                <Text style={{ fontSize: 13, color: '#6B7280' }}>I'm new to {hometownCity || 'this area'} – connect me with locals who can help me explore</Text>
+              </View>
+            </View>
+          ) : null}
 
           {isTraveler ? (
             <>

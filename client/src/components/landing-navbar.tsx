@@ -45,13 +45,6 @@ export default function LandingNavbar() {
               Beta Launch
             </span>
             <button 
-              onClick={() => setLocation('/signin')}
-              className="navbar-btn-black-text px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap border-2"
-              style={{ backgroundColor: '#f3f4f6', borderColor: '#d1d5db' }}
-            >
-              Sign In
-            </button>
-            <button 
               onClick={() => setLocation('/join')}
               className="navbar-btn-black-text px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap border-2"
               style={{ backgroundColor: '#fb923c', borderColor: '#fb923c' }}
@@ -115,28 +108,16 @@ export default function LandingNavbar() {
             ))}
           </div>
           <div className="pt-2 pb-4 border-t border-gray-200/60 dark:border-gray-700/60 px-3">
-            <div className="flex flex-col space-y-2">
-              <button 
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setLocation('/join');
-                }}
-                className="text-center px-4 py-3.5 rounded-xl text-[15px] font-semibold text-white transition-all active:scale-[0.98] shadow-sm"
-                style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)', minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
-              >
-                Sign Up
-              </button>
-              <button 
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setLocation('/signin');
-                }}
-                className="text-center px-4 py-3.5 rounded-xl text-[15px] font-semibold text-gray-700 bg-gray-100 active:bg-gray-200 transition-all active:scale-[0.98]"
-                style={{ minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
-              >
-                Sign In
-              </button>
-            </div>
+            <button 
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setLocation('/join');
+              }}
+              className="w-full text-center px-4 py-3.5 rounded-xl text-[15px] font-semibold text-white transition-all active:scale-[0.98] shadow-sm"
+              style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)', minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+            >
+              Sign Up
+            </button>
           </div>
         </div>
       )}
