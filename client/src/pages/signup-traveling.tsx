@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import { useLocation, Link } from "wouter";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { getAllInterests, getAllActivities, getAllLanguages, validateSelections, getHometownInterests } from "../../../shared/base-options";
 import { validateCustomInput, filterCustomEntries } from "@/lib/contentFilter";
-import { AuthContext } from "@/App";
+import { useAuth } from "@/App";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { InterestSelector } from "@/components/InterestSelector";
 import { authStorage } from "@/lib/auth";
@@ -19,7 +19,7 @@ import { getDateInputConstraints } from "@/lib/ageUtils";
 export default function SignupTraveling() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { setUser } = useContext(AuthContext);
+  const { setUser } = useAuth();
 
   const [formData, setFormData] = useState({
     // Basic info (from account signup)
@@ -334,8 +334,10 @@ export default function SignupTraveling() {
             variant: "default",
           });
           
+          // ALWAYS redirect - use client-side navigation to preserve auth state
+          console.log('🚀 Navigating to /account-success...');
           localStorage.setItem('just_registered', 'true');
-          setLocation('/profile');
+          setLocation('/account-success');
           
         } else {
           console.error('❌ Registration failed:', data.message);
