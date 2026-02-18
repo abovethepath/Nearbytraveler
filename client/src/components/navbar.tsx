@@ -541,21 +541,6 @@ function Navbar() {
                     <span>My Profile</span>
                   </DropdownMenuItem>
 
-                  {/* Welcome item */}
-                  {directUser?.userType !== "business" && (
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setLocation("/welcome");
-                        setTimeout(
-                          () => window.scrollTo({ top: 0, behavior: "smooth" }),
-                          100,
-                        );
-                      }}
-                    >
-                      <Star className="mr-2 h-4 w-4" />
-                      <span>Welcome</span>
-                    </DropdownMenuItem>
-                  )}
 
                   {/* Quick access items not in top nav or bottom nav */}
                   <DropdownMenuItem

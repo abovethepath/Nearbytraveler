@@ -100,8 +100,8 @@ export default function SignupBusinessSimple() {
   useEffect(() => {
     console.log('🔍 Business Signup Page - Auth Check:', { isAuthenticated, userType: user?.userType, username: user?.username });
     if (isAuthenticated && user?.userType === 'business') {
-      console.log('🔄 Business user already authenticated, redirecting to welcome page');
-      setLocation('/welcome-business');
+      console.log('🔄 Business user already authenticated, redirecting to dashboard');
+      setLocation('/business-dashboard');
       return;
     }
   }, [isAuthenticated, user, setLocation]);
@@ -279,9 +279,9 @@ export default function SignupBusinessSimple() {
       // Clear sessionStorage account data since signup is complete
       sessionStorage.removeItem('accountData');
       
-      // Small delay to ensure context update, then redirect to welcome page
+      // Small delay to ensure context update, then redirect to dashboard
       setTimeout(() => {
-        setLocation('/welcome-business');
+        setLocation('/business-dashboard');
       }, 100);
     },
     onError: (error: Error) => {

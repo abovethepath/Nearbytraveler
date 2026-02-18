@@ -130,8 +130,6 @@ import PrivacySettingsPage from "@/pages/privacy-settings";
 import { PitchPreview } from "@/pages/pitch-preview";
 import AdminSettings from "@/pages/admin-settings";
 import SMSTest from "@/pages/sms-test";
-import Welcome from "@/pages/welcome";
-import WelcomeBusiness from "@/pages/welcome-business";
 import FinishingSetup from "@/pages/FinishingSetup";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
@@ -700,14 +698,9 @@ function Router() {
         return <EventDetails eventId={eventId} />;
       }
 
-      // Redirect unauthenticated users trying to access welcome pages (native: no hard nav)
+      // Welcome pages removed - redirect to signin
       if (location === '/welcome' || location === '/welcome-business') {
-        console.log('🚫 SECURITY: Unauthenticated user trying to access welcome page - redirecting to auth');
-        if (isNativeIOSApp()) {
-          setLocation('/signin');
-        } else {
-          window.location.href = '/signin';
-        }
+        setLocation('/signin');
         return null;
       }
 
@@ -919,13 +912,15 @@ function Router() {
 
     console.log('✅ USER AUTHENTICATED - routing to:', location, 'user:', effectiveUser?.username || 'unknown user');
 
-    // Welcome pages - only for authenticated users
+    // Welcome pages removed - redirect to home/dashboard
     if (location === '/welcome') {
-      return <Welcome />;
+      setLocation('/');
+      return null;
     }
 
     if (location === '/welcome-business') {
-      return <WelcomeBusiness />;
+      setLocation('/business-dashboard');
+      return null;
     }
 
     if (location === '/finishing-setup') {
@@ -1165,9 +1160,11 @@ function Router() {
       case '/travel-blog':
         return <TravelBlog />;
       case '/welcome':
-        return <Welcome />;
+        setLocation('/');
+        return null;
       case '/welcome-business':
-        return <WelcomeBusiness />;
+        setLocation('/business-dashboard');
+        return null;
       case '/finishing-setup':
         return <FinishingSetup />;
       case '/getting-started':
