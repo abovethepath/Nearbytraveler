@@ -1321,17 +1321,10 @@ function Router() {
         <>
           {console.log('🔍 APP ROUTING: Authentication evidence found, showing authenticated app for location:', location)}
           
-          {/* Mobile Navigation - hidden in native iOS app (native has its own tab bar/nav) */}
+          {/* Navigation - Navbar handles both mobile and desktop, hidden in native iOS */}
           {!isNativeIOSApp() && (
-            <div className="md:hidden" style={{ position: 'relative', zIndex: 99999 }}>
-              <MobileTopNav />
-            </div>
-          )}
-          
-          {/* Desktop Navigation - hidden in native iOS */}
-          <div className={isNativeIOSApp() ? "hidden" : "hidden md:block"}>
             <Navbar />
-          </div>
+          )}
           
           {/* Main content */}
           <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden">
