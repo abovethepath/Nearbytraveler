@@ -59,8 +59,15 @@ export default function LandingNavbar() {
             </button>
           </div>
 
-          {/* Mobile: just hamburger menu */}
-          <div className="flex items-center lg:hidden">
+          {/* Mobile: Sign In button + hamburger menu */}
+          <div className="flex items-center lg:hidden gap-1">
+            <button
+              onClick={() => setLocation('/signin')}
+              className="text-orange-600 dark:text-orange-400 text-sm font-semibold px-3 py-2 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 active:bg-orange-100 transition-colors"
+              style={{ minHeight: '40px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+            >
+              Sign In
+            </button>
             <button 
               onClick={(e) => {
                 e.preventDefault();
