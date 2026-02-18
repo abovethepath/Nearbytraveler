@@ -334,9 +334,10 @@ export default function SignupTraveling() {
             variant: "default",
           });
           
-          // ALWAYS redirect - this is the critical action
-          console.log('🚀 Redirecting to /account-success...');
-          window.location.href = '/account-success';
+          // ALWAYS redirect - use client-side navigation to preserve auth state
+          console.log('🚀 Navigating to /account-success...');
+          localStorage.setItem('just_registered', 'true');
+          setLocation('/account-success');
           
         } else {
           console.error('❌ Registration failed:', data.message);

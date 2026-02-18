@@ -255,18 +255,17 @@ function Router() {
       try {
         console.log('🔍 Checking server-side authentication...');
         const response = await fetch(`${getApiBaseUrl()}/api/auth/user`, {
-          credentials: 'include' // Include cookies/session
+          credentials: 'include'
         });
         
         if (response.ok) {
           const serverUser = await response.json();
           console.log('✅ Server session found:', serverUser.username, 'ID:', serverUser.id);
           setUser(serverUser);
-          // Also store in localStorage for consistency
           authStorage.setUser(serverUser);
           localStorage.setItem('user', JSON.stringify(serverUser));
+          localStorage.removeItem('just_registered');
           
-          // Check if this is a new user who needs welcome
           if (serverUser && !localStorage.getItem('welcomed_' + serverUser.id)) {
             console.log('🎉 New user detected - showing welcome');
             localStorage.setItem('welcomed_' + serverUser.id, 'true');
@@ -275,14 +274,50 @@ function Router() {
           setIsLoading(false);
           return;
         } else {
-          console.log('❌ No server session found (401) - clearing stale localStorage to prevent wrong user');
+          console.log('❌ No server session found (401) - attempting recovery...');
         }
       } catch (error) {
         console.log('❌ Server auth check failed:', error);
       }
 
-      // CRITICAL: When session returns 401, NEVER trust localStorage. It may have wrong user
-      // (e.g. admin on shared Replit, stale data). Clear everything and require fresh login.
+      // RECOVERY: If we have user data in localStorage, try to recover the session
+      const storedUserData = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+      if (storedUserData) {
+        try {
+          const storedUser = JSON.parse(storedUserData);
+          if (storedUser && storedUser.id) {
+            console.log('🔄 Attempting session recovery for user:', storedUser.username);
+            const recoveryResponse = await fetch(`${getApiBaseUrl()}/api/auth/recover-session`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({
+                userId: storedUser.id,
+                email: storedUser.email,
+                username: storedUser.username
+              })
+            });
+            
+            if (recoveryResponse.ok) {
+              const recoveredUser = await recoveryResponse.json();
+              console.log('✅ Session recovered successfully for:', recoveredUser.username);
+              setUser(recoveredUser);
+              authStorage.setUser(recoveredUser);
+              localStorage.setItem('user', JSON.stringify(recoveredUser));
+              localStorage.removeItem('just_registered');
+              setIsLoading(false);
+              return;
+            } else {
+              console.log('❌ Session recovery failed - credentials mismatch');
+            }
+          }
+        } catch (e) {
+          console.error('❌ Session recovery error:', e);
+        }
+      }
+
+      // Only clear localStorage if recovery also failed
+      console.log('🗑️ Clearing all user storage keys');
       authStorage.clearUser();
       localStorage.removeItem('user');
       localStorage.removeItem('travelconnect_user');
@@ -290,9 +325,9 @@ function Router() {
       localStorage.removeItem('authUser');
       localStorage.removeItem('current_user');
       localStorage.removeItem('auth_token');
+      localStorage.removeItem('just_registered');
       setUser(null);
 
-      // Always set loading to false after auth check - no delay needed
       setIsLoading(false);
     };
 
