@@ -26,6 +26,7 @@ export default function AccountSuccess() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionMessage, setTransitionMessage] = useState('Setting up your profile...');
   const { user, isAuthenticated, setUser } = useAuth();
+  const [authRetryCount, setAuthRetryCount] = useState(0);
 
   // Timer for seconds elapsed
   useEffect(() => {
@@ -34,6 +35,33 @@ export default function AccountSuccess() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // If we land here without auth (race condition), retry fetching user from server
+  useEffect(() => {
+    if (isAuthenticated && user) return;
+    if (authRetryCount >= 8) return;
+
+    const retryTimer = setTimeout(async () => {
+      console.log(`🔄 ACCOUNT-SUCCESS: Auth retry ${authRetryCount + 1}/8 - checking server session...`);
+      try {
+        const res = await fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' });
+        if (res.ok) {
+          const serverUser = await res.json();
+          console.log('✅ ACCOUNT-SUCCESS: Session recovered on retry:', serverUser.username);
+          setUser(serverUser);
+          localStorage.setItem('user', JSON.stringify(serverUser));
+        } else {
+          console.log('❌ ACCOUNT-SUCCESS: Still no session, will retry...');
+          setAuthRetryCount(prev => prev + 1);
+        }
+      } catch (err) {
+        console.error('ACCOUNT-SUCCESS: Auth retry error:', err);
+        setAuthRetryCount(prev => prev + 1);
+      }
+    }, 1500);
+
+    return () => clearTimeout(retryTimer);
+  }, [isAuthenticated, user, authRetryCount, setUser]);
 
   // Trigger bootstrap operations when user is authenticated
   useEffect(() => {

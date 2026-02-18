@@ -4733,8 +4733,31 @@ Questions? Just reply to this message!
         console.log("🔐 Extended session to 30 days for keepLoggedIn");
       }
 
+      // CRITICAL FIX: Explicitly save session BEFORE sending response
+      // Without this, the session data (user info) is set in memory but never
+      // persisted to the store (Redis/memory). The cookie is sent to the client
+      // pointing to an empty session, so the next /api/auth/user check returns 401.
+      // This was the root cause of iOS WebView users landing on the login page after signup.
+      await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          console.log("⚠️ Registration session save timeout - proceeding anyway");
+          resolve();
+        }, 5000);
+        
+        (req as any).session.save((err: any) => {
+          clearTimeout(timeout);
+          if (err) {
+            console.error("❌ Registration session save error:", err?.message || err);
+            resolve();
+          } else {
+            console.log("✅ Registration session saved successfully for user:", user.username, "sessionID:", (req as any).sessionID?.substring(0, 10) + '...');
+            resolve();
+          }
+        });
+      });
+
       // ---------- FAST RESPONSE: Return success immediately ----------
-      // User account is created - send success response NOW
+      // User account is created and session is saved - send success response NOW
       // All other tasks will run in the background
       console.log(`✅ REGISTRATION SUCCESS: User ${user.username} created (ID: ${user.id}) - returning response immediately`);
 
@@ -4748,7 +4771,7 @@ Questions? Just reply to this message!
         responsePayload.sessionId = (req as any).sessionID;
       }
 
-      // Send success response FIRST - user sees instant success
+      // Send success response - session is already persisted
       res.status(201).json(responsePayload);
 
       // ---------- BACKGROUND TASKS: Run after response is sent ----------

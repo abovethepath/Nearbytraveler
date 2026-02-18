@@ -11,6 +11,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import GlobalHotfixes from "@/GlobalHotfixes";
 import { METRO_AREAS } from "@shared/constants";
 import Home from "@/pages/home";
+import AccountSuccess from "@/pages/account-success";
 import Discover from "@/pages/discover";
 import ProfileComplete from "@/pages/profile-complete";
 import Messages from "@/pages/messages";
@@ -646,10 +647,10 @@ function Router() {
       return <LandingSimple />;
     }
 
-    // /account-success removed: redirect to / (web) or /home?native=ios (iOS)
+    // /account-success: Show the post-signup success page
+    // This page has its own auth retry logic to handle session persistence timing
     if (location === '/account-success') {
-      setLocation(isNativeIOSApp() ? '/home?native=ios' : '/');
-      return null;
+      return <AccountSuccess />;
     }
 
     if (!isActuallyAuthenticated) {
