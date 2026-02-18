@@ -12,6 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Rocket, Mail, User, ArrowLeft } from "lucide-react";
 import Logo from "@/components/logo";
 import { useLocation } from "wouter";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 const waitlistSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -71,7 +72,7 @@ export default function LaunchingSoon() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setLocation("/")}
+                  onClick={() => setLocation(isNativeIOSApp() ? "/home" : "/")}
                   className="text-gray-600 hover:text-gray-800"
                   data-testid="button-back-home"
                 >
@@ -118,7 +119,7 @@ export default function LaunchingSoon() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setLocation("/")}
+                onClick={() => setLocation(isNativeIOSApp() ? "/home" : "/")}
                 className="text-gray-600 hover:text-gray-800"
                 data-testid="button-back-home-form"
               >

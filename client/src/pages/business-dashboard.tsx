@@ -20,6 +20,7 @@ import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { AuthContext } from "@/App";
 import { authStorage } from "@/lib/auth";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 import InstantDealCreator from "@/components/InstantDealCreator";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
@@ -726,7 +727,7 @@ export default function BusinessDashboard() {
           <CardContent className="p-6 text-center">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Access Restricted</h2>
             <p className="text-gray-600 dark:text-gray-300 mb-6">This dashboard is only available to business accounts.</p>
-            <Button onClick={() => window.location.href = '/'} className="w-full">
+            <Button onClick={() => { window.location.href = isNativeIOSApp() ? '/home?native=ios' : '/'; }} className="w-full">
               Go to Home
             </Button>
           </CardContent>

@@ -120,7 +120,7 @@ export function MobileTopNav() {
       localStorage.clear();
       sessionStorage.clear();
       authStorage.clearUser();
-      window.location.href = '/';
+      window.location.href = isNative ? '/home?native=ios' : '/';
     } else {
       await logout();
     }

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Users, Globe, Star, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export default function Donate() {
   const [, setLocation] = useLocation();
@@ -66,7 +67,7 @@ export default function Donate() {
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
-              onClick={() => setLocation("/")}
+              onClick={() => setLocation(isNativeIOSApp() ? "/home" : "/")}
               className="p-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white"
             >
               <ArrowLeft className="w-5 h-5" />

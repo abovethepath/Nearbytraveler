@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export default function SettingsPage() {
   const { user, isAuthenticated } = useAuth();
@@ -110,7 +111,7 @@ export default function SettingsPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setLocation("/")}
+              onClick={() => setLocation(isNativeIOSApp() ? "/home" : "/")}
               className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             >
               <X className="w-6 h-6" />

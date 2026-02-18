@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -25,7 +26,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
   };
 
   handleGoHome = () => {
-    window.location.href = "/";
+    window.location.href = isNativeIOSApp() ? "/home?native=ios" : "/";
   };
 
   render(): React.ReactNode {
