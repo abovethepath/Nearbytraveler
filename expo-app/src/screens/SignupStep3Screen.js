@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet,
+  View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform,
   ActivityIndicator, ScrollView, useColorScheme, Linking,
 } from 'react-native';
@@ -47,6 +47,7 @@ export default function SignupStep3Screen({ navigation, route }) {
   const [isNewToTown, setIsNewToTown] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const scrollRef = useRef(null);
 
   const effectiveUserType = userType || signupData?.userType || 'local';
   const isTraveler = effectiveUserType === 'traveler';
@@ -74,17 +75,22 @@ export default function SignupStep3Screen({ navigation, route }) {
 
   const handleComplete = async () => {
     setError('');
-    if (!signupData) return;
+    if (!signupData) {
+      setError('Session expired. Please start signup again.');
+      return;
+    }
 
     const city = hometownCity.trim();
     const country = hometownCountry.trim() || 'United States';
 
     if (!dateOfBirth) {
       setError('Please select your date of birth.');
+      setTimeout(() => scrollRef.current?.scrollTo?.({ y: 0, animated: true }), 100);
       return;
     }
     if (!city || !country) {
       setError('Hometown city and country are required.');
+      setTimeout(() => scrollRef.current?.scrollTo?.({ y: 0, animated: true }), 100);
       return;
     }
     const customList = customInterestsText
@@ -94,6 +100,7 @@ export default function SignupStep3Screen({ navigation, route }) {
     const totalInterests = interests.length + customList.length;
     if (totalInterests < 7) {
       setError('Please choose at least 7 interests (from the list and/or add your own).');
+      setTimeout(() => scrollRef.current?.scrollTo?.({ y: 0, animated: true }), 100);
       return;
     }
 
@@ -159,7 +166,12 @@ export default function SignupStep3Screen({ navigation, route }) {
       const result = await api.register(registrationData);
       await AsyncStorage.removeItem(SIGNUP_DATA_KEY);
 
-      const user = result.user;
+      let user = result.user;
+      if (!user && (result.sessionId || result.ok !== false)) {
+        try {
+          user = await api.getUser();
+        } catch {}
+      }
       if (user) {
         setUser?.(user);
         try {
@@ -167,10 +179,12 @@ export default function SignupStep3Screen({ navigation, route }) {
         } catch {}
         // Trigger bootstrap (chatroom auto-join, etc.) - fire-and-forget
         api.bootstrapAfterRegister().catch(() => {});
+      } else {
+        setError('Account created but we couldn’t load your profile. Try logging in.');
       }
-      // AuthContext will re-render and show MainTabs when user is set
     } catch (e) {
       setError(e?.message || 'Registration failed. Please try again.');
+      setTimeout(() => scrollRef.current?.scrollTo?.({ y: 0, animated: true }), 100);
     } finally {
       setLoading(false);
     }
@@ -207,7 +221,7 @@ export default function SignupStep3Screen({ navigation, route }) {
   return (
     <SafeAreaView style={[styles.container, containerStyle]}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardView}>
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
               <Text style={styles.backText}>‹ Back</Text>
@@ -236,13 +250,13 @@ export default function SignupStep3Screen({ navigation, route }) {
               </Text>
             </TouchableOpacity>
             {showDatePicker && (
-              <View style={{ backgroundColor: '#F9FAFB', borderRadius: 12, padding: 8 }}>
+              <View style={{ backgroundColor: datePickerBg, borderRadius: 12, padding: 8 }}>
                 <DateTimePicker
                   value={dateOfBirth || new Date(2000, 0, 1)}
                   mode="date"
                   display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  themeVariant="light"
-                  textColor="#111827"
+                  themeVariant={dark ? 'dark' : 'light'}
+                  textColor={datePickerText}
                   onChange={(evt, selectedDate) => {
                     setShowDatePicker(Platform.OS === 'ios');
                     if (selectedDate) {
@@ -269,19 +283,19 @@ export default function SignupStep3Screen({ navigation, route }) {
             dark={dark}
           />
 
-          <View style={[styles.inputContainer, { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 12, borderWidth: 1 }, newToTownBoxStyle]}>
-            <TouchableOpacity
-              style={{ width: 24, height: 24, borderRadius: 6, borderWidth: 2, borderColor: isNewToTown ? ORANGE : '#9CA3AF', backgroundColor: isNewToTown ? ORANGE : 'transparent', marginRight: 12, justifyContent: 'center', alignItems: 'center' }}
-              onPress={() => setIsNewToTown(!isNewToTown)}
-              activeOpacity={0.7}
-            >
+          <TouchableOpacity
+            style={[styles.inputContainer, { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 12, borderWidth: 1 }, newToTownBoxStyle]}
+            onPress={() => setIsNewToTown(!isNewToTown)}
+            activeOpacity={0.7}
+          >
+            <View style={{ width: 24, height: 24, borderRadius: 6, borderWidth: 2, borderColor: isNewToTown ? ORANGE : '#9CA3AF', backgroundColor: isNewToTown ? ORANGE : 'transparent', marginRight: 12, justifyContent: 'center', alignItems: 'center' }}>
               {isNewToTown ? <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>✓</Text> : null}
-            </TouchableOpacity>
+            </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.inputLabel, inputLabelStyle, { marginBottom: 4 }]}>Are you new to your hometown?</Text>
               <Text style={{ fontSize: 13, color: dark ? DARK.textMuted : '#6B7280' }}>I'm new to {hometownCity || 'my hometown'} – connect me with locals who can help me explore</Text>
             </View>
-          </View>
+          </TouchableOpacity>
 
           {isTraveler ? (
             <>
@@ -388,17 +402,18 @@ export default function SignupStep3Screen({ navigation, route }) {
             </Text>
           </View>
 
-          <TouchableOpacity
-            style={[styles.continueButton, loading && { opacity: 0.7 }]}
+          <Pressable
+            style={({ pressed }) => [styles.continueButton, loading && { opacity: 0.7 }, pressed && { opacity: 0.85 }]}
             onPress={handleComplete}
             disabled={loading}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
               <Text style={styles.continueButtonText}>Create Account</Text>
             )}
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

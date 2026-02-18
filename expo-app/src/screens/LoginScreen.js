@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform,
-  ActivityIndicator, ScrollView, Dimensions, useColorScheme, Image,
+  ActivityIndicator, ScrollView, Dimensions, useColorScheme,
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useAuth } from '../services/AuthContext';
@@ -19,7 +19,6 @@ const DARK = {
   inputBorder: '#38383a',
   errorBg: '#3d1f1f',
   errorBorder: '#5c2a2a',
-  logoBg: '#2c2c2e',
 };
 
 export default function LoginScreen({ navigation }) {
@@ -57,7 +56,6 @@ export default function LoginScreen({ navigation }) {
   };
 
   const containerStyle = { backgroundColor: dark ? DARK.bg : '#FFFFFF' };
-  const logoContainerStyle = { backgroundColor: dark ? DARK.logoBg : '#FFF7ED' };
   const appNameStyle = { color: dark ? DARK.text : '#111827' };
   const taglineStyle = { color: dark ? DARK.textMuted : '#6B7280' };
   const errorContainerStyle = { backgroundColor: dark ? DARK.errorBg : '#FEF2F2', borderColor: dark ? DARK.errorBorder : '#FECACA' };
@@ -75,10 +73,10 @@ export default function LoginScreen({ navigation }) {
       >
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           <View style={styles.brandSection}>
-            <View style={[styles.logoContainer, logoContainerStyle]}>
-              <Image source={require('../../assets/logo.png')} style={styles.logoImage} resizeMode="contain" />
+            <View style={styles.textLogoRow}>
+              <Text style={[styles.textLogoBlue, dark && styles.textLogoBlueDark]}>Nearby</Text>
+              <Text style={[styles.textLogoOrange, dark && styles.textLogoOrangeDark]}>Traveler</Text>
             </View>
-            <Text style={[styles.appName, appNameStyle]}>Nearby Traveler</Text>
             <Text style={[styles.tagline, taglineStyle]}>Connect with travelers & locals nearby</Text>
           </View>
 
@@ -163,9 +161,11 @@ const styles = StyleSheet.create({
   keyboardView: { flex: 1 },
   scrollContent: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 28, paddingVertical: 40 },
   brandSection: { alignItems: 'center', marginBottom: 40 },
-  logoContainer: { width: 200, height: 64, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
-  logoImage: { width: 180, height: 56 },
-  appName: { fontSize: 28, fontWeight: '700', color: '#111827', marginBottom: 8 },
+  textLogoRow: { flexDirection: 'row', alignItems: 'baseline', marginBottom: 12 },
+  textLogoBlue: { fontSize: 32, fontWeight: '700', color: '#3B82F6' },
+  textLogoBlueDark: { color: '#60A5FA' },
+  textLogoOrange: { fontSize: 32, fontWeight: '700', color: '#F97316' },
+  textLogoOrangeDark: { color: '#FB923C' },
   tagline: { fontSize: 16, color: '#6B7280', textAlign: 'center' },
   formSection: { marginBottom: 32 },
   errorContainer: { backgroundColor: '#FEF2F2', borderRadius: 12, padding: 14, marginBottom: 16, borderWidth: 1, borderColor: '#FECACA' },

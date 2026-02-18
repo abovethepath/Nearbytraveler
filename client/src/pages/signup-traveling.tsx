@@ -489,23 +489,27 @@ export default function SignupTraveling() {
                   )}
                 </div>
 
-                {/* NEW TO HOMETOWN QUESTION */}
+                {/* NEW TO HOMETOWN QUESTION - full box clickable */}
                 {formData.hometownCity && (
-                  <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-200 dark:border-blue-700">
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, isNewToTown: !prev.isNewToTown }))}
+                    className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-200 dark:border-blue-700 w-full text-left cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                    data-testid="checkbox-new-to-town"
+                  >
                     <Checkbox
                       id="isNewToTown"
                       checked={formData.isNewToTown}
                       onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isNewToTown: !!checked }))}
-                      className="mt-0.5 h-5 w-5 border-2 border-gray-400 dark:border-gray-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                      data-testid="checkbox-new-to-town"
+                      className="mt-0.5 h-5 w-5 border-2 border-gray-400 dark:border-gray-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 pointer-events-none"
                     />
-                    <label htmlFor="isNewToTown" className="text-sm text-gray-800 dark:text-gray-200 cursor-pointer">
+                    <span className="text-sm text-gray-800 dark:text-gray-200 flex-1">
                       <strong>I'm new to {formData.hometownCity}</strong>
                       <p className="text-gray-600 dark:text-gray-400 mt-1">
                         Check this if you recently moved here
                       </p>
-                    </label>
-                  </div>
+                    </span>
+                  </button>
                 )}
               </div>
 

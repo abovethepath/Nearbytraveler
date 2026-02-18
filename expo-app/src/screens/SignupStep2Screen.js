@@ -3,7 +3,6 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform,
   ActivityIndicator, ScrollView, useColorScheme,
-  Pressable, Keyboard,
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -193,19 +192,9 @@ export default function SignupStep2Screen({ navigation, route }) {
                 </TouchableOpacity>
               </View>
             </TouchableOpacity>
-            <Pressable
-              onPress={() => {
-                Keyboard.dismiss();
-                setTimeout(() => passwordRef.current?.focus(), 100);
-              }}
-              style={({ pressed }) => [
-                styles.passwordHintRow,
-                { paddingVertical: 14, minHeight: 52, justifyContent: 'center', opacity: pressed ? 0.7 : 1 },
-              ]}
-            >
-              <Text style={[styles.passwordHint, dark && { color: DARK.textMuted }]}>Use a strong password. </Text>
-              <Text style={styles.createOwnLink}>Tap here to create your own</Text>
-            </Pressable>
+            <View style={styles.passwordHintRow}>
+              <Text style={[styles.passwordHint, dark && { color: DARK.textMuted }]}>Use a strong password. Tap the field above to type your own.</Text>
+            </View>
           </View>
           <View style={styles.inputContainer}>
             <Text style={[styles.inputLabel, inputLabelStyle]}>Confirm Password *</Text>
@@ -271,9 +260,8 @@ const styles = StyleSheet.create({
   passwordInputWrapper: { position: 'relative' },
   passwordInput: { paddingRight: 48 },
   eyeButton: { position: 'absolute', right: 12, top: 0, bottom: 0, justifyContent: 'center' },
-  passwordHintRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 4, marginTop: 6 },
+  passwordHintRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', marginTop: 6 },
   passwordHint: { fontSize: 13, color: '#6B7280' },
-  createOwnLink: { fontSize: 13, color: ORANGE, fontWeight: '600' },
   continueButton: { backgroundColor: ORANGE, borderRadius: 12, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
   continueButtonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
 });

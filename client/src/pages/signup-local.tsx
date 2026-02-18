@@ -402,27 +402,28 @@ export default function SignupLocal() {
                   )}
                 </div>
 
-                {/* New to Town Checkbox */}
-                <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-200 dark:border-blue-700">
+                {/* New to Town - full box clickable */}
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, isNewToTown: !prev.isNewToTown }))}
+                  className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-200 dark:border-blue-700 w-full text-left cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                  data-testid="checkbox-new-to-town"
+                >
                   <Checkbox
                     id="isNewToTown"
                     checked={formData.isNewToTown}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isNewToTown: checked as boolean }))}
-                    data-testid="checkbox-new-to-town"
-                    className="mt-0.5 border-2 border-gray-400 dark:border-gray-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                    className="mt-0.5 border-2 border-gray-400 dark:border-gray-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 pointer-events-none"
                   />
                   <div className="flex-1">
-                    <label
-                      htmlFor="isNewToTown"
-                      className="text-sm font-semibold text-gray-800 dark:text-gray-200 cursor-pointer"
-                    >
+                    <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                       I'm new to {formData.hometownCity || 'this area'}
-                    </label>
+                    </span>
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                       Check this if you recently moved here and want to explore your new hometown
                     </p>
                   </div>
-                </div>
+                </button>
               </div>
 
               {/* Top Choices */}

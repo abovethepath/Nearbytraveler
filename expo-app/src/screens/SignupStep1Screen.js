@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  SafeAreaView, ScrollView, useColorScheme, Image,
+  SafeAreaView, ScrollView, useColorScheme,
 } from 'react-native';
 
 const ORANGE = '#F97316';
@@ -55,8 +55,10 @@ export default function SignupStep1Screen({ navigation }) {
         </View>
 
         <View style={styles.titleSection}>
-          <Image source={require('../../assets/logo.png')} style={styles.siteLogo} resizeMode="contain" />
-          <Image source={require('../../assets/icon.png')} style={styles.appIcon} resizeMode="contain" />
+          <View style={styles.textLogoRow}>
+            <Text style={[styles.textLogoBlue, dark && styles.textLogoBlueDark]}>Nearby</Text>
+            <Text style={[styles.textLogoOrange, dark && styles.textLogoOrangeDark]}>Traveler</Text>
+          </View>
           <Text style={[styles.title, titleStyle]}>Join Nearby Traveler</Text>
           <Text style={[styles.subtitle, subtitleStyle]}>Choose how you want to connect</Text>
         </View>
@@ -106,8 +108,11 @@ const styles = StyleSheet.create({
   backText: { color: ORANGE, fontSize: 17, fontWeight: '600' },
   stepLabel: { flex: 1, textAlign: 'right', color: '#6B7280', fontSize: 14 },
   titleSection: { alignItems: 'center', marginBottom: 32 },
-  siteLogo: { width: 160, height: 52, marginBottom: 8 },
-  appIcon: { width: 48, height: 48, marginBottom: 12 },
+  textLogoRow: { flexDirection: 'row', alignItems: 'baseline', marginBottom: 12 },
+  textLogoBlue: { fontSize: 30, fontWeight: '700', color: '#3B82F6' },
+  textLogoBlueDark: { color: '#60A5FA' },
+  textLogoOrange: { fontSize: 30, fontWeight: '700', color: '#F97316' },
+  textLogoOrangeDark: { color: '#FB923C' },
   title: { fontSize: 26, fontWeight: '700', color: '#111827', marginBottom: 8 },
   subtitle: { fontSize: 16, color: '#6B7280', textAlign: 'center' },
   optionsSection: { gap: 12, marginBottom: 32 },

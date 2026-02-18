@@ -172,6 +172,19 @@ function WebViewWithChrome({ path, navigation }) {
       Linking.openURL(req.url).catch(() => {});
       return false;
     }
+    // iOS: never load landing page - redirect to home
+    const url = req?.url || '';
+    if (url.includes(HOST)) {
+      try {
+        const pathname = (new URL(url).pathname || '/').replace(/\/$/, '') || '/';
+        if (pathname === '/' || pathname === '/landing' || pathname.indexOf('/landing') === 0) {
+          webViewRef.current?.injectJavaScript(
+            `window.location.replace('${BASE_URL}${pathWithNativeIOS('/home')}');true;`
+          );
+          return false;
+        }
+      } catch (e) {}
+    }
     return shouldLoadInWebView(req?.url);
   }, []);
 
@@ -330,7 +343,17 @@ function WebViewWithChrome({ path, navigation }) {
         onHttpError={onHttpError}
         onMessage={onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-        onNavigationStateChange={(navState) => { setCanGoBackWeb(navState.canGoBack); }}
+        onNavigationStateChange={(navState) => {
+          setCanGoBackWeb(navState.canGoBack);
+          const url = navState?.url || '';
+          if (!url.includes(HOST)) return;
+          const pathname = (url.replace(BASE_URL, '').split('?')[0] || '/').replace(/\/$/, '') || '/';
+          if (pathname === '/' || pathname === '/landing' || pathname.indexOf('/landing') === 0) {
+            webViewRef.current?.injectJavaScript(
+              `window.location.replace('${BASE_URL}${pathWithNativeIOS('/home')}');true;`
+            );
+          }
+        }}
         allowsBackForwardNavigationGestures={false}
         javaScriptEnabled={true}
         domStorageEnabled={true}
@@ -359,8 +382,15 @@ function NTWebView({ uri }) {
   );
 }
 
+// iOS app never shows landing - use home instead of / or /landing
+function ensureNoLandingPath(path) {
+  const p = (path || '/').replace(/\/$/, '') || '/';
+  if (p === '/' || p === '/landing' || p.indexOf('/landing') === 0) return '/home';
+  return path || '/home';
+}
+
 export function GenericWebViewScreen({ route, navigation }) {
-  const path = route?.params?.path || '/';
+  const path = ensureNoLandingPath(route?.params?.path);
   return <WebViewWithChrome path={path} navigation={navigation} />;
 }
 

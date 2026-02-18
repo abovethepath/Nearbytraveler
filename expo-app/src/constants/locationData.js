@@ -23,48 +23,54 @@ const LA_METRO_CITIES = [
   'San Pedro', 'Wilmington', 'Harbor City', 'Harbor Gateway'
 ];
 
-// US cities from locationData - popular LA metro first, then other major cities
-const US_CITIES_BASE = [
-  'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'Beverly Hills', 'West Hollywood', 'Hollywood',
-  'Culver City', 'Marina del Rey', 'Manhattan Beach', 'Hermosa Beach', 'Redondo Beach', 'Playa del Rey',
-  'Malibu', 'Pasadena', 'Glendale', 'Burbank', 'Long Beach', 'El Segundo', 'Westwood', 'West LA',
-  'Downtown LA', 'Silver Lake', 'Echo Park', 'Los Feliz', 'Koreatown', 'Inglewood', 'Torrance',
-  'Las Vegas', 'Miami', 'Nashville', 'New Orleans', 'Austin', 'Chicago', 'New York City',
-  'Manhattan', 'Bronx', 'Brooklyn', 'Queens', 'Staten Island',
+// Order: 1) Los Angeles  2) Main cities  3) LA cities (metro)  4) Rest of USA
+const LOS_ANGELES_FIRST = ['Los Angeles'];
+
+const MAIN_CITIES = [
+  'New York City', 'San Francisco', 'Las Vegas', 'Miami', 'Nashville', 'New Orleans',
+  'Austin', 'Chicago', 'San Diego', 'Seattle', 'Boston', 'Washington DC', 'Philadelphia', 'Phoenix',
+  'Houston', 'Denver', 'Atlanta', 'Dallas', 'Manhattan', 'Bronx', 'Brooklyn', 'Queens', 'Staten Island',
+];
+
+// LA metro neighborhoods (LA_METRO_CITIES minus "Los Angeles" which is already first)
+const LA_METRO_OTHER = LA_METRO_CITIES.filter((c) => c !== 'Los Angeles');
+
+// Rest of US cities (alphabetical-ish)
+const REST_US_CITIES = [
   'Aberdeen', 'Abilene', 'Akron', 'Albany', 'Albuquerque', 'Alexandria', 'Allentown', 'Amarillo',
-  'Anaheim', 'Anchorage', 'Ann Arbor', 'Arlington', 'Atlanta', 'Augusta', 'Aurora',
+  'Anaheim', 'Anchorage', 'Ann Arbor', 'Arlington', 'Augusta', 'Aurora',
   'Bakersfield', 'Baltimore', 'Baton Rouge', 'Beaumont', 'Bellevue', 'Berkeley', 'Birmingham', 'Boise',
-  'Boston', 'Bridgeport', 'Buffalo', 'Cambridge', 'Cape Coral', 'Carrollton', 'Cary', 'Cedar Rapids',
+  'Bridgeport', 'Buffalo', 'Cambridge', 'Cape Coral', 'Carrollton', 'Cary', 'Cedar Rapids',
   'Chandler', 'Charleston', 'Charlotte', 'Chattanooga', 'Chesapeake', 'Cincinnati', 'Clarksville',
   'Cleveland', 'Colorado Springs', 'Columbia', 'Columbus', 'Concord', 'Coral Springs', 'Corona', 'Corpus Christi',
-  'Dallas', 'Dayton', 'Denver', 'Des Moines', 'Detroit', 'Durham', 'El Paso', 'Elizabeth', 'Elk Grove',
+  'Dayton', 'Des Moines', 'Detroit', 'Durham', 'El Paso', 'Elizabeth', 'Elk Grove',
   'Erie', 'Eugene', 'Evansville', 'Fayetteville', 'Fontana', 'Fort Collins', 'Fort Lauderdale',
   'Fort Wayne', 'Fort Worth', 'Fremont', 'Fresno', 'Fullerton', 'Garden Grove', 'Garland', 'Gilbert',
   'Glendale', 'Grand Prairie', 'Grand Rapids', 'Green Bay', 'Greensboro', 'Gresham', 'Hampton',
-  'Hartford', 'Hayward', 'Henderson', 'Hialeah', 'Hollywood', 'Honolulu', 'Houston', 'Huntington Beach',
-  'Huntsville', 'Independence', 'Indianapolis', 'Inglewood', 'Irvine', 'Irving', 'Jackson', 'Jacksonville',
+  'Hartford', 'Hayward', 'Henderson', 'Hialeah', 'Hollywood', 'Honolulu', 'Huntington Beach',
+  'Huntsville', 'Independence', 'Indianapolis', 'Irvine', 'Irving', 'Jackson', 'Jacksonville',
   'Jersey City', 'Joliet', 'Kansas City', 'Knoxville', 'Lafayette', 'Lakewood', 'Lancaster', 'Lansing',
   'Laredo', 'Lexington', 'Lincoln', 'Little Rock', 'Long Beach', 'Louisville', 'Lowell', 'Lubbock',
   'Madison', 'Manchester', 'McAllen', 'McKinney', 'Memphis', 'Mesa', 'Mesquite', 'Milwaukee', 'Minneapolis',
   'Mobile', 'Modesto', 'Montgomery', 'Moreno Valley', 'Murfreesboro', 'Naperville', 'New Haven', 'Newark',
   'Newport News', 'Norfolk', 'Norman', 'North Las Vegas', 'Oakland', 'Oceanside', 'Oklahoma City', 'Omaha',
   'Ontario', 'Orange', 'Orlando', 'Overland Park', 'Oxnard', 'Palmdale', 'Pasadena', 'Paterson',
-  'Pembroke Pines', 'Peoria', 'Philadelphia', 'Phoenix', 'Pittsburgh', 'Plano', 'Pomona', 'Portland',
-  'Providence', 'Provo', 'Raleigh', 'Rancho Cucamonga', 'Reno', 'Richmond', 'Riverside', 'Rochester',
-  'Rockford', 'Roseville', 'Sacramento', 'Salem', 'Salinas', 'Salt Lake City', 'San Antonio', 'San Bernardino',
-  'San Diego', 'San Francisco', 'San Jose', 'Santa Ana', 'Santa Clara', 'Santa Clarita', 'Savannah',
-  'Scottsdale', 'Seattle', 'Shreveport', 'Simi Valley', 'Sioux Falls', 'South Bend', 'Spokane', 'Springfield',
-  'St. Louis', 'St. Paul', 'St. Petersburg', 'Stamford', 'Sterling Heights', 'Stockton', 'Sunnyvale', 'Syracuse',
-  'Tacoma', 'Tallahassee', 'Tampa', 'Tempe', 'Thornton', 'Thousand Oaks', 'Toledo', 'Topeka', 'Torrance',
-  'Tucson', 'Tulsa', 'Vancouver', 'Virginia Beach', 'Visalia', 'Waco', 'Warren', 'Washington DC', 'Waterbury',
-  'West Covina', 'West Valley City', 'Westchester County', 'Westminster', 'Wichita', 'Winston-Salem', 'Worcester',
-  'Yonkers', 'Youngstown'
+  'Pembroke Pines', 'Peoria', 'Pittsburgh', 'Plano', 'Portland', 'Providence', 'Provo', 'Raleigh',
+  'Rancho Cucamonga', 'Reno', 'Richmond', 'Riverside', 'Rochester', 'Rockford', 'Roseville', 'Sacramento',
+  'Salem', 'Salinas', 'Salt Lake City', 'San Antonio', 'San Bernardino', 'San Jose', 'Santa Ana',
+  'Santa Clara', 'Santa Clarita', 'Savannah', 'Scottsdale', 'Shreveport', 'Simi Valley', 'Sioux Falls',
+  'South Bend', 'Spokane', 'Springfield', 'St. Louis', 'St. Paul', 'St. Petersburg', 'Stamford',
+  'Sterling Heights', 'Stockton', 'Sunnyvale', 'Syracuse', 'Tacoma', 'Tallahassee', 'Tampa', 'Tempe',
+  'Thornton', 'Thousand Oaks', 'Toledo', 'Topeka', 'Torrance', 'Tucson', 'Tulsa', 'Vancouver', 'Virginia Beach',
+  'Visalia', 'Waco', 'Warren', 'Waterbury', 'West Covina', 'West Valley City', 'Westchester County',
+  'Westminster', 'Wichita', 'Winston-Salem', 'Worcester', 'Yonkers', 'Youngstown',
 ];
 
-// Merge LA metro cities (add any not in base) - KEEP ORDER: popular first, then LA cities, then rest (no sort)
-const usCitiesSet = new Set(US_CITIES_BASE.map(c => c.toLowerCase()));
-const laOnly = LA_METRO_CITIES.filter(c => !usCitiesSet.has(c.toLowerCase()));
-const merged = [...US_CITIES_BASE, ...laOnly];
+const firstThreeSet = new Set(
+  [...LOS_ANGELES_FIRST, ...MAIN_CITIES, ...LA_METRO_OTHER].map((c) => c.toLowerCase())
+);
+const restUsOnly = REST_US_CITIES.filter((c) => !firstThreeSet.has(c.toLowerCase()));
+const merged = [...LOS_ANGELES_FIRST, ...MAIN_CITIES, ...LA_METRO_OTHER, ...restUsOnly];
 const seen = new Set();
 const US_CITIES = merged.filter((c) => {
   const k = c.toLowerCase();
