@@ -262,10 +262,8 @@ export default function SignupLocal() {
             variant: "default",
           });
           
-          // ALWAYS redirect - use client-side navigation to preserve auth state
-          console.log('🚀 Navigating to /account-success...');
           localStorage.setItem('just_registered', 'true');
-          setLocation('/account-success');
+          setLocation('/profile');
           
         } else {
           console.error('❌ Registration failed:', data.message);

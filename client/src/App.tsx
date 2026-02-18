@@ -11,7 +11,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import GlobalHotfixes from "@/GlobalHotfixes";
 import { METRO_AREAS } from "@shared/constants";
 import Home from "@/pages/home";
-import AccountSuccess from "@/pages/account-success";
 import Discover from "@/pages/discover";
 import ProfileComplete from "@/pages/profile-complete";
 import Messages from "@/pages/messages";
@@ -645,12 +644,6 @@ function Router() {
     // Show simple A/B test landing page regardless of auth state
     if (location === '/landing-simple') {
       return <LandingSimple />;
-    }
-
-    // /account-success: Show the post-signup success page
-    // This page has its own auth retry logic to handle session persistence timing
-    if (location === '/account-success') {
-      return <AccountSuccess />;
     }
 
     if (!isActuallyAuthenticated) {
