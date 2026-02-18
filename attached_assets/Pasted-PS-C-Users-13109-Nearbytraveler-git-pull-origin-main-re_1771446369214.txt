@@ -1,0 +1,64 @@
+PS C:\Users\13109\Nearbytraveler> git pull origin main
+remote: Enumerating objects: 120, done.
+remote: Counting objects: 100% (94/94), done.
+remote: Compressing objects: 100% (5/5), done.
+remote: Total 54 (delta 49), reused 54 (delta 49), pack-reused 0 (from 0)
+Unpacking objects: 100% (54/54), 10.84 KiB | 48.00 KiB/s, done.
+From https://github.com/abovethepath/Nearbytraveler
+ * branch              main       -> FETCH_HEAD
+   251aff0d..636586a9  main       -> origin/main
+Updating 251aff0d..636586a9
+Fast-forward
+ client/src/App.tsx                             |  72 +++++++++----
+ client/src/ErrorBoundary.tsx                   |   3 +-
+ client/src/components/MobileTopNav.tsx         |   2 +-
+ client/src/components/NativeAppProfileMenu.tsx |   8 +-
+ client/src/components/logo-fresh.tsx           |   3 +-
+ client/src/components/logo.tsx                 |   3 +-
+ client/src/components/navbar.tsx               |   6 +-
+ client/src/lib/nativeApp.ts                    |  46 ++++----
+ client/src/pages/FinishingSetup.tsx            | 141 +++++++++++++++++++++++++
+ client/src/pages/TravelIntentQuiz.tsx          |   3 +-
+ client/src/pages/account-success.tsx           |  24 +++--
+ client/src/pages/ai-companion.tsx              |   3 +-
+ client/src/pages/business-dashboard.tsx        |   3 +-
+ client/src/pages/coming-soon.tsx               |   3 +-
+ client/src/pages/donate.tsx                    |   3 +-
+ client/src/pages/home.tsx                      |  10 ++
+ client/src/pages/join-trip.tsx                 |   5 +-
+ client/src/pages/launching-soon.tsx            |   5 +-
+ client/src/pages/meetup-chat.tsx               |   5 +-
+ client/src/pages/profile-complete.tsx          |   6 +-
+ client/src/pages/quick-login.tsx               |   3 +-
+ client/src/pages/reset-password.tsx            |   3 +-
+ client/src/pages/settings.tsx                  |   3 +-
+ client/src/pages/signup-account.tsx            |   4 +-
+ client/src/pages/travel-blog.tsx               |   3 +-
+ client/src/pages/travel-memories.tsx           |   3 +-
+ 26 files changed, 294 insertions(+), 79 deletions(-)
+ create mode 100644 client/src/pages/FinishingSetup.tsx
+PS C:\Users\13109\Nearbytraveler> powershell "Select-String -Path client\src\App.tsx -Pattern 'welcome'"
+
+client\src\App.tsx:133:import Welcome from "@/pages/welcome";
+client\src\App.tsx:134:import WelcomeBusiness from "@/pages/welcome-business";
+client\src\App.tsx:239:    '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/finishing-setup', '/quick-login', '/preview-landing', '/preview-first-landing',
+client\src\App.tsx:269:          if (serverUser && !localStorage.getItem('welcomed_' + serverUser.id)) {
+client\src\App.tsx:270:            console.log('🎉 New user detected - showing welcome');
+client\src\App.tsx:271:            localStorage.setItem('welcomed_' + serverUser.id, 'true');
+client\src\App.tsx:438:          // Clear any welcome flags
+client\src\App.tsx:440:            if (key.startsWith('welcomed_')) {
+client\src\App.tsx:703:      // Redirect unauthenticated users trying to access welcome pages (native: no hard nav)
+client\src\App.tsx:704:      if (location === '/welcome' || location === '/welcome-business') {
+client\src\App.tsx:705:        console.log('🚫 SECURITY: Unauthenticated user trying to access welcome page - redirecting to auth');
+client\src\App.tsx:922:    // Welcome pages - only for authenticated users
+client\src\App.tsx:923:    if (location === '/welcome') {
+client\src\App.tsx:924:      return <Welcome />;
+client\src\App.tsx:927:    if (location === '/welcome-business') {
+client\src\App.tsx:928:      return <WelcomeBusiness />;
+client\src\App.tsx:1167:      case '/welcome':
+client\src\App.tsx:1168:        return <Welcome />;
+client\src\App.tsx:1169:      case '/welcome-business':
+client\src\App.tsx:1170:        return <WelcomeBusiness />;
+
+
+PS C:\Users\13109\Nearbytraveler>
