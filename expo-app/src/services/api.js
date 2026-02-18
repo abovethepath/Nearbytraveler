@@ -1,8 +1,26 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import offlineStorage from './offlineStorage';
+import { BASE_URL } from '../config';
 
-const BASE_URL = 'https://nearbytraveler.org';
 const SESSION_KEY = 'nt_session_id';
+
+const CONNECTION_ERROR_MSG = 'Can\'t connect to server. Please check your internet connection and try again.';
+
+function isNetworkError(e) {
+  if (!e) return false;
+  const msg = (e.message || String(e)).toLowerCase();
+  return e.name === 'TypeError' || msg.includes('network') || msg.includes('failed to fetch') || msg.includes('fetch') || msg.includes('connection');
+}
+
+/** Wrap fetch and turn network failures into a clear user-facing message. */
+async function fetchWithConnectionMessage(url, options) {
+  try {
+    return await fetch(url, options);
+  } catch (e) {
+    if (isNetworkError(e)) throw new Error(CONNECTION_ERROR_MSG);
+    throw e;
+  }
+}
 
 let sessionCookie = null;
 
@@ -84,7 +102,7 @@ const api = {
     if (payload.username) payload.username = String(payload.username).trim();
     if (payload.password) payload.password = String(payload.password).trim();
 
-    const r = await fetch(`${BASE_URL}/api/auth/login`, {
+    const r = await fetchWithConnectionMessage(`${BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: getHeaders(),
       credentials: 'include',
@@ -112,7 +130,7 @@ const api = {
 
   async getUser() {
     try {
-      const r = await fetch(`${BASE_URL}/api/auth/user`, {
+      const r = await fetchWithConnectionMessage(`${BASE_URL}/api/auth/user`, {
         headers: getHeaders(),
         credentials: 'include',
       });
@@ -153,7 +171,7 @@ const api = {
   getSessionCookie: () => sessionCookie,
 
   async register(userData) {
-    const r = await fetch(`${BASE_URL}/api/register`, {
+    const r = await fetchWithConnectionMessage(`${BASE_URL}/api/register`, {
       method: 'POST',
       headers: getHeaders(),
       credentials: 'include',

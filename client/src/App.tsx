@@ -453,9 +453,11 @@ function Router() {
     console.log('🔍 ROUTING DEBUG - isAuthenticated:', authValue.isAuthenticated, 'location:', location, 'user:', effectiveUser);
     console.log('🔍 Current window.location.pathname:', window.location.pathname);
 
-    // NATIVE APP: Never show landing page - redirect to /home
+    // NATIVE APP: Never show landing page - redirect to /home (update URL so refresh stays on home)
     if (isNativeIOSApp() && (location === '/' || location === '' || location.startsWith('/landing'))) {
-      setLocation('/home');
+      const search = window.location.search || '';
+      const newSearch = search.includes('native=ios') ? search : (search ? search + '&native=ios' : '?native=ios');
+      window.location.replace(window.location.origin + '/home' + newSearch);
       return null;
     }
 

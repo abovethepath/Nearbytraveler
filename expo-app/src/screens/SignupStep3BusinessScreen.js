@@ -7,6 +7,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../services/api';
 import { useAuth } from '../services/AuthContext';
+import { BASE_URL } from '../config';
 import { BUSINESS_TYPES } from '../constants/businessTypes';
 
 const ORANGE = '#F97316';
@@ -387,7 +388,7 @@ export default function SignupStep3BusinessScreen({ navigation, route }) {
               By completing your profile, you agree to our{' '}
               <Text
                 style={{ color: '#3B82F6', fontWeight: '600' }}
-                onPress={() => Linking.openURL('https://nearbytraveler.org/terms')}
+                onPress={() => Linking.openURL(`${BASE_URL}/terms`)}
               >
                 Terms and Conditions
               </Text>

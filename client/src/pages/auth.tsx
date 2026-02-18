@@ -8,6 +8,7 @@ import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 import JoinNowWidgetNew from "@/components/join-now-widget-new";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 // Background image handled via direct path in CSS
@@ -90,8 +91,8 @@ export default function Auth() {
             description: "Successfully logged in.",
           });
           
-          // Redirect to home
-          setLocation('/');
+          // Redirect to home (native app must use /home so we don't show landing)
+          setLocation(isNativeIOSApp() ? '/home' : '/');
         } else {
           // Backend returned an error in JSON format
           console.log('Login failed with response:', data);
@@ -140,7 +141,7 @@ export default function Auth() {
           <CardHeader className="text-center pb-8 relative overflow-visible">
             {/* Back Button */}
             <button
-              onClick={() => setLocation('/')}
+              onClick={() => setLocation(isNativeIOSApp() ? '/home' : '/')}
               className="absolute left-4 top-4 flex items-center gap-2 transition-colors group bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-md z-50"
               data-testid="button-back-home"
             >

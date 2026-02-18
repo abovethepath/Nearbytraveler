@@ -8,10 +8,7 @@ function getSpeechModule() {
   return null;
 }
 import { useAuth } from '../services/AuthContext';
-
-const DEV_WEB_URL = null;
-const BASE_URL = (typeof __DEV__ !== 'undefined' && __DEV__ && DEV_WEB_URL) ? DEV_WEB_URL.replace(/\/$/, '') : 'https://nearbytraveler.org';
-const HOST = (BASE_URL || '').replace(/^https?:\/\//, '').split('/')[0] || 'nearbytraveler.org';
+import { BASE_URL, HOST } from '../config';
 const HEADER_HEIGHT = 56;
 
 const DARK = {
@@ -162,7 +159,7 @@ function WebViewWithChrome({ path, navigation }) {
     setLoading(false); setRefreshing(false);
     const desc = (e.nativeEvent?.description || '').toLowerCase();
     const isConnectionError = desc.includes('connect') || desc.includes('network') || desc.includes('offline') || desc.includes('internet') || desc.includes('err_connection') || desc.includes('nsurlerrordomain');
-    setError(isConnectionError ? 'Unable to connect. Please check your internet connection and try again.' : (e.nativeEvent?.description || 'Failed to load page'));
+    setError(isConnectionError ? 'Can\'t connect to server. Please check your internet connection and try again.' : (e.nativeEvent?.description || 'Failed to load page'));
   }, []);
   const onHttpError = useCallback((e) => { setError(e.nativeEvent?.statusCode ? `Error ${e.nativeEvent.statusCode}` : 'Request failed'); }, []);
   const onRetry = useCallback(() => { setError(null); setLoading(true); webViewRef.current?.reload(); }, []);
@@ -420,7 +417,7 @@ export function JoinWebViewScreen({ navigation }) {
     setLoading(false);
     const desc = (e.nativeEvent?.description || '').toLowerCase();
     const isConnectionError = desc.includes('connect') || desc.includes('network') || desc.includes('offline') || desc.includes('internet') || desc.includes('err_connection') || desc.includes('nsurlerrordomain');
-    setError(isConnectionError ? 'Unable to connect. Please check your internet connection and try again.' : (e.nativeEvent?.description || 'Failed to load page'));
+    setError(isConnectionError ? 'Can\'t connect to server. Please check your internet connection and try again.' : (e.nativeEvent?.description || 'Failed to load page'));
   }, []);
   const onShouldStartLoadWithRequest = useCallback((request) => {
     const url = request?.url || '';
@@ -511,7 +508,7 @@ export function ConnectionsScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity>
-      <NTWebView uri="https://nearbytraveler.org/connections" />
+      <NTWebView uri={`${BASE_URL}/connections?native=ios`} />
     </SafeAreaView>
   );
 }
@@ -520,7 +517,7 @@ export function SettingsScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity>
-      <NTWebView uri="https://nearbytraveler.org/settings" />
+      <NTWebView uri={`${BASE_URL}/settings?native=ios`} />
     </SafeAreaView>
   );
 }
