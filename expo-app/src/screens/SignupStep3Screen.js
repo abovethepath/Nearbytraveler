@@ -183,7 +183,7 @@ export default function SignupStep3Screen({ navigation, route }) {
   const sectionTitleStyle = { color: dark ? DARK.text : '#111827' };
   const errorContainerStyle = dark ? { backgroundColor: DARK.errorBg, borderColor: DARK.errorBorder } : {};
   const inputLabelStyle = { color: dark ? DARK.text : '#374151' };
-  const inputStyle = dark ? { backgroundColor: DARK.inputBg, borderColor: DARK.inputBorder } : {};
+  const inputStyle = dark ? { backgroundColor: DARK.inputBg, borderColor: DARK.inputBorder, color: DARK.text } : {};
   const dateTextColor = dark ? DARK.text : '#111827';
   const placeholderColor = dark ? DARK.textMuted : '#9CA3AF';
   const datePickerBg = dark ? DARK.inputBg : '#F9FAFB';
@@ -374,18 +374,6 @@ export default function SignupStep3Screen({ navigation, route }) {
               multiline
               numberOfLines={2}
             />
-          </View>
-
-          <View style={{ marginTop: 16, marginBottom: 8, alignItems: 'center' }}>
-            <Text style={[styles.interestsSubtitle, interestsSubtitleStyle, { textAlign: 'center' }]}>
-              By completing your profile, you agree to our{' '}
-              <Text
-                style={{ color: '#3B82F6', fontWeight: '600' }}
-                onPress={() => Linking.openURL('https://nearbytraveler.org/terms')}
-              >
-                Terms and Conditions
-              </Text>
-            </Text>
           </View>
 
           <View style={{ marginTop: 16, marginBottom: 8, alignItems: 'center' }}>

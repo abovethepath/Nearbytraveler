@@ -15,15 +15,15 @@ export default function Privacy() {
   const homeUrl = user ? "/home" : "/";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
           <div className="mb-6">
             <Link href="/">
               <Button 
                 variant="outline" 
-                className="flex items-center gap-2 hover:bg-gray-50"
+                className="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700"
                 onClick={scrollToTop}
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -31,18 +31,18 @@ export default function Privacy() {
               </Button>
             </Link>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Privacy Policy</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">Privacy Policy</h1>
           
-          <div className="prose prose-gray max-w-none space-y-6">
-            <p className="text-sm text-gray-600 mb-6">
+          <div className="prose prose-gray dark:prose-invert max-w-none space-y-6">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
               <strong>Last Updated:</strong> January 16, 2026
             </p>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Information We Collect</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">1. Information We Collect</h2>
               
-              <h3 className="text-xl font-medium text-gray-800 mb-3">Personal Information</h3>
-              <ul className="list-disc pl-6 space-y-2 text-gray-700">
+              <h3 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-3">Personal Information</h3>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300">
                 <li>Name, email address, username, and date of birth</li>
                 <li>Profile information including bio (which may contain any personal details you choose to share), interests, activities, and travel preferences</li>
                 <li>Location data (hometown, current city, travel destinations)</li>
@@ -51,8 +51,8 @@ export default function Privacy() {
                 <li>Travel plans, dates, and itineraries</li>
               </ul>
 
-              <h3 className="text-xl font-medium text-gray-800 mb-3 mt-6">Usage Information</h3>
-              <ul className="list-disc pl-6 space-y-2 text-gray-700">
+              <h3 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-3 mt-6">Usage Information</h3>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300">
                 <li>Device information and browser type</li>
                 <li>IP address and general location</li>
                 <li>Pages visited and features used</li>
@@ -62,8 +62,8 @@ export default function Privacy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">2. How We Use Your Information</h2>
-              <ul className="list-disc pl-6 space-y-2 text-gray-700">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">2. How We Use Your Information</h2>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300">
                 <li>Provide and improve our travel networking services</li>
                 <li>Connect you with compatible travelers, locals, and businesses</li>
                 <li>Send relevant recommendations and notifications</li>
@@ -75,8 +75,8 @@ export default function Privacy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">3. Information Sharing</h2>
-              <div className="space-y-4 text-gray-700">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">3. Information Sharing</h2>
+              <div className="space-y-4 text-gray-700 dark:text-gray-300">
                 <p>
                   <strong>With Other Users:</strong> Your profile information, travel plans, and public content are visible to other platform users to facilitate connections.
                 </p>
@@ -93,22 +93,22 @@ export default function Privacy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">4. Data Security</h2>
-              <p className="text-gray-700">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">4. Data Security</h2>
+              <p className="text-gray-700 dark:text-gray-300">
                 We implement industry-standard security measures to protect your personal information, including encryption, secure servers, and regular security audits. However, no internet transmission is completely secure, and we cannot guarantee absolute security.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">5. Information Sharing</h2>
-              <p className="text-gray-700 mb-4">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">5. Information Sharing</h2>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
                 Nearby Traveler facilitates connections between travelers, locals, and businesses. Here's how your information is shared:
               </p>
 
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-medium text-gray-800 mb-3">With Other Platform Users</h3>
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-3">With Other Platform Users</h3>
+                  <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                     <ul className="list-disc pl-6 space-y-2 text-blue-800 text-sm">
                       <li><strong>Profile Information:</strong> Your name, username, bio, location, and profile photo are visible to other users to facilitate connections</li>
                       <li><strong>Travel Plans:</strong> Your destinations, travel dates, and trip details are visible to help other users find compatible travel companions</li>
@@ -120,8 +120,8 @@ export default function Privacy() {
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-medium text-gray-800 mb-3">With Business Partners</h3>
-                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                  <h3 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-3">With Business Partners</h3>
+                  <div className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
                     <ul className="list-disc pl-6 space-y-2 text-orange-800 text-sm">
                       <li><strong>Interest-Based Matching:</strong> We share your stated interests with relevant businesses in your travel destinations or hometown</li>
                       <li><strong>Location-Based Services:</strong> Businesses receive information about travelers and locals interested in their services in their area</li>
@@ -131,9 +131,9 @@ export default function Privacy() {
                   </div>
                 </div>
 
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
                   <h4 className="font-semibold text-amber-900 mb-2">Information Sharing is Essential to Our Service</h4>
-                  <p className="text-amber-800 text-sm">
+                  <p className="text-amber-800 dark:text-amber-200 text-sm">
                     Information sharing between travelers, locals, and businesses is fundamental to how Nearby Traveler works. By creating an account, you agree to this information sharing which enables meaningful connections and relevant local experiences.
                   </p>
                 </div>
@@ -141,8 +141,8 @@ export default function Privacy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">6. Your Rights and Choices</h2>
-              <ul className="list-disc pl-6 space-y-2 text-gray-700">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">6. Your Rights and Choices</h2>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300">
                 <li>Access, update, or delete your personal information</li>
                 <li>Request data portability or account deletion</li>
                 <li>Disable location sharing and proximity notifications</li>
@@ -150,52 +150,52 @@ export default function Privacy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">7. Data Retention</h2>
-              <p className="text-gray-700">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">7. Data Retention</h2>
+              <p className="text-gray-700 dark:text-gray-300">
                 We retain your information as long as your account is active or as needed to provide services. After account deletion, we may retain some information for legal compliance, fraud prevention, and legitimate business purposes.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">8. International Data Transfers</h2>
-              <p className="text-gray-700">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">8. International Data Transfers</h2>
+              <p className="text-gray-700 dark:text-gray-300">
                 Your information may be transferred to and processed in countries other than your own. We ensure appropriate safeguards are in place to protect your privacy rights.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">9. Mobile Application</h2>
-              <p className="text-gray-700 mb-4">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">9. Mobile Application</h2>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
                 When using our mobile application, we may collect additional information:
               </p>
-              <ul className="list-disc pl-6 space-y-2 text-gray-700">
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300">
                 <li><strong>Device Information:</strong> Device type, operating system, and unique device identifiers</li>
                 <li><strong>Push Notifications:</strong> If enabled, we send notifications about messages, events, and connections</li>
                 <li><strong>Location Services:</strong> If permitted, we use your device location to show nearby travelers and local recommendations</li>
                 <li><strong>Camera and Photos:</strong> Only accessed when you choose to upload profile photos or content</li>
               </ul>
-              <p className="text-gray-700 mt-4">
+              <p className="text-gray-700 dark:text-gray-300 mt-4">
                 You can manage app permissions through your device settings at any time.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">10. Children's Privacy</h2>
-              <p className="text-gray-700">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">10. Children's Privacy</h2>
+              <p className="text-gray-700 dark:text-gray-300">
                 Our platform is not intended for users under 16 years of age. We do not knowingly collect personal information from children under 16.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">11. Changes to This Policy</h2>
-              <p className="text-gray-700">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">11. Changes to This Policy</h2>
+              <p className="text-gray-700 dark:text-gray-300">
                 We may update this privacy policy periodically. We will notify you of significant changes via email or platform notification.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">12. Contact Us</h2>
-              <p className="text-gray-700">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">12. Contact Us</h2>
+              <p className="text-gray-700 dark:text-gray-300">
                 If you have questions about this privacy policy or our data practices, please contact us at:
               </p>
               <div className="bg-gray-50 p-4 rounded-md mt-3">
@@ -206,8 +206,8 @@ export default function Privacy() {
             </section>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <button onClick={() => window.history.back()} className="text-blue-600 hover:text-blue-800 transition-colors">
+          <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <button onClick={() => window.history.back()} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
               ← Back
             </button>
           </div>
