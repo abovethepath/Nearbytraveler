@@ -1273,13 +1273,13 @@ function Router() {
             </main>
           </div>
 
-          {/* Bottom Navigation - show on all screen sizes for authenticated users */}
-          {!isNativeIOSApp() && (user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
-            <MobileBottomNav />
-          )}
-
           {/* REMOVED: Instant Messaging Components - obsolete functionality */}
         </>
+      )}
+
+      {/* Bottom Navigation - rendered outside conditional branches so it always shows for authenticated users */}
+      {!isSignupRoute && !isNativeIOSApp() && (user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
+        <MobileBottomNav />
       )}
     </AuthContext.Provider>
   );
