@@ -132,7 +132,6 @@ import AdminSettings from "@/pages/admin-settings";
 import SMSTest from "@/pages/sms-test";
 import Welcome from "@/pages/welcome";
 import WelcomeBusiness from "@/pages/welcome-business";
-import AccountSuccess from "@/pages/account-success";
 import FinishingSetup from "@/pages/FinishingSetup";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
@@ -235,7 +234,7 @@ function Router() {
   }
 
   const landingPageRoutes = [
-    '/', '/landing', '/landing-new', '/auth', '/auth/signup', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling', '/account-success',
+    '/', '/landing', '/landing-new', '/auth', '/auth/signup', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling',
     '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/ambassador-program', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/finishing-setup', '/quick-login', '/preview-landing', '/preview-first-landing',
     '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code', '/landing-simple'
@@ -614,6 +613,12 @@ function Router() {
       return <LandingSimple />;
     }
 
+    // /account-success removed: redirect to / (web) or /home?native=ios (iOS)
+    if (location === '/account-success') {
+      setLocation(isNativeIOSApp() ? '/home?native=ios' : '/');
+      return null;
+    }
+
     if (!isActuallyAuthenticated) {
       console.log('🏠 STREAMLINED LANDING - User not authenticated, showing streamlined landing page for:', location);
       console.log('🔐 DEBUG: window.location.pathname =', window.location.pathname);
@@ -850,10 +855,6 @@ function Router() {
       }
       
       // SIGNUP ROUTES - All handled by early return at top of function
-      if (location === '/account-success') {
-        console.log('✅ ACCOUNT SUCCESS - Showing account creation progress');
-        return <AccountSuccess />;
-      }
       if (location === '/finishing-setup') {
         console.log('✅ FINISHING SETUP - Native post-signup interstitial');
         return <FinishingSetup />;
@@ -1024,8 +1025,6 @@ function Router() {
     }
 
     switch (location) {
-      case '/account-success':
-        return <AccountSuccess />;
       case '/events':
         return <Events />;
       case '/event-history':

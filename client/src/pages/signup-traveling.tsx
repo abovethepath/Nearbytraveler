@@ -15,6 +15,7 @@ import { InterestSelector } from "@/components/InterestSelector";
 import { authStorage } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
 import { getDateInputConstraints } from "@/lib/ageUtils";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export default function SignupTraveling() {
   const [, setLocation] = useLocation();
@@ -336,7 +337,11 @@ export default function SignupTraveling() {
           
           // ALWAYS redirect - this is the critical action
           console.log('🚀 Redirecting to /account-success...');
-          window.location.href = '/account-success';
+          if (isNativeIOSApp()) {
+            window.location.href = '/home?native=ios';
+          } else {
+            window.location.href = '/account-success';
+          }
           
         } else {
           console.error('❌ Registration failed:', data.message);

@@ -362,7 +362,7 @@ export default function SignupAccount() {
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     placeholder="Create a secure password (min 8 chars)"
-                    className="text-base py-3 pr-10"
+                    className="text-base py-3 pr-10 text-gray-900 dark:text-white bg-white dark:bg-gray-800 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                     required
                   />
                   <button
@@ -387,7 +387,7 @@ export default function SignupAccount() {
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                     placeholder="Confirm your password"
-                    className={`text-base py-3 pr-20 ${
+                    className={`text-base py-3 pr-20 text-gray-900 dark:text-white bg-white dark:bg-gray-800 placeholder:text-gray-500 dark:placeholder:text-gray-400 ${
                       formData.confirmPassword && formData.password ? (
                         formData.password === formData.confirmPassword ? 'border-green-500' : 'border-red-500'
                       ) : ''
