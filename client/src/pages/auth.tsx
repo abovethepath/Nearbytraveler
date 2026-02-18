@@ -149,16 +149,14 @@ export default function Auth() {
             </button>
             
             <div className="flex justify-center mb-6">
-              <Logo variant="header" />
+              <Logo variant="auth" />
             </div>
             <CardTitle className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-              {isLogin ? 'Welcome Back' : 'Join Nearby Traveler'}
+              {isLogin ? 'Welcome Back' : 'Join'}
             </CardTitle>
-            {!isLogin && (
-              <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">
-                Connect with travelers and locals worldwide
-              </p>
-            )}
+            <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">
+              Connect with travelers and locals worldwide
+            </p>
           </CardHeader>
           <CardContent className="space-y-6">
             {isSignupPage && !isLogin ? (

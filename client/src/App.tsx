@@ -45,57 +45,50 @@ import JoinNowWidgetNew from "@/components/join-now-widget-new";
 import Logo from "@/components/logo";
 import { HelpChatbot } from "@/components/HelpChatbot";
 
-// Join page component with sign in option
+// Join page component with sign in option — matches reference: text logo, headline, tagline, choose box
 function JoinPageWithSignIn() {
   const [, setLocation] = useLocation();
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col relative">
-      {/* Vibrant header banner */}
-      <div className="bg-gradient-to-r from-orange-600 to-blue-600 py-4 px-4 text-center">
-        <p className="text-white font-bold text-base sm:text-lg">
-          🌍 Join thousands of travelers and locals connecting worldwide!
-        </p>
-      </div>
+    <div className="min-h-screen bg-indigo-950 dark:bg-indigo-950 flex flex-col relative">
+      {/* Gradient band */}
+      <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-orange-500 via-orange-400 to-purple-500" aria-hidden />
 
       {/* Back Button */}
       <button
         onClick={() => setLocation('/')}
-        className="absolute top-16 left-4 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-orange-200 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 transition-all group shadow-md z-10"
+        className="absolute top-4 left-4 z-10 p-2 rounded-full bg-white/10 dark:bg-white/10 backdrop-blur-sm border border-white/20 text-gray-200 hover:text-white hover:bg-white/20 transition-all"
         data-testid="button-back"
       >
-        <svg 
-          className="w-6 h-6 text-orange-600 dark:text-orange-400 group-hover:text-orange-700 dark:group-hover:text-orange-300 transition-colors" 
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
       </button>
 
-      <div className="flex-1 flex items-center justify-center p-4">
+      <div className="flex-1 flex items-center justify-center p-4 pt-14">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-6">
-              <Logo variant="header" />
-            </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-blue-600 bg-clip-text text-transparent mb-2">
-              Join Nearby Traveler
-            </h1>
-            <p className="text-lg text-gray-700 dark:text-gray-300">
-              Start Connecting with Nearby Locals and Nearby Travelers Today Based on Common Interests and Demographics
-            </p>
+          {/* Logo: text-based NearbyTraveler (blue + orange, no black box) */}
+          <div className="flex justify-center mb-6">
+            <Logo variant="join" />
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 border-2 border-orange-200 dark:border-orange-800">
-            <JoinNowWidgetNew />
+          {/* Headline */}
+          <h1 className="text-center text-2xl sm:text-3xl font-bold text-orange-500 dark:text-orange-400 mb-2">
+            Join Nearby Traveler
+          </h1>
+          {/* Tagline */}
+          <p className="text-center text-sm sm:text-base text-gray-300 dark:text-gray-300 mb-8 max-w-lg mx-auto">
+            Start Connecting with Nearby Locals and Nearby Travelers Today Based on Common Interests and Demographics
+          </p>
+          {/* Choose how you want to connect — bordered box */}
+          <div className="rounded-xl border-2 border-orange-500/60 dark:border-orange-500/60 bg-indigo-900/40 dark:bg-indigo-900/40 p-5 sm:p-6">
+            <JoinNowWidgetNew darkBackground />
           </div>
           <div className="text-center mt-6">
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-gray-400 dark:text-gray-400 text-sm">
               Already have an account?{" "}
-              <button 
+              <button
                 onClick={() => setLocation('/signin')}
-                className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 font-bold underline"
+                className="text-orange-400 hover:text-orange-300 font-bold underline"
               >
                 Sign In
               </button>

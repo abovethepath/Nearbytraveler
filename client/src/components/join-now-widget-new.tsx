@@ -4,7 +4,12 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Plane, Store, Check } from "lucide-react";
 
-export default function JoinNowWidgetNew() {
+interface JoinNowWidgetNewProps {
+  /** When true, use light text for use on dark join page background */
+  darkBackground?: boolean;
+}
+
+export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewProps) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [userType, setUserType] = useState("");
@@ -73,7 +78,7 @@ export default function JoinNowWidgetNew() {
 
   return (
     <div className="space-y-5">
-      <p className="text-center text-gray-600 dark:text-gray-400 font-medium text-sm">
+      <p className="text-left text-gray-600 dark:text-gray-400 font-medium text-sm [.join-page-dark_&]:text-gray-200">
         Choose how you want to connect
       </p>
       
@@ -107,10 +112,10 @@ export default function JoinNowWidgetNew() {
               </div>
               
               <div className="flex-grow">
-                <div className={`text-lg font-bold ${isSelected ? "text-white" : "text-gray-900 dark:text-white"}`}>
+                <div className={`text-lg font-bold ${isSelected ? "text-white" : darkBackground ? "text-white" : "text-gray-900 dark:text-white"}`}>
                   {title}
                 </div>
-                <div className={`text-sm ${isSelected ? "text-white/90" : "text-gray-600 dark:text-gray-400"}`}>
+                <div className={`text-sm ${isSelected ? "text-white/90" : darkBackground ? "text-gray-300" : "text-gray-600 dark:text-gray-400"}`}>
                   {subtitle}
                 </div>
               </div>
