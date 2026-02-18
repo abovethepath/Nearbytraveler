@@ -263,7 +263,7 @@ export default function SignupLocal() {
           });
           
           localStorage.setItem('just_registered', 'true');
-          setLocation('/profile');
+          setLocation('/welcome');
           
         } else {
           console.error('❌ Registration failed:', data.message);

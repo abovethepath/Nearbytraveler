@@ -4765,7 +4765,7 @@ Questions? Just reply to this message!
       const responsePayload: Record<string, unknown> = {
         message: "Registration successful",
         user: userWithoutPassword,
-        redirectTo: "/profile"
+        redirectTo: "/welcome"
       };
       if (isReactNative && (req as any).sessionID) {
         responsePayload.sessionId = (req as any).sessionID;

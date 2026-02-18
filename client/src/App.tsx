@@ -11,6 +11,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import GlobalHotfixes from "@/GlobalHotfixes";
 import { METRO_AREAS } from "@shared/constants";
 import Home from "@/pages/home";
+import Welcome from "@/pages/welcome";
+import WelcomeBusiness from "@/pages/welcome-business";
 import Discover from "@/pages/discover";
 import ProfileComplete from "@/pages/profile-complete";
 import Messages from "@/pages/messages";
@@ -646,6 +648,14 @@ function Router() {
       return <LandingSimple />;
     }
 
+    // Welcome pages - show before auth check to prevent landing page flash after signup
+    if (location === '/welcome') {
+      return <Welcome />;
+    }
+    if (location === '/welcome-business') {
+      return <WelcomeBusiness />;
+    }
+
     if (!isActuallyAuthenticated) {
       console.log('🏠 STREAMLINED LANDING - User not authenticated, showing streamlined landing page for:', location);
       console.log('🔐 DEBUG: window.location.pathname =', window.location.pathname);
@@ -692,10 +702,11 @@ function Router() {
         return <EventDetails eventId={eventId} />;
       }
 
-      // Welcome pages removed - redirect to signin
-      if (location === '/welcome' || location === '/welcome-business') {
-        setLocation('/signin');
-        return null;
+      if (location === '/welcome') {
+        return <Welcome />;
+      }
+      if (location === '/welcome-business') {
+        return <WelcomeBusiness />;
       }
 
 
@@ -906,15 +917,12 @@ function Router() {
 
     console.log('✅ USER AUTHENTICATED - routing to:', location, 'user:', effectiveUser?.username || 'unknown user');
 
-    // Welcome pages removed - redirect to home/dashboard
     if (location === '/welcome') {
-      setLocation('/');
-      return null;
+      return <Welcome />;
     }
 
     if (location === '/welcome-business') {
-      setLocation('/business-dashboard');
-      return null;
+      return <WelcomeBusiness />;
     }
 
     if (location === '/finishing-setup') {
@@ -1154,11 +1162,9 @@ function Router() {
       case '/travel-blog':
         return <TravelBlog />;
       case '/welcome':
-        setLocation('/');
-        return null;
+        return <Welcome />;
       case '/welcome-business':
-        setLocation('/business-dashboard');
-        return null;
+        return <WelcomeBusiness />;
       case '/finishing-setup':
         return <FinishingSetup />;
       case '/getting-started':
