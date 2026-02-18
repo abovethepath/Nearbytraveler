@@ -23,6 +23,8 @@ export default function AccountSuccess() {
     message: 'Starting setup...' 
   });
   const [bootstrapTriggered, setBootstrapTriggered] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionMessage, setTransitionMessage] = useState('Setting up your profile...');
   const { user, isAuthenticated, setUser } = useAuth();
 
   // Timer for seconds elapsed
@@ -107,7 +109,7 @@ export default function AccountSuccess() {
     } catch (e) {
       console.warn('Auth refetch before navigate:', e);
     }
-    const target = isNativeIOSApp() ? '/home' : '/profile';
+    const target = isNativeIOSApp() ? '/finishing-setup' : '/profile';
     console.log('CTA success, navigating now…', { hasUser: !!user, target });
     setLocation(target);
   };

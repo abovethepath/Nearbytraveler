@@ -133,6 +133,7 @@ import SMSTest from "@/pages/sms-test";
 import Welcome from "@/pages/welcome";
 import WelcomeBusiness from "@/pages/welcome-business";
 import AccountSuccess from "@/pages/account-success";
+import FinishingSetup from "@/pages/FinishingSetup";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Cookies from "@/pages/cookies";
@@ -236,7 +237,7 @@ function Router() {
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/auth/signup', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling', '/account-success',
     '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/ambassador-program', '/getting-started',
-    '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/quick-login', '/preview-landing', '/preview-first-landing',
+    '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/finishing-setup', '/quick-login', '/preview-landing', '/preview-first-landing',
     '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code', '/landing-simple'
   ];
   const isLandingPage = landingPageRoutes.includes(location);
@@ -853,6 +854,10 @@ function Router() {
         console.log('✅ ACCOUNT SUCCESS - Showing account creation progress');
         return <AccountSuccess />;
       }
+      if (location === '/finishing-setup') {
+        console.log('✅ FINISHING SETUP - Native post-signup interstitial');
+        return <FinishingSetup />;
+      }
       if (location === '/join') {
         console.log('✅ JOIN PAGE - Unauthenticated access allowed');
         return <JoinPageWithSignIn />;
@@ -885,6 +890,10 @@ function Router() {
 
     if (location === '/welcome-business') {
       return <WelcomeBusiness />;
+    }
+
+    if (location === '/finishing-setup') {
+      return <FinishingSetup />;
     }
 
     if (location.startsWith('/quick-meetups/') && location.includes('/manage')) {
@@ -1125,6 +1134,8 @@ function Router() {
         return <Welcome />;
       case '/welcome-business':
         return <WelcomeBusiness />;
+      case '/finishing-setup':
+        return <FinishingSetup />;
       case '/getting-started':
         return <GettingStarted />;
       case '/ambassador-program':
