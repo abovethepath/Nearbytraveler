@@ -6684,23 +6684,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <CardContent>
                 {sortedUserConnections.length > 0 ? (
                   <div className="space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     {sortedUserConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
                       <div
                         key={connection.id}
-                        className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 flex items-start gap-3"
+                        className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 flex flex-col items-center text-center gap-2"
                       >
                         <SimpleAvatar
                           user={connection.connectedUser}
                           size="md"
-                          className="w-12 h-12 rounded-full border-2 object-cover cursor-pointer flex-shrink-0"
+                          className="w-14 h-14 rounded-full border-2 object-cover cursor-pointer flex-shrink-0"
                           onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
                         />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate text-gray-900 dark:text-white">
+                        <div className="w-full min-w-0">
+                          <p className="font-medium text-sm text-gray-900 dark:text-white break-words">
                             {connection.connectedUser?.username}
                           </p>
-                          <p className="text-xs truncate text-gray-500 dark:text-gray-400">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 break-words">
                             {connection.connectedUser?.hometownCity && connection.connectedUser?.hometownCountry
                               ? `${connection.connectedUser?.hometownCity}, ${connection.connectedUser?.hometownCountry.replace("United States", "USA")}`
                               : "New member"}
