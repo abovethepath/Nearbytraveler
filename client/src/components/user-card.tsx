@@ -173,14 +173,21 @@ export default function UserCard({
       </div>
       
       {/* Info box - compact when compact prop, else spacious on desktop */}
-      <div className={`bg-white dark:bg-gray-800 ${compact ? 'p-1.5' : 'p-2 lg:p-4'}`}>
+      <div className={`bg-white dark:bg-gray-800 ${compact ? 'p-2' : 'p-2 lg:p-4'}`}>
         {/* Mobile / compact: simple stacked layout */}
         <div className={compact ? '' : 'lg:hidden'}>
-          <div className={`font-semibold text-gray-900 dark:text-white truncate ${compact ? 'text-xs' : 'text-sm'}`}>
+          <div className={`font-semibold text-gray-900 dark:text-white ${compact ? 'text-sm leading-tight' : 'text-sm'}`} style={compact ? { display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' } : { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
             {displayName}
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-            {displayCity}
+          {user.userType === 'business' && user.businessType && (
+            <div className="text-xs text-orange-600 dark:text-orange-400 truncate mt-0.5 font-medium">
+              {user.businessType}
+            </div>
+          )}
+          <div className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+            {user.userType === 'business' && user.streetAddress 
+              ? `📍 ${user.streetAddress}` 
+              : displayCity}
           </div>
           {!compact && (
             <div className="mt-1.5 space-y-0.5">
