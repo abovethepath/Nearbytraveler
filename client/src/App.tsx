@@ -991,6 +991,8 @@ function Router() {
     }
 
     switch (location) {
+      case '/account-success':
+        return <AccountSuccess />;
       case '/events':
         return <Events />;
       case '/event-history':
