@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { MapPin, Heart, Camera, Coffee, Utensils, Palette, Music, TreePine } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getApiBaseUrl } from '@/lib/queryClient';
+import { isNativeIOSApp } from '@/lib/nativeApp';
 // Removed useAuth import - will get user from localStorage instead
 
 // Inspired by TangoTrips.com's "Intention-Driven" onboarding approach
@@ -152,7 +153,7 @@ export default function TravelIntentQuiz() {
         setLocation('/profile');
       } else {
         console.log('🔄 No user found, redirecting to home');
-        setLocation('/');
+        setLocation(isNativeIOSApp() ? '/home' : '/');
       }
       
     } catch (error) {

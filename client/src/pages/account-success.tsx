@@ -23,7 +23,7 @@ export default function AccountSuccess() {
     message: 'Starting setup...' 
   });
   const [bootstrapTriggered, setBootstrapTriggered] = useState(false);
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, setUser } = useAuth();
 
   // Timer for seconds elapsed
   useEffect(() => {
@@ -95,13 +95,21 @@ export default function AccountSuccess() {
     }
   };
 
-  const handleContinue = () => {
-    // In iOS app never send user to landing (/); go to home
-    if (isNativeIOSApp()) {
-      window.location.href = '/home?native=ios';
-    } else {
-      window.location.href = '/';
+  const handleContinue = async () => {
+    // Refresh auth so guard sees effectiveUser before we navigate (avoids "null for a beat" bounce)
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' });
+      if (res.ok) {
+        const serverUser = await res.json();
+        setUser(serverUser);
+        localStorage.setItem('user', JSON.stringify(serverUser));
+      }
+    } catch (e) {
+      console.warn('Auth refetch before navigate:', e);
     }
+    const target = isNativeIOSApp() ? '/home' : '/profile';
+    console.log('CTA success, navigating now…', { hasUser: !!user, target });
+    setLocation(target);
   };
 
   // Check if profile is ready (user data is loaded and bootstrap has started)

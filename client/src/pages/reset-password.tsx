@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 import { Lock, CheckCircle, ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react";
 
 const resetPasswordSchema = z.object({
@@ -148,7 +149,7 @@ export default function ResetPassword() {
   }
 
   if (!token || isValidToken === false) {
-    window.location.href = '/';
+    window.location.href = isNativeIOSApp() ? '/home?native=ios' : '/';
     return null;
   }
 

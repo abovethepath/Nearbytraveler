@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
+import { isNativeIOSApp } from '@/lib/nativeApp';
 import { Users, MapPin, Calendar, Check, X, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -68,7 +69,7 @@ export default function JoinTrip() {
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               This invite link is no longer valid. Please ask for a new invite.
             </p>
-            <Button onClick={() => setLocation('/')} variant="outline">
+            <Button onClick={() => setLocation(isNativeIOSApp() ? '/home' : '/')} variant="outline">
               Go Home
             </Button>
           </CardContent>
@@ -145,7 +146,7 @@ export default function JoinTrip() {
             <Button 
               variant="outline" 
               className="w-full"
-              onClick={() => setLocation('/')}
+              onClick={() => setLocation(isNativeIOSApp() ? '/home' : '/')}
             >
               Maybe Later
             </Button>

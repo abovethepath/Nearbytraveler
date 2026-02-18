@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Calendar, Plus, Users, Globe, ArrowLeft, Home } from "lucide-react";
 import type { TravelMemory } from "@shared/schema";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export default function TravelMemoriesPage() {
   const [activeTab, setActiveTab] = useState("public");
@@ -72,7 +73,7 @@ export default function TravelMemoriesPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setLocation("/")}
+                onClick={() => setLocation(isNativeIOSApp() ? "/home" : "/")}
                 className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
               >
                 <Home className="w-4 h-4" />

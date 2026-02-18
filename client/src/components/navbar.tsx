@@ -340,13 +340,13 @@ function Navbar() {
       setUser(null);
 
       // Step 6: Hard redirect - replace prevents back button returning to auth'd page
-      window.location.replace("/");
+      window.location.replace(isNativeIOSApp() ? "/home?native=ios" : "/");
     } catch (error) {
       console.error("❌ Logout error:", error);
       localStorage.clear();
       sessionStorage.clear();
       invalidateUserCache();
-      window.location.replace("/");
+      window.location.replace(isNativeIOSApp() ? "/home?native=ios" : "/");
     }
   };
 
@@ -560,7 +560,7 @@ function Navbar() {
                   {/* Quick access items not in top nav or bottom nav */}
                   <DropdownMenuItem
                     onClick={() => {
-                      setLocation("/");
+                      setLocation(isNativeIOSApp() ? "/home" : "/");
                       setTimeout(
                         () => window.scrollTo({ top: 0, behavior: "smooth" }),
                         100,

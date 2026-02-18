@@ -106,6 +106,16 @@ export default function Home() {
 
   const { user, setUser, logout } = useContext(AuthContext);
 
+  // One-pass debug: if you see HOME MOUNT then land on Landing, Home (or a child) is redirecting
+  useEffect(() => {
+    const u = user ?? (() => { try { return JSON.parse(localStorage.getItem('user') || '{}'); } catch { return null; } })();
+    console.log('HOME MOUNT', {
+      hasUser: !!u,
+      profileComplete: (u as any)?.profileComplete ?? (u as any)?.profile_complete,
+      userId: u?.id,
+    });
+  }, []);
+
   // Function to handle section loading
   const handleSectionView = (sectionName: string) => {
     setActiveSection(sectionName);

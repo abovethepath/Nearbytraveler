@@ -18,6 +18,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { AuthContext } from "@/App";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 const MENU_ITEMS = [
   { icon: Home, label: "Home", path: "/" },
@@ -65,15 +66,16 @@ export function NativeAppProfileMenu({
         w.ReactNativeWebView.postMessage(JSON.stringify({ type: "LOGOUT" }));
       }
       // Fallback: full reload to login (works for web too)
-      window.location.href = "/";
+      window.location.href = isNativeIOSApp() ? "/home?native=ios" : "/";
     } catch (e) {
       console.error("Logout failed:", e);
-      window.location.href = "/";
+      window.location.href = isNativeIOSApp() ? "/home?native=ios" : "/";
     }
   };
 
   const navigate = (path: string) => {
-    const profilePath = path === "/profile" && currentUserId ? `/profile/${currentUserId}` : path;
+    const resolved = path === "/" && isNativeIOSApp() ? "/home" : path;
+    const profilePath = resolved === "/profile" && currentUserId ? `/profile/${currentUserId}` : resolved;
     setLocation(profilePath);
   };
 

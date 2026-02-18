@@ -17,6 +17,7 @@ import { Heart, MapPin, Search, Sparkles, Plus, Star, TrendingUp, MessageCircle,
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 const createPostSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -164,7 +165,7 @@ export default function TravelBlog() {
   const [, setLocation] = useLocation();
   
   React.useEffect(() => {
-    setLocation('/');
+    setLocation(isNativeIOSApp() ? '/home' : '/');
   }, [setLocation]);
   
   return null;

@@ -56,7 +56,7 @@ function JoinPageWithSignIn() {
 
       {/* Back Button */}
       <button
-        onClick={() => setLocation('/')}
+        onClick={() => setLocation(isNativeIOSApp() ? '/home' : '/')}
         className="absolute top-4 left-4 z-10 p-2 rounded-full bg-white/10 dark:bg-white/10 backdrop-blur-sm border border-white/20 text-gray-200 hover:text-white hover:bg-white/20 transition-all"
         data-testid="button-back"
       >
@@ -337,6 +337,14 @@ function Router() {
     window.scrollTo(0, 0);
   }, [location]);
 
+  // Native iOS: redirect / and /landing to /home in effect (not during render) to avoid Wouter render loop
+  useEffect(() => {
+    console.log('NATIVE ROOT REDIRECT EFFECT CHECK', { location });
+    if (isNativeIOSApp() && (location === '/' || location === '' || location.startsWith('/landing'))) {
+      setLocation('/home');
+    }
+  }, [location, setLocation]);
+
   const authValue = React.useMemo(() => {
     // Robust authentication check that accounts for timing issues
     const hasUserInState = !!user;
@@ -450,14 +458,19 @@ function Router() {
 
   const renderPage = (overrideUser?: User | null) => {
     const effectiveUser = overrideUser !== undefined ? overrideUser : user;
+    const routeRendered = location === '/home' && effectiveUser ? 'Home' : location === '/profile' ? 'Profile' : location;
+    console.log('ROUTE GUARD', {
+      authLoading: isLoading,
+      hasUser: !!effectiveUser,
+      path: location,
+      routeRendered,
+      serverSessionHint: 'If protected API calls fail, verify /api/auth/user returns 200 in network tab',
+    });
     console.log('🔍 ROUTING DEBUG - isAuthenticated:', authValue.isAuthenticated, 'location:', location, 'user:', effectiveUser);
     console.log('🔍 Current window.location.pathname:', window.location.pathname);
 
-    // NATIVE APP: Never show landing page - redirect to /home (update URL so refresh stays on home)
+    // NATIVE APP: Never show landing; redirect to /home is done in Router useEffect (avoids setLocation during render / loop)
     if (isNativeIOSApp() && (location === '/' || location === '' || location.startsWith('/landing'))) {
-      const search = window.location.search || '';
-      const newSearch = search.includes('native=ios') ? search : (search ? search + '&native=ios' : '?native=ios');
-      window.location.replace(window.location.origin + '/home' + newSearch);
       return null;
     }
 
@@ -506,9 +519,13 @@ function Router() {
         return <QRSignup referralCode={qrData || ''} />;
       }
       
-      // Default fallback for any other signup routes
+      // Default fallback for any other signup routes (native: no hard nav to avoid session drop)
       console.log('⚠️ Unknown signup route, redirecting to account signup');
-      window.location.href = '/signup/account';
+      if (isNativeIOSApp()) {
+        setLocation('/signup/account');
+      } else {
+        window.location.href = '/signup/account';
+      }
       return null;
     }
 
@@ -642,10 +659,14 @@ function Router() {
         return <EventDetails eventId={eventId} />;
       }
 
-      // Redirect unauthenticated users trying to access welcome pages
+      // Redirect unauthenticated users trying to access welcome pages (native: no hard nav)
       if (location === '/welcome' || location === '/welcome-business') {
         console.log('🚫 SECURITY: Unauthenticated user trying to access welcome page - redirecting to auth');
-        window.location.href = '/signin';
+        if (isNativeIOSApp()) {
+          setLocation('/signin');
+        } else {
+          window.location.href = '/signin';
+        }
         return null;
       }
 
@@ -814,6 +835,9 @@ function Router() {
 
       // CRITICAL: Root path should always show landing page for unauthenticated users
       if (location === '/' || location === '') {
+        if (isNativeIOSApp()) {
+          console.warn('LANDING RENDERED ON IOS - SHOULD NOT HAPPEN', { authLoading: isLoading, hasUser: !!user });
+        }
         console.log('🏠 STREAMLINED LANDING v20250128-2024 - Root path for unauthenticated user - showing new streamlined version');
         return <LandingStreamlined />;
       }
@@ -1175,14 +1199,14 @@ function Router() {
         // Only redirect business users if route is NOT allowed
         if (effectiveUser?.userType === 'business' && location !== '/' && !isBusinessAllowedRoute) {
           console.log('🏢 BUSINESS USER: Unknown route detected (not whitelisted), redirecting to home page');
-          setLocation('/');
+          setLocation(isNativeIOSApp() ? '/home' : '/');
           return null;
         }
         
         // MOBILE FIX: If unknown route but user is authenticated, redirect to home
         console.log('🚫 UNKNOWN ROUTE FOR AUTHENTICATED USER:', location);
         console.log('🔄 MOBILE: Redirecting unknown authenticated route to home');
-        setLocation('/');
+        setLocation(isNativeIOSApp() ? '/home' : '/');
         return null;
 
     }

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import Logo from "@/components/logo";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export default function ComingSoon() {
   const [, setLocation] = useLocation();
@@ -23,7 +24,7 @@ export default function ComingSoon() {
 
           <div className="space-y-3">
             <Button
-              onClick={() => setLocation('/')}
+              onClick={() => setLocation(isNativeIOSApp() ? '/home' : '/')}
               className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-semibold"
             >
               Back to Landing Page

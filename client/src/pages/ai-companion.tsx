@@ -14,6 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { MapPin, Star, Clock, DollarSign, Bookmark, Heart, Navigation, MessageCircle, Send, Bot, User, Sparkles, Check } from "lucide-react";
 
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 import { useToast } from "@/hooks/use-toast";
 
 interface Recommendation {
@@ -48,7 +49,7 @@ export default function AICompanion() {
   const [, setLocation] = useLocation();
   
   React.useEffect(() => {
-    setLocation('/');
+    setLocation(isNativeIOSApp() ? '/home' : '/');
   }, [setLocation]);
   
   return null;

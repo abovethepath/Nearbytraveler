@@ -1,4 +1,5 @@
 import { useLocation } from "wouter";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 interface LogoProps {
   className?: string;
@@ -9,7 +10,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
   const [, setLocation] = useLocation();
 
   const handleClick = () => {
-    setLocation("/");
+    setLocation(isNativeIOSApp() ? "/home" : "/");
     window.scrollTo(0, 0);
   };
 

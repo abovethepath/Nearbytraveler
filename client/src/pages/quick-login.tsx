@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/App";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export default function QuickLogin() {
   const [userId, setUserId] = useState("108");
@@ -29,7 +30,7 @@ export default function QuickLogin() {
       if (response.ok) {
         const userData = await response.json();
         login(userData);
-        setLocation('/');
+        setLocation(isNativeIOSApp() ? '/home' : '/');
       } else {
         console.error('Login failed:', response.statusText);
       }
