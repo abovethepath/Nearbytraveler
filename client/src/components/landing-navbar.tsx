@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { ThemeToggle } from "@/components/theme-toggle";
+import Logo from "@/components/logo";
 
 export default function LandingNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -11,8 +12,10 @@ export default function LandingNavbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 lg:h-auto gap-4" style={{display: 'flex', minHeight: '64px'}}>
           
-          {/* Logo removed from landing navbar */}
-          <div className="flex-shrink-0" />
+          <div className="flex-shrink-0 flex items-center gap-2">
+            <Logo variant="navbar" />
+            <span className="text-red-600 text-xs font-bold uppercase leading-none">Beta</span>
+          </div>
 
           {/* Navigation Links - Flexible Width with Smart Sizing */}
           <div className="hidden lg:flex items-center justify-center flex-1 max-w-2xl">
@@ -54,10 +57,20 @@ export default function LandingNavbar() {
           </div>
 
           <div className="flex items-center lg:hidden gap-2">
-            <ThemeToggle />
-            <span className="text-[11px] text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-full font-medium">
-              Beta
-            </span>
+            <button
+              onClick={() => setLocation('/signin')}
+              className="text-gray-700 dark:text-white text-sm font-medium px-3 py-1.5 hover:text-orange-600 transition-colors"
+              style={{ minHeight: '36px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => setLocation('/join')}
+              className="text-white text-sm font-semibold px-4 py-1.5 rounded-full shadow-sm"
+              style={{ background: '#f97316', minHeight: '36px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+            >
+              Sign Up
+            </button>
             <button 
               onClick={(e) => {
                 e.preventDefault();
@@ -68,7 +81,6 @@ export default function LandingNavbar() {
               className="flex items-center justify-center rounded-xl text-gray-600 hover:text-gray-800 active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
               style={{ width: '44px', height: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              data-testid="mobile-menu-button"
             >
               {!mobileMenuOpen ? (
                 <svg className="block" width="22" height="22" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

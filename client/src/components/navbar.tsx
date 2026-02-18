@@ -465,37 +465,54 @@ function Navbar() {
               <div className="flex items-center space-x-2 md:space-x-3">
                 {directUser?.id && <NotificationBell userId={directUser.id} />}
 
+                {!directUser?.id && (
+                  <>
+                    <Link href="/signin">
+                      <Button variant="ghost" size="sm" className="text-gray-700 dark:text-white font-medium hover:text-orange-600">
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link href="/launching-soon">
+                      <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full px-4">
+                        Sign Up
+                      </Button>
+                    </Link>
+                  </>
+                )}
+
                 {/* Desktop Theme Toggle */}
                 <div className="hidden md:block">
                   <AdaptiveThemeToggle />
                 </div>
 
                 {/* Mobile Menu Button - Simplified for Capacitor WebView */}
-                <button
-                  type="button"
-                  className={`md:hidden p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer relative z-[1100] ${isNativeIOSApp() ? "h-14 w-14" : "h-12 w-12"}`}
-                  onClick={() => {
-                    console.log("🍔 Hamburger clicked");
-                    setIsMobileMenuOpen((o) => !o);
-                  }}
-                  aria-controls="mobile-menu"
-                  aria-expanded={isMobileMenuOpen}
-                  aria-label={
-                    isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"
-                  }
-                  style={{
-                    WebkitTapHighlightColor: "transparent",
-                    cursor: "pointer",
-                  }}
-                >
-                  {isMobileMenuOpen ? (
-                    <X className="h-7 w-7 pointer-events-none" />
-                  ) : (
-                    <Menu className="h-7 w-7 pointer-events-none" />
-                  )}
-                </button>
+                {directUser?.id && (
+                  <button
+                    type="button"
+                    className={`md:hidden p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer relative z-[1100] ${isNativeIOSApp() ? "h-14 w-14" : "h-12 w-12"}`}
+                    onClick={() => {
+                      console.log("🍔 Hamburger clicked");
+                      setIsMobileMenuOpen((o) => !o);
+                    }}
+                    aria-controls="mobile-menu"
+                    aria-expanded={isMobileMenuOpen}
+                    aria-label={
+                      isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"
+                    }
+                    style={{
+                      WebkitTapHighlightColor: "transparent",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {isMobileMenuOpen ? (
+                      <X className="h-7 w-7 pointer-events-none" />
+                    ) : (
+                      <Menu className="h-7 w-7 pointer-events-none" />
+                    )}
+                  </button>
+                )}
               </div>
-              <DropdownMenu modal={false}>
+              {directUser?.id && <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
@@ -717,7 +734,7 @@ function Navbar() {
                     <span>Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-              </DropdownMenu>
+              </DropdownMenu>}
             </div>
           </div>
         </div>
