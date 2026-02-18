@@ -6,6 +6,7 @@ import { CheckCircle, Loader2, Users, MessageCircle, MapPin } from 'lucide-react
 import { useAuth } from '@/App';
 import Navbar from '@/components/navbar';
 import { getApiBaseUrl } from '@/lib/queryClient';
+import { isNativeIOSApp } from '@/lib/nativeApp';
 
 interface BootstrapStatus {
   status: 'pending' | 'completed' | 'error';
@@ -95,7 +96,12 @@ export default function AccountSuccess() {
   };
 
   const handleContinue = () => {
-    window.location.href = '/';
+    // In iOS app never send user to landing (/); go to home
+    if (isNativeIOSApp()) {
+      window.location.href = '/home?native=ios';
+    } else {
+      window.location.href = '/';
+    }
   };
 
   // Check if profile is ready (user data is loaded and bootstrap has started)
