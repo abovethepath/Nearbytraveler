@@ -4276,24 +4276,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Main Content Container - with overflow-x-hidden for rest of page */}
       <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden">
 
-      {/* Subtle profile completion nudge - only on own profile */}
-      {isOwnProfile && isProfileIncomplete() && (
-        <div className="mx-4 sm:mx-6 lg:mx-8 mt-4">
-          <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg px-4 py-3 flex items-center justify-between gap-3">
-            <p className="text-sm text-orange-800 dark:text-orange-200">
-              Finish your profile to get better matches — add your bio, gender, and preferences.
-            </p>
-            <Button
-              size="sm"
-              variant="outline"
-              className="border-orange-300 text-orange-700 hover:bg-orange-100 dark:border-orange-700 dark:text-orange-300 dark:hover:bg-orange-900/30 flex-shrink-0"
-              onClick={() => setIsEditMode(true)}
-            >
-              Edit Profile
-            </Button>
-          </div>
-        </div>
-      )}
 
       {/* Navigation Tabs - Card Style with Border */}
       <div className="w-auto bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg mt-4">
@@ -4513,19 +4495,27 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </CardTitle>
 
                   {isOwnProfile && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setIsEditMode(true);
-                      }}
-                      className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-transparent dark:border-gray-400 ${isProfileIncomplete() ? 'bg-red-500 hover:bg-red-600 text-white dark:ring-2 dark:ring-red-400' : 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white dark:ring-2 dark:ring-gray-400'}`}
-                      style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer', touchAction: 'manipulation' }}
-                      data-testid="button-edit-profile"
-                    >
-                      <span className="text-white font-medium">Edit</span>
-                    </button>
+                    <div className="relative flex items-center gap-2">
+                      {isProfileIncomplete() && (
+                        <span className="text-orange-500 dark:text-orange-400 text-sm font-semibold whitespace-nowrap animate-pulse flex items-center gap-1">
+                          Fill out bio
+                          <span className="inline-block">&#8594;</span>
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setIsEditMode(true);
+                        }}
+                        className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-transparent dark:border-gray-400 ${isProfileIncomplete() ? 'bg-red-500 hover:bg-red-600 text-white dark:ring-2 dark:ring-red-400 animate-pulse' : 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white dark:ring-2 dark:ring-gray-400'}`}
+                        style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer', touchAction: 'manipulation' }}
+                        data-testid="button-edit-profile"
+                      >
+                        <span className="text-white font-medium">Edit</span>
+                      </button>
+                    </div>
                   )}
                 </div>
               </CardHeader>
