@@ -442,11 +442,12 @@ export function JoinWebViewScreen({ navigation }) {
     const url = navState?.url || '';
     if (!url.includes(BASE_URL)) return;
 
-    // Mark signup complete on ANY successful navigation away from /join
-    if (!url.includes('/join')) {
+    const pathname = (url.replace(BASE_URL, '').split('?')[0] || '/').replace(/\/$/, '') || '/';
+
+    // Check if user completed signup (any of these routes = signup done)
+    if (['/welcome', '/welcome-business', '/home', '/account-success', '/finishing-setup', '/profile', '/business-dashboard'].some(p => pathname === p)) {
       signupCompletedRef.current = true;
       checkAuth?.();
-      // Navigate to Home screen immediately
       navigation.navigate('Home');
     }
   }, [checkAuth, navigation]);
