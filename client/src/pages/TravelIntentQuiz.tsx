@@ -399,7 +399,7 @@ export default function TravelIntentQuiz() {
                   disabled={!canProceed() || isSubmitting}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
-                  {isSubmitting ? 'Saving...' : (currentStep === 4 ? 'Complete Quiz' : 'Next Step')}
+                  {isSubmitting ? 'Saving...' : (currentStep === 4 ? 'Submit' : 'Next Step')}
                 </Button>
               </div>
             </CardContent>
