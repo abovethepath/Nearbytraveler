@@ -94,7 +94,7 @@ export default function LandingNavbar() {
       </div>
       
       {mobileMenuOpen && (
-        <div className="lg:hidden shadow-lg max-h-screen overflow-y-auto" style={{ background: 'rgba(255,255,255,0.98)', WebkitOverflowScrolling: 'touch' }}>
+        <div className="lg:hidden shadow-lg max-h-screen overflow-y-auto bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700" style={{ WebkitOverflowScrolling: 'touch' }}>
           <div className="pt-2 pb-2 space-y-0.5 px-3">
             {[
               { href: "/", label: "Home", icon: "🏠" },
@@ -107,7 +107,7 @@ export default function LandingNavbar() {
               <Link 
                 key={item.href}
                 href={item.href} 
-                className="flex items-center gap-3 px-4 py-3 text-[15px] text-gray-900 dark:text-gray-900 rounded-xl active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
+                className="flex items-center gap-3 px-4 py-3 text-[15px] text-gray-900 dark:text-white rounded-xl active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
                 style={{ minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -116,13 +116,13 @@ export default function LandingNavbar() {
               </Link>
             ))}
           </div>
-          <div className="pt-2 pb-4 border-t border-gray-200/60 dark:border-gray-700/60 px-3 space-y-2">
+          <div className="pt-2 pb-4 border-t border-gray-200 dark:border-gray-700 px-3 space-y-2">
             <button 
               onClick={() => {
                 setMobileMenuOpen(false);
                 setLocation('/signin');
               }}
-              className="w-full text-center px-4 py-3 rounded-xl text-[15px] font-medium text-gray-900 border border-gray-300 transition-all active:scale-[0.98]"
+              className="w-full text-center px-4 py-3 rounded-xl text-[15px] font-medium text-gray-900 dark:text-white border-2 border-gray-400 dark:border-gray-500 transition-all active:scale-[0.98]"
               style={{ minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
             >
               Sign In
