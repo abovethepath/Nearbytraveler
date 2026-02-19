@@ -1336,7 +1336,6 @@ function Router() {
       {isSignupRoute ? (
         <>
           {console.log('🔥 SIGNUP ROUTE RENDERING - bypassing auth logic:', location)}
-          {!isNativeIOSApp() && <LandingNavbar />}
           <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
             {location === '/signup/account' && <SignupAccount />}
             {location === '/signup/local' && <SignupLocal />}
