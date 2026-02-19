@@ -292,9 +292,9 @@ function Router() {
       }
     }
 
-    // Skip auth check for signup routes
-    if (isSignupRoute) {
-      console.log('🔥 SIGNUP ROUTE - skipping auth check:', location);
+    // Skip auth check for signup routes and public pages (but not root '/' which needs auth check for redirect)
+    if (isSignupRoute || (isLandingPage && location !== '/')) {
+      console.log('🔥 PUBLIC PAGE - skipping auth check:', location);
       setIsLoading(false);
       return;
     }
