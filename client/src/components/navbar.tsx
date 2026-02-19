@@ -37,6 +37,7 @@ import {
 import Logo from "@/components/logo";
 import ConnectModal from "@/components/connect-modal";
 import NotificationBell from "@/components/notification-bell";
+import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import { useTheme } from "@/components/theme-provider";
 import { AdaptiveThemeToggle } from "@/components/adaptive-theme-toggle";
 import { authStorage } from "@/lib/auth";
@@ -91,6 +92,7 @@ function Navbar() {
   const { user, setUser } = useContext(AuthContext);
   const [showConnectModal, setShowConnectModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showSearchWidget, setShowSearchWidget] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { toggleTheme } = useTheme();
@@ -163,6 +165,13 @@ function Navbar() {
 
   // close on route change
   useEffect(() => setIsMobileMenuOpen(false), [location]);
+
+  // Listen for openSearchWidget from MobileTopNav or other components
+  useEffect(() => {
+    const handler = () => setShowSearchWidget(true);
+    window.addEventListener("openSearchWidget", handler);
+    return () => window.removeEventListener("openSearchWidget", handler);
+  }, []);
 
   // Listen for profile updates to refresh user data
   useEffect(() => {
@@ -360,6 +369,7 @@ function Navbar() {
     if (directUser?.userType === "business") {
       return [
         { path: "/business-dashboard", label: "Dashboard", icon: "📊" },
+        { path: null, label: "Search", icon: "🔍", action: "search" as const },
         { path: "/deals", label: "Deals", icon: "🏷️" },
         { path: "/connect", label: "Connect", icon: "💝" },
       ];
@@ -367,6 +377,7 @@ function Navbar() {
 
     return [
       { path: "/explore", label: "Explore", icon: "⚡" },
+      { path: null, label: "Search", icon: "🔍", action: "search" as const },
       { path: "/discover", label: "Cities", icon: "🌍" },
       { path: "/events", label: "Events", icon: "📅" },
       { path: "/match-in-city", label: "City Plans", icon: "🎯" },
@@ -428,21 +439,36 @@ function Navbar() {
             </div>
             <div className="flex items-center space-x-3 md:space-x-6 ml-auto">
               {/* Desktop Navigation */}
-              <nav className="hidden md:flex space-x-2 lg:space-x-4">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    href={item.path}
-                    className={`transition-colors font-medium hover:underline ${
-                      location === item.path
-                        ? "text-gray-900 dark:text-white font-semibold"
-                        : "text-gray-700 dark:text-white hover:text-travel-blue"
-                    }`}
-                    onClick={() => console.log(`Navigating to ${item.path}`)}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+              <nav className="hidden md:flex space-x-2 lg:space-x-4 items-center">
+                {navItems.map((item) =>
+                  (item as { action?: string }).action === "search" ? (
+                    directUser?.id && (
+                      <button
+                        key="search"
+                        type="button"
+                        onClick={() => setShowSearchWidget(true)}
+                        className="flex items-center gap-1.5 font-medium text-gray-700 dark:text-white hover:text-travel-blue transition-colors"
+                        aria-label="Search"
+                      >
+                        <Search className="h-4 w-4" />
+                        <span>{item.label}</span>
+                      </button>
+                    )
+                  ) : (
+                    <Link
+                      key={item.path}
+                      href={item.path!}
+                      className={`transition-colors font-medium hover:underline ${
+                        location === item.path
+                          ? "text-gray-900 dark:text-white font-semibold"
+                          : "text-gray-700 dark:text-white hover:text-travel-blue"
+                      }`}
+                      onClick={() => console.log(`Navigating to ${item.path}`)}
+                    >
+                      {item.label}
+                    </Link>
+                  )
+                )}
               </nav>
 
               <div className="flex items-center space-x-2 md:space-x-3">
@@ -524,6 +550,10 @@ function Navbar() {
                     <span>My Profile</span>
                   </DropdownMenuItem>
 
+                  <DropdownMenuItem onClick={() => setShowSearchWidget(true)}>
+                    <Search className="mr-2 h-4 w-4" />
+                    <span>Search</span>
+                  </DropdownMenuItem>
 
                   {/* Quick access items not in top nav or bottom nav */}
                   <DropdownMenuItem
@@ -855,6 +885,12 @@ function Navbar() {
         isOpen={showConnectModal}
         onClose={() => setShowConnectModal(false)}
         userTravelPlans={(userTravelPlans as any[]) || []}
+      />
+
+      {/* Advanced Search - sitewide access from navbar */}
+      <AdvancedSearchWidget
+        open={showSearchWidget}
+        onOpenChange={setShowSearchWidget}
       />
     </>
   );

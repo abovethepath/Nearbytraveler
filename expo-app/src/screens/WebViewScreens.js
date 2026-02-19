@@ -128,12 +128,13 @@ function WebViewWithChrome({ path, navigation }) {
   useFocusEffect(useCallback(() => { loadUser(); }, [loadUser]));
 
   const onAvatarPress = useCallback(() => {
-    const profilePath = user?.id ? `/profile/${user.id}` : '/profile';
+    const u = authUser || user;
+    const profilePath = u?.username ? `/profile/${u.username}` : '/profile';
     const fullPath = pathWithNativeIOS(profilePath);
     webViewRef.current?.injectJavaScript(
       `window.location.href='${BASE_URL}${fullPath}';true;`
     );
-  }, [user?.id]);
+  }, [authUser?.username, user?.username]);
 
   useFocusEffect(
     useCallback(() => {
@@ -275,8 +276,9 @@ function WebViewWithChrome({ path, navigation }) {
   const containerBg = dark ? DARK.bg : '#FFFFFF';
   const headerBg = dark ? DARK.bg : '#FFFFFF';
   const headerBorder = dark ? DARK.border : '#F3F4F6';
-  const profileImg = user?.profileImage || user?.profilePhoto;
-  const initials = (user?.name || user?.fullName || user?.displayName || user?.username || 'U').charAt(0).toUpperCase();
+  const displayUser = authUser || user;
+  const profileImg = displayUser?.profileImage || displayUser?.profilePhoto || user?.profileImage || user?.profilePhoto;
+  const initials = (displayUser?.name || displayUser?.fullName || displayUser?.displayName || displayUser?.username || 'U').charAt(0).toUpperCase();
 
   if (error) {
     return (
@@ -296,6 +298,8 @@ function WebViewWithChrome({ path, navigation }) {
     );
   }
 
+  const loadingBg = dark ? DARK.bg : '#FFFFFF';
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: containerBg }]}>
       <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: headerBorder }]}>
@@ -313,6 +317,21 @@ function WebViewWithChrome({ path, navigation }) {
           <Text style={{ fontSize: 16, fontWeight: '700', color: dark ? DARK.text : '#111827' }}>NearbyTraveler</Text>
         </View>
         <View style={styles.headerRight}>
+          {(authUser || user) && (
+            <TouchableOpacity
+              style={styles.searchButton}
+              onPress={() => {
+                try {
+                  webViewRef.current?.injectJavaScript(
+                    "window.dispatchEvent(new CustomEvent('openSearchWidget'));true;"
+                  );
+                } catch (e) {}
+              }}
+              accessibilityLabel="Search"
+            >
+              <Text style={[styles.searchButtonText, dark && { color: DARK.text }]}>🔍</Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity style={styles.avatarButton} onPress={onAvatarPress}>
             {profileImg ? (
               <Image source={{ uri: profileImg }} style={styles.avatarImage} />
@@ -324,11 +343,6 @@ function WebViewWithChrome({ path, navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-      {loading && (
-        <View style={[styles.loadingOverlay, dark && { backgroundColor: 'rgba(28,28,30,0.9)' }]}>
-          <ActivityIndicator size="large" color="#F97316" />
-        </View>
-      )}
       <WebView
         ref={webViewRef}
         source={source}
@@ -367,12 +381,16 @@ function WebViewWithChrome({ path, navigation }) {
         allowsBackForwardNavigationGestures={false}
         javaScriptEnabled={true}
         domStorageEnabled={true}
-        startInLoadingState={path === '/profile'}
+        startInLoadingState={true}
         pullToRefreshEnabled={true}
         sharedCookiesEnabled={true}
         thirdPartyCookiesEnabled={true}
-        fadeDuration={path === '/profile' ? 0 : undefined}
-        renderLoading={path === '/profile' ? () => <View style={{ flex: 1, backgroundColor: dark ? '#1c1c1e' : '#FFFFFF' }} /> : undefined}
+        fadeDuration={0}
+        renderLoading={() => (
+          <View style={{ flex: 1, backgroundColor: loadingBg, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" color="#F97316" />
+          </View>
+        )}
       />
     </SafeAreaView>
   );
@@ -740,6 +758,8 @@ const styles = StyleSheet.create({
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   signOutButton: { paddingVertical: 6, paddingHorizontal: 12, borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 8 },
   signOutText: { fontSize: 14, fontWeight: '600', color: '#6B7280' },
+  searchButton: { width: 44, height: 44, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
+  searchButtonText: { fontSize: 22, color: '#111827' },
   avatarButton: { width: 44, height: 44, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   avatarImage: { width: 40, height: 40, borderRadius: 20 },
   avatarFallback: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' },

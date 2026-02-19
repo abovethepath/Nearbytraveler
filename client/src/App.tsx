@@ -178,6 +178,7 @@ import { isNativeIOSApp } from "@/lib/nativeApp";
 // Removed conflicting MobileNav - using MobileTopNav and MobileBottomNav instead
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { MobileTopNav } from "@/components/MobileTopNav";
+import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import Footer from "@/components/footer";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 // REMOVED: IM components (IMAlert, OnlineBuddyList, FloatingChatManager, IMNotificationManager) - obsolete functionality
@@ -208,6 +209,17 @@ export const useAuth = () => {
   }
   return context;
 };
+
+/** Advanced Search widget for native iOS - web nav is hidden, so we render it here and open via openSearchWidget event from native header */
+function NativeIOSSearchWidget() {
+  const [open, setOpen] = React.useState(false);
+  React.useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("openSearchWidget", handler);
+    return () => window.removeEventListener("openSearchWidget", handler);
+  }, []);
+  return <AdvancedSearchWidget open={open} onOpenChange={setOpen} />;
+}
 
 function Router() {
   // BULLETPROOF POST-SIGNUP FIX: If just_registered flag exists, load user from localStorage
@@ -1418,6 +1430,11 @@ function Router() {
       {/* Bottom Navigation - rendered outside conditional branches so it always shows for authenticated users */}
       {!isSignupRoute && !isNativeIOSApp() && (user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
         <MobileBottomNav />
+      )}
+
+      {/* Advanced Search for native iOS - web nav is hidden, so we render the widget here and open it via postMessage from native header */}
+      {isNativeIOSApp() && !isSignupRoute && (user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
+        <NativeIOSSearchWidget />
       )}
     </AuthContext.Provider>
   );

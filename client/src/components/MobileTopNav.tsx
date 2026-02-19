@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Menu, X, Home, MapPin, Calendar, Users, MessageCircle, User, LogOut, Compass, Zap, Building2, Star, ChevronRight, Settings } from "lucide-react";
+import { Menu, X, Home, MapPin, Calendar, Users, MessageCircle, User, LogOut, Compass, Zap, Building2, Star, ChevronRight, Settings, Search } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AuthContext } from "@/App";
 import { useLocation } from "wouter";
@@ -133,6 +133,7 @@ export function MobileTopNav() {
       title: "Main",
       items: [
         { icon: Home, label: "Dashboard", path: "/" },
+        { icon: Search, label: "Search", action: "search" },
         { icon: Building2, label: "Manage Deals", path: "/business-dashboard" },
       ]
     },
@@ -157,6 +158,7 @@ export function MobileTopNav() {
       title: "Discover",
       items: [
         { icon: Home, label: "Home", path: "/" },
+        { icon: Search, label: "Search", action: "search" },
         { icon: MapPin, label: "Cities", path: "/discover" },
         { icon: Calendar, label: "Events", path: "/events" },
         { icon: Zap, label: "Event Integrations", path: "/integrations" },
@@ -325,7 +327,14 @@ export function MobileTopNav() {
                           minHeight: '44px',
                           borderBottom: idx < group.items.length - 1 ? '0.5px solid rgba(0,0,0,0.08)' : 'none',
                         }}
-                        onClick={() => navigate(item.path)}
+                        onClick={() => {
+                          if ((item as { action?: string }).action === "search") {
+                            setIsOpen(false);
+                            window.dispatchEvent(new CustomEvent("openSearchWidget"));
+                          } else {
+                            navigate(item.path);
+                          }
+                        }}
                       >
                         <div className="w-7 h-7 rounded-md bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
                           <item.icon className="w-4 h-4 text-orange-600 dark:text-orange-400 pointer-events-none" />

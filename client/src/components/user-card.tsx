@@ -58,7 +58,7 @@ export default function UserCard({
   
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    window.history.pushState({}, '', `/profile/${user.id}`);
+    window.history.pushState({}, '', `/profile/${user.username}`);
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
@@ -114,7 +114,7 @@ export default function UserCard({
   };
 
   const matchPercent = getMatchPercent();
-  const thingsInCommon = compatibilityData?.sharedInterests?.length || 0;
+  const thingsInCommon = compatibilityData?.matchCount ?? compatibilityData?.sharedInterests?.length ?? 0;
   const mutualFriends = connectionDegree?.mutualCount || 0;
 
   return (

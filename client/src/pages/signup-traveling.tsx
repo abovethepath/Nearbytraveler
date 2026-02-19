@@ -337,10 +337,10 @@ export default function SignupTraveling() {
           if ((window as any).ReactNativeWebView && data.user) {
             (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: 'SIGNUP_COMPLETE', user: data.user }));
           }
-          const userId = data.user?.id;
+          const username = data.user?.username;
           // Keep user on signup page while profile builds — calm transition
           await new Promise((r) => setTimeout(r, 1800));
-          setLocation(userId ? `/profile/${userId}` : '/home');
+          setLocation(username ? `/profile/${username}` : '/home');
           
         } else {
           console.error('❌ Registration failed:', data.message);

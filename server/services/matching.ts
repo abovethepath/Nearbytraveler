@@ -3,7 +3,8 @@ import type { User, TravelPlan } from "@shared/schema";
 
 export interface MatchScore {
   userId: number;
-  score: number;
+  score: number; // 0-1 for compatibility level
+  matchCount: number; // Raw count: "5 things", "22 things", etc.
   reasons: string[];
   compatibilityLevel: 'high' | 'medium' | 'low';
   sharedInterests: string[];
@@ -75,15 +76,15 @@ export class TravelMatchingService {
         preferences
       );
       
-      if (score.score > 0.15) { // Lower threshold to 15% compatibility for more matches
+      if (score.matchCount >= 1) { // At least 1 thing in common
         matches.push(score);
       }
     }
     
     console.log(`⏱️ MATCHING: Completed scoring ${potentialMatches.length} users in ${Date.now() - startTime}ms, found ${matches.length} matches`);
 
-    // Sort by score descending
-    return matches.sort((a, b) => b.score - a.score);
+    // Sort by match count descending (22 things > 6 things > 5 things)
+    return matches.sort((a, b) => b.matchCount - a.matchCount);
   }
 
   /**
@@ -115,37 +116,24 @@ export class TravelMatchingService {
     preferences?: MatchingPreferences
   ): Promise<MatchScore> {
     const reasons: string[] = [];
-    let totalScore = 0;
-    const maxScore = 100; // Simplified to 100 for intuitive percentages
+    let matchCount = 0; // Count of things in common - no point system
 
-    // Calculate shared items for intuitive matching
+    // Calculate shared items - each shared item = 1 thing
     const sharedInterests = this.getSharedInterests(user1, user2);
     const sharedActivities = this.getSharedActivities(user1, user2);
     const sharedEvents = await this.getSharedEvents(user1, user2);
     const sharedCityActivities = await this.getSharedCityActivities(user1, user2);
     
-    // Prioritize city-specific activities over general interests
-    const totalSharedItems = sharedInterests.length + sharedActivities.length + sharedEvents.length + sharedCityActivities.length;
-
-    // Compatibility calculation complete
-
-    // Core compatibility scoring - much simpler and more intuitive
-    // Base score from shared interests, activities, events (70 points max)
-    const baseScore = Math.min(totalSharedItems * 3, 70); // Each shared thing = 3 points
-    totalScore += baseScore;
+    matchCount += sharedInterests.length + sharedActivities.length + sharedEvents.length + sharedCityActivities.length;
     
-    if (totalSharedItems > 0) {
-      reasons.push(`${totalSharedItems} things in common`);
+    if (sharedInterests.length > 0 || sharedActivities.length > 0 || sharedEvents.length > 0 || sharedCityActivities.length > 0) {
+      reasons.push(`${matchCount} things in common`);
       
-      // PRIORITIZE city-specific activities (Things I Want To Do) - show these FIRST with city names
       if (sharedCityActivities.length > 0) {
-        // Group by city for better display
         const cityCounts: { [city: string]: number } = {};
         sharedCityActivities.forEach(item => {
           cityCounts[item.city] = (cityCounts[item.city] || 0) + 1;
         });
-        
-        // Show city-specific matches prominently
         Object.entries(cityCounts).forEach(([city, count]) => {
           reasons.push(`${count} shared interests in ${city}`);
         });
@@ -162,35 +150,177 @@ export class TravelMatchingService {
       }
     }
 
-    // Location bonus (15 points max)
+    // Location overlap - 1 thing
     const locationScore = this.calculateLocationCompatibility(
       user1Plans, 
       user2Plans, 
       preferences?.destination
     );
-    totalScore += Math.min(locationScore.score * 0.5, 15); // Reduced weight
-    reasons.push(...locationScore.reasons);
+    if (locationScore.hasOverlap) {
+      matchCount += 1;
+      reasons.push(...locationScore.reasons);
+    }
 
-    // User type compatibility bonus (10 points max)
+    // User type compatible - 1 thing
     const userTypeScore = this.calculateUserTypeCompatibility(user1, user2);
-    totalScore += Math.min(userTypeScore.score, 10);
-    reasons.push(...userTypeScore.reasons);
+    if (userTypeScore.isCompatible) {
+      matchCount += 1;
+      reasons.push(...userTypeScore.reasons);
+    }
 
-    // Small bonuses for other compatibility factors (5 points max combined)
-    const languageScore = this.calculateLanguageCompatibility(user1, user2);
-    totalScore += Math.min(languageScore.score * 0.5, 5);
-    reasons.push(...languageScore.reasons);
+    // Shared languages (excluding English) - each = 1 thing
+    const sharedLanguages = this.getSharedLanguages(user1, user2);
+    matchCount += sharedLanguages.length;
+    if (sharedLanguages.length > 0) {
+      reasons.push(`${sharedLanguages.length} shared language${sharedLanguages.length > 1 ? 's' : ''}: ${sharedLanguages.slice(0, 3).join(', ')}`);
+    }
 
-    // Hostel matching bonus (15 points max) - only if trip dates overlap
+    // Same hostel - 1 thing
     const hostelScore = this.calculateHostelCompatibility(user1Plans, user2Plans);
-    totalScore += Math.min(hostelScore.score, 15);
-    reasons.push(...hostelScore.reasons);
+    if (hostelScore.reasons.length > 0) {
+      matchCount += 1;
+      reasons.push(...hostelScore.reasons);
+    }
 
-    const normalizedScore = Math.min(totalScore / maxScore, 1);
+    // Travel intent matches - each factor (why, how, budget, group, travelWhat) = 1 thing
+    const travelIntentScore = this.calculateTravelIntentCompatibility(user1, user2);
+    matchCount += travelIntentScore.reasons.length;
+    if (travelIntentScore.reasons.length > 0) reasons.push(...travelIntentScore.reasons);
+
+    // Sexual preference - each shared = 1 thing
+    const sharedSexualPrefs = this.getSharedSexualPreferences(user1, user2);
+    matchCount += sharedSexualPrefs.length;
+    if (sharedSexualPrefs.length > 0) {
+      reasons.push(`${sharedSexualPrefs.length} shared sexual preference${sharedSexualPrefs.length > 1 ? 's' : ''}: ${sharedSexualPrefs.slice(0, 3).join(', ')}`);
+    }
+
+    // Countries visited - each = 1 thing
+    const sharedCountries = this.getSharedCountries(user1, user2);
+    matchCount += sharedCountries.length;
+    if (sharedCountries.length > 0) {
+      reasons.push(`${sharedCountries.length} countries in common: ${sharedCountries.slice(0, 3).join(', ')}`);
+    }
+
+    // Travel style - each = 1 thing
+    const sharedTravelStyle = this.getSharedTravelStyle(user1, user2);
+    matchCount += sharedTravelStyle.length;
+    if (sharedTravelStyle.length > 0) {
+      reasons.push(`${sharedTravelStyle.length} shared travel style: ${sharedTravelStyle.slice(0, 2).join(', ')}`);
+    }
+
+    // Tags - each = 1 thing
+    const sharedTags = this.getSharedTags(user1, user2);
+    matchCount += sharedTags.length;
+    if (sharedTags.length > 0) reasons.push(`${sharedTags.length} shared tags`);
+
+    // Local expertise - each = 1 thing
+    const sharedExpertise = this.getSharedLocalExpertise(user1, user2);
+    matchCount += sharedExpertise.length;
+    if (sharedExpertise.length > 0) reasons.push(`${sharedExpertise.length} shared local expertise`);
+
+    // Both veterans or both active duty - 1 thing
+    const veteranScore = this.calculateVeteranStatusCompatibility(user1, user2);
+    if (veteranScore.bothVeterans || veteranScore.bothActiveDuty) {
+      matchCount += 1;
+      reasons.push(...veteranScore.reasons);
+    }
+
+    // Age compatibility - 1 thing
+    const ageScore = this.calculateAgeCompatibility(user1, user2);
+    if (ageScore.sameAge || ageScore.reasons.length > 0) {
+      matchCount += 1;
+      reasons.push(...ageScore.reasons);
+    }
+
+    // Both traveling with children - 1 thing
+    if (user1.travelingWithChildren && user2.travelingWithChildren) {
+      matchCount += 1;
+      reasons.push('Both traveling with kids');
+    }
+
+    // Profile location overlap - 1 thing
+    const profileLocationScore = this.calculateProfileLocationOverlap(user1, user2);
+    if (profileLocationScore.reasons.length > 0) {
+      matchCount += 1;
+      reasons.push(...profileLocationScore.reasons);
+    }
+
+    // Custom activities - each = 1 thing
+    const sharedCustomActivities = this.getSharedCustomActivities(user1, user2);
+    matchCount += sharedCustomActivities.length;
+    if (sharedCustomActivities.length > 0) reasons.push(`${sharedCustomActivities.length} shared custom activities`);
+
+    // Custom events - each = 1 thing
+    const sharedCustomEvents = this.getSharedCustomEvents(user1, user2);
+    matchCount += sharedCustomEvents.length;
+    if (sharedCustomEvents.length > 0) reasons.push(`${sharedCustomEvents.length} shared custom events`);
+
+    // Default travel interests - each = 1 thing
+    const sharedDefaultInterests = this.getSharedDefaultTravelInterests(user1, user2);
+    matchCount += sharedDefaultInterests.length;
+    if (sharedDefaultInterests.length > 0) reasons.push(`${sharedDefaultInterests.length} shared travel interests`);
+
+    // Travel plan overlap - 1 thing
+    const travelPlanScore = this.calculateTravelPlanOverlap(user1Plans, user2Plans);
+    if (travelPlanScore.reasons.length > 0) {
+      matchCount += 1;
+      reasons.push(...travelPlanScore.reasons);
+    }
+
+    // Same gender - 1 thing
+    if (this.haveSameGender(user1, user2)) {
+      matchCount += 1;
+      reasons.push('Same gender');
+    }
+
+    // Secret activities - each = 1 thing
+    const sharedSecretActivities = this.getSharedSecretActivities(user1, user2);
+    matchCount += sharedSecretActivities.length;
+    if (sharedSecretActivities.length > 0) reasons.push(`${sharedSecretActivities.length} shared secret activities`);
+
+    // Both new to town - 1 thing
+    const newToTownScore = this.calculateNewToTownCompatibility(user1, user2);
+    if (newToTownScore.reasons.length > 0) {
+      matchCount += 1;
+      reasons.push(...newToTownScore.reasons);
+    }
+
+    // Children ages overlap - 1 thing
+    const childrenAgesScore = this.calculateChildrenAgesCompatibility(user1, user2);
+    if (childrenAgesScore.reasons.length > 0) {
+      matchCount += 1;
+      reasons.push(...childrenAgesScore.reasons);
+    }
+
+    // Business compatibility - 1 thing
+    const businessScore = this.calculateBusinessCompatibility(user1, user2);
+    if (businessScore.reasons.length > 0) {
+      matchCount += 1;
+      reasons.push(...businessScore.reasons);
+    }
+
+    // Bio overlap - 1 thing
+    const bioScore = this.calculateBioCompatibility(user1, user2);
+    if (bioScore.reasons.length > 0) {
+      matchCount += 1;
+      reasons.push(...bioScore.reasons);
+    }
+
+    // Add or update the "things in common" summary with final count
+    const thingsIdx = reasons.findIndex(r => r.includes('things in common'));
+    if (thingsIdx >= 0) {
+      reasons[thingsIdx] = `${matchCount} things in common`;
+    } else if (matchCount > 0) {
+      reasons.unshift(`${matchCount} things in common`);
+    }
+
+    // Score as 0-1 for compatibility level (matchCount / 30 = 100% at 30+ things)
+    const normalizedScore = Math.min(matchCount / 30, 1);
     
     return {
       userId: user2.id,
       score: normalizedScore,
+      matchCount,
       reasons: reasons.filter(r => r.length > 0),
       compatibilityLevel: this.getCompatibilityLevel(normalizedScore),
       sharedInterests: sharedInterests,
@@ -201,11 +331,11 @@ export class TravelMatchingService {
       locationOverlap: locationScore.hasOverlap,
       dateOverlap: false, // Simplified for now
       userTypeCompatibility: userTypeScore.isCompatible,
-      travelIntentCompatibility: true, // Simplified for now  
-      bothVeterans: false, // Simplified for now
-      bothActiveDuty: false, // Simplified for now
-      sameFamilyStatus: false, // Simplified for now
-      sameAge: false, // Simplified for now
+      travelIntentCompatibility: travelIntentScore.isCompatible,
+      bothVeterans: veteranScore.bothVeterans,
+      bothActiveDuty: veteranScore.bothActiveDuty,
+      sameFamilyStatus: !!(user1.travelingWithChildren && user2.travelingWithChildren),
+      sameAge: ageScore.sameAge,
       sameGender: this.haveSameGender(user1, user2),
       sharedLanguages: this.getSharedLanguages(user1, user2),
       sharedCountries: this.getSharedCountries(user1, user2)
@@ -919,15 +1049,18 @@ export class TravelMatchingService {
   }
 
   private getSharedInterests(user1: User, user2: User): string[] {
-    // Combine regular and custom interests for comprehensive matching
-    // Note: privateInterests removed for Apple App Store compliance (January 2025)
+    // Combine all interest sources: interests, custom, subInterests, privateInterests
     const user1Interests = [
       ...this.parseInterests(user1.interests),
-      ...this.parseCustomInterests(user1.customInterests)
+      ...this.parseCustomInterests(user1.customInterests),
+      ...this.parseInterests(user1.subInterests),
+      ...this.parseInterests(user1.privateInterests)
     ];
     const user2Interests = [
       ...this.parseInterests(user2.interests),
-      ...this.parseCustomInterests(user2.customInterests)
+      ...this.parseCustomInterests(user2.customInterests),
+      ...this.parseInterests(user2.subInterests),
+      ...this.parseInterests(user2.privateInterests)
     ];
     
     return user1Interests.filter(interest => 
@@ -939,12 +1072,16 @@ export class TravelMatchingService {
 
   private getSharedActivities(user1: User, user2: User): string[] {
     const user1Activities = [
+      ...this.parseInterests(user1.activities),
       ...this.parseInterests(user1.localActivities),
-      ...this.parseInterests(user1.preferredActivities)
+      ...this.parseInterests(user1.preferredActivities),
+      ...this.parseInterests(user1.defaultTravelActivities)
     ];
     const user2Activities = [
+      ...this.parseInterests(user2.activities),
       ...this.parseInterests(user2.localActivities), 
-      ...this.parseInterests(user2.preferredActivities)
+      ...this.parseInterests(user2.preferredActivities),
+      ...this.parseInterests(user2.defaultTravelActivities)
     ];
     
     return user1Activities.filter(activity => 
@@ -979,12 +1116,14 @@ export class TravelMatchingService {
       ...this.parseInterests(user1.events), // Use the actual 'events' field
       ...this.parseInterests(user1.localEvents),
       ...this.parseInterests(user1.plannedEvents),
+      ...this.parseInterests(user1.defaultTravelEvents),
       ...user1AttendingEvents.filter(title => title.length > 0) // Add actual events they're attending
     ];
     const user2Events = [
       ...this.parseInterests(user2.events), // Use the actual 'events' field
       ...this.parseInterests(user2.localEvents), 
       ...this.parseInterests(user2.plannedEvents),
+      ...this.parseInterests(user2.defaultTravelEvents),
       ...user2AttendingEvents.filter(title => title.length > 0) // Add actual events they're attending
     ];
     
@@ -1113,12 +1252,19 @@ export class TravelMatchingService {
     return { score, reasons, sameAge };
   }
 
+  /** Languages to exclude from match scoring (everyone has these - don't count as a match) */
+  private readonly EXCLUDED_LANGUAGES = ['english', 'en'];
+
   /**
-   * Calculate language compatibility
+   * Calculate language compatibility - excludes English since everyone speaks it
    */
   private calculateLanguageCompatibility(user1: User, user2: User) {
-    const user1Languages = this.parseInterests(user1.languagesSpoken);
-    const user2Languages = this.parseInterests(user2.languagesSpoken);
+    const user1Languages = this.parseInterests(user1.languagesSpoken).filter(
+      lang => !this.EXCLUDED_LANGUAGES.includes(lang)
+    );
+    const user2Languages = this.parseInterests(user2.languagesSpoken).filter(
+      lang => !this.EXCLUDED_LANGUAGES.includes(lang)
+    );
     
     const sharedLanguages = user1Languages.filter(lang => 
       user2Languages.some(otherLang => 
@@ -1149,11 +1295,15 @@ export class TravelMatchingService {
   }
 
   /**
-   * Get shared languages
+   * Get shared languages - excludes English since everyone speaks it
    */
   private getSharedLanguages(user1: User, user2: User): string[] {
-    const user1Languages = this.parseInterests(user1.languagesSpoken);
-    const user2Languages = this.parseInterests(user2.languagesSpoken);
+    const user1Languages = this.parseInterests(user1.languagesSpoken).filter(
+      lang => !this.EXCLUDED_LANGUAGES.includes(lang)
+    );
+    const user2Languages = this.parseInterests(user2.languagesSpoken).filter(
+      lang => !this.EXCLUDED_LANGUAGES.includes(lang)
+    );
     
     return user1Languages.filter(lang => 
       user2Languages.some(otherLang => 
@@ -1177,11 +1327,207 @@ export class TravelMatchingService {
   }
 
   /**
+   * Get shared travel style (solo, budget, luxury, etc.)
+   */
+  private getSharedTravelStyle(user1: User, user2: User): string[] {
+    const user1Styles = this.parseInterests(user1.travelStyle);
+    const user2Styles = this.parseInterests(user2.travelStyle);
+    
+    return user1Styles.filter(style => 
+      user2Styles.some(other => this.areInterestsSimilar(style, other))
+    );
+  }
+
+  /**
+   * Get shared tags
+   */
+  private getSharedTags(user1: User, user2: User): string[] {
+    const user1Tags = this.parseInterests(user1.tags);
+    const user2Tags = this.parseInterests(user2.tags);
+    
+    return user1Tags.filter(tag => 
+      user2Tags.some(other => this.areInterestsSimilar(tag, other))
+    );
+  }
+
+  /**
+   * Get shared local expertise
+   */
+  private getSharedLocalExpertise(user1: User, user2: User): string[] {
+    const user1Expertise = this.parseInterests(user1.localExpertise);
+    const user2Expertise = this.parseInterests(user2.localExpertise);
+    
+    return user1Expertise.filter(expertise => 
+      user2Expertise.some(other => this.areInterestsSimilar(expertise, other))
+    );
+  }
+
+  /**
    * Check if users have the same gender
    */
   private haveSameGender(user1: User, user2: User): boolean {
     return !!(user1.gender && user2.gender && 
       user1.gender.toLowerCase() === user2.gender.toLowerCase());
+  }
+
+  /**
+   * Calculate profile location overlap (hometown, destination, metro area)
+   */
+  private calculateProfileLocationOverlap(user1: User, user2: User) {
+    let score = 0;
+    const reasons: string[] = [];
+    const normalize = (s: string | null | undefined) => (s || '').toLowerCase().trim();
+
+    if (normalize(user1.hometownCity) && normalize(user2.hometownCity) &&
+        this.areLocationsSimilar(user1.hometownCity!, user2.hometownCity!)) {
+      score += 1.5;
+      reasons.push('Same hometown city');
+    }
+    if (normalize(user1.destinationCity) && normalize(user2.destinationCity) &&
+        this.areLocationsSimilar(user1.destinationCity!, user2.destinationCity!)) {
+      score += 1.5;
+      reasons.push('Same destination city');
+    }
+    if (normalize(user1.metroArea) && normalize(user2.metroArea) &&
+        user1.metroArea!.toLowerCase() === user2.metroArea!.toLowerCase()) {
+      score += 1;
+      reasons.push('Same metro area');
+    }
+
+    return { score: Math.min(score, 3), reasons };
+  }
+
+  /**
+   * Get shared custom activities (comma-separated strings)
+   */
+  private getSharedCustomActivities(user1: User, user2: User): string[] {
+    const u1 = this.parseCustomInterests(user1.customActivities);
+    const u2 = this.parseCustomInterests(user2.customActivities);
+    return u1.filter(a => u2.some(b => this.areInterestsSimilar(a, b)));
+  }
+
+  /**
+   * Get shared custom events
+   */
+  private getSharedCustomEvents(user1: User, user2: User): string[] {
+    const u1 = this.parseCustomInterests(user1.customEvents);
+    const u2 = this.parseCustomInterests(user2.customEvents);
+    return u1.filter(e => u2.some(f => this.areInterestsSimilar(e, f)));
+  }
+
+  /**
+   * Get shared default travel interests
+   */
+  private getSharedDefaultTravelInterests(user1: User, user2: User): string[] {
+    const u1 = this.parseInterests(user1.defaultTravelInterests);
+    const u2 = this.parseInterests(user2.defaultTravelInterests);
+    return u1.filter(i => u2.some(j => this.areInterestsSimilar(i, j)));
+  }
+
+  /**
+   * Calculate travel plan overlap (destination, accommodation, transportation - beyond hostel)
+   */
+  private calculateTravelPlanOverlap(plans1: TravelPlan[], plans2: TravelPlan[]) {
+    let score = 0;
+    const reasons: string[] = [];
+
+    for (const p1 of plans1) {
+      for (const p2 of plans2) {
+        if (!this.areLocationsSimilar(p1.destination, p2.destination)) continue;
+        if (p1.accommodation && p2.accommodation &&
+            this.areInterestsSimilar(p1.accommodation, p2.accommodation)) {
+          score += 1;
+          reasons.push(`Same accommodation type: ${p1.accommodation}`);
+        }
+        if (p1.transportation && p2.transportation &&
+            this.areInterestsSimilar(p1.transportation, p2.transportation)) {
+          score += 1;
+          reasons.push(`Same transportation: ${p1.transportation}`);
+        }
+      }
+    }
+
+    return { score: Math.min(score, 3), reasons };
+  }
+
+  /**
+   * Both new to town - locals who recently moved, great for meeting each other
+   */
+  private calculateNewToTownCompatibility(user1: User, user2: User) {
+    const isNewToTown = (u: User) => {
+      if (!u.newToTownUntil) return false;
+      const until = u.newToTownUntil instanceof Date ? u.newToTownUntil : new Date(u.newToTownUntil);
+      return until > new Date();
+    };
+    if (isNewToTown(user1) && isNewToTown(user2)) {
+      return { score: 2, reasons: ['Both new to town'] };
+    }
+    return { score: 0, reasons: [] as string[] };
+  }
+
+  /**
+   * Children ages overlap - when both traveling with kids, similar ages
+   */
+  private calculateChildrenAgesCompatibility(user1: User, user2: User) {
+    if (!user1.travelingWithChildren || !user2.travelingWithChildren) {
+      return { score: 0, reasons: [] as string[] };
+    }
+    const parseAges = (s: string | null | undefined): number[] => {
+      if (!s) return [];
+      return s.split(/[,;]/).map(a => parseInt(a.trim(), 10)).filter(n => !isNaN(n) && n > 0 && n < 25);
+    };
+    const ages1 = parseAges(user1.childrenAges);
+    const ages2 = parseAges(user2.childrenAges);
+    if (ages1.length === 0 || ages2.length === 0) return { score: 0, reasons: [] as string[] };
+    const overlap = ages1.some(a1 => ages2.some(a2 => Math.abs(a1 - a2) <= 3));
+    if (overlap) {
+      return { score: 2, reasons: ['Kids similar ages'] };
+    }
+    return { score: 0, reasons: [] as string[] };
+  }
+
+  /**
+   * Business compatibility - specialty, services, target customers overlap
+   */
+  private calculateBusinessCompatibility(user1: User, user2: User) {
+    const getBusinessKeywords = (u: User): string[] => {
+      const parts: string[] = [];
+      if (u.specialty) parts.push(...this.parseCustomInterests(u.specialty));
+      if (u.services) parts.push(...this.parseCustomInterests(u.services));
+      if (u.targetCustomers) parts.push(...this.parseCustomInterests(u.targetCustomers));
+      if (u.businessType) parts.push(u.businessType.toLowerCase());
+      return parts.filter(Boolean);
+    };
+    const kw1 = getBusinessKeywords(user1);
+    const kw2 = getBusinessKeywords(user2);
+    if (kw1.length === 0 || kw2.length === 0) return { score: 0, reasons: [] as string[] };
+    const overlap = kw1.some(k1 => kw2.some(k2 => this.areInterestsSimilar(k1, k2)));
+    if (overlap) {
+      return { score: 2, reasons: ['Relevant business match'] };
+    }
+    return { score: 0, reasons: [] as string[] };
+  }
+
+  /**
+   * Bio keyword overlap - travel style, interests mentioned in bio
+   */
+  private calculateBioCompatibility(user1: User, user2: User) {
+    const keywords1 = this.extractTravelKeywords(user1.bio || '');
+    const keywords2 = this.extractTravelKeywords(user2.bio || '');
+    const overlap = keywords1.filter(k => keywords2.includes(k));
+    if (overlap.length > 0) {
+      return { score: Math.min(overlap.length, 2), reasons: [`Similar bio: ${overlap.slice(0, 2).join(', ')}`] };
+    }
+    return { score: 0, reasons: [] as string[] };
+  }
+
+  /**
+   * Get shared secret activities (comma-separated text)
+   */
+  private getSharedSecretActivities(user1: User, user2: User): string[] {
+    const u1 = this.parseCustomInterests(user1.secretActivities);
+    const u2 = this.parseCustomInterests(user2.secretActivities);
+    return u1.filter(a => u2.some(b => this.areInterestsSimilar(a, b)));
   }
 
   /**

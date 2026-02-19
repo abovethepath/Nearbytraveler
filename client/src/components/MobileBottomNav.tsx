@@ -49,12 +49,12 @@ export function MobileBottomNav() {
     { icon: Home, label: "Dashboard", path: "/" },
     { icon: Search, label: "Search", action: "search" },
     { icon: MessageSquare, label: "Messages", path: "/messages" },
-    { icon: User, label: "Business", path: user ? `/profile/${user.id}` : "/profile" },
+    { icon: User, label: "Business", path: user ? `/profile/${user.username}` : "/profile" },
   ] : [
     { icon: Home, label: "Home", path: "/" },
     { icon: Search, label: "Search", action: "search" },
     { icon: MessageSquare, label: "Messages", path: "/messages" },
-    { icon: User, label: "Profile", path: user ? `/profile/${user.id}` : "/profile" },
+    { icon: User, label: "Profile", path: user ? `/profile/${user.username}` : "/profile" },
   ];
   
   const actionMenuItems = isBusinessUser ? [

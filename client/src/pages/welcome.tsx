@@ -18,7 +18,7 @@ export default function Welcome() {
 
   const handleEnterApp = async () => {
     if (user?.id) {
-      setLocation(`/profile/${user.id}`);
+      setLocation(`/profile/${user.username}`);
     } else {
       setLocation('/profile');
     }

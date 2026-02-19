@@ -45,6 +45,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
     travelerTypes: [] as string[],
     militaryStatus: [] as string[],
     newToTown: false,
+    travelingWithChildren: false,
+    commonFriends: false,
     hostelName: "" // Hostel search filter
   });
 
@@ -127,6 +129,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       if (advancedFilters.travelerTypes.length > 0) params.append('travelerTypes', advancedFilters.travelerTypes.join(','));
       if (advancedFilters.militaryStatus.length > 0) params.append('militaryStatus', advancedFilters.militaryStatus.join(','));
       if (advancedFilters.newToTown) params.append('newToTown', 'true');
+      if (advancedFilters.travelingWithChildren) params.append('travelingWithChildren', 'true');
+      if (advancedFilters.commonFriends) params.append('commonFriends', 'true');
       if (advancedFilters.hostelName) params.append('hostelName', advancedFilters.hostelName);
       if (currentUser?.id) params.append('currentUserId', currentUser.id.toString());
 
@@ -180,6 +184,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       travelerTypes: [],
       militaryStatus: [],
       newToTown: false,
+      travelingWithChildren: false,
+      commonFriends: false,
       hostelName: ""
     });
     setLocationFilter({
@@ -628,6 +634,46 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                   New to Town
                 </span>
                 <span className="text-gray-600 dark:text-gray-400">Show only people new to town</span>
+              </Label>
+            </div>
+
+            {/* Traveling with Children Filter */}
+            <div className="flex items-center space-x-2 p-3 border rounded-lg bg-amber-50 dark:bg-amber-900/20">
+              <Checkbox
+                id="travelingWithChildren"
+                checked={advancedFilters.travelingWithChildren}
+                onCheckedChange={(checked) => {
+                  setAdvancedFilters(prev => ({
+                    ...prev,
+                    travelingWithChildren: checked as boolean
+                  }));
+                }}
+              />
+              <Label htmlFor="travelingWithChildren" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-100 border border-amber-300 dark:border-amber-600">
+                  Traveling with Kids
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">Show only people traveling with children</span>
+              </Label>
+            </div>
+
+            {/* Common Friends Filter */}
+            <div className="flex items-center space-x-2 p-3 border rounded-lg bg-blue-50 dark:bg-blue-900/20">
+              <Checkbox
+                id="commonFriends"
+                checked={advancedFilters.commonFriends}
+                onCheckedChange={(checked) => {
+                  setAdvancedFilters(prev => ({
+                    ...prev,
+                    commonFriends: checked as boolean
+                  }));
+                }}
+              />
+              <Label htmlFor="commonFriends" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100 border border-blue-300 dark:border-blue-600">
+                  Mutual Connections
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">Show only people with mutual friends</span>
               </Label>
             </div>
           </div>

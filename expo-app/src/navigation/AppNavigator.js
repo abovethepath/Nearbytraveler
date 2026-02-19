@@ -174,7 +174,7 @@ function MainTabs() {
           tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} />,
         }}
       >
-        {() => <WebViewStack path="/profile" tabLabel="Home" />}
+        {() => <WebViewStack path="/home" tabLabel="Home" />}
       </Tab.Screen>
       <Tab.Screen
         name="Explore"
@@ -182,7 +182,7 @@ function MainTabs() {
           tabBarIcon: ({ focused }) => <TabIcon emoji="🔍" focused={focused} />,
         }}
       >
-        {() => <WebViewStack path="/discover" tabLabel="Explore" />}
+        {() => <WebViewStack path="/explore" tabLabel="Explore" />}
       </Tab.Screen>
       <Tab.Screen
         name="Create"
@@ -208,6 +208,7 @@ function MainTabs() {
         name="Profile"
         options={{
           tabBarIcon: ({ focused }) => <TabIcon emoji="👤" focused={focused} />,
+          unmountOnBlur: false,
         }}
       >
         {() => <WebViewStack path="/profile" tabLabel="Profile" />}

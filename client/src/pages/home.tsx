@@ -458,7 +458,11 @@ export default function Home() {
     const userCompatibility = Array.isArray(compatibilityData) ? compatibilityData.find((match: any) => match.userId === otherUser.id) : null;
     
     if (userCompatibility) {
-      // Calculate total from all shared categories
+      // Use matchCount from API (count of all things in common - no point system)
+      if (typeof userCompatibility.matchCount === 'number') {
+        return userCompatibility.matchCount;
+      }
+      // Fallback: sum shared categories if matchCount not available
       let total = 0;
       total += userCompatibility.sharedInterests?.length || 0;
       total += userCompatibility.sharedActivities?.length || 0;
@@ -467,8 +471,6 @@ export default function Home() {
       total += userCompatibility.sharedCountries?.length || 0;
       total += userCompatibility.sharedTravelIntent?.length || 0;
       total += userCompatibility.sharedSexualPreferences?.length || 0;
-      
-      // Add boolean matches
       if (userCompatibility.locationOverlap) total += 1;
       if (userCompatibility.dateOverlap) total += 1;
       if (userCompatibility.userTypeCompatibility) total += 1;
@@ -478,7 +480,6 @@ export default function Home() {
       if (userCompatibility.sameAge) total += 1;
       if (userCompatibility.sameGender) total += 1;
       if (userCompatibility.travelIntentCompatibility) total += 1;
-      
       return total;
     }
     

@@ -5280,6 +5280,8 @@ Questions? Just reply to this message. Welcome aboard!
         militaryStatus,
         newToTown,
         hostelName,
+        travelingWithChildren,
+        commonFriends,
         currentUserId: currentUserIdParam
       } = req.query;
 
@@ -5385,6 +5387,34 @@ Questions? Just reply to this message. Welcome aboard!
               ilike(users.travelGroup, pattern),
               ilike(users.customStatus, pattern),
               ilike(users.locationBasedStatus, pattern),
+              ilike(users.statusEmoji, pattern),
+              ilike(users.currentCity, pattern),
+              // Business / address fields
+              ilike(users.streetAddress, pattern),
+              ilike(users.street, pattern),
+              ilike(users.city, pattern),
+              ilike(users.state, pattern),
+              ilike(users.country, pattern),
+              ilike(users.zipCode, pattern),
+              ilike(users.zipcode, pattern),
+              ilike(users.phoneNumber, pattern),
+              ilike(users.phone, pattern),
+              ilike(users.websiteUrl, pattern),
+              ilike(users.website, pattern),
+              ilike(users.specialty, pattern),
+              ilike(users.priceRange, pattern),
+              ilike(users.ownerName, pattern),
+              ilike(users.contactName, pattern),
+              ilike(users.ownerEmail, pattern),
+              ilike(users.ownerPhone, pattern),
+              ilike(users.referralCode, pattern),
+              ilike(users.instagramHandle, pattern),
+              ilike(users.instagramUrl, pattern),
+              ilike(users.twitterUrl, pattern),
+              ilike(users.linkedinUrl, pattern),
+              ilike(users.tiktokUrl, pattern),
+              ilike(users.youtubeUrl, pattern),
+              ilike(users.facebookUrl, pattern),
               // Business fields
               ilike(users.businessName, pattern),
               ilike(users.businessDescription, pattern),
@@ -5412,6 +5442,8 @@ Questions? Just reply to this message. Welcome aboard!
               sql`LOWER(COALESCE(array_to_string(${users.defaultTravelEvents}, ' '), '')) LIKE ${pattern}`,
               sql`LOWER(COALESCE(array_to_string(${users.tags}, ' '), '')) LIKE ${pattern}`,
               sql`LOWER(COALESCE(array_to_string(${users.sexualPreference}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.privateInterests}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.subInterests}, ' '), '')) LIKE ${pattern}`,
               // Also search user_city_interests and user_event_interests tables
               sql`EXISTS (
                 SELECT 1 FROM user_city_interests 
@@ -5422,6 +5454,26 @@ Questions? Just reply to this message. Welcome aboard!
                 SELECT 1 FROM user_event_interests 
                 WHERE user_event_interests.user_id = ${users.id}
                 AND (LOWER(user_event_interests.event_title) LIKE ${pattern} OR LOWER(user_event_interests.city_name) LIKE ${pattern})
+              )`,
+              // Travel plans (trips) - destination, hostel, accommodation, transportation, notes
+              sql`EXISTS (
+                SELECT 1 FROM travel_plans tp
+                WHERE tp.user_id = ${users.id}
+                AND (
+                  LOWER(COALESCE(tp.destination, '')) LIKE ${pattern}
+                  OR LOWER(COALESCE(tp.destination_city, '')) LIKE ${pattern}
+                  OR LOWER(COALESCE(tp.destination_state, '')) LIKE ${pattern}
+                  OR LOWER(COALESCE(tp.destination_country, '')) LIKE ${pattern}
+                  OR LOWER(COALESCE(tp.accommodation, '')) LIKE ${pattern}
+                  OR LOWER(COALESCE(tp.hostel_name, '')) LIKE ${pattern}
+                  OR LOWER(COALESCE(tp.transportation, '')) LIKE ${pattern}
+                  OR LOWER(COALESCE(tp.notes, '')) LIKE ${pattern}
+                  OR LOWER(COALESCE(array_to_string(tp.interests, ' '), '')) LIKE ${pattern}
+                  OR LOWER(COALESCE(array_to_string(tp.activities, ' '), '')) LIKE ${pattern}
+                  OR LOWER(COALESCE(array_to_string(tp.events, ' '), '')) LIKE ${pattern}
+                  OR LOWER(COALESCE(array_to_string(tp.travel_style, ' '), '')) LIKE ${pattern}
+                  OR LOWER(COALESCE(tp.travel_group, '')) LIKE ${pattern}
+                )
               )`
             )
           );
@@ -5432,7 +5484,7 @@ Questions? Just reply to this message. Welcome aboard!
         }
       } else {
         // If no search term provided, require at least one other filter
-        if (!location && !userType && !gender && !interests && !activities && !eventsFilter && !topChoices && !sexualPreference && !militaryStatus && !newToTown) {
+        if (!location && !userType && !gender && !interests && !activities && !eventsFilter && !topChoices && !sexualPreference && !militaryStatus && !newToTown && !travelingWithChildren && !commonFriends) {
           return res.json({
             users: [],
             total: 0,
@@ -5538,16 +5590,47 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      // Military status filter
+      // Military status filter - uses isVeteran and isActiveDuty booleans
       if (militaryStatus && typeof militaryStatus === 'string') {
-        const statusList = militaryStatus.split(',').map(s => s.trim()).filter(Boolean);
-        if (statusList.length > 0) {
-          whereConditions.push(or(
-            ...statusList.map(status => 
-              ilike(users.militaryStatus, `%${status}%`)
-            )
-          ));
+        const statusList = militaryStatus.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+        const conditions = [];
+        if (statusList.some(s => s.includes('veteran') || s.includes('vet'))) {
+          conditions.push(eq(users.isVeteran, true));
         }
+        if (statusList.some(s => s.includes('active') || s.includes('duty'))) {
+          conditions.push(eq(users.isActiveDuty, true));
+        }
+        if (conditions.length > 0) {
+          whereConditions.push(or(...conditions));
+        }
+      }
+
+      // Traveling with children filter
+      if (travelingWithChildren === 'true') {
+        whereConditions.push(eq(users.travelingWithChildren, true));
+        if (process.env.NODE_ENV === 'development') console.log('👨‍👩‍👧 TRAVELING WITH CHILDREN FILTER: Searching for users traveling with kids');
+      }
+
+      // Common friends filter - only users who share at least one accepted connection with current user
+      if (commonFriends === 'true' && currentUserId) {
+        whereConditions.push(
+          sql`${users.id} IN (
+            SELECT DISTINCT c2.requester_id AS friend_id FROM connections c1
+            JOIN connections c2 ON (
+              (c1.requester_id = ${currentUserId} AND c2.receiver_id = c1.receiver_id AND c2.requester_id != ${currentUserId})
+              OR (c1.receiver_id = ${currentUserId} AND c2.requester_id = c1.requester_id AND c2.receiver_id != ${currentUserId})
+            )
+            WHERE c1.status = 'accepted' AND c2.status = 'accepted'
+            UNION
+            SELECT DISTINCT c2.receiver_id AS friend_id FROM connections c1
+            JOIN connections c2 ON (
+              (c1.requester_id = ${currentUserId} AND c2.requester_id = c1.receiver_id AND c2.receiver_id != ${currentUserId})
+              OR (c1.receiver_id = ${currentUserId} AND c2.receiver_id = c1.requester_id AND c2.requester_id != ${currentUserId})
+            )
+            WHERE c1.status = 'accepted' AND c2.status = 'accepted'
+          )`
+        );
+        if (process.env.NODE_ENV === 'development') console.log('🤝 COMMON FRIENDS FILTER: Searching for users with mutual connections');
       }
 
       // New to Town filter - only show users with active newToTownUntil date
@@ -5895,12 +5978,17 @@ Questions? Just reply to this message. Welcome aboard!
           };
         }
         
-        // Get compatibility score
+        // Get compatibility score (matchCount = things in common, no point system)
         try {
           const viewer = await storage.getUser(viewerId);
           if (viewer) {
-            const matchingService = await import('./services/matching.js');
-            compatibility = matchingService.calculateCompatibility(viewer, userData);
+            const viewerPlans = await storage.getUserTravelPlans(viewerId);
+            compatibility = await matchingService.calculateCompatibilityScore(
+              viewer,
+              userData,
+              viewerPlans,
+              travelPlansData
+            );
           }
         } catch (e) {
           // Compatibility calculation failed, continue without it

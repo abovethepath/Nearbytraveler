@@ -3949,7 +3949,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <button
                             type="button"
                             onClick={async () => {
-                              const profileUrl = `https://nearbytraveler.org/profile/${user.id}`;
+                              const profileUrl = `https://nearbytraveler.org/profile/${user.username}`;
                               const shareText = `Check out @${user.username} on Nearby Traveler`;
                               if (navigator.share) {
                                 try {
@@ -4927,10 +4927,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             const response = await fetch(`${apiBase}/api/users/${user.id}`, {
                               method: 'PUT',
                               headers: { 'Content-Type': 'application/json' },
+                              credentials: 'include',
                               body: JSON.stringify(saveData)
                             });
                             if (!response.ok) throw new Error('Failed to save');
-                            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
                             setIsEditingPublicInterests(false);
                             setTimeout(() => {
                               const section = document.getElementById('interests-activities-section');
@@ -5244,11 +5245,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             const response = await fetch(`${apiBase}/api/users/${user.id}`, {
                               method: 'PUT',
                               headers: { 'Content-Type': 'application/json' },
+                              credentials: 'include',
                               body: JSON.stringify(saveData)
                             });
                             if (!response.ok) throw new Error('Failed to save');
                             
-                            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
                             setIsEditingPublicInterests(false);
                             setTimeout(() => {
                               const section = document.getElementById('interests-activities-section');
