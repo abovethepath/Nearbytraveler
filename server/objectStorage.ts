@@ -119,6 +119,41 @@ export class ObjectStorageService {
     }
   }
 
+  async getVideoIntroUploadURL(userId: number): Promise<{ signedUrl: string; objectPath: string }> {
+    const publicObjectSearchPaths = this.getPublicObjectSearchPaths();
+    if (publicObjectSearchPaths.length === 0) {
+      throw new Error("PUBLIC_OBJECT_SEARCH_PATHS not set.");
+    }
+    const videoId = randomUUID();
+    const publicPath = publicObjectSearchPaths[0];
+    const objectPath = `video-intros/${userId}/${videoId}.mp4`;
+    const fullPath = `${publicPath}/${objectPath}`;
+    const { bucketName, objectName } = parseObjectPath(fullPath);
+    const signedUrl = await signObjectURL({ bucketName, objectName, method: "PUT", ttlSec: 900 });
+    return { signedUrl, objectPath };
+  }
+
+  async getVideoIntroReadURL(objectPath: string): Promise<string> {
+    const publicObjectSearchPaths = this.getPublicObjectSearchPaths();
+    const publicPath = publicObjectSearchPaths[0];
+    const fullPath = `${publicPath}/${objectPath}`;
+    const { bucketName, objectName } = parseObjectPath(fullPath);
+    return signObjectURL({ bucketName, objectName, method: "GET", ttlSec: 3600 });
+  }
+
+  async deleteObject(objectPath: string): Promise<void> {
+    const publicObjectSearchPaths = this.getPublicObjectSearchPaths();
+    const publicPath = publicObjectSearchPaths[0];
+    const fullPath = `${publicPath}/${objectPath}`;
+    const { bucketName, objectName } = parseObjectPath(fullPath);
+    const bucket = objectStorageClient.bucket(bucketName);
+    const file = bucket.file(objectName);
+    const [exists] = await file.exists();
+    if (exists) {
+      await file.delete();
+    }
+  }
+
   // Gets the upload URL for a public city photo
   async getCityPhotoUploadURL(): Promise<string> {
     const publicObjectSearchPaths = this.getPublicObjectSearchPaths();

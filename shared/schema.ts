@@ -183,6 +183,9 @@ export const users = pgTable("users", {
   // Additional fields for compatibility
   currentCity: text("current_city"), // Current location city
   
+  // Video Intro
+  videoIntroUrl: text("video_intro_url"),
+  
   // Avatar customization
   avatarColor: text("avatar_color").default("#3B82F6"), // User's chosen avatar color (default blue)
   avatarGradient: text("avatar_gradient"), // Optional gradient preference for future use

@@ -6574,6 +6574,100 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Video Intro - get signed upload URL (auth required, own profile only)
+  app.post("/api/users/:id/video-intro/upload-url", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id || '0');
+      if (!userId) return res.status(400).json({ message: "Invalid user ID" });
+      const sessionUserId = (req as any).session?.user?.id;
+      const headerUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
+      const authUserId = sessionUserId || headerUserId;
+      if (!authUserId || authUserId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      const { ObjectStorageService } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      const { signedUrl, objectPath } = await objectStorageService.getVideoIntroUploadURL(userId);
+      return res.json({ signedUrl, objectPath });
+    } catch (error: any) {
+      console.error("Error generating video upload URL:", error);
+      return res.status(500).json({ message: "Failed to generate upload URL" });
+    }
+  });
+
+  // Video Intro - confirm upload and save path to user record (auth required, own profile only)
+  app.put("/api/users/:id/video-intro", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id || '0');
+      const sessionUserId = (req as any).session?.user?.id;
+      const headerUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
+      const authUserId = sessionUserId || headerUserId;
+      if (!authUserId || authUserId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      const { objectPath } = req.body;
+      if (!objectPath || typeof objectPath !== 'string') return res.status(400).json({ message: "Object path required" });
+      const expectedPrefix = `video-intros/${userId}/`;
+      if (!objectPath.startsWith(expectedPrefix)) {
+        return res.status(400).json({ message: "Invalid object path" });
+      }
+      const updatedUser = await storage.updateUser(userId, { videoIntroUrl: objectPath });
+      if (!updatedUser) return res.status(404).json({ message: "User not found" });
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      return res.json({ message: "Video intro saved", user: userWithoutPassword });
+    } catch (error: any) {
+      console.error("Error saving video intro:", error);
+      return res.status(500).json({ message: "Failed to save video intro" });
+    }
+  });
+
+  // Video Intro - get signed read URL for playback (public)
+  app.get("/api/users/:id/video-intro", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id || '0');
+      const user = await storage.getUser(userId);
+      if (!user || !user.videoIntroUrl) return res.status(404).json({ message: "No video intro found" });
+      const { ObjectStorageService } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      const signedUrl = await objectStorageService.getVideoIntroReadURL(user.videoIntroUrl);
+      return res.json({ url: signedUrl });
+    } catch (error: any) {
+      console.error("Error getting video intro URL:", error);
+      return res.status(500).json({ message: "Failed to get video intro" });
+    }
+  });
+
+  // Video Intro - delete (auth required, own profile only)
+  app.delete("/api/users/:id/video-intro", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id || '0');
+      const sessionUserId = (req as any).session?.user?.id;
+      const headerUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
+      const authUserId = sessionUserId || headerUserId;
+      if (!authUserId || authUserId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      if (user.videoIntroUrl) {
+        try {
+          const { ObjectStorageService } = await import("./objectStorage");
+          const objectStorageService = new ObjectStorageService();
+          await objectStorageService.deleteObject(user.videoIntroUrl);
+        } catch (e) {
+          console.error("Error deleting video file from storage:", e);
+        }
+      }
+      const updatedUser = await storage.updateUser(userId, { videoIntroUrl: null });
+      if (!updatedUser) return res.status(404).json({ message: "User not found" });
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      return res.json({ message: "Video intro deleted", user: userWithoutPassword });
+    } catch (error: any) {
+      console.error("Error deleting video intro:", error);
+      return res.status(500).json({ message: "Failed to delete video intro" });
+    }
+  });
+
   // AI Bio Generator endpoint - generates a personalized bio from user's profile data
   app.post("/api/users/generate-bio", async (req, res) => {
     try {
