@@ -128,28 +128,28 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
 
           return (
             <Card key={b.id} className="overflow-hidden hover:shadow-lg transition-shadow min-w-0">
-              <CardContent className="p-4 md:p-5">
+              <CardContent className="p-5 md:p-6">
                 {/* Header row */}
-                <div className="flex items-start gap-3 min-w-0">
+                <div className="flex items-start gap-4 min-w-0">
                   {(b.logoUrl || b.profileImage) && (
                     <img
                       src={b.logoUrl || b.profileImage}
                       alt={title}
-                      className="h-12 w-12 rounded-lg object-cover shrink-0"
+                      className="h-16 w-16 rounded-lg object-cover shrink-0"
                       loading="lazy"
                     />
                   )}
                   <div className="min-w-0 flex-1 overflow-hidden">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm md:text-base truncate" title={title}>
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-base md:text-lg leading-tight" title={title}>
                       {title}
                     </h3>
                     {category && (
-                      <Badge variant="secondary" className="mt-1 text-xs font-medium">
+                      <Badge variant="secondary" className="mt-1.5 text-xs font-medium">
                         {category}
                       </Badge>
                     )}
-                    <div className="mt-1 flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 min-w-0">
-                      <MapPin className="h-3.5 w-3.5 shrink-0" />
+                    <div className="mt-1.5 flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300 min-w-0">
+                      <MapPin className="h-4 w-4 shrink-0" />
                       <span className="truncate">
                         {b.streetAddress || b.street_address || b.address ? 
                           `${b.streetAddress || b.street_address || b.address}, ${city}` :
@@ -163,7 +163,7 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                 {/* Bio — safe wrapping + clamp */}
                 {bio && (
                   <p
-                    className="mt-3 text-sm text-gray-600 dark:text-gray-300 leading-relaxed
+                    className="mt-4 text-sm text-gray-600 dark:text-gray-300 leading-relaxed
                                whitespace-normal break-words [overflow-wrap:anywhere] hyphens-auto
                                line-clamp-3 md:line-clamp-4"
                     title={bio}
@@ -173,30 +173,30 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                 )}
 
                 {/* Contact info */}
-                <div className="mt-3 space-y-1.5">
+                <div className="mt-4 space-y-2">
                   {phone && (
                     <a
                       href={`tel:${phone}`}
-                      className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 min-w-0"
+                      className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 min-w-0"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Phone className="h-3.5 w-3.5 shrink-0" />
+                      <Phone className="h-4 w-4 shrink-0" />
                       <span className="truncate">{phone}</span>
                     </a>
                   )}
                   {b.streetAddress && (
-                    <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 min-w-0">
-                      <MapPin className="h-3.5 w-3.5 shrink-0" />
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 min-w-0">
+                      <MapPin className="h-4 w-4 shrink-0" />
                       <span className="truncate">{b.streetAddress}</span>
                     </div>
                   )}
                 </div>
 
                 {/* Actions */}
-                <div className="mt-3 flex gap-2">
+                <div className="mt-4 flex gap-3">
                   <Button
                     size="sm"
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2"
                     onClick={() => setLocation(`/business/${b.id}`)}
                   >
                     View
@@ -204,10 +204,10 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1 border-orange-300 dark:border-orange-600 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-xs"
+                    className="flex-1 border-orange-300 dark:border-orange-600 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-sm py-2"
                     onClick={() => setLocation(`/business/${b.id}/offers`)}
                   >
-                    <Tag className="h-3.5 w-3.5 mr-1" />
+                    <Tag className="h-4 w-4 mr-1.5" />
                     Deals
                   </Button>
                 </div>
