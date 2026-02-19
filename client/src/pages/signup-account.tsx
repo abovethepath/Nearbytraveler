@@ -394,7 +394,6 @@ export default function SignupAccount() {
                         formData.password === formData.confirmPassword ? 'border-green-500' : 'border-red-500'
                       ) : ''
                     }`}
-                    required
                   />
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 space-x-2">
                     <button

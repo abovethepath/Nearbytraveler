@@ -95,7 +95,11 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
                 w-full relative overflow-hidden rounded-xl p-4 text-left transition-all duration-200
                 flex items-center gap-4
                 ${isSelected 
-                  ? `bg-gradient-to-r ${gradient} text-white shadow-lg scale-[1.02] ring-4 ${ringColor}` 
+                  ? `${
+                      type === 'local' ? 'bg-gradient-to-r from-blue-500 to-orange-500' :
+                      type === 'traveler' ? 'bg-gradient-to-r from-blue-500 to-blue-600' :
+                      'bg-gradient-to-r from-orange-500 to-orange-600'
+                    } text-white shadow-lg scale-[1.02] ring-4 ${ringColor}` 
                   : `${bgLight} border-2 ${borderColor} hover:shadow-md hover:scale-[1.01]`
                 }
               `}
@@ -105,7 +109,9 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
                 flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center
                 ${isSelected 
                   ? "bg-white/20" 
-                  : `bg-gradient-to-br ${gradient}`
+                  : type === 'local' ? 'bg-gradient-to-br from-blue-500 to-orange-500' :
+                    type === 'traveler' ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
+                    'bg-gradient-to-br from-orange-500 to-orange-600'
                 }
               `}>
                 <Icon className={`w-6 h-6 ${isSelected ? "text-white" : "text-white"}`} />
