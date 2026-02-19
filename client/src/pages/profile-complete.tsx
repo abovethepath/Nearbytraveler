@@ -3999,7 +3999,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         
                         {/* ALWAYS show hometown - NEVER remove - compact text for mobile - allow wrapping for full visibility */}
                         <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
-                          <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                          <MapPin className="hidden sm:block w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                           <span className="break-words">Nearby Local • {hometown}</span>
                           {user.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 flex-shrink-0">
@@ -4028,12 +4028,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             return (
                               <>
                                 <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
-                                  <Plane className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                                  <Plane className="hidden sm:block w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
                                   <span className="break-words">Nearby Traveler • {currentTravelPlan}</span>
                                 </div>
                                 {activePlanWithHostel && (
                                   <div className="flex items-start gap-1.5 text-sm font-medium text-black flex-wrap mt-1">
-                                    <Building2 className="w-4 h-4 text-black flex-shrink-0 mt-0.5" />
+                                    <Building2 className="hidden sm:block w-4 h-4 text-black flex-shrink-0 mt-0.5" />
                                     <span className="break-words">🏨 Staying at {activePlanWithHostel.hostelName}</span>
                                   </div>
                                 )}
