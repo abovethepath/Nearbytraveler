@@ -1386,7 +1386,7 @@ function Router() {
           
           {/* Main content */}
           <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden">
-            <main className={`w-full max-w-full overflow-x-hidden main-with-bottom-nav ${isNativeIOSApp() ? 'pt-0 pb-0' : 'pt-16 pb-24 md:pt-0 md:pb-20'}`}>
+            <main className={`w-full max-w-full overflow-x-hidden main-with-bottom-nav ${isNativeIOSApp() ? 'pt-0 pb-0' : 'pt-0 pb-24 md:pt-0 md:pb-20'}`}>
               <div className="w-full max-w-full overflow-x-hidden">
                 {renderPage()}
               </div>
