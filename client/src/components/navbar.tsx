@@ -110,12 +110,12 @@ function Navbar() {
     return () => window.removeEventListener("keydown", handleKeydown);
   }, [toggleTheme]);
 
+  // directUser: Trust AuthContext first, then localStorage. Never make a separate auth fetch.
   const [directUser, setDirectUser] = useState<any>(() => {
     if (user) return user;
-    // Check localStorage for just-registered user data
-    const justRegistered = localStorage.getItem('just_registered');
+    // Fallback: check localStorage for stored user data
     const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-    if (justRegistered === 'true' && storedUser) {
+    if (storedUser) {
       try {
         const parsed = JSON.parse(storedUser);
         if (parsed?.id) return parsed;
@@ -124,69 +124,29 @@ function Navbar() {
     return null;
   });
 
-  // Fetch session user - but DON'T clear directUser if context user is already set
-  // or if just_registered flag exists (handles iOS WebView cookie timing where fetch returns 401 right after signup)
+  // Sync from AuthContext - this is the ONLY source of truth for user state
   useEffect(() => {
-    let cancelled = false;
-    const fetchSessionUser = async () => {
-      try {
-        const sessionRes = await fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' });
-        if (cancelled) return;
-        if (sessionRes.ok) {
-          const sessionUser = await sessionRes.json();
-          if (sessionUser?.id) {
-            setUser(sessionUser);
-            setDirectUser(sessionUser);
-            authStorage.setUser(sessionUser);
-            window.dispatchEvent(new CustomEvent("avatarRefresh"));
-            return;
-          }
-        }
-        // Don't clear user if just_registered or if we have user data in storage
-        const justRegistered = localStorage.getItem('just_registered');
-        const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-        if (justRegistered === 'true' && storedUser) {
-          try {
-            const parsed = JSON.parse(storedUser);
-            if (parsed?.id) {
-              console.log('🔒 Navbar: just_registered - keeping user from localStorage');
-              setDirectUser(parsed);
-              return;
-            }
-          } catch {}
-        }
-        if (!user && !directUser) setDirectUser(null);
-      } catch (error) {
-        if (!cancelled && !user && !directUser) setDirectUser(null);
-      }
-    };
-    fetchSessionUser();
-    return () => { cancelled = true; };
-  }, [location, setUser, user]);
-
-  // Sync from AuthContext when it updates (e.g. after login) - but only if IDs match
-  useEffect(() => {
-    if (!user) {
-      // Don't clear directUser if just_registered flag exists (prevents post-signup flash)
-      const justRegistered = localStorage.getItem('just_registered');
-      if (justRegistered === 'true') {
-        return;
-      }
-      // Also don't clear if we still have stored user data
+    if (user?.id) {
+      setDirectUser(user);
+    } else if (!user) {
+      // Only clear if localStorage also has no user data (true logout)
       const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-      if (storedUser) {
+      if (!storedUser) {
+        setDirectUser(null);
+      } else {
         try {
           const parsed = JSON.parse(storedUser);
-          if (parsed?.id && directUser?.id && String(parsed.id) === String(directUser.id)) {
-            return;
+          if (parsed?.id) {
+            setDirectUser(parsed);
+          } else {
+            setDirectUser(null);
           }
-        } catch {}
+        } catch {
+          setDirectUser(null);
+        }
       }
-      setDirectUser(null);
-    } else if (user?.id && user?.username && (!directUser || String(directUser.id) === String(user.id))) {
-      setDirectUser(user);
     }
-  }, [user?.id, user?.username, user, directUser?.id]);
+  }, [user?.id, user?.username, user]);
 
   // recalc top on load/resize & when warning banners appear/disappear
   useEffect(() => {
