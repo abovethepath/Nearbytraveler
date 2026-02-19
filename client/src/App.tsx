@@ -173,6 +173,7 @@ import ComingSoon from "@/pages/coming-soon";
 
 
 import Navbar from "@/components/navbar";
+import LandingNavbar from "@/components/landing-navbar";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 // Removed conflicting MobileNav - using MobileTopNav and MobileBottomNav instead
 import { MobileBottomNav } from "@/components/MobileBottomNav";
@@ -1335,6 +1336,7 @@ function Router() {
       {isSignupRoute ? (
         <>
           {console.log('🔥 SIGNUP ROUTE RENDERING - bypassing auth logic:', location)}
+          {!isNativeIOSApp() && <LandingNavbar />}
           <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
             {location === '/signup/account' && <SignupAccount />}
             {location === '/signup/local' && <SignupLocal />}
