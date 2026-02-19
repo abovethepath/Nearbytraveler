@@ -51,11 +51,11 @@ export default function LandingNavbar() {
               Sign In
             </button>
             <button 
-              onClick={() => setLocation('/join')}
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="text-white px-5 py-2 rounded-full text-sm font-semibold transition duration-150 ease-in-out whitespace-nowrap shadow-sm"
               style={{ backgroundColor: '#f97316' }}
             >
-              Sign Up
+              Join Waitlist
             </button>
           </div>
 
@@ -130,12 +130,12 @@ export default function LandingNavbar() {
             <button 
               onClick={() => {
                 setMobileMenuOpen(false);
-                setLocation('/join');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               className="w-full text-center px-4 py-3.5 rounded-xl text-[15px] font-semibold text-white transition-all active:scale-[0.98] shadow-sm"
               style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)', minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
             >
-              Sign Up
+              Join Waitlist
             </button>
           </div>
         </div>

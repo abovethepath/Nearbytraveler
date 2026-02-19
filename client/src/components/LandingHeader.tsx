@@ -1,30 +1,31 @@
 import LandingNavbar from "@/components/landing-navbar";
 import { Button } from "@/components/ui/button";
-import { useLocation } from "wouter";
 
 export default function LandingHeader() {
-  const [, setLocation] = useLocation();
+  const scrollToWaitlist = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   
   return (
     <div className="fixed inset-x-0 top-0 z-[100]" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       <div className="xl:hidden bg-orange-500 text-black py-3 px-4 shadow-lg">
         <div className="max-w-6xl mx-auto flex items-center justify-center">
           <Button
-            onClick={() => setLocation("/join")}
+            onClick={scrollToWaitlist}
             className="flex-1 max-w-md bg-black text-orange-400 font-bold text-base px-4 py-3 rounded-xl hover:bg-gray-800 transition-all duration-200 active:scale-95 shadow-lg"
             style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '44px' }}
           >
-            SIGN UP - CONNECT TODAY!
+            COMING SOON - JOIN WAITLIST
           </Button>
         </div>
       </div>
 
       <div className="hidden xl:block bg-orange-500 text-black py-3 px-4 text-center">
         <Button
-          onClick={() => setLocation("/join")}
+          onClick={scrollToWaitlist}
           className="bg-black text-orange-400 font-bold text-xl px-8 py-3 rounded-xl hover:bg-gray-800 transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg"
         >
-          SIGN UP - CONNECT TODAY!
+          COMING SOON - JOIN WAITLIST
         </Button>
       </div>
 
