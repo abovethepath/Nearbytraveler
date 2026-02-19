@@ -250,6 +250,29 @@ function Router() {
       setIsLoading(false);
       return;
     }
+
+    // BULLETPROOF FIX: If user just registered, trust localStorage immediately.
+    // On iOS WebView, session cookies from the registration POST are often not
+    // available yet for the next GET request, causing a false 401.
+    // The user JUST signed up successfully - we have their data, skip server check.
+    const justRegistered = localStorage.getItem('just_registered');
+    const storedUserForJustReg = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+    if (justRegistered === 'true' && storedUserForJustReg) {
+      try {
+        const parsedUser = JSON.parse(storedUserForJustReg);
+        if (parsedUser && parsedUser.id) {
+          console.log('🎯 JUST REGISTERED - trusting localStorage, skipping server auth check for:', parsedUser.username);
+          setUser(parsedUser);
+          authStorage.setUser(parsedUser);
+          localStorage.removeItem('just_registered');
+          setIsLoading(false);
+          return;
+        }
+      } catch (e) {
+        console.error('Failed to parse just_registered user data:', e);
+      }
+    }
+
     console.log('🚀 PRODUCTION CACHE BUST v2025-08-17-17-28 - Starting authentication check');
 
     // Check server-side session first
