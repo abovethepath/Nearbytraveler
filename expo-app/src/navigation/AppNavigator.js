@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../services/AuthContext';
 
 import LoginScreen from '../screens/LoginScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import SignupStep1Screen from '../screens/SignupStep1Screen';
 import SignupStep2Screen from '../screens/SignupStep2Screen';
 import SignupStep3Screen from '../screens/SignupStep3Screen';
@@ -170,12 +171,11 @@ function MainTabs() {
     >
       <Tab.Screen
         name="Home"
+        component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} />,
         }}
-      >
-        {() => <WebViewStack path="/profile" tabLabel="Home" />}
-      </Tab.Screen>
+      />
       <Tab.Screen
         name="Explore"
         options={{
@@ -206,12 +206,11 @@ function MainTabs() {
       </Tab.Screen>
       <Tab.Screen
         name="Profile"
+        component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => <TabIcon emoji="👤" focused={focused} />,
         }}
-      >
-        {() => <WebViewStack path="/profile" tabLabel="Profile" />}
-      </Tab.Screen>
+      />
     </Tab.Navigator>
   );
 }

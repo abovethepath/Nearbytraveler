@@ -85,7 +85,7 @@ export default function SignupStep1Screen({ navigation }) {
                 key={type}
                 onPress={() => setUserType(type)}
                 activeOpacity={0.8}
-                style={[styles.optionCard, !isSelected && optionCardBase, !isSelected && styles.optionCardUnselected]}
+                style={[styles.optionCard, !isSelected && optionCardBase, !isSelected && !dark && styles.optionCardUnselected]}
               >
                 {isSelected ? (
                   <LinearGradient
