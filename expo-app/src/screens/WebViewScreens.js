@@ -444,13 +444,12 @@ export function JoinWebViewScreen({ navigation }) {
 
     const pathname = (url.replace(BASE_URL, '').split('?')[0] || '/').replace(/\/$/, '') || '/';
 
-    // Check if user completed signup (any of these routes = signup done)
-    if (['/welcome', '/welcome-business', '/home', '/account-success', '/finishing-setup', '/profile', '/business-dashboard'].some(p => pathname === p)) {
+    // Signup complete: navigate to native Home immediately (don't wait for checkAuth - it's async and can cause landing flash)
+    if (pathname === '/welcome' || pathname === '/welcome-business' || pathname === '/home') {
       signupCompletedRef.current = true;
-      checkAuth?.();
       navigation.navigate('Home');
     }
-  }, [checkAuth, navigation]);
+  }, [navigation]);
 
   const containerBg = dark ? DARK.bg : '#FFFFFF';
   const headerBg = dark ? DARK.bg : '#FFFFFF';
