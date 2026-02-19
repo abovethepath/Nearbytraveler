@@ -3781,32 +3781,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
 
-      {/* Profile Completion Warning - hidden in native app (Apple) to avoid covering profile */}
-      {isProfileIncomplete() && !isNativeIOSApp() && (
-        <div className="w-full bg-red-600 text-white px-4 py-3">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-3 flex-1">
-                <div className="bg-white/20 rounded-full p-2 flex-shrink-0">
-                  <Zap className="w-5 h-5 text-white" />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-bold text-base sm:text-lg">PLEASE FILL OUT PROFILE NOW TO MATCH WELL WITH OTHERS</p>
-                  <p className="text-red-100 text-xs sm:text-sm">Complete your bio, gender, and sexual preference to improve your compatibility with other travelers</p>
-                </div>
-              </div>
-              <Button
-                size="sm"
-                variant="secondary"
-                className="bg-white text-red-600 hover:bg-red-50 font-semibold flex-shrink-0 w-full sm:w-auto"
-                onClick={() => setIsEditMode(true)}
-              >
-                Complete Profile
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     
       {/* PROFILE HEADER - Mobile Responsive - Full Bleed */}
       <div
@@ -4301,6 +4275,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Main Content Container - with overflow-x-hidden for rest of page */}
       <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden">
+
+      {/* Subtle profile completion nudge - only on own profile */}
+      {isOwnProfile && isProfileIncomplete() && (
+        <div className="mx-4 sm:mx-6 lg:mx-8 mt-4">
+          <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg px-4 py-3 flex items-center justify-between gap-3">
+            <p className="text-sm text-orange-800 dark:text-orange-200">
+              Finish your profile to get better matches — add your bio, gender, and preferences.
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-orange-300 text-orange-700 hover:bg-orange-100 dark:border-orange-700 dark:text-orange-300 dark:hover:bg-orange-900/30 flex-shrink-0"
+              onClick={() => setIsEditMode(true)}
+            >
+              Edit Profile
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Navigation Tabs - Card Style with Border */}
       <div className="w-auto bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg mt-4">

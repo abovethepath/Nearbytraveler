@@ -414,11 +414,6 @@ function Navbar() {
 
   // Check if profile needs completion (bio, gender, sexual preference)
   // Business users are excluded - they complete different fields during signup
-  const profileNeedsCompletion =
-    directUser &&
-    directUser.userType !== "business" &&
-    (!directUser.bio || !directUser.gender || !directUser.sexualPreference);
-
   return (
     <>
       <header
@@ -712,23 +707,6 @@ function Navbar() {
           </div>
         </div>
 
-        {/* Profile Completion Reminder Bar - Now INSIDE header, below the black navbar */}
-        {profileNeedsCompletion && (
-          <div className="bg-red-600 text-white py-2 px-4 text-center text-sm font-medium overflow-hidden border-t border-red-700">
-            <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 overflow-hidden">
-              <span>⚠️ Complete your profile to unlock all features</span>
-              <Link href={`/profile/${directUser?.id || ""}`}>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="ml-2 bg-white text-red-600 hover:bg-gray-100"
-                >
-                  Complete Profile
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
       </header>
 
       {/* 
