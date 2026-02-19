@@ -97,7 +97,7 @@ function addNativeParam(url) {
 function WebViewWithChrome({ path, navigation }) {
   const colorScheme = useColorScheme();
   const dark = colorScheme === 'dark';
-  const { logout } = useAuth();
+  const { user: authUser, logout } = useAuth();
   const { height: windowHeight } = useWindowDimensions();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -333,7 +333,20 @@ function WebViewWithChrome({ path, navigation }) {
         ref={webViewRef}
         source={source}
         style={[styles.webview, dark && { backgroundColor: DARK.bg }]}
-        injectedJavaScriptBeforeContentLoaded={NATIVE_INJECT_JS}
+        injectedJavaScriptBeforeContentLoaded={
+          authUser
+            ? NATIVE_INJECT_JS + `
+(function(){
+  try{
+    var u=${JSON.stringify(authUser)};
+    localStorage.setItem('user',JSON.stringify(u));
+    localStorage.setItem('userData',JSON.stringify(u));
+    localStorage.setItem('travelconnect_user',JSON.stringify(u));
+  }catch(e){}
+})();
+`
+            : NATIVE_INJECT_JS
+        }
         onLoadStart={onLoadStart}
         onLoadEnd={onLoadEnd}
         onError={onError}
@@ -357,6 +370,7 @@ function WebViewWithChrome({ path, navigation }) {
         startInLoadingState={path === '/profile'}
         pullToRefreshEnabled={true}
         sharedCookiesEnabled={true}
+        thirdPartyCookiesEnabled={true}
         fadeDuration={path === '/profile' ? 0 : undefined}
         renderLoading={path === '/profile' ? () => <View style={{ flex: 1, backgroundColor: dark ? '#1c1c1e' : '#FFFFFF' }} /> : undefined}
       />
@@ -369,6 +383,8 @@ function NTWebView({ uri }) {
     <WebView
       source={{ uri: addNativeParam(uri) }}
       style={styles.webview}
+      sharedCookiesEnabled={true}
+      thirdPartyCookiesEnabled={true}
       injectedJavaScriptBeforeContentLoaded={NATIVE_INJECT_JS}
       onShouldStartLoadWithRequest={(request) => {
         if (isExternalUrl(request.url)) {

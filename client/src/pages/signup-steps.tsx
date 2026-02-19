@@ -95,6 +95,7 @@ export default function SignupSteps() {
   const { setUser } = useContext(AuthContext);
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const totalSteps = 5;
   
   const [formData, setFormData] = useState<SignupData>({
@@ -147,7 +148,9 @@ export default function SignupSteps() {
         title: "Account created successfully!",
         description: "Welcome to Nearby Traveler! Your profile has been created.",
       });
-      setLocation('/profile');
+      // Brief delay so user stays on signup page while profile builds
+      setIsRedirecting(true);
+      setTimeout(() => setLocation('/profile'), 1800);
     },
     onError: (error: any) => {
       console.error('Registration error:', error);
@@ -850,10 +853,10 @@ export default function SignupSteps() {
               ) : (
                 <Button
                   onClick={handleSubmit}
-                  disabled={registerMutation.isPending}
+                  disabled={registerMutation.isPending || isRedirecting}
                   className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 flex items-center space-x-2"
                 >
-                  {registerMutation.isPending ? (
+                  {(registerMutation.isPending || isRedirecting) ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                       <span>Creating Profile...</span>

@@ -78,6 +78,7 @@ export default function SignupBusinessSimple() {
   const { toast } = useToast();
   const { user, isAuthenticated, login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationCaptured, setLocationCaptured] = useState(false);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
@@ -293,7 +294,9 @@ export default function SignupBusinessSimple() {
       if ((window as any).ReactNativeWebView && response.user) {
         (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: 'SIGNUP_COMPLETE', user: response.user }));
       }
-      setLocation('/business-dashboard');
+      // Keep user on signup page while profile builds — calm transition
+      setIsRedirecting(true);
+      setTimeout(() => setLocation('/business-dashboard'), 1800);
     },
     onError: (error: Error) => {
       toast({
@@ -835,11 +838,11 @@ export default function SignupBusinessSimple() {
                 
                 <Button 
                   type="submit" 
-                  disabled={isLoading || signupMutation.isPending}
+                  disabled={isLoading || signupMutation.isPending || isRedirecting}
                   className="w-full h-12 text-lg bg-blue-600 hover:bg-blue-700"
                   data-testid="button-register-business"
                 >
-                  {isLoading || signupMutation.isPending ? "Creating Account..." : "Register Business"}
+                  {isLoading || signupMutation.isPending || isRedirecting ? "Creating Account..." : "Register Business"}
                 </Button>
               </form>
             </Form>

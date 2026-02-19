@@ -338,6 +338,8 @@ export default function SignupTraveling() {
             (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: 'SIGNUP_COMPLETE', user: data.user }));
           }
           const userId = data.user?.id;
+          // Keep user on signup page while profile builds — calm transition
+          await new Promise((r) => setTimeout(r, 1800));
           setLocation(userId ? `/profile/${userId}` : '/home');
           
         } else {
