@@ -223,7 +223,9 @@ function Router() {
     '/signup/local', 
     '/signup/traveling', 
     '/signup/business',
-    '/signup/traveler'
+    '/signup/traveler',
+    '/welcome',
+    '/welcome-business'
   ];
   const isSignupRoute = PUBLIC_SIGNUP_PATHS.includes(location) || location.startsWith('/signup/');
   
