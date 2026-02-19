@@ -897,6 +897,16 @@ function Router() {
         return <JoinPageWithSignIn />;
       }
 
+      // Post-signup: native app shows FinishingSetup (poll then /home); web redirects to profile
+      if (location === '/account-success') {
+        if (isNativeIOSApp()) {
+          console.log('✅ ACCOUNT-SUCCESS (native) - Showing FinishingSetup');
+          return <FinishingSetup />;
+        }
+        setLocation('/profile');
+        return null;
+      }
+
       // QR Code page - PUBLIC ACCESS for printing business cards
       if (location === '/qr-code') {
         console.log('🎯 QR CODE PAGE ACCESS - Cache Bust v4 - Showing SIMPLE QR generator');

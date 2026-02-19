@@ -397,7 +397,7 @@ export function GenericWebViewScreen({ route, navigation }) {
  * Step 2: Create account (SignupAccount)
  * Step 3: Complete profile (SignupLocal or SignupTraveling)
  * Replaces the old single-form RegisterScreen.
- * Uses incognito + no shared cookies so stale sessions don't redirect to home.
+ * Uses incognito. sharedCookiesEnabled=true so after signup the session is available to the app and checkAuth() can succeed.
  */
 export function JoinWebViewScreen({ navigation }) {
   const colorScheme = useColorScheme();
@@ -407,7 +407,6 @@ export function JoinWebViewScreen({ navigation }) {
   const [error, setError] = useState(null);
   const webViewRef = useRef(null);
   const signupCompletedRef = useRef(false);
-  // Use /join with NO cookies - incognito + no shared cookies = clean slate so we always see the 3-step flow
   const joinUri = `${BASE_URL}${pathWithNativeIOS('/join')}`;
   const source = { uri: joinUri };
 
@@ -423,24 +422,34 @@ export function JoinWebViewScreen({ navigation }) {
     const url = request?.url || '';
     if (!url.includes(BASE_URL)) return true;
     const pathname = (url.replace(BASE_URL, '').split('?')[0] || '/').replace(/\/$/, '') || '/';
-    if (!signupCompletedRef.current && (pathname === '/' || pathname === '/home')) {
+
+    // FIRST: Check if signup completed (pathname === '/home') - allow before any redirect logic
+    if (pathname === '/home' || pathname === '/account-success' || pathname === '/finishing-setup') {
+      signupCompletedRef.current = true;
+      return true;  // ALLOW the load
+    }
+
+    // THEN: Block landing/join loop only if signup NOT completed
+    if (!signupCompletedRef.current && (pathname === '/' || pathname === '/landing' || pathname.indexOf('/landing') === 0)) {
       webViewRef.current?.injectJavaScript(`window.location.href='${joinUri}';true;`);
       return false;
     }
+
     return true;
   }, [joinUri]);
 
   const onNavigationStateChange = useCallback((navState) => {
     const url = navState?.url || '';
     if (!url.includes(BASE_URL)) return;
-    const pathname = (url.replace(BASE_URL, '').split('?')[0] || '/').replace(/\/$/, '') || '/';
-    if (pathname === '/account-success') {
+
+    // Mark signup complete on ANY successful navigation away from /join
+    if (!url.includes('/join')) {
       signupCompletedRef.current = true;
       checkAuth?.();
-    } else if (signupCompletedRef.current && (pathname === '/' || pathname === '/home')) {
-      checkAuth?.();
+      // Navigate to Home screen immediately
+      navigation.navigate('Home');
     }
-  }, [checkAuth]);
+  }, [checkAuth, navigation]);
 
   const containerBg = dark ? DARK.bg : '#FFFFFF';
   const headerBg = dark ? DARK.bg : '#FFFFFF';
@@ -494,7 +503,7 @@ export function JoinWebViewScreen({ navigation }) {
         javaScriptEnabled={true}
         domStorageEnabled={true}
         incognito={true}
-        sharedCookiesEnabled={false}
+        sharedCookiesEnabled={true}
       />
     </SafeAreaView>
   );

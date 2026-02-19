@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
@@ -19,15 +20,18 @@ import { useAuth } from "@/App";
 import { useEffect } from "react";
 
 const businessSignupSchema = z.object({
-  // Account Owner Information (for platform communication)
+  // Account credentials (from step 1)
   username: z.string().min(6, "Username must be 6-12 characters").max(12, "Username must be 6-12 characters"),
   email: z.string().email("Please enter a valid email").refine((val) => {
-    // Allow email variants for multiple businesses (e.g., owner+restaurant@example.com)
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
   }, "Please enter a valid email address"),
   password: z.string().min(8, "Password must be 8 characters or more"),
-  ownerName: z.string().min(1, "Business name is required for contact database"),
-  contactName: z.string().min(1, "Contact person name is required"),
+  // Business details
+  businessName: z.string().min(1, "Business name is required"),
+  businessDescription: z.string().optional(),
+  // Owner/Manager in charge of the account
+  ownerName: z.string().min(1, "Owner/Manager name is required"),
+  contactName: z.string().optional(), // Optional - defaults to ownerName if empty
   ownerPhone: z.string().min(1, "Contact phone is required").refine((val) => {
     // Accept various international phone formats
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
@@ -156,10 +160,11 @@ export default function SignupBusinessSimple() {
       username: accountData?.username || "",
       email: accountData?.email || "",
       password: accountData?.password || "",
-      ownerName: accountData?.name || "", // Business name from step 1
-      contactName: "", // Contact person - leave empty for user to fill
+      businessName: accountData?.name || "", // Business name from step 1
+      businessDescription: "",
+      ownerName: "", // Owner/Manager in charge
+      contactName: "",
       ownerPhone: "",
-      // businessName comes from step 1, no need to collect again
       businessType: "",
       customBusinessType: "",
       businessPhone: "",
@@ -206,9 +211,14 @@ export default function SignupBusinessSimple() {
       // Process custom business type
       const processedData = { ...data };
       
-      // CRITICAL: Add required fields using data from step 1 and current form
-      (processedData as any).name = accountData?.businessName || "";
-      (processedData as any).businessName = accountData?.businessName || "";
+      // CRITICAL: Add required fields - businessName from form, name for user record
+      (processedData as any).name = data.businessName || accountData?.name || "";
+      (processedData as any).businessName = data.businessName || accountData?.name || "";
+      (processedData as any).businessDescription = data.businessDescription || "";
+      // Default contactName to ownerName when not provided
+      if (!processedData.contactName || !processedData.contactName.trim()) {
+        (processedData as any).contactName = data.ownerName;
+      }
       
       // Handle business email - default to owner's email if not provided
       if (!processedData.businessEmail || !processedData.businessEmail.trim()) {
@@ -242,7 +252,7 @@ export default function SignupBusinessSimple() {
         body: JSON.stringify({
           ...processedData,
           userType: "business",
-          businessName: accountData?.businessName || "", // Include businessName from step 1
+          businessName: data.businessName || accountData?.name || "",
           websiteUrl: (processedData as any).websiteUrl, // Ensure websiteUrl is included
         })
       });
@@ -328,14 +338,58 @@ export default function SignupBusinessSimple() {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="space-y-8">
                 
-                {/* Account Owner Information Section */}
+                {/* Business Details Section - Required fields */}
+                <div className="space-y-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <Building className="w-5 h-5" />
+                    Business Details
+                  </h3>
+                  <FormField
+                    control={form.control}
+                    name="businessName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Name *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your Business Name" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Legal or trading name of your business
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="businessDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Information</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Describe your business: what you offer, your specialties, hours, etc."
+                            className="min-h-[100px]"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Brief description to help travelers and locals find you
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Account Owner/Manager Section */}
                 <div className="space-y-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                     <User className="w-5 h-5" />
-                    Account Owner Information
+                    Owner/Manager in Charge
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Contact information for the person managing this account
+                    The person responsible for managing this business account
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
@@ -343,12 +397,12 @@ export default function SignupBusinessSimple() {
                       name="ownerName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Business Name *</FormLabel>
+                          <FormLabel>Owner/Manager Name *</FormLabel>
                           <FormControl>
-                            <Input placeholder="Your Business Name" {...field} />
+                            <Input placeholder="John Smith" {...field} />
                           </FormControl>
                           <FormDescription>
-                            Legal name of your business for contact database
+                            Name of the person in charge of this account
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -360,12 +414,12 @@ export default function SignupBusinessSimple() {
                       name="contactName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Contact Person Name *</FormLabel>
+                          <FormLabel>Contact Person Name (optional)</FormLabel>
                           <FormControl>
-                            <Input placeholder="John Smith" {...field} />
+                            <Input placeholder="Same as owner or different contact" {...field} />
                           </FormControl>
                           <FormDescription>
-                            Name of the person to contact about this business
+                            Leave blank if same as owner/manager
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
