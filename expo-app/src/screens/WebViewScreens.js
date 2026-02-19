@@ -354,9 +354,11 @@ function WebViewWithChrome({ path, navigation }) {
         allowsBackForwardNavigationGestures={false}
         javaScriptEnabled={true}
         domStorageEnabled={true}
-        startInLoadingState={false}
+        startInLoadingState={path === '/profile'}
         pullToRefreshEnabled={true}
         sharedCookiesEnabled={true}
+        fadeDuration={path === '/profile' ? 0 : undefined}
+        renderLoading={path === '/profile' ? () => <View style={{ flex: 1, backgroundColor: dark ? '#1c1c1e' : '#FFFFFF' }} /> : undefined}
       />
     </SafeAreaView>
   );
@@ -403,13 +405,25 @@ export function GenericWebViewScreen({ route, navigation }) {
 export function JoinWebViewScreen({ navigation }) {
   const colorScheme = useColorScheme();
   const dark = colorScheme === 'dark';
-  const { checkAuth } = useAuth();
+  const { checkAuth, setUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const webViewRef = useRef(null);
   const signupCompletedRef = useRef(false);
   const joinUri = `${BASE_URL}${pathWithNativeIOS('/join')}`;
   const source = { uri: joinUri };
+
+  const handleMessage = useCallback(async (event) => {
+    try {
+      const data = JSON.parse(event.nativeEvent.data);
+      if (data.type === 'SIGNUP_COMPLETE' && data.user) {
+        const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+        await AsyncStorage.setItem('user', JSON.stringify(data.user));
+        setUser(data.user);
+        signupCompletedRef.current = true;
+      }
+    } catch (e) {}
+  }, [setUser, navigation]);
 
   const onLoadStart = useCallback(() => { setLoading(true); setError(null); }, []);
   const onLoadEnd = useCallback(() => setLoading(false), []);
@@ -461,7 +475,6 @@ export function JoinWebViewScreen({ navigation }) {
         (pathname.startsWith('/profile/') && pathname.split('/').length >= 3)) {
       signupCompletedRef.current = true;
       await checkAuth();
-      navigation.navigate('Home');
     }
   }, [navigation, checkAuth]);
 
@@ -514,6 +527,163 @@ export function JoinWebViewScreen({ navigation }) {
         onError={onError}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         onNavigationStateChange={onNavigationStateChange}
+        onMessage={handleMessage}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        sharedCookiesEnabled={true}
+        thirdPartyCookiesEnabled={true}
+      />
+    </SafeAreaView>
+  );
+}
+
+/**
+ * Business signup WebView - loads web /signup/business which has SmartLocationInput (same dropdowns as rest of site).
+ * Injects accountData from native SignupStep2 into sessionStorage before page loads.
+ */
+export function BusinessSignupWebViewScreen({ navigation }) {
+  const colorScheme = useColorScheme();
+  const dark = colorScheme === 'dark';
+  const { checkAuth, setUser } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [signupData, setSignupData] = useState(null);
+  const [injectScript, setInjectScript] = useState('');
+  const webViewRef = useRef(null);
+
+  const handleMessage = useCallback(async (event) => {
+    try {
+      const data = JSON.parse(event.nativeEvent.data);
+      if (data.type === 'SIGNUP_COMPLETE' && data.user) {
+        const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+        await AsyncStorage.setItem('user', JSON.stringify(data.user));
+        await AsyncStorage.removeItem('signup_data');
+        setUser(data.user);
+      }
+    } catch (e) {}
+  }, [setUser, navigation]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+        const stored = await AsyncStorage.getItem('signup_data');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setSignupData(parsed);
+          const accountData = {
+            name: parsed.name || '',
+            username: parsed.username || '',
+            email: (parsed.email || '').toLowerCase().trim(),
+            confirmEmail: (parsed.email || '').toLowerCase().trim(),
+            phoneNumber: parsed.phoneNumber || '',
+            password: parsed.password || '',
+            userType: 'business',
+            isNewToTown: false,
+            keepLoggedIn: true,
+          };
+          setInjectScript(
+            `(function(){try{var d=${JSON.stringify(accountData)};sessionStorage.setItem('accountData',JSON.stringify(d));}catch(e){}})();true;`
+          );
+        } else {
+          navigation.replace('SignupStep1');
+        }
+      } catch {
+        navigation.replace('SignupStep1');
+      }
+    };
+    load();
+  }, [navigation]);
+
+  const businessUri = `${BASE_URL}${pathWithNativeIOS('/signup/business')}`;
+  const source = { uri: businessUri };
+
+  const onLoadStart = useCallback(() => { setLoading(true); setError(null); }, []);
+  const onLoadEnd = useCallback(() => setLoading(false), []);
+  const onError = useCallback((e) => {
+    setLoading(false);
+    const desc = (e.nativeEvent?.description || '').toLowerCase();
+    const isConnectionError = desc.includes('connect') || desc.includes('network') || desc.includes('offline') || desc.includes('internet') || desc.includes('err_connection') || desc.includes('nsurlerrordomain');
+    setError(isConnectionError ? 'Can\'t connect to server. Please check your internet connection and try again.' : (e.nativeEvent?.description || 'Failed to load page'));
+  }, []);
+
+  const onNavigationStateChange = useCallback(async (navState) => {
+    const url = navState?.url || '';
+    if (!url.includes(BASE_URL)) return;
+    const pathname = (url.replace(BASE_URL, '').split('?')[0] || '/').replace(/\/$/, '') || '/';
+    if (pathname === '/business-dashboard' || pathname === '/home' || pathname.startsWith('/profile/')) {
+      try {
+        const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+        await AsyncStorage.removeItem('signup_data');
+      } catch (_) {}
+      await checkAuth();
+      // AppNavigator switches to MainTabs when user is set
+    }
+  }, [navigation, checkAuth]);
+
+  const containerBg = dark ? DARK.bg : '#FFFFFF';
+  const headerBg = dark ? DARK.bg : '#FFFFFF';
+  const headerBorder = dark ? DARK.border : '#F3F4F6';
+
+  if (!signupData) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: containerBg }]}>
+        <View style={[styles.loadingOverlay, dark && { backgroundColor: 'rgba(28,28,30,0.9)' }]}>
+          <ActivityIndicator size="large" color="#F97316" />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: containerBg }]}>
+        <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: headerBorder }]}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Text style={[styles.backChevron, { marginRight: 4 }]}>‹</Text>
+            <Text style={styles.backText}>Back</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={[styles.errorContainer, { backgroundColor: containerBg }]}>
+          <Text style={[styles.errorText, dark && { color: DARK.textMuted }]}>{error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={() => { setError(null); setLoading(true); webViewRef.current?.reload(); }}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const injectedBeforeLoad = injectScript
+    ? `${NATIVE_INJECT_JS}\n${injectScript}`
+    : NATIVE_INJECT_JS;
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: containerBg }]}>
+      <View style={[styles.header, { backgroundColor: headerBg, borderBottomColor: headerBorder }]}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Text style={[styles.backChevron, { marginRight: 4 }]}>‹</Text>
+          <Text style={styles.backText}>Back</Text>
+        </TouchableOpacity>
+        <View style={styles.logoContainer}>
+          <Text style={{ fontSize: 16, fontWeight: '700', color: dark ? DARK.text : '#111827' }}>Register Business</Text>
+        </View>
+      </View>
+      {loading && (
+        <View style={[styles.loadingOverlay, dark && { backgroundColor: 'rgba(28,28,30,0.9)' }]}>
+          <ActivityIndicator size="large" color="#F97316" />
+        </View>
+      )}
+      <WebView
+        ref={webViewRef}
+        source={source}
+        style={[styles.webview, dark && { backgroundColor: DARK.bg }]}
+        injectedJavaScriptBeforeContentLoaded={injectedBeforeLoad}
+        onLoadStart={onLoadStart}
+        onLoadEnd={onLoadEnd}
+        onError={onError}
+        onNavigationStateChange={onNavigationStateChange}
+        onMessage={handleMessage}
         javaScriptEnabled={true}
         domStorageEnabled={true}
         sharedCookiesEnabled={true}

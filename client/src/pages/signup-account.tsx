@@ -210,6 +210,7 @@ export default function SignupAccount() {
   };
 
   // Check if all fields are properly filled and valid
+  // Confirm password: ONLY match check — no strength/complexity (those apply to password field only)
   const isFormValid = 
     formData.name.trim() !== "" &&
     formData.username.trim() !== "" &&
@@ -220,7 +221,6 @@ export default function SignupAccount() {
     formData.phoneNumber.trim() !== "" &&
     formData.password.trim() !== "" &&
     formData.password.length >= 8 &&
-    formData.confirmPassword.trim() !== "" &&
     formData.password === formData.confirmPassword &&
     usernameAvailable === true;
 

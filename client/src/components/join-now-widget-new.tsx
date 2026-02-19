@@ -48,7 +48,8 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
       subtitle: "I live here & want to meet travelers",
       color: "blue-orange",
       gradient: "from-blue-500 to-orange-500",
-      bgLight: "bg-blue-50 dark:bg-blue-950/50",
+      bgLight: "bg-blue-50 dark:bg-blue-950/80",
+      bgDark: "bg-blue-950/70",
       borderColor: "border-blue-400",
       ringColor: "ring-blue-300",
     },
@@ -59,7 +60,8 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
       subtitle: "I'm traveling & want to connect",
       color: "blue",
       gradient: "from-blue-500 to-blue-600",
-      bgLight: "bg-blue-50 dark:bg-blue-950/50",
+      bgLight: "bg-blue-50 dark:bg-blue-950/80",
+      bgDark: "bg-blue-950/70",
       borderColor: "border-blue-500",
       ringColor: "ring-blue-300",
     },
@@ -70,7 +72,8 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
       subtitle: "I run a local business",
       color: "orange",
       gradient: "from-orange-500 to-orange-600",
-      bgLight: "bg-orange-50 dark:bg-orange-950/50",
+      bgLight: "bg-orange-50 dark:bg-orange-950/80",
+      bgDark: "bg-orange-950/70",
       borderColor: "border-orange-500",
       ringColor: "ring-orange-300",
     },
@@ -83,9 +86,10 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
       </p>
       
       <div className="space-y-3">
-        {userTypes.map(({ type, icon: Icon, title, subtitle, gradient, bgLight, borderColor, ringColor }) => {
+        {userTypes.map(({ type, icon: Icon, title, subtitle, gradient, bgLight, bgDark, borderColor, ringColor }) => {
           const isSelected = userType === type;
-          
+          const unselectedBg = darkBackground ? bgDark : bgLight;
+
           return (
             <button
               key={type}
@@ -100,7 +104,7 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
                       type === 'traveler' ? 'bg-gradient-to-r from-blue-500 to-blue-600' :
                       'bg-gradient-to-r from-orange-500 to-orange-600'
                     } text-white shadow-lg scale-[1.02] ring-4 ${ringColor}` 
-                  : `${bgLight} border-2 ${borderColor} hover:shadow-md hover:scale-[1.01]`
+                  : `${unselectedBg} border-2 ${borderColor} hover:shadow-md hover:scale-[1.01]`
                 }
               `}
               data-testid={`button-select-${type}`}

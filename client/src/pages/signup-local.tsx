@@ -262,6 +262,9 @@ export default function SignupLocal() {
           });
           
           localStorage.setItem('just_registered', 'true');
+          if ((window as any).ReactNativeWebView && data.user) {
+            (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: 'SIGNUP_COMPLETE', user: data.user }));
+          }
           const userId = data.user?.id;
           setLocation(userId ? `/profile/${userId}` : '/home');
           

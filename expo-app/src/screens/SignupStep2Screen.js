@@ -86,7 +86,7 @@ export default function SignupStep2Screen({ navigation, route }) {
         password,
       };
       await AsyncStorage.setItem(SIGNUP_DATA_KEY, JSON.stringify(signupData));
-      const nextStep = userType === 'business' ? 'SignupStep3Business' : 'SignupStep3';
+      const nextStep = userType === 'business' ? 'BusinessSignupWebView' : 'SignupStep3';
       navigation.navigate(nextStep, { userType: userType || 'local' });
     } catch (e) {
       setError('Could not save. Please try again.');

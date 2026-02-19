@@ -290,6 +290,9 @@ export default function SignupBusinessSimple() {
       sessionStorage.removeItem('accountData');
       
       localStorage.setItem('just_registered', 'true');
+      if ((window as any).ReactNativeWebView && response.user) {
+        (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: 'SIGNUP_COMPLETE', user: response.user }));
+      }
       setLocation('/business-dashboard');
     },
     onError: (error: Error) => {

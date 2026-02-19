@@ -3,10 +3,11 @@ import {
   View, Text, TouchableOpacity, StyleSheet,
   SafeAreaView, ScrollView, useColorScheme,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const ORANGE = '#F97316';
 const BLUE = '#3B82F6';
-const TEAL = '#14B8A6';
+const BLUE_600 = '#2563EB';
 
 const DARK = {
   bg: '#1c1c1e',
@@ -18,10 +19,11 @@ const DARK = {
   disabledBg: '#38383a',
 };
 
+// Match web join-now-widget-new.tsx: Local=blue-orange, Traveler=blue, Business=orange
 const USER_TYPES = [
-  { type: 'local', icon: '📍', title: 'Nearby Local', subtitle: "I live here & want to meet travelers", color: BLUE },
-  { type: 'traveler', icon: '✈️', title: 'Nearby Traveler', subtitle: "I'm traveling & want to connect", color: ORANGE },
-  { type: 'business', icon: '🏪', title: 'Nearby Business', subtitle: 'I run a local business', color: TEAL },
+  { type: 'local', icon: '📍', title: 'Nearby Local', subtitle: "I live here & want to meet travelers", colors: [BLUE, ORANGE] },
+  { type: 'traveler', icon: '✈️', title: 'Nearby Traveler', subtitle: "I'm traveling & want to connect", colors: [BLUE, BLUE_600] },
+  { type: 'business', icon: '🏪', title: 'Nearby Business', subtitle: 'I run a local business', colors: [ORANGE, '#EA580C'] },
 ];
 
 export default function SignupStep1Screen({ navigation }) {
@@ -64,15 +66,10 @@ export default function SignupStep1Screen({ navigation }) {
         </View>
 
         <View style={styles.optionsSection}>
-          {USER_TYPES.map(({ type, icon, title, subtitle, color }) => {
+          {USER_TYPES.map(({ type, icon, title, subtitle, colors }) => {
             const isSelected = userType === type;
-            return (
-              <TouchableOpacity
-                key={type}
-                style={[styles.optionCard, optionCardBase, isSelected && { backgroundColor: color, borderColor: color }]}
-                onPress={() => setUserType(type)}
-                activeOpacity={0.8}
-              >
+            const cardContent = (
+              <View style={styles.optionCardInner}>
                 <View style={[styles.optionIcon, optionIconBase, isSelected && styles.optionIconSelected]}>
                   <Text style={styles.optionIconText}>{icon}</Text>
                 </View>
@@ -81,6 +78,27 @@ export default function SignupStep1Screen({ navigation }) {
                   <Text style={[styles.optionSubtitle, optionSubtitleBase, isSelected && styles.optionSubtitleSelected]}>{subtitle}</Text>
                 </View>
                 {isSelected && <Text style={styles.checkmark}>✓</Text>}
+              </View>
+            );
+            return (
+              <TouchableOpacity
+                key={type}
+                onPress={() => setUserType(type)}
+                activeOpacity={0.8}
+                style={[styles.optionCard, !isSelected && optionCardBase, !isSelected && styles.optionCardUnselected]}
+              >
+                {isSelected ? (
+                  <LinearGradient
+                    colors={colors}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={[styles.optionCardGradient, { borderColor: colors[0] }]}
+                  >
+                    {cardContent}
+                  </LinearGradient>
+                ) : (
+                  cardContent
+                )}
               </TouchableOpacity>
             );
           })}
@@ -117,13 +135,22 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 16, color: '#6B7280', textAlign: 'center' },
   optionsSection: { gap: 12, marginBottom: 32 },
   optionCard: {
+    borderRadius: 16,
+    borderWidth: 2,
+    overflow: 'hidden',
+  },
+  optionCardUnselected: {
+    borderColor: '#E5E7EB',
+    backgroundColor: '#F9FAFB',
+  },
+  optionCardGradient: {
+    borderRadius: 14,
+    borderWidth: 0,
+  },
+  optionCardInner: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#E5E7EB',
-    backgroundColor: '#F9FAFB',
   },
   optionIcon: {
     width: 48,
