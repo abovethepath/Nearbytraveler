@@ -110,10 +110,10 @@ function Navbar() {
     return () => window.removeEventListener("keydown", handleKeydown);
   }, [toggleTheme]);
 
-  const [directUser, setDirectUser] = useState<any>(null);
+  const [directUser, setDirectUser] = useState<any>(user || null);
 
-  // CRITICAL: Session is the ONLY source of truth for avatar. Never trust localStorage first.
-  // Fetch /api/auth/user on mount and whenever we need to verify - prevents showing wrong user (e.g. admin)
+  // Fetch session user - but DON'T clear directUser if context user is already set
+  // (handles iOS WebView cookie timing where fetch returns 401 right after signup)
   useEffect(() => {
     let cancelled = false;
     const fetchSessionUser = async () => {
@@ -130,14 +130,14 @@ function Navbar() {
             return;
           }
         }
-        setDirectUser(null);
+        if (!user) setDirectUser(null);
       } catch (error) {
-        if (!cancelled) setDirectUser(null);
+        if (!cancelled && !user) setDirectUser(null);
       }
     };
     fetchSessionUser();
     return () => { cancelled = true; };
-  }, [location, setUser]);
+  }, [location, setUser, user]);
 
   // Sync from AuthContext when it updates (e.g. after login) - but only if IDs match
   useEffect(() => {

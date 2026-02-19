@@ -209,8 +209,29 @@ export const useAuth = () => {
 };
 
 function Router() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // BULLETPROOF POST-SIGNUP FIX: If just_registered flag exists, load user from localStorage
+  // synchronously in the useState initializer. This handles the case where:
+  // 1. iOS WebView reloads the page after signup (full remount)
+  // 2. The Router component remounts for any reason after signup
+  // Without this, user=null on first render -> landing navbar flashes
+  const [user, setUser] = useState<User | null>(() => {
+    const flag = localStorage.getItem('just_registered');
+    if (flag === 'true') {
+      const stored = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed && parsed.id) {
+            console.log('🎯 INIT: just_registered user loaded:', parsed.username);
+            localStorage.removeItem('just_registered');
+            return parsed;
+          }
+        } catch (e) { /* ignore */ }
+      }
+    }
+    return null;
+  });
+  const [isLoading, setIsLoading] = useState(!user);
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
   
@@ -223,9 +244,7 @@ function Router() {
     '/signup/local', 
     '/signup/traveling', 
     '/signup/business',
-    '/signup/traveler',
-    '/welcome',
-    '/welcome-business'
+    '/signup/traveler'
   ];
   const isSignupRoute = PUBLIC_SIGNUP_PATHS.includes(location) || location.startsWith('/signup/');
   
@@ -244,17 +263,16 @@ function Router() {
   const isLandingPage = landingPageRoutes.includes(location);
 
   useEffect(() => {
-    // Skip auth check for signup routes
-    if (isSignupRoute) {
-      console.log('🔥 SIGNUP ROUTE - skipping auth check:', location);
+    // BULLETPROOF FIX #1: If user was already set from useState initializer (just_registered),
+    // skip the server auth check entirely. The server might return 401 due to iOS WebView
+    // cookie timing, which would incorrectly clear the user we just set.
+    if (user && user.id) {
+      console.log('🎯 User already initialized (likely from just_registered), skipping server auth check:', user.username);
       setIsLoading(false);
       return;
     }
 
-    // BULLETPROOF FIX: If user just registered, trust localStorage immediately.
-    // On iOS WebView, session cookies from the registration POST are often not
-    // available yet for the next GET request, causing a false 401.
-    // The user JUST signed up successfully - we have their data, skip server check.
+    // BULLETPROOF FIX #2: Fallback check for just_registered flag (in case initializer missed it)
     const justRegistered = localStorage.getItem('just_registered');
     const storedUserForJustReg = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
     if (justRegistered === 'true' && storedUserForJustReg) {
@@ -271,6 +289,13 @@ function Router() {
       } catch (e) {
         console.error('Failed to parse just_registered user data:', e);
       }
+    }
+
+    // Skip auth check for signup routes
+    if (isSignupRoute) {
+      console.log('🔥 SIGNUP ROUTE - skipping auth check:', location);
+      setIsLoading(false);
+      return;
     }
 
     console.log('🚀 PRODUCTION CACHE BUST v2025-08-17-17-28 - Starting authentication check');

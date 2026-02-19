@@ -289,10 +289,8 @@ export default function SignupBusinessSimple() {
       // Clear sessionStorage account data since signup is complete
       sessionStorage.removeItem('accountData');
       
-      // Small delay to ensure context update, then redirect to dashboard
-      setTimeout(() => {
-        setLocation('/business-dashboard');
-      }, 100);
+      localStorage.setItem('just_registered', 'true');
+      setLocation('/business-dashboard');
     },
     onError: (error: Error) => {
       toast({

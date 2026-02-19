@@ -335,7 +335,8 @@ export default function SignupTraveling() {
           });
           
           localStorage.setItem('just_registered', 'true');
-          setLocation('/welcome');
+          const userId = data.user?.id;
+          setLocation(userId ? `/profile/${userId}` : '/home');
           
         } else {
           console.error('❌ Registration failed:', data.message);
