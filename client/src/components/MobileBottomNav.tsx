@@ -207,10 +207,10 @@ export function MobileBottomNav() {
           display: 'flex', 
           alignItems: 'flex-end', 
           justifyContent: 'space-between', 
-          padding: '0 8px', 
-          maxWidth: '480px', 
+          padding: '0 16px', 
+          maxWidth: '700px', 
           margin: '0 auto', 
-          height: '49px',
+          height: '60px',
           position: 'relative',
           overflow: 'visible',
         }}>
@@ -238,9 +238,9 @@ export function MobileBottomNav() {
                   flex: 1,
                   touchAction: 'manipulation', 
                   WebkitTapHighlightColor: 'transparent', 
-                  minHeight: '49px',
-                  paddingTop: '6px',
-                  paddingBottom: '2px',
+                  minHeight: '60px',
+                  paddingTop: '8px',
+                  paddingBottom: '4px',
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
@@ -249,16 +249,16 @@ export function MobileBottomNav() {
               >
                 <Icon 
                   style={{ 
-                    width: '22px', 
-                    height: '22px', 
-                    marginBottom: '2px',
+                    width: '26px', 
+                    height: '26px', 
+                    marginBottom: '3px',
                     color: isActive ? '#f97316' : (isDark ? '#8e8e93' : '#9ca3af'),
                     strokeWidth: isActive ? 2.5 : 1.8,
                   }}
                 />
                 <span style={{ 
-                  fontSize: '10px', 
-                  lineHeight: '12px', 
+                  fontSize: '12px', 
+                  lineHeight: '14px', 
                   fontWeight: 500,
                   color: isActive ? '#f97316' : (isDark ? '#8e8e93' : '#9ca3af'),
                 }}>
@@ -280,27 +280,27 @@ export function MobileBottomNav() {
               flex: 1,
               touchAction: 'manipulation',
               WebkitTapHighlightColor: 'transparent',
-              minHeight: '49px',
-              paddingTop: '6px',
-              paddingBottom: '2px',
+              minHeight: '60px',
+              paddingTop: '8px',
+              paddingBottom: '4px',
               background: 'none',
               border: 'none',
               cursor: 'pointer',
             }}
           >
             <div style={{
-              width: '28px',
-              height: '28px',
-              borderRadius: '8px',
+              width: '34px',
+              height: '34px',
+              borderRadius: '10px',
               background: '#f97316',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: '2px',
+              marginBottom: '3px',
             }}>
-              <Plus style={{ width: '18px', height: '18px', color: 'white' }} strokeWidth={2.5} />
+              <Plus style={{ width: '20px', height: '20px', color: 'white' }} strokeWidth={2.5} />
             </div>
-            <span style={{ fontSize: '10px', lineHeight: '12px', fontWeight: 500, color: '#f97316' }}>
+            <span style={{ fontSize: '12px', lineHeight: '14px', fontWeight: 500, color: '#f97316' }}>
               Create
             </span>
           </button>
@@ -331,9 +331,9 @@ export function MobileBottomNav() {
                   flex: 1,
                   touchAction: 'manipulation', 
                   WebkitTapHighlightColor: 'transparent', 
-                  minHeight: '49px',
-                  paddingTop: '6px',
-                  paddingBottom: '2px',
+                  minHeight: '60px',
+                  paddingTop: '8px',
+                  paddingBottom: '4px',
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
@@ -341,13 +341,13 @@ export function MobileBottomNav() {
                 }}
                 aria-label={item.label}
               >
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '28px', overflow: 'visible' }}>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '32px', overflow: 'visible' }}>
                   <Icon 
                     style={{ 
-                      width: '22px', 
-                      height: '22px', 
-                      minWidth: '22px',
-                      marginBottom: '2px',
+                      width: '26px', 
+                      height: '26px', 
+                      minWidth: '26px',
+                      marginBottom: '3px',
                       color: isActive ? '#f97316' : (isDark ? '#8e8e93' : '#9ca3af'),
                       strokeWidth: isActive ? 2.5 : 1.8,
                       flexShrink: 0,
@@ -358,8 +358,8 @@ export function MobileBottomNav() {
                       position: 'absolute',
                       top: '-6px',
                       right: '-10px',
-                      minWidth: '16px',
-                      height: '16px',
+                      minWidth: '18px',
+                      height: '18px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -367,7 +367,7 @@ export function MobileBottomNav() {
                       color: 'white',
                       borderRadius: '9999px',
                       padding: '0 4px',
-                      fontSize: '10px',
+                      fontSize: '11px',
                       fontWeight: 700,
                       boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
                     }}>
@@ -376,8 +376,8 @@ export function MobileBottomNav() {
                   )}
                 </div>
                 <span style={{ 
-                  fontSize: '10px', 
-                  lineHeight: '12px', 
+                  fontSize: '12px', 
+                  lineHeight: '14px', 
                   fontWeight: 500,
                   color: isActive ? '#f97316' : (isDark ? '#8e8e93' : '#9ca3af'),
                 }}>
