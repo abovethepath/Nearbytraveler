@@ -403,9 +403,11 @@ export default function SignupLocal() {
                 </div>
 
                 {/* New to Town - full box clickable */}
-                <button
-                  type="button"
+                <div
+                  role="button"
+                  tabIndex={0}
                   onClick={() => setFormData(prev => ({ ...prev, isNewToTown: !prev.isNewToTown }))}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFormData(prev => ({ ...prev, isNewToTown: !prev.isNewToTown })); } }}
                   className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-200 dark:border-blue-700 w-full text-left cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
                   data-testid="checkbox-new-to-town"
                 >
@@ -423,7 +425,7 @@ export default function SignupLocal() {
                       Check this if you recently moved here and want to explore your new hometown
                     </p>
                   </div>
-                </button>
+                </div>
               </div>
 
               {/* Top Choices */}

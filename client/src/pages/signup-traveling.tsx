@@ -491,9 +491,11 @@ export default function SignupTraveling() {
 
                 {/* NEW TO HOMETOWN QUESTION - full box clickable */}
                 {formData.hometownCity && (
-                  <button
-                    type="button"
+                  <div
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setFormData(prev => ({ ...prev, isNewToTown: !prev.isNewToTown }))}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFormData(prev => ({ ...prev, isNewToTown: !prev.isNewToTown })); } }}
                     className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-200 dark:border-blue-700 w-full text-left cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
                     data-testid="checkbox-new-to-town"
                   >
@@ -509,7 +511,7 @@ export default function SignupTraveling() {
                         Check this if you recently moved here
                       </p>
                     </span>
-                  </button>
+                  </div>
                 )}
               </div>
 
