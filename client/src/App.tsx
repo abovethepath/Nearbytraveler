@@ -259,7 +259,7 @@ function Router() {
     '/', '/landing', '/landing-new', '/auth', '/auth/signup', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling',
     '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/ambassador-program', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/finishing-setup', '/quick-login', '/preview-landing', '/preview-first-landing',
-    '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code', '/landing-simple'
+    '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code', '/landing-simple', '/signin', '/launching-soon'
   ];
   const isLandingPage = landingPageRoutes.includes(location);
 
@@ -534,7 +534,7 @@ function Router() {
     };
   }, [user, setLocation, queryClient]);
 
-  if (isLoading) {
+  if (isLoading && !isSignupRoute && !isLandingPage) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-2xl font-semibold text-gray-700">Loading Nearby Traveler...</div>
