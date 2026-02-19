@@ -1,0 +1,45 @@
+---
+description: iOS WebView sign-up flow fix — only modify native app paths, never touch web
+globs: client/src/App.tsx,client/src/lib/nativeApp.ts,client/src/lib/auth.ts,expo-app/**/*.js
+alwaysApply: false
+---
+
+# iOS WebView Sign-Up Flow — Critical Constraints
+
+## IMPORTANT: iOS WebView App Only — Do NOT Touch Web Pages
+
+The sign-up flow is broken in the iOS WebView app — after signing up, users get redirected to the landing page instead of the authenticated home page. Fixes must apply **only** to the iOS app experience.
+
+## Rules
+
+1. **Only modify code paths that run when `isNativeIOSApp()` returns true** — this function is in `client/src/lib/nativeApp.ts` and detects when the app is running inside the iOS WebView.
+
+2. **Do NOT change any behavior for regular web users** — the desktop and mobile web sign-up/sign-in flows must remain exactly as they are.
+
+3. **Do NOT modify** the landing pages, the LandingNavbar, or any unauthenticated page routing for non-iOS users.
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `client/src/App.tsx` | Main routing logic, has `isNativeIOSApp()` checks throughout |
+| `client/src/lib/nativeApp.ts` | iOS detection utility |
+| `client/src/lib/auth.ts` | Authentication storage and session management |
+| `client/src/components/navbar.tsx` | Already hidden for iOS via `isNativeIOSApp()` |
+| `client/src/components/MobileBottomNav.tsx` | iOS bottom navigation |
+| `expo-app/src/screens/WebViewScreens.js` | JoinWebViewScreen — navigates to native Home on signup complete |
+| `server/routes.ts` | Backend auth routes: `/api/auth/user`, `/api/auth/recover-session` |
+
+## The Problem
+
+After a user completes signup in the iOS app, the routing in App.tsx doesn't detect the new auth state properly and falls through to the unauthenticated/landing page routes instead of showing the authenticated app with the bottom nav.
+
+## Expected Behavior (iOS Only)
+
+After signup completes → user sees the authenticated home page (`/home`) with the bottom tab navigation bar, **not** the landing/waitlist page.
+
+## Implementation Notes
+
+- Use `isNativeIOSApp()` to gate any new logic — e.g. `if (isNativeIOSApp()) { ... }`
+- The native app's `JoinWebViewScreen` should call `navigation.navigate('Home')` when `/welcome`, `/welcome-business`, or `/home` loads — don't wait for async `checkAuth`
+- Add `/welcome` and `/welcome-business` to `PUBLIC_SIGNUP_PATHS` in App.tsx so `checkServerAuth` doesn't clear the user on those routes

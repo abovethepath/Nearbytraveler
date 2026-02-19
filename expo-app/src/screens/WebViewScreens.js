@@ -397,7 +397,8 @@ export function GenericWebViewScreen({ route, navigation }) {
  * Step 2: Create account (SignupAccount)
  * Step 3: Complete profile (SignupLocal or SignupTraveling)
  * Replaces the old single-form RegisterScreen.
- * Uses incognito. sharedCookiesEnabled=true so after signup the session is available to the app and checkAuth() can succeed.
+ * No incognito - sharedCookiesEnabled + thirdPartyCookiesEnabled so session cookie flows through.
+ * On signup-complete path, calls checkAuth() then navigates to Home so AuthContext has user before MainTabs.
  */
 export function JoinWebViewScreen({ navigation }) {
   const colorScheme = useColorScheme();
@@ -418,13 +419,22 @@ export function JoinWebViewScreen({ navigation }) {
     const isConnectionError = desc.includes('connect') || desc.includes('network') || desc.includes('offline') || desc.includes('internet') || desc.includes('err_connection') || desc.includes('nsurlerrordomain');
     setError(isConnectionError ? 'Can\'t connect to server. Please check your internet connection and try again.' : (e.nativeEvent?.description || 'Failed to load page'));
   }, []);
+  // Paths that indicate signup is complete - Local/Traveler go to /profile or /profile/:id, Business to /business-dashboard
+  const isSignupCompletePath = (pathname) => {
+    if (!pathname) return false;
+    return pathname === '/home' || pathname === '/welcome' || pathname === '/welcome-business' ||
+      pathname === '/account-success' || pathname === '/finishing-setup' ||
+      pathname === '/profile' || pathname === '/business-dashboard' ||
+      (pathname.startsWith('/profile/') && pathname.split('/').length >= 3);
+  };
+
   const onShouldStartLoadWithRequest = useCallback((request) => {
     const url = request?.url || '';
     if (!url.includes(BASE_URL)) return true;
     const pathname = (url.replace(BASE_URL, '').split('?')[0] || '/').replace(/\/$/, '') || '/';
 
-    // FIRST: Check if signup completed (pathname === '/home') - allow before any redirect logic
-    if (pathname === '/home' || pathname === '/account-success' || pathname === '/finishing-setup') {
+    // FIRST: Check if signup completed - allow before any redirect logic
+    if (isSignupCompletePath(pathname)) {
       signupCompletedRef.current = true;
       return true;  // ALLOW the load
     }
@@ -438,18 +448,22 @@ export function JoinWebViewScreen({ navigation }) {
     return true;
   }, [joinUri]);
 
-  const onNavigationStateChange = useCallback((navState) => {
+  const onNavigationStateChange = useCallback(async (navState) => {
     const url = navState?.url || '';
     if (!url.includes(BASE_URL)) return;
 
     const pathname = (url.replace(BASE_URL, '').split('?')[0] || '/').replace(/\/$/, '') || '/';
 
-    // Signup complete: navigate to native Home immediately (don't wait for checkAuth - it's async and can cause landing flash)
-    if (pathname === '/welcome' || pathname === '/welcome-business' || pathname === '/home') {
+    // Signup complete: call checkAuth so session is in AuthContext, then navigate to native Home
+    // Local/Traveler redirect to /profile/:id or /home; Business to /business-dashboard
+    if (pathname === '/welcome' || pathname === '/welcome-business' || pathname === '/home' ||
+        pathname === '/profile' || pathname === '/business-dashboard' ||
+        (pathname.startsWith('/profile/') && pathname.split('/').length >= 3)) {
       signupCompletedRef.current = true;
+      await checkAuth();
       navigation.navigate('Home');
     }
-  }, [navigation]);
+  }, [navigation, checkAuth]);
 
   const containerBg = dark ? DARK.bg : '#FFFFFF';
   const headerBg = dark ? DARK.bg : '#FFFFFF';
@@ -502,8 +516,8 @@ export function JoinWebViewScreen({ navigation }) {
         onNavigationStateChange={onNavigationStateChange}
         javaScriptEnabled={true}
         domStorageEnabled={true}
-        incognito={true}
         sharedCookiesEnabled={true}
+        thirdPartyCookiesEnabled={true}
       />
     </SafeAreaView>
   );

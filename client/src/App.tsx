@@ -299,6 +299,24 @@ function Router() {
       return;
     }
 
+    // CRITICAL iOS FIX: Skip auth check for /profile and /profile/:id when we have just_registered or user in storage.
+    // After signup, user may land on /profile/:id before cookie propagates; don't clear them.
+    const storedForProfile = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+    if ((location === '/profile' || location.startsWith('/profile/')) && (justRegistered === 'true' || storedForProfile)) {
+      console.log('🎯 PROFILE ROUTE POST-SIGNUP - skipping server auth check for:', location);
+      if (storedForProfile) {
+        try {
+          const parsedUser = JSON.parse(storedForProfile);
+          if (parsedUser?.id) {
+            setUser(parsedUser);
+            authStorage.setUser(parsedUser);
+          }
+        } catch {}
+      }
+      setIsLoading(false);
+      return;
+    }
+
     console.log('🚀 PRODUCTION CACHE BUST v2025-08-17-17-28 - Starting authentication check');
 
     // Check server-side session first
