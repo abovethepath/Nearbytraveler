@@ -494,7 +494,7 @@ export default function CityPage({ cityName }: CityPageProps) {
 
                 {/* Business Users Grid - using same UserCard component for consistent sizing */}
                 {users.filter((user: User) => user.userType === 'business').length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     {users
                       .filter((user: User) => user.userType === 'business')
                       .slice(0, 6)
