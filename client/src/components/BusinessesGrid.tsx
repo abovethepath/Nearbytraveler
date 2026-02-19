@@ -131,7 +131,7 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
           return (
             <div
               key={b.id}
-              className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow cursor-pointer p-4"
+              className="rounded-xl border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-md hover:shadow-xl transition-shadow cursor-pointer p-4"
               onClick={() => setLocation(`/business/${b.id}`)}
             >
               <div className="flex gap-4">
@@ -150,10 +150,6 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                   {category && (
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{category}</p>
                   )}
-                  <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    <MapPin className="h-3 w-3 shrink-0" />
-                    <span className="truncate">{locationText}</span>
-                  </div>
                 </div>
               </div>
 
