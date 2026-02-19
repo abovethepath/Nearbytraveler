@@ -484,7 +484,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="bg-gradient-to-r from-green-500 to-orange-500 text-white hover:from-green-600 hover:to-orange-600 transition-all duration-300 rounded-xl shadow-lg"
+                    className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 transition-all duration-300 rounded-xl shadow-lg"
                     onClick={() => setLocation('/deals')}
                   >
                     <Briefcase className="w-4 h-4 mr-2" />
@@ -571,7 +571,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                       <Button
                         onClick={() => setShowAllEvents(true)}
                         variant="outline"
-                        className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600"
+                        className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
                       >
                         <Calendar className="w-4 h-4 mr-2" />
                         View All {events.length} Events

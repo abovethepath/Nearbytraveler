@@ -601,7 +601,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             What You Have in Common
           </CardTitle>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <Badge className="bg-green-600 dark:bg-green-500 text-white dark:text-white shadow-md border-green-700 dark:border-green-600 text-xs sm:text-sm px-2 py-1 font-bold whitespace-nowrap">
+            <Badge className="bg-blue-600 dark:bg-blue-500 text-white dark:text-white shadow-md border-blue-700 dark:border-blue-600 text-xs sm:text-sm px-2 py-1 font-bold whitespace-nowrap">
               {compatibilityData?.matchCount != null
                 ? `${compatibilityData.matchCount} things in common`
                 : compatibilityData
@@ -641,7 +641,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </h5>
             <div className="flex flex-wrap gap-1.5">
               {commonalities.sharedActivities.map((activity, index) => (
-                <div key={`shared-activity-${activity}-${index}`} className="inline-flex items-center justify-center h-8 sm:h-9 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none">
+                <div key={`shared-activity-${activity}-${index}`} className="inline-flex items-center justify-center h-8 sm:h-9 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none">
                   {activity}
                 </div>
               ))}
@@ -882,7 +882,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-blue-900 dark:text-blue-300">{trip.destination}</span>
                     {trip.dateOverlap && (
-                      <Badge className="bg-green-500 text-white border-green-600 shadow-md font-medium">
+                      <Badge className="bg-orange-500 text-white border-orange-600 shadow-md font-medium">
                         Overlapping Dates
                       </Badge>
                     )}

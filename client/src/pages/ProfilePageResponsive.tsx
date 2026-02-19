@@ -165,22 +165,21 @@ export default function ProfilePageResponsive() {
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-2xl md:text-3xl font-bold" data-testid="text-name">{displayName}</h1>
                 {isAvailableNow && (
-                  <span className="status-badge inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-500 text-white text-xs font-semibold whitespace-nowrap">
+                  <span className="status-badge inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-500 text-white text-xs font-semibold whitespace-nowrap">
                     <Zap className="w-3 h-3" />
                     Available Now
                   </span>
                 )}
               </div>
-              {/* CRITICAL: Always show hometown location - consistent mobile sizing */}
-              <div className="flex flex-col gap-1">
-                <p className="text-sm text-gray-600 font-medium" data-testid="text-hometown-location">
-                  Nearby Local • {hometownLocation}
-                </p>
-                {/* CRITICAL: Show destination location when actively traveling - same size as hometown */}
-                {destinationLocation && (
-                  <p className="text-sm text-blue-600 font-medium" data-testid="text-destination-location">
-                    Nearby Traveler • {destinationLocation}
-                  </p>
+              {/* 4-line block: Nearby Local, city, Nearby Traveler, destination — one line each, mobile-friendly */}
+              <div className="flex flex-col gap-0 text-sm font-medium min-w-0">
+                <p className="text-gray-600 whitespace-nowrap" data-testid="text-hometown-label">Nearby Local</p>
+                <p className="text-gray-600 truncate" data-testid="text-hometown-location" title={hometownLocation}>{hometownLocation}</p>
+                <p className="text-blue-600 whitespace-nowrap mt-1" data-testid="text-destination-label">Nearby Traveler</p>
+                {destinationLocation ? (
+                  <p className="text-blue-600 truncate" data-testid="text-destination-location" title={destinationLocation}>{destinationLocation}</p>
+                ) : (
+                  <p className="text-blue-600 truncate" data-testid="text-destination-location">—</p>
                 )}
               </div>
             </div>

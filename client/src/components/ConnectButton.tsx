@@ -146,7 +146,7 @@ export default function ConnectButton({
         text: 'Connected', 
         disabled: false, 
         variant: 'default' as const, 
-        className: 'bg-green-600 hover:bg-green-700 text-white border-0' 
+        className: 'bg-blue-600 hover:bg-blue-700 text-white border-0' 
       };
     }
     if (connectionStatus?.status === 'pending') {

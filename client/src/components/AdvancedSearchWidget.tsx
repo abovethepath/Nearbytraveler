@@ -783,7 +783,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                               {user.username}
                             </h4>
                             {availableUserIds.has(user.id) && (
-                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-orange-500 to-green-500 text-white flex-shrink-0">
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-blue-500 to-orange-500 text-white flex-shrink-0">
                                 <Zap className="w-2.5 h-2.5" />
                                 Available
                               </span>

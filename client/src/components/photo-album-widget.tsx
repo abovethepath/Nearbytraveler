@@ -822,7 +822,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                             });
                           }
                         }}
-                        className={selectedAlbum.isPublic ? "bg-green-500 text-white hover:bg-green-600" : "bg-gray-500 text-white hover:bg-gray-600"}
+                        className={selectedAlbum.isPublic ? "bg-orange-500 text-white hover:bg-orange-600" : "bg-gray-500 text-white hover:bg-gray-600"}
                       >
                         {selectedAlbum.isPublic ? "🌐 Public" : "🔒 Private"}
                       </Button>

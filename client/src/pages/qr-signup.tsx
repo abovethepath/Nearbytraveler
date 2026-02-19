@@ -565,7 +565,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
 
               <Button 
                 onClick={() => handleSignupClick('business')}
-                className="w-full bg-green-600 hover:bg-green-700 text-white"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 data-testid="button-signup-business"
               >
                 <span className="flex items-center justify-center space-x-2">

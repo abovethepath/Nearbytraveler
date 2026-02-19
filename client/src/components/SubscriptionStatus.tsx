@@ -254,7 +254,7 @@ export function SubscriptionStatus() {
                 createSubscriptionMutation.mutate();
               }}
               disabled={createSubscriptionMutation.isPending}
-              className="bg-green-600 hover:bg-green-700 text-white w-full"
+              className="bg-blue-600 hover:bg-blue-700 text-white w-full"
               style={{ transition: 'none' }}
             >
               {createSubscriptionMutation.isPending 

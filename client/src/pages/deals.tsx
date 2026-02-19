@@ -331,7 +331,7 @@ export default function Deals() {
               <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                 {/* Discount Value Badge */}
                 {deal.discountValue && (
-                  <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-bold whitespace-nowrap leading-none bg-green-500 text-white border-0">
+                  <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-bold whitespace-nowrap leading-none bg-orange-500 text-white border-0">
                     {getDiscountIcon(deal.discountType)}
                     <span className="ml-1">
                       {deal.discountType === 'percentage' ? `${deal.discountValue}% OFF` : 
@@ -638,7 +638,7 @@ export default function Deals() {
                   {claimedDeal.description}
                 </p>
                 <div className="flex items-center gap-2">
-                  <Badge className="bg-green-500 text-white">
+                  <Badge className="bg-orange-500 text-white">
                     {claimedDeal.discountValue}
                     {claimedDeal.discountType === 'percentage' ? '% OFF' : ' OFF'}
                   </Badge>

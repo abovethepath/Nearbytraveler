@@ -201,7 +201,7 @@ export default function LocationSortedEvents({
               e.stopPropagation();
               // Handle join event action
             }}
-            className="flex-1 text-xs bg-green-600 hover:bg-green-700"
+            className="flex-1 text-xs bg-blue-600 hover:bg-blue-700 text-white"
             style={{ color: 'black' }}
           >
             <span style={{ color: 'black' }}>Join Event</span>

@@ -98,6 +98,8 @@ function WebViewWithChrome({ path, navigation }) {
   const colorScheme = useColorScheme();
   const dark = colorScheme === 'dark';
   const { user: authUser, logout } = useAuth();
+  const sessionCookie = api.getSessionCookie();
+  const sessionId = sessionCookie ? sessionCookie.replace(/^nt\.sid=/, '') : null;
   const { height: windowHeight } = useWindowDimensions();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -105,7 +107,15 @@ function WebViewWithChrome({ path, navigation }) {
   const [user, setUser] = useState(null);
   const [canGoBackWeb, setCanGoBackWeb] = useState(false);
   const webViewRef = useRef(null);
+  const displayUser = authUser || user;
   const source = webViewSource(path);
+
+  // Wait for auth on Messages and chat paths so the page never loads without user (avoids blank / "Please log in")
+  const isMessagesPath = path === '/messages' || (path && path.startsWith('/messages'));
+  const isChatroomPath = path && path.startsWith('/chatroom');
+  const isEventChatPath = path && path.startsWith('/event-chat');
+  const shouldWaitForAuth = (isMessagesPath || isChatroomPath || isEventChatPath) && !displayUser;
+  const effectiveSource = shouldWaitForAuth ? null : source;
 
   const loadUser = useCallback(() => {
     api.getUser().then((u) => {
@@ -276,7 +286,6 @@ function WebViewWithChrome({ path, navigation }) {
   const containerBg = dark ? DARK.bg : '#FFFFFF';
   const headerBg = dark ? DARK.bg : '#FFFFFF';
   const headerBorder = dark ? DARK.border : '#F3F4F6';
-  const displayUser = authUser || user;
   const profileImg = displayUser?.profileImage || displayUser?.profilePhoto || user?.profileImage || user?.profilePhoto;
   const initials = (displayUser?.name || displayUser?.fullName || displayUser?.displayName || displayUser?.username || 'U').charAt(0).toUpperCase();
 
@@ -343,21 +352,32 @@ function WebViewWithChrome({ path, navigation }) {
           </TouchableOpacity>
         </View>
       </View>
+      {shouldWaitForAuth ? (
+        <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg }]}>
+          <ActivityIndicator size="large" color="#F97316" />
+          <Text style={[styles.loadingMessage, dark && { color: DARK.textMuted }]}>
+            {isMessagesPath ? 'Loading messages...' : (isChatroomPath || isEventChatPath) ? 'Loading chat...' : 'Loading...'}
+          </Text>
+        </View>
+      ) : (
       <WebView
         ref={webViewRef}
-        source={source}
+        source={effectiveSource}
         style={[styles.webview, dark && { backgroundColor: DARK.bg }]}
         injectedJavaScriptBeforeContentLoaded={
-          authUser
+          displayUser
             ? NATIVE_INJECT_JS + `
-(function(){
-  try{
-    var u=${JSON.stringify(authUser)};
-    localStorage.setItem('user',JSON.stringify(u));
-    localStorage.setItem('userData',JSON.stringify(u));
-    localStorage.setItem('travelconnect_user',JSON.stringify(u));
-  }catch(e){}
+(function() {
+  try {
+    var u = ${JSON.stringify(displayUser)};
+    localStorage.setItem('user', JSON.stringify(u));
+    localStorage.setItem('userData', JSON.stringify(u));
+    localStorage.setItem('travelconnect_user', JSON.stringify(u));
+    ${sessionId ? `localStorage.setItem('auth_token', ${JSON.stringify(sessionId)});` : ''}
+    console.log('[NearbyTraveler Native] Auth injection fired - user and token set');
+  } catch(e) {}
 })();
+true;
 `
             : NATIVE_INJECT_JS
         }
@@ -381,6 +401,7 @@ function WebViewWithChrome({ path, navigation }) {
         allowsBackForwardNavigationGestures={false}
         javaScriptEnabled={true}
         domStorageEnabled={true}
+        cacheEnabled={true}
         startInLoadingState={true}
         pullToRefreshEnabled={true}
         sharedCookiesEnabled={true}
@@ -392,6 +413,7 @@ function WebViewWithChrome({ path, navigation }) {
           </View>
         )}
       />
+      )}
     </SafeAreaView>
   );
 }
@@ -775,4 +797,5 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   scrollContent: { flexGrow: 1 },
   webview: { flex: 1, backgroundColor: '#FFFFFF' },
+  loadingMessage: { marginTop: 12, fontSize: 16, color: '#6B7280' },
 });

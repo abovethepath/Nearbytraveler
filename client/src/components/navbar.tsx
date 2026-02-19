@@ -148,7 +148,7 @@ function Navbar() {
         }
       }
     }
-  }, [user?.id, user?.username, user]);
+  }, [user?.id, user?.username, user?.profileImage, user]);
 
   // recalc top on load/resize & when warning banners appear/disappear
   useEffect(() => {
@@ -213,8 +213,9 @@ function Navbar() {
     if (directUser) {
       const imageLength = directUser.profileImage?.length || 0;
 
-      // Automatically clear any image over 200KB to prevent performance issues
-      if (imageLength > 200000) {
+      // Automatically clear any image over 800KB to prevent performance issues
+      // Base64 adds ~33% overhead: 500KB image → ~682KB string. Use 800KB to allow valid uploads.
+      if (imageLength > 800000) {
         console.warn(
           "Avatar too large (" +
             imageLength +

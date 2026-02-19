@@ -669,13 +669,13 @@ export default function SignupBusinessSimple() {
                         disabled={isGettingLocation}
                         size="sm"
                         variant={locationCaptured ? "default" : "outline"}
-                        className={locationCaptured ? "bg-green-600 hover:bg-green-700" : ""}
+                        className={locationCaptured ? "bg-blue-600 hover:bg-blue-700" : ""}
                       >
                         {locationCaptured ? "Location Captured ✓" : "Enable Location"}
                       </Button>
                     </div>
                     {locationCaptured && (
-                      <div className="text-sm text-green-600 dark:text-green-400 font-medium">
+                      <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">
                         ✅ Location captured for proximity notifications
                       </div>
                     )}

@@ -939,7 +939,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                       <div className="flex items-start gap-3">
                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 ${
                           isOriginalOrganizer === true 
-                            ? 'border-green-500 bg-green-500' 
+                            ? 'border-blue-500 bg-blue-500' 
                             : 'border-gray-300 dark:border-gray-600'
                         }`}>
                           {isOriginalOrganizer === true && (

@@ -2529,8 +2529,29 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       const safeResults = results.map(({ password, ...rest }) => rest);
       
-      console.log(`🌍 users-by-location: found ${safeResults.length} ${userType} users for "${searchCity}"`);
-      res.json(safeResults);
+      // Enrich with travel status so user cards show destination badge for travelers
+      const now = new Date();
+      const enrichedResults = await Promise.all(safeResults.map(async (user: any) => {
+        const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
+        const activePlan = userTravelPlans.find((plan: any) => {
+          const start = new Date(plan.startDate);
+          const end = new Date(plan.endDate);
+          return now >= start && now <= end;
+        });
+        const formattedPlans = userTravelPlans.map((plan: any) => ({
+          ...plan,
+          destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
+        }));
+        return {
+          ...user,
+          travelPlans: formattedPlans,
+          isCurrentlyTraveling: !!activePlan,
+          travelDestination: activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null)
+        };
+      }));
+      
+      console.log(`🌍 users-by-location: found ${enrichedResults.length} ${userType} users for "${searchCity}"`);
+      res.json(enrichedResults);
     } catch (error: any) {
       console.error("Error in users-by-location endpoint:", error);
       res.status(500).json({ message: "Failed to fetch users by location", error });
@@ -2822,8 +2843,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       }
       
-      // Remove passwords and add city-specific role metadata
-      const finalUsers = combinedUsers.map(user => {
+      // Remove passwords, add city-specific role metadata, and enrich with travel status for user card badges
+      const now = new Date();
+      const finalUsers = await Promise.all(combinedUsers.map(async (user) => {
         if (!user) return null;
         
         const { password: _, ...userWithoutPassword } = user;
@@ -2835,22 +2857,38 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         if (isLocalToCity) rolesInCity.push('local');
         if (isTravelerToCity) rolesInCity.push('traveler');
         
+        // Enrich with travel status so user cards show destination in top-left
+        const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
+        const activePlan = userTravelPlans.find((plan: any) => {
+          const start = new Date(plan.startDate);
+          const end = new Date(plan.endDate);
+          return now >= start && now <= end;
+        });
+        const formattedPlans = userTravelPlans.map((plan: any) => ({
+          ...plan,
+          destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
+        }));
+        
         return {
           ...userWithoutPassword,
           hometownCity: user.hometownCity || '',
           location: user.location,
           isLocalToCity,
           isTravelerToCity,
-          rolesInCity
+          rolesInCity,
+          travelPlans: formattedPlans,
+          isCurrentlyTraveling: !!activePlan,
+          travelDestination: activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null)
         };
-      }).filter(Boolean);
+      }));
       
+      const filteredFinalUsers = finalUsers.filter(Boolean);
       if (process.env.NODE_ENV === 'development') {
         console.log(`🏙️ CITY USERS: Found ${localUsers.length} locals + ${travelersInCity.length} travelers`);
-        console.log(`🏙️ CITY USERS: Final result - ${finalUsers.length} users for ${city}`);
+        console.log(`🏙️ CITY USERS: Final result - ${filteredFinalUsers.length} users for ${city}`);
       }
       
-      return res.json(finalUsers);
+      return res.json(filteredFinalUsers);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching city users:", error);
       return res.status(500).json({ message: "Failed to fetch city users", error: error.message });
@@ -19251,11 +19289,11 @@ Questions? Just reply to this message. Welcome aboard!
   // GET city activities for a specific city
   app.get("/api/city-activities/:cityName", async (req, res) => {
     try {
-      const { cityName } = req.params;
+      const cityName = decodeURIComponent(req.params.cityName || '');
       if (process.env.NODE_ENV === 'development') console.log(`🏃 CITY ACTIVITIES GET: Fetching activities for ${cityName}`);
       
       // Fetch activities: exclude hidden items, prioritize featured
-      const activities = await db
+      let activities = await db
         .select()
         .from(cityActivities)
         .where(
@@ -19270,6 +19308,32 @@ Questions? Just reply to this message. Welcome aboard!
           cityActivities.rank, // Then by rank
           desc(cityActivities.createdAt) // Then by newest
         );
+      
+      // Auto-seed launch cities: if we have curated data but DB is empty, seed so users see pre-populated activities
+      if (activities.length === 0) {
+        const { getFeaturedActivitiesForCity } = await import('./static-city-activities.js');
+        const featured = getFeaturedActivitiesForCity(cityName);
+        if (featured.length > 0) {
+          if (process.env.NODE_ENV === 'development') console.log(`🌱 CITY ACTIVITIES GET: Auto-seeding ${cityName} (${featured.length} featured)`);
+          const { ensureCityHasActivities } = await import('./auto-city-setup.js');
+          await ensureCityHasActivities(cityName, '', 'United States', 1);
+          activities = await db
+            .select()
+            .from(cityActivities)
+            .where(
+              and(
+                eq(cityActivities.cityName, cityName),
+                eq(cityActivities.isActive, true),
+                eq(cityActivities.isHidden, false)
+              )
+            )
+            .orderBy(
+              desc(cityActivities.isFeatured),
+              cityActivities.rank,
+              desc(cityActivities.createdAt)
+            );
+        }
+      }
       
       if (process.env.NODE_ENV === 'development') console.log(`✅ CITY ACTIVITIES GET: Found ${activities.length} activities for ${cityName}`);
       res.json(activities);
@@ -19337,6 +19401,49 @@ Questions? Just reply to this message. Welcome aboard!
       res.status(500).json({ error: 'Failed to delete city activity' });
     }
   });
+
+  // PATCH/PUT city activity by ID — only the creator can edit (avoids others changing e.g. "Taylor Swift May 4" to May 5)
+  const updateCityActivityHandler = async (req: any, res: any) => {
+    try {
+      const activityId = parseInt(req.params.activityId);
+      if (isNaN(activityId)) {
+        return res.status(400).json({ error: 'Invalid activity ID' });
+      }
+      const userId = req.headers['x-user-id'] ? parseInt(String(req.headers['x-user-id']), 10) : null;
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      const [row] = await db.select().from(cityActivities).where(eq(cityActivities.id, activityId)).limit(1);
+      if (!row) {
+        return res.status(404).json({ error: 'Activity not found' });
+      }
+      if (row.createdByUserId === 1) {
+        return res.status(403).json({ error: 'Cannot edit system activities' });
+      }
+      if (row.createdByUserId !== userId) {
+        return res.status(403).json({ error: 'Only the creator can edit this activity' });
+      }
+
+      const { activityName, description } = req.body || {};
+      const updates: Record<string, any> = {};
+      if (typeof activityName === 'string' && activityName.trim()) updates.activityName = activityName.trim();
+      if (description !== undefined) updates.description = description === null || description === '' ? '' : String(description);
+
+      if (Object.keys(updates).length === 0) {
+        return res.status(400).json({ error: 'No valid fields to update' });
+      }
+
+      const updated = await storage.updateCityActivity(activityId, updates);
+      if (process.env.NODE_ENV === 'development') console.log(`✏️ UPDATED CITY ACTIVITY: ID ${activityId} by user ${userId}`);
+      res.json(updated);
+    } catch (error: any) {
+      console.error('Error updating city activity:', error);
+      res.status(500).json({ error: 'Failed to update city activity' });
+    }
+  };
+  app.patch("/api/city-activities/:activityId", updateCityActivityHandler);
+  app.put("/api/city-activities/:activityId", updateCityActivityHandler);
 
   // POST enhance city with AI-generated activities
   app.post("/api/city-activities/:cityName/enhance", async (req, res) => {

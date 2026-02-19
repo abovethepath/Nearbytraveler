@@ -368,7 +368,7 @@ export default function Events() {
   const categoryData = [
     { name: "Food & Dining", emoji: "🍕", color: "bg-white text-orange-600 border-orange-300 hover:bg-orange-50 dark:bg-gray-800 dark:text-orange-400 dark:border-orange-600 dark:hover:bg-orange-900/20", selectedColor: "bg-orange-500 text-white border-orange-500" },
     { name: "Music & Entertainment", emoji: "🎵", color: "bg-white text-purple-600 border-purple-300 hover:bg-purple-50 dark:bg-gray-800 dark:text-purple-400 dark:border-purple-600 dark:hover:bg-purple-900/20", selectedColor: "bg-purple-500 text-white border-purple-500" },
-    { name: "Sports & Fitness", emoji: "⚽", color: "bg-white text-green-600 border-green-300 hover:bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-600 dark:hover:bg-green-900/20", selectedColor: "bg-green-500 text-white border-green-500" },
+    { name: "Sports & Fitness", emoji: "⚽", color: "bg-white text-blue-600 border-blue-300 hover:bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-600 dark:hover:bg-blue-900/20", selectedColor: "bg-blue-500 text-white border-blue-500" },
     { name: "Nightlife & Parties", emoji: "🌃", color: "bg-white text-indigo-600 border-indigo-300 hover:bg-indigo-50 dark:bg-gray-800 dark:text-indigo-400 dark:border-indigo-600 dark:hover:bg-indigo-900/20", selectedColor: "bg-indigo-500 text-white border-indigo-500" },
     { name: "Social & Networking", emoji: "👥", color: "bg-white text-blue-600 border-blue-300 hover:bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-600 dark:hover:bg-blue-900/20", selectedColor: "bg-blue-500 text-white border-blue-500" },
     { name: "Arts & Culture", emoji: "🎨", color: "bg-white text-pink-600 border-pink-300 hover:bg-pink-50 dark:bg-gray-800 dark:text-pink-400 dark:border-pink-600 dark:hover:bg-pink-900/20", selectedColor: "bg-pink-500 text-white border-pink-500" },
@@ -1018,7 +1018,7 @@ export default function Events() {
 
                         {/* Recurring Badge - Top Right */}
                         {event.isRecurring && (
-                          <Badge className="absolute top-3 right-3 bg-green-500 text-white border-0 text-xs shadow-md">
+                          <Badge className="absolute top-3 right-3 bg-orange-500 text-white border-0 text-xs shadow-md">
                             🔄 {event.recurrenceType === 'weekly' ? 'Weekly' : 'Recurring'}
                           </Badge>
                         )}

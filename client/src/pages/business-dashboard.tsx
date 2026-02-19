@@ -872,7 +872,7 @@ export default function BusinessDashboard() {
             </TabsTrigger>
             <TabsTrigger 
               value="events" 
-              className="text-xs sm:text-sm data-[state=active]:bg-green-500 data-[state=active]:text-white py-2 sm:py-3"
+              className="text-xs sm:text-sm data-[state=active]:bg-blue-500 data-[state=active]:text-white py-2 sm:py-3"
               data-testid="tab-events"
             >
               Events

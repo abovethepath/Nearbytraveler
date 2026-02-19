@@ -710,7 +710,7 @@ export default function Messages() {
                                     rows={3}
                                   />
                                   <div className="flex gap-2">
-                                    <Button size="sm" onClick={() => handleEditMessage(msg.id)} className="bg-green-600 hover:bg-green-700 text-white">
+                                    <Button size="sm" onClick={() => handleEditMessage(msg.id)} className="bg-blue-600 hover:bg-blue-700 text-white">
                                       <Check className="w-4 h-4 mr-1" />
                                       Save
                                     </Button>

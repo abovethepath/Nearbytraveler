@@ -252,7 +252,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
               </Badge>
             ) : isGoing ? (
               /* Show "Going" badge if already going */
-              <Badge className="flex items-center gap-1 bg-green-500 text-white px-3 py-1">
+              <Badge className="flex items-center gap-1 bg-orange-500 text-white px-3 py-1">
                 <Check className="h-3 w-3" />
                 Going
               </Badge>

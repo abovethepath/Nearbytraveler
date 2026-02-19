@@ -426,7 +426,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         {onSortByAvailableNow && (
           <Button
             size="sm"
-            className="w-full mb-4 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs py-2 rounded-full"
+            className="w-full mb-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2 rounded-full"
             onClick={onSortByAvailableNow}
           >
             🟢 See Who Else is Available Now
@@ -478,7 +478,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                   <div className="flex gap-1">
                     <Button
                       size="sm"
-                      className="h-7 bg-green-500 hover:bg-green-600 text-white text-xs"
+                      className="h-7 bg-orange-500 hover:bg-orange-600 text-white text-xs"
                       onClick={() => respondRequestMutation.mutate({ requestId: req.id, status: "accepted", fromUserId: req.fromUser?.id })}
                     >
                       Accept
@@ -586,7 +586,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                       />
                       <Button
                         size="sm"
-                        className="h-7 w-7 p-0 bg-green-500 hover:bg-green-600"
+                        className="h-7 w-7 p-0 bg-orange-500 hover:bg-orange-600"
                         onClick={() => sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage })}
                         disabled={sendRequestMutation.isPending}
                       >

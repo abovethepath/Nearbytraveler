@@ -152,7 +152,7 @@ export default function Donate() {
                 
                 <Button
                   onClick={() => handleDonate(tier.id)}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   style={{ transition: 'none' }}
                 >
                   Support {tier.amount}/year
@@ -186,7 +186,7 @@ export default function Donate() {
             
             <Button
               onClick={() => handleDonate("angel")}
-              className="w-full bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-lg"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-lg"
               style={{transition: 'none'}}
             >
               Contact for Investment

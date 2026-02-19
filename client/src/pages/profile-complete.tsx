@@ -2242,8 +2242,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // CRITICAL: Clear localStorage cache to prevent stale data
       invalidateUserCache();
       
-      // API returns { user, profileImage, message } - extract the user data
-      const updatedUser = data?.user || data;
+      // API returns { user, profileImage, message } - extract user and ensure profileImage is set
+      const rawUser = data?.user || data;
+      const updatedUser = {
+        ...rawUser,
+        profileImage: data?.profileImage ?? rawUser?.profileImage,
+      };
       console.log('Profile upload success, user has image:', !!updatedUser?.profileImage);
       
       // Update localStorage immediately
@@ -3567,7 +3571,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Get connect button text and state
   const getConnectButtonState = () => {
     if (connectionStatus?.status === 'accepted') {
-      return { text: 'Connected', disabled: false, variant: 'default' as const, className: 'bg-green-600 hover:bg-green-700 text-white border-0' };
+      return { text: 'Connected', disabled: false, variant: 'default' as const, className: 'bg-blue-600 hover:bg-blue-700 text-white border-0' };
     }
     if (connectionStatus?.status === 'pending') {
       return { text: 'Request Sent', disabled: true, variant: 'default' as const, className: 'bg-gray-600 hover:bg-gray-700 text-white border-0' };
@@ -3998,50 +4002,51 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           )}
                         </div>
                         
-                        {/* ALWAYS show hometown - NEVER remove - compact text for mobile - allow wrapping for full visibility */}
-                        <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
-                          <MapPin className="hidden sm:block w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                          <span className="break-words">Nearby Local • {hometown}</span>
+                        {/* 4-line block: Nearby Local, city, Nearby Traveler, destination — one line each, no mid-word wrap */}
+                        <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black min-w-0">
+                          <div className="flex-shrink-0 mt-0.5 flex flex-col items-center gap-0">
+                            <MapPin className="hidden sm:block w-5 h-5 text-blue-600" />
+                            <Plane className="hidden sm:block w-5 h-5 text-orange-600 mt-1" />
+                          </div>
+                          <div className="flex flex-col gap-0 min-w-0 flex-1">
+                            <span className="whitespace-nowrap">Nearby Local</span>
+                            <span className="truncate" title={hometown}>{hometown}</span>
+                            <span className="whitespace-nowrap mt-0.5">Nearby Traveler</span>
+                            {(() => {
+                              const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+                              return currentTravelPlan ? (
+                                <span className="truncate" title={currentTravelPlan}>{currentTravelPlan}</span>
+                              ) : (
+                                <span className="truncate">—</span>
+                              );
+                            })()}
+                          </div>
                           {user.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 flex-shrink-0">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 flex-shrink-0 self-start">
                               <span style={{ color: 'black' }}>New to Town</span>
                             </span>
                           )}
                         </div>
-                        
-                        {/* ADDITIONAL travel status if currently traveling - shows BELOW hometown */}
+                        {/* Hostel line when traveling and public hostel set */}
                         {(() => {
                           const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                          if (currentTravelPlan) {
-                            // Find the active travel plan that matches the current destination AND has public hostel info
-                            const now = new Date();
-                            const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
-                              if (!plan.startDate || !plan.endDate) return false;
-                              const start = new Date(plan.startDate);
-                              const end = new Date(plan.endDate);
-                              // Must be active, have public hostel, AND match the displayed destination
-                              const isActive = now >= start && now <= end;
-                              const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
-                              const matchesDestination = plan.destination && currentTravelPlan.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
-                              return isActive && hasPublicHostel && matchesDestination;
-                            });
-                            
-                            return (
-                              <>
-                                <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
-                                  <Plane className="hidden sm:block w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                                  <span className="break-words">Nearby Traveler • {currentTravelPlan}</span>
-                                </div>
-                                {activePlanWithHostel && (
-                                  <div className="flex items-start gap-1.5 text-sm font-medium text-black flex-wrap mt-1">
-                                    <Building2 className="hidden sm:block w-4 h-4 text-black flex-shrink-0 mt-0.5" />
-                                    <span className="break-words">🏨 Staying at {activePlanWithHostel.hostelName}</span>
-                                  </div>
-                                )}
-                              </>
-                            );
-                          }
-                          return null;
+                          if (!currentTravelPlan) return null;
+                          const now = new Date();
+                          const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
+                            if (!plan.startDate || !plan.endDate) return false;
+                            const start = new Date(plan.startDate);
+                            const end = new Date(plan.endDate);
+                            const isActive = now >= start && now <= end;
+                            const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
+                            const matchesDestination = plan.destination && currentTravelPlan.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
+                            return isActive && hasPublicHostel && matchesDestination;
+                          });
+                          return activePlanWithHostel ? (
+                            <div className="flex items-start gap-1.5 text-sm font-medium text-black flex-wrap mt-1">
+                              <Building2 className="hidden sm:block w-4 h-4 text-black flex-shrink-0 mt-0.5" />
+                              <span className="break-words">🏨 Staying at {activePlanWithHostel.hostelName}</span>
+                            </div>
+                          ) : null;
                         })()}
                         
                         {/* Show travel plan actions if has ANY travel plans (current or upcoming) */}
@@ -4181,7 +4186,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       e.stopPropagation();
                       setShowWriteReferenceModal(true);
                     }}
-                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
                     data-testid="button-write-reference"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
@@ -4191,7 +4196,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <Button
                     type="button"
                     onClick={() => setLocation('/auth')}
-                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
                     data-testid="button-write-reference"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
@@ -4399,7 +4404,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                       activeTab === 'countries' 
                         ? 'bg-white/20 text-white' 
-                        : 'bg-green-500 text-white'
+                        : 'bg-orange-500 text-white hover:bg-orange-600'
                     }`}>
                       {countriesVisited.length}
                     </span>
@@ -4465,7 +4470,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   // Reset after scrolling completes
                   setTimeout(() => setTriggerQuickMeetup(false), 500);
                 }}
-                className="bg-gradient-to-r from-green-500 to-blue-500 border-0 hover:from-green-600 hover:to-blue-600 
+                className="bg-gradient-to-r from-blue-500 to-orange-500 border-0 hover:from-blue-600 hover:to-orange-600 
                            px-4 sm:px-6 py-2 sm:py-2 text-sm font-medium rounded-lg
                            w-full sm:w-auto flex items-center justify-center transition-all duration-200"
                 style={{ color: 'black' }}
@@ -4761,7 +4766,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           console.log('🔥 CREATE OFFER clicked, navigating to business dashboard');
                           setLocation('/business-dashboard');
                         }}
-                        className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600"
+                        className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
                       >
                         <Plus className="w-3 h-3 mr-1" />
                         Create Offer
@@ -4801,7 +4806,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
                             <div className="flex items-center gap-2">
-                              <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-bold whitespace-nowrap leading-none bg-gradient-to-r from-green-500 to-blue-500 text-white">
+                              <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-bold whitespace-nowrap leading-none bg-gradient-to-r from-blue-500 to-orange-500 text-white">
                                 {(() => {
                                   // Format discount display based on deal type
                                   const value = deal.discountValue?.trim() || '';
@@ -4950,7 +4955,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             console.error('Failed to update:', error);
                           }
                         }}
-                        className="bg-green-600 hover:bg-green-700 text-white"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
                         size="sm"
                       >
                         Save All
@@ -5118,7 +5123,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               }}
                               className={`h-8 px-3 rounded-full text-sm font-medium transition-all ${
                                 isSelected
-                                  ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md'
+                                  ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-md'
                                   : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
                               }`}
                             >
@@ -5214,7 +5219,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       onClick={() => {
                                         setEditFormData(prev => ({ ...prev, activities: prev.activities.filter(a => a !== activity) }));
                                       }}
-                                      className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md gap-1.5 hover:opacity-80 transition-opacity"
+                                      className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-md gap-1.5 hover:opacity-80 transition-opacity"
                                       title="Click to remove"
                                     >
                                       {activity}
@@ -5271,7 +5276,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             console.error('Failed to update:', error);
                           }
                         }}
-                        className="bg-green-600 hover:bg-green-700 text-white"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
                         size="sm"
                       >
                         Save All
@@ -5622,7 +5627,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             }
                           }}
                           disabled={false}
-                          className="bg-green-600 hover:bg-green-700 text-white"
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
                           Save Business Changes
                         </Button>
@@ -5928,7 +5933,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             });
                           }
                         }}
-                        className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-semibold"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-semibold"
                         size="lg"
                       >
                         💾 Save Business Changes
@@ -5992,7 +5997,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <Button 
                         size="sm" 
                         onClick={() => setLocation('/upload-photos')}
-                        className="bg-green-500 text-white hover:bg-green-600 flex-1 sm:flex-none text-xs sm:text-sm"
+                        className="bg-orange-500 text-white hover:bg-orange-600 flex-1 sm:flex-none text-xs sm:text-sm"
                       >
                         Upload Photos
                       </Button>
@@ -6180,7 +6185,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               updateCountries.mutate(tempCountries);
                             }}
                             disabled={updateCountries.isPending}
-                            className="bg-green-600 hover:bg-green-700 text-white"
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
                           >
                             {updateCountries.isPending ? "Saving..." : "Save Countries"}
                           </Button>
@@ -6734,7 +6739,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                           setConnectionNoteText('');
                                         }).catch(console.error);
                                       }}
-                                      className="h-6 px-2 text-xs bg-green-500 hover:bg-green-600 text-white border-0"
+                                      className="h-6 px-2 text-xs bg-orange-500 hover:bg-orange-600 text-white border-0"
                                       data-testid={`button-save-note-${connection.id}`}
                                     >
                                       Save
@@ -7192,7 +7197,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-700">
                     <CardContent className="py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
                           <Users className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -9620,7 +9625,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <Button 
                     type="submit" 
                     disabled={createReference.isPending}
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                     data-testid="button-submit-reference"
                   >
                     {createReference.isPending ? "Submitting..." : "Submit Reference"}
