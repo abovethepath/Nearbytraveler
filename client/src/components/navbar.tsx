@@ -110,10 +110,22 @@ function Navbar() {
     return () => window.removeEventListener("keydown", handleKeydown);
   }, [toggleTheme]);
 
-  const [directUser, setDirectUser] = useState<any>(user || null);
+  const [directUser, setDirectUser] = useState<any>(() => {
+    if (user) return user;
+    // Check localStorage for just-registered user data
+    const justRegistered = localStorage.getItem('just_registered');
+    const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+    if (justRegistered === 'true' && storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        if (parsed?.id) return parsed;
+      } catch {}
+    }
+    return null;
+  });
 
   // Fetch session user - but DON'T clear directUser if context user is already set
-  // (handles iOS WebView cookie timing where fetch returns 401 right after signup)
+  // or if just_registered flag exists (handles iOS WebView cookie timing where fetch returns 401 right after signup)
   useEffect(() => {
     let cancelled = false;
     const fetchSessionUser = async () => {
@@ -130,9 +142,22 @@ function Navbar() {
             return;
           }
         }
-        if (!user) setDirectUser(null);
+        // Don't clear user if just_registered or if we have user data in storage
+        const justRegistered = localStorage.getItem('just_registered');
+        const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+        if (justRegistered === 'true' && storedUser) {
+          try {
+            const parsed = JSON.parse(storedUser);
+            if (parsed?.id) {
+              console.log('🔒 Navbar: just_registered - keeping user from localStorage');
+              setDirectUser(parsed);
+              return;
+            }
+          } catch {}
+        }
+        if (!user && !directUser) setDirectUser(null);
       } catch (error) {
-        if (!cancelled && !user) setDirectUser(null);
+        if (!cancelled && !user && !directUser) setDirectUser(null);
       }
     };
     fetchSessionUser();
@@ -142,6 +167,21 @@ function Navbar() {
   // Sync from AuthContext when it updates (e.g. after login) - but only if IDs match
   useEffect(() => {
     if (!user) {
+      // Don't clear directUser if just_registered flag exists (prevents post-signup flash)
+      const justRegistered = localStorage.getItem('just_registered');
+      if (justRegistered === 'true') {
+        return;
+      }
+      // Also don't clear if we still have stored user data
+      const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          if (parsed?.id && directUser?.id && String(parsed.id) === String(directUser.id)) {
+            return;
+          }
+        } catch {}
+      }
       setDirectUser(null);
     } else if (user?.id && user?.username && (!directUser || String(directUser.id) === String(user.id))) {
       setDirectUser(user);
