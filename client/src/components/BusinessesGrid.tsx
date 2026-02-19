@@ -131,68 +131,68 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
           return (
             <div
               key={b.id}
-              className="rounded-xl border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-md hover:shadow-xl transition-shadow cursor-pointer p-4"
+              className="rounded-xl border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow cursor-pointer overflow-hidden"
               onClick={() => setLocation(`/business/${b.id}`)}
             >
-              <div className="flex gap-4">
-                {(b.logoUrl || b.profileImage) && (
+              {/* Large hero image */}
+              {(b.logoUrl || b.profileImage) && (
+                <div className="w-full h-44 bg-gray-100 dark:bg-gray-700 overflow-hidden">
                   <img
                     src={b.logoUrl || b.profileImage}
                     alt={title}
-                    className="h-20 w-20 rounded-lg object-cover shrink-0"
+                    className="w-full h-full object-cover"
                     loading="lazy"
                   />
-                )}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-gray-900 dark:text-white text-base leading-tight">
-                    {title}
-                  </h3>
-                  {category && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{category}</p>
-                  )}
                 </div>
-              </div>
-
-              {bio && (
-                <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 line-clamp-2">{bio}</p>
               )}
 
-              <div className="mt-3 space-y-1.5">
-                {phone && (
-                  <a
-                    href={`tel:${phone}`}
-                    className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Phone className="h-3.5 w-3.5 shrink-0" />
-                    <span>{phone}</span>
-                  </a>
+              <div className="p-5">
+                <h3 className="font-bold text-gray-900 dark:text-white text-xl leading-tight">
+                  {title}
+                </h3>
+                {category && (
+                  <p className="text-sm text-orange-600 dark:text-orange-400 font-medium mt-1">{category}</p>
                 )}
-                {b.streetAddress && (
-                  <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300">
-                    <MapPin className="h-3.5 w-3.5 shrink-0" />
-                    <span>{b.streetAddress}</span>
-                  </div>
-                )}
-              </div>
 
-              <div className="mt-3 flex gap-3">
-                <Button
-                  size="sm"
-                  className="flex-1 h-9 bg-blue-600 hover:bg-blue-700 text-white text-sm"
-                  onClick={(e) => { e.stopPropagation(); setLocation(`/business/${b.id}`); }}
-                >
-                  View
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="flex-1 h-9 border-orange-300 dark:border-orange-600 text-orange-600 dark:text-orange-400 text-sm"
-                  onClick={(e) => { e.stopPropagation(); setLocation(`/business/${b.id}/offers`); }}
-                >
-                  <Tag className="h-3.5 w-3.5 mr-1" />
-                  Deals
-                </Button>
+                {bio && (
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 leading-relaxed line-clamp-3">{bio}</p>
+                )}
+
+                <div className="mt-4 space-y-2">
+                  {phone && (
+                    <a
+                      href={`tel:${phone}`}
+                      className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Phone className="h-4 w-4 shrink-0" />
+                      <span>{phone}</span>
+                    </a>
+                  )}
+                  {b.streetAddress && (
+                    <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                      <MapPin className="h-4 w-4 shrink-0" />
+                      <span>{b.streetAddress}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-5 flex gap-3">
+                  <Button
+                    className="flex-1 h-11 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold"
+                    onClick={(e) => { e.stopPropagation(); setLocation(`/business/${b.id}`); }}
+                  >
+                    View Business
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1 h-11 border-2 border-orange-400 dark:border-orange-500 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-sm font-semibold"
+                    onClick={(e) => { e.stopPropagation(); setLocation(`/business/${b.id}/offers`); }}
+                  >
+                    <Tag className="h-4 w-4 mr-1.5" />
+                    Deals
+                  </Button>
+                </div>
               </div>
             </div>
           );
