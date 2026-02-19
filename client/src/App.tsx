@@ -226,7 +226,6 @@ function Router() {
     '/signup/traveler'
   ];
   const isSignupRoute = PUBLIC_SIGNUP_PATHS.includes(location) || location.startsWith('/signup/');
-  const isWelcomeRoute = location === '/welcome' || location === '/welcome-business';
   
   // CRITICAL FIX: Don't render anything for API routes
   if (location.startsWith('/api/')) {
@@ -1285,11 +1284,6 @@ function Router() {
             {location.startsWith('/signup/qr/') && <QRSignup referralCode={location.split('/signup/qr/')[1] || ''} />}
           </div>
         </>
-      ) : isWelcomeRoute ? (
-        <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
-          {location === '/welcome' && <Welcome />}
-          {location === '/welcome-business' && <WelcomeBusiness />}
-        </div>
       ) : !hasAnyAuthEvidence ? (
         // MOBILE FIX: Check if this is a navigation to home page from mobile nav
         location === '/home' && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) ? (
@@ -1343,7 +1337,7 @@ function Router() {
       )}
 
       {/* Bottom Navigation - rendered outside conditional branches so it always shows for authenticated users */}
-      {!isSignupRoute && !isWelcomeRoute && !isNativeIOSApp() && (user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
+      {!isSignupRoute && !isNativeIOSApp() && (user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
         <MobileBottomNav />
       )}
     </AuthContext.Provider>
