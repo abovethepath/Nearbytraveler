@@ -209,32 +209,14 @@ function Navbar() {
     };
   }, [setUser]);
 
-  // Clear oversized images and validate avatar data
+  // Log oversized avatar data only; do NOT clear or delete server photo (so corner avatar can show uploaded photo)
   useEffect(() => {
-    if (directUser) {
-      const imageLength = directUser.profileImage?.length || 0;
-
-      // Automatically clear any image over 800KB to prevent performance issues
-      // Base64 adds ~33% overhead: 500KB image → ~682KB string. Use 800KB to allow valid uploads.
+    if (directUser?.profileImage) {
+      const imageLength = directUser.profileImage.length;
       if (imageLength > 800000) {
         console.warn(
-          "Avatar too large (" +
-            imageLength +
-            " chars), auto-clearing for performance",
+          "Avatar data is large (" + imageLength + " chars). Server photo kept; consider compressing on upload.",
         );
-
-        // Clear from context immediately
-        const cleanUser = { ...directUser, profileImage: null };
-        setUser(cleanUser);
-        authStorage.setUser(cleanUser);
-
-        // Clear from server
-        fetch(`${getApiBaseUrl()}/api/users/profile-photo`, {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-        }).catch(() => {});
-
-        return;
       }
     }
   }, [directUser?.id, directUser?.profileImage?.length]);

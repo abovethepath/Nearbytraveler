@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { getProfileImageUrl } from "@/components/simple-avatar";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -780,7 +781,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                     className="flex items-center gap-3 flex-1 cursor-pointer"
                   >
                     <Avatar className="w-10 h-10">
-                      <AvatarImage src={member.profileImage || undefined} />
+                      <AvatarImage src={getProfileImageUrl(member) || undefined} />
                       <AvatarFallback className="bg-green-600 text-white text-sm">
                         {getFirstName(member.name, member.username)[0]}
                       </AvatarFallback>
@@ -863,7 +864,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                 data-testid={`avatar-member-${member.id}`}
               >
                 <Avatar className="w-8 h-8 border-2 border-gray-800">
-                  <AvatarImage src={member.profileImage || undefined} />
+                  <AvatarImage src={getProfileImageUrl(member) || undefined} />
                   <AvatarFallback className="bg-green-600 text-white text-[10px]">
                     {getFirstName(member.name, member.username)[0]}
                   </AvatarFallback>
@@ -944,7 +945,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                         className="flex items-center gap-3 flex-1 cursor-pointer"
                       >
                         <Avatar className="w-12 h-12">
-                          <AvatarImage src={member.profileImage || undefined} />
+                          <AvatarImage src={getProfileImageUrl(member) || undefined} />
                           <AvatarFallback className="bg-green-600 text-white">
                             {getFirstName(member.name, member.username)[0]}
                           </AvatarFallback>
@@ -1025,7 +1026,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                         }
                       }}
                     >
-                      <AvatarImage src={message.sender?.profileImage || undefined} />
+                      <AvatarImage src={getProfileImageUrl(message.sender) || undefined} />
                       <AvatarFallback className="text-xs">{message.sender?.name?.[0] || '?'}</AvatarFallback>
                     </Avatar>
                   )}

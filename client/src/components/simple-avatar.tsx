@@ -1,12 +1,22 @@
 import { useMemo } from "react";
 import { User } from "lucide-react";
 
+/** Single source of truth for avatar URL from any user-like object (used in navbar, chat, messages). */
+export function getProfileImageUrl(user: { profileImage?: string | null; profilePhoto?: string | null; profile_image?: string | null; avatar?: string | null } | null | undefined): string | null {
+  if (!user) return null;
+  const url = (user as any).profileImage ?? (user as any).profilePhoto ?? (user as any).profile_image ?? (user as any).avatar;
+  if (!url || typeof url !== 'string' || url.trim() === '') return null;
+  if (url.startsWith('data:image/') || url.startsWith('http')) return url;
+  return null;
+}
+
 interface SimpleAvatarProps {
   user: {
     id: number;
     username: string;
     name?: string;
     profileImage?: string | null;
+    profilePhoto?: string | null;
     avatarColor?: string | null;
     avatarGradient?: string | null;
   } | null;
@@ -80,11 +90,11 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
     const gradientIndex = user.username.charCodeAt(0) % gradients.length;
     const gradient = gradients[gradientIndex];
 
+    // Single source: profileImage, profilePhoto, or profile_image (used everywhere for corner + chat avatars)
+    const imageUrl = getProfileImageUrl(user);
+
     // More robust image validation - check for data URLs or http URLs
-    const hasValidImage = user.profileImage && 
-                         user.profileImage.trim() !== '' && 
-                         (user.profileImage.startsWith('data:image/') || 
-                          user.profileImage.startsWith('http'));
+    const hasValidImage = !!imageUrl;
 
     // Generate placeholder URL using name or username
     const displayName = user.name || user.username;
@@ -94,10 +104,10 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
       letter: firstLetter,
       gradient,
       hasImage: hasValidImage,
-      imageUrl: hasValidImage ? user.profileImage : null,
+      imageUrl: hasValidImage ? imageUrl : null,
       placeholderUrl
     };
-  }, [user?.id, user?.username, user?.name, user?.profileImage]);
+  }, [user?.id, user?.username, user?.name, (user as any)?.profileImage, (user as any)?.profilePhoto, (user as any)?.profile_image]);
 
   const handleClick = () => {
     if (onClick) {

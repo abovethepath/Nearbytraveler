@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MessageCircle, Send, Users, ArrowLeft, Heart, Reply, Copy, Edit2, Trash2, Check, X, ThumbsUp } from 'lucide-react';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
-import { SimpleAvatar } from '@/components/simple-avatar';
+import { SimpleAvatar, getProfileImageUrl } from '@/components/simple-avatar';
 import websocketService from '@/services/websocketService';
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
@@ -588,7 +588,7 @@ export default function Messages() {
                     >
                       <Avatar className="w-12 h-12">
                         <AvatarImage 
-                          src={conv.profileImage} 
+                          src={getProfileImageUrl(conv) || undefined} 
                           alt={`${conv.username} avatar`}
                         />
                         <AvatarFallback className="bg-blue-600 text-white">
@@ -891,7 +891,7 @@ export default function Messages() {
                 >
                   <div className="flex items-center gap-3">
                     <Avatar className="w-10 h-10">
-                      <AvatarImage src={contact.profileImage} />
+                      <AvatarImage src={getProfileImageUrl(contact) || undefined} />
                       <AvatarFallback className="bg-green-600 text-white text-sm">
                         {contact.username?.charAt(0)?.toUpperCase() || '?'}
                       </AvatarFallback>

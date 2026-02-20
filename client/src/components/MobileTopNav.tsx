@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Menu, X, Home, MapPin, Calendar, Users, MessageCircle, User, LogOut, Compass, Zap, Building2, Star, ChevronRight, Settings, Search } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getProfileImageUrl } from "@/components/simple-avatar";
 import { AuthContext } from "@/App";
 import { useLocation } from "wouter";
 import Logo from "@/components/logo";
@@ -241,7 +242,7 @@ export function MobileTopNav() {
           >
             <Avatar className="w-8 h-8 border-2 border-gray-200/80 dark:border-gray-600/80 pointer-events-none ring-1 ring-white/20">
               <AvatarImage
-                src={currentUser?.profileImage || undefined}
+                src={getProfileImageUrl(currentUser) || undefined}
                 alt={currentUser?.name || currentUser?.username || "User"}
                 className="pointer-events-none"
               />
@@ -292,7 +293,7 @@ export function MobileTopNav() {
                 <div className="px-4 py-4 border-b border-gray-200/60 dark:border-gray-700/60">
                   <div className="flex items-center gap-3">
                     <Avatar className="w-14 h-14 pointer-events-none ring-2 ring-orange-200 dark:ring-orange-800">
-                      <AvatarImage src={currentUser.profileImage} className="pointer-events-none" />
+                      <AvatarImage src={getProfileImageUrl(currentUser) || undefined} className="pointer-events-none" />
                       <AvatarFallback className="bg-orange-500 text-white text-lg pointer-events-none">
                         {(currentUser.name || currentUser.fullName || currentUser.displayName || currentUser.username || '').charAt(0)?.toUpperCase() || "U"}
                       </AvatarFallback>
