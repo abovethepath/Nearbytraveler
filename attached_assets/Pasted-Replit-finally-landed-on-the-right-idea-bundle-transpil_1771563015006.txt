@@ -1,0 +1,92 @@
+Replit finally landed on the right idea: bundle/transpile the server without type-checking (esbuild), plus Vite for the client. That avoids the “1000 TS errors” problem and still creates dist/server/index.js.
+
+But there’s one catch: you told me earlier Render UI didn’t show a Build Command field, so “set Build Command to bash build.sh” may not be possible.
+
+So I’m going to give you the solution that works even when you can’t set a Render build command:
+
+✅ Put the build into postinstall so Render runs it automatically.
+
+Do this: add build.sh + a Node script + postinstall
+1) Create scripts/build-server.mjs
+
+Create this file:
+
+scripts/build-server.mjs
+
+import { build } from "esbuild";
+
+await build({
+  entryPoints: ["server/index.ts"],
+  outfile: "dist/server/index.js",
+  bundle: true,
+  platform: "node",
+  format: "esm",
+  target: "node20",
+  sourcemap: false,
+  minify: false,
+  external: [
+    // keep native/binary deps external (safe)
+    "pg-native",
+    "bufferutil"
+  ]
+});
+
+console.log("✅ Server built: dist/server/index.js");
+
+2) Create build.sh (repo root)
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Building server..."
+node scripts/build-server.mjs
+
+echo "Building client..."
+npx vite build
+
+echo "✅ Build complete"
+
+
+Make it executable on Replit:
+
+chmod +x build.sh
+
+3) Update package.json scripts
+
+Change your scripts to:
+
+"scripts": {
+  "dev": "node -r dotenv/config ./node_modules/tsx/dist/cli.mjs server/index.ts dotenv_config_path=./.env",
+  "build": "bash build.sh",
+  "postinstall": "bash build.sh",
+  "start": "node dist/server/index.js",
+  "check": "tsc",
+  "db:push": "drizzle-kit push"
+}
+
+
+Why postinstall? Render will always run npm install / npm ci, and then postinstall runs automatically—even if you can’t set a build command in the UI.
+
+Verify locally on Replit
+rm -rf dist
+npm run build
+ls -la dist/server/index.js
+ls -la dist/public/index.html
+
+
+Then test start:
+
+npm start
+
+Commit + push
+git add build.sh scripts/build-server.mjs package.json package-lock.json
+git commit -m "Render build: esbuild server + vite client via postinstall"
+git push origin main
+
+
+Redeploy on Render.
+
+Important note
+
+Replit’s message about “997 errors in the server” is about type-checking, not runtime compilation. Esbuild/tsx will transpile fine as long as the code is syntactically valid.
+
+If you want the fastest possible step right now: tell me whether you currently can edit package.json in Replit (you can), and whether Render is a Blueprint service (render.yaml) or a normal service—then I’ll tailor the exact minimal changes. But the postinstall + build.sh approach works regardless.
