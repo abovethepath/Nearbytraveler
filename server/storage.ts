@@ -10345,43 +10345,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getMeetupChatroom(meetupId: number): Promise<any> {
-    try {
-      // Look for existing meetup chatroom using the existing infrastructure
-      const [chatroom] = await db
-        .select()
-        .from(meetupChatrooms)
-        .where(
-          and(
-            eq(meetupChatrooms.meetupId, meetupId),
-            eq(meetupChatrooms.isActive, true)
-          )
-        )
-        .limit(1);
-      
-      if (chatroom) {
-        return chatroom;
-      }
-      
-      // Fallback: look in city chatrooms
-      const [cityChatroom] = await db
-        .select()
-        .from(citychatrooms)
-        .where(
-          and(
-            ilike(citychatrooms.name, `%Meetup ${meetupId}%`),
-            eq(citychatrooms.isActive, true)
-          )
-        )
-        .limit(1);
-      
-      return cityChatroom;
-    } catch (error) {
-      console.error('Error fetching meetup chatroom:', error);
-      return undefined;
-    }
-  }
-
   async createMeetupChatroom(data: any): Promise<any> {
     try {
       // Try to create using existing meetup chatrooms table first
