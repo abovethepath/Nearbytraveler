@@ -4083,9 +4083,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   })()}
 
                   {/* Stats badges removed from header - now shown only in tabs below for cleaner layout */}
-                  
+                  {!isOwnProfile && (
+                  <div>
                   {/* Mutual Connections Display - LinkedIn style */}
-                  {!isOwnProfile && connectionDegreeData?.mutualCount && connectionDegreeData.mutualCount > 0 && (
+                  {connectionDegreeData?.mutualCount && connectionDegreeData.mutualCount > 0 && (
                     <div className="flex items-center gap-2 mt-3 p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700" data-testid="mutual-connections">
                       <div className="flex -space-x-2">
                         {connectionDegreeData.mutuals?.slice(0, 3).map((mutual, index) => (
@@ -4125,10 +4126,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </div>
                   )}
-                </div>
-              )}
+                  </div>
+                )}
             </div>
-
             {/* CTAs — own row below username */}
             {!isOwnProfile ? (
               <div className="w-full flex items-center gap-3 flex-wrap min-w-0 relative z-50 pointer-events-auto mt-2" style={{ position: 'relative', zIndex: 9999 }}>

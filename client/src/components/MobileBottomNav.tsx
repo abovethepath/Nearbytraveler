@@ -45,18 +45,22 @@ export function MobileBottomNav() {
 
   const isBusinessUser = user?.userType === 'business';
 
+  // Profile path: use id (reliable) or username, never leave undefined
+  const profilePath = user?.id ? `/profile/${user.id}` : (user?.username ? `/profile/${user.username}` : "/profile");
+
   const navItems = isBusinessUser ? [
     { icon: Home, label: "Dashboard", path: "/business-dashboard" },
     { icon: Search, label: "Search", action: "search" },
     { icon: MessageSquare, label: "Messages", path: "/messages" },
-    { icon: User, label: "Business", path: user ? `/profile/${user.username}` : "/profile" },
+    { icon: User, label: "Profile", path: profilePath },
   ] : [
     { icon: Home, label: "Home", path: "/" },
     { icon: Search, label: "Search", action: "search" },
     { icon: MessageSquare, label: "Messages", path: "/messages" },
-    { icon: User, label: "Profile", path: user ? `/profile/${user.username}` : "/profile" },
+    { icon: User, label: "Profile", path: profilePath },
   ];
   
+  // Business: deals only. Regular users: events, plan trip, quick meetups (no deals here).
   const actionMenuItems = isBusinessUser ? [
     { label: "Create Deal", path: "/business-dashboard?action=create-deal", icon: Calendar, color: "#f97316" },
     { label: "Quick Deal", path: "/business-dashboard?action=create-quick-deal", icon: Zap, color: "#3b82f6" },
@@ -309,20 +313,26 @@ export function MobileBottomNav() {
             const isActive = item.path ? (location === item.path || location === item.path + '/' || (item.path === '/messages' && location.startsWith('/messages')) || (item.path === '/business-dashboard' && location.startsWith('/business-dashboard')) || (item.path.startsWith('/profile') && location.startsWith('/profile'))) : false;
             const Icon = item.icon;
             const isMessagesItem = item.label === "Messages";
-            
+            const handleNavClick = (e: React.MouseEvent) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (item.action === "search") {
+                setShowSearchWidget(true);
+              } else if (item.path) {
+                if (isMessagesItem) {
+                  setLocation("/messages");
+                } else {
+                  setLocation(item.path);
+                }
+              }
+            };
+
             return (
               <button
                 key={item.path || item.action || index}
                 type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (item.action === "search") {
-                    setShowSearchWidget(true);
-                  } else if (item.path) {
-                    setLocation(item.path);
-                  }
-                }}
+                onClick={handleNavClick}
+                data-testid={isMessagesItem ? "nav-messages" : undefined}
                 style={{ 
                   display: 'flex',
                   flexDirection: 'column',
