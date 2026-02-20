@@ -52,14 +52,12 @@ function JoinPageWithSignIn() {
   const [, setLocation] = useLocation();
   
   return (
-    <div className="min-h-screen bg-indigo-950 dark:bg-indigo-950 flex flex-col relative">
-      {/* Gradient band */}
-      <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-orange-500 via-orange-400 to-purple-500" aria-hidden />
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col relative">
+      <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-orange-500 to-blue-500" aria-hidden />
 
-      {/* Back Button */}
       <button
         onClick={() => setLocation(isNativeIOSApp() ? '/home' : '/')}
-        className="absolute top-4 left-4 z-10 p-2 rounded-full bg-white/10 dark:bg-white/10 backdrop-blur-sm border border-white/20 text-gray-200 hover:text-white hover:bg-white/20 transition-all"
+        className="absolute top-4 left-4 z-10 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-gray-700 transition-all"
         data-testid="button-back"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,28 +67,24 @@ function JoinPageWithSignIn() {
 
       <div className="flex-1 flex items-center justify-center p-4 pt-14">
         <div className="w-full max-w-md">
-          {/* Logo: text-based NearbyTraveler (blue + orange, no black box) */}
           <div className="flex justify-center mb-6">
-            <Logo variant="join" />
+            <Logo variant="auth" />
           </div>
-          {/* Headline */}
-          <h1 className="text-center text-2xl sm:text-3xl font-bold text-orange-500 dark:text-orange-400 mb-2">
+          <h1 className="text-center text-2xl sm:text-3xl font-bold text-orange-600 dark:text-orange-400 mb-2">
             Join Nearby Traveler
           </h1>
-          {/* Tagline */}
-          <p className="text-center text-sm sm:text-base text-gray-300 dark:text-gray-300 mb-8 max-w-lg mx-auto">
+          <p className="text-center text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-8 max-w-lg mx-auto">
             Start Connecting with Nearby Locals and Nearby Travelers Today Based on Common Interests and Demographics
           </p>
-          {/* Choose how you want to connect — bordered box */}
-          <div className="rounded-xl border-2 border-orange-500/60 dark:border-orange-500/60 bg-indigo-900/40 dark:bg-indigo-900/40 p-5 sm:p-6">
-            <JoinNowWidgetNew darkBackground />
+          <div className="rounded-xl border-2 border-orange-200 dark:border-orange-800 bg-white dark:bg-gray-900 shadow-lg p-5 sm:p-6">
+            <JoinNowWidgetNew />
           </div>
           <div className="text-center mt-6">
-            <p className="text-gray-400 dark:text-gray-400 text-sm">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
               Already have an account?{" "}
               <button
                 onClick={() => setLocation('/signin')}
-                className="text-orange-400 hover:text-orange-300 font-bold underline"
+                className="text-orange-600 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-300 font-bold underline"
               >
                 Sign In
               </button>
