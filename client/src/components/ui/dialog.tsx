@@ -20,8 +20,9 @@ const DialogOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
-    style={{ position: 'fixed', inset: 0, zIndex: 2147483640, backgroundColor: 'rgba(0,0,0,0.95)' }}
+    style={{ position: 'fixed', inset: 0, zIndex: 2147483640 }}
     className={cn(
+      "bg-black/50 dark:bg-black/80",
       "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
@@ -39,9 +40,9 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       {...props}
-      style={{ ...style, position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 2147483641, backgroundColor: '#111827' }}
+      style={{ ...style, position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 2147483641 }}
       className={cn(
-        "grid w-full max-w-lg max-h-[95vh] gap-4 border p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg overflow-y-auto text-white",
+        "grid w-full max-w-lg max-h-[95vh] gap-4 border border-gray-200 dark:border-gray-700 p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg overflow-y-auto bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
         className
       )}
     >

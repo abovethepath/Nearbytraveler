@@ -405,7 +405,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   if (loadingCityActivities || loadingJoinedEvents || loadingEventInterests || loadingTravelPlans) {
     return (
-      <div className="bg-slate-100 dark:bg-gray-800 rounded-lg p-6">
+      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">⭐ Things I Want to Do in...</h2>
         <div className="text-gray-600 dark:text-gray-400">Loading...</div>
       </div>
@@ -418,7 +418,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 border border-black dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
+    <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
       <h2 
         className={`font-semibold text-gray-900 dark:text-white mb-4 ${isMobile ? 'text-base' : 'text-lg'}`}
         data-testid="things-i-want-to-do-section"

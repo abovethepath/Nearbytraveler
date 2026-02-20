@@ -94,19 +94,19 @@ function ThingsInCommonSection({ currentUser, profileUser }: ThingsInCommonSecti
   return (
     <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-full overflow-hidden">
       <CardContent className="p-4">
-        <div className="p-3 bg-gradient-to-br from-green-50 to-blue-50 border-l-4 border-green-200 rounded-r-lg">
-          <h5 className="font-medium text-black mb-3 flex items-center gap-2">
-            <Users className="w-4 h-4 text-green-600" />
+        <div className="p-3 bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 border-l-4 border-green-200 dark:border-green-600 rounded-r-lg">
+          <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
+            <Users className="w-4 h-4 text-green-600 dark:text-green-400" />
             Things We Have in Common ({totalThingsInCommon})
           </h5>
           
           <div className="space-y-3">
             {sharedInterests.length > 0 && (
               <div>
-                <h6 className="text-sm font-medium text-black mb-2">Shared Interests ({sharedInterests.length})</h6>
+                <h6 className="text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">Shared Interests ({sharedInterests.length})</h6>
                 <div className="flex flex-wrap gap-1">
                   {sharedInterests.map((interest: string, index: number) => (
-                    <div key={index} className="pill-interests bg-green-100 text-green-800 border-green-200">
+                    <div key={index} className="pill-interests bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 border-green-200 dark:border-green-600">
                       {interest}
                     </div>
                   ))}
@@ -116,10 +116,10 @@ function ThingsInCommonSection({ currentUser, profileUser }: ThingsInCommonSecti
 
             {sharedActivities.length > 0 && (
               <div>
-                <h6 className="text-sm font-medium text-black mb-2">Shared Activities ({sharedActivities.length})</h6>
+                <h6 className="text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">Shared Activities ({sharedActivities.length})</h6>
                 <div className="flex flex-wrap gap-1">
                   {sharedActivities.map((activity: string, index: number) => (
-                    <div key={index} className="pill-interests bg-blue-100 text-blue-800 border-blue-200">
+                    <div key={index} className="pill-interests bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-600">
                       {activity}
                     </div>
                   ))}
@@ -128,8 +128,8 @@ function ThingsInCommonSection({ currentUser, profileUser }: ThingsInCommonSecti
             )}
           </div>
 
-          <div className="mt-3 pt-3 border-t border-green-200">
-            <p className="text-xs text-black italic">
+          <div className="mt-3 pt-3 border-t border-green-200 dark:border-green-600">
+            <p className="text-xs text-gray-700 dark:text-gray-300 italic">
               This compatibility assessment helps you find meaningful connections based on shared interests and activities.
             </p>
           </div>
@@ -3595,16 +3595,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-lg font-medium text-gray-900 dark:text-white">
-              {isOwnProfile 
-                ? (currentUser?.userType === 'business' ? 'Loading Business Profile...' : 'Loading Your Profile...') 
-                : 'Loading Profile...'}
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-orange-500 dark:border-gray-600 dark:border-t-orange-500" />
       </div>
     );
   }
@@ -3977,10 +3969,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <Badge 
                               className={`text-xs px-2 py-0.5 font-semibold ${
                                 connectionDegreeData.degree === 1 
-                                  ? 'bg-green-100 text-green-800 border-green-300' 
+                                  ? 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-200 dark:border-green-600' 
                                   : connectionDegreeData.degree === 2 
-                                    ? 'bg-blue-100 text-blue-800 border-blue-300'
-                                    : 'bg-purple-100 text-purple-800 border-purple-300'
+                                    ? 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/50 dark:text-blue-200 dark:border-blue-600'
+                                    : 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/50 dark:text-purple-200 dark:border-purple-600'
                               }`}
                               data-testid="badge-connection-degree"
                             >
@@ -4002,28 +3994,28 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           )}
                         </div>
                         
-                        {/* 4-line block: Nearby Local, city, Nearby Traveler, destination — one line each, no mid-word wrap */}
-                        <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black min-w-0">
+                        {/* 4-line block: Nearby Local, city, Nearby Traveler, destination — labels stand out by color and size */}
+                        <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black dark:text-gray-200 min-w-0">
                           <div className="flex-shrink-0 mt-0.5 flex flex-col items-center gap-0">
                             <MapPin className="hidden sm:block w-5 h-5 text-blue-600" />
                             <Plane className="hidden sm:block w-5 h-5 text-orange-600 mt-1" />
                           </div>
                           <div className="flex flex-col gap-0 min-w-0 flex-1">
-                            <span className="whitespace-nowrap">Nearby Local</span>
-                            <span className="truncate" title={hometown}>{hometown}</span>
-                            <span className="whitespace-nowrap mt-0.5">Nearby Traveler</span>
+                            <span className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</span>
+                            <span className="truncate text-gray-700 dark:text-gray-300" title={hometown}>{hometown}</span>
+                            <span className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-0.5">Nearby Traveler</span>
                             {(() => {
                               const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
                               return currentTravelPlan ? (
-                                <span className="truncate" title={currentTravelPlan}>{currentTravelPlan}</span>
+                                <span className="truncate text-gray-700 dark:text-gray-300" title={currentTravelPlan}>{currentTravelPlan}</span>
                               ) : (
-                                <span className="truncate">—</span>
+                                <span className="truncate text-gray-700 dark:text-gray-300">—</span>
                               );
                             })()}
                           </div>
                           {user.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 flex-shrink-0 self-start">
-                              <span style={{ color: 'black' }}>New to Town</span>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 flex-shrink-0 self-start">
+                              New to Town
                             </span>
                           )}
                         </div>
@@ -4271,20 +4263,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         {/* Upload overlay (unchanged) */}
         {uploadingPhoto && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
-            <div className="bg-white rounded-lg p-4 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center border border-gray-200 dark:border-gray-600 shadow-lg">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-              <p className="text-sm font-medium">Uploading...</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Uploading...</p>
             </div>
           </div>
         )}
       </div>
 
       {/* Main Content Container - with overflow-x-hidden for rest of page */}
-      <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden">
+      <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900">
 
 
       {/* Navigation Tabs - Card Style with Border */}
-      <div className="w-auto bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg mt-4">
+      <div className="w-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg mt-4 shadow-sm">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex flex-wrap gap-2 sm:gap-3 lg:gap-4">
@@ -4491,10 +4483,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
 
             {/* About Section - Always Visible */}
-            <Card className="mt-2 relative overflow-visible">
+            <Card className="mt-2 relative overflow-visible bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-4 lg:px-6 pt-3 sm:pt-4 lg:pt-6">
                 <div className="flex items-center justify-between w-full">
-                  <CardTitle className="text-base sm:text-lg lg:text-xl font-bold break-words text-left leading-tight flex-1 pr-2">
+                  <CardTitle className="text-base sm:text-lg lg:text-xl font-bold break-words text-left leading-tight flex-1 pr-2 text-gray-900 dark:text-white">
                     {user?.userType === 'business'
                       ? `ABOUT OUR BUSINESS`
                       : `ABOUT ${user?.username || 'User'}`}
@@ -4526,10 +4518,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4 lg:pb-6 min-w-0 break-words overflow-visible">
+              <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4 lg:pb-6 min-w-0 break-words overflow-visible text-gray-700 dark:text-gray-300">
                 {/* Bio / Business Description */}
                 <div>
-                  <p className="text-gray-900 dark:text-white leading-relaxed whitespace-pre-wrap break-words text-left">
+                  <p className="text-gray-900 dark:text-gray-100 leading-relaxed whitespace-pre-wrap break-words text-left">
                     {user?.userType === 'business'
                       ? (user?.businessDescription || "No business description available yet.")
                       : (user?.bio || "No bio available yet.")
@@ -5978,7 +5970,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 style={{zIndex: 10, position: 'relative'}} 
                 data-testid="photos-content"
               >
-              <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
+              <Card className="bg-white border border-gray-200 dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center gap-2 text-black dark:text-white">
                     <Camera className="w-5 h-5" />
@@ -6099,7 +6091,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 style={{zIndex: 10, position: 'relative'}} 
                 data-testid="countries-content"
               >
-                <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+                <Card className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
                   <CardHeader className="bg-white dark:bg-gray-900">
                     <div className="flex items-center justify-between">
                       <CardTitle className="flex items-center gap-2 text-black dark:text-white">
@@ -6324,9 +6316,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Events I'm Going To - Only show on own profile for non-business users */}
             {isOwnProfile && user?.userType !== 'business' && eventsGoing.length > 0 && (
-              <Card className="hover:shadow-lg transition-all duration-200 hover:border-green-300 mt-6">
+              <Card className="hover:shadow-lg transition-all duration-200 hover:border-green-300 mt-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                 <CardHeader className="pb-2">
-                  <CardTitle className="dark:text-white flex items-center gap-2 text-base">
+                  <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2 text-base">
                     <Calendar className="w-5 h-5 text-green-500" />
                     Events I'm Going To
                     <Badge variant="secondary" className="ml-auto bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
@@ -6341,7 +6333,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
-                      <h4 className="font-medium text-sm dark:text-white line-clamp-1">{event.title}</h4>
+                      <h4 className="font-medium text-sm text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
                       <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
                         <Calendar className="w-3 h-3" />
                         {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -6367,9 +6359,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Events I'm Interested In - Only show on own profile for non-business users */}
             {isOwnProfile && user?.userType !== 'business' && eventsInterested.length > 0 && (
-              <Card className="hover:shadow-lg transition-all duration-200 hover:border-orange-300 mt-4">
+              <Card className="hover:shadow-lg transition-all duration-200 hover:border-orange-300 mt-4 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                 <CardHeader className="pb-2">
-                  <CardTitle className="dark:text-white flex items-center gap-2 text-base">
+                  <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2 text-base">
                     <Star className="w-5 h-5 text-orange-500" />
                     Events I'm Interested In
                     <Badge variant="secondary" className="ml-auto bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
@@ -6384,7 +6376,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
-                      <h4 className="font-medium text-sm dark:text-white line-clamp-1">{event.title}</h4>
+                      <h4 className="font-medium text-sm text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
                       <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
                         <Calendar className="w-3 h-3" />
                         {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -6558,7 +6550,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               style={{zIndex: 10, position: 'relative'}} 
               data-testid="contacts-content"
             >
-              <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
+              <Card className="bg-white border border-gray-200 dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center justify-between text-black dark:text-white">
                     <div className="flex items-center gap-2">
@@ -6992,7 +6984,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             <Card className="hover:shadow-lg transition-all duration-200 border-2 border-blue-200 dark:border-blue-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <Globe className="w-5 h-5 text-blue-600" />
                     Languages I Speak
                   </CardTitle>
@@ -7149,9 +7141,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               >
                 {user?.id && (
                   <div className="space-y-4" style={{zIndex: 10, position: 'relative'}}>
-                    <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+                    <Card className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
                       <CardHeader className="bg-white dark:bg-gray-900">
-                        <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+                        <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                           <Star className="w-5 h-5 text-yellow-500" />
                           References
                         </CardTitle>
@@ -7232,7 +7224,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {user?.userType !== 'business' && (
               <Card className="hover:shadow-lg transition-all duration-200 hover:border-purple-300 dark:hover:border-purple-600 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <Sparkles className="w-5 h-5 text-purple-600" />
                     Travel Intent & Style
                     {isOwnProfile && (
@@ -8476,7 +8468,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Profile Edit Modal - inset+margin keeps dialog on-screen in WebView; z-index above overlay so content is clickable */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
         <DialogContent 
-          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-700"
+          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700"
         >
           <DialogHeader className="flex-shrink-0 pr-10">
             <div className="flex items-center justify-between">
@@ -8510,8 +8502,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           {/* Show loading state while form initializes to prevent freeze */}
           {!isFormReady ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-              <p className="text-gray-600 dark:text-gray-300">Loading profile editor...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-blue-600 dark:border-gray-600 dark:border-t-blue-500" />
             </div>
           ) : (
           <Form {...profileForm}>

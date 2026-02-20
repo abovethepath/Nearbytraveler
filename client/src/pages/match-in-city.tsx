@@ -1155,6 +1155,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
       if (response.ok) {
         const newActivityData = await response.json();
+        const addedName = newPickName.trim();
         setCityActivities(prev => [...prev, newActivityData]);
         
         // Auto-select the new pick
@@ -1175,9 +1176,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         setShowAddPickModal(false);
         setShowEventSuggestion(false);
         
+        queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
+        fetchUserActivities();
+        fetchCityActivities();
+        
         toast({
           title: "City Plan Added!",
-          description: `"${newPickName}" added to your plans for ${selectedCity}`,
+          description: `"${addedName}" added to your plans for ${selectedCity}`,
         });
       } else {
         const error = await response.json();

@@ -58,7 +58,7 @@ export function VideoIntroPlayer({ userId, isOwnProfile, hasVideo }: VideoIntroP
     }
 
     if (!file.type.startsWith('video/')) {
-      toast({ title: "Invalid file", description: "Please select a video file.", variant: "destructive" });
+      toast({ title: "Invalid file", description: "Please select a video file (MP4, WebM, or QuickTime).", variant: "destructive" });
       return;
     }
 
@@ -66,40 +66,47 @@ export function VideoIntroPlayer({ userId, isOwnProfile, hasVideo }: VideoIntroP
     setUploadProgress(10);
 
     try {
-      const urlRes = await apiRequest('POST', `/api/users/${userId}/video-intro/upload-url`);
-      const { signedUrl, objectPath } = await urlRes.json();
-      setUploadProgress(30);
-
+      const user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
+      const formData = new FormData();
+      formData.append('video', file);
+      const base = apiBase || '';
+      const url = `${base}/api/users/${userId}/video-intro/upload`;
       const xhr = new XMLHttpRequest();
+      xhr.open('POST', url);
+      xhr.withCredentials = true;
+      if (user?.id) xhr.setRequestHeader('x-user-id', String(user.id));
+      const userData = user?.id ? JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name }) : '';
+      if (userData) xhr.setRequestHeader('x-user-data', userData);
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          setUploadProgress(10 + Math.round((e.loaded / e.total) * 90));
+        }
+      };
       await new Promise<void>((resolve, reject) => {
-        xhr.upload.onprogress = (e) => {
-          if (e.lengthComputable) {
-            setUploadProgress(30 + Math.round((e.loaded / e.total) * 50));
-          }
-        };
         xhr.onload = () => {
           if (xhr.status >= 200 && xhr.status < 300) resolve();
-          else reject(new Error("Upload failed"));
+          else {
+            let msg = "Could not upload video. Please try again.";
+            try {
+              const body = JSON.parse(xhr.responseText || '{}');
+              if (body?.message) msg = body.message;
+            } catch {}
+            reject(new Error(msg));
+          }
         };
-        xhr.onerror = () => reject(new Error("Upload failed"));
-        xhr.open('PUT', signedUrl);
-        xhr.setRequestHeader('Content-Type', file.type);
-        xhr.send(file);
+        xhr.onerror = () => reject(new Error("Network error. Check your connection and try again."));
+        xhr.send(formData);
       });
 
-      setUploadProgress(85);
-
-      await apiRequest('PUT', `/api/users/${userId}/video-intro`, { objectPath });
       setUploadProgress(100);
-
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'video-intro'] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/profile-bundle', userId] });
-
       toast({ title: "Video uploaded!", description: "Your video intro is now on your profile." });
-    } catch (error) {
-      console.error("Video upload error:", error);
-      toast({ title: "Upload failed", description: "Could not upload video. Please try again.", variant: "destructive" });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not upload video. Please try again.";
+      console.error("Video upload error:", err);
+      toast({ title: "Upload failed", description: message, variant: "destructive" });
     } finally {
       setUploading(false);
       setUploadProgress(0);

@@ -120,7 +120,7 @@ export default function UserCard({
 
   return (
     <button 
-      className={`w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border shadow-sm hover:shadow-md transition-all text-left ${compact ? 'rounded-lg' : 'lg:rounded-2xl'} ${isAvailableNow ? 'border-orange-400 dark:border-orange-500 ring-2 ring-orange-400/30' : 'border-gray-200 dark:border-gray-700'}`}
+      className={`w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border shadow-sm hover:shadow-md transition-all text-left ${compact ? 'rounded-lg' : 'lg:rounded-2xl'} ${isAvailableNow ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
@@ -162,10 +162,10 @@ export default function UserCard({
           </div>
         )}
         
-        {/* Available Now badge - show when user is available (web and native app) */}
+        {/* Available Now badge - green, visible to everyone (web and native app) */}
         {isAvailableNow && (
           <div className="absolute bottom-1.5 left-1.5 right-1.5">
-            <span className="status-badge animate-pulsate-green flex items-center justify-center gap-1 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg w-full">
+            <span className="status-badge animate-pulsate-green flex items-center justify-center gap-1 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg w-full">
               <span className="status-badge w-1.5 h-1.5 bg-white rounded-full"></span>
               Available Now
             </span>

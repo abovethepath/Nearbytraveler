@@ -69,6 +69,9 @@ const businessSignupSchema = z.object({
   activities: z.array(z.string()).optional().default([]),
   customInterests: z.string().optional(),
   customActivities: z.string().optional(),
+
+  // Referral: referrer's username or email (optional)
+  referredByUser: z.string().optional(),
 });
 
 type BusinessSignupData = z.infer<typeof businessSignupSchema>;
@@ -103,9 +106,9 @@ export default function SignupBusinessSimple() {
 
   // Redirect authenticated business users to their welcome/dashboard page
   useEffect(() => {
-    console.log('🔍 Business Signup Page - Auth Check:', { isAuthenticated, userType: user?.userType, username: user?.username });
+    console.log('≡ƒöì Business Signup Page - Auth Check:', { isAuthenticated, userType: user?.userType, username: user?.username });
     if (isAuthenticated && user?.userType === 'business') {
-      console.log('🔄 Business user already authenticated, redirecting to dashboard');
+      console.log('≡ƒöä Business user already authenticated, redirecting to dashboard');
       setLocation('/business-dashboard');
       return;
     }
@@ -113,7 +116,7 @@ export default function SignupBusinessSimple() {
 
   // Early return if user is already authenticated as business
   if (isAuthenticated && user?.userType === 'business') {
-    console.log('🔄 Rendering redirect for authenticated business user');
+    console.log('≡ƒöä Rendering redirect for authenticated business user');
     return <div>Redirecting...</div>;
   }
 
@@ -183,6 +186,7 @@ export default function SignupBusinessSimple() {
       activities: [],
       customInterests: "",
       customActivities: "",
+      referredByUser: "",
     },
   });
 
@@ -255,6 +259,7 @@ export default function SignupBusinessSimple() {
           userType: "business",
           businessName: data.businessName || accountData?.name || "",
           websiteUrl: (processedData as any).websiteUrl, // Ensure websiteUrl is included
+          ...(data.referredByUser?.trim() && { referredByUser: data.referredByUser.trim() }),
         })
       });
 
@@ -294,7 +299,7 @@ export default function SignupBusinessSimple() {
       if ((window as any).ReactNativeWebView && response.user) {
         (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: 'SIGNUP_COMPLETE', user: response.user }));
       }
-      // Keep user on signup page while profile builds — calm transition
+      // Keep user on signup page while profile builds ΓÇö calm transition
       setIsRedirecting(true);
       setTimeout(() => setLocation('/business-dashboard'), 1800);
     },
@@ -335,7 +340,7 @@ export default function SignupBusinessSimple() {
                 className="flex items-center gap-2 px-4 py-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
                 data-testid="button-back-top"
               >
-                ← Back to Join
+                ΓåÉ Back to Join
               </Button>
             </div>
             
@@ -476,7 +481,7 @@ export default function SignupBusinessSimple() {
                           <FormDescription>
                             Owner's email for platform notifications. <br/>
                             <span className="text-sm text-blue-600 dark:text-blue-400">
-                              💡 <strong>Multiple Businesses?</strong> Use email variants like: owner+restaurant@example.com, owner+shop@example.com
+                              ≡ƒÆí <strong>Multiple Businesses?</strong> Use email variants like: owner+restaurant@example.com, owner+shop@example.com
                             </span>
                           </FormDescription>
                           <FormMessage />
@@ -671,12 +676,12 @@ export default function SignupBusinessSimple() {
                         variant={locationCaptured ? "default" : "outline"}
                         className={locationCaptured ? "bg-blue-600 hover:bg-blue-700" : ""}
                       >
-                        {locationCaptured ? "Location Captured ✓" : "Enable Location"}
+                        {locationCaptured ? "Location Captured Γ£ô" : "Enable Location"}
                       </Button>
                     </div>
                     {locationCaptured && (
                       <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">
-                        ✅ Location captured for proximity notifications
+                        Γ£à Location captured for proximity notifications
                       </div>
                     )}
                   </div>
@@ -693,7 +698,7 @@ export default function SignupBusinessSimple() {
                     {/* Interests Section */}
                     <div>
                       <FormLabel className="text-gray-900 dark:text-white font-medium flex items-center justify-between">
-                        <span>🎯 What interests does your business serve?</span>
+                        <span>≡ƒÄ» What interests does your business serve?</span>
                         <span className="text-sm text-gray-600 dark:text-gray-400">
                           {selectedInterests.length} selected
                         </span>
@@ -720,7 +725,7 @@ export default function SignupBusinessSimple() {
                     {/* Activities Section */}
                     <div>
                       <FormLabel className="text-gray-900 dark:text-white font-medium flex items-center justify-between">
-                        <span>🎪 What activities do you offer or cater to?</span>
+                        <span>≡ƒÄ¬ What activities do you offer or cater to?</span>
                         <span className="text-sm text-gray-600 dark:text-gray-400">
                           {selectedActivities.length} selected
                         </span>
@@ -750,7 +755,7 @@ export default function SignupBusinessSimple() {
                       name="customInterests"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-900 dark:text-white font-medium">✨ Add Custom Interests (Optional)</FormLabel>
+                          <FormLabel className="text-gray-900 dark:text-white font-medium">Γ£¿ Add Custom Interests (Optional)</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="e.g., Craft Beer, Vegan Options, Live Music"
@@ -772,7 +777,7 @@ export default function SignupBusinessSimple() {
                       name="customActivities"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-900 dark:text-white font-medium">✨ Add Custom Activities (Optional)</FormLabel>
+                          <FormLabel className="text-gray-900 dark:text-white font-medium">Γ£¿ Add Custom Activities (Optional)</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="e.g., Cooking Classes, Wine Tastings, Workshops"
@@ -790,6 +795,30 @@ export default function SignupBusinessSimple() {
                   </div>
                 </div>
 
+                {/* Referral: Were you referred by a member? */}
+                <div className="space-y-2 p-4 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50">
+                  <FormField
+                    control={form.control}
+                    name="referredByUser"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-900 dark:text-white">Were you referred by a member?</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter referrer's username or email (optional)"
+                            className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          If a Nearby Traveler or Local referred you, type their username or email here.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 {/* Terms agreement */}
                 <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
                   By completing your profile, you agree to our{" "}
@@ -803,7 +832,7 @@ export default function SignupBusinessSimple() {
                   <div className="flex items-start space-x-3">
                     <Zap className="w-8 h-8 text-orange-500 mt-1" />
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">🎯 Complete Your Profile to Match with Users!</h3>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">≡ƒÄ» Complete Your Profile to Match with Users!</h3>
                       <p className="text-sm text-gray-800 dark:text-gray-200 font-medium mb-4">
                         After registration, <strong>you MUST complete your business profile</strong> to start matching with travelers and locals:
                       </p>
@@ -829,7 +858,7 @@ export default function SignupBusinessSimple() {
                       </div>
                       <div className="mt-4 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg border border-orange-300 dark:border-orange-600">
                         <p className="text-sm font-bold text-orange-800 dark:text-orange-200">
-                          ⚠️ Without a complete profile, travelers and locals won't be able to find or connect with your business!
+                          ΓÜá∩╕Å Without a complete profile, travelers and locals won't be able to find or connect with your business!
                         </p>
                       </div>
                     </div>

@@ -69,14 +69,11 @@ export default function ProfilePageResponsive() {
 
   if (!isReady) {
     return (
-      <div className="min-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
         <ResponsiveNavbar />
         <main className="container-default py-6 md:py-10 flex-1">
           <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading profile...</p>
-            </div>
+            <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-blue-600" />
           </div>
         </main>
       </div>
@@ -84,13 +81,13 @@ export default function ProfilePageResponsive() {
   }
   
   if (!actualUser) {
-    return (
-      <div className="min-screen flex flex-col">
-        <ResponsiveNavbar />
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+      <ResponsiveNavbar />
         <main className="container-default py-6 md:py-10 flex-1">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
-              <p className="text-gray-600">Please log in to view your profile</p>
+              <p className="text-gray-600 dark:text-gray-300">Please log in to view your profile</p>
             </div>
           </div>
         </main>
@@ -143,7 +140,7 @@ export default function ProfilePageResponsive() {
   const interests = [...standardInterests, ...customInterestsArray];
 
   return (
-    <div className="min-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       <ResponsiveNavbar />
 
       <main className="container-default py-6 md:py-10 flex-1">
@@ -163,23 +160,23 @@ export default function ProfilePageResponsive() {
           <div className="space-y-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl md:text-3xl font-bold" data-testid="text-name">{displayName}</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" data-testid="text-name">{displayName}</h1>
                 {isAvailableNow && (
-                  <span className="status-badge inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-500 text-white text-xs font-semibold whitespace-nowrap">
+                  <span className="status-badge inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-500 text-white text-xs font-semibold whitespace-nowrap">
                     <Zap className="w-3 h-3" />
                     Available Now
                   </span>
                 )}
               </div>
-              {/* 4-line block: Nearby Local, city, Nearby Traveler, destination — one line each, mobile-friendly */}
+              {/* 4-line block: Nearby Local, city, Nearby Traveler, destination — labels stand out by color and size */}
               <div className="flex flex-col gap-0 text-sm font-medium min-w-0">
-                <p className="text-gray-600 whitespace-nowrap" data-testid="text-hometown-label">Nearby Local</p>
-                <p className="text-gray-600 truncate" data-testid="text-hometown-location" title={hometownLocation}>{hometownLocation}</p>
-                <p className="text-blue-600 whitespace-nowrap mt-1" data-testid="text-destination-label">Nearby Traveler</p>
+                <p className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap" data-testid="text-hometown-label">Nearby Local</p>
+                <p className="text-gray-600 dark:text-gray-400 truncate" data-testid="text-hometown-location" title={hometownLocation}>{hometownLocation}</p>
+                <p className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-1" data-testid="text-destination-label">Nearby Traveler</p>
                 {destinationLocation ? (
-                  <p className="text-blue-600 truncate" data-testid="text-destination-location" title={destinationLocation}>{destinationLocation}</p>
+                  <p className="text-blue-600 dark:text-blue-400 truncate" data-testid="text-destination-location" title={destinationLocation}>{destinationLocation}</p>
                 ) : (
-                  <p className="text-blue-600 truncate" data-testid="text-destination-location">—</p>
+                  <p className="text-blue-600 dark:text-blue-400 truncate" data-testid="text-destination-location">—</p>
                 )}
               </div>
             </div>
@@ -200,7 +197,7 @@ export default function ProfilePageResponsive() {
                   </span>
                 ))
               ) : (
-                <span className="text-sm text-gray-500">No interests listed</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">No interests listed</span>
               )}
             </div>
           </div>
@@ -208,16 +205,16 @@ export default function ProfilePageResponsive() {
 
         {/* About + Gallery (stack on mobile) */}
         <section className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <article className="lg:col-span-2 rounded-2xl border p-4 md:p-6 bg-white">
-            <h2 className="text-lg font-semibold mb-2">About</h2>
-            <p className="text-sm leading-6 text-gray-700" data-testid="text-bio">
+          <article className="lg:col-span-2 rounded-2xl border border-gray-200 dark:border-gray-700 p-4 md:p-6 bg-white dark:bg-gray-800">
+            <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">About</h2>
+            <p className="text-sm leading-6 text-gray-700 dark:text-gray-300" data-testid="text-bio">
               {bio}
             </p>
           </article>
 
-          <aside className="rounded-2xl border p-4 md:p-6 bg-white">
-            <h3 className="text-lg font-semibold mb-3">Profile Details</h3>
-            <div className="space-y-2 text-sm">
+          <aside className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4 md:p-6 bg-white dark:bg-gray-800">
+            <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Profile Details</h3>
+            <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
               {user.age && (
                 <div>
                   <span className="font-medium">Age:</span> {user.age}

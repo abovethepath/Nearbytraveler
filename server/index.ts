@@ -1,6 +1,6 @@
 // Load env vars FIRST (before db and other imports that need them)
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ path: new URL("../.env", import.meta.url).pathname });
 
 // Initialize Sentry error monitoring
 import "./instrument";
@@ -89,6 +89,8 @@ console.log("Environment check:", {
 });
 
 const app = express();
+app.get("/api/sentry-test", (_req, res) => res.json({ ok: true }));
+
 
 // Trust reverse proxy (Replit/Render/Railway) so secure cookies & IPs work
 app.set("trust proxy", 1);

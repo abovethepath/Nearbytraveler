@@ -16,6 +16,7 @@ interface User {
   destinationCity?: string | null;
   destinationState?: string | null;
   destinationCountry?: string | null;
+  travelDestination?: string | null;
   location?: string | null;
   interests?: string[];
   userType?: string;
@@ -63,14 +64,15 @@ export default function ResponsiveUserGrid({
       return <span className="text-gray-600 dark:text-gray-400 whitespace-nowrap">Business User</span>;
     }
     const hometown = user.hometownCity || '—';
-    const destination = user.destinationCity || null;
+    const travelDest = user.travelDestination;
+    const destination = user.destinationCity || (travelDest && typeof travelDest === 'string' ? travelDest.split(',')[0].trim() : null) || null;
     return (
       <div className="text-center text-gray-600 dark:text-gray-400 font-medium min-w-0">
-        <div className="whitespace-nowrap">Nearby Local</div>
+        <div className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</div>
         <div className="truncate px-0.5" title={hometown}>{hometown}</div>
         {destination && (
           <>
-            <div className="whitespace-nowrap">Nearby Traveler</div>
+            <div className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap">Nearby Traveler</div>
             <div className="truncate px-0.5" title={destination}>{destination}</div>
           </>
         )}
@@ -93,14 +95,14 @@ export default function ResponsiveUserGrid({
     const isAvailable = availableNowIds.includes(user.id);
     return (
     <Card 
-      className={`group cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden ${isAvailable ? 'border-orange-400 dark:border-orange-500 ring-2 ring-orange-400/30' : 'border-gray-200 dark:border-gray-700'}`}
+      className={`group cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={() => setLocation(`/profile/${user.id}`)}
     >
       {/* Cover Background */}
       <div className="h-16 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 relative">
         {isAvailable && (
           <div className="absolute top-2 right-2">
-            <span className="flex items-center gap-1 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-pulse">
+            <span className="flex items-center gap-1 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-pulse">
               <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
               Available Now
             </span>
@@ -165,14 +167,14 @@ export default function ResponsiveUserGrid({
     const isAvailable = availableNowIds.includes(user.id);
     return (
     <Card 
-      className={`cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden h-full ${isAvailable ? 'border-orange-400 dark:border-orange-500 ring-2 ring-orange-400/30' : 'border-gray-200 dark:border-gray-700'}`}
+      className={`cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden h-full ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={() => setLocation(`/profile/${user.id}`)}
     >
       {/* Gradient Cover - smaller for mobile */}
       <div className="h-12 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 relative">
         {isAvailable && (
           <div className="absolute top-1 right-1">
-            <span className="flex items-center gap-1 bg-orange-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-lg animate-pulse">
+            <span className="flex items-center gap-1 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-lg animate-pulse">
               <span className="w-1 h-1 bg-white rounded-full"></span>
               Available
             </span>

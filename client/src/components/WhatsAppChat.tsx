@@ -742,7 +742,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   };
 
   return (
-    <div className="flex bg-gray-900 text-white overflow-hidden h-[calc(100dvh-10.5rem)] md:h-[calc(100dvh-9.5rem)]">
+    <div className="flex bg-gray-900 text-white overflow-hidden h-[calc(100dvh-5.5rem)] md:h-[calc(100dvh-5.5rem)]">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-r border-gray-700">
@@ -1188,8 +1188,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </div>
         )}
 
-        {/* Input box - fixed at bottom */}
-        <div className="px-3 py-2 bg-gray-800 border-t border-gray-700">
+        {/* Input box - fixed at bottom, minimal padding above bottom nav */}
+        <div className="px-3 py-1.5 bg-gray-800 border-t border-gray-700">
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
           {!messagesLoaded && !isWsConnected && (
             <div className="text-center text-yellow-400 text-xs mb-2 animate-pulse">

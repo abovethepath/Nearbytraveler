@@ -567,7 +567,7 @@ function Router() {
   if (isLoading && !isSignupRoute && !isLandingPage) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-2xl font-semibold text-gray-700">Loading Nearby Traveler...</div>
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-300 border-t-orange-500" />
       </div>
     );
   }
@@ -1145,6 +1145,11 @@ function Router() {
       const businessId = location.split('/')[2];
       console.log('🏢 BUSINESS PROFILE ROUTE (authenticated): businessId:', businessId);
       return <ProfileComplete userId={parseInt(businessId)} />;
+    }
+
+    // Home screen message links go to /messages?user=123 — must match so Messages page renders
+    if (location === '/messages' || location.startsWith('/messages?')) {
+      return <Messages />;
     }
 
     switch (location) {

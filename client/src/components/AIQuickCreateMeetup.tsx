@@ -246,9 +246,13 @@ export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel, autoS
       });
     },
     onError: (error: any) => {
+      const msg = error?.message ?? "";
+      const isServiceUnavailable = /AI service.*unavailable|temporarily unavailable|not configured/i.test(msg);
       toast({
-        title: "Couldn't understand that",
-        description: error.message || "Please try describing your meetup differently.",
+        title: isServiceUnavailable ? "AI parsing not available" : "Couldn't understand that",
+        description: isServiceUnavailable
+          ? "AI meetup parsing isn't set up on this server. You can still create a meetup — use the form or type your idea and we'll use the first line as the title."
+          : (msg || "Please try describing your meetup differently."),
         variant: "destructive"
       });
     }
