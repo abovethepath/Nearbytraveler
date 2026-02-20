@@ -11566,18 +11566,6 @@ export class DatabaseStorage implements IStorage {
   // ITINERARY CRUD METHODS
   // ========================================
 
-  async getItinerariesByTravelPlan(travelPlanId: number): Promise<any[]> {
-    try {
-      const itineraries = await db
-        .select()
-        .from(tripItineraries)
-        .where(eq(tripItineraries.travelPlanId, travelPlanId))
-        .orderBy(desc(tripItineraries.createdAt));
-      return itineraries;
-    } catch (error) {
-      console.error('Error fetching itineraries:', error);
-      return [];
-    }
   }
 
   async getItineraryWithItems(itineraryId: number): Promise<any> {
