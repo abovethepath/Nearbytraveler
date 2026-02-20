@@ -7936,7 +7936,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         </div>
       </div>
-
+      </div>
 
       {/* Photo Lightbox */}
       {photos.length > 0 && selectedPhotoIndex >= 0 && (
@@ -10121,7 +10121,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
 
-      </div>
       </div>
     </React.Fragment>
   );
