@@ -1,4 +1,5 @@
 import { storage } from '../storage';
+import { sendBrevoEmail } from '../email/brevoSend';
 
 interface EventReminder {
   eventId: number;
@@ -12,18 +13,7 @@ interface EventReminder {
 }
 
 export class EventReminderService {
-  private sgMail: any;
-
   constructor() {
-    this.initializeSendGrid();
-  }
-
-  private async initializeSendGrid() {
-    if (process.env.SENDGRID_API_KEY) {
-      const sgMail = await import('@sendgrid/mail');
-      this.sgMail = sgMail.default;
-      this.sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    }
   }
   
   /**
@@ -115,11 +105,6 @@ export class EventReminderService {
    * Send individual event reminder email
    */
   private async sendEventReminder(reminder: EventReminder): Promise<void> {
-    if (!this.sgMail) {
-      console.log('SendGrid not configured - reminder email not sent');
-      return;
-    }
-
     try {
       const { eventTitle, eventDate, eventLocation, userEmail, userName, reminderType } = reminder;
       
@@ -162,15 +147,12 @@ The Nearby Traveler Team
 Visit: https://nearbytraveler.com
       `.trim();
 
-      const msg = {
-        to: userEmail,
-        from: 'aaron_marc2004@yahoo.com',
+      await sendBrevoEmail({
+        toEmail: userEmail,
         subject,
-        html: htmlContent,
-        text: textContent
-      };
-
-      await this.sgMail.send(msg);
+        textContent,
+        htmlContent,
+      });
       console.log(`Event reminder sent to ${userEmail} for event: ${eventTitle} (${reminderType})`);
     } catch (error) {
       console.error(`Error sending reminder to ${reminder.userEmail}:`, error);
