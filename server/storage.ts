@@ -4742,52 +4742,6 @@ export class DatabaseStorage implements IStorage {
       throw error;
     }
   }
-  async getChatroomMessages(chatroomId: number): Promise<any[]> {
-    try {
-      const messages = await db.select({
-        id: chatroomMessages.id,
-        chatroomId: chatroomMessages.chatroomId,
-        senderId: chatroomMessages.senderId,
-        content: chatroomMessages.content,
-        messageType: chatroomMessages.messageType,
-        replyToId: chatroomMessages.replyToId,
-        isEdited: chatroomMessages.isEdited,
-        createdAt: chatroomMessages.createdAt,
-        sender: {
-          id: users.id,
-          username: users.username,
-          name: users.name,
-          profileImage: users.profileImage
-        }
-      })
-      .from(chatroomMessages)
-      .leftJoin(users, eq(chatroomMessages.senderId, users.id))
-      .where(eq(chatroomMessages.chatroomId, chatroomId))
-      .orderBy(chatroomMessages.createdAt);
-
-      // Populate replyTo for messages that are replies
-      const messagesWithReplies = messages.map(msg => {
-        if (msg.replyToId) {
-          const replyToMessage = messages.find(m => m.id === msg.replyToId);
-          if (replyToMessage) {
-            return {
-              ...msg,
-              replyTo: {
-                id: replyToMessage.id,
-                content: replyToMessage.content,
-                sender: replyToMessage.sender
-              }
-            };
-          }
-        }
-        return msg;
-      });
-
-      return messagesWithReplies;
-    } catch (error) {
-      console.error('Error fetching chatroom messages:', error);
-      return [];
-    }
   }
   async updateChatroomMessage(messageId: number, content: string, senderId: number): Promise<any> {
     try {
