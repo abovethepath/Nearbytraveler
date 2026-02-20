@@ -18,11 +18,7 @@ import {
   type BusinessOfferData,
   type LocationMatchData
 } from '../templates/emailTemplates.js';
-import * as brevo from '@getbrevo/brevo';
-import fetch from 'node-fetch';
-
 export class EmailService {
-  private brevoApi: any;
   private apiKey: string | undefined;
   private isInitialized: boolean = false;
 
@@ -31,28 +27,12 @@ export class EmailService {
   }
 
   private ensureInitialized() {
-    console.log('🔍 BREVO DEBUG: Checking initialization. Current state:', {
-      isInitialized: this.isInitialized,
-      hasApiKey: !!process.env.BREVO_API_KEY,
-      apiKeyPrefix: process.env.BREVO_API_KEY?.substring(0, 10)
-    });
-
-    if (this.isInitialized) {
-      console.log('✅ Brevo already initialized');
-      return;
-    }
+    if (this.isInitialized) return;
 
     if (process.env.BREVO_API_KEY) {
-      try {
-        console.log('🔧 Attempting Brevo initialization...');
-        // Store API key for direct use
-        this.apiKey = process.env.BREVO_API_KEY;
-        this.brevoApi = new brevo.TransactionalEmailsApi();
-        this.isInitialized = true;
-        console.log('✅ Brevo initialized successfully with key starting with:', process.env.BREVO_API_KEY.substring(0, 10));
-      } catch (error) {
-        console.error('❌ Brevo initialization failed:', error);
-      }
+      this.apiKey = process.env.BREVO_API_KEY;
+      this.isInitialized = true;
+      console.log('✅ Brevo initialized successfully');
     } else {
       console.log('⚠️ BREVO_API_KEY not found - emails will not be sent');
     }

@@ -1,12 +1,3 @@
-import * as brevo from '@getbrevo/brevo';
-
-if (!process.env.BREVO_API_KEY) {
-  throw new Error("BREVO_API_KEY environment variable must be set");
-}
-
-const brevoApiInstance = brevo.TransactionalEmailsApi.getDefaultApi();
-brevoApiInstance.authentications['apiKey'].apiKey = process.env.BREVO_API_KEY;
-
 interface BlockingNotificationData {
   blockerUsername: string;
   blockerEmail: string;
@@ -14,6 +5,38 @@ interface BlockingNotificationData {
   blockedEmail: string;
   reason: string;
   timestamp: Date;
+}
+
+async function sendBrevoDirectEmail(to: string, from: string, fromName: string, subject: string, html: string, text: string) {
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) {
+    console.warn("⚠️ BREVO_API_KEY not found - security email not sent");
+    return false;
+  }
+
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "api-key": apiKey,
+      accept: "application/json",
+    },
+    body: JSON.stringify({
+      sender: { name: fromName, email: from },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+      textContent: text,
+    }),
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error(`❌ Brevo security email failed ${res.status}: ${errorText}`);
+    return false;
+  }
+
+  return true;
 }
 
 export async function sendBlockingNotification(data: BlockingNotificationData): Promise<boolean> {
@@ -78,17 +101,19 @@ Please review this incident. Multiple blocks for the same user may require admin
 This is an automated security notification.
     `;
 
-    const sendSmtpEmail = new brevo.SendSmtpEmail();
-    sendSmtpEmail.to = [{ email: 'security@nearbytraveler.org', name: 'Security Team' }];
-    sendSmtpEmail.sender = { email: 'aaron_marc2004@yahoo.com', name: 'NearbyTraveler Security' };
-    sendSmtpEmail.subject = `🚨 User Blocking Alert: @${data.blockerUsername} blocked @${data.blockedUsername}`;
-    sendSmtpEmail.textContent = emailText;
-    sendSmtpEmail.htmlContent = emailHtml;
-    
-    await brevoApiInstance.sendTransacEmail(sendSmtpEmail);
+    const result = await sendBrevoDirectEmail(
+      'security@nearbytraveler.org',
+      'aaron_marc2004@yahoo.com',
+      'NearbyTraveler Security',
+      `🚨 User Blocking Alert: @${data.blockerUsername} blocked @${data.blockedUsername}`,
+      emailHtml,
+      emailText
+    );
 
-    console.log('Security blocking notification sent successfully');
-    return true;
+    if (result) {
+      console.log('Security blocking notification sent successfully');
+    }
+    return result;
   } catch (error) {
     console.error('Failed to send blocking notification:', error);
     return false;
@@ -154,16 +179,19 @@ This is an automated high-priority security alert.
 Generated: ${new Date().toISOString()}
     `;
 
-    await mailService.send({
-      to: 'security@nearbytraveler.org',
-      from: 'aaron_marc2004@yahoo.com',
-      subject: `🚨 CRITICAL: @${username} has ${blockCount} blocks - Review Required`,
-      text: emailText,
-      html: emailHtml,
-    });
+    const result = await sendBrevoDirectEmail(
+      'security@nearbytraveler.org',
+      'aaron_marc2004@yahoo.com',
+      'NearbyTraveler Security',
+      `🚨 CRITICAL: @${username} has ${blockCount} blocks - Review Required`,
+      emailHtml,
+      emailText
+    );
 
-    console.log('Multiple blocks alert sent successfully');
-    return true;
+    if (result) {
+      console.log('Multiple blocks alert sent successfully');
+    }
+    return result;
   } catch (error) {
     console.error('Failed to send multiple blocks alert:', error);
     return false;
