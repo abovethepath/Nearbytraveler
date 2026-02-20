@@ -7,11 +7,12 @@
     "node": "20.x"
   },
   "scripts": {
-    "dev": "node -r dotenv/config ./node_modules/tsx/dist/cli.mjs server/index.ts dotenv_config_path=./.env",
-    "build": "vite build",
-    "start": "node dist/server/index.js",
-    "check": "tsc",
-    "db:push": "drizzle-kit push"
+  "dev": "node -r dotenv/config ./node_modules/tsx/dist/cli.mjs server/index.ts dotenv_config_path=./.env",
+  "build": "tsc -p tsconfig.json && vite build",
+  "start": "node dist/server/index.js",
+  "check": "tsc",
+  "db:push": "drizzle-kit push"
+
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.37.0",
