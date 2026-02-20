@@ -72,6 +72,8 @@ export const users = pgTable("users", {
   coverPhoto: text("cover_photo"), // Cover photo for profile
   secretActivities: text("secret_activities"), // Secret things they would do if closest friends came to town
   
+  // Sign in with Apple (Apple sends sub only; email/name only on first auth)
+  appleId: text("apple_id").unique(),
   // Social Media Links
   facebookUrl: text("facebook_url"),
   facebookId: text("facebook_id"),

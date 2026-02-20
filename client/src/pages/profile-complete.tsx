@@ -10122,6 +10122,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       )}
 
       </div>
+      </div>
     </React.Fragment>
   );
 }

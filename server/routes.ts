@@ -1,13 +1,18 @@
 import type { Express, Request, Response } from "express";
 import multer from "multer";
 
-// Extend session interface to include user property
+// Extend session interface to include user property and Sign in with Apple pending data
 declare module 'express-session' {
   interface SessionData {
     user?: {
       id: number;
       username: string;
       email: string;
+    };
+    pendingApple?: {
+      sub: string;   // Apple user ID (only time we get it)
+      email?: string;
+      name?: string;
     };
   }
 }
@@ -19,6 +24,7 @@ type AliveWS = WebSocket & { isAlive?: boolean };
 import express from "express";
 import path from "path";
 import { storage } from "./storage";
+import appleSignin from "apple-signin-auth";
 import { db, withRetry } from "./db";
 import { sendBrevoEmail } from "./email/brevoSend";
 import { cache, cachedQuery, CACHE_TTL } from "./cache";
@@ -1200,6 +1206,70 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         message: "Server error",
         ...(isDev && { detail: errMsg })
       });
+    }
+  });
+
+  // Sign in with Apple: verify identity token, then login or return needsOnboarding
+  app.post("/api/auth/apple", async (req, res) => {
+    try {
+      const { identityToken, email: appleEmail, fullName: appleFullName } = req.body || {};
+      if (!identityToken || typeof identityToken !== "string") {
+        return res.status(400).json({ message: "Identity token is required" });
+      }
+      const clientId = process.env.APPLE_CLIENT_ID || "com.nearbytraveler.app";
+      const payload = await appleSignin.verifyIdToken(identityToken, {
+        audience: clientId,
+        ignoreExpiration: false,
+      });
+      const sub = payload.sub as string;
+      if (!sub) {
+        return res.status(400).json({ message: "Invalid Apple token" });
+      }
+      const existingUser = await storage.getUserByAppleId(sub);
+      if (existingUser) {
+        const sess = (req as any).session;
+        if (sess && typeof sess.save === "function") {
+          sess.user = {
+            id: existingUser.id,
+            username: existingUser.username,
+            email: existingUser.email,
+          };
+          await new Promise<void>((resolve) => {
+            const t = setTimeout(() => resolve(), 3000);
+            sess.save((err: any) => {
+              clearTimeout(t);
+              if (err) console.error("Session save error:", err?.message);
+              resolve();
+            });
+          });
+        }
+        return res.status(200).json({
+          ok: true,
+          user: { id: existingUser.id, username: existingUser.username },
+        });
+      }
+      const name = appleFullName
+        ? [appleFullName.givenName, appleFullName.familyName].filter(Boolean).join(" ").trim() || undefined
+        : undefined;
+      const sess = (req as any).session;
+      if (sess && typeof sess.save === "function") {
+        sess.pendingApple = { sub, email: appleEmail || undefined, name };
+        await new Promise<void>((resolve) => {
+          const t = setTimeout(() => resolve(), 3000);
+          sess.save((err: any) => {
+            clearTimeout(t);
+            if (err) console.error("Session save error:", err?.message);
+            resolve();
+          });
+        });
+      }
+      return res.status(200).json({
+        needsOnboarding: true,
+        pendingApple: { sub, email: appleEmail || undefined, name },
+      });
+    } catch (e: any) {
+      if (process.env.NODE_ENV === "development") console.error("Apple auth error:", e?.message || e);
+      return res.status(401).json({ message: "Apple sign-in failed" });
     }
   });
 
@@ -4142,6 +4212,14 @@ Questions? Just reply to this message!
 
       // Convert date strings to Date objects and map form data to correct schema fields
       const processedData = { ...req.body };
+      const pendingApple = (req as any).session?.pendingApple;
+      if (pendingApple) {
+        processedData.appleId = pendingApple.sub;
+        if (pendingApple.email && !processedData.email) processedData.email = pendingApple.email;
+        if (pendingApple.name && !processedData.name) processedData.name = pendingApple.name;
+        if (!processedData.password) processedData.password = crypto.randomBytes(32).toString("hex");
+        if (process.env.NODE_ENV === "development") console.log("🍎 APPLE: Completing registration with pendingApple sub", pendingApple.sub);
+      }
       if (processedData.dateOfBirth && typeof processedData.dateOfBirth === 'string') {
         processedData.dateOfBirth = new Date(processedData.dateOfBirth);
       }
@@ -4668,6 +4746,17 @@ Questions? Just reply to this message!
           return res.status(400).json({ 
             message: `Please select at least 3 items total from interests, activities, and events. You have selected ${totalSelections}.`,
             field: "totalSelections"
+          });
+        }
+      }
+
+      if (pendingApple) {
+        const existingByApple = await storage.getUserByAppleId(pendingApple.sub);
+        if (existingByApple) {
+          (req as any).session.pendingApple = undefined;
+          return res.status(409).json({
+            message: "This Apple ID is already linked to an account. Please sign in.",
+            field: "appleId",
           });
         }
       }

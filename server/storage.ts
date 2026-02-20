@@ -13,6 +13,7 @@ export interface IStorage {
   getUserByUsernameOrEmail(usernameOrEmail: string): Promise<User | undefined>;
   getUserByResetToken(token: string): Promise<User | undefined>;
   getUserByFacebookId(facebookId: string): Promise<User | undefined>;
+  getUserByAppleId(appleId: string): Promise<User | undefined>;
   linkFacebookAccount(userId: number, facebookId: string, accessToken: string): Promise<User | undefined>;
   createUserSession(userId: number, sessionToken: string): Promise<void>;
   createUser(user: InsertUser): Promise<User>;
@@ -583,6 +584,11 @@ export class DatabaseStorage implements IStorage {
       )
     ).limit(1);
     return result[0];
+  }
+
+  async getUserByAppleId(appleId: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.appleId, appleId));
+    return user || undefined;
   }
 
   async getUserByFacebookId(facebookId: string): Promise<User | undefined> {
