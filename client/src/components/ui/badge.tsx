@@ -70,7 +70,7 @@ function Badge({ className, variant, ...props }: BadgeProps) {
   if (isInterest) {
     enforcedClassName = 'text-xs bg-blue-500 text-white border-blue-500 dark:bg-blue-500 dark:text-white dark:border-blue-500 justify-center h-6 min-w-[3rem] px-3';
   } else if (isActivity) {
-    enforcedClassName = 'text-xs bg-green-500 text-white border-green-500 dark:bg-green-500 dark:text-white dark:border-green-500 justify-center h-6 min-w-[3rem] px-3';
+    enforcedClassName = 'text-xs bg-orange-500 text-white border-orange-500 dark:bg-orange-500 dark:text-white dark:border-orange-500 justify-center h-6 min-w-[3rem] px-3';
   } else if (isEvent) {
     enforcedClassName = 'text-xs bg-purple-500 text-white border-purple-500 dark:bg-purple-500 dark:text-white dark:border-purple-500 justify-center h-6 min-w-[3rem] px-3';
   }

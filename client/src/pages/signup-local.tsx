@@ -448,7 +448,7 @@ export default function SignupLocal() {
                   </span>
                   <span className={`text-sm font-bold px-3 py-1 rounded-full ${
                     getTotalInterestsCount() >= 7 
-                      ? 'bg-green-500 text-white' 
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white' 
                       : 'bg-orange-500 text-white'
                   }`}>
                     {getTotalInterestsCount()}/7

@@ -251,7 +251,7 @@ export function UserListModal({ isOpen, onClose, city, state, country, userType,
                         size="sm" 
                         onClick={() => connectMutation.mutate(user.id)}
                         disabled={connectMutation.isPending}
-                        className="text-xs bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
+                        className="text-xs bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
                       >
                         <UserPlus className="h-3 w-3 mr-1" />
                         {connectMutation.isPending ? 'Connecting...' : 'Connect'}

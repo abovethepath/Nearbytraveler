@@ -153,7 +153,7 @@ function MainTabs() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle,
+        tabBarStyle: { ...tabBarStyle, display: 'flex' },
         tabBarActiveTintColor: TAB_ACTIVE,
         tabBarInactiveTintColor: dark ? TAB_INACTIVE_DARK : TAB_INACTIVE,
         tabBarLabelStyle: {
@@ -162,6 +162,7 @@ function MainTabs() {
           marginTop: 2,
         },
         tabBarIconStyle: { width: ICON_SIZE, height: ICON_SIZE },
+        tabBarHideOnKeyboard: false,
         // Keep all tab screens mounted so switching tabs doesn't remount WebViews (fixes Home flashing)
         lazy: false,
         unmountOnBlur: false,

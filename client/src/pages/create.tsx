@@ -19,7 +19,7 @@ export default function Create() {
       icon: Calendar,
       title: "Event",
       description: "Create a planned event",
-      color: "bg-green-500",
+      color: "bg-orange-500",
       path: "/create-event"
     },
     {

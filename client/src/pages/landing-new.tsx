@@ -334,7 +334,7 @@ export default function LandingNew() {
               <div className="bg-gradient-to-br from-blue-50 to-orange-50 rounded-xl p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900">Beach Bonfire & BBQ</h3>
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
+                  <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
                 </div>
                 <p className="text-sm sm:text-base text-gray-700">
                   Sunset gathering with locals — authentic LA beach culture, music, and new friends.
@@ -354,7 +354,7 @@ export default function LandingNew() {
               <div className="bg-gradient-to-br from-blue-50 to-orange-50 rounded-xl p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900">Hollywood Sign Hike</h3>
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
+                  <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
                 </div>
                 <p className="text-sm sm:text-base text-gray-700">
                   Saturday morning hikes with locals and travelers — amazing views, great photos, real LA.

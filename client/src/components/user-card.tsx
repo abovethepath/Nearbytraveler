@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "wouter";
 
 export interface User {
   id: number;
@@ -56,10 +57,10 @@ export default function UserCard({
   isAvailableNow = false
 }: UserCardProps) {
   
+  const [, setLocation] = useLocation();
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    window.history.pushState({}, '', `/profile/${user.username}`);
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    setLocation(`/profile/${user.id}`);
   };
 
   const getUserGradient = () => {
@@ -161,7 +162,7 @@ export default function UserCard({
           </div>
         )}
         
-        {/* Available Now badge - show when user is available (web and native app) */}
+        {/* Available Now badge - green, visible to everyone (web and native app) */}
         {isAvailableNow && (
           <div className="absolute bottom-1.5 left-1.5 right-1.5">
             <span className="status-badge animate-pulsate-green flex items-center justify-center gap-1 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg w-full">

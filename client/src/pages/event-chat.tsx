@@ -1,10 +1,11 @@
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import WhatsAppChat from "@/components/WhatsAppChat";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
+import { authStorage } from "@/lib/auth";
 
 interface User {
   id: number;
@@ -32,8 +33,17 @@ export default function EventChat() {
   const { toast } = useToast();
   const eventId = params?.eventId ? parseInt(params.eventId) : null;
 
-  let user: any = {};
-  try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { }
+  const [userId, setUserId] = useState<number | undefined>(() => authStorage.getUser()?.id ?? undefined);
+  useEffect(() => {
+    const u = authStorage.getUser();
+    if (u?.id) setUserId(u.id);
+  }, []);
+  useEffect(() => {
+    if (userId != null) return;
+    const t1 = setTimeout(() => { const u = authStorage.getUser(); if (u?.id) setUserId(u.id); }, 300);
+    const t2 = setTimeout(() => { const u = authStorage.getUser(); if (u?.id) setUserId(u.id); }, 1200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [userId]);
 
   const { data: event, isLoading, isError, error, failureCount } = useQuery<Event>({
     queryKey: [`/api/events/${eventId}`],
@@ -95,13 +105,17 @@ export default function EventChat() {
     );
   }
 
+  if (!userId) {
+    return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading chat...</div>;
+  }
+
   return (
     <WhatsAppChat
       chatId={chatroom.id}
       chatType="event"
       title={event.title}
       subtitle={new Date(event.date).toLocaleDateString()}
-      currentUserId={user.id}
+      currentUserId={userId}
       eventId={eventId} // Pass the eventId so navigation back works correctly
     />
   );

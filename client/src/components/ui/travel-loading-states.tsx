@@ -133,7 +133,7 @@ export function EventsLoader() {
       <div className="relative">
         {/* Calendar Animation */}
         <motion.div
-          className="w-16 h-16 bg-green-500 rounded-lg flex items-center justify-center text-white shadow-lg"
+          className="w-16 h-16 bg-orange-500 rounded-lg flex items-center justify-center text-white shadow-lg"
           animate={{
             rotateY: [0, 180, 360],
           }}

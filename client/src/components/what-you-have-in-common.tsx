@@ -601,13 +601,13 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             What You Have in Common
           </CardTitle>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <Badge className="bg-green-600 dark:bg-green-500 text-white dark:text-white shadow-md border-green-700 dark:border-green-600 text-xs sm:text-sm px-2 py-1 font-bold whitespace-nowrap">
+            <span className="inline-flex items-center justify-center rounded-full bg-blue-600 dark:bg-blue-500 text-white shadow-md border border-blue-700 dark:border-blue-600 text-sm font-bold px-4 py-2.5 min-h-[2.5rem]">
               {compatibilityData?.matchCount != null
                 ? `${compatibilityData.matchCount} things in common`
                 : compatibilityData
                   ? `${(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} things in common`
                   : `${commonalities.totalCount} things in common`}
-            </Badge>
+            </span>
           </div>
         </div>
         <p className="text-sm text-orange-600 dark:text-gray-300 font-medium mt-1">
@@ -641,7 +641,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </h5>
             <div className="flex flex-wrap gap-1.5">
               {commonalities.sharedActivities.map((activity, index) => (
-                <div key={`shared-activity-${activity}-${index}`} className="inline-flex items-center justify-center h-8 sm:h-9 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none">
+                <div key={`shared-activity-${activity}-${index}`} className="inline-flex items-center justify-center h-8 sm:h-9 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none">
                   {activity}
                 </div>
               ))}
@@ -882,7 +882,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-blue-900 dark:text-blue-300">{trip.destination}</span>
                     {trip.dateOverlap && (
-                      <Badge className="bg-green-500 text-white border-green-600 shadow-md font-medium">
+                      <Badge className="bg-orange-500 text-white border-orange-600 shadow-md font-medium">
                         Overlapping Dates
                       </Badge>
                     )}

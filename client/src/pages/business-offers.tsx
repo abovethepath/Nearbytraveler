@@ -600,7 +600,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
                             e.stopPropagation();
                             handleRedeemOffer(offer.id);
                           }}
-                          className="w-full bg-green-600 hover:bg-green-700 text-white"
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                           style={{ transition: 'none' }}
                         >
                           Redeem This Offer

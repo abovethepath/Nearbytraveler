@@ -49,7 +49,7 @@ export function MobileTopNav() {
     } else if (user?.id && user?.username && (!currentUser || String(currentUser.id) === String(user.id))) {
       setCurrentUser(user);
     }
-  }, [user?.id, user?.username, user, currentUser?.id]);
+  }, [user?.id, user?.username, user?.profileImage, user, currentUser?.id]);
 
   useEffect(() => {
     const handleUpdate = (e: any) => {

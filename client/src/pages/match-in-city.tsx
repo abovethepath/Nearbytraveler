@@ -17,6 +17,7 @@ import { getTravelActivities } from "@shared/base-options";
 import { METRO_AREAS } from "@shared/constants";
 import { getMetroAreaName } from "@shared/metro-areas";
 import SubInterestSelector from "@/components/SubInterestSelector";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 // City Plan categories for user-created plans
 const CITY_PICK_CATEGORIES = [
@@ -118,6 +119,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [editingActivityName, setEditingActivityName] = useState('');
   const [activitySearchFilter, setActivitySearchFilter] = useState('');
   const [activeMobileSection, setActiveMobileSection] = useState<'popular' | 'ai' | 'preferences' | 'selected' | 'events' | 'all'>('all');
+  const [customActivityText, setCustomActivityText] = useState('');
+  const [addingCustomActivity, setAddingCustomActivity] = useState(false);
 
   // Clear All Plans Confirmation Dialog
   const [showClearAllDialog, setShowClearAllDialog] = useState(false);
@@ -656,7 +659,21 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       const response = await fetch(`${apiBase}/api/city-activities/${encodeURIComponent(selectedCity)}`);
       if (response.ok) {
         const activities = await response.json();
-        setCityActivities(activities);
+        setCityActivities(Array.isArray(activities) ? activities : []);
+        // If server didn't auto-seed and we got 0 for a launch city, trigger seed then refetch
+        const list = Array.isArray(activities) ? activities : [];
+        if (list.length === 0 && LAUNCH_CITY_NAMES.some(c => c.toLowerCase() === selectedCity.trim().toLowerCase())) {
+          try {
+            await fetch(`${apiBase}/api/city-activities/${encodeURIComponent(selectedCity)}/seed-and-refresh`, { method: 'POST' });
+            const retry = await fetch(`${apiBase}/api/city-activities/${encodeURIComponent(selectedCity)}`);
+            if (retry.ok) {
+              const retryData = await retry.json();
+              setCityActivities(Array.isArray(retryData) ? retryData : []);
+            }
+          } catch (e) {
+            console.warn('Seed-and-refresh failed:', e);
+          }
+        }
       } else {
         console.error('🎯 ACTIVITIES API ERROR:', response.status);
         const errorText = await response.text();
@@ -723,22 +740,31 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   const addActivity = async () => {
-    if (!newActivityName.trim() || !newActivityDescription.trim()) return;
+    if (!newActivityName.trim()) return;
+    const storedUser = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+    const userId = actualUser?.id;
+    if (!userId) {
+      toast({ title: "Error", description: "Please log in to add activities", variant: "destructive" });
+      return;
+    }
 
     try {
       const apiBase = getApiBaseUrl();
       const response = await fetch(`${apiBase}/api/city-activities`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-user-id': String(userId)
         },
         body: JSON.stringify({
-          city: selectedCity,
+          cityName: selectedCity,
           activityName: newActivityName.trim(),
-          description: newActivityDescription.trim(),
-          category: 'user-generated',
+          description: (newActivityDescription && newActivityDescription.trim()) || `User-created activity in ${selectedCity}`,
+          category: 'other',
           state: '',
-          country: ''
+          country: 'United States',
+          createdByUserId: userId
         })
       });
 
@@ -1129,6 +1155,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
       if (response.ok) {
         const newActivityData = await response.json();
+        const addedName = newPickName.trim();
         setCityActivities(prev => [...prev, newActivityData]);
         
         // Auto-select the new pick
@@ -1149,9 +1176,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         setShowAddPickModal(false);
         setShowEventSuggestion(false);
         
+        queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
+        fetchUserActivities();
+        fetchCityActivities();
+        
         toast({
           title: "City Plan Added!",
-          description: `"${newPickName}" added to your plans for ${selectedCity}`,
+          description: `"${addedName}" added to your plans for ${selectedCity}`,
         });
       } else {
         const error = await response.json();
@@ -1719,30 +1750,34 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       });
 
       if (response.ok) {
-        // Update the city activity name in the city activities list
-        const cityActivityResponse = await fetch(`${apiBase}/api/city-activities/${editingActivity.activityId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-user-id': userId.toString()
-          },
-          body: JSON.stringify({
-            activityName: editingActivityName,
-            description: 'Updated activity'
-          })
-        });
+        // Only update the global city activity if the current user created it (avoids non-creators changing e.g. "May 4" to "May 5")
+        const cityActivity = cityActivities.find(ca => ca.id === editingActivity.activityId);
+        const isCreator = cityActivity && cityActivity.createdByUserId === userId;
+        if (isCreator) {
+          const cityActivityResponse = await fetch(`${apiBase}/api/city-activities/${editingActivity.activityId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-user-id': userId.toString()
+            },
+            body: JSON.stringify({
+              activityName: editingActivityName,
+              description: cityActivity?.description || 'Updated activity'
+            })
+          });
 
-        if (cityActivityResponse.ok) {
-          setCityActivities(prev => prev.map(activity => 
-            activity.id === editingActivity.activityId 
-              ? { ...activity, name: editingActivityName }
-              : activity
-          ));
+          if (cityActivityResponse.ok) {
+            setCityActivities(prev => prev.map(activity =>
+              activity.id === editingActivity.activityId
+                ? { ...activity, activityName: editingActivityName }
+                : activity
+            ));
+          }
         }
-        
+
         setEditingActivity(null);
         setEditingActivityName('');
-        
+
         toast({
           title: "Activity Updated",
           description: `Updated to "${editingActivityName}"`,
@@ -1765,48 +1800,49 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-orange-900">
         <div className="container mx-auto px-4 py-8">
-          {/* Hero Toggle Button */}
-          {!isInitialHeroVisible && (
-            <div className="mb-6">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleInitialHeroVisibility}
-                className="text-sm bg-white/10 text-white border-white/20 hover:bg-white/20"
-                data-testid="button-show-match-initial-hero"
-              >
-                <ChevronDown className="w-4 h-4 mr-2" />
-                Show Hero Section
-              </Button>
-            </div>
-          )}
-          
-          {isInitialHeroVisible && (
-          <div className="text-center mb-8 relative">
-            {/* Hide Hero Button - positioned below title on mobile */}
-            <div className="flex justify-end mb-2 md:absolute md:top-0 md:right-0 md:mb-0">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleInitialHeroVisibility}
-                className="text-sm bg-white/10 text-white border-white/20 hover:bg-white/20"
-                data-testid="button-hide-match-initial-hero"
-              >
-                <X className="w-4 h-4 mr-2" />
-                Hide
-              </Button>
-            </div>
-            
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">🎯 City Plans</h1>
-            <p className="text-xl text-white/80 mb-4">Pick a city, then choose plans to match with people who want to do the same things.</p>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 max-w-2xl mx-auto">
-              <p className="text-white/90 text-sm leading-relaxed">
-                🎯 <strong>Pick your plans</strong> → Select what you'd actually do in that city<br/>
-                👥 <strong>Find your people</strong> → We'll show matches with the most shared plans<br/>
-                ➕ <strong>Add your own</strong> → Create a plan or event and invite others
-              </p>
-            </div>
-          </div>
+          {/* Hero section and toggle — hidden on iOS for a cleaner city plans experience */}
+          {!isNativeIOSApp() && (
+            <>
+              {!isInitialHeroVisible && (
+                <div className="mb-6">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={toggleInitialHeroVisibility}
+                    className="text-sm bg-white/10 text-white border-white/20 hover:bg-white/20"
+                    data-testid="button-show-match-initial-hero"
+                  >
+                    <ChevronDown className="w-4 h-4 mr-2" />
+                    Show Hero Section
+                  </Button>
+                </div>
+              )}
+              {isInitialHeroVisible && (
+                <div className="text-center mb-8 relative">
+                  <div className="flex justify-end mb-2 md:absolute md:top-0 md:right-0 md:mb-0">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={toggleInitialHeroVisibility}
+                      className="text-sm bg-white/10 text-white border-white/20 hover:bg-white/20"
+                      data-testid="button-hide-match-initial-hero"
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Hide
+                    </Button>
+                  </div>
+                  <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">🎯 City Plans</h1>
+                  <p className="text-xl text-white/80 mb-4">Pick a city, then choose plans to match with people who want to do the same things.</p>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 max-w-2xl mx-auto">
+                    <p className="text-white/90 text-sm leading-relaxed">
+                      🎯 <strong>Pick your plans</strong> → Select what you'd actually do in that city<br/>
+                      👥 <strong>Find your people</strong> → We'll show matches with the most shared plans<br/>
+                      ➕ <strong>Add your own</strong> → Create a plan or event and invite others
+                    </p>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {/* Search Cities */}
@@ -1978,48 +2014,49 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           <div className="w-20" />
         </div>
 
-        {/* Hero Toggle Button */}
-        {!isHeroVisible && (
-          <div className="max-w-4xl mx-auto mb-6">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleHeroVisibility}
-              className="text-sm"
-              data-testid="button-show-match-hero"
-            >
-              <ChevronDown className="w-4 h-4 mr-2" />
-              Show Instructions
-            </Button>
-          </div>
-        )}
-
-        {/* Instructions */}
-        {isHeroVisible && (
-          <div className="max-w-4xl mx-auto mb-6">
-            <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
-              {/* Mobile: Stack vertically, Desktop: Side by side */}
-              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-2">
-                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200">🎯 How City Plans Works</h3>
+        {/* Hero / Instructions — hidden on iOS for cleaner experience */}
+        {!isNativeIOSApp() && (
+          <>
+            {!isHeroVisible && (
+              <div className="max-w-4xl mx-auto mb-6">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={toggleHeroVisibility}
-                  className="text-sm w-fit"
-                  data-testid="button-hide-match-hero"
+                  className="text-sm"
+                  data-testid="button-show-match-hero"
                 >
-                  <X className="w-4 h-4 mr-2" />
-                  Hide Instructions
+                  <ChevronDown className="w-4 h-4 mr-2" />
+                  Show Instructions
                 </Button>
               </div>
-              <div className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
-                <p>• <strong>Choose activities you want to do</strong> → Get matched with others who share your interests</p>
-                <p>• <strong>Add your own activities</strong> → Help others discover new experiences</p>
-                <p>• <strong>Connect with locals & travelers</strong> → Plan meetups and explore together</p>
-                <p>• <strong>Edit or delete outdated activities</strong> → Keep your interests current and relevant</p>
+            )}
+            {isHeroVisible && (
+              <div className="max-w-4xl mx-auto mb-6">
+                <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-2">
+                    <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200">🎯 How City Plans Works</h3>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={toggleHeroVisibility}
+                      className="text-sm w-fit"
+                      data-testid="button-hide-match-hero"
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Hide Instructions
+                    </Button>
+                  </div>
+                  <div className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
+                    <p>• <strong>Choose activities you want to do</strong> → Get matched with others who share your interests</p>
+                    <p>• <strong>Add your own activities</strong> → Help others discover new experiences</p>
+                    <p>• <strong>Connect with locals & travelers</strong> → Plan meetups and explore together</p>
+                    <p>• <strong>Edit or delete outdated activities</strong> → Keep your interests current and relevant</p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            )}
+          </>
         )}
 
         {/* Activity Selection Interface - GORGEOUS RESTORED DESIGN */}
@@ -2328,6 +2365,69 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-2">🎯 Things to Do in {selectedCity}</h3>
                         <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Popular spots, local favorites, and unique ideas — tap to add to your plans</p>
                         <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-yellow-500 to-orange-500 mx-auto rounded-full mt-2"></div>
+                        {/* Inline text box: add custom "thing I want to do" — editable/deletable by all */}
+                        <div className="flex flex-col sm:flex-row gap-2 mt-4 max-w-xl mx-auto">
+                          <input
+                            type="text"
+                            placeholder="Type something you want to do in this city..."
+                            value={customActivityText}
+                            onChange={(e) => setCustomActivityText(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                (document.querySelector('[data-add-custom-activity]') as HTMLButtonElement)?.click();
+                              }
+                            }}
+                            className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm placeholder-gray-500"
+                          />
+                          <Button
+                            data-add-custom-activity
+                            size="sm"
+                            disabled={!customActivityText.trim() || addingCustomActivity}
+                            onClick={async () => {
+                              if (!customActivityText.trim()) return;
+                              const stored = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
+                              const u = user || (stored ? JSON.parse(stored) : null);
+                              const uid = u?.id;
+                              if (!uid) {
+                                toast({ title: "Error", description: "Please log in to add activities", variant: "destructive" });
+                                return;
+                              }
+                              setAddingCustomActivity(true);
+                              try {
+                                const apiBase = getApiBaseUrl();
+                                const res = await fetch(`${apiBase}/api/city-activities`, {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json', 'x-user-id': String(uid) },
+                                  body: JSON.stringify({
+                                    cityName: selectedCity,
+                                    activityName: customActivityText.trim(),
+                                    description: `User-created: ${customActivityText.trim()} in ${selectedCity}`,
+                                    category: 'other',
+                                    state: '',
+                                    country: 'United States',
+                                    createdByUserId: uid
+                                  })
+                                });
+                                if (res.ok) {
+                                  const newActivity = await res.json();
+                                  const addedName = customActivityText.trim();
+                                  setCityActivities(prev => [...prev, newActivity]);
+                                  setCustomActivityText('');
+                                  toast({ title: "Added", description: `"${addedName}" added to ${selectedCity}` });
+                                  fetchMatchingUsers();
+                                } else {
+                                  const err = await res.json();
+                                  toast({ title: "Error", description: err.error || "Failed to add", variant: "destructive" });
+                                }
+                              } finally {
+                                setAddingCustomActivity(false);
+                              }
+                            }}
+                          >
+                            {addingCustomActivity ? 'Adding…' : 'Add'}
+                          </Button>
+                        </div>
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                         {displayedActivities.map((activity) => {
@@ -2337,7 +2437,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           );
                           const isFeatured = (activity as any).isFeatured || (activity as any).source === 'featured';
                           const isAICreated = activity.createdByUserId === 1;
-                          const isUserCreated = activity.createdByUserId === currentUserId2;
+                          const isUserCreated = activity.createdByUserId != null && activity.createdByUserId !== 1; // any user-created: deletable by all
+                          const isCreatedByMe = activity.createdByUserId === currentUserId2; // only creator can edit (avoids someone changing e.g. "Taylor Swift May 4" to May 5)
                           const userActivity = userActivities.find(ua => ua.activityId === activity.id || (ua.activityName === activity.activityName && ua.cityName === selectedCity));
                           
                           return (
@@ -2378,13 +2479,28 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               )}
                               {isUserCreated && (
                                 <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                  {isCreatedByMe && (
+                                    <button
+                                      className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingActivity(activity);
+                                        setEditActivityName(activity.activityName);
+                                        setEditActivityDescription((activity as any).description || '');
+                                        setEditingActivityName(activity.activityName);
+                                      }}
+                                      title="Edit (only you can edit what you added)"
+                                    >
+                                      <Edit className="w-2.5 h-2.5" />
+                                    </button>
+                                  )}
                                   <button
                                     className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      if (userActivity) handleDeleteActivity(userActivity.id);
-                                      else handleDeleteCityActivity(activity.id);
+                                      handleDeleteCityActivity(activity.id);
                                     }}
+                                    title="Remove from city (visible to everyone)"
                                   >
                                     <X className="w-2.5 h-2.5" />
                                   </button>
@@ -2613,9 +2729,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             {userPicksForCity.map((ua) => {
                               const activity = cityActivities.find(ca => ca.id === ua.activityId);
                               const activityName = ua.activityName || activity?.activityName || 'Unknown';
-                              const isUserCreated = (activity?.createdByUserId === currentUserId3) || 
-                                                    (activity?.source === 'user' && activity?.createdByUserId === currentUserId3) ||
-                                                    (ua.source === 'user' && ua.createdByUserId === currentUserId3);
+                              const isUserCreated = (activity?.createdByUserId != null && activity?.createdByUserId !== 1) ||
+                                                    (ua.source === 'user' && ua.createdByUserId != null && ua.createdByUserId !== 1);
                               const categoryInfo = CITY_PICK_CATEGORIES.find(c => c.id === activity?.category);
                               
                               return (
@@ -2881,35 +2996,74 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         )}
       </div>
 
-      {/* Edit Activity Modal */}
+      {/* Edit Activity Modal — city activity (creator only) or user pick */}
       {editingActivity && (
         <div className="fixed inset-0 bg-black/95 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md border border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Edit Activity</h3>
-            <Input
-              value={editingActivityName}
-              onChange={(e) => setEditingActivityName(e.target.value)}
-              className="mb-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
-              placeholder="Activity name"
-            />
-            <div className="flex gap-2 justify-end">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setEditingActivity(null);
-                  setEditingActivityName('');
-                }}
-                className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleUpdateActivity}
-                className="bg-blue-500 hover:bg-blue-600 text-white"
-              >
-                Save
-              </Button>
-            </div>
+            {/* City activity edit (creator only): name + description */}
+            {!(editingActivity as any).activityId ? (
+              <>
+                <Input
+                  value={editActivityName}
+                  onChange={(e) => setEditActivityName(e.target.value)}
+                  className="mb-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                  placeholder="Activity name"
+                />
+                <Input
+                  value={editActivityDescription}
+                  onChange={(e) => setEditActivityDescription(e.target.value)}
+                  className="mb-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                  placeholder="Description (optional)"
+                />
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setEditingActivity(null);
+                      setEditActivityName('');
+                      setEditActivityDescription('');
+                    }}
+                    className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={updateActivity}
+                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                  >
+                    Save
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <Input
+                  value={editingActivityName}
+                  onChange={(e) => setEditingActivityName(e.target.value)}
+                  className="mb-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                  placeholder="Activity name"
+                />
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setEditingActivity(null);
+                      setEditingActivityName('');
+                    }}
+                    className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleUpdateActivity}
+                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                  >
+                    Save
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

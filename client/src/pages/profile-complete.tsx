@@ -94,19 +94,19 @@ function ThingsInCommonSection({ currentUser, profileUser }: ThingsInCommonSecti
   return (
     <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-full overflow-hidden">
       <CardContent className="p-4">
-        <div className="p-3 bg-gradient-to-br from-green-50 to-blue-50 border-l-4 border-green-200 rounded-r-lg">
-          <h5 className="font-medium text-black mb-3 flex items-center gap-2">
-            <Users className="w-4 h-4 text-green-600" />
+        <div className="p-3 bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 border-l-4 border-green-200 dark:border-green-600 rounded-r-lg">
+          <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
+            <Users className="w-4 h-4 text-green-600 dark:text-green-400" />
             Things We Have in Common ({totalThingsInCommon})
           </h5>
           
           <div className="space-y-3">
             {sharedInterests.length > 0 && (
               <div>
-                <h6 className="text-sm font-medium text-black mb-2">Shared Interests ({sharedInterests.length})</h6>
+                <h6 className="text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">Shared Interests ({sharedInterests.length})</h6>
                 <div className="flex flex-wrap gap-1">
                   {sharedInterests.map((interest: string, index: number) => (
-                    <div key={index} className="pill-interests bg-green-100 text-green-800 border-green-200">
+                    <div key={index} className="pill-interests bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 border-green-200 dark:border-green-600">
                       {interest}
                     </div>
                   ))}
@@ -116,10 +116,10 @@ function ThingsInCommonSection({ currentUser, profileUser }: ThingsInCommonSecti
 
             {sharedActivities.length > 0 && (
               <div>
-                <h6 className="text-sm font-medium text-black mb-2">Shared Activities ({sharedActivities.length})</h6>
+                <h6 className="text-sm font-medium text-gray-900 dark:text-gray-200 mb-2">Shared Activities ({sharedActivities.length})</h6>
                 <div className="flex flex-wrap gap-1">
                   {sharedActivities.map((activity: string, index: number) => (
-                    <div key={index} className="pill-interests bg-blue-100 text-blue-800 border-blue-200">
+                    <div key={index} className="pill-interests bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-600">
                       {activity}
                     </div>
                   ))}
@@ -128,8 +128,8 @@ function ThingsInCommonSection({ currentUser, profileUser }: ThingsInCommonSecti
             )}
           </div>
 
-          <div className="mt-3 pt-3 border-t border-green-200">
-            <p className="text-xs text-black italic">
+          <div className="mt-3 pt-3 border-t border-green-200 dark:border-green-600">
+            <p className="text-xs text-gray-700 dark:text-gray-300 italic">
               This compatibility assessment helps you find meaningful connections based on shared interests and activities.
             </p>
           </div>
@@ -2242,8 +2242,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // CRITICAL: Clear localStorage cache to prevent stale data
       invalidateUserCache();
       
-      // API returns { user, profileImage, message } - extract the user data
-      const updatedUser = data?.user || data;
+      // API returns { user, profileImage, message } - extract user and ensure profileImage is set
+      const rawUser = data?.user || data;
+      const updatedUser = {
+        ...rawUser,
+        profileImage: data?.profileImage ?? rawUser?.profileImage,
+      };
       console.log('Profile upload success, user has image:', !!updatedUser?.profileImage);
       
       // Update localStorage immediately
@@ -3567,7 +3571,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Get connect button text and state
   const getConnectButtonState = () => {
     if (connectionStatus?.status === 'accepted') {
-      return { text: 'Connected', disabled: false, variant: 'default' as const, className: 'bg-green-600 hover:bg-green-700 text-white border-0' };
+      return { text: 'Connected', disabled: false, variant: 'default' as const, className: 'bg-blue-600 hover:bg-blue-700 text-white border-0' };
     }
     if (connectionStatus?.status === 'pending') {
       return { text: 'Request Sent', disabled: true, variant: 'default' as const, className: 'bg-gray-600 hover:bg-gray-700 text-white border-0' };
@@ -3591,16 +3595,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-lg font-medium text-gray-900 dark:text-white">
-              {isOwnProfile 
-                ? (currentUser?.userType === 'business' ? 'Loading Business Profile...' : 'Loading Your Profile...') 
-                : 'Loading Profile...'}
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-orange-500 dark:border-gray-600 dark:border-t-orange-500" />
       </div>
     );
   }
@@ -3973,10 +3969,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <Badge 
                               className={`text-xs px-2 py-0.5 font-semibold ${
                                 connectionDegreeData.degree === 1 
-                                  ? 'bg-green-100 text-green-800 border-green-300' 
+                                  ? 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-200 dark:border-green-600' 
                                   : connectionDegreeData.degree === 2 
-                                    ? 'bg-blue-100 text-blue-800 border-blue-300'
-                                    : 'bg-purple-100 text-purple-800 border-purple-300'
+                                    ? 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/50 dark:text-blue-200 dark:border-blue-600'
+                                    : 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/50 dark:text-purple-200 dark:border-purple-600'
                               }`}
                               data-testid="badge-connection-degree"
                             >
@@ -3998,50 +3994,51 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           )}
                         </div>
                         
-                        {/* ALWAYS show hometown - NEVER remove - compact text for mobile - allow wrapping for full visibility */}
-                        <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
-                          <MapPin className="hidden sm:block w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                          <span className="break-words">Nearby Local • {hometown}</span>
+                        {/* 4-line block: Nearby Local, city, Nearby Traveler, destination — labels stand out by color and size */}
+                        <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black dark:text-gray-200 min-w-0">
+                          <div className="flex-shrink-0 mt-0.5 flex flex-col items-center gap-0">
+                            <MapPin className="hidden sm:block w-5 h-5 text-blue-600" />
+                            <Plane className="hidden sm:block w-5 h-5 text-orange-600 mt-1" />
+                          </div>
+                          <div className="flex flex-col gap-0 min-w-0 flex-1">
+                            <span className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</span>
+                            <span className="truncate text-gray-700 dark:text-gray-300" title={hometown}>{hometown}</span>
+                            <span className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-0.5">Nearby Traveler</span>
+                            {(() => {
+                              const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+                              return currentTravelPlan ? (
+                                <span className="truncate text-gray-700 dark:text-gray-300" title={currentTravelPlan}>{currentTravelPlan}</span>
+                              ) : (
+                                <span className="truncate text-gray-700 dark:text-gray-300">—</span>
+                              );
+                            })()}
+                          </div>
                           {user.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 flex-shrink-0">
-                              <span style={{ color: 'black' }}>New to Town</span>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 flex-shrink-0 self-start">
+                              New to Town
                             </span>
                           )}
                         </div>
-                        
-                        {/* ADDITIONAL travel status if currently traveling - shows BELOW hometown */}
+                        {/* Hostel line when traveling and public hostel set */}
                         {(() => {
                           const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                          if (currentTravelPlan) {
-                            // Find the active travel plan that matches the current destination AND has public hostel info
-                            const now = new Date();
-                            const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
-                              if (!plan.startDate || !plan.endDate) return false;
-                              const start = new Date(plan.startDate);
-                              const end = new Date(plan.endDate);
-                              // Must be active, have public hostel, AND match the displayed destination
-                              const isActive = now >= start && now <= end;
-                              const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
-                              const matchesDestination = plan.destination && currentTravelPlan.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
-                              return isActive && hasPublicHostel && matchesDestination;
-                            });
-                            
-                            return (
-                              <>
-                                <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
-                                  <Plane className="hidden sm:block w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                                  <span className="break-words">Nearby Traveler • {currentTravelPlan}</span>
-                                </div>
-                                {activePlanWithHostel && (
-                                  <div className="flex items-start gap-1.5 text-sm font-medium text-black flex-wrap mt-1">
-                                    <Building2 className="hidden sm:block w-4 h-4 text-black flex-shrink-0 mt-0.5" />
-                                    <span className="break-words">🏨 Staying at {activePlanWithHostel.hostelName}</span>
-                                  </div>
-                                )}
-                              </>
-                            );
-                          }
-                          return null;
+                          if (!currentTravelPlan) return null;
+                          const now = new Date();
+                          const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
+                            if (!plan.startDate || !plan.endDate) return false;
+                            const start = new Date(plan.startDate);
+                            const end = new Date(plan.endDate);
+                            const isActive = now >= start && now <= end;
+                            const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
+                            const matchesDestination = plan.destination && currentTravelPlan.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
+                            return isActive && hasPublicHostel && matchesDestination;
+                          });
+                          return activePlanWithHostel ? (
+                            <div className="flex items-start gap-1.5 text-sm font-medium text-black flex-wrap mt-1">
+                              <Building2 className="hidden sm:block w-4 h-4 text-black flex-shrink-0 mt-0.5" />
+                              <span className="break-words">🏨 Staying at {activePlanWithHostel.hostelName}</span>
+                            </div>
+                          ) : null;
                         })()}
                         
                         {/* Show travel plan actions if has ANY travel plans (current or upcoming) */}
@@ -4181,7 +4178,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       e.stopPropagation();
                       setShowWriteReferenceModal(true);
                     }}
-                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
                     data-testid="button-write-reference"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
@@ -4191,7 +4188,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <Button
                     type="button"
                     onClick={() => setLocation('/auth')}
-                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
                     data-testid="button-write-reference"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
@@ -4266,20 +4263,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         {/* Upload overlay (unchanged) */}
         {uploadingPhoto && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
-            <div className="bg-white rounded-lg p-4 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center border border-gray-200 dark:border-gray-600 shadow-lg">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-              <p className="text-sm font-medium">Uploading...</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Uploading...</p>
             </div>
           </div>
         )}
       </div>
 
       {/* Main Content Container - with overflow-x-hidden for rest of page */}
-      <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden">
+      <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900">
 
 
       {/* Navigation Tabs - Card Style with Border */}
-      <div className="w-auto bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg mt-4">
+      <div className="w-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg mt-4 shadow-sm">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex flex-wrap gap-2 sm:gap-3 lg:gap-4">
@@ -4399,7 +4396,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                       activeTab === 'countries' 
                         ? 'bg-white/20 text-white' 
-                        : 'bg-green-500 text-white'
+                        : 'bg-orange-500 text-white hover:bg-orange-600'
                     }`}>
                       {countriesVisited.length}
                     </span>
@@ -4465,7 +4462,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   // Reset after scrolling completes
                   setTimeout(() => setTriggerQuickMeetup(false), 500);
                 }}
-                className="bg-gradient-to-r from-green-500 to-blue-500 border-0 hover:from-green-600 hover:to-blue-600 
+                className="bg-gradient-to-r from-blue-500 to-orange-500 border-0 hover:from-blue-600 hover:to-orange-600 
                            px-4 sm:px-6 py-2 sm:py-2 text-sm font-medium rounded-lg
                            w-full sm:w-auto flex items-center justify-center transition-all duration-200"
                 style={{ color: 'black' }}
@@ -4486,10 +4483,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
 
             {/* About Section - Always Visible */}
-            <Card className="mt-2 relative overflow-visible">
+            <Card className="mt-2 relative overflow-visible bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-4 lg:px-6 pt-3 sm:pt-4 lg:pt-6">
                 <div className="flex items-center justify-between w-full">
-                  <CardTitle className="text-base sm:text-lg lg:text-xl font-bold break-words text-left leading-tight flex-1 pr-2">
+                  <CardTitle className="text-base sm:text-lg lg:text-xl font-bold break-words text-left leading-tight flex-1 pr-2 text-gray-900 dark:text-white">
                     {user?.userType === 'business'
                       ? `ABOUT OUR BUSINESS`
                       : `ABOUT ${user?.username || 'User'}`}
@@ -4521,10 +4518,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4 lg:pb-6 min-w-0 break-words overflow-visible">
+              <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4 lg:pb-6 min-w-0 break-words overflow-visible text-gray-700 dark:text-gray-300">
                 {/* Bio / Business Description */}
                 <div>
-                  <p className="text-gray-900 dark:text-white leading-relaxed whitespace-pre-wrap break-words text-left">
+                  <p className="text-gray-900 dark:text-gray-100 leading-relaxed whitespace-pre-wrap break-words text-left">
                     {user?.userType === 'business'
                       ? (user?.businessDescription || "No business description available yet.")
                       : (user?.bio || "No bio available yet.")
@@ -4761,7 +4758,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           console.log('🔥 CREATE OFFER clicked, navigating to business dashboard');
                           setLocation('/business-dashboard');
                         }}
-                        className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600"
+                        className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
                       >
                         <Plus className="w-3 h-3 mr-1" />
                         Create Offer
@@ -4801,7 +4798,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
                             <div className="flex items-center gap-2">
-                              <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-bold whitespace-nowrap leading-none bg-gradient-to-r from-green-500 to-blue-500 text-white">
+                              <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-bold whitespace-nowrap leading-none bg-gradient-to-r from-blue-500 to-orange-500 text-white">
                                 {(() => {
                                   // Format discount display based on deal type
                                   const value = deal.discountValue?.trim() || '';
@@ -4950,7 +4947,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             console.error('Failed to update:', error);
                           }
                         }}
-                        className="bg-green-600 hover:bg-green-700 text-white"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
                         size="sm"
                       >
                         Save All
@@ -5118,7 +5115,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               }}
                               className={`h-8 px-3 rounded-full text-sm font-medium transition-all ${
                                 isSelected
-                                  ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md'
+                                  ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-md'
                                   : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
                               }`}
                             >
@@ -5214,7 +5211,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       onClick={() => {
                                         setEditFormData(prev => ({ ...prev, activities: prev.activities.filter(a => a !== activity) }));
                                       }}
-                                      className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md gap-1.5 hover:opacity-80 transition-opacity"
+                                      className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-md gap-1.5 hover:opacity-80 transition-opacity"
                                       title="Click to remove"
                                     >
                                       {activity}
@@ -5271,7 +5268,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             console.error('Failed to update:', error);
                           }
                         }}
-                        className="bg-green-600 hover:bg-green-700 text-white"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
                         size="sm"
                       >
                         Save All
@@ -5622,7 +5619,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             }
                           }}
                           disabled={false}
-                          className="bg-green-600 hover:bg-green-700 text-white"
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
                           Save Business Changes
                         </Button>
@@ -5928,7 +5925,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             });
                           }
                         }}
-                        className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-semibold"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-semibold"
                         size="lg"
                       >
                         💾 Save Business Changes
@@ -5973,7 +5970,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 style={{zIndex: 10, position: 'relative'}} 
                 data-testid="photos-content"
               >
-              <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
+              <Card className="bg-white border border-gray-200 dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center gap-2 text-black dark:text-white">
                     <Camera className="w-5 h-5" />
@@ -5992,7 +5989,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <Button 
                         size="sm" 
                         onClick={() => setLocation('/upload-photos')}
-                        className="bg-green-500 text-white hover:bg-green-600 flex-1 sm:flex-none text-xs sm:text-sm"
+                        className="bg-orange-500 text-white hover:bg-orange-600 flex-1 sm:flex-none text-xs sm:text-sm"
                       >
                         Upload Photos
                       </Button>
@@ -6094,7 +6091,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 style={{zIndex: 10, position: 'relative'}} 
                 data-testid="countries-content"
               >
-                <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+                <Card className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
                   <CardHeader className="bg-white dark:bg-gray-900">
                     <div className="flex items-center justify-between">
                       <CardTitle className="flex items-center gap-2 text-black dark:text-white">
@@ -6180,7 +6177,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               updateCountries.mutate(tempCountries);
                             }}
                             disabled={updateCountries.isPending}
-                            className="bg-green-600 hover:bg-green-700 text-white"
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
                           >
                             {updateCountries.isPending ? "Saving..." : "Save Countries"}
                           </Button>
@@ -6319,9 +6316,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Events I'm Going To - Only show on own profile for non-business users */}
             {isOwnProfile && user?.userType !== 'business' && eventsGoing.length > 0 && (
-              <Card className="hover:shadow-lg transition-all duration-200 hover:border-green-300 mt-6">
+              <Card className="hover:shadow-lg transition-all duration-200 hover:border-green-300 mt-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                 <CardHeader className="pb-2">
-                  <CardTitle className="dark:text-white flex items-center gap-2 text-base">
+                  <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2 text-base">
                     <Calendar className="w-5 h-5 text-green-500" />
                     Events I'm Going To
                     <Badge variant="secondary" className="ml-auto bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
@@ -6336,7 +6333,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
-                      <h4 className="font-medium text-sm dark:text-white line-clamp-1">{event.title}</h4>
+                      <h4 className="font-medium text-sm text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
                       <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
                         <Calendar className="w-3 h-3" />
                         {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -6362,9 +6359,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Events I'm Interested In - Only show on own profile for non-business users */}
             {isOwnProfile && user?.userType !== 'business' && eventsInterested.length > 0 && (
-              <Card className="hover:shadow-lg transition-all duration-200 hover:border-orange-300 mt-4">
+              <Card className="hover:shadow-lg transition-all duration-200 hover:border-orange-300 mt-4 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                 <CardHeader className="pb-2">
-                  <CardTitle className="dark:text-white flex items-center gap-2 text-base">
+                  <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2 text-base">
                     <Star className="w-5 h-5 text-orange-500" />
                     Events I'm Interested In
                     <Badge variant="secondary" className="ml-auto bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
@@ -6379,7 +6376,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
-                      <h4 className="font-medium text-sm dark:text-white line-clamp-1">{event.title}</h4>
+                      <h4 className="font-medium text-sm text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
                       <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
                         <Calendar className="w-3 h-3" />
                         {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -6553,7 +6550,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               style={{zIndex: 10, position: 'relative'}} 
               data-testid="contacts-content"
             >
-              <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
+              <Card className="bg-white border border-gray-200 dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center justify-between text-black dark:text-white">
                     <div className="flex items-center gap-2">
@@ -6734,7 +6731,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                           setConnectionNoteText('');
                                         }).catch(console.error);
                                       }}
-                                      className="h-6 px-2 text-xs bg-green-500 hover:bg-green-600 text-white border-0"
+                                      className="h-6 px-2 text-xs bg-orange-500 hover:bg-orange-600 text-white border-0"
                                       data-testid={`button-save-note-${connection.id}`}
                                     >
                                       Save
@@ -6987,7 +6984,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             <Card className="hover:shadow-lg transition-all duration-200 border-2 border-blue-200 dark:border-blue-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <Globe className="w-5 h-5 text-blue-600" />
                     Languages I Speak
                   </CardTitle>
@@ -7144,9 +7141,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               >
                 {user?.id && (
                   <div className="space-y-4" style={{zIndex: 10, position: 'relative'}}>
-                    <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+                    <Card className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
                       <CardHeader className="bg-white dark:bg-gray-900">
-                        <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+                        <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                           <Star className="w-5 h-5 text-yellow-500" />
                           References
                         </CardTitle>
@@ -7192,7 +7189,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-700">
                     <CardContent className="py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
                           <Users className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -7227,7 +7224,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {user?.userType !== 'business' && (
               <Card className="hover:shadow-lg transition-all duration-200 hover:border-purple-300 dark:hover:border-purple-600 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <Sparkles className="w-5 h-5 text-purple-600" />
                     Travel Intent & Style
                     {isOwnProfile && (
@@ -8471,7 +8468,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Profile Edit Modal - inset+margin keeps dialog on-screen in WebView; z-index above overlay so content is clickable */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
         <DialogContent 
-          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-700"
+          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700"
         >
           <DialogHeader className="flex-shrink-0 pr-10">
             <div className="flex items-center justify-between">
@@ -8505,8 +8502,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           {/* Show loading state while form initializes to prevent freeze */}
           {!isFormReady ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-              <p className="text-gray-600 dark:text-gray-300">Loading profile editor...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-blue-600 dark:border-gray-600 dark:border-t-blue-500" />
             </div>
           ) : (
           <Form {...profileForm}>
@@ -9620,7 +9616,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <Button 
                     type="submit" 
                     disabled={createReference.isPending}
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                     data-testid="button-submit-reference"
                   >
                     {createReference.isPending ? "Submitting..." : "Submit Reference"}

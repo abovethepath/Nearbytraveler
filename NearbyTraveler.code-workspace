@@ -45,5 +45,6 @@
 		{
 			"path": "tests"
 		}
-	]
+	],
+	"settings": {}
 }

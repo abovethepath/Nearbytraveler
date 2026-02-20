@@ -16,6 +16,7 @@ interface User {
   destinationCity?: string | null;
   destinationState?: string | null;
   destinationCountry?: string | null;
+  travelDestination?: string | null;
   location?: string | null;
   interests?: string[];
   userType?: string;
@@ -57,25 +58,26 @@ export default function ResponsiveUserGrid({
     return "Location not set";
   };
 
-  // Get LinkedIn-style subtitle: "Nearby Local" or "Nearby Traveler"
-  const getUserSubtitle = (user: User) => {
-    // Business users
+  // 4-line block: Line 1 Nearby Local, Line 2 city, Line 3 Nearby Traveler, Line 4 destination (mobile-friendly, no mid-word wrap)
+  const UserLocationLines = ({ user }: { user: User }) => {
     if (user.userType === 'business') {
-      return 'Business User';
+      return <span className="text-gray-600 dark:text-gray-400 whitespace-nowrap">Business User</span>;
     }
-    
-    // Check if user is actively traveling (has destination)
-    if (user.destinationCity) {
-      return `Nearby Traveler • ${user.destinationCity}`;
-    }
-    
-    // Default to Local with hometown
-    if (user.hometownCity) {
-      return `Nearby Local • ${user.hometownCity}`;
-    }
-    
-    // Fallback
-    return user.userType === 'traveler' ? 'Nearby Traveler' : 'Nearby Local';
+    const hometown = user.hometownCity || '—';
+    const travelDest = user.travelDestination;
+    const destination = user.destinationCity || (travelDest && typeof travelDest === 'string' ? travelDest.split(',')[0].trim() : null) || null;
+    return (
+      <div className="text-center text-gray-600 dark:text-gray-400 font-medium min-w-0">
+        <div className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</div>
+        <div className="truncate px-0.5" title={hometown}>{hometown}</div>
+        {destination && (
+          <>
+            <div className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap">Nearby Traveler</div>
+            <div className="truncate px-0.5" title={destination}>{destination}</div>
+          </>
+        )}
+      </div>
+    );
   };
 
   const getInterestsBadge = (user: User) => {
@@ -128,10 +130,10 @@ export default function ResponsiveUserGrid({
           {user.username}
         </h3>
         
-        {/* Subtitle - LinkedIn style "Local in/Traveler in" */}
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 font-medium">
-          {getUserSubtitle(user)}
-        </p>
+        {/* Subtitle - 4 lines: Nearby Local, city, Nearby Traveler, destination */}
+        <div className="text-sm text-gray-600 dark:text-gray-400 mb-3 font-medium">
+          <UserLocationLines user={user} />
+        </div>
         
         {/* Bio */}
         {user.bio && (
@@ -198,10 +200,10 @@ export default function ResponsiveUserGrid({
           {user.username}
         </h3>
         
-        {/* Subtitle - LinkedIn style */}
-        <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium">
-          {getUserSubtitle(user)}
-        </p>
+        {/* Subtitle - 4 lines: Nearby Local, city, Nearby Traveler, destination */}
+        <div className="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium min-w-0">
+          <UserLocationLines user={user} />
+        </div>
         
         {/* Interests Badge - smaller */}
         <div className="flex justify-center scale-75">

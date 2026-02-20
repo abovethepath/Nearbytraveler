@@ -491,7 +491,7 @@ function QuickMeetupsPage() {
             ) : (
               <Button 
                 size="sm" 
-                className={`flex-1 text-xs h-7 ${isExpired ? 'bg-gray-500 hover:bg-gray-600' : 'bg-green-500 hover:bg-green-600'} text-white`}
+                className={`flex-1 text-xs h-7 ${isExpired ? 'bg-gray-500 hover:bg-gray-600' : 'bg-orange-500 hover:bg-orange-600'} text-white`}
                 onClick={async () => {
                   if (isExpired) {
                     setShowCreateForm(true);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Platform, useColorScheme, useWindowDimensions, ScrollView, RefreshControl, Image, BackHandler, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, CommonActions } from '@react-navigation/native';
 import api from '../services/api';
 
 function getSpeechModule() {
@@ -98,14 +98,36 @@ function WebViewWithChrome({ path, navigation }) {
   const colorScheme = useColorScheme();
   const dark = colorScheme === 'dark';
   const { user: authUser, logout } = useAuth();
+  const sessionCookie = api.getSessionCookie();
+  const sessionId = sessionCookie ? sessionCookie.replace(/^nt\.sid=/, '') : null;
   const { height: windowHeight } = useWindowDimensions();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [user, setUser] = useState(null);
+  const [headerProfileImage, setHeaderProfileImage] = useState(null);
   const [canGoBackWeb, setCanGoBackWeb] = useState(false);
   const webViewRef = useRef(null);
+  const displayUser = authUser || user;
   const source = webViewSource(path);
+
+  // Wait for auth on Messages and chat paths so the page never loads without user (avoids blank / "Please log in")
+  const isMessagesPath = path === '/messages' || (path && path.startsWith('/messages'));
+  const isChatroomPath = path && path.startsWith('/chatroom');
+  const isEventChatPath = path && path.startsWith('/event-chat');
+  const wantsAuth = isMessagesPath || isChatroomPath || isEventChatPath;
+  const shouldWaitForAuth = wantsAuth && !displayUser;
+  const [authWaitExpired, setAuthWaitExpired] = useState(false);
+  useEffect(() => {
+    if (!wantsAuth || displayUser) return;
+    const t = setTimeout(() => setAuthWaitExpired(true), 2500);
+    return () => clearTimeout(t);
+  }, [wantsAuth, displayUser]);
+  useEffect(() => {
+    if (displayUser) setAuthWaitExpired(false);
+  }, [displayUser]);
+  const effectiveSource = (shouldWaitForAuth && !authWaitExpired) ? null : source;
+  const showAuthWaiting = shouldWaitForAuth && !authWaitExpired;
 
   const loadUser = useCallback(() => {
     api.getUser().then((u) => {
@@ -116,9 +138,12 @@ function WebViewWithChrome({ path, navigation }) {
           api.getUserProfile(u.id).then((profile) => {
             const img = profile?.profileImage || profile?.profilePhoto;
             if (img) {
+              setHeaderProfileImage(img);
               setUser((prev) => (prev ? { ...prev, profileImage: img } : prev));
             }
           }).catch(() => {});
+        } else {
+          setHeaderProfileImage(profileImg);
         }
       }
     }).catch(() => {});
@@ -127,14 +152,46 @@ function WebViewWithChrome({ path, navigation }) {
   useEffect(() => { loadUser(); }, [loadUser]);
   useFocusEffect(useCallback(() => { loadUser(); }, [loadUser]));
 
+  // When authUser is set but has no profile image (e.g. from login), fetch profile for header avatar
+  useEffect(() => {
+    const who = authUser || user;
+    if (!who?.id) return;
+    const hasImg = who.profileImage || who.profilePhoto || headerProfileImage;
+    if (hasImg) {
+      if ((who.profileImage || who.profilePhoto) && !headerProfileImage) setHeaderProfileImage(who.profileImage || who.profilePhoto);
+      return;
+    }
+    api.getUserProfile(who.id).then((profile) => {
+      const img = profile?.profileImage || profile?.profilePhoto;
+      if (img) {
+        setHeaderProfileImage(img);
+        setUser((prev) => (prev && prev.id === who.id ? { ...prev, profileImage: img } : prev));
+      }
+    }).catch(() => {});
+  }, [authUser?.id, user?.id, authUser?.profileImage, authUser?.profilePhoto, user?.profileImage, user?.profilePhoto]);
+
   const onAvatarPress = useCallback(() => {
-    const u = authUser || user;
-    const profilePath = u?.username ? `/profile/${u.username}` : '/profile';
-    const fullPath = pathWithNativeIOS(profilePath);
-    webViewRef.current?.injectJavaScript(
-      `window.location.href='${BASE_URL}${fullPath}';true;`
-    );
-  }, [authUser?.username, user?.username]);
+    const tabNav = navigation.getParent?.();
+    if (tabNav?.navigate) {
+      tabNav.navigate('Profile');
+      return;
+    }
+    const rootNav = navigation.getParent?.()?.getParent?.();
+    if (rootNav?.navigate) {
+      rootNav.navigate('MainTabs', { screen: 'Profile' });
+      return;
+    }
+    try {
+      navigation.dispatch(CommonActions.navigate('Profile'));
+    } catch (_) {
+      const u = authUser || user;
+      const profilePath = u?.username ? `/profile/${u.username}` : '/profile';
+      const fullPath = pathWithNativeIOS(profilePath);
+      webViewRef.current?.injectJavaScript(
+        `window.location.href='${BASE_URL}${fullPath}';true;`
+      );
+    }
+  }, [navigation, authUser?.username, user?.username]);
 
   useFocusEffect(
     useCallback(() => {
@@ -276,8 +333,7 @@ function WebViewWithChrome({ path, navigation }) {
   const containerBg = dark ? DARK.bg : '#FFFFFF';
   const headerBg = dark ? DARK.bg : '#FFFFFF';
   const headerBorder = dark ? DARK.border : '#F3F4F6';
-  const displayUser = authUser || user;
-  const profileImg = displayUser?.profileImage || displayUser?.profilePhoto || user?.profileImage || user?.profilePhoto;
+  const profileImg = headerProfileImage || displayUser?.profileImage || displayUser?.profilePhoto || user?.profileImage || user?.profilePhoto;
   const initials = (displayUser?.name || displayUser?.fullName || displayUser?.displayName || displayUser?.username || 'U').charAt(0).toUpperCase();
 
   if (error) {
@@ -334,7 +390,10 @@ function WebViewWithChrome({ path, navigation }) {
           )}
           <TouchableOpacity style={styles.avatarButton} onPress={onAvatarPress}>
             {profileImg ? (
-              <Image source={{ uri: profileImg }} style={styles.avatarImage} />
+              <Image
+                source={{ uri: profileImg.startsWith('http') ? profileImg : `${BASE_URL}${profileImg.startsWith('/') ? '' : '/'}${profileImg}` }}
+                style={styles.avatarImage}
+              />
             ) : (
               <View style={[styles.avatarFallback, dark && styles.avatarFallbackDark]}>
                 <Text style={styles.avatarFallbackText}>{initials}</Text>
@@ -343,21 +402,29 @@ function WebViewWithChrome({ path, navigation }) {
           </TouchableOpacity>
         </View>
       </View>
+      {showAuthWaiting ? (
+        <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg }]}>
+          <ActivityIndicator size="large" color="#F97316" />
+        </View>
+      ) : (
       <WebView
         ref={webViewRef}
-        source={source}
+        source={effectiveSource}
         style={[styles.webview, dark && { backgroundColor: DARK.bg }]}
         injectedJavaScriptBeforeContentLoaded={
-          authUser
+          displayUser
             ? NATIVE_INJECT_JS + `
-(function(){
-  try{
-    var u=${JSON.stringify(authUser)};
-    localStorage.setItem('user',JSON.stringify(u));
-    localStorage.setItem('userData',JSON.stringify(u));
-    localStorage.setItem('travelconnect_user',JSON.stringify(u));
-  }catch(e){}
+(function() {
+  try {
+    var u = ${JSON.stringify(displayUser)};
+    localStorage.setItem('user', JSON.stringify(u));
+    localStorage.setItem('userData', JSON.stringify(u));
+    localStorage.setItem('travelconnect_user', JSON.stringify(u));
+    ${sessionId ? `localStorage.setItem('auth_token', ${JSON.stringify(sessionId)});` : ''}
+    console.log('[NearbyTraveler Native] Auth injection fired - user and token set');
+  } catch(e) {}
 })();
+true;
 `
             : NATIVE_INJECT_JS
         }
@@ -381,6 +448,7 @@ function WebViewWithChrome({ path, navigation }) {
         allowsBackForwardNavigationGestures={false}
         javaScriptEnabled={true}
         domStorageEnabled={true}
+        cacheEnabled={true}
         startInLoadingState={true}
         pullToRefreshEnabled={true}
         sharedCookiesEnabled={true}
@@ -392,6 +460,7 @@ function WebViewWithChrome({ path, navigation }) {
           </View>
         )}
       />
+      )}
     </SafeAreaView>
   );
 }
@@ -775,4 +844,5 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   scrollContent: { flexGrow: 1 },
   webview: { flex: 1, backgroundColor: '#FFFFFF' },
+  loadingMessage: { marginTop: 12, fontSize: 16, color: '#6B7280' },
 });

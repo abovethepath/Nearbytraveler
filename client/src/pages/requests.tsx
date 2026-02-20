@@ -238,7 +238,7 @@ export default function Requests() {
                         size="sm"
                         onClick={() => handleAccept(request.id)}
                         disabled={acceptMutation.isPending}
-                        className="bg-green-600 hover:bg-green-700"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
                       >
                         <Check className="w-4 h-4 mr-1" />
                         Accept

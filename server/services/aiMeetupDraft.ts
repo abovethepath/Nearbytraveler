@@ -61,6 +61,7 @@ export class AiMeetupDraftService {
     }
 
     if (!this.openai) {
+      // Not Expo Go–specific: server needs OPENAI_API_KEY or AI_INTEGRATIONS_OPENAI_API_KEY set
       return {
         draft: null,
         success: false,

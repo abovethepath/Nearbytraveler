@@ -4,7 +4,7 @@ import WhatsAppChat from "@/components/WhatsAppChat";
 import { authStorage } from "@/lib/auth";
 import { getApiBaseUrl, apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, MessageCircle, Users, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -21,18 +21,34 @@ export default function WhatsAppChatroom() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [hasJoined, setHasJoined] = useState(false);
-  
-  const pathParts = window.location.pathname.split('/');
-  const chatroomId = parseInt(pathParts[2] || '0');
-  
-  const currentUser = authStorage.getUser();
-  const currentUserId = currentUser?.id;
+  const [currentUserId, setCurrentUserId] = useState<number | undefined>(() => authStorage.getUser()?.id);
+
+  const pathParts = typeof window !== 'undefined' ? window.location.pathname.split('/') : [];
+  const chatroomId = parseInt(pathParts[2] || '0', 10);
+
+  // Re-check user so chat opens even if auth was injected after mount (e.g. native app)
+  useEffect(() => {
+    const u = authStorage.getUser();
+    if (u?.id) setCurrentUserId(u.id);
+  }, []);
+  useEffect(() => {
+    if (currentUserId) return;
+    const t1 = setTimeout(() => {
+      const u = authStorage.getUser();
+      if (u?.id) setCurrentUserId(u.id);
+    }, 300);
+    const t2 = setTimeout(() => {
+      const u = authStorage.getUser();
+      if (u?.id) setCurrentUserId(u.id);
+    }, 1200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [currentUserId]);
 
   const isValidChatroomId = chatroomId > 0 && !isNaN(chatroomId);
 
   const { data: chatroom, isLoading } = useQuery<ChatroomDetails>({
     queryKey: [`/api/chatrooms/${chatroomId}`],
-    enabled: isValidChatroomId && !!currentUserId
+    enabled: isValidChatroomId && !!currentUserId,
   });
 
   const { data: membershipCheck, isLoading: checkingMembership } = useQuery<{ isMember: boolean }>({

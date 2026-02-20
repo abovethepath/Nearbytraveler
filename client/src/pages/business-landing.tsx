@@ -151,7 +151,7 @@ export default function BusinessLanding() {
               <h3 className="text-xl font-bold mb-3 text-black">Tour Operators</h3>
               <p className="text-black text-sm">Walking tours, food tours, cultural experiences</p>
             </div>
-            <div className="bg-green-500 dark:bg-green-600 p-6 rounded-xl shadow-lg">
+            <div className="bg-blue-600 dark:bg-blue-700 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">🚴</div>
               <h3 className="text-xl font-bold mb-3 text-black">Activity Providers</h3>
               <p className="text-black text-sm">Hiking, biking, water sports, adventure activities</p>
@@ -360,7 +360,7 @@ export default function BusinessLanding() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {/* Beta Members */}
             <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-2xl border-4 border-green-500 relative">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-1 rounded-full font-bold text-sm">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-6 py-1 rounded-full font-bold text-sm">
                 FREE BETA
               </div>
               <div className="text-center mt-4">
@@ -434,7 +434,7 @@ export default function BusinessLanding() {
                 setLocation('/signup/account');
               }}
               size="lg"
-              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold text-xl px-12 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
+              className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold text-xl px-12 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
               data-testid="button-claim-beta-pricing"
             >
               <Zap className="w-6 h-6 mr-2" />

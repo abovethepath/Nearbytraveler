@@ -292,16 +292,16 @@ export default function Home() {
       };
     }
     
-    // For other users, use THEIR travel plans to detect their travel status
-    const isCurrentlyTraveling = !!currentTravelDestination;
-    const displayLocation = currentTravelDestination || 
+    // For other users: prefer travel from their plans, but preserve server-sent travel fields so
+    // the destination badge shows when the API already set isCurrentlyTraveling/travelDestination
+    const isCurrentlyTraveling = !!currentTravelDestination || !!user.isCurrentlyTraveling;
+    const travelDestination = currentTravelDestination || user.travelDestination || null;
+    const displayLocation = travelDestination ||
       [user.hometownCity, user.hometownState, user.hometownCountry].filter(Boolean).join(', ') || user.location;
 
     return {
       ...user,
-      // CRITICAL: Only set travelDestination if we have an ACTIVE travel plan
-      // Don't fallback to stale user.travelDestination
-      travelDestination: currentTravelDestination || null,
+      travelDestination,
       isCurrentlyTraveling,
       displayLocation,
       locationContext: isCurrentlyTraveling ? 'traveling' : 'hometown'

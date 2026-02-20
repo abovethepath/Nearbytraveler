@@ -1,4 +1,5 @@
 import type { Express, Request, Response } from "express";
+import multer from "multer";
 
 // Extend session interface to include user property
 declare module 'express-session' {
@@ -2529,8 +2530,29 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       const safeResults = results.map(({ password, ...rest }) => rest);
       
-      console.log(`🌍 users-by-location: found ${safeResults.length} ${userType} users for "${searchCity}"`);
-      res.json(safeResults);
+      // Enrich with travel status so user cards show destination badge for travelers
+      const now = new Date();
+      const enrichedResults = await Promise.all(safeResults.map(async (user: any) => {
+        const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
+        const activePlan = userTravelPlans.find((plan: any) => {
+          const start = new Date(plan.startDate);
+          const end = new Date(plan.endDate);
+          return now >= start && now <= end;
+        });
+        const formattedPlans = userTravelPlans.map((plan: any) => ({
+          ...plan,
+          destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
+        }));
+        return {
+          ...user,
+          travelPlans: formattedPlans,
+          isCurrentlyTraveling: !!activePlan,
+          travelDestination: activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null)
+        };
+      }));
+      
+      console.log(`🌍 users-by-location: found ${enrichedResults.length} ${userType} users for "${searchCity}"`);
+      res.json(enrichedResults);
     } catch (error: any) {
       console.error("Error in users-by-location endpoint:", error);
       res.status(500).json({ message: "Failed to fetch users by location", error });
@@ -2822,8 +2844,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       }
       
-      // Remove passwords and add city-specific role metadata
-      const finalUsers = combinedUsers.map(user => {
+      // Remove passwords, add city-specific role metadata, and enrich with travel status for user card badges
+      const now = new Date();
+      const finalUsers = await Promise.all(combinedUsers.map(async (user) => {
         if (!user) return null;
         
         const { password: _, ...userWithoutPassword } = user;
@@ -2835,22 +2858,41 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         if (isLocalToCity) rolesInCity.push('local');
         if (isTravelerToCity) rolesInCity.push('traveler');
         
+        // Enrich with travel status so user cards show destination in top-left
+        const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
+        const activePlan = userTravelPlans.find((plan: any) => {
+          const start = new Date(plan.startDate);
+          const end = new Date(plan.endDate);
+          return now >= start && now <= end;
+        });
+        const formattedPlans = userTravelPlans.map((plan: any) => ({
+          ...plan,
+          destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
+        }));
+        
+        const travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
+        const destinationCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
         return {
           ...userWithoutPassword,
           hometownCity: user.hometownCity || '',
           location: user.location,
           isLocalToCity,
           isTravelerToCity,
-          rolesInCity
+          rolesInCity,
+          travelPlans: formattedPlans,
+          isCurrentlyTraveling: !!activePlan,
+          travelDestination: travelDestination || null,
+          destinationCity
         };
-      }).filter(Boolean);
+      }));
       
+      const filteredFinalUsers = finalUsers.filter(Boolean);
       if (process.env.NODE_ENV === 'development') {
         console.log(`🏙️ CITY USERS: Found ${localUsers.length} locals + ${travelersInCity.length} travelers`);
-        console.log(`🏙️ CITY USERS: Final result - ${finalUsers.length} users for ${city}`);
+        console.log(`🏙️ CITY USERS: Final result - ${filteredFinalUsers.length} users for ${city}`);
       }
       
-      return res.json(finalUsers);
+      return res.json(filteredFinalUsers);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching city users:", error);
       return res.status(500).json({ message: "Failed to fetch city users", error: error.message });
@@ -2965,14 +3007,18 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           return now >= start && now <= end;
         });
         
+        const travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
+        const isCurrentlyTraveling = !!activePlan || !!(user as any).isCurrentlyTraveling;
+        const destCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
         return {
           ...user,
           travelPlans: userTravelPlans.map(plan => ({
             ...plan,
             destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
           })),
-          isCurrentlyTraveling: !!activePlan,
-          travelDestination: activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : null
+          isCurrentlyTraveling,
+          travelDestination: travelDestination || null,
+          destinationCity: destCity
         };
       }));
       
@@ -4585,6 +4631,11 @@ Questions? Just reply to this message!
           console.error('🔗 REFERRAL: Error looking up referrer:', error);
         }
         // DO NOT set userData.referralCode - that field is for the user's OWN unique code (generated later)
+      }
+      // Business referral: referrerUser was looked up by username/email earlier; apply to userData
+      if (referrerUser) {
+        (userData as any).referredBy = referrerUser.id;
+        if (process.env.NODE_ENV === 'development') console.log('🔗 BUSINESS REFERRAL: Set referredBy to', referrerUser.id);
       }
       if (finalConnectionNote) {
         (userData as any).connectionNote = finalConnectionNote;
@@ -6574,6 +6625,56 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Multer for video intro upload (memory, 50MB max)
+  const videoIntroUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 50 * 1024 * 1024 },
+  });
+
+  // Video Intro - server-side upload (avoids CORS; client POSTs file here, server uploads to storage)
+  app.post("/api/users/:id/video-intro/upload", videoIntroUpload.single("video"), async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id || "0");
+      if (!userId) return res.status(400).json({ message: "Invalid user ID" });
+      const sessionUserId = (req as any).session?.user?.id;
+      const headerUserId = req.headers["x-user-id"] ? parseInt(req.headers["x-user-id"] as string) : null;
+      const authUserId = sessionUserId || headerUserId;
+      if (!authUserId || authUserId !== userId) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+      const file = (req as any).file;
+      if (!file || !file.buffer) {
+        return res.status(400).json({ message: "No video file received. Please select a video (MP4, WebM, or QuickTime)." });
+      }
+      if (!file.mimetype || !file.mimetype.startsWith("video/")) {
+        return res.status(400).json({ message: "Invalid file type. Please upload a video (MP4, WebM, or QuickTime)." });
+      }
+      const { ObjectStorageService } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      const { signedUrl, objectPath } = await objectStorageService.getVideoIntroUploadURL(userId);
+      const putRes = await fetch(signedUrl, {
+        method: "PUT",
+        body: file.buffer,
+        headers: { "Content-Type": file.mimetype },
+      });
+      if (!putRes.ok) {
+        console.error("Video intro storage PUT failed:", putRes.status, await putRes.text());
+        return res.status(502).json({ message: "Video storage upload failed. Please try again." });
+      }
+      const updatedUser = await storage.updateUser(userId, { videoIntroUrl: objectPath });
+      if (!updatedUser) return res.status(404).json({ message: "User not found" });
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      return res.json({ message: "Video intro saved", user: userWithoutPassword });
+    } catch (error: any) {
+      console.error("Error in video intro upload:", error);
+      return res.status(500).json({
+        message: error?.message?.includes("PUBLIC_OBJECT_SEARCH_PATHS")
+          ? "Video upload is not configured on this server. Please try again later."
+          : "Failed to upload video. Please try again.",
+      });
+    }
+  });
+
   // Video Intro - get signed upload URL (auth required, own profile only)
   app.post("/api/users/:id/video-intro/upload-url", async (req, res) => {
     try {
@@ -7006,15 +7107,17 @@ Questions? Just reply to this message. Welcome aboard!
         
         // Remove password and add travel plans + travel status
         const { password: _, ...userWithoutPassword } = user;
-        
+        const travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
+        const destCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
         return {
           ...userWithoutPassword,
           hometownCity: user.hometownCity || '',
           location: user.location,
           travelPlans: formattedTravelPlans,
-          // CRITICAL: Include travel status for airplane badge display
+          // CRITICAL: Include travel status for airplane badge + destination on user cards (web + iOS)
           isCurrentlyTraveling: !!activePlan,
-          travelDestination: activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : null
+          travelDestination,
+          destinationCity: destCity
         };
       }));
       
@@ -19251,11 +19354,11 @@ Questions? Just reply to this message. Welcome aboard!
   // GET city activities for a specific city
   app.get("/api/city-activities/:cityName", async (req, res) => {
     try {
-      const { cityName } = req.params;
+      const cityName = decodeURIComponent(req.params.cityName || '');
       if (process.env.NODE_ENV === 'development') console.log(`🏃 CITY ACTIVITIES GET: Fetching activities for ${cityName}`);
       
       // Fetch activities: exclude hidden items, prioritize featured
-      const activities = await db
+      let activities = await db
         .select()
         .from(cityActivities)
         .where(
@@ -19270,6 +19373,32 @@ Questions? Just reply to this message. Welcome aboard!
           cityActivities.rank, // Then by rank
           desc(cityActivities.createdAt) // Then by newest
         );
+      
+      // Auto-seed launch cities: if we have curated data but DB is empty, seed so users see pre-populated activities
+      if (activities.length === 0) {
+        const { getFeaturedActivitiesForCity } = await import('./static-city-activities.js');
+        const featured = getFeaturedActivitiesForCity(cityName);
+        if (featured.length > 0) {
+          if (process.env.NODE_ENV === 'development') console.log(`🌱 CITY ACTIVITIES GET: Auto-seeding ${cityName} (${featured.length} featured)`);
+          const { ensureCityHasActivities } = await import('./auto-city-setup.js');
+          await ensureCityHasActivities(cityName, '', 'United States', 1);
+          activities = await db
+            .select()
+            .from(cityActivities)
+            .where(
+              and(
+                eq(cityActivities.cityName, cityName),
+                eq(cityActivities.isActive, true),
+                eq(cityActivities.isHidden, false)
+              )
+            )
+            .orderBy(
+              desc(cityActivities.isFeatured),
+              cityActivities.rank,
+              desc(cityActivities.createdAt)
+            );
+        }
+      }
       
       if (process.env.NODE_ENV === 'development') console.log(`✅ CITY ACTIVITIES GET: Found ${activities.length} activities for ${cityName}`);
       res.json(activities);
@@ -19337,6 +19466,49 @@ Questions? Just reply to this message. Welcome aboard!
       res.status(500).json({ error: 'Failed to delete city activity' });
     }
   });
+
+  // PATCH/PUT city activity by ID — only the creator can edit (avoids others changing e.g. "Taylor Swift May 4" to May 5)
+  const updateCityActivityHandler = async (req: any, res: any) => {
+    try {
+      const activityId = parseInt(req.params.activityId);
+      if (isNaN(activityId)) {
+        return res.status(400).json({ error: 'Invalid activity ID' });
+      }
+      const userId = req.headers['x-user-id'] ? parseInt(String(req.headers['x-user-id']), 10) : null;
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      const [row] = await db.select().from(cityActivities).where(eq(cityActivities.id, activityId)).limit(1);
+      if (!row) {
+        return res.status(404).json({ error: 'Activity not found' });
+      }
+      if (row.createdByUserId === 1) {
+        return res.status(403).json({ error: 'Cannot edit system activities' });
+      }
+      if (row.createdByUserId !== userId) {
+        return res.status(403).json({ error: 'Only the creator can edit this activity' });
+      }
+
+      const { activityName, description } = req.body || {};
+      const updates: Record<string, any> = {};
+      if (typeof activityName === 'string' && activityName.trim()) updates.activityName = activityName.trim();
+      if (description !== undefined) updates.description = description === null || description === '' ? '' : String(description);
+
+      if (Object.keys(updates).length === 0) {
+        return res.status(400).json({ error: 'No valid fields to update' });
+      }
+
+      const updated = await storage.updateCityActivity(activityId, updates);
+      if (process.env.NODE_ENV === 'development') console.log(`✏️ UPDATED CITY ACTIVITY: ID ${activityId} by user ${userId}`);
+      res.json(updated);
+    } catch (error: any) {
+      console.error('Error updating city activity:', error);
+      res.status(500).json({ error: 'Failed to update city activity' });
+    }
+  };
+  app.patch("/api/city-activities/:activityId", updateCityActivityHandler);
+  app.put("/api/city-activities/:activityId", updateCityActivityHandler);
 
   // POST enhance city with AI-generated activities
   app.post("/api/city-activities/:cityName/enhance", async (req, res) => {
@@ -22631,9 +22803,35 @@ Questions? Just reply to this message. Welcome aboard!
 
   // ---------- COMMUNITY TAGS ----------
 
-  // Get all community tags
+  // Default (site-wide) communities — shown for every city. Ensured on first fetch.
+  const DEFAULT_COMMUNITIES: Array<{ name: string; displayName: string; category: string; icon: string; color: string; description: string }> = [
+    { name: "solo-female-travelers", displayName: "Solo Female Travelers", category: "identity", icon: "👩", color: "#EC4899", description: "Connect with other solo female travelers. Safe, supportive community for women who travel alone." },
+    { name: "lgbtq-plus", displayName: "LGBTQ+", category: "identity", icon: "🏳️‍🌈", color: "#8B5CF6", description: "LGBTQ+ friendly community. Meet travelers and locals in a welcoming space." },
+    { name: "digital-nomads", displayName: "Digital Nomads", category: "lifestyle", icon: "💻", color: "#06B6D4", description: "Remote workers and location-independent travelers." },
+    { name: "solo-travelers", displayName: "Solo Travelers", category: "lifestyle", icon: "🧳", color: "#F59E0B", description: "Traveling solo? Find meetups and tips from other solo travelers." },
+    { name: "foodies", displayName: "Foodies", category: "interest", icon: "🍳", color: "#EF4444", description: "Love food and local eats? Connect with fellow foodies." },
+    { name: "veterans", displayName: "Veterans", category: "identity", icon: "🎖️", color: "#6366F1", description: "Veterans and military community. Connect with those who serve." },
+  ];
+
+  // Get all community tags (site-wide; same list for every city)
   app.get("/api/community-tags", async (req: any, res) => {
     try {
+      // Ensure default communities exist (idempotent)
+      for (const c of DEFAULT_COMMUNITIES) {
+        const [existing] = await db.select().from(communityTags).where(eq(communityTags.name, c.name));
+        if (!existing) {
+          await db.insert(communityTags).values({
+            name: c.name,
+            displayName: c.displayName,
+            category: c.category,
+            icon: c.icon,
+            color: c.color,
+            description: c.description,
+            isUserCreated: false,
+          });
+        }
+      }
+
       const category = req.query.category as string;
       const includePrivate = req.query.includePrivate === "true";
       const conditions = [eq(communityTags.isActive, true)];
