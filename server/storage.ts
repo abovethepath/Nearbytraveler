@@ -4651,48 +4651,6 @@ export class DatabaseStorage implements IStorage {
 
   async updateChatroom(): Promise<any> { return undefined; }
   async deleteChatroom(): Promise<any> { return true; }
-  async joinChatroom(chatroomId: number, userId: number): Promise<any> {
-    try {
-      // Check if user is already a member
-      const existingMember = await db.select()
-        .from(chatroomMembers)
-        .where(and(
-          eq(chatroomMembers.chatroomId, chatroomId),
-          eq(chatroomMembers.userId, userId)
-        ))
-        .limit(1);
-
-      if (existingMember.length > 0) {
-        // Reactivate membership if exists but inactive and award aura for rejoining
-        const member = existingMember[0];
-        if (!member.isActive) {
-          await db.update(chatroomMembers)
-            .set({ isActive: true })
-            .where(and(
-              eq(chatroomMembers.chatroomId, chatroomId),
-              eq(chatroomMembers.userId, userId)
-            ));
-          
-          // Award 1 aura for rejoining chatroom
-          await this.awardAura(userId, 1, 'rejoining chatroom');
-        }
-        return { success: true };
-      }
-
-      // Add new member
-      await db.insert(chatroomMembers).values({
-        chatroomId,
-        userId,
-        role: 'member',
-        isActive: true
-      });
-
-      // Award 1 aura for joining chatroom
-      await this.awardAura(userId, 1, 'joining chatroom');
-
-      return { success: true };
-    } catch (error) {
-      console.error('Error joining chatroom:', error);
       throw error;
     }
   }
