@@ -626,8 +626,8 @@ function Router() {
         return <SignupTraveling />;
       }
       if (location === '/signup/business') {
-        console.log('✅ SIGNUP BUSINESS - Direct access');
-        return <SignupBusinessSimple />;
+        console.log('✅ SIGNUP BUSINESS - Using proper 3-step signup flow');
+        return <SignupSteps initialUserType="business" />;
       }
       if (location.startsWith('/signup/qr/')) {
         const qrData = location.split('/signup/qr/')[1];
@@ -1371,7 +1371,7 @@ function Router() {
             {location === '/signup/local' && <SignupLocal />}
             {/* OLD BROKEN UNIFIED SIGNUP REMOVED FOREVER */}
             {location === '/signup/traveling' && <SignupTraveling />}
-            {location === '/signup/business' && <SignupBusinessSimple />}
+            {location === '/signup/business' && <SignupSteps initialUserType="business" />}
             {location.startsWith('/signup/qr/') && <QRSignup referralCode={location.split('/signup/qr/')[1] || ''} />}
           </div>
         </>
