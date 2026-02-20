@@ -10,9 +10,14 @@ await build({
   sourcemap: false,
   minify: false,
   external: [
+    "@replit/vite-plugin-runtime-error-modal",
+    "@replit/vite-plugin-cartographer",
+    "lightningcss",
+    "lightningcss/node",
+    "bufferutil",
+    "utf-8-validate",
     "pg-native",
-    "bufferutil"
-  ]
+  ],
 });
 
 console.log("✅ Server built: dist/server/index.js");

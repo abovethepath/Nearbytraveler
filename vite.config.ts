@@ -1,23 +1,21 @@
+import path from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import path from "path";
+
+const isReplit = !!process.env.REPL_ID;
+const isDev = process.env.NODE_ENV !== "production";
 
 export default defineConfig(async () => ({
   plugins: [
     react(),
-    ...(process.env.REPL_ID !== undefined
+    ...(isReplit && isDev
       ? [
           (await import("@replit/vite-plugin-runtime-error-modal")).default(),
-          ...(process.env.NODE_ENV !== "production"
-            ? [
-                await import("@replit/vite-plugin-cartographer").then((m) =>
-                  m.cartographer(),
-                ),
-              ]
-            : []),
+          (await import("@replit/vite-plugin-cartographer")).default(),
         ]
       : []),
   ],
+
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
@@ -26,14 +24,18 @@ export default defineConfig(async () => ({
     },
     dedupe: ["autoprefixer", "postcss"],
   },
+
   root: path.resolve(import.meta.dirname, "client"),
+
   css: {
     postcss: path.resolve(import.meta.dirname, "postcss.config.js"),
   },
+
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
   },
+
   server: {
     fs: {
       strict: true,
