@@ -7,7 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BlockedUsersList } from "@/components/blocked-users-list";
-import { Settings, Shield, Users, Bell, Eye, MapPin, MessageSquare, Camera, Mail, Loader2, X, User, Sun, Moon, Monitor, Smartphone } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Settings, Shield, Users, Bell, Eye, MapPin, MessageSquare, Camera, Mail, Loader2, X, User, Sun, Moon, Monitor, Smartphone, FileText, Trash2 } from "lucide-react";
+import { Link } from "wouter";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/App";
 import { useToast } from "@/hooks/use-toast";
@@ -17,11 +28,13 @@ import { useLocation } from "wouter";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export default function SettingsPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
   const { theme, setTheme } = useTheme();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // Early return if no user
   if (!isAuthenticated || !user?.id) {
@@ -97,6 +110,23 @@ export default function SettingsPage() {
       title: "Notification Settings Saved",
       description: "Your notification preferences have been saved successfully.",
     });
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      await apiRequest("DELETE", "/api/users/me");
+      toast({ title: "Account deleted", description: "Your account has been permanently deleted." });
+      setShowDeleteConfirm(false);
+      logout(isNativeIOSApp() ? "/home" : "/signin");
+    } catch (err: any) {
+      toast({
+        title: "Could not delete account",
+        description: err?.message || "Something went wrong. Try again or contact support.",
+        variant: "destructive",
+      });
+      setDeleting(false);
+    }
   };
 
   return (
@@ -318,6 +348,44 @@ export default function SettingsPage() {
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       Allow others to send you connection requests
                     </p>
+                  </div>
+
+                  {/* Legal - Privacy Policy & Terms (for App Store / in-app access) */}
+                  <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <Label className="text-base font-medium flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Legal
+                    </Label>
+                    <div className="flex flex-wrap gap-4">
+                      <Link href="/privacy" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                        Privacy Policy
+                      </Link>
+                      <Link href="/terms" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                        Terms of Service
+                      </Link>
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Review how we use your data and our terms of use
+                    </p>
+                  </div>
+
+                  {/* Delete Account (in-app for App Store compliance) */}
+                  <div className="space-y-3 pt-4 border-t border-red-200 dark:border-red-900/50">
+                    <Label className="text-base font-medium flex items-center gap-2 text-red-600 dark:text-red-400">
+                      <Trash2 className="h-4 w-4" />
+                      Delete Account
+                    </Label>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Permanently delete your account and data. This cannot be undone.
+                    </p>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => setShowDeleteConfirm(true)}
+                      data-testid="button-delete-account"
+                    >
+                      Delete my account
+                    </Button>
                   </div>
 
                   <Button 
@@ -583,6 +651,27 @@ export default function SettingsPage() {
               </Card>
             </TabsContent>
           </Tabs>
+
+          <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete your account and all your data (profile, photos, connections, messages). This cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={(e) => { e.preventDefault(); handleDeleteAccount(); }}
+                  disabled={deleting}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Delete my account"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </div>

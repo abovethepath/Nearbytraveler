@@ -3751,7 +3751,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   }
 
   return (
-    <>
+    <React.Fragment>
       {/* Mobile Navigation - REMOVED: App.tsx now handles MobileTopNav and MobileBottomNav globally */}
       {/* This was causing duplicate navbars and the profile page's internal nav was working */}
       {/* while other pages used App.tsx's nav which had stacking context issues */}
@@ -10122,8 +10122,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       )}
 
       </div>
-      </div>
-    </>
+    </React.Fragment>
   );
 }
 

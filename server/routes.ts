@@ -6645,6 +6645,29 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Delete my account (in-app account deletion for App Store compliance)
+  app.delete("/api/users/me", async (req, res) => {
+    try {
+      const sessionUserId = (req as any).session?.user?.id;
+      const headerUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
+      const userId = sessionUserId || headerUserId;
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const deleted = await storage.deleteUser(userId);
+      if (!deleted) {
+        return res.status(500).json({ message: "Failed to delete account" });
+      }
+      (req as any).session.destroy((err: any) => {
+        if (err) console.error("Session destroy error on account delete:", err);
+        res.status(200).json({ success: true, message: "Account deleted" });
+      });
+    } catch (error: any) {
+      console.error("Error deleting account:", error);
+      return res.status(500).json({ message: "Failed to delete account" });
+    }
+  });
+
   // Multer for video intro upload (memory, 50MB max)
   const videoIntroUpload = multer({
     storage: multer.memoryStorage(),
