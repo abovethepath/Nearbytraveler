@@ -1143,69 +1143,63 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
-      console.log("🔍 Found user:", user.username, "with password set:", !!user.password);
+      // Drizzle returns schema names (camelCase); ensure we read password
+      const storedPassword = (user as any).password;
+      console.log("🔍 Found user:", user.username, "userType:", (user as any).userType, "with password set:", !!storedPassword);
 
       // Simple password check (in production, use bcrypt)
-      const isValidPassword = password === user.password;
+      if (!storedPassword) {
+        console.error("❌ Login: User has no password set (id:", user.id, "). Business may have been created without password.");
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      const isValidPassword = password === storedPassword;
       if (!isValidPassword) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // Create session
-      (req as any).session = (req as any).session || {};
-      (req as any).session.user = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        profileImageUrl: user.profileImage
-      };
-
-      // Save session - try with callback first, fallback to sync if it fails
-      console.log("🔐 Saving session for user:", user.id);
-      
-      try {
-        // Try async save with timeout
-        await new Promise<void>((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            console.log("⚠️ Session save timeout - proceeding anyway");
-            resolve();
-          }, 3000);
-          
-          (req as any).session.save((err: any) => {
-            clearTimeout(timeout);
-            if (err) {
-              console.error("❌ Session save error:", err?.message || err);
-              // Don't reject - just log and continue
+      // Create session - only mutate if express-session already created req.session
+      const sess = (req as any).session;
+      if (sess && typeof sess.save === 'function') {
+        sess.user = {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          profileImageUrl: (user as any).profileImage
+        };
+        console.log("🔐 Saving session for user:", user.id);
+        try {
+          await new Promise<void>((resolve) => {
+            const timeout = setTimeout(() => {
+              console.log("⚠️ Session save timeout - proceeding anyway");
               resolve();
-            } else {
-              console.log("✅ Session saved successfully");
+            }, 3000);
+            sess.save((err: any) => {
+              clearTimeout(timeout);
+              if (err) console.error("❌ Session save error:", err?.message || err);
+              else console.log("✅ Session saved successfully");
               resolve();
-            }
+            });
           });
-        });
-        
-        console.log("✅ Login successful:", {
-          email,
-          userId: user.id,
-          sessionID: (req as any).sessionID?.substring(0, 10) + '...',
-          setCookieHeader: res.getHeader('Set-Cookie')
-        });
-        // React Native cannot read Set-Cookie; send sessionId in body so app can send Cookie header
-        const isMobile = req.get('X-Client') === 'ReactNative';
-        const body: { ok: boolean; user: { id: string; username: string }; sessionId?: string } = { ok: true, user: { id: user.id, username: user.username } };
-        if (isMobile && (req as any).sessionID) body.sessionId = (req as any).sessionID;
-        return res.status(200).json(body);
-      } catch (saveError: any) {
-        console.error("❌ Session save failed:", saveError?.message);
-        // Still return success - session might work on next request
-        const isMobile = req.get('X-Client') === 'ReactNative';
-        const body: { ok: boolean; user: { id: string; username: string }; sessionId?: string } = { ok: true, user: { id: user.id, username: user.username } };
-        if (isMobile && (req as any).sessionID) body.sessionId = (req as any).sessionID;
-        return res.status(200).json(body);
+        } catch (saveError: any) {
+          console.error("❌ Session save failed:", saveError?.message);
+        }
+      } else {
+        console.log("⚠️ No session or session.save - skipping session persist (login will still succeed)");
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      return res.status(500).json({ message: "Server error" });
+
+      console.log("✅ Login successful:", { email, userId: user.id });
+      const isMobile = req.get('X-Client') === 'ReactNative';
+      const body: { ok: boolean; user: { id: number; username: string }; sessionId?: string } = { ok: true, user: { id: user.id, username: user.username } };
+      if (isMobile && (req as any).sessionID) body.sessionId = (req as any).sessionID;
+      return res.status(200).json(body);
+    } catch (error: any) {
+      const errMsg = error?.message || String(error);
+      console.error("Login error:", errMsg, error?.stack);
+      const isDev = process.env.NODE_ENV !== 'production' && !process.env.REPL_SLUG;
+      return res.status(500).json({
+        message: "Server error",
+        ...(isDev && { detail: errMsg })
+      });
     }
   });
 
