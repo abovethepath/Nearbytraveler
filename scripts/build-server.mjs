@@ -2,10 +2,10 @@ import { build } from "esbuild";
 
 await build({
   entryPoints: ["server/index.ts"],
-  outfile: "dist/server/index.js",
+  outfile: "dist/server/index.cjs",
   bundle: true,
   platform: "node",
-  format: "esm",
+  format: "cjs",
   target: "node20",
   sourcemap: false,
   minify: false,
@@ -20,4 +20,4 @@ await build({
   ],
 });
 
-console.log("✅ Server built: dist/server/index.js");
+console.log("✅ Server built: dist/server/index.cjs");
