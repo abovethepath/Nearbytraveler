@@ -4651,9 +4651,6 @@ export class DatabaseStorage implements IStorage {
 
   async updateChatroom(): Promise<any> { return undefined; }
   async deleteChatroom(): Promise<any> { return true; }
-      throw error;
-    }
-  }
   async leaveChatroom(): Promise<any> { return true; }
   async getChatroomMembers(chatroomId: number): Promise<any[]> {
     try {
@@ -4700,7 +4697,7 @@ export class DatabaseStorage implements IStorage {
       throw error;
     }
   }
-  }
+
   async updateChatroomMessage(messageId: number, content: string, senderId: number): Promise<any> {
     try {
       // First verify the user owns the message
@@ -10378,37 +10375,6 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error joining chatroom:', error);
       throw error;
-    }
-  }
-
-  async getQuickMeetup(meetupId: number): Promise<any> {
-    try {
-      const [meetup] = await db
-        .select({
-          id: quickMeetups.id,
-          title: quickMeetups.title,
-          description: quickMeetups.description,
-          organizerId: quickMeetups.organizerId,
-          location: quickMeetups.location,
-          meetingPoint: quickMeetups.meetingPoint,
-          city: quickMeetups.city,
-          state: quickMeetups.state,
-          country: quickMeetups.country,
-          availableAt: quickMeetups.availableAt,
-          expiresAt: quickMeetups.expiresAt,
-          maxParticipants: quickMeetups.maxParticipants,
-          participantCount: quickMeetups.participantCount,
-          isActive: quickMeetups.isActive,
-          category: quickMeetups.category,
-          createdAt: quickMeetups.createdAt
-        })
-        .from(quickMeetups)
-        .where(eq(quickMeetups.id, meetupId));
-      
-      return meetup;
-    } catch (error) {
-      console.error('Error fetching quick meetup:', error);
-      return undefined;
     }
   }
 
