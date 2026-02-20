@@ -10345,46 +10345,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createMeetupChatroom(data: any): Promise<any> {
-    try {
-      // Try to create using existing meetup chatrooms table first
-      if (db.schema && meetupChatrooms) {
-        try {
-          const [meetupChatroom] = await db.insert(meetupChatrooms).values({
-            meetupId: data.meetupId,
-            chatroomName: data.name,
-            description: data.description,
-            isActive: true,
-            maxMembers: data.maxMembers || 20,
-            expiresAt: new Date(Date.now() + (6 * 60 * 60 * 1000)) // 6 hours from now
-          }).returning();
-          
-          return meetupChatroom;
-        } catch (meetupError) {
-          console.log('Meetup chatroom table not available, using city chatroom fallback');
-        }
-      }
-      
-      // Fallback: create using city chatroom infrastructure
-      const chatroom = await this.createCityChatroom({
-        name: `Meetup ${data.meetupId} Chat`,
-        description: data.description || `Chat room for meetup: ${data.name}`,
-        city: 'Global',
-        state: null,
-        country: 'Global',
-        createdById: 2, // nearbytraveler as system user
-        isPublic: data.isPublic !== false,
-        maxMembers: data.maxMembers || 20,
-        tags: ['meetup', 'chat', `meetup-${data.meetupId}`],
-        rules: 'Be respectful and enjoy meeting new people!'
-      });
-      
-      return chatroom;
-    } catch (error) {
-      console.error('Error creating meetup chatroom:', error);
-      throw error;
-    }
-  }
 
   async sendChatroomMessage(chatroomId: number, userId: number, content: string): Promise<any> {
     try {
