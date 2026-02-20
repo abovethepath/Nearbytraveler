@@ -7129,14 +7129,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getAllUsers(): Promise<any[]> {
-    try {
-      const allUsers = await db.select().from(users);
-      return allUsers;
-    } catch (error) {
-      console.error('Error fetching all users:', error);
-      return [];
-    }
   }
 
   // Landmark methods implementation
@@ -10614,21 +10606,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async isUserBlocked(blockerId: number, blockedId: number): Promise<boolean> {
-    try {
-      const [result] = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(blockedUsers)
-        .where(and(
-          eq(blockedUsers.blockerId, blockerId),
-          eq(blockedUsers.blockedId, blockedId)
-        ));
-      
-      return (result?.count || 0) > 0;
-    } catch (error) {
-      console.error('Error checking if user is blocked:', error);
-      return false;
-    }
   }
 
   // Notification Settings methods
