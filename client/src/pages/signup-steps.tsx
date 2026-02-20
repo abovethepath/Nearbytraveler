@@ -90,20 +90,16 @@ const calculateAge = (dateString: string): number => {
 
 const BASE_LANGUAGES = getAllLanguages();
 
-interface SignupStepsProps {
-  initialUserType?: string;
-}
-
-export default function SignupSteps({ initialUserType }: SignupStepsProps = {}) {
+export default function SignupSteps() {
   const [, setLocation] = useLocation();
   const { setUser } = useContext(AuthContext);
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState(initialUserType ? 2 : 1);
+  const [currentStep, setCurrentStep] = useState(1);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const totalSteps = 5;
   
   const [formData, setFormData] = useState<SignupData>({
-    userType: initialUserType || "",
+    userType: "",
     email: "",
     password: "",
     confirmPassword: "",
