@@ -6920,31 +6920,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getItineraryWithItems(itineraryId: number): Promise<any> {
-    try {
-      const [itinerary] = await db
-        .select()
-        .from(tripItineraries)
-        .where(eq(tripItineraries.id, itineraryId));
-
-      if (!itinerary) return null;
-
-      const items = await db
-        .select()
-        .from(itineraryItems)
-        .where(eq(itineraryItems.itineraryId, itineraryId))
-        .orderBy(asc(itineraryItems.date), asc(itineraryItems.orderIndex));
-
-      return {
-        ...itinerary,
-        items
-      };
-    } catch (error) {
-      console.error('Error fetching itinerary with items:', error);
-      return null;
-    }
-  }
-
   async updateItinerary(id: number, updates: Partial<TripItinerary>): Promise<TripItinerary | undefined> {
     try {
       const [updatedItinerary] = await db
@@ -7127,8 +7102,6 @@ export class DatabaseStorage implements IStorage {
       console.error('Error fetching user shared itineraries:', error);
       return [];
     }
-  }
-
   }
 
   // Landmark methods implementation
@@ -10606,8 +10579,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  }
-
   // Notification Settings methods
   async getUserNotificationSettings(userId: number): Promise<UserNotificationSettings | undefined> {
     try {
@@ -11565,8 +11536,6 @@ export class DatabaseStorage implements IStorage {
   // ========================================
   // ITINERARY CRUD METHODS
   // ========================================
-
-  }
 
   async getItineraryWithItems(itineraryId: number): Promise<any> {
     try {
