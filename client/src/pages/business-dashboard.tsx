@@ -847,11 +847,13 @@ export default function BusinessDashboard() {
           </Card>
         </div>
 
-        {/* Mobile-responsive subscription status */}
+        {/* Mobile-responsive subscription status - clear section */}
         <div className="mb-6 sm:mb-8">
           <SubscriptionStatus />
         </div>
 
+        {/* Deals & content section - clear separation from subscription, no overlap */}
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-6 sm:pt-8">
         {/* Mobile-responsive tabs */}
         <Tabs defaultValue="active" className="space-y-4 sm:space-y-6">
           <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 gap-1 sm:gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 rounded-lg">
@@ -893,7 +895,7 @@ export default function BusinessDashboard() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="active" className="mt-6">
+          <TabsContent value="active" className="mt-6 min-h-[280px]">
             {isLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {[...Array(6)].map((_, i) => (
@@ -1579,6 +1581,7 @@ export default function BusinessDashboard() {
             )}
           </TabsContent>
         </Tabs>
+        </div>
       </div>
 
       {/* Mobile-responsive View Offer Dialog */}
@@ -1707,18 +1710,41 @@ export default function BusinessDashboard() {
               {editingOffer ? 'Edit Offer' : 'Create New Offer'}
             </DialogTitle>
             <DialogDescription className="text-sm text-gray-600 dark:text-gray-300">
-              {editingOffer ? 'Update your existing offer details' : 'Create an attractive offer to draw customers to your business'}
+              {editingOffer ? 'Update your existing offer details' : 'Create an attractive offer to draw customers to your business. Required fields are marked with *.'}
             </DialogDescription>
           </DialogHeader>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
-              console.error("❌ Form validation errors:", errors);
+            <form id="create-offer-form" onSubmit={form.handleSubmit(onSubmit, (errors) => {
+              const fieldLabels: Record<string, string> = {
+                title: "Offer Title",
+                description: "Description",
+                category: "Category",
+                customCategory: "Custom Category",
+                discountType: "Discount Type",
+                discountValue: "Discount Value",
+                targetAudience: "Target Audience",
+                city: "City / Location",
+                country: "Country",
+                validFrom: "Valid From (start date)",
+                validUntil: "Valid Until (end date)",
+              };
+              const list = Object.keys(errors).map((k) => fieldLabels[k] || k).join(", ");
               toast({
-                title: "Form Validation Error",
-                description: "Please check all required fields and fix any errors",
+                title: "Required fields missing or invalid",
+                description: list ? `Please fix: ${list}. Required fields are marked with * below.` : "Please check the required fields (marked with *) and try again.",
                 variant: "destructive",
               });
+              // Scroll first error into view
+              const firstKey = Object.keys(errors)[0];
+              if (firstKey) {
+                const locationKeys = ["city", "country"];
+                const selector = locationKeys.includes(firstKey)
+                  ? `[data-field-block="location"]`
+                  : `[name="${firstKey}"]`;
+                const el = document.querySelector(selector) ?? document.querySelector(`[data-field="${firstKey}"]`) ?? document.querySelector(`#${firstKey}`);
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+              }
             })} className="space-y-4 sm:space-y-6">
               {/* Mobile-responsive form fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
@@ -1727,7 +1753,7 @@ export default function BusinessDashboard() {
                   name="title"
                   render={({ field }) => (
                     <FormItem className="sm:col-span-2">
-                      <FormLabel className="text-gray-900 dark:text-white">Offer Title *</FormLabel>
+                      <FormLabel className="text-gray-900 dark:text-white">Offer Title <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input placeholder="20% off your first purchase!" {...field} />
                       </FormControl>
@@ -1741,16 +1767,16 @@ export default function BusinessDashboard() {
                   name="description"
                   render={({ field }) => (
                     <FormItem className="sm:col-span-2">
-                      <FormLabel className="text-gray-900 dark:text-white">Description *</FormLabel>
+                      <FormLabel className="text-gray-900 dark:text-white">Description <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder="Get 20% off when you spend $50 or more on any item in our store. Valid for new customers only."
+                          placeholder="Explain your deal here in detail."
                           rows={3}
                           {...field} 
                         />
                       </FormControl>
                       <FormDescription className="text-gray-600 dark:text-gray-400">
-                        Maximum 120 characters. Be clear and compelling!
+                        20–120 characters. Be clear and compelling!
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -1762,7 +1788,7 @@ export default function BusinessDashboard() {
                   name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-900 dark:text-white">Category *</FormLabel>
+                      <FormLabel className="text-gray-900 dark:text-white">Category <span className="text-red-500">*</span></FormLabel>
                       <Select 
                         onValueChange={field.onChange} 
                         value={field.value || undefined}
@@ -1791,7 +1817,7 @@ export default function BusinessDashboard() {
                     name="customCategory"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-900 dark:text-white">Custom Category *</FormLabel>
+                        <FormLabel className="text-gray-900 dark:text-white">Custom Category <span className="text-red-500">*</span></FormLabel>
                         <FormControl>
                           <Input placeholder="Enter your category" {...field} />
                         </FormControl>
@@ -1806,7 +1832,7 @@ export default function BusinessDashboard() {
                   name="discountType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-900 dark:text-white">Discount Type *</FormLabel>
+                      <FormLabel className="text-gray-900 dark:text-white">Discount Type <span className="text-red-500">*</span></FormLabel>
                       <Select 
                         onValueChange={field.onChange} 
                         value={field.value || undefined}
@@ -1836,7 +1862,7 @@ export default function BusinessDashboard() {
                   name="discountValue"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-900 dark:text-white">Discount Value *</FormLabel>
+                      <FormLabel className="text-gray-900 dark:text-white">Discount Value <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input 
                           placeholder={
@@ -1880,7 +1906,7 @@ export default function BusinessDashboard() {
                   render={() => (
                     <FormItem>
                       <div className="mb-4">
-                        <FormLabel className="text-gray-900 dark:text-white">Target Audience *</FormLabel>
+                        <FormLabel className="text-gray-900 dark:text-white">Target Audience <span className="text-red-500">*</span></FormLabel>
                         <FormDescription className="text-gray-600 dark:text-gray-400">
                           Who is this offer for?
                         </FormDescription>
@@ -1979,8 +2005,8 @@ export default function BusinessDashboard() {
                       )}
                     />
 
-                    <div>
-                      <FormLabel className="text-gray-900 dark:text-white">City, State/Province, Country *</FormLabel>
+                    <div data-field="city" data-field-block="location">
+                      <FormLabel className="text-gray-900 dark:text-white">City, State/Province, Country <span className="text-red-500">*</span></FormLabel>
                       <SmartLocationInput
                         city={form.watch("city")}
                         state={form.watch("state")}
@@ -2043,7 +2069,7 @@ export default function BusinessDashboard() {
                   name="validFrom"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-900 dark:text-white">Valid From *</FormLabel>
+                      <FormLabel className="text-gray-900 dark:text-white">Valid From <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input 
                           type="date" 
@@ -2078,7 +2104,7 @@ export default function BusinessDashboard() {
                   name="validUntil"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-900 dark:text-white">Valid Until *</FormLabel>
+                      <FormLabel className="text-gray-900 dark:text-white">Valid Until <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input 
                           type="date" 
@@ -2337,18 +2363,34 @@ export default function BusinessDashboard() {
         />
       )}
 
-      {/* Reuse Deal Dialog */}
-      {reuseDialogOpen && reuseDealData && (
-        <QuickDealsWidget
-          showCreateForm={reuseDialogOpen}
-          onCloseCreateForm={() => {
+      {/* Reuse Deal – modal so it doesn’t overlap tabs / subscription */}
+      <Dialog
+        open={!!(reuseDialogOpen && reuseDealData)}
+        onOpenChange={(open) => {
+          if (!open) {
             setReuseDialogOpen(false);
             setReuseDealData(null);
-          }}
-          city={reuseDealData?.city}
-          profileUserId={storageUser?.id}
-        />
-      )}
+          }
+        }}
+      >
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Reuse Quick Deal</DialogTitle>
+            <DialogDescription>Create a new quick deal from your past deal. Edit details and set new times.</DialogDescription>
+          </DialogHeader>
+          {reuseDialogOpen && reuseDealData && storageUser && (
+            <QuickDealsWidget
+              showCreateForm={true}
+              onCloseCreateForm={() => {
+                setReuseDialogOpen(false);
+                setReuseDealData(null);
+              }}
+              city={reuseDealData?.city}
+              profileUserId={storageUser.id}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

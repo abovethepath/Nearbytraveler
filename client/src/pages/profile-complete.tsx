@@ -3781,156 +3781,152 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       )}
 
     
-      {/* PROFILE HEADER - Mobile Responsive - Full Bleed */}
-      <div
-        className={`bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 relative isolate`}
-        style={{ 
-          width: '100vw',
-          position: 'relative',
-          left: '50%',
-          transform: 'translateX(-50%)'
-        }}
-      >
-        {/* floating color button */}
-        {isOwnProfile && (
-          <button
-            type="button"
-            onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
-            aria-label="Change header colors"
-            className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white"
+      {/* PROFILE HEADER - Business: centered avatar + card below. User: row layout */}
+      {user?.userType === 'business' ? (
+        <>
+          {/* Business hero: gradient strip with centered avatar only */}
+          <div
+            className={`bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 pt-6 sm:pt-8 pb-10 sm:pb-12 relative isolate`}
+            style={{ width: '100vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
           >
-            🎨
-          </button>
-        )}
-
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6 relative z-20">
-
-            {/* Avatar + camera (bigger, no scrollbars) */}
-            <div className="relative flex-shrink-0">
-              <div 
-                className={`rounded-full border-4 border-white dark:border-gray-600 shadow-xl overflow-hidden ${!isOwnProfile && user?.profileImage ? 'cursor-pointer hover:border-orange-400 transition-all' : ''}`}
-                onClick={() => {
-                  if (!isOwnProfile && user?.profileImage) {
-                    setShowExpandedPhoto(true);
-                  }
-                }}
-                title={!isOwnProfile && user?.profileImage ? "Click to enlarge photo" : undefined}
+            {isOwnProfile && (
+              <button
+                type="button"
+                onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
+                aria-label="Change header colors"
+                className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white"
               >
-                <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
-                  <SimpleAvatar
-                    user={user}
-                    size="xl"
-                    className="w-full h-full block object-cover"
-                  />
+                🎨
+              </button>
+            )}
+            <div className="max-w-7xl mx-auto flex flex-col items-center relative z-10">
+              <div className="relative flex-shrink-0">
+                <div
+                  className={`rounded-full border-4 border-white dark:border-gray-600 shadow-xl overflow-hidden ${!isOwnProfile && user?.profileImage ? 'cursor-pointer hover:border-orange-400 transition-all' : ''}`}
+                  onClick={() => { if (!isOwnProfile && user?.profileImage) setShowExpandedPhoto(true); }}
+                  title={!isOwnProfile && user?.profileImage ? "Click to enlarge photo" : undefined}
+                >
+                  <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full overflow-hidden no-scrollbar">
+                    <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
+                  </div>
                 </div>
+                {isOwnProfile && (
+                  <>
+                    {!user?.profileImage && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg whitespace-nowrap z-20 animate-pulse">Add Photo</div>
+                    )}
+                    <div
+                      className={`absolute bottom-0 right-0 h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600 animate-bounce' : 'bg-gray-600 hover:bg-gray-500'} text-white shadow-lg border-2 border-white z-10 overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
+                      data-testid="button-upload-avatar"
+                    >
+                      <Camera className="h-4 w-4 sm:h-5 sm:w-5 pointer-events-none" />
+                      <input id="avatar-upload-input" type="file" accept="image/*" onChange={(e) => { console.log('📸 Avatar file input changed', e.target.files?.length); handleAvatarUpload(e); }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" style={{ fontSize: '200px' }} disabled={uploadingPhoto} aria-label="Change avatar" />
+                    </div>
+                  </>
+                )}
               </div>
-
-              {isOwnProfile && (
-                <>
-                  {/* Upload Photo Prompt - Only show when no profile image */}
-                  {!user?.profileImage && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg whitespace-nowrap z-20 animate-pulse">
-                      Add Photo
-                    </div>
-                  )}
-                  
-                  <div
-                    className={`absolute bottom-2 right-2
-                               h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0 flex items-center justify-center cursor-pointer
-                               ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600 animate-bounce' : 'bg-gray-600 hover:bg-gray-500'} 
-                               text-white shadow-lg border-2 border-white z-10 overflow-hidden
-                               ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
-                    data-testid="button-upload-avatar"
-                  >
-                    <Camera className="h-4 w-4 sm:h-5 sm:w-5 pointer-events-none" />
-                    <input
-                      id="avatar-upload-input"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        console.log('📸 Avatar file input changed, files:', e.target.files?.length);
-                        handleAvatarUpload(e);
-                      }}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      style={{ fontSize: '200px' }}
-                      disabled={uploadingPhoto}
-                      aria-label="Change avatar"
-                    />
-                  </div>
-                </>
-              )}
             </div>
-
-            {/* Profile text */}
-            <div className="flex-1 min-w-0 overflow-hidden">
-              {user?.userType === 'business' ? (
-                <div className="space-y-2 w-full mt-2 overflow-hidden min-w-0">
-                  <h1 className="text-xl sm:text-3xl font-bold text-white drop-shadow-sm">
-                    {user.businessName || user.name || `@${user.username}`}
-                  </h1>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm sm:text-base flex-wrap">
-                      <span className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-white/95 text-gray-900 border border-white/50">
-                        Nearby Business
-                      </span>
-                      {user.businessType && <span className="text-white/90 text-sm sm:text-base">• {user.businessType}</span>}
-                    </div>
-                    
-                    {/* Contact info: one line per item, responsive & clean (matches user profile style) */}
-                    <div className="space-y-1.5 mt-3 min-w-0">
-                      {user.streetAddress && (
-                        <a 
-                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                            `${user.streetAddress}, ${user.city}, ${user.state} ${user.zipCode}`
-                          )}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-start gap-2 text-sm sm:text-base text-white/95 hover:text-white transition-colors min-w-0"
-                          data-testid="link-business-address"
-                        >
-                          <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5 text-white/80" />
-                          <span className="min-w-0 flex-1 break-words line-clamp-2 text-left" style={{ wordBreak: 'break-word' }}>
-                            {[user.streetAddress, user.zipCode, user.city, user.state, user.country].filter(Boolean).join(', ')}
-                          </span>
-                        </a>
-                      )}
-                      {user.phoneNumber && (
-                        <a 
-                          href={`tel:${user.phoneNumber}`}
-                          className="flex items-center gap-2 text-sm sm:text-base text-white/95 hover:text-white transition-colors min-w-0"
-                          data-testid="link-business-phone"
-                        >
-                          <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-white/80" />
-                          <span className="truncate min-w-0" title={user.phoneNumber}>{user.phoneNumber}</span>
-                        </a>
-                      )}
-                      {user.email && (
-                        <a 
-                          href={`mailto:${user.email}`}
-                          className="flex items-center gap-2 text-sm sm:text-base text-white/95 hover:text-white transition-colors min-w-0"
-                          data-testid="link-business-email"
-                        >
-                          <Mail className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-white/80" />
-                          <span className="truncate min-w-0" title={user.email}>{user.email}</span>
-                        </a>
-                      )}
-                      {user.websiteUrl && (
-                        <a 
-                          href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-sm sm:text-base text-white/95 hover:text-white transition-colors min-w-0"
-                          data-testid="link-business-website"
-                        >
-                          <Globe className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-white/80" />
-                          <span className="truncate min-w-0 text-left" title={user.websiteUrl}>{user.websiteUrl.replace(/^https?:\/\//i, '')}</span>
-                        </a>
-                      )}
-                    </div>
+          </div>
+          {/* Business info card: black text on light background */}
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 -mt-6 sm:-mt-8 relative z-20">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-5 sm:p-6 text-left">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                {user.businessName || user.name || `@${user.username}`}
+              </h1>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="inline-flex items-center h-7 rounded-full px-3 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 border border-blue-200 dark:border-blue-700">
+                  Nearby Business
+                </span>
+                {user.businessType && (
+                  <span className="inline-flex items-center h-7 rounded-full px-3 text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600">
+                    {user.businessType}
+                  </span>
+                )}
+              </div>
+              <div className="space-y-2.5 text-gray-900 dark:text-gray-100">
+                {user.streetAddress && (
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([user.streetAddress, user.city, user.state, user.zipCode, user.country].filter(Boolean).join(', '))}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-start gap-2 text-sm sm:text-base hover:text-blue-600 dark:hover:text-blue-400 transition-colors min-w-0"
+                    data-testid="link-business-address"
+                  >
+                    <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5 text-gray-600 dark:text-gray-400" />
+                    <span className="break-words text-left">{[user.streetAddress, user.zipCode, user.city, user.state, user.country].filter(Boolean).join(', ')}</span>
+                  </a>
+                )}
+                {user.phoneNumber && (
+                  <a href={`tel:${user.phoneNumber}`} className="flex items-center gap-2 text-sm sm:text-base text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors min-w-0" data-testid="link-business-phone">
+                    <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-gray-600 dark:text-gray-400" />
+                    <span className="truncate" title={user.phoneNumber}>{user.phoneNumber}</span>
+                  </a>
+                )}
+                {user.email && (
+                  <a href={`mailto:${user.email}`} className="flex items-center gap-2 text-sm sm:text-base text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors min-w-0" data-testid="link-business-email">
+                    <Mail className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-gray-600 dark:text-gray-400" />
+                    <span className="truncate" title={user.email}>{user.email}</span>
+                  </a>
+                )}
+                {user.websiteUrl && (
+                  <a
+                    href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm sm:text-base text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors min-w-0"
+                    data-testid="link-business-website"
+                  >
+                    <Globe className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-gray-600 dark:text-gray-400" />
+                    <span className="truncate text-left" title={user.websiteUrl}>{user.websiteUrl.replace(/^https?:\/\//i, '')}</span>
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div
+          className={`bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 relative isolate`}
+          style={{ width: '100vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
+        >
+          {isOwnProfile && (
+            <button
+              type="button"
+              onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
+              aria-label="Change header colors"
+              className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white"
+            >
+              🎨
+            </button>
+          )}
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6 relative z-20">
+              <div className="relative flex-shrink-0">
+                <div
+                  className={`rounded-full border-4 border-white dark:border-gray-600 shadow-xl overflow-hidden ${!isOwnProfile && user?.profileImage ? 'cursor-pointer hover:border-orange-400 transition-all' : ''}`}
+                  onClick={() => { if (!isOwnProfile && user?.profileImage) setShowExpandedPhoto(true); }}
+                  title={!isOwnProfile && user?.profileImage ? "Click to enlarge photo" : undefined}
+                >
+                  <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
+                    <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
                   </div>
                 </div>
-              ) : (
+                {isOwnProfile && (
+                  <>
+                    {!user?.profileImage && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg whitespace-nowrap z-20 animate-pulse">Add Photo</div>
+                    )}
+                    <div
+                      className={`absolute bottom-2 right-2 h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600 animate-bounce' : 'bg-gray-600 hover:bg-gray-500'} text-white shadow-lg border-2 border-white z-10 overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
+                      data-testid="button-upload-avatar"
+                    >
+                      <Camera className="h-4 w-4 sm:h-5 sm:w-5 pointer-events-none" />
+                      <input id="avatar-upload-input" type="file" accept="image/*" onChange={(e) => { console.log('📸 Avatar file input changed', e.target.files?.length); handleAvatarUpload(e); }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" style={{ fontSize: '200px' }} disabled={uploadingPhoto} aria-label="Change avatar" />
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="flex-1 min-w-0 overflow-hidden">
                 <div className="space-y-2 text-black w-full mt-2 overflow-hidden">
                   {(() => {
                     // Use compact formatting: "City, ST" for US, "City, Country" for international
@@ -4535,6 +4531,42 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   />
                 )}
 
+                {/* Edit interests & activities - visible from About for own profile */}
+                {isOwnProfile && (
+                  <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const userInterests = [...(user?.interests || [])];
+                        const userActivities = [...(user?.activities || [])];
+                        if (user?.customInterests) {
+                          user.customInterests.split(',').map((s: string) => s.trim()).filter(Boolean).forEach((item: string) => {
+                            if (!userInterests.includes(item)) userInterests.push(item);
+                          });
+                        }
+                        if (user?.customActivities) {
+                          user.customActivities.split(',').map((s: string) => s.trim()).filter(Boolean).forEach((item: string) => {
+                            if (!userActivities.includes(item)) userActivities.push(item);
+                          });
+                        }
+                        setEditFormData({ interests: userInterests, activities: userActivities });
+                        setIsEditingPublicInterests(true);
+                        setActiveEditSection(user?.userType === 'business' ? 'activities' : 'interests');
+                        const sectionId = user?.userType === 'business' ? 'business-interests-activities-edit-section' : 'interests-activities-section';
+                        setTimeout(() => {
+                          const el = document.getElementById(sectionId);
+                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
+                      }}
+                      className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline"
+                      data-testid="button-edit-interests-activities-from-about"
+                    >
+                      <Edit2 className="w-4 h-4 shrink-0" />
+                      Edit interests & activities
+                    </button>
+                  </div>
+                )}
+
                 {/* Business Contact Information - Prominent placement for business profiles */}
                 {user?.userType === 'business' && (
                   <div className="space-y-3 border-t pt-4 mt-4 bg-gradient-to-br from-blue-50 to-gray-50 dark:from-gray-800 dark:to-gray-900 p-4 rounded-lg">
@@ -4864,11 +4896,44 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {user?.userType === 'business' && (
               <>
                 <Card id="business-interests-activities-section">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                      <Heart className="w-5 h-5 text-orange-500" />
-                      Interests & Activities
-                    </CardTitle>
+                  <CardHeader className="pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                        <Heart className="w-5 h-5 text-orange-500" />
+                        Interests & Activities
+                      </CardTitle>
+                      {isOwnProfile && (
+                        <Button
+                          onClick={() => {
+                            const userInterests = [...(user?.interests || [])];
+                            const userActivities = [...(user?.activities || [])];
+                            if (user?.customInterests) {
+                              user.customInterests.split(',').map((s: string) => s.trim()).filter(Boolean).forEach((item: string) => {
+                                if (!userInterests.includes(item)) userInterests.push(item);
+                              });
+                            }
+                            if (user?.customActivities) {
+                              user.customActivities.split(',').map((s: string) => s.trim()).filter(Boolean).forEach((item: string) => {
+                                if (!userActivities.includes(item)) userActivities.push(item);
+                              });
+                            }
+                            setEditFormData({ interests: userInterests, activities: userActivities });
+                            setIsEditingPublicInterests(true);
+                            setActiveEditSection('activities');
+                            setTimeout(() => {
+                              const el = document.getElementById('business-interests-activities-edit-section');
+                              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }, 100);
+                          }}
+                          className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 text-black px-4 py-2 text-sm shrink-0"
+                          size="sm"
+                          data-testid="button-edit-interests-activities"
+                        >
+                          <Edit2 className="w-4 h-4 mr-1 text-black" />
+                          <span className="text-black">Edit</span>
+                        </Button>
+                      )}
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {(() => {
@@ -4945,7 +5010,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {user?.userType !== 'business' && (
             <Card id="interests-activities-section">
               <CardHeader className="pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                     <Heart className="w-5 h-5 text-red-500" />
                     Interests & Activities
@@ -4967,7 +5032,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           activities: allActivities
                         });
                       }}
-                      className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 text-black px-4 py-2 text-sm"
+                      className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 text-black px-4 py-2 text-sm shrink-0"
                       size="sm"
                       data-testid="button-edit-interests"
                     >
@@ -5486,9 +5551,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Business Interests, Activities & Events Section - For business users only */}
             {user?.userType === 'business' && (
-            <Card>
+            <Card id="business-interests-activities-edit-section">
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <CardTitle className="flex items-center gap-2">
                     <Heart className="w-5 h-5 text-orange-500" />
                     Business Interests, Activities & Events

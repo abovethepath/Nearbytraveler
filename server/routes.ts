@@ -16031,7 +16031,8 @@ Questions? Just reply to this message. Welcome aboard!
       res.json(newDeal);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error creating quick deal:", error);
-      res.status(500).json({ message: "Failed to create quick deal" });
+      const message = error?.message || "Failed to create quick deal";
+      res.status(500).json({ message });
     }
   });
 

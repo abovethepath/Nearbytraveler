@@ -715,6 +715,9 @@ app.use((req, res, next) => {
     await db.execute(
       sql`ALTER TABLE meetup_chatrooms ADD COLUMN IF NOT EXISTS available_now_id INTEGER REFERENCES available_now(id)`,
     );
+    await db.execute(
+      sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS contact_role TEXT`,
+    );
     console.log("✅ Schema migration check complete");
   } catch (migrationError) {
     console.log(

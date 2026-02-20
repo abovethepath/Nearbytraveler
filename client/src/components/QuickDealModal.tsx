@@ -129,7 +129,7 @@ export default function QuickDealModal({ onClose, businessId, businessLocation }
             <Textarea
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Limited time offer..."
+              placeholder="Explain your deal here in detail."
               required
               rows={3}
             />

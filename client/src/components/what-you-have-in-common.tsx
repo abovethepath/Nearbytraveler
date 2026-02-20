@@ -602,11 +602,11 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
           </CardTitle>
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="inline-flex items-center justify-center rounded-full bg-blue-600 dark:bg-blue-500 text-white shadow-md border border-blue-700 dark:border-blue-600 text-sm font-bold px-4 py-2.5 min-h-[2.5rem]">
-              {compatibilityData?.matchCount != null
-                ? `${compatibilityData.matchCount} things in common`
-                : compatibilityData
-                  ? `${(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} things in common`
-                  : `${commonalities.totalCount} things in common`}
+              {(() => {
+                const visibleCount = (compatibilityData?.sharedInterests?.length || 0) + (compatibilityData?.sharedActivities?.length || 0) + (compatibilityData?.sharedEvents?.length || 0);
+                const count = compatibilityData ? visibleCount : commonalities.totalCount;
+                return `${count} things in common`;
+              })()}
             </span>
           </div>
         </div>

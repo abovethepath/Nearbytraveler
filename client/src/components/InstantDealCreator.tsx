@@ -72,7 +72,6 @@ export default function InstantDealCreator({ businessId, businessName, businessL
       const startTime = data.startDate ? new Date(data.startDate) : new Date();
       const validUntil = new Date(startTime.getTime() + (parseInt(data.validFor) * 60 * 60 * 1000)); // Hours to milliseconds
       
-      // Quick deals use a different endpoint and table for proper counting
       const dealData = {
         title: data.title,
         description: data.description,
@@ -87,7 +86,13 @@ export default function InstantDealCreator({ businessId, businessName, businessL
         maxRedemptions: data.maxRedemptions ? parseInt(data.maxRedemptions) : 50
       };
 
-      return apiRequest('POST', '/api/quick-deals', dealData);
+      const response = await apiRequest('POST', '/api/quick-deals', dealData);
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        const message = (body as { message?: string }).message || response.statusText || 'Failed to create deal';
+        throw new Error(message);
+      }
+      return response;
     },
     onSuccess: () => {
       toast({
@@ -99,17 +104,16 @@ export default function InstantDealCreator({ businessId, businessName, businessL
       setIsOpen(false);
       onDealCreated();
       
-      // Invalidate relevant queries for quick deals and analytics
       queryClient.invalidateQueries({ queryKey: ['/api/quick-deals'] });
       queryClient.invalidateQueries({ queryKey: [`/api/quick-deals/business/${businessId}`] });
-      // CRITICAL: Use correct analytics endpoint that dashboard fetches from
       queryClient.invalidateQueries({ queryKey: ['/api/business-deals/analytics'] });
       queryClient.invalidateQueries({ queryKey: [`/api/business-deals/business/${businessId}`] });
     },
     onError: (error) => {
+      const message = error instanceof Error ? error.message : 'Failed to create instant deal';
       toast({
-        title: "Error Creating Instant Deal",
-        description: error instanceof Error ? error.message : "Failed to create instant deal",
+        title: "Could not create deal",
+        description: message,
         variant: "destructive",
       });
     }
@@ -184,7 +188,7 @@ export default function InstantDealCreator({ businessId, businessName, businessL
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="Limited time offer! Get 30% off all menu items. Show this deal to your server. Valid for the next few hours only!"
+                      placeholder="Explain your deal here in detail."
                       rows={3}
                       {...field} 
                     />

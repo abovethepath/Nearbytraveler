@@ -78,7 +78,7 @@ export default function UserCard({
     return gradients[user.id % gradients.length];
   };
 
-  const getTravelCity = () => {
+  const getTravelCity = (): string | null => {
     if ((user as any).travelPlans && Array.isArray((user as any).travelPlans)) {
       const now = new Date();
       now.setHours(0, 0, 0, 0);
@@ -90,6 +90,10 @@ export default function UserCard({
         return now >= start && now <= end;
       });
       if (currentTrip?.destinationCity) return currentTrip.destinationCity;
+    }
+    if ((user as any).destinationCity) {
+      const c = (user as any).destinationCity;
+      if (c && String(c).toLowerCase() !== 'null') return String(c).trim();
     }
     if (user.isCurrentlyTraveling && user.travelDestination) {
       const city = user.travelDestination.split(',')[0].trim();
@@ -115,7 +119,10 @@ export default function UserCard({
   };
 
   const matchPercent = getMatchPercent();
-  const thingsInCommon = compatibilityData?.matchCount ?? compatibilityData?.sharedInterests?.length ?? 0;
+  // Use visible count (interests + activities + events) so the number matches what users see in "Things in common"
+  const thingsInCommon = compatibilityData
+    ? (compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)
+    : 0;
   const mutualFriends = connectionDegree?.mutualCount || 0;
 
   return (
@@ -144,10 +151,10 @@ export default function UserCard({
           </div>
         )}
         
-        {/* Travel badge on photo */}
+        {/* Travel badge on photo - only when we have a destination (there's never traveling without one) */}
         {travelCity && (
-          <div className="absolute top-1.5 left-1.5">
-            <span className="bg-blue-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
+          <div className="absolute top-1.5 left-1.5 z-10">
+            <span className="bg-blue-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap">
               ✈️ {travelCity}
             </span>
           </div>
@@ -190,6 +197,11 @@ export default function UserCard({
               ? `📍 ${user.streetAddress}` 
               : displayCity}
           </div>
+          {travelCity && user.userType !== 'business' && (
+            <div className="text-[10px] font-medium text-blue-600 dark:text-blue-400 truncate mt-0.5">
+              ✈️ Traveling to {travelCity}
+            </div>
+          )}
           {!compact && (
             <div className="mt-1.5 space-y-0.5">
               {thingsInCommon > 0 && (
@@ -217,8 +229,13 @@ export default function UserCard({
           <div className="text-sm font-semibold text-gray-900 dark:text-white truncate mt-1">
             {displayName}
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-            {displayCity}
+          <div className="truncate">
+            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{displayCity}</div>
+            {travelCity && user.userType !== 'business' && (
+              <div className="text-[10px] font-medium text-blue-600 dark:text-blue-400 truncate">
+                ✈️ To {travelCity}
+              </div>
+            )}
           </div>
         </div>
       </div>

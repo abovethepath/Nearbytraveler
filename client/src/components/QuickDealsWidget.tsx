@@ -36,6 +36,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
   const [internalShowCreateForm, setInternalShowCreateForm] = useState(false);
   const showCreateForm = externalShowCreateForm || internalShowCreateForm;
   const [expandedDeal, setExpandedDeal] = useState<number | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -104,10 +105,16 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
     enabled: actualUser?.userType === 'business' // Only run query for business users
   });
 
-  // Create deal mutation
+  // Create deal mutation - throw on non-OK so onError runs and we can show server message
   const createDealMutation = useMutation({
     mutationFn: async (dealData: InsertQuickDeal) => {
-      return apiRequest('POST', '/api/quick-deals', dealData);
+      const response = await apiRequest('POST', '/api/quick-deals', dealData);
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        const message = (data as { message?: string }).message || response.statusText || 'Failed to create deal';
+        throw new Error(message);
+      }
+      return response;
     },
     onSuccess: () => {
       toast({
@@ -115,6 +122,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
         description: "Your quick deal is now live and visible to customers."
       });
       setInternalShowCreateForm(false);
+      setCreateError(null);
       if (onCloseCreateForm) onCloseCreateForm();
       setNewDeal({
         title: '',
@@ -132,38 +140,35 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
         availability: 'today'
       });
       queryClient.invalidateQueries({ queryKey: ['/api/quick-deals'] });
-      // Also refresh dashboard analytics to update quick deals count
       queryClient.invalidateQueries({ queryKey: ['/api/business-deals/analytics'] });
     },
     onError: (error: any) => {
-      console.error('Deal creation error:', error);
-      
-      // Handle monthly deal limit error specifically
-      if (error.message?.includes('Monthly deal limit reached')) {
-        toast({
-          title: "Monthly Deal Limit Reached",
-          description: error.message,
-          variant: "destructive"
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to create deal. Please try again.",
-          variant: "destructive"
-        });
-      }
+      const message = error?.message || 'Failed to create deal. Please try again.';
+      console.error('Deal creation error:', message);
+      setCreateError(message);
+      toast({
+        title: "Could not create deal",
+        description: message,
+        variant: "destructive"
+      });
     }
   });
 
   const handleCreateDeal = () => {
-    if (!newDeal.title || !newDeal.description || !newDeal.discountAmount) {
+    const missing: string[] = [];
+    if (!newDeal.title?.trim()) missing.push("Deal Title");
+    if (!newDeal.description?.trim()) missing.push("Description");
+    if (!newDeal.discountAmount?.trim()) missing.push("Discount Amount");
+    if (missing.length > 0) {
+      setCreateError(`Required: ${missing.join(", ")}. Please fill in all fields marked with *.`);
       toast({
-        title: "Missing Information",
-        description: "Please fill in title, description, and discount amount.",
+        title: "Required fields missing",
+        description: `Fill in: ${missing.join(", ")} (fields marked with *).`,
         variant: "destructive"
       });
       return;
     }
+    setCreateError(null);
 
     const dealData: InsertQuickDeal = {
       businessId: actualUser!.id,
@@ -302,7 +307,10 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
             Quick Deal Now
           </h3>
           <Button
-            onClick={() => setInternalShowCreateForm(!showCreateForm)}
+            onClick={() => {
+              setInternalShowCreateForm(!showCreateForm);
+              setCreateError(null);
+            }}
             size="sm"
             variant="outline"
             className="flex items-center gap-1"
@@ -317,10 +325,15 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
         {showCreateForm && (
           <div className="border-2 border-orange-500 rounded-lg p-4 mb-4 bg-orange-50 dark:bg-orange-950 shadow-lg" data-testid="form-create-deal">
             <h4 className="font-medium mb-3 text-gray-900 dark:text-white">Create Quick Deal</h4>
+            {createError && (
+              <div className="mb-3 p-3 rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-800 dark:text-red-200 text-sm" role="alert">
+                {createError}
+              </div>
+            )}
             <div className="space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm font-medium text-gray-900 dark:text-white">Deal Title</label>
+                  <label className="text-sm font-medium text-gray-900 dark:text-white">Deal Title <span className="text-red-500">*</span></label>
                   <Input
                     value={newDeal.title}
                     onChange={(e) => setNewDeal({ ...newDeal, title: e.target.value })}
@@ -329,7 +342,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-900 dark:text-white">Discount Amount</label>
+                  <label className="text-sm font-medium text-gray-900 dark:text-white">Discount Amount <span className="text-red-500">*</span></label>
                   <Input
                     value={newDeal.discountAmount}
                     onChange={(e) => setNewDeal({ ...newDeal, discountAmount: e.target.value })}
@@ -340,11 +353,11 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                <label className="text-sm font-medium text-gray-900 dark:text-white">Description <span className="text-red-500">*</span></label>
                 <Textarea
                   value={newDeal.description}
                   onChange={(e) => setNewDeal({ ...newDeal, description: e.target.value })}
-                  placeholder="Describe your deal..."
+                  placeholder="Explain your deal here in detail."
                   rows={2}
                   data-testid="textarea-deal-description"
                 />

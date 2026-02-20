@@ -667,6 +667,24 @@ img,
   -ms-interpolation-mode: bicubic;
 }
 
+/* Prevent images from being draggable so widgets/cards don't feel like they slide when touching images */
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: auto;
+}
+
+/* Prevent widgets/cards from feeling draggable or sliding on touch (not intentional – no drag-to-reorder) */
+[data-testid*="widget"],
+[data-testid*="quick-meetup-widget"],
+[data-testid*="travel-plans-widget"],
+[data-testid*="location-widget"],
+.rounded-lg.border.bg-card {
+  -webkit-user-drag: none;
+  user-drag: none;
+  touch-action: pan-y;
+}
+
 /* Ensure avatar images are sharp on high-DPI displays */
 .avatar,
 [data-radix-avatar] {
