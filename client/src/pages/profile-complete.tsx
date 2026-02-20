@@ -3877,7 +3877,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     data-testid="link-business-website"
                   >
                     <Globe className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-gray-600 dark:text-gray-400" />
-                    <span className="truncate text-left" title={user.websiteUrl}>{user.websiteUrl.replace(/^https?:\/\//i, '')}</span>
+                    <span className="truncate text-left" title={user.websiteUrl}>{user.websiteUrl.replace(new RegExp('^https?:\\/\\/', 'i'), '')}</span>
                   </a>
                 )}
               </div>
@@ -8727,7 +8727,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           />
                         </FormControl>
                         <div className="text-xs text-gray-500 text-right">
-                          {field.value?.length || 0}/100 characters
+                          {`${field.value?.length || 0}/100 characters`}
                         </div>
                         <FormMessage />
                       </FormItem>
@@ -8816,7 +8816,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           />
                         </FormControl>
                         <div className="text-xs text-gray-500 text-right">
-                          {field.value?.length || 0}/1000 characters {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
+                          {`${field.value?.length || 0}/1000 characters`} {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
                         </div>
                         <FormMessage />
                       </FormItem>
@@ -8862,7 +8862,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           />
                         </FormControl>
                         <div className="text-xs text-gray-500 text-right">
-                          {field.value?.length || 0}/1000 characters {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
+                          {`${field.value?.length || 0}/1000 characters`} {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
                         </div>
                         <FormMessage />
                       </FormItem>
@@ -8884,7 +8884,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           />
                         </FormControl>
                         <div className="text-xs text-gray-500 text-right">
-                          {field.value?.length || 0}/500 characters
+                          {`${field.value?.length || 0}/500 characters`}
                         </div>
                         <FormMessage />
                       </FormItem>
