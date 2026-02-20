@@ -806,13 +806,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   });
   const [savingBusinessDescription, setSavingBusinessDescription] = useState(false);
   
-  // Owner contact information state
+  // Owner contact information state (Admin / private business info)
   const editingOwnerInfo = activeEditSection === 'owner';
   const [ownerContactForm, setOwnerContactForm] = useState({
-    ownerName: '',
+    businessName: '',
     contactName: '',
     ownerEmail: '',
-    ownerPhone: ''
+    ownerPhone: '',
+    contactRole: ''
   });
   
   // Controlled input states for custom entries
@@ -3310,9 +3311,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     setActiveEditSection('business');
   };
 
-  // Owner contact mutation and handlers
+  // Owner contact mutation and handlers (businessName, contactName, contactEmail, contactPhone, contactRole)
   const updateOwnerContact = useMutation({
-    mutationFn: async (data: { ownerName: string; ownerEmail: string; ownerPhone: string }) => {
+    mutationFn: async (data: { businessName: string; contactName: string; ownerEmail: string; ownerPhone: string; contactRole: string }) => {
       const apiBase = getApiBaseUrl();
       const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
         method: 'PUT',
@@ -3356,14 +3357,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     updateOwnerContact.mutate(ownerContactForm);
   };
 
-  // Initialize owner contact form when user data loads
+  // Initialize owner contact form when user data loads (correct fields: businessName, contact person, role)
   useEffect(() => {
     if (user && user.userType === 'business') {
       setOwnerContactForm({
-        ownerName: user.ownerName || "",
-        contactName: user.contactName || "",
+        businessName: (user as any).businessName ?? user.businessName ?? (user as any).name ?? "",
+        contactName: (user as any).contactName ?? user.contactName ?? user.ownerName ?? "",
         ownerEmail: user.ownerEmail || "",
-        ownerPhone: user.ownerPhone || ""
+        ownerPhone: user.ownerPhone || "",
+        contactRole: (user as any).contactRole ?? user.contactRole ?? ""
       });
     }
   }, [user]);
@@ -3863,20 +3865,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* Profile text */}
             <div className="flex-1 min-w-0 overflow-hidden">
               {user?.userType === 'business' ? (
-                <div className="space-y-2 text-black w-full mt-2 overflow-hidden">
-                  <h1 className="text-2xl sm:text-4xl font-bold text-black">
+                <div className="space-y-2 w-full mt-2 overflow-hidden min-w-0">
+                  <h1 className="text-xl sm:text-3xl font-bold text-white drop-shadow-sm">
                     {user.businessName || user.name || `@${user.username}`}
                   </h1>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm sm:text-base">
-                      <span className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-white text-black border border-black">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm sm:text-base flex-wrap">
+                      <span className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-white/95 text-gray-900 border border-white/50">
                         Nearby Business
                       </span>
-                      {user.businessType && <span className="text-black/80">• {user.businessType}</span>}
+                      {user.businessType && <span className="text-white/90 text-sm sm:text-base">• {user.businessType}</span>}
                     </div>
                     
-                    {/* Contact Information - Large and Prominent */}
-                    <div className="space-y-2 mt-3">
+                    {/* Contact info: one line per item, responsive & clean (matches user profile style) */}
+                    <div className="space-y-1.5 mt-3 min-w-0">
                       {user.streetAddress && (
                         <a 
                           href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -3884,49 +3886,45 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           )}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-black hover:text-gray-800 transition-colors"
+                          className="flex items-start gap-2 text-sm sm:text-base text-white/95 hover:text-white transition-colors min-w-0"
                           data-testid="link-business-address"
                         >
-                          <MapPin className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-                          <span className="break-words">
-                            {user.streetAddress}{user.zipCode && `, ${user.zipCode}`}
-                            {user.city && `, ${user.city}`}{user.state && `, ${user.state}`}
+                          <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5 text-white/80" />
+                          <span className="min-w-0 flex-1 break-words line-clamp-2 text-left" style={{ wordBreak: 'break-word' }}>
+                            {[user.streetAddress, user.zipCode, user.city, user.state, user.country].filter(Boolean).join(', ')}
                           </span>
                         </a>
                       )}
-                      
                       {user.phoneNumber && (
                         <a 
                           href={`tel:${user.phoneNumber}`}
-                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-black hover:text-gray-800 transition-colors"
+                          className="flex items-center gap-2 text-sm sm:text-base text-white/95 hover:text-white transition-colors min-w-0"
                           data-testid="link-business-phone"
                         >
-                          <Phone className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-                          <span>{user.phoneNumber}</span>
+                          <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-white/80" />
+                          <span className="truncate min-w-0" title={user.phoneNumber}>{user.phoneNumber}</span>
                         </a>
                       )}
-                      
                       {user.email && (
                         <a 
                           href={`mailto:${user.email}`}
-                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-black hover:text-gray-800 transition-colors break-all"
+                          className="flex items-center gap-2 text-sm sm:text-base text-white/95 hover:text-white transition-colors min-w-0"
                           data-testid="link-business-email"
                         >
-                          <Mail className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-                          <span>{user.email}</span>
+                          <Mail className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-white/80" />
+                          <span className="truncate min-w-0" title={user.email}>{user.email}</span>
                         </a>
                       )}
-                      
                       {user.websiteUrl && (
                         <a 
                           href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-black hover:text-gray-800 transition-colors break-all"
+                          className="flex items-center gap-2 text-sm sm:text-base text-white/95 hover:text-white transition-colors min-w-0"
                           data-testid="link-business-website"
                         >
-                          <Globe className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-                          <span>{user.websiteUrl}</span>
+                          <Globe className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-white/80" />
+                          <span className="truncate min-w-0 text-left" title={user.websiteUrl}>{user.websiteUrl.replace(/^https?:\/\//i, '')}</span>
                         </a>
                       )}
                     </div>
@@ -4860,6 +4858,78 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   )}
                 </CardContent>
               </Card>
+            )}
+
+            {/* Interests, Activities & Events - Business (for matching with users); shown right after Deals */}
+            {user?.userType === 'business' && (
+              <>
+                <Card id="business-interests-activities-section">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                      <Heart className="w-5 h-5 text-orange-500" />
+                      Interests & Activities
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {(() => {
+                      const allInterests = [...(user?.interests || [])];
+                      const allActivities = [...(user?.activities || [])];
+                      if (user?.customInterests) {
+                        user.customInterests.split(',').map((s: string) => s.trim()).filter(Boolean).forEach((item: string) => {
+                          if (!allInterests.includes(item)) allInterests.push(item);
+                        });
+                      }
+                      if (user?.customActivities) {
+                        user.customActivities.split(',').map((s: string) => s.trim()).filter(Boolean).forEach((item: string) => {
+                          if (!allActivities.includes(item)) allActivities.push(item);
+                        });
+                      }
+                      return (
+                        <>
+                          {allInterests.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Interests (for matching)</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {allInterests.map((interest, index) => (
+                                  <span key={`bi-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-700">
+                                    {interest}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {allActivities.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Activities (for matching)</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {allActivities.map((activity, index) => (
+                                  <span key={`ba-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-700">
+                                    {activity}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {(allInterests.length === 0 && allActivities.length === 0) && (
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Add interests and activities in Edit to match with travelers and locals.</p>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                      <Calendar className="w-5 h-5" />
+                      Our Events
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <BusinessEventsWidget userId={effectiveUserId || 0} />
+                  </CardContent>
+                </Card>
+              </>
             )}
 
             {/* What You Have in Common Section - Separate Card for clean mobile layout */}
@@ -5942,21 +6012,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
-
-            {/* Our Events Widget - only for business profiles */}
-            {user?.userType === 'business' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5" />
-                    Our Events
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <BusinessEventsWidget userId={effectiveUserId || 0} />
-                </CardContent>
-              </Card>
-            )}
 
             {/* Photo Gallery Preview */}
             {/* Photos Panel - Optimized Preview */}
@@ -7648,36 +7703,49 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <div>
                         <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Business Name</Label>
                         <Input 
-                          value={ownerContactForm.ownerName}
-                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerName: e.target.value }))}
-                          placeholder="Enter business name"
+                          value={ownerContactForm.businessName}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, businessName: e.target.value }))}
+                          placeholder="Your business or company name"
                           className="mt-1"
                         />
                       </div>
                       <div>
-                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Name</Label>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Person&apos;s Name</Label>
                         <Input 
                           value={ownerContactForm.contactName}
                           onChange={(e) => setOwnerContactForm(prev => ({ ...prev, contactName: e.target.value }))}
-                          placeholder="Enter main contact person name"
+                          placeholder="Name of main contact person"
                           className="mt-1"
                         />
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          The person we should contact (may be different from owner)
-                        </p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact&apos;s Role</Label>
+                        <select
+                          value={ownerContactForm.contactRole}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, contactRole: e.target.value }))}
+                          className="mt-1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        >
+                          <option value="">Select role</option>
+                          <option value="Owner">Owner</option>
+                          <option value="Manager">Manager</option>
+                          <option value="Marketing">Marketing</option>
+                          <option value="Operations">Operations</option>
+                          <option value="General Contact">General Contact</option>
+                          <option value="Other">Other</option>
+                        </select>
                       </div>
                       <div>
                         <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Email</Label>
                         <Input 
                           value={ownerContactForm.ownerEmail}
                           onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerEmail: e.target.value }))}
-                          placeholder="owner@business.com"
+                          placeholder="contact@business.com"
                           type="email"
                           className="mt-1"
                         />
                       </div>
                       <div>
-                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Person Phone Number</Label>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Phone Number</Label>
                         <Input 
                           value={ownerContactForm.ownerPhone}
                           onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerPhone: e.target.value }))}
@@ -7700,10 +7768,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           onClick={() => {
                             setActiveEditSection(null);
                             setOwnerContactForm({
-                              ownerName: user?.ownerName || "",
-                              contactName: user?.contactName || "",
-                              ownerEmail: user?.ownerEmail || "",
-                              ownerPhone: user?.ownerPhone || ""
+                              businessName: (user as any)?.businessName ?? user?.businessName ?? (user as any)?.name ?? "",
+                              contactName: (user as any)?.contactName ?? user?.contactName ?? "",
+                              ownerEmail: user?.ownerEmail ?? "",
+                              ownerPhone: user?.ownerPhone ?? "",
+                              contactRole: (user as any)?.contactRole ?? user?.contactRole ?? ""
                             });
                           }}
                           className="border-purple-500 text-purple-600 hover:bg-purple-50 dark:border-purple-400 dark:text-purple-400 dark:hover:bg-purple-900/20"
@@ -7717,13 +7786,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Business Name:</span>
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          {user?.ownerName || "Not set"}
+                          {(user as any)?.businessName ?? user?.businessName ?? (user as any)?.name ?? "Not set"}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Name:</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Person&apos;s Name:</span>
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          {user?.contactName || "Not set"}
+                          {(user as any)?.contactName ?? user?.contactName ?? "Not set"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact&apos;s Role:</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {(user as any)?.contactRole ?? user?.contactRole ?? "Not set"}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
@@ -7742,7 +7817,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         )}
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Person Phone:</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Phone Number:</span>
                         {user?.ownerPhone ? (
                           <a 
                             href={`tel:${user.ownerPhone}`} 

@@ -41,13 +41,16 @@ interface User {
 
 interface BusinessSubscription {
   id: number;
-  businessName: string;
-  email: string;
+  businessName: string | null;
+  contactPersonName: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
+  contactRole: string | null;
   status: string;
   monthlyRevenue: number;
   createdAt: string;
-  trialEndDate?: string;
-  nextBillingDate?: string;
+  trialEndDate?: string | null;
+  nextBillingDate?: string | null;
 }
 
 interface PricingConfig {
@@ -560,8 +563,11 @@ export default function AdminDashboard() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Business</TableHead>
-                      <TableHead>Email</TableHead>
+                      <TableHead>Business Name</TableHead>
+                      <TableHead>Contact Person</TableHead>
+                      <TableHead>Contact Role</TableHead>
+                      <TableHead>Contact Email</TableHead>
+                      <TableHead>Contact Phone</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Revenue</TableHead>
                       <TableHead>Trial End</TableHead>
@@ -571,11 +577,14 @@ export default function AdminDashboard() {
                   <TableBody>
                     {businesses?.map((business) => (
                       <TableRow key={business.id}>
-                        <TableCell className="font-medium">{business.businessName}</TableCell>
-                        <TableCell>{business.email}</TableCell>
+                        <TableCell className="font-medium">{business.businessName ?? '—'}</TableCell>
+                        <TableCell>{business.contactPersonName ?? '—'}</TableCell>
+                        <TableCell>{business.contactRole ?? '—'}</TableCell>
+                        <TableCell>{business.contactEmail ?? '—'}</TableCell>
+                        <TableCell>{business.contactPhone ?? '—'}</TableCell>
                         <TableCell>
                           <Badge variant={
-                            business.status === 'active' ? 'default' : 
+                            business.status === 'active' ? 'default' :
                             business.status === 'trialing' ? 'secondary' : 'destructive'
                           }>
                             {business.status}

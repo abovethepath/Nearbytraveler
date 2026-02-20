@@ -32,6 +32,7 @@ const businessSignupSchema = z.object({
   // Owner/Manager in charge of the account
   ownerName: z.string().min(1, "Owner/Manager name is required"),
   contactName: z.string().optional(), // Optional - defaults to ownerName if empty
+  contactRole: z.string().optional(), // owner, manager, marketing, etc.
   ownerPhone: z.string().min(1, "Contact phone is required").refine((val) => {
     // Accept various international phone formats
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
@@ -166,9 +167,10 @@ export default function SignupBusinessSimple() {
       password: accountData?.password || "",
       businessName: accountData?.name || "", // Business name from step 1
       businessDescription: "",
-      ownerName: "", // Owner/Manager in charge
-      contactName: "",
-      ownerPhone: "",
+      ownerName: (accountData as any)?.contactName || "", // Name of contact from step 1
+      contactName: (accountData as any)?.contactName || "",
+      contactRole: "",
+      ownerPhone: accountData?.phoneNumber || "",
       businessType: "",
       customBusinessType: "",
       businessPhone: "",
@@ -437,7 +439,33 @@ export default function SignupBusinessSimple() {
                         </FormItem>
                       )}
                     />
-                    
+                    <FormField
+                      control={form.control}
+                      name="contactRole"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Contact's Role</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value || undefined}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="e.g. Owner, Manager" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Owner">Owner</SelectItem>
+                              <SelectItem value="Manager">Manager</SelectItem>
+                              <SelectItem value="Marketing">Marketing</SelectItem>
+                              <SelectItem value="General Manager">General Manager</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormDescription>
+                            Role of the contact person for admin records
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField
                       control={form.control}
                       name="ownerPhone"
@@ -465,7 +493,7 @@ export default function SignupBusinessSimple() {
                             <Input placeholder="businessusername" {...field} disabled className="bg-gray-100 dark:bg-gray-800" />
                           </FormControl>
                           <FormDescription>
-                            From step 1 registration
+                            From Step 1 (User Name)
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -482,7 +510,7 @@ export default function SignupBusinessSimple() {
                             <Input placeholder="owner@example.com or owner+pizza@example.com" {...field} disabled className="bg-gray-100 dark:bg-gray-800" />
                           </FormControl>
                           <FormDescription>
-                            Owner's email for platform notifications. <br/>
+                            Contact's email from Step 1. <br/>
                             <span className="text-sm text-blue-600 dark:text-blue-400">
                               💡 <strong>Multiple Businesses?</strong> Use email variants like: owner+restaurant@example.com, owner+shop@example.com
                             </span>

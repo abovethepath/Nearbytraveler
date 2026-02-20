@@ -1142,7 +1142,8 @@ function Router() {
     }
 
     // Home screen message links go to /messages?user=123 — must match so Messages page renders
-    if (location === '/messages' || location.startsWith('/messages?')) {
+    // Support both /messages and /messages/ (trailing slash) so bottom nav never shows blank
+    if (location === '/messages' || location === '/messages/' || location.startsWith('/messages?')) {
       return <Messages />;
     }
 
@@ -1165,6 +1166,7 @@ function Router() {
         return <BusinessRegistration />;
       // Profile routes handled before authentication check to prevent redirect loops
       case '/messages':
+      case '/messages/':
         return <Messages />;
       case '/meetups':
         return <Meetups />;

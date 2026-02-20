@@ -4390,35 +4390,33 @@ Questions? Just reply to this message!
           if (process.env.NODE_ENV === 'development') console.log(`🗺️ BUSINESS SIGNUP GEOCODING QUEUED: Address "${processedData.businessAddress}" will be processed in background`);
         }
         
-        // Map business contact information
+        // Map business contact information (contact person phone for admin; phoneNumber can be business line)
+        if (processedData.ownerPhone) {
+          processedData.ownerPhone = processedData.ownerPhone;
+        }
         if (processedData.businessPhone) {
           processedData.phoneNumber = processedData.businessPhone;
         }
         
-        // Map business contact fields for admin database
+        // Contact person name (ownerName = primary contact; contactName = alternate contact name)
         if (processedData.ownerName) {
-          // ownerName now contains business name for contact database
           processedData.ownerName = processedData.ownerName;
         }
-        
         if (processedData.contactName) {
-          // contactName contains actual contact person name
           processedData.contactName = processedData.contactName;
         }
         
-        if (processedData.ownerPhone) {
-          // ownerPhone contains contact person phone
-          processedData.ownerPhone = processedData.ownerPhone;
-        }
-        
         if (processedData.email) {
-          // email contains contact email
           processedData.ownerEmail = processedData.email;
         }
         
-        // Map business name from form or account data
+        // Business name must stay distinct from contact person name
         if ((processedData as any).businessName) {
           processedData.businessName = (processedData as any).businessName;
+        }
+        // Ensure user.name is business name for business accounts (display), not contact person
+        if (processedData.userType === 'business' && (processedData as any).businessName) {
+          (processedData as any).name = (processedData as any).businessName;
         }
         
         // Map website URL from form data
@@ -5918,6 +5916,10 @@ Questions? Just reply to this message. Welcome aboard!
         userWithoutPassword.ownerPhone = userWithoutPassword.owner_phone;
         delete userWithoutPassword.owner_phone;
       }
+      if (userWithoutPassword.contact_role !== undefined) {
+        userWithoutPassword.contactRole = userWithoutPassword.contact_role;
+        delete userWithoutPassword.contact_role;
+      }
       
       // Note: Travel intent fields are already in camelCase from database
       
@@ -6444,8 +6446,32 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      // Remove password from response
+      // Remove password from response and map snake_case to camelCase for client (match GET /api/users/:id)
       const { password: _, ...userWithoutPassword } = updatedUser;
+      if (userWithoutPassword.business_name !== undefined) {
+        userWithoutPassword.businessName = userWithoutPassword.business_name;
+        delete userWithoutPassword.business_name;
+      }
+      if (userWithoutPassword.contact_name !== undefined) {
+        userWithoutPassword.contactName = userWithoutPassword.contact_name;
+        delete userWithoutPassword.contact_name;
+      }
+      if (userWithoutPassword.owner_name !== undefined) {
+        userWithoutPassword.ownerName = userWithoutPassword.owner_name;
+        delete userWithoutPassword.owner_name;
+      }
+      if (userWithoutPassword.owner_email !== undefined) {
+        userWithoutPassword.ownerEmail = userWithoutPassword.owner_email;
+        delete userWithoutPassword.owner_email;
+      }
+      if (userWithoutPassword.owner_phone !== undefined) {
+        userWithoutPassword.ownerPhone = userWithoutPassword.owner_phone;
+        delete userWithoutPassword.owner_phone;
+      }
+      if (userWithoutPassword.contact_role !== undefined) {
+        userWithoutPassword.contactRole = userWithoutPassword.contact_role;
+        delete userWithoutPassword.contact_role;
+      }
 
       if (process.env.NODE_ENV === 'development') console.log(`✓ User ${userId} updated successfully`);
       return res.json(userWithoutPassword);
@@ -20796,9 +20822,12 @@ Questions? Just reply to this message. Welcome aboard!
   // Generate referral code and QR code for user
   app.get('/api/user/qr-code', async (req: any, res) => {
     try {
-      const userId = req.headers['x-user-id'];
+      const rawId = req.headers['x-user-id'];
+      const userId = rawId != null && !isNaN(parseInt(String(rawId))) ? parseInt(String(rawId), 10) : null;
+      if (userId == null) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
       let user = await storage.getUser(userId);
-      
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -21296,19 +21325,42 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // GET /api/admin/businesses - All business accounts for admin
+  // GET /api/admin/businesses - All business accounts for admin (private admin section)
   app.get("/api/admin/businesses", async (req: any, res) => {
     try {
       const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
       if (userId !== 2) return res.status(403).json({ error: "Admin access required" });
-      const businesses = await db.select({
+      const rows = await db.select({
         id: users.id,
         businessName: users.businessName,
+        contactName: users.contactName,
+        ownerName: users.ownerName,
         email: users.email,
+        ownerEmail: users.ownerEmail,
+        phoneNumber: users.phoneNumber,
+        ownerPhone: users.ownerPhone,
+        contactRole: users.contactRole,
         status: users.subscriptionStatus,
         monthlyRevenue: sql<number>`0`,
         createdAt: users.createdAt,
+        trialEndDate: users.trialEndDate,
+        subscriptionEndDate: users.subscriptionEndDate,
       }).from(users).where(eq(users.userType, 'business')).orderBy(desc(users.createdAt));
+
+      // Map to clear admin labels: Business Name, Contact Person Name, Contact Email, Contact Phone, Contact Role
+      const businesses = rows.map((r: any) => ({
+        id: r.id,
+        businessName: r.businessName ?? null,
+        contactPersonName: r.contactName ?? r.ownerName ?? null,
+        contactEmail: r.ownerEmail ?? r.email ?? null,
+        contactPhone: r.ownerPhone ?? r.phoneNumber ?? null,
+        contactRole: r.contactRole ?? null,
+        status: r.status,
+        monthlyRevenue: r.monthlyRevenue,
+        createdAt: r.createdAt,
+        trialEndDate: r.trialEndDate,
+        nextBillingDate: r.subscriptionEndDate,
+      }));
 
       res.json(businesses);
     } catch (error: any) {

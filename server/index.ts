@@ -112,6 +112,19 @@ app.use((req, res, next) => {
   next();
 });
 
+// Request timeout for API routes - prevent hanging requests (e.g. Replit cold start / slow DB)
+const API_REQUEST_TIMEOUT_MS = 60000; // 60 seconds
+app.use("/api", (req, res, next) => {
+  const timer = setTimeout(() => {
+    if (res.headersSent) return;
+    console.warn(`⚠️ REQUEST TIMEOUT: ${req.method} ${req.path} after ${API_REQUEST_TIMEOUT_MS}ms`);
+    res.status(503).json({ message: "Request timed out. Please try again." });
+    // Do not call req.destroy() - it can crash the server if the handler is still running
+  }, API_REQUEST_TIMEOUT_MS);
+  res.on("finish", () => clearTimeout(timer));
+  next();
+});
+
 // Health check endpoint for monitoring
 app.get("/api/health", async (req, res) => {
   try {
@@ -852,20 +865,8 @@ app.use((req, res, next) => {
         log(`serving on port ${port}`);
         console.log(`🚀 Server successfully started on http://0.0.0.0:${port}`);
 
-        // Initialize travel status service on startup
-        console.log("🔄 Running initial travel status check...");
-        try {
-          await TravelStatusService.updateAllUserTravelStatuses();
-          console.log("✅ Initial travel status check completed");
-        } catch (travelError) {
-          console.error(
-            "⚠️ Travel status check failed (non-fatal):",
-            travelError,
-          );
-        }
-
-        // Set up hourly travel status check (every hour)
-        const TRAVEL_STATUS_CHECK_INTERVAL = 60 * 60 * 1000; // 1 hour in milliseconds
+        // Travel status: only run hourly. Skip on startup so new users and first requests aren't slowed by a big batch (up to 100 users with travel data).
+        const TRAVEL_STATUS_CHECK_INTERVAL = 60 * 60 * 1000; // 1 hour
         setInterval(async () => {
           console.log("🔄 Running scheduled travel status check...");
           try {
@@ -876,9 +877,7 @@ app.use((req, res, next) => {
           }
         }, TRAVEL_STATUS_CHECK_INTERVAL);
 
-        console.log(
-          "✅ Server started successfully with travel status monitoring enabled",
-        );
+        console.log("✅ Server started (travel status runs hourly)");
       } catch (error) {
         console.error("❌ Failed to initialize server services:", error);
         console.error(

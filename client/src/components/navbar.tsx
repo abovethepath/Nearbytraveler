@@ -28,6 +28,7 @@ import {
   Search,
   User,
   Sparkles,
+  Zap,
   Mail,
   Menu,
   X,
@@ -366,14 +367,18 @@ function Navbar() {
       ? `/profile/${directUser.id}`
       : "/profile";
 
-    // Business users get a completely different, simplified navbar
+    // Business users: Dashboard, Deals (deal panel), Admin (if admin), Search, Connect. No Plan trip or Create hangout.
     if (directUser?.userType === "business") {
-      return [
+      const items: { path: string | null; label: string; icon: string; action?: "search" }[] = [
         { path: "/business-dashboard", label: "Dashboard", icon: "📊" },
         { path: null, label: "Search", icon: "🔍", action: "search" as const },
         { path: "/deals", label: "Deals", icon: "🏷️" },
         { path: "/connect", label: "Connect", icon: "💝" },
       ];
+      if (directUser?.isAdmin) {
+        items.splice(2, 0, { path: "/admin-dashboard", label: "Admin", icon: "⚙️" });
+      }
+      return items;
     }
 
     return [
@@ -586,7 +591,7 @@ function Navbar() {
                     <>
                       <DropdownMenuItem
                         onClick={() => {
-                          setLocation("/events");
+                          setLocation("/business-dashboard?action=create-quick-deal");
                           setTimeout(
                             () =>
                               window.scrollTo({ top: 0, behavior: "smooth" }),
@@ -594,21 +599,8 @@ function Navbar() {
                           );
                         }}
                       >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        <span>My Events</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => {
-                          setLocation("/create-event");
-                          setTimeout(
-                            () =>
-                              window.scrollTo({ top: 0, behavior: "smooth" }),
-                            100,
-                          );
-                        }}
-                      >
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        <span>Create Event</span>
+                        <Zap className="mr-2 h-4 w-4" />
+                        <span>Create Quick Deal</span>
                       </DropdownMenuItem>
                     </>
                   )}

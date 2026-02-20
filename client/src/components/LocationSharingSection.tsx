@@ -117,7 +117,6 @@ export function LocationSharingSection({ user, queryClient, toast }: LocationSha
     setLocalLocationSharing(enabled);
     
     if (enabled) {
-      // Request location permission first
       if (!navigator.geolocation) {
         setLocalLocationSharing(false);
         toast({
@@ -128,54 +127,41 @@ export function LocationSharingSection({ user, queryClient, toast }: LocationSha
         return;
       }
       
-      // Get current location before enabling sharing
+      // Try to get position; if it fails (e.g. permission denied), still enable sharing so the toggle stays on
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
+        (position) => {
           const { latitude, longitude } = position.coords;
-          console.log('🔧 LocationSharingSection: Got location:', { latitude, longitude });
-          
           updateLocationSharingMutation.mutate({
-            locationSharingEnabled: enabled,
+            locationSharingEnabled: true,
             currentLatitude: latitude,
             currentLongitude: longitude
           });
-          
           toast({
             title: "Location sharing enabled",
             description: "Your location is now visible on city maps",
           });
         },
         (error) => {
-          console.error('🔧 LocationSharingSection: Location error:', error);
-          setLocalLocationSharing(false);
-          
-          let message = "Unable to get your location";
-          
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              message = "Location access denied. Please enable location permissions.";
-              break;
-            case error.POSITION_UNAVAILABLE:
-              message = "Location information unavailable.";
-              break;
-            case error.TIMEOUT:
-              message = "Location request timed out.";
-              break;
-          }
-          
-          toast({
-            title: "Location Error",
-            description: message,
-            variant: "destructive",
+          // Still save preference ON so user can toggle on without being blocked by permission/timeout
+          updateLocationSharingMutation.mutate({
+            locationSharingEnabled: true
           });
-        }
+          const message = error.code === error.PERMISSION_DENIED
+            ? "Location sharing is on. Enable browser location access to share your position on the map."
+            : error.code === error.TIMEOUT
+              ? "Location sharing is on. Use \"Update Current Location\" when ready to share your position."
+              : "Location sharing is on. Use \"Update Current Location\" when your position is available.";
+          toast({
+            title: "Location sharing enabled",
+            description: message,
+          });
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
       );
     } else {
-      // Disable location sharing
       updateLocationSharingMutation.mutate({
-        locationSharingEnabled: enabled
+        locationSharingEnabled: false
       });
-      
       toast({
         title: "Location sharing disabled",
         description: "Your location is no longer visible on city maps",

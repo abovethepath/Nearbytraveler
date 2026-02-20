@@ -46,7 +46,7 @@ export function MobileBottomNav() {
   const isBusinessUser = user?.userType === 'business';
 
   const navItems = isBusinessUser ? [
-    { icon: Home, label: "Dashboard", path: "/" },
+    { icon: Home, label: "Dashboard", path: "/business-dashboard" },
     { icon: Search, label: "Search", action: "search" },
     { icon: MessageSquare, label: "Messages", path: "/messages" },
     { icon: User, label: "Business", path: user ? `/profile/${user.username}` : "/profile" },
@@ -58,8 +58,8 @@ export function MobileBottomNav() {
   ];
   
   const actionMenuItems = isBusinessUser ? [
-    { label: "Create Deal", path: "/business-dashboard", icon: Calendar, color: "#f97316" },
-    { label: "Quick Deal", path: "/business-dashboard", icon: Zap, color: "#3b82f6" },
+    { label: "Create Deal", path: "/business-dashboard?action=create-deal", icon: Calendar, color: "#f97316" },
+    { label: "Quick Deal", path: "/business-dashboard?action=create-quick-deal", icon: Zap, color: "#3b82f6" },
   ] : [
     { label: "Create Event", path: "/create-event", icon: Calendar, color: "#f97316" },
     { label: "Plan Trip", path: "/plan-trip", icon: MapPin, color: "#3b82f6" },
@@ -306,7 +306,7 @@ export function MobileBottomNav() {
           </button>
 
           {navItems.slice(2).map((item, index) => {
-            const isActive = item.path ? (location === item.path || (item.path.startsWith('/profile') && location.startsWith('/profile'))) : false;
+            const isActive = item.path ? (location === item.path || location === item.path + '/' || (item.path === '/messages' && location.startsWith('/messages')) || (item.path === '/business-dashboard' && location.startsWith('/business-dashboard')) || (item.path.startsWith('/profile') && location.startsWith('/profile'))) : false;
             const Icon = item.icon;
             const isMessagesItem = item.label === "Messages";
             

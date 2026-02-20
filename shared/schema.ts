@@ -139,7 +139,8 @@ export const users = pgTable("users", {
   
   ownerName: text("owner_name"), // Name of business owner for admin contact
   contactName: text("contact_name"), // Name of primary contact person (may be different from owner)
-  
+  contactRole: text("contact_role"), // Contact's role: owner, manager, marketing, etc.
+
   isActive: boolean("is_active").default(true),
   isAdmin: boolean("is_admin").default(false),
   

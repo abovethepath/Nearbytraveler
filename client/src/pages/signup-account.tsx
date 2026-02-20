@@ -18,6 +18,7 @@ export default function SignupAccount() {
   
   const [formData, setFormData] = useState({
     name: "",
+    contactName: "", // Business only: name of contact person
     username: "",
     email: "",
     confirmEmail: "",
@@ -108,9 +109,10 @@ export default function SignupAccount() {
     setCurrentError(null);
     setIsLoading(true);
     
-    // Basic validation
-    if (!formData.name || !formData.username || !formData.email || !formData.phoneNumber || !formData.password) {
-      const errorMsg = "Please fill in all required fields.";
+    // Basic validation (business requires contactName too)
+    const missingBusiness = userType === 'business' && !formData.contactName?.trim();
+    if (!formData.name || !formData.username || !formData.email || !formData.phoneNumber || !formData.password || missingBusiness) {
+      const errorMsg = userType === 'business' ? "Please fill in Business Name, Name of Contact, Username, Contact Phone, Contact Email, and Password." : "Please fill in all required fields.";
       setCurrentError(errorMsg);
       toast({
         title: "Missing fields",
@@ -169,9 +171,9 @@ export default function SignupAccount() {
       return;
     }
 
-    // Store account data for profile completion
+    // Store account data for profile completion (business: name = business name, contactName = name of contact)
     const isNewToTown = sessionStorage.getItem('isNewToTown') === 'true';
-    const accountData = {
+    const accountData: Record<string, unknown> = {
       name: formData.name,
       username: formData.username,
       email: formData.email.toLowerCase().trim(),
@@ -182,6 +184,9 @@ export default function SignupAccount() {
       isNewToTown: isNewToTown,
       keepLoggedIn: keepLoggedIn
     };
+    if (userType === 'business' && formData.contactName?.trim()) {
+      accountData.contactName = formData.contactName.trim();
+    }
 
     sessionStorage.setItem('accountData', JSON.stringify(accountData));
 
@@ -209,10 +214,10 @@ export default function SignupAccount() {
     }
   };
 
-  // Check if all fields are properly filled and valid
-  // Confirm password: ONLY match check — no strength/complexity (those apply to password field only)
+  // Check if all fields are properly filled and valid (business also needs contactName)
   const isFormValid = 
     formData.name.trim() !== "" &&
+    (userType !== 'business' || formData.contactName?.trim() !== "") &&
     formData.username.trim() !== "" &&
     formData.username.length >= 6 &&
     formData.email.trim() !== "" &&
@@ -251,7 +256,7 @@ export default function SignupAccount() {
               Create Your Account
             </CardTitle>
             <CardDescription className="text-lg text-white/90 font-medium">
-              {getUserTypeDisplayName()} • Step 2 of 3
+              {getUserTypeDisplayName()} • {userType === 'business' ? 'Step 1 of 2 – Business name, contact & password' : 'Step 2 of 3'}
             </CardDescription>
           </CardHeader>
 
@@ -281,9 +286,26 @@ export default function SignupAccount() {
                 />
               </div>
 
+              {userType === 'business' && (
+                <div>
+                  <Label htmlFor="contactName" className="text-base font-medium text-gray-900 dark:text-white">
+                    Name of Contact *
+                  </Label>
+                  <Input
+                    id="contactName"
+                    type="text"
+                    value={formData.contactName}
+                    onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
+                    placeholder="Person managing this account"
+                    className="text-base py-3"
+                    required
+                  />
+                </div>
+              )}
+
               <div>
                 <Label htmlFor="username" className="text-base font-medium text-gray-900 dark:text-white">
-                  Username * (6-12 characters)
+                  {userType === 'business' ? 'User Name * (6-12 characters)' : 'Username * (6-12 characters)'}
                 </Label>
                 <Input
                   id="username"
@@ -308,7 +330,7 @@ export default function SignupAccount() {
 
               <div>
                 <Label htmlFor="email" className="text-base font-medium text-gray-900 dark:text-white">
-                  Email *
+                  {userType === 'business' ? "Contact's Email Address *" : 'Email *'}
                 </Label>
                 <Input
                   id="email"
@@ -338,7 +360,7 @@ export default function SignupAccount() {
 
               <div>
                 <Label htmlFor="phoneNumber" className="text-base font-medium text-gray-900 dark:text-white">
-                  Phone Number *
+                  {userType === 'business' ? "Contact's Phone Number *" : 'Phone Number *'}
                 </Label>
                 <Input
                   id="phoneNumber"

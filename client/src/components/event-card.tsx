@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, Instagram, Check } from "lucide-react";
+import { Calendar, MapPin, Users, Instagram, Check, Phone } from "lucide-react";
 import { useLocation } from "wouter";
 import type { Event } from "@shared/schema";
 import ConnectionCelebration from "./connection-celebration";
@@ -137,6 +137,21 @@ export default function EventCard({ event, compact = false, featured = false }: 
     }
   };
 
+  // Build full address for maps link and display
+  const addressParts = [
+    event.venueName,
+    event.street || event.location,
+    event.city,
+    event.state && event.state !== event.city ? event.state : null,
+    event.country,
+  ].filter(Boolean);
+  const fullAddress = addressParts.join(", ");
+  const mapsUrl = fullAddress
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`
+    : null;
+  const eventPhone = (event as { phone?: string }).phone;
+  const telUrl = eventPhone ? `tel:${eventPhone.replace(/\s/g, "")}` : null;
+
   if (compact) {
     return (
       <div 
@@ -153,12 +168,38 @@ export default function EventCard({ event, compact = false, featured = false }: 
               </span>
               <span className="flex items-start">
                 <MapPin className="w-3 h-3 inline mr-1 mt-0.5 flex-shrink-0" />
-                <span className="break-words">
-                  {event.venueName && <><strong>{event.venueName}</strong><br /></>}
-                  {event.street && <>{event.street}<br /></>}
-                  {event.city}{event.state && event.state !== event.city && `, ${event.state}`}{event.country && `, ${event.country}`}
-                </span>
+                {mapsUrl ? (
+                  <a
+                    href={mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="break-words underline underline-offset-1 hover:text-travel-blue dark:hover:text-blue-400"
+                  >
+                    {event.venueName && <><strong>{event.venueName}</strong><br /></>}
+                    {event.street && <>{event.street}<br /></>}
+                    {event.city}{event.state && event.state !== event.city && `, ${event.state}`}{event.country && `, ${event.country}`}
+                  </a>
+                ) : (
+                  <span className="break-words">
+                    {event.venueName && <><strong>{event.venueName}</strong><br /></>}
+                    {event.street && <>{event.street}<br /></>}
+                    {event.city}{event.state && event.state !== event.city && `, ${event.state}`}{event.country && `, ${event.country}`}
+                  </span>
+                )}
               </span>
+              {eventPhone && telUrl && (
+                <span className="flex items-center">
+                  <Phone className="w-3 h-3 inline mr-1 flex-shrink-0" />
+                  <a
+                    href={telUrl}
+                    onClick={(e) => e.stopPropagation()}
+                    className="break-words underline underline-offset-1 hover:text-travel-blue dark:hover:text-blue-400"
+                  >
+                    {eventPhone}
+                  </a>
+                </span>
+              )}
             </div>
           </div>
           {event.imageUrl && (
@@ -194,7 +235,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
         {/* Content */}
         <div className="p-4 md:p-5 space-y-3">
-          <h3 className="text-gray-900 dark:text-white text-lg font-semibold leading-snug line-clamp-2">
+          <h3 className="text-gray-900 dark:text-white text-lg font-semibold leading-snug line-clamp-2 break-words [overflow-wrap:anywhere]">
             {event.title}
           </h3>
 
@@ -210,21 +251,45 @@ export default function EventCard({ event, compact = false, featured = false }: 
             </p>
           )}
 
-          {/* Meta — wraps on small screens */}
+          {/* Meta — wraps on small screens; address wraps so "CA" etc. isn't cut off */}
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <Calendar className="h-4 w-4 shrink-0 text-travel-blue" />
-              <span className="truncate break-words [overflow-wrap:anywhere]">{formatEventDate(event.date)}</span>
+              <span className="break-words">{formatEventDate(event.date)}</span>
             </div>
-            <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-              <MapPin className="h-4 w-4 shrink-0 text-travel-blue" />
-              <span className="truncate break-words [overflow-wrap:anywhere]">
-                {event.venueName && `${event.venueName}, `}{event.street || event.location}{event.city && `, ${event.city}`}{event.state && event.state !== event.city && `, ${event.state}`}{event.country && `, ${event.country}`}
-              </span>
+            <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 flex-1">
+              <MapPin className="h-4 w-4 shrink-0 text-travel-blue mt-0.5 self-start" />
+              {mapsUrl ? (
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="break-words underline underline-offset-1 hover:text-travel-blue dark:hover:text-blue-400 text-left"
+                >
+                  {event.venueName && `${event.venueName}, `}{event.street || event.location}{event.city && `, ${event.city}`}{event.state && event.state !== event.city && `, ${event.state}`}{event.country && `, ${event.country}`}
+                </a>
+              ) : (
+                <span className="break-words">
+                  {event.venueName && `${event.venueName}, `}{event.street || event.location}{event.city && `, ${event.city}`}{event.state && event.state !== event.city && `, ${event.state}`}{event.country && `, ${event.country}`}
+                </span>
+              )}
             </div>
+            {eventPhone && telUrl && (
+              <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <Phone className="h-4 w-4 shrink-0 text-travel-blue" />
+                <a
+                  href={telUrl}
+                  onClick={(e) => e.stopPropagation()}
+                  className="break-words underline underline-offset-1 hover:text-travel-blue dark:hover:text-blue-400"
+                >
+                  {eventPhone}
+                </a>
+              </div>
+            )}
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <Users className="h-4 w-4 shrink-0" />
-              <span className="truncate break-words [overflow-wrap:anywhere]">{(event as any).participantCount ?? 0} attending</span>
+              <span className="break-words">{(event as any).participantCount ?? 0} attending</span>
             </div>
           </div>
 
