@@ -59,6 +59,9 @@ const businessSignupSchema = z.object({
   // Optional website - Accept any reasonable format
   businessWebsite: z.string().optional(),
   
+  // Member referral tracking
+  referredByUser: z.string().optional(),
+  
   // Location services for proximity features
   currentLatitude: z.number().optional(),
   currentLongitude: z.number().optional(),
@@ -183,6 +186,7 @@ export default function SignupBusinessSimple() {
       activities: [],
       customInterests: "",
       customActivities: "",
+      referredByUser: "",
     },
   });
 
@@ -247,6 +251,8 @@ export default function SignupBusinessSimple() {
       delete processedData.customBusinessType;
       delete processedData.businessWebsite; // Remove since we moved it to websiteUrl
 
+      const referralCode = sessionStorage.getItem('referralCode');
+      
       const response = await fetch(`${getApiBaseUrl()}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -254,7 +260,9 @@ export default function SignupBusinessSimple() {
           ...processedData,
           userType: "business",
           businessName: data.businessName || accountData?.name || "",
-          websiteUrl: (processedData as any).websiteUrl, // Ensure websiteUrl is included
+          websiteUrl: (processedData as any).websiteUrl,
+          ...(data.referredByUser?.trim() && { referredByUser: data.referredByUser.trim() }),
+          ...(referralCode && { referralCode }),
         })
       });
 
@@ -788,6 +796,33 @@ export default function SignupBusinessSimple() {
                       )}
                     />
                   </div>
+                </div>
+
+                {/* Member Referral */}
+                <div className="space-y-4 bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    Were you referred by a member?
+                  </h3>
+                  <FormField
+                    control={form.control}
+                    name="referredByUser"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Referrer's Username or Email (optional)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Enter their username or email" 
+                            {...field} 
+                            data-testid="input-referred-by"
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          If a Nearby Traveler member referred your business, enter their username or email so they get credit
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
                 {/* Terms agreement */}
