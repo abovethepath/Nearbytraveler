@@ -1,6 +1,6 @@
 // Load env vars FIRST (before db and other imports that need them)
 import dotenv from "dotenv";
-dotenv.config({ path: new URL("../.env", import.meta.url).pathname });
+dotenv.config();
 
 // Initialize Sentry error monitoring
 import "./instrument";
@@ -93,7 +93,6 @@ app.get("/health", (_req, res) => {
   res.status(200).send("ok");
 });
 app.get("/api/sentry-test", (_req, res) => res.json({ ok: true }));
-
 
 // Trust reverse proxy (Replit/Render/Railway) so secure cookies & IPs work
 app.set("trust proxy", 1);
@@ -362,9 +361,11 @@ app.get("/api/users-by-location/:city/:userType", async (req, res) => {
   try {
     const { city, userType } = req.params;
     const searchCity = decodeURIComponent(city);
-    
-    const { getMetroCities, getMetroAreaName } = await import("../shared/metro-areas");
-    
+
+    const { getMetroCities, getMetroAreaName } = await import(
+      "../shared/metro-areas"
+    );
+
     // Inline getExpandedCityList logic
     let expandedCities: string[];
     const metroCities = getMetroCities(searchCity);
@@ -374,37 +375,48 @@ app.get("/api/users-by-location/:city/:userType", async (req, res) => {
       const metroName = getMetroAreaName(searchCity);
       if (metroName !== searchCity) {
         const allMetroCities = getMetroCities(metroName);
-        expandedCities = [...new Set([searchCity, metroName, ...allMetroCities])];
+        expandedCities = [
+          ...new Set([searchCity, metroName, ...allMetroCities]),
+        ];
       } else {
         expandedCities = [searchCity];
       }
     }
-    console.log(`🌍 users-by-location [CRITICAL]: searching ${expandedCities.length} cities for "${searchCity}" (type: ${userType})`);
-    
-    const cityConditions = expandedCities.map(c =>
-      or(
-        ilike(users.hometownCity, `%${c}%`),
-        ilike(users.location, `%${c}%`)
-      )
+    console.log(
+      `🌍 users-by-location [CRITICAL]: searching ${expandedCities.length} cities for "${searchCity}" (type: ${userType})`,
     );
-    
+
+    const cityConditions = expandedCities.map((c) =>
+      or(ilike(users.hometownCity, `%${c}%`), ilike(users.location, `%${c}%`)),
+    );
+
     const conditions: any[] = [or(...cityConditions)];
-    
-    if (userType && userType !== 'all') {
+
+    if (userType && userType !== "all") {
       conditions.push(eq(users.userType, userType));
     }
-    
+
     conditions.push(eq(users.isActive, true));
-    
-    const results = await db.select().from(users).where(and(...conditions));
-    
+
+    const results = await db
+      .select()
+      .from(users)
+      .where(and(...conditions));
+
     const safeResults = results.map(({ password, ...rest }) => rest);
-    
-    console.log(`🌍 users-by-location [CRITICAL]: found ${safeResults.length} ${userType} users for "${searchCity}"`);
+
+    console.log(
+      `🌍 users-by-location [CRITICAL]: found ${safeResults.length} ${userType} users for "${searchCity}"`,
+    );
     res.json(safeResults);
   } catch (error: any) {
     console.error("Error in users-by-location endpoint:", error);
-    res.status(500).json({ message: "Failed to fetch users by location", error: error.message });
+    res
+      .status(500)
+      .json({
+        message: "Failed to fetch users by location",
+        error: error.message,
+      });
   }
 });
 
@@ -822,7 +834,9 @@ app.use((req, res, next) => {
   httpServerWithWebSocket.on("error", (error: any) => {
     console.error("Server error:", error);
     if (error.code === "EADDRINUSE") {
-      console.error(`Port ${port} is already in use. Will retry or wait for port to free up.`);
+      console.error(
+        `Port ${port} is already in use. Will retry or wait for port to free up.`,
+      );
     } else {
       console.error("Server error (non-fatal):", error.message);
     }
