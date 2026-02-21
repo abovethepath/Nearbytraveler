@@ -1,10 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform,
   ActivityIndicator, ScrollView, Dimensions, useColorScheme,
 } from 'react-native';
+
+const IS_IOS = Platform.OS === 'ios';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { useAuth } from '../services/AuthContext';
 
 const { width } = Dimensions.get('window');
@@ -22,7 +25,7 @@ const DARK = {
 };
 
 export default function LoginScreen({ navigation }) {
-  const { login } = useAuth();
+  const { login, appleLogin } = useAuth();
   const colorScheme = useColorScheme();
   const dark = colorScheme === 'dark';
 
@@ -32,7 +35,16 @@ export default function LoginScreen({ navigation }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [appleAuthAvailable, setAppleAuthAvailable] = useState(false);
   const passwordRef = useRef(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    AppleAuthentication.isAvailableAsync()
+      .then((available) => { if (!cancelled) setAppleAuthAvailable(available); })
+      .catch(() => { if (!cancelled) setAppleAuthAvailable(false); });
+    return () => { cancelled = true; };
+  }, []);
 
   const handleLogin = async () => {
     const cleanedIdentifier = (identifier || '').trim();
@@ -46,10 +58,38 @@ export default function LoginScreen({ navigation }) {
     setError('');
     setLoading(true);
     try {
-      // Pass identifier to AuthContext; it will authenticate using username or email.
       await login(cleanedIdentifier, cleanedPassword);
     } catch (e) {
       setError(e?.message || 'Invalid credentials. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      const fullName = credential.fullName
+        ? { givenName: credential.fullName.givenName, familyName: credential.fullName.familyName }
+        : undefined;
+      const result = await appleLogin({
+        identityToken: credential.identityToken,
+        email: credential.email || undefined,
+        fullName: fullName,
+      });
+      if (result.needsOnboarding) {
+        navigation.navigate('Register');
+      }
+    } catch (e) {
+      if (e?.code === 'ERR_REQUEST_CANCELED') return;
+      setError(e?.message || 'Apple sign-in failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -142,6 +182,29 @@ export default function LoginScreen({ navigation }) {
             <TouchableOpacity style={styles.forgotButton} onPress={() => navigation.navigate('ForgotPassword')}>
               <Text style={styles.forgotText}>Forgot password?</Text>
             </TouchableOpacity>
+
+            {IS_IOS && (
+              <View style={styles.appleSection}>
+                <View style={[styles.divider, dark && { backgroundColor: DARK.border }]} />
+                {appleAuthAvailable ? (
+                  <AppleAuthentication.AppleAuthenticationButton
+                    buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+                    buttonStyle={dark ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+                    cornerRadius={12}
+                    style={styles.appleButton}
+                    onPress={handleAppleSignIn}
+                  />
+                ) : (
+                  <TouchableOpacity
+                    style={[styles.appleFallbackButton, dark && styles.appleFallbackButtonDark]}
+                    onPress={handleAppleSignIn}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={[styles.appleFallbackText, dark && { color: '#111827' }]}>Sign in with Apple</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
           </View>
 
           <View style={styles.registerSection}>
@@ -182,6 +245,12 @@ const styles = StyleSheet.create({
   loginButtonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
   forgotButton: { alignItems: 'center', marginTop: 16 },
   forgotText: { color: '#F97316', fontSize: 14, fontWeight: '500' },
+  appleSection: { marginTop: 24, width: '100%' },
+  divider: { height: 1, marginTop: 8, marginBottom: 20, backgroundColor: '#E5E7EB' },
+  appleButton: { width: '100%', height: 50 },
+  appleFallbackButton: { width: '100%', height: 50, borderRadius: 12, backgroundColor: '#000', alignItems: 'center', justifyContent: 'center' },
+  appleFallbackButtonDark: { backgroundColor: '#fff' },
+  appleFallbackText: { color: '#fff', fontSize: 17, fontWeight: '600' },
   registerSection: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6 },
   registerPrompt: { color: '#6B7280', fontSize: 15 },
   registerLink: { color: '#F97316', fontSize: 15, fontWeight: '700' }

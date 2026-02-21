@@ -60,6 +60,21 @@ export function AuthProvider({ children }) {
     return result;
   };
 
+  /** Sign in with Apple (iOS). Returns { user } on success or { needsOnboarding: true } if new user must complete signup. */
+  const appleLogin = async (payload) => {
+    const result = await api.appleLogin(payload);
+    if (result.needsOnboarding) {
+      return result;
+    }
+    let fullUser = result.user ? await api.getUser() : null;
+    if (!fullUser?.id && result?.user) fullUser = result.user;
+    if (fullUser) {
+      setUser(fullUser);
+      await AsyncStorage.setItem('user', JSON.stringify(fullUser));
+    }
+    return result;
+  };
+
   const logout = async () => {
     await api.logout();
     await AsyncStorage.removeItem('user');
@@ -67,7 +82,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, setUser, checkAuth }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, appleLogin, setUser, checkAuth }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1243,10 +1243,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             });
           });
         }
-        return res.status(200).json({
+        const body: { ok: boolean; user: { id: number; username: string }; sessionId?: string } = {
           ok: true,
           user: { id: existingUser.id, username: existingUser.username },
-        });
+        };
+        const isMobile = req.get("X-Client") === "ReactNative";
+        if (isMobile && (req as any).sessionID) body.sessionId = (req as any).sessionID;
+        return res.status(200).json(body);
       }
       const name = appleFullName
         ? [appleFullName.givenName, appleFullName.familyName].filter(Boolean).join(" ").trim() || undefined
