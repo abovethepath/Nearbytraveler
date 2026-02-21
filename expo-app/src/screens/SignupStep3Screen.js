@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, Pressable, StyleSheet,
   SafeAreaView, KeyboardAvoidingView, Platform,
-  ActivityIndicator, ScrollView, useColorScheme, Linking,
+  ActivityIndicator, ScrollView, useColorScheme,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -396,7 +396,7 @@ export default function SignupStep3Screen({ navigation, route }) {
               By completing your profile, you agree to our{' '}
               <Text
                 style={{ color: '#3B82F6', fontWeight: '600' }}
-                onPress={() => Linking.openURL(`${BASE_URL}/terms`)}
+                onPress={() => navigation.navigate('TermsWebView', { url: `${BASE_URL}/terms`, title: 'Terms and Conditions' })}
               >
                 Terms and Conditions
               </Text>

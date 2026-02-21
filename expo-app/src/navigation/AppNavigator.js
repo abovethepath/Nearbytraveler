@@ -20,7 +20,7 @@ import SignupStep1Screen from '../screens/SignupStep1Screen';
 import SignupStep2Screen from '../screens/SignupStep2Screen';
 import SignupStep3Screen from '../screens/SignupStep3Screen';
 import SignupStep3BusinessScreen from '../screens/SignupStep3BusinessScreen';
-import { GenericWebViewScreen, BusinessSignupWebViewScreen } from '../screens/WebViewScreens';
+import { GenericWebViewScreen, BusinessSignupWebViewScreen, TermsWebViewScreen } from '../screens/WebViewScreens';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 
 const Tab = createBottomTabNavigator();
@@ -134,6 +134,7 @@ function AuthStack() {
       <Stack.Screen name="SignupStep3" component={SignupStep3Screen} />
       <Stack.Screen name="SignupStep3Business" component={SignupStep3BusinessScreen} />
       <Stack.Screen name="BusinessSignupWebView" component={BusinessSignupWebViewScreen} />
+      <Stack.Screen name="TermsWebView" component={TermsWebViewScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
     </Stack.Navigator>
   );

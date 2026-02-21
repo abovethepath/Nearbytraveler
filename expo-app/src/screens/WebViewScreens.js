@@ -818,6 +818,76 @@ export function SettingsScreen({ navigation }) {
   );
 }
 
+/**
+ * In-app Terms (or any single URL) screen for Auth flow.
+ * Opens the given URL in a WebView with a Back button so the user stays in the app
+ * and returns to sign-in/signup when they tap Back (instead of leaving the app).
+ */
+export function TermsWebViewScreen({ route, navigation }) {
+  const { url, title = 'Terms and Conditions' } = route?.params || {};
+  const colorScheme = useColorScheme();
+  const dark = colorScheme === 'dark';
+  const [loading, setLoading] = useState(true);
+  const effectiveUrl = url || `${BASE_URL}/terms`;
+  const source = { uri: effectiveUrl };
+
+  const onShouldStartLoadWithRequest = useCallback((req) => {
+    if (isExternalUrl(req?.url)) {
+      Linking.openURL(req.url).catch(() => {});
+      return false;
+    }
+    // When the terms page "Back" / "Back to Sign In" navigates to /auth, /, or /landing,
+    // stay in the app: pop the Terms screen and return to sign-up/sign-in instead of loading the site.
+    const reqUrl = (req?.url || '').trim();
+    if (reqUrl && reqUrl.includes(HOST)) {
+      try {
+        const pathname = (new URL(reqUrl).pathname || '/').replace(/\/$/, '') || '/';
+        if (pathname === '/' || pathname === '/auth' || pathname === '/landing' || pathname.indexOf('/landing') === 0) {
+          navigation.goBack();
+          return false;
+        }
+      } catch (_) {}
+    }
+    return true;
+  }, [navigation]);
+
+  const headerBg = dark ? DARK.bg : '#FFFFFF';
+  const headerBorder = dark ? DARK.border : '#F3F4F6';
+  const titleColor = dark ? DARK.text : '#111827';
+  const backColor = '#F97316';
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: headerBg }]}>
+      <View style={[styles.termsHeader, { borderBottomColor: headerBorder }]}>
+        <TouchableOpacity
+          style={styles.termsBackButton}
+          onPress={() => navigation.goBack()}
+          accessibilityLabel="Back to sign up"
+        >
+          <Text style={[styles.backChevron, { color: backColor }]}>&lsaquo;</Text>
+          <Text style={[styles.backText, { color: backColor }]}>Back</Text>
+        </TouchableOpacity>
+        <Text style={[styles.termsTitle, { color: titleColor }]} numberOfLines={1}>
+          {title}
+        </Text>
+        <View style={styles.termsBackButton} />
+      </View>
+      <WebView
+        source={source}
+        style={[styles.webview, dark && { backgroundColor: DARK.bg }]}
+        onLoadStart={() => setLoading(true)}
+        onLoadEnd={() => setLoading(false)}
+        onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+      />
+      {loading && (
+        <View style={[styles.loadingOverlay, { top: HEADER_HEIGHT, backgroundColor: dark ? 'rgba(28,28,30,0.9)' : 'rgba(255,255,255,0.8)' }]}>
+          <ActivityIndicator size="large" color="#F97316" />
+        </View>
+      )}
+    </SafeAreaView>
+  );
+}
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: '#F3F4F6', height: HEADER_HEIGHT },
@@ -845,4 +915,7 @@ const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1 },
   webview: { flex: 1, backgroundColor: '#FFFFFF' },
   loadingMessage: { marginTop: 12, fontSize: 16, color: '#6B7280' },
+  termsHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4, paddingHorizontal: 8, borderBottomWidth: 1, height: HEADER_HEIGHT },
+  termsBackButton: { minWidth: 72, flexShrink: 0, flexDirection: 'row', alignItems: 'center', paddingVertical: 4, paddingHorizontal: 8 },
+  termsTitle: { flex: 1, textAlign: 'center', fontSize: 17, fontWeight: '600', paddingHorizontal: 8 },
 });

@@ -388,7 +388,7 @@ export default function SignupStep3BusinessScreen({ navigation, route }) {
               By completing your profile, you agree to our{' '}
               <Text
                 style={{ color: '#3B82F6', fontWeight: '600' }}
-                onPress={() => Linking.openURL(`${BASE_URL}/terms`)}
+                onPress={() => navigation.navigate('TermsWebView', { url: `${BASE_URL}/terms`, title: 'Terms and Conditions' })}
               >
                 Terms and Conditions
               </Text>
