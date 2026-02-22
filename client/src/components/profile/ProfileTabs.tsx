@@ -2427,7 +2427,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      setShowChatroomList(true);
+                      openTab('chatrooms');
                     }}
                     style={{ position: 'relative', zIndex: 50, pointerEvents: 'auto' }}
                   >
