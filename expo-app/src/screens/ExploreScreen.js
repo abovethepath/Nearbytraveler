@@ -4,38 +4,53 @@ import { useAuth } from '../services/AuthContext';
 import api from '../services/api';
 import UserAvatar from '../components/UserAvatar';
 
-// Resolve display destination from API (destinationCity, travelDestination, travelPlans). Never return the string "null".
+// Normalize any value to a displayable string; treat null, "null", "-", "—", "" as invalid (return "").
+const normalizeText = (v) => {
+  if (v === null || v === undefined) return '';
+  const s = String(v).trim();
+  if (!s) return '';
+  const lower = s.toLowerCase();
+  if (lower === 'null' || lower === 'undefined' || s === '-' || s === '—') return '';
+  return s;
+};
+
+// Single source of truth: get destination from ALL possible API fields, normalized. Returns "" if none valid.
 function getTravelDestination(user) {
-  const dest = user.destinationCity || (user.destination_city && user.destination_city.trim()) || null;
-  if (dest && String(dest).toLowerCase() !== 'null') return String(dest).trim();
-  const td = user.travelDestination || user.travel_destination;
-  if (td && typeof td === 'string') {
-    const city = td.split(',')[0].trim();
-    if (city && city.toLowerCase() !== 'null') return city;
-  }
-  if (user.travelPlans && Array.isArray(user.travelPlans) && user.travelPlans.length > 0) {
-    const plan = user.travelPlans.find((p) => p.destinationCity || p.destination_city || p.destination);
-    if (plan) {
-      const c = plan.destinationCity || plan.destination_city || (plan.destination && String(plan.destination).split(',')[0].trim());
-      if (c && String(c).toLowerCase() !== 'null') return String(c).trim();
-    }
-  }
-  if (user.isCurrentlyTraveling || user.is_currently_traveling) return 'away';
-  return null;
+  const from = (v) => normalizeText(v);
+  const firstCity = (s) => {
+    if (!s || typeof s !== 'string') return '';
+    const city = s.split(',')[0].trim();
+    return from(city);
+  };
+  return (
+    from(user?.destinationCity) ||
+    from(user?.destination_city) ||
+    from(user?.travelCity) ||
+    from(user?.destination) ||
+    firstCity(user?.travelDestination) ||
+    firstCity(user?.travel_destination) ||
+    from(user?.travelingTo) ||
+    from(user?.currentDestinationCity) ||
+    (Array.isArray(user?.travelPlans) && user.travelPlans.length > 0 && (() => {
+      const plan = user.travelPlans.find((p) => p.destinationCity || p.destination_city || p.destination);
+      if (!plan) return '';
+      return from(plan.destinationCity) || from(plan.destination_city) || firstCity(plan.destination);
+    })()) ||
+    ''
+  );
 }
 
-function safeTravelLabel(destination, isTraveler) {
-  const valid = destination && destination !== 'away' && String(destination).toLowerCase() !== 'null';
-  if (valid) return `Traveling to ${destination}`;
-  return isTraveler ? 'Traveler' : 'Traveling';
+// Only place we build the travel line text. Never interpolate destination elsewhere.
+function getTravelLabel(user) {
+  const dest = getTravelDestination(user);
+  return dest ? `✈️ Traveling to ${dest}` : '✈️ Traveler';
 }
 
 const UserCard = ({ user, onPress, navigation }) => {
   const hometown = user.hometownCity || user.hometown_city || user.city || 'Unknown';
-  const destination = getTravelDestination(user);
   const isTraveler = user.userType === 'traveler' || user.user_type === 'traveler';
-  const showTravelLine = isTraveler || destination;
-  const travelLabel = safeTravelLabel(destination, isTraveler);
+  const dest = getTravelDestination(user);
+  const showTravelLine = user.userType !== 'business' && (isTraveler || dest);
 
   return (
     <TouchableOpacity style={styles.userCard} onPress={() => onPress(user)} activeOpacity={0.7}>
@@ -43,8 +58,8 @@ const UserCard = ({ user, onPress, navigation }) => {
       <View style={styles.userInfo}>
         <Text style={styles.userName} numberOfLines={1}>{user.fullName || user.username}</Text>
         <Text style={styles.userCity} numberOfLines={1}>&#x1F4CD; From {hometown}</Text>
-        {showTravelLine && user.userType !== 'business' && (
-          <Text style={styles.travelLine} numberOfLines={1}>✈️ {travelLabel}</Text>
+        {showTravelLine && (
+          <Text style={styles.travelLine} numberOfLines={1}>{getTravelLabel(user)}</Text>
         )}
         {user.bio ? <Text style={styles.userBio} numberOfLines={2}>{user.bio}</Text> : null}
         <View style={styles.tagRow}>
