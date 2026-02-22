@@ -131,12 +131,12 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
           return (
             <div
               key={b.id}
-              className="rounded-xl border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow cursor-pointer overflow-hidden"
+              className="rounded-xl border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow cursor-pointer overflow-hidden flex flex-col"
               onClick={() => setLocation(`/business/${b.id}`)}
             >
               {/* Large hero image */}
               {(b.logoUrl || b.profileImage) && (
-                <div className="w-full h-44 bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                <div className="w-full h-48 sm:h-52 bg-gray-100 dark:bg-gray-700 overflow-hidden">
                   <img
                     src={b.logoUrl || b.profileImage}
                     alt={title}
@@ -146,8 +146,8 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                 </div>
               )}
 
-              <div className="p-5">
-                <h3 className="font-bold text-gray-900 dark:text-white text-xl leading-tight">
+              <div className="p-4 sm:p-5">
+                <h3 className="font-bold text-gray-900 dark:text-white text-lg sm:text-xl leading-tight break-words">
                   {title}
                 </h3>
                 {category && (
