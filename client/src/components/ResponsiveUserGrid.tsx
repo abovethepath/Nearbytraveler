@@ -65,7 +65,7 @@ export default function ResponsiveUserGrid({
     }
     const hometown = user.hometownCity || '—';
     const travelDest = user.travelDestination;
-    const destination = user.destinationCity || (travelDest && typeof travelDest === 'string' ? travelDest.split(',')[0].trim() : null) || null;
+    const destination = user.isCurrentlyTraveling ? (user.destinationCity || (travelDest && typeof travelDest === 'string' ? travelDest.split(',')[0].trim() : null) || null) : null;
     return (
       <div className="text-center text-gray-600 dark:text-gray-400 font-medium min-w-0">
         <div className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</div>

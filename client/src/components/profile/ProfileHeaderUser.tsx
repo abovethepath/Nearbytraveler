@@ -176,18 +176,21 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black dark:text-gray-200 min-w-0">
                           <div className="flex-shrink-0 mt-0.5 flex flex-col items-center gap-0">
                             <MapPin className="hidden sm:block w-5 h-5 text-blue-600" />
-                            <Plane className="hidden sm:block w-5 h-5 text-orange-600 mt-1" />
+                            {getCurrentTravelDestination(travelPlans || []) && (
+                              <Plane className="hidden sm:block w-5 h-5 text-orange-600 mt-1" />
+                            )}
                           </div>
                           <div className="flex flex-col gap-0 min-w-0 flex-1">
                             <span className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</span>
                             <span className="truncate text-gray-700 dark:text-gray-300" title={hometown}>{hometown}</span>
-                            <span className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-0.5">Nearby Traveler</span>
                             {(() => {
                               const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                              return currentTravelPlan ? (
-                                <span className="truncate text-gray-700 dark:text-gray-300" title={currentTravelPlan}>{currentTravelPlan}</span>
-                              ) : (
-                                <span className="truncate text-gray-700 dark:text-gray-300">--</span>
+                              if (!currentTravelPlan) return null;
+                              return (
+                                <>
+                                  <span className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-0.5">Nearby Traveler</span>
+                                  <span className="truncate text-gray-700 dark:text-gray-300" title={currentTravelPlan}>{currentTravelPlan}</span>
+                                </>
                               );
                             })()}
                           </div>
