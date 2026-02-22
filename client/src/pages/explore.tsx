@@ -45,15 +45,41 @@ const ENERGY_LABELS: Record<string, string> = {
   low: "Chill", medium: "Moderate", high: "Active",
 };
 
+function resolveCurrentCity(user: any): { city: string; country: string } {
+  if (!user) return { city: "", country: "" };
+  const now = new Date();
+  const hasActiveTrip = user.isCurrentlyTraveling &&
+    user.destinationCity &&
+    (!user.travelEndDate || new Date(user.travelEndDate) >= now) &&
+    (!user.travelStartDate || new Date(user.travelStartDate) <= now);
+  if (hasActiveTrip) {
+    return {
+      city: user.destinationCity,
+      country: user.destinationCountry || user.hometownCountry || "United States",
+    };
+  }
+  if (user.travelDestination && user.isCurrentlyTraveling) {
+    return {
+      city: user.travelDestination,
+      country: user.destinationCountry || user.hometownCountry || "United States",
+    };
+  }
+  return {
+    city: user.hometownCity || "",
+    country: user.hometownCountry || "United States",
+  };
+}
+
 export default function Explore() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const storedUser = localStorage.getItem("user");
   const currentUser = storedUser ? JSON.parse(storedUser) : null;
-  const rawCity = currentUser?.hometownCity || currentUser?.travelDestination || "";
+  const resolved = resolveCurrentCity(currentUser);
+  const rawCity = resolved.city;
   const userCity = rawCity ? getMetroAreaName(rawCity) : "";
-  const userCountry = currentUser?.hometownCountry || currentUser?.country || "United States";
+  const userCountry = resolved.country;
 
   const [activeTab, setActiveTab] = useState("live");
   const [showCreateLiveShare, setShowCreateLiveShare] = useState(false);

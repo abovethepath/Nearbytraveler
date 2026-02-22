@@ -64,17 +64,45 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
     },
     refetchInterval: 30000, // Refresh every 30 seconds for real-time updates
   });
+  const resolvedLocation = (() => {
+    if (!actualUser) return { city: '', state: '', country: 'United States' };
+    const now = new Date();
+    const hasActiveTrip = actualUser.isCurrentlyTraveling &&
+      actualUser.destinationCity &&
+      (!actualUser.travelEndDate || new Date(actualUser.travelEndDate) >= now) &&
+      (!actualUser.travelStartDate || new Date(actualUser.travelStartDate) <= now);
+    if (hasActiveTrip) {
+      return {
+        city: actualUser.destinationCity || '',
+        state: actualUser.destinationState || '',
+        country: actualUser.destinationCountry || 'United States',
+      };
+    }
+    if (actualUser.travelDestination && actualUser.isCurrentlyTraveling) {
+      return {
+        city: actualUser.travelDestination || '',
+        state: '',
+        country: actualUser.destinationCountry || actualUser.hometownCountry || 'United States',
+      };
+    }
+    return {
+      city: actualUser.hometownCity || '',
+      state: actualUser.hometownState || '',
+      country: actualUser.hometownCountry || 'United States',
+    };
+  })();
+
   const [newMeetup, setNewMeetup] = useState<NewMeetup>({
     title: '',
     description: '',
     meetingPoint: '',
     streetAddress: '',
-    city: actualUser?.hometownCity || '',
-    state: actualUser?.hometownState || '',
-    country: actualUser?.hometownCountry || 'United States',
+    city: resolvedLocation.city,
+    state: resolvedLocation.state,
+    country: resolvedLocation.country,
     zipcode: '',
     responseTime: '24hours',
-    organizerNotes: '' // Contact info like "call me if lost"
+    organizerNotes: ''
   });
 
   const queryClient = useQueryClient();
@@ -199,9 +227,9 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
         description: '',
         meetingPoint: '',
         streetAddress: '',
-        city: actualUser?.hometownCity || '',
-        state: actualUser?.hometownState || '',
-        country: actualUser?.hometownCountry || 'United States',
+        city: resolvedLocation.city,
+        state: resolvedLocation.state,
+        country: resolvedLocation.country,
         zipcode: '',
         responseTime: '1hour',
         organizerNotes: ''
@@ -517,7 +545,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
 
               {useAiVoice ? (
                 <AIQuickCreateMeetup
-                  defaultCity={actualUser?.hometownCity || city?.split(',')[0] || ''}
+                  defaultCity={resolvedLocation.city || city?.split(',')[0] || ''}
                   autoStartListening={true}
                   onDraftReady={(draft) => {
                     setNewMeetup({
@@ -525,9 +553,9 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                       description: draft.description || '',
                       meetingPoint: draft.meetingPoint || '',
                       streetAddress: draft.streetAddress || '',
-                      city: draft.city || actualUser?.hometownCity || '',
-                      state: draft.state || actualUser?.hometownState || '',
-                      country: draft.country || actualUser?.hometownCountry || 'United States',
+                      city: draft.city || resolvedLocation.city,
+                      state: draft.state || resolvedLocation.state,
+                      country: draft.country || resolvedLocation.country,
                       zipcode: draft.zipcode || '',
                       responseTime: draft.responseTime || '2hours',
                       organizerNotes: draft.organizerNotes || ''

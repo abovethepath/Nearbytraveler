@@ -723,7 +723,14 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                 <CardContent>
                   <AIQuickCreateEvent
                     onDraftReady={handleAiDraftReady}
-                    defaultCity={currentUser.hometownCity || currentUser.destinationCity}
+                    defaultCity={(() => {
+                      const now = new Date();
+                      const hasActiveTrip = currentUser.isCurrentlyTraveling &&
+                        currentUser.destinationCity &&
+                        (!currentUser.travelEndDate || new Date(currentUser.travelEndDate) >= now) &&
+                        (!currentUser.travelStartDate || new Date(currentUser.travelStartDate) <= now);
+                      return hasActiveTrip ? currentUser.destinationCity : (currentUser.hometownCity || currentUser.destinationCity);
+                    })()}
                   />
                 </CardContent>
               )}
