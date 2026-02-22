@@ -1,5 +1,5 @@
 import { useRoute, useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import WhatsAppChat from "@/components/WhatsAppChat";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -53,6 +53,31 @@ export default function QuickMeetupChat() {
     retryDelay: 1000
   });
 
+  const queryClient = useQueryClient();
+  const joinMutation = useMutation({
+    mutationFn: async () => {
+      const headers = { 'x-user-id': String(user?.id || '') };
+      if (!user?.id) throw new Error('Not logged in');
+      const base = getApiBaseUrl();
+      const [joinMeetupRes, joinChatRes] = await Promise.all([
+        fetch(`${base}/api/quick-meets/${meetupId}/join`, { method: 'POST', headers }),
+        fetch(`${base}/api/quick-meetup-chatrooms/${chatroom!.id}/join`, { method: 'POST', headers })
+      ]);
+      if (!joinMeetupRes.ok) {
+        const err = await joinMeetupRes.json().catch(() => ({}));
+        throw new Error(err.message || `Join meetup failed: ${joinMeetupRes.status}`);
+      }
+      if (!joinChatRes.ok) {
+        const err = await joinChatRes.json().catch(() => ({}));
+        throw new Error(err.message || `Join chatroom failed: ${joinChatRes.status}`);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meets', meetupId] });
+      queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatroom?.id}/members`] });
+    }
+  });
+
   useEffect(() => {
     if (meetupError && error && failureCount >= 2) {
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -66,6 +91,12 @@ export default function QuickMeetupChat() {
       }
     }
   }, [meetupError, error, failureCount, toast, setLocation]);
+
+  useEffect(() => {
+    if (meetup && chatroom?.id && user?.id && !joinMutation.isSuccess && !joinMutation.isPending) {
+      joinMutation.mutate();
+    }
+  }, [meetup?.id, chatroom?.id, user?.id]);
 
   if (!meetupId) {
     return (
@@ -81,6 +112,22 @@ export default function QuickMeetupChat() {
 
   if (meetupLoading || chatroomLoading) {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading...</div>;
+  }
+
+  if (joinMutation.isPending) {
+    return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Joining hangout...</div>;
+  }
+
+  if (joinMutation.isError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
+        <p className="text-sm text-red-300">{joinMutation.error instanceof Error ? joinMutation.error.message : 'Failed to join'}</p>
+        <Button onClick={() => setLocation('/quick-meetups')} variant="outline">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Quick Meetups
+        </Button>
+      </div>
+    );
   }
 
   if (meetupError || !meetup) {
@@ -107,6 +154,10 @@ export default function QuickMeetupChat() {
         </Button>
       </div>
     );
+  }
+
+  if (!joinMutation.isSuccess) {
+    return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Joining hangout...</div>;
   }
 
   return (

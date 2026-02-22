@@ -104,32 +104,43 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
-  // Get destination cities from travel plans (all trips - we'll mark past ones)
+  // Get hometown from user profile (always include - users list things to do in both hometown AND destinations)
+  const hometownCity = userProfile?.hometownCity || (userProfile as any)?.hometown_city || "";
+
+  // Get destination cities from travel plans (all trips - we'll mark past ones) + hometown
   const travelDestinations = useMemo(() => {
-    if (!Array.isArray(travelPlans)) return [];
+    const dests: { cityName: string; tripId?: number; startDate?: string; endDate?: string; fullDestination?: string; isPast: boolean; isHometown?: boolean }[] = [];
     
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
+    // ALWAYS add hometown first - users need to list things in both hometown AND destinations
+    if (hometownCity && String(hometownCity).toLowerCase() !== 'null') {
+      dests.push({ cityName: String(hometownCity).trim(), isPast: false, isHometown: true });
+    }
     
-    return travelPlans
-      .map((plan: TravelPlan) => {
+    if (Array.isArray(travelPlans)) {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      
+      travelPlans.forEach((plan: TravelPlan) => {
+        const cityName = plan.destinationCity || plan.destination;
+        if (!cityName || String(cityName).toLowerCase() === 'null') return;
         const endDate = new Date(plan.endDate);
         endDate.setHours(23, 59, 59, 999);
         const isPast = endDate < now;
-        
-        return {
-          cityName: plan.destinationCity || plan.destination,
-          tripId: plan.id,
-          startDate: plan.startDate,
-          endDate: plan.endDate,
-          fullDestination: plan.destination,
-          isPast
-        };
-      })
-      .filter((dest, index, self) => 
-        index === self.findIndex(d => d.cityName === dest.cityName)
-      );
-  }, [travelPlans]);
+        if (!dests.some(d => d.cityName === cityName)) {
+          dests.push({
+            cityName,
+            tripId: plan.id,
+            startDate: plan.startDate,
+            endDate: plan.endDate,
+            fullDestination: plan.destination,
+            isPast
+          });
+        }
+      });
+    }
+    
+    return dests;
+  }, [travelPlans, hometownCity]);
 
   // Only use city-specific activities (no general profile interests)
   const allActivities = useMemo(() => {
@@ -344,14 +355,13 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       cities[consolidatedCity].events.push(event);
     });
 
-    // Also add cities from travel destinations (even if no activities/events yet)
+    // Also add cities from travel destinations + hometown (even if no activities/events yet)
     travelDestinations.forEach(dest => {
       const consolidatedCity = consolidateCity(dest.cityName);
       if (!cities[consolidatedCity]) {
-        cities[consolidatedCity] = { activities: [], events: [], travelPlan: dest };
+        cities[consolidatedCity] = { activities: [], events: [], travelPlan: dest.isHometown ? undefined : dest };
       } else {
-        // Add travel plan info to existing city
-        cities[consolidatedCity].travelPlan = dest;
+        if (!dest.isHometown) cities[consolidatedCity].travelPlan = dest;
       }
     });
 

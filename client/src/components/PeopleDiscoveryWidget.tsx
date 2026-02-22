@@ -315,12 +315,14 @@ export function PeopleDiscoveryWidget({
                   </p>
                 </div>
                 
-                {/* Under hometown: plane + destination (only when we have a valid destination) */}
-                {locationInfo.travelTo && locationInfo.travelTo !== 'away' && String(locationInfo.travelTo).toLowerCase() !== 'null' && (
+                {/* Under hometown: plane + destination (valid city) or "Currently traveling" when no city */}
+                {locationInfo.isTraveling && (
                   <div className="flex items-center justify-center gap-1">
                     <Plane className="w-4 h-4 text-blue-500 flex-shrink-0" aria-hidden />
                     <p className="text-blue-600 dark:text-blue-400 text-sm font-medium break-words px-1 text-center">
-                      Traveling to {locationInfo.travelTo}
+                      {locationInfo.travelTo && locationInfo.travelTo !== 'away' && String(locationInfo.travelTo).toLowerCase() !== 'null'
+                        ? `Traveling to ${locationInfo.travelTo}`
+                        : '✈️ Currently traveling'}
                     </p>
                   </div>
                 )}
@@ -421,11 +423,13 @@ export function PeopleDiscoveryWidget({
                   From {locationInfo.hometown}
                 </p>
               </div>
-{locationInfo.travelTo && locationInfo.travelTo !== 'away' && String(locationInfo.travelTo).toLowerCase() !== 'null' && (
+{locationInfo.isTraveling && (
                   <div className="flex items-center justify-center gap-1">
                     <Plane className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" aria-hidden />
                     <p className="text-xs text-blue-600 dark:text-blue-400 font-medium text-center break-words px-1">
-                      Traveling to {locationInfo.travelTo}
+                      {locationInfo.travelTo && locationInfo.travelTo !== 'away' && String(locationInfo.travelTo).toLowerCase() !== 'null'
+                        ? `Traveling to ${locationInfo.travelTo}`
+                        : '✈️ Currently traveling'}
                     </p>
                   </div>
                 )}

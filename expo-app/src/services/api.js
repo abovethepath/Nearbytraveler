@@ -172,10 +172,13 @@ const api = {
 
   /** One-time token for iOS Messages WebView bootstrap (requires existing session). */
   async getWebViewToken() {
+    await restoreSession();
     const url = `${BASE_URL}/api/auth/webview-token`;
+    const headers = { ...getHeaders() };
+    if (sessionCookie && !headers['Cookie']) headers['Cookie'] = sessionCookie;
     const opts = {
       method: 'GET',
-      headers: getHeaders(),
+      headers,
       credentials: 'include',
     };
     try {

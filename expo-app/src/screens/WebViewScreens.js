@@ -153,40 +153,6 @@ const MESSAGES_PAGE_INJECT_JS = `
 true;
 `;
 
-// Messages only: on-screen auth check badge (fetch with credentials) — proves whether WebView is authenticated.
-const MESSAGES_AUTH_DEBUG_BADGE_JS = `
-(function() {
-  function badge(text) {
-    try {
-      var el = document.getElementById('native-msg-debug');
-      if (!el) {
-        el = document.createElement('div');
-        el.id = 'native-msg-debug';
-        el.style.cssText = 'position:fixed;top:8px;left:8px;z-index:999999;background:rgba(0,0,0,0.75);color:#fff;padding:6px 8px;font-size:12px;border-radius:8px;max-width:92vw;';
-        if (document.body) document.body.appendChild(el);
-      }
-      el.textContent = text;
-    } catch(e) {}
-  }
-  function checkAuth() {
-    badge('Checking /api/auth/user...');
-    fetch('/api/auth/user', { credentials: 'include' })
-      .then(function(res) { badge('/api/auth/user: ' + res.status); })
-      .catch(function() { badge('Auth check failed'); });
-  }
-  if (document.body) {
-    setTimeout(checkAuth, 600);
-    setTimeout(checkAuth, 2000);
-  } else {
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(checkAuth, 600);
-      setTimeout(checkAuth, 2000);
-    });
-  }
-})();
-true;
-`;
-
 function pathWithNativeIOS(path) {
   const hasQuery = path.indexOf('?') !== -1;
   return `${path}${hasQuery ? '&' : '?'}native=ios`;
@@ -286,29 +252,45 @@ function WebViewWithChrome({ path, navigation }) {
     let resolved = false;
     const timeoutId = setTimeout(() => {
       if (resolved) return;
-      setMessagesBootstrapError((e) => (!e ? 'Bootstrap timeout' : e));
+      if (sessionCookie) {
+        resolved = true;
+        const fallbackUri = `${BASE_URL}${pathWithNativeIOS(safeMessagesRedirect)}`;
+        setMessagesBootstrapUri({ uri: fallbackUri, headers: { Cookie: sessionCookie } });
+        setMessagesBootstrapError(null);
+      } else {
+        setMessagesBootstrapError((e) => (!e ? 'Bootstrap timeout' : e));
+      }
       setMessagesBootstrapLoading(false);
     }, 10000);
     api.getWebViewToken()
       .then((token) => {
         resolved = true;
-        if (!token) {
+        if (token) {
+          const uri = `${BASE_URL}/api/auth/webview-login?token=${encodeURIComponent(token)}&redirect=${encodeURIComponent(safeMessagesRedirect)}`;
+          setMessagesBootstrapUri({ uri, headers: sessionCookie ? { Cookie: sessionCookie } : undefined });
+          setMessagesBootstrapError(null);
+        } else if (sessionCookie) {
+          const fallbackUri = `${BASE_URL}${pathWithNativeIOS(safeMessagesRedirect)}`;
+          setMessagesBootstrapUri({ uri: fallbackUri, headers: { Cookie: sessionCookie } });
+          setMessagesBootstrapError(null);
+        } else {
           setMessagesBootstrapError('No token (401 or empty)');
-          setMessagesBootstrapLoading(false);
-          return;
         }
-        const uri = `${BASE_URL}/api/auth/webview-login?token=${encodeURIComponent(token)}&redirect=${encodeURIComponent(safeMessagesRedirect)}`;
-        setMessagesBootstrapUri(uri);
-        setMessagesBootstrapError(null);
         setMessagesBootstrapLoading(false);
       })
       .catch((err) => {
         resolved = true;
-        setMessagesBootstrapError(err?.message || String(err) || 'Token request failed');
+        if (sessionCookie) {
+          const fallbackUri = `${BASE_URL}${pathWithNativeIOS(safeMessagesRedirect)}`;
+          setMessagesBootstrapUri({ uri: fallbackUri, headers: { Cookie: sessionCookie } });
+          setMessagesBootstrapError(null);
+        } else {
+          setMessagesBootstrapError(err?.message || String(err) || 'Token request failed');
+        }
         setMessagesBootstrapLoading(false);
       })
       .finally(() => clearTimeout(timeoutId));
-  }, [isMessagesPath, !!displayUser, safeMessagesRedirect]);
+  }, [isMessagesPath, !!displayUser, safeMessagesRedirect, sessionCookie]);
   const handleMessagesRetry = useCallback(() => {
     setMessagesBootstrapError(null);
     runMessagesBootstrap();
@@ -335,7 +317,7 @@ function WebViewWithChrome({ path, navigation }) {
   const authReady = !!displayUser;
   const messagesBootstrapReady = isMessagesPath && authReady && !!messagesBootstrapUri;
   const effectiveSource = isMessagesPath && authReady
-    ? (messagesBootstrapReady ? { uri: messagesBootstrapUri } : null)
+    ? (messagesBootstrapReady ? (typeof messagesBootstrapUri === 'object' && messagesBootstrapUri?.uri ? messagesBootstrapUri : { uri: messagesBootstrapUri }) : null)
     : ((shouldWaitForAuth && !authWaitExpired) ? null : source);
   const showAuthWaiting = shouldWaitForAuth && !authWaitExpired;
   const isMessagesWaiting = isMessagesPath && (!authReady || !messagesBootstrapUri) && !messagesBootstrapError;
@@ -615,11 +597,6 @@ function WebViewWithChrome({ path, navigation }) {
       </View>
       {isMessagesPath && messagesBootstrapError ? (
         <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg, padding: 24 }]}>
-          <View style={{ position: 'absolute', top: 8, left: 8, backgroundColor: 'rgba(0,0,0,0.75)', padding: 6, borderRadius: 8, maxWidth: '92%' }}>
-            <Text style={{ color: '#fff', fontSize: 11 }}>authReady: {authReady ? '1' : '0'}</Text>
-            <Text style={{ color: '#fff', fontSize: 11 }}>token: fail</Text>
-            <Text style={{ color: '#fff', fontSize: 11 }}>bootstrapUri: {messagesBootstrapUri ? 'set' : 'not'}</Text>
-          </View>
           <Text style={[styles.loadingMessage, { marginBottom: 8, fontWeight: '600' }, dark && { color: DARK.textMuted }]}>Messages failed to start</Text>
           <Text style={[styles.loadingMessage, { marginBottom: 16, textAlign: 'center' }, dark && { color: DARK.textMuted }]}>{messagesBootstrapError}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={handleMessagesRetry}>
@@ -630,13 +607,6 @@ function WebViewWithChrome({ path, navigation }) {
         <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg }]}>
           <ActivityIndicator size="large" color="#F97316" />
           <Text style={[styles.loadingMessage, dark && { color: DARK.textMuted }]}>Preparing Messages…</Text>
-          {isMessagesPath && (
-            <View style={{ position: 'absolute', top: 8, left: 8, backgroundColor: 'rgba(0,0,0,0.75)', padding: 6, borderRadius: 8, maxWidth: '92%' }}>
-              <Text style={{ color: '#fff', fontSize: 11 }}>authReady: {authReady ? '1' : '0'}</Text>
-              <Text style={{ color: '#fff', fontSize: 11 }}>token: {messagesBootstrapError ? 'fail' : (messagesBootstrapUri ? 'ok' : (messagesBootstrapLoading ? '…' : '—'))}</Text>
-              <Text style={{ color: '#fff', fontSize: 11 }}>bootstrapUri: {messagesBootstrapUri ? 'set' : 'not'}</Text>
-            </View>
-          )}
         </View>
       ) : showAuthWaiting ? (
         <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg }]}>
@@ -669,8 +639,7 @@ function WebViewWithChrome({ path, navigation }) {
   } catch(e) {}
 })();
 ` : '') +
-          (isMessagesPath ? MESSAGES_PAGE_INJECT_JS : '') +
-          (isMessagesPath ? MESSAGES_AUTH_DEBUG_BADGE_JS : '') + '\ntrue;'
+          (isMessagesPath ? MESSAGES_PAGE_INJECT_JS : '') + '\ntrue;'
         }
         onLoadStart={onLoadStart}
         onLoadEnd={onLoadEnd}

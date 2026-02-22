@@ -99,7 +99,7 @@ export default function ProfilePageResponsive() {
 
   const { data: availableNowIds = [] } = useQuery<number[]>({
     queryKey: ['/api/available-now/active-ids'],
-    refetchInterval: 30000,
+    refetchInterval: 15000, // Refetch so Available badge shows correctly for other users
   });
 
   const { data: cityInterests = [] } = useQuery<any[]>({

@@ -99,6 +99,7 @@ export default function ResponsiveUserGrid({
     const hometown = user.hometownCity || raw.hometown_city || '—';
     const travelingTo = getTravelDestination(user);
     const hasValidDestination = travelingTo && travelingTo !== 'away' && String(travelingTo).toLowerCase() !== 'null';
+    const isTravelingNoCity = travelingTo === 'away' || (!!(user.isCurrentlyTraveling ?? (raw as any).is_currently_traveling) && !hasValidDestination);
     return (
       <div className="text-center text-gray-600 dark:text-gray-400 font-medium min-w-0">
         <div className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</div>
@@ -106,10 +107,10 @@ export default function ResponsiveUserGrid({
           <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-gray-500 dark:text-gray-400" aria-hidden />
           <span className="truncate">From {hometown}</span>
         </div>
-        {hasValidDestination && (
-          <div className="flex items-center justify-center gap-1 mt-0.5 text-blue-600 dark:text-blue-400" title={`Traveling to ${travelingTo}`}>
+        {(hasValidDestination || isTravelingNoCity) && (
+          <div className="flex items-center justify-center gap-1 mt-0.5 text-blue-600 dark:text-blue-400" title={hasValidDestination ? `Traveling to ${travelingTo}` : 'Currently traveling'}>
             <Plane className="w-3.5 h-3.5 flex-shrink-0" aria-hidden />
-            <span className="truncate text-xs sm:text-sm font-semibold">Traveling to {travelingTo}</span>
+            <span className="truncate text-xs sm:text-sm font-semibold">{hasValidDestination ? `Traveling to ${travelingTo}` : '✈️ Currently traveling'}</span>
           </div>
         )}
       </div>

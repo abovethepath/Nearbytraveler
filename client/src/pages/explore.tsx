@@ -51,12 +51,24 @@ export default function Explore() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const storedUser = localStorage.getItem("user");
-  const currentUser = storedUser ? JSON.parse(storedUser) : null;
-  // Resolved city: active trip → current location → home (never stale/hardcoded)
+  const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+  const userId = parsedUser?.id;
+  const { data: freshUser } = useQuery({
+    queryKey: [`/api/users/${userId}`],
+    enabled: !!userId,
+    staleTime: 60000,
+  });
+  const currentUser = freshUser || parsedUser;
+  // Resolved city: active trip → destination when traveling → current location → home (never show hometown when traveling)
   const activeTrip = getActiveTripPlan(currentUser?.travelPlans ?? []);
   const currentLocationCity = (currentUser as any)?.currentLocation?.city ?? (currentUser as any)?.currentCity;
+  const destCity = (currentUser as any)?.destinationCity ?? (currentUser as any)?.destination_city;
+  const travelDest = currentUser?.travelDestination && String(currentUser.travelDestination).split(",")[0]?.trim();
+  const isTraveling = !!(activeTrip || (currentUser as any)?.isCurrentlyTraveling || (currentUser as any)?.is_currently_traveling || destCity || (travelDest && String(travelDest).toLowerCase() !== 'null'));
   const rawCity =
     activeTrip?.destinationCity
+    || (isTraveling && destCity && String(destCity).toLowerCase() !== 'null' ? String(destCity).trim() : null)
+    || (isTraveling && travelDest ? travelDest : null)
     || currentLocationCity
     || currentUser?.hometownCity
     || (currentUser?.travelDestination && String(currentUser.travelDestination).split(",")[0]?.trim())
@@ -415,7 +427,7 @@ export default function Explore() {
               <Dialog open={showCreateLiveShare} onOpenChange={setShowCreateLiveShare}>
                 <DialogTrigger asChild>
                   <Button className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white h-14 text-lg">
-                    <MapPin className="w-5 h-5 mr-2" /> I'm here in {userCity || "my city"} right now
+                    <MapPin className="w-5 h-5 mr-2" /> {userCity ? (isTraveling ? `I'm in ${userCity}` : `I'm here in ${userCity}`) : "Share my location"} right now
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="bg-white dark:bg-gray-900">
@@ -1049,6 +1061,16 @@ export default function Explore() {
                     if (active?.destinationCity) travelDest = String(active.destinationCity).trim();
                     else if (active?.destination_city) travelDest = String(active.destination_city).trim();
                     else if (active?.destination) travelDest = String(active.destination).split(',')[0].trim();
+                    // No active trip by date: use next/any plan's destination so we still show "Traveling to X"
+                    if (!travelDest || travelDest.toLowerCase() === 'null') {
+                      for (const p of plans) {
+                        const city = p?.destinationCity ?? p?.destination_city ?? (p?.destination ? String(p.destination).split(',')[0].trim() : null);
+                        if (city && String(city).toLowerCase() !== 'null') {
+                          travelDest = String(city).trim();
+                          break;
+                        }
+                      }
+                    }
                   }
                   if (!travelDest && (user.destinationCity || (user as any).destination_city)) {
                     const d = user.destinationCity ?? (user as any).destination_city;

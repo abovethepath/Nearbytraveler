@@ -141,29 +141,38 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium min-w-0">
-                      <div className="flex-shrink-0 mt-0.5 flex flex-col items-center gap-0">
-                        <MapPin className="hidden sm:block w-5 h-5 text-blue-600" />
-                        <Plane className="hidden sm:block w-5 h-5 text-orange-600 mt-1" />
+                    <div
+                      className="rounded-[14px] px-[14px] py-3 min-w-0"
+                      style={{
+                        background: 'rgba(255,255,255,0.78)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)',
+                      }}
+                    >
+                      <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium min-w-0">
+                        <div className="flex-shrink-0 mt-0.5 flex flex-col items-center gap-0">
+                          <MapPin className="hidden sm:block w-5 h-5 text-blue-600" />
+                          <Plane className="hidden sm:block w-5 h-5 text-orange-600 mt-1" />
+                        </div>
+                        <div className="flex flex-col gap-0 min-w-0 flex-1" style={{ maxWidth: '100%' }}>
+                          <span className="text-sm sm:text-base font-extrabold whitespace-nowrap" style={{ color: '#F97316' }}>Nearby Local</span>
+                          <span className="whitespace-normal break-words line-clamp-2" style={{ color: '#111827', WebkitLineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }} title={hometown}>{hometown}</span>
+                          <span className="text-sm sm:text-base font-extrabold whitespace-nowrap mt-0.5" style={{ color: '#2563EB' }}>Nearby Traveler</span>
+                          {(() => {
+                            const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+                            return currentTravelPlan ? (
+                              <span className="whitespace-normal break-words line-clamp-2" style={{ color: '#111827', WebkitLineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }} title={currentTravelPlan}>{currentTravelPlan}</span>
+                            ) : (
+                              <span style={{ color: '#111827' }}>—</span>
+                            );
+                          })()}
+                        </div>
+                        {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 flex-shrink-0 self-start">
+                            New to Town
+                          </span>
+                        )}
                       </div>
-                      <div className="flex flex-col gap-0 min-w-0 flex-1" style={{ maxWidth: '100%' }}>
-                        <span className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</span>
-                        <span className="text-gray-900 dark:text-gray-100 whitespace-normal break-words line-clamp-2" style={{ WebkitLineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }} title={hometown}>{hometown}</span>
-                        <span className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-0.5">Nearby Traveler</span>
-                        {(() => {
-                          const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                          return currentTravelPlan ? (
-                            <span className="text-gray-900 dark:text-gray-100 whitespace-normal break-words line-clamp-2" style={{ WebkitLineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }} title={currentTravelPlan}>{currentTravelPlan}</span>
-                          ) : (
-                            <span className="text-gray-900 dark:text-gray-100">—</span>
-                          );
-                        })()}
-                      </div>
-                      {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 flex-shrink-0 self-start">
-                          New to Town
-                        </span>
-                      )}
                     </div>
                     {(() => {
                       const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);

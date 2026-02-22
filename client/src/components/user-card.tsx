@@ -128,9 +128,10 @@ export default function UserCard({
 
   const travelCity = getTravelCity();
   const displayCity = user.hometownCity || u.hometown_city || 'Unknown';
-  // Only show travel line when we have a valid destination - no placeholder text, no space taken
+  // Show travel badge: valid city → "Traveling to X", traveling but no city → "Currently traveling", else nothing
   const hasValidDestination = travelCity && travelCity !== 'away' && String(travelCity).toLowerCase() !== 'null';
-  const travelingLabel = hasValidDestination ? `Traveling to ${travelCity}` : '';
+  const isTravelingNoCity = travelCity === 'away' || (!!(user.isCurrentlyTraveling ?? u.is_currently_traveling) && !hasValidDestination);
+  const travelingLabel = hasValidDestination ? `Traveling to ${travelCity}` : (isTravelingNoCity ? 'Currently traveling' : '');
   const displayName = user.userType === 'business' && user.businessName 
     ? user.businessName 
     : `@${user.username}`;
@@ -178,11 +179,11 @@ export default function UserCard({
           </div>
         )}
         
-        {/* Travel badge on photo - only when we have a valid destination */}
-        {hasValidDestination && user.userType !== 'business' && (
+        {/* Travel badge on photo - valid destination or "Currently traveling" when no city */}
+        {(hasValidDestination || isTravelingNoCity) && user.userType !== 'business' && (
           <div className="absolute top-1.5 left-1.5 z-10 flex items-center gap-0.5 bg-blue-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap max-w-[85%]">
             <Plane className="w-3 h-3 flex-shrink-0" aria-hidden />
-            <span className="truncate">{travelCity}</span>
+            <span className="truncate">{hasValidDestination ? travelCity : 'Traveling'}</span>
           </div>
         )}
         

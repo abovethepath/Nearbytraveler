@@ -15877,17 +15877,24 @@ Questions? Just reply to this message. Welcome aboard!
   // JOIN quick meet endpoint
   app.post("/api/quick-meets/:id/join", async (req, res) => {
     try {
-      const meetupId = parseInt(req.params.id || '0');
+      const rawId = req.params.id || '0';
+      const meetupId = parseInt(rawId, 10);
       const userId = req.headers['x-user-id'];
       
       if (!userId) {
         return res.status(401).json({ message: "User ID required" });
       }
 
-      if (process.env.NODE_ENV === 'development') console.log(`🤝 USER ${userId} JOINING QUICK MEET ${meetupId}`);
+      if (isNaN(meetupId) || meetupId <= 0) {
+        if (process.env.NODE_ENV === 'development') console.log(`❌ JOIN 400: Invalid meetupId raw=${rawId} parsed=${meetupId}`);
+        return res.status(400).json({ message: "Invalid quick meet ID", code: "INVALID_ID" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🤝 USER ${userId} JOINING QUICK MEET ${meetupId} (raw: ${rawId})`);
 
       const meetup = await storage.getQuickMeetup(meetupId);
       if (!meetup) {
+        if (process.env.NODE_ENV === 'development') console.log(`❌ JOIN 404: Meetup ${meetupId} not found in DB`);
         return res.status(404).json({ message: "Quick meet not found", code: "NOT_FOUND" });
       }
 
@@ -22118,6 +22125,18 @@ Questions? Just reply to this message. Welcome aboard!
           gte(availableNow.expiresAt, now)
         ));
       let activeIds = results.map(r => r.userId);
+      // Ensure current user is included when they're available (single source of truth for badge display)
+      if (currentUserId > 0 && !activeIds.includes(currentUserId)) {
+        const mySession = await db.select({ userId: availableNow.userId })
+          .from(availableNow)
+          .where(and(
+            eq(availableNow.userId, currentUserId),
+            eq(availableNow.isAvailable, true),
+            gte(availableNow.expiresAt, now)
+          ))
+          .limit(1);
+        if (mySession.length > 0) activeIds = [currentUserId, ...activeIds];
+      }
       
       if (currentUserId > 0) {
         const hiddenFromMe = await db.select({ userId: hiddenFromUsers.userId })
