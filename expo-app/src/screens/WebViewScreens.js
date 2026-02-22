@@ -35,19 +35,49 @@ const NATIVE_INJECT_JS = `
     }
     var s = document.createElement('style');
     s.id = 'native-ios-css';
-    s.textContent = ':root { --native-tabbar-height: 88px; --native-bottom-inset: 88px; } .mobile-top-nav, .mobile-bottom-nav, .desktop-navbar, [data-testid="button-mobile-menu"], .ios-nav-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; } body[data-native-ios] .mobile-top-nav, body[data-native-ios] .mobile-bottom-nav, body[data-native-ios] .desktop-navbar { display: none !important; }';
+    s.textContent = ':root { --native-tabbar-height: 88px; --native-bottom-inset: 88px; --native-header-height: 56px; } .mobile-top-nav, .mobile-bottom-nav, .desktop-navbar, [data-testid="button-mobile-menu"], .ios-nav-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; } body[data-native-ios] .mobile-top-nav, body[data-native-ios] .mobile-bottom-nav, body[data-native-ios] .desktop-navbar { display: none !important; }'
+      + ' body.native-ios-app div.bg-gradient-to-r[style*="100vw"], body.native-ios-app div[style*="100vw"][style*="translateX(-50%)"] { width: 100% !important; max-width: 100% !important; left: 0 !important; transform: none !important; overflow-x: clip !important; box-sizing: border-box !important; min-height: 220px !important; }'
+      + ' body.native-ios-app .flex-1.min-w-0.overflow-hidden { min-width: 0 !important; }'
+      + ' body.native-ios-app div.flex.flex-col.gap-0.min-w-0.flex-1 { min-width: 0 !important; overflow: hidden !important; }'
+      + ' body.native-ios-app div.flex.items-start.gap-1\\.5.min-w-0 { flex-wrap: wrap !important; min-width: 0 !important; }'
+      + ' body.native-ios-app div.flex.items-start.gap-1\\.5.min-w-0 > span.flex-shrink-0.self-start { flex-basis: 100% !important; margin-top: 6px !important; }';
     if (document.head) document.head.appendChild(s);
     else document.addEventListener('DOMContentLoaded', function() { document.head.appendChild(s); });
     function setBodyAttr() {
       if (document.body) {
         document.body.setAttribute('data-native-ios', 'true');
         document.body.classList.add('native-ios-app');
+        document.body.setAttribute('data-native-hero-patch', 'ok');
       }
     }
     setBodyAttr();
     document.addEventListener('DOMContentLoaded', setBodyAttr);
     var mo = new MutationObserver(function() { if (document.body) { setBodyAttr(); mo.disconnect(); } });
     mo.observe(document.documentElement, { childList: true });
+    function hideNearbyTravelerWhenEmpty() {
+      var spans = document.querySelectorAll('body.native-ios-app span');
+      for (var i = 0; i < spans.length; i++) {
+        var span = spans[i];
+        if ((span.textContent || '').trim() !== 'Nearby Traveler') continue;
+        var destSpan = span.nextElementSibling;
+        if (!destSpan) continue;
+        var dest = (destSpan.textContent || '').trim();
+        if (dest === '' || dest === '—' || dest === '--' || dest.toLowerCase() === 'null') {
+          span.style.display = 'none';
+          destSpan.style.display = 'none';
+        }
+      }
+    }
+    function runHeroPatch() {
+      hideNearbyTravelerWhenEmpty();
+      if (document.body) document.body.setAttribute('data-native-hero-patch', 'ok');
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', runHeroPatch);
+    } else {
+      runHeroPatch();
+    }
+    setTimeout(runHeroPatch, 800);
   })();
   true;
 `;
@@ -118,11 +148,12 @@ function WebViewWithChrome({ path, navigation }) {
   const wantsAuth = isMessagesPath || isChatroomPath || isEventChatPath;
   const shouldWaitForAuth = wantsAuth && !displayUser;
   const [authWaitExpired, setAuthWaitExpired] = useState(false);
+  const authWaitMs = isMessagesPath ? 4500 : 2500;
   useEffect(() => {
     if (!wantsAuth || displayUser) return;
-    const t = setTimeout(() => setAuthWaitExpired(true), 2500);
+    const t = setTimeout(() => setAuthWaitExpired(true), authWaitMs);
     return () => clearTimeout(t);
-  }, [wantsAuth, displayUser]);
+  }, [wantsAuth, displayUser, authWaitMs]);
   useEffect(() => {
     if (displayUser) setAuthWaitExpired(false);
   }, [displayUser]);

@@ -4,10 +4,10 @@ import { useAuth } from '../services/AuthContext';
 import api from '../services/api';
 import UserAvatar from '../components/UserAvatar';
 
-// Resolve display destination from API (destinationCity, travelDestination, travelPlans)
+// Resolve display destination from API (destinationCity, travelDestination, travelPlans). Never return the string "null".
 function getTravelDestination(user) {
   const dest = user.destinationCity || (user.destination_city && user.destination_city.trim()) || null;
-  if (dest && dest.toLowerCase() !== 'null') return dest.trim();
+  if (dest && String(dest).toLowerCase() !== 'null') return String(dest).trim();
   const td = user.travelDestination || user.travel_destination;
   if (td && typeof td === 'string') {
     const city = td.split(',')[0].trim();
@@ -24,12 +24,18 @@ function getTravelDestination(user) {
   return null;
 }
 
+function safeTravelLabel(destination, isTraveler) {
+  const valid = destination && destination !== 'away' && String(destination).toLowerCase() !== 'null';
+  if (valid) return `Traveling to ${destination}`;
+  return isTraveler ? 'Traveler' : 'Traveling';
+}
+
 const UserCard = ({ user, onPress, navigation }) => {
   const hometown = user.hometownCity || user.hometown_city || user.city || 'Unknown';
   const destination = getTravelDestination(user);
   const isTraveler = user.userType === 'traveler' || user.user_type === 'traveler';
   const showTravelLine = isTraveler || destination;
-  const travelLabel = destination && destination !== 'away' ? `Traveling to ${destination}` : (isTraveler ? 'Traveler' : 'Traveling');
+  const travelLabel = safeTravelLabel(destination, isTraveler);
 
   return (
     <TouchableOpacity style={styles.userCard} onPress={() => onPress(user)} activeOpacity={0.7}>
