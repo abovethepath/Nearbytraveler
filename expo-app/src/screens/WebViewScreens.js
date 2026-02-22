@@ -37,9 +37,6 @@ const NATIVE_INJECT_JS = `
     s.id = 'native-ios-css';
     s.textContent = ':root { --native-tabbar-height: 88px; --native-bottom-inset: 88px; --native-header-height: 56px; } .mobile-top-nav, .mobile-bottom-nav, .desktop-navbar, [data-testid="button-mobile-menu"], .ios-nav-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; } body[data-native-ios] .mobile-top-nav, body[data-native-ios] .mobile-bottom-nav, body[data-native-ios] .desktop-navbar { display: none !important; }'
       + ' body.native-ios-app div.bg-gradient-to-r[style*="100vw"], body.native-ios-app div[style*="100vw"][style*="translateX(-50%)"] { width: 100% !important; max-width: 100% !important; left: 0 !important; transform: none !important; overflow-x: clip !important; box-sizing: border-box !important; min-height: 220px !important; }'
-      + ' body.native-ios-app .flex-1.min-w-0.overflow-hidden { min-width: 0 !important; overflow: visible !important; }'
-      + ' body.native-ios-app div.flex.flex-col.gap-0.min-w-0.flex-1 { min-width: 0 !important; overflow: visible !important; }'
-      + ' body.native-ios-app div.flex.flex-col.gap-0.min-w-0.flex-1 > * { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }'
       + ' body.native-ios-app div.flex.items-start.gap-1\\.5.min-w-0 { flex-wrap: wrap !important; min-width: 0 !important; gap: 10px !important; row-gap: 8px !important; }'
       + ' body.native-ios-app div.flex.items-start.gap-1\\.5.min-w-0 > span.flex-shrink-0.self-start { flex-basis: 100% !important; margin-top: 8px !important; align-self: flex-start !important; }';
     if (document.head) document.head.appendChild(s);
@@ -69,20 +66,26 @@ const NATIVE_INJECT_JS = `
         }
       }
     }
-    function abbreviateUSA() {
-      var candidates = document.querySelectorAll('body.native-ios-app span, body.native-ios-app div, body.native-ios-app p');
-      for (var i = 0; i < candidates.length; i++) {
-        var el = candidates[i];
-        var t = (el.textContent || '').trim();
-        if (!t) continue;
+    function patchHeroHometownLine() {
+      var spans = document.querySelectorAll('body.native-ios-app span');
+      for (var i = 0; i < spans.length; i++) {
+        if ((spans[i].textContent || '').trim() !== 'Nearby Local') continue;
+        var hometownEl = spans[i].nextElementSibling;
+        if (!hometownEl || !(hometownEl.textContent || '').trim()) continue;
+        hometownEl.style.whiteSpace = 'normal';
+        hometownEl.style.overflow = 'visible';
+        hometownEl.style.textOverflow = 'clip';
+        hometownEl.style.maxWidth = '100%';
+        var t = hometownEl.textContent || '';
         if (t.indexOf('United States') !== -1) {
-          el.textContent = t.replace(/\\bUnited States\\b/g, 'USA');
+          hometownEl.textContent = t.replace(/\\bUnited States\\b/g, 'USA');
         }
+        break;
       }
     }
     function runHeroPatch() {
       hideNearbyTravelerWhenEmpty();
-      abbreviateUSA();
+      patchHeroHometownLine();
       if (document.body) document.body.setAttribute('data-native-hero-patch', 'ok');
     }
     if (document.readyState === 'loading') {
@@ -225,6 +228,7 @@ function WebViewWithChrome({ path, navigation }) {
   const webViewRef = useRef(null);
   const displayUser = authUser || user;
   const source = webViewSource(path);
+  const [messagesBootstrapUri, setMessagesBootstrapUri] = useState(null);
 
   // Wait for auth on Messages and chat paths so the page never loads without user (avoids blank / "Please log in")
   const isMessagesPath = path === '/messages' || (path && path.startsWith('/messages'));
@@ -242,10 +246,29 @@ function WebViewWithChrome({ path, navigation }) {
   useEffect(() => {
     if (displayUser) setAuthWaitExpired(false);
   }, [displayUser]);
-  const effectiveSource = (shouldWaitForAuth && !authWaitExpired) ? null : source;
-  const showAuthWaiting = shouldWaitForAuth && !authWaitExpired;
+
+  useEffect(() => {
+    if (!isMessagesPath) {
+      setMessagesBootstrapUri(null);
+      return;
+    }
+    if (!displayUser) return;
+    let cancelled = false;
+    api.getWebViewToken().then((token) => {
+      if (cancelled || !token) return;
+      const uri = `${BASE_URL}/api/auth/webview-login?token=${encodeURIComponent(token)}&redirect=${encodeURIComponent('/messages')}`;
+      setMessagesBootstrapUri(uri);
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [isMessagesPath, displayUser?.id]);
+
   const authReady = !!displayUser;
-  const isMessagesWaiting = isMessagesPath && !authReady;
+  const messagesBootstrapReady = isMessagesPath && authReady && !!messagesBootstrapUri;
+  const effectiveSource = isMessagesPath && authReady
+    ? (messagesBootstrapReady ? { uri: messagesBootstrapUri } : null)
+    : ((shouldWaitForAuth && !authWaitExpired) ? null : source);
+  const showAuthWaiting = shouldWaitForAuth && !authWaitExpired;
+  const isMessagesWaiting = isMessagesPath && (!authReady || !messagesBootstrapUri);
 
   const loadUser = useCallback(() => {
     api.getUser().then((u) => {

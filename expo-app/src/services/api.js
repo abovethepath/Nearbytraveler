@@ -170,6 +170,17 @@ const api = {
   /** For WebView: pass this as Cookie header so the site sees the user as logged in. */
   getSessionCookie: () => sessionCookie,
 
+  /** One-time token for iOS Messages WebView bootstrap (requires existing session). */
+  async getWebViewToken() {
+    const r = await fetch(`${BASE_URL}/api/auth/webview-token`, {
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!r.ok) return null;
+    const data = await r.json();
+    return data?.token || null;
+  },
+
   async register(userData) {
     const r = await fetchWithConnectionMessage(`${BASE_URL}/api/register`, {
       method: 'POST',

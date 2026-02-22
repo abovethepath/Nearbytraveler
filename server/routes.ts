@@ -1378,7 +1378,72 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       res.status(401).json({ message: "Not authenticated" });
     }
   });
-  
+
+  const WEBVIEW_TOKEN_TTL_MS = 60 * 1000;
+  const sessionSecret = process.env.SESSION_SECRET || "nearby-traveler-secret-key-dev";
+  const webviewTokenJtiStore = new Map<string, number>();
+
+  function pruneExpiredJtis() {
+    const now = Date.now();
+    for (const [jti, exp] of webviewTokenJtiStore.entries()) {
+      if (exp <= now) webviewTokenJtiStore.delete(jti);
+    }
+  }
+
+  app.get("/api/auth/webview-token", (req: any, res) => {
+    const user = req.session?.user;
+    if (!user?.id) return res.status(401).json({ message: "Not authenticated" });
+    const exp = Date.now() + WEBVIEW_TOKEN_TTL_MS;
+    const jti = crypto.randomBytes(16).toString("hex");
+    webviewTokenJtiStore.set(jti, exp);
+    pruneExpiredJtis();
+    const payload = `${user.id}:${exp}:${jti}`;
+    const sig = crypto.createHmac("sha256", sessionSecret).update(payload).digest("base64url");
+    const token = Buffer.from(payload, "utf8").toString("base64url") + "." + sig;
+    res.json({ token });
+  });
+
+  app.get("/api/auth/webview-login", async (req: any, res) => {
+    const token = (req.query.token as string)?.trim();
+    const redirectPath = (req.query.redirect as string)?.trim();
+    const safeRedirect =
+      typeof redirectPath === "string" &&
+      redirectPath.startsWith("/") &&
+      !redirectPath.startsWith("//")
+        ? redirectPath
+        : "/messages";
+    if (!token) return res.redirect(302, safeRedirect);
+    const parts = token.split(".");
+    if (parts.length !== 2) return res.redirect(302, safeRedirect);
+    try {
+      const payload = Buffer.from(parts[0], "base64url").toString("utf8");
+      const expectedSig = crypto.createHmac("sha256", sessionSecret).update(payload).digest("base64url");
+      if (parts[1] !== expectedSig) return res.redirect(302, safeRedirect);
+      const payloadParts = payload.split(":");
+      if (payloadParts.length < 3) return res.redirect(302, safeRedirect);
+      const [userIdStr, expStr, jti] = payloadParts;
+      const exp = parseInt(expStr, 10);
+      if (isNaN(exp) || Date.now() > exp) return res.redirect(302, safeRedirect);
+      const storedExp = webviewTokenJtiStore.get(jti);
+      if (storedExp === undefined) return res.redirect(302, safeRedirect);
+      webviewTokenJtiStore.delete(jti);
+      if (storedExp <= Date.now()) return res.redirect(302, safeRedirect);
+      const userId = parseInt(userIdStr, 10);
+      if (isNaN(userId)) return res.redirect(302, safeRedirect);
+      const user = await storage.getUser(userId);
+      if (!user) return res.redirect(302, safeRedirect);
+      (req as any).session.user = { id: user.id, username: user.username };
+      (req as any).session.save((err: any) => {
+        if (err) console.error("webview-login session save error:", err);
+        const origin = `${req.protocol}://${req.get("host") || ""}`;
+        const redirectUrl = origin + safeRedirect + (safeRedirect.includes("?") ? "&" : "?") + "native=ios";
+        res.redirect(302, redirectUrl);
+      });
+    } catch {
+      res.redirect(302, safeRedirect);
+    }
+  });
+
   // Session recovery endpoint - re-establishes server session when it's lost (e.g., after server restart)
   // SECURITY: Requires both userId AND email to prevent session hijacking
   app.post("/api/auth/recover-session", async (req, res) => {
