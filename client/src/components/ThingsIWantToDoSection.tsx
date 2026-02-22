@@ -436,12 +436,13 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   {isHometown ? (
                     <span className="flex items-center gap-2">
                       <MapPin className="w-5 h-5 text-blue-500" />
-                      ⭐ Things I Want to Do in... <span className="text-blue-600 dark:text-blue-400">{cityName}</span>
+                      Things I Want to Do in My Hometown: <span className="text-blue-600 dark:text-blue-400">{cityName}</span>
                     </span>
                   ) : (
-                    <span className="flex items-center gap-2 flex-wrap">
+                    <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`} className="flex items-center gap-2 flex-wrap hover:opacity-80 transition-opacity">
                       <Plane className={`w-5 h-5 ${isPastTrip ? 'text-gray-400' : 'text-orange-500'}`} />
-                      ⭐ Things I Want to Do in... <span className="text-orange-600 dark:text-orange-400">{cityName}</span>
+                      <span>Things I Want to Do in My Destination:</span>
+                      <span className="text-orange-600 dark:text-orange-400 underline">{cityName}</span>
                       {cityData.travelPlan && (
                         <span className="text-xs font-normal text-gray-500 dark:text-gray-400">
                           ({new Date(cityData.travelPlan.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(cityData.travelPlan.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
@@ -452,7 +453,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                           Past
                         </Badge>
                       )}
-                    </span>
+                    </Link>
                   )}
                 </h2>
                 <div className="flex items-center justify-end mb-3">
