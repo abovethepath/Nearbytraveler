@@ -132,22 +132,21 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     </div>
 
                     {isOwnProfile ? (
-                      <div className="rounded-xl bg-white/75 dark:bg-gray-900/75 backdrop-blur-sm p-3 sm:p-4 border border-white/40 dark:border-gray-700/50 shadow-sm mt-1">
-                        <div className="flex flex-col gap-0.5 min-w-0">
-                          <span className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
-                          <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100 break-words" title={hometown}>{hometown}</span>
-                          <span className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 mt-1.5">Nearby Traveler</span>
-                          {(() => {
-                            const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                            return currentTravelPlan ? (
-                              <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100 break-words" title={currentTravelPlan}>{currentTravelPlan}</span>
-                            ) : (
-                              <span className="text-sm sm:text-base text-gray-500 dark:text-gray-400">--</span>
-                            );
-                          })()}
-                        </div>
+                      <div className="flex flex-col gap-1 min-w-0 mt-1">
+                        <span className="text-base sm:text-lg font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
+                        <span className="text-base sm:text-lg font-medium text-black dark:text-gray-100 break-words" title={hometown}>{hometown}</span>
+                        {(() => {
+                          const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+                          if (!currentTravelPlan) return null;
+                          return (
+                            <>
+                              <span className="text-base sm:text-lg font-semibold text-blue-600 dark:text-blue-400 mt-1">Nearby Traveler</span>
+                              <span className="text-base sm:text-lg font-medium text-black dark:text-gray-100 break-words" title={currentTravelPlan}>{currentTravelPlan}</span>
+                            </>
+                          );
+                        })()}
                         {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-2">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-1 self-start">
                             New to Town
                           </span>
                         )}
@@ -165,7 +164,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             return isActive && hasPublicHostel && matchesDestination;
                           });
                           return activePlanWithHostel ? (
-                            <div className="flex items-center gap-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 mt-2">
+                            <div className="flex items-center gap-1.5 text-sm font-medium text-black dark:text-gray-100 mt-1">
                               <Building2 className="w-4 h-4 text-orange-600 flex-shrink-0" />
                               <span className="break-words">Staying at {activePlanWithHostel.hostelName}</span>
                             </div>
