@@ -37,10 +37,11 @@ const NATIVE_INJECT_JS = `
     s.id = 'native-ios-css';
     s.textContent = ':root { --native-tabbar-height: 88px; --native-bottom-inset: 88px; --native-header-height: 56px; } .mobile-top-nav, .mobile-bottom-nav, .desktop-navbar, [data-testid="button-mobile-menu"], .ios-nav-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; } body[data-native-ios] .mobile-top-nav, body[data-native-ios] .mobile-bottom-nav, body[data-native-ios] .desktop-navbar { display: none !important; }'
       + ' body.native-ios-app div.bg-gradient-to-r[style*="100vw"], body.native-ios-app div[style*="100vw"][style*="translateX(-50%)"] { width: 100% !important; max-width: 100% !important; left: 0 !important; transform: none !important; overflow-x: clip !important; box-sizing: border-box !important; min-height: 220px !important; }'
-      + ' body.native-ios-app .flex-1.min-w-0.overflow-hidden { min-width: 0 !important; }'
-      + ' body.native-ios-app div.flex.flex-col.gap-0.min-w-0.flex-1 { min-width: 0 !important; overflow: hidden !important; }'
-      + ' body.native-ios-app div.flex.items-start.gap-1\\.5.min-w-0 { flex-wrap: wrap !important; min-width: 0 !important; }'
-      + ' body.native-ios-app div.flex.items-start.gap-1\\.5.min-w-0 > span.flex-shrink-0.self-start { flex-basis: 100% !important; margin-top: 6px !important; }';
+      + ' body.native-ios-app .flex-1.min-w-0.overflow-hidden { min-width: 0 !important; overflow: visible !important; }'
+      + ' body.native-ios-app div.flex.flex-col.gap-0.min-w-0.flex-1 { min-width: 0 !important; overflow: visible !important; }'
+      + ' body.native-ios-app div.flex.flex-col.gap-0.min-w-0.flex-1 > * { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }'
+      + ' body.native-ios-app div.flex.items-start.gap-1\\.5.min-w-0 { flex-wrap: wrap !important; min-width: 0 !important; gap: 10px !important; row-gap: 8px !important; }'
+      + ' body.native-ios-app div.flex.items-start.gap-1\\.5.min-w-0 > span.flex-shrink-0.self-start { flex-basis: 100% !important; margin-top: 8px !important; align-self: flex-start !important; }';
     if (document.head) document.head.appendChild(s);
     else document.addEventListener('DOMContentLoaded', function() { document.head.appendChild(s); });
     function setBodyAttr() {
@@ -68,8 +69,20 @@ const NATIVE_INJECT_JS = `
         }
       }
     }
+    function abbreviateUSA() {
+      var candidates = document.querySelectorAll('body.native-ios-app span, body.native-ios-app div, body.native-ios-app p');
+      for (var i = 0; i < candidates.length; i++) {
+        var el = candidates[i];
+        var t = (el.textContent || '').trim();
+        if (!t) continue;
+        if (t.indexOf('United States') !== -1) {
+          el.textContent = t.replace(/\\bUnited States\\b/g, 'USA');
+        }
+      }
+    }
     function runHeroPatch() {
       hideNearbyTravelerWhenEmpty();
+      abbreviateUSA();
       if (document.body) document.body.setAttribute('data-native-hero-patch', 'ok');
     }
     if (document.readyState === 'loading') {
@@ -80,6 +93,78 @@ const NATIVE_INJECT_JS = `
     setTimeout(runHeroPatch, 800);
   })();
   true;
+`;
+
+// Messages page: prevent blank collapse + one-time reload if content missing (iOS WebView only).
+const MESSAGES_PAGE_INJECT_JS = `
+(function() {
+  function applyStickyHeights() {
+    try {
+      if (document.documentElement) document.documentElement.style.height = '100%';
+      if (document.body) {
+        document.body.style.height = 'auto';
+        document.body.style.minHeight = '120vh';
+      }
+    } catch(e) {}
+  }
+  var end = Date.now() + 10000;
+  var mo = new MutationObserver(function() {
+    if (Date.now() > end) { mo.disconnect(); return; }
+    applyStickyHeights();
+  });
+  function run() {
+    applyStickyHeights();
+    try {
+      if (document.body) mo.observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
+    } catch(e) {}
+    setTimeout(function() { mo.disconnect(); }, 10000);
+    setTimeout(function() {
+      try {
+        var hasContent = document.querySelector('[data-testid="messages-list"], [data-testid="message-list"], .messages, [class*="MessagesList"], [class*="message-list"], [class*="message-thread"]') || (document.body && document.body.innerText && document.body.innerText.length > 200);
+        if (hasContent) return;
+        if (sessionStorage.getItem('__reloaded_messages_once')) return;
+        sessionStorage.setItem('__reloaded_messages_once', '1');
+        location.reload();
+      } catch(e) {}
+    }, 3000);
+  }
+  if (document.body) run(); else document.addEventListener('DOMContentLoaded', run);
+})();
+true;
+`;
+
+// Messages only: on-screen auth check badge (fetch with credentials) — proves whether WebView is authenticated.
+const MESSAGES_AUTH_DEBUG_BADGE_JS = `
+(function() {
+  function badge(text) {
+    try {
+      var el = document.getElementById('native-msg-debug');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'native-msg-debug';
+        el.style.cssText = 'position:fixed;top:8px;left:8px;z-index:999999;background:rgba(0,0,0,0.75);color:#fff;padding:6px 8px;font-size:12px;border-radius:8px;max-width:92vw;';
+        if (document.body) document.body.appendChild(el);
+      }
+      el.textContent = text;
+    } catch(e) {}
+  }
+  function checkAuth() {
+    badge('Checking /api/auth/user...');
+    fetch('/api/auth/user', { credentials: 'include' })
+      .then(function(res) { badge('/api/auth/user: ' + res.status); })
+      .catch(function() { badge('Auth check failed'); });
+  }
+  if (document.body) {
+    setTimeout(checkAuth, 600);
+    setTimeout(checkAuth, 2000);
+  } else {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(checkAuth, 600);
+      setTimeout(checkAuth, 2000);
+    });
+  }
+})();
+true;
 `;
 
 function pathWithNativeIOS(path) {
@@ -148,7 +233,7 @@ function WebViewWithChrome({ path, navigation }) {
   const wantsAuth = isMessagesPath || isChatroomPath || isEventChatPath;
   const shouldWaitForAuth = wantsAuth && !displayUser;
   const [authWaitExpired, setAuthWaitExpired] = useState(false);
-  const authWaitMs = isMessagesPath ? 4500 : 2500;
+  const authWaitMs = isMessagesPath ? 6000 : 2500;
   useEffect(() => {
     if (!wantsAuth || displayUser) return;
     const t = setTimeout(() => setAuthWaitExpired(true), authWaitMs);
@@ -159,6 +244,8 @@ function WebViewWithChrome({ path, navigation }) {
   }, [displayUser]);
   const effectiveSource = (shouldWaitForAuth && !authWaitExpired) ? null : source;
   const showAuthWaiting = shouldWaitForAuth && !authWaitExpired;
+  const authReady = !!displayUser;
+  const isMessagesWaiting = isMessagesPath && !authReady;
 
   const loadUser = useCallback(() => {
     api.getUser().then((u) => {
@@ -433,12 +520,18 @@ function WebViewWithChrome({ path, navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-      {showAuthWaiting ? (
+      {isMessagesWaiting ? (
+        <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg }]}>
+          <ActivityIndicator size="large" color="#F97316" />
+          <Text style={[styles.loadingMessage, dark && { color: DARK.textMuted }]}>Preparing Messages…</Text>
+        </View>
+      ) : showAuthWaiting ? (
         <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg }]}>
           <ActivityIndicator size="large" color="#F97316" />
         </View>
       ) : (
       <WebView
+        key={isMessagesPath ? `${path}|${authReady ? 1 : 0}` : undefined}
         ref={webViewRef}
         source={effectiveSource}
         style={[styles.webview, dark && { backgroundColor: DARK.bg }]}
@@ -462,7 +555,9 @@ function WebViewWithChrome({ path, navigation }) {
     console.log('[NearbyTraveler Native] Auth injection fired - user and token set');
   } catch(e) {}
 })();
-` : '') + '\ntrue;'
+` : '') +
+          (isMessagesPath ? MESSAGES_PAGE_INJECT_JS : '') +
+          (isMessagesPath ? MESSAGES_AUTH_DEBUG_BADGE_JS : '') + '\ntrue;'
         }
         onLoadStart={onLoadStart}
         onLoadEnd={onLoadEnd}
@@ -489,6 +584,7 @@ function WebViewWithChrome({ path, navigation }) {
         pullToRefreshEnabled={true}
         sharedCookiesEnabled={true}
         thirdPartyCookiesEnabled={true}
+        {...(isMessagesPath && Platform.OS === 'ios' ? { useSharedProcessPool: true, incognito: false } : {})}
         fadeDuration={0}
         renderLoading={() => (
           <View style={{ flex: 1, backgroundColor: loadingBg, justifyContent: 'center', alignItems: 'center' }}>
