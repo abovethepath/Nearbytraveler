@@ -3758,7 +3758,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     setShowExpandedPhoto, uploadingPhoto, handleAvatarUpload, toast, connectionDegreeData, userVouches, travelPlans,
     openTab, hostelMatch, currentUser, handleMessage, setShowWriteReferenceModal, getMetropolitanArea,
     activeTab, userConnections, photos, userTravelMemories, userReferences, setTriggerQuickMeetup, isProfileIncomplete,
-    setIsEditMode, editFormData, setIsEditingPublicInterests, setActiveEditSection, setEditFormData, effectiveUserId,
+    setIsEditMode, editFormData, isEditingPublicInterests, setIsEditingPublicInterests, setActiveEditSection, setEditFormData, effectiveUserId,
     queryClient, tabRefs, loadedTabs, showConnectionFilters, setShowConnectionFilters, connectionFilters, setConnectionFilters,
     sortedUserConnections, connectionsDisplayCount, setConnectionsDisplayCount, editingConnectionNote, setEditingConnectionNote,
     connectionNoteText, setConnectionNoteText, showWriteReferenceModal, setShowReferenceForm, showReferenceForm, referenceForm,
