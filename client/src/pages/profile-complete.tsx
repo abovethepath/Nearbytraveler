@@ -25,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon, Mail, ThumbsUp, Building2, Award } from "lucide-react";
 
-type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries' | 'vouches' | 'menu';
+type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries' | 'vouches' | 'chatrooms' | 'menu';
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -731,6 +731,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     travel: React.useRef<HTMLDivElement>(null),
     countries: React.useRef<HTMLDivElement>(null),
     vouches: React.useRef<HTMLDivElement>(null),
+    chatrooms: React.useRef<HTMLDivElement>(null),
     menu: React.useRef<HTMLDivElement>(null),
   };
 

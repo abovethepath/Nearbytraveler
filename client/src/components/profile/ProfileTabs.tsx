@@ -3553,6 +3553,7 @@ export function ProfileTabs(props: ProfilePageProps) {
 
 
             {/* Chatrooms Panel - Own profile only */}
+            <div ref={tabRefs.chatrooms} />
             {activeTab === 'chatrooms' && isOwnProfile && user?.userType !== 'business' && (
               <Card>
                 <CardHeader>
