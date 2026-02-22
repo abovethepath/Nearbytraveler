@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2 } from "lucide-react";
 import { calculateAge } from "@/lib/ageUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { VideoIntroPlayer } from "@/components/VideoIntro";
@@ -131,7 +131,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   }`}
                   data-testid="tab-travel"
                 >
-                  Travel
+                  Travel Plans
                   {!!(travelPlans?.length) && (
                     <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                       activeTab === 'travel' 
@@ -2425,6 +2425,35 @@ export function ProfileTabs(props: ProfilePageProps) {
                   {(vouches?.length || 0) === 0 && (
                     <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6 hidden sm:block">
                       Get vouched by vouched community members who know you personally
+                    </div>
+                  )}
+                  {isOwnProfile && (
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3 flex flex-col gap-2">
+                      <button
+                        type="button"
+                        className="flex items-center justify-between cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                        onClick={() => {
+                          const chatCity = user?.hometownCity || user?.location?.split(',')[0] || 'General';
+                          setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
+                        }}
+                      >
+                        <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                          <MessageCircle className="w-4 h-4 text-purple-500" />
+                          Chatrooms
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                      </button>
+                      <button
+                        type="button"
+                        className="flex items-center justify-between cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                        onClick={() => setLocation('/share-qr')}
+                      >
+                        <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                          <Share2 className="w-4 h-4 text-orange-500" />
+                          Invite Friends
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                      </button>
                     </div>
                   )}
                 </CardContent>

@@ -96,7 +96,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             toast?.({ title: "Profile link copied!", description: "You can now paste it anywhere." });
                           }
                         }}
-                        className="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                        className="p-1.5 rounded-full bg-white/80 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
                         style={{ touchAction: 'manipulation' }}
                         title="Share profile"
                       >
@@ -130,85 +130,96 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black dark:text-gray-200 min-w-0">
-                      <div className="flex-shrink-0 mt-0.5 flex flex-col items-center gap-0">
-                        <MapPin className="hidden sm:block w-5 h-5 text-blue-600" />
-                        <Plane className="hidden sm:block w-5 h-5 text-orange-600 mt-1" />
-                      </div>
-                      <div className="flex flex-col gap-0 min-w-0 flex-1">
-                        <span className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</span>
-                        <span className="truncate text-gray-700 dark:text-gray-300" title={hometown}>{hometown}</span>
-                        <span className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-0.5">Nearby Traveler</span>
+
+                    {isOwnProfile ? (
+                      <div className="rounded-xl bg-white/75 dark:bg-gray-900/75 backdrop-blur-sm p-3 sm:p-4 border border-white/40 dark:border-gray-700/50 shadow-sm mt-1">
+                        <div className="flex flex-col gap-0.5 min-w-0">
+                          <span className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
+                          <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100 break-words" title={hometown}>{hometown}</span>
+                          <span className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 mt-1.5">Nearby Traveler</span>
+                          {(() => {
+                            const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+                            return currentTravelPlan ? (
+                              <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100 break-words" title={currentTravelPlan}>{currentTravelPlan}</span>
+                            ) : (
+                              <span className="text-sm sm:text-base text-gray-500 dark:text-gray-400">--</span>
+                            );
+                          })()}
+                        </div>
+                        {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-2">
+                            New to Town
+                          </span>
+                        )}
                         {(() => {
                           const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                          return currentTravelPlan ? (
-                            <span className="truncate text-gray-700 dark:text-gray-300" title={currentTravelPlan}>{currentTravelPlan}</span>
-                          ) : (
-                            <span className="truncate text-gray-700 dark:text-gray-300">—</span>
-                          );
+                          if (!currentTravelPlan) return null;
+                          const now = new Date();
+                          const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
+                            if (!plan.startDate || !plan.endDate) return false;
+                            const start = new Date(plan.startDate);
+                            const end = new Date(plan.endDate);
+                            const isActive = now >= start && now <= end;
+                            const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
+                            const matchesDestination = plan.destination && currentTravelPlan.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
+                            return isActive && hasPublicHostel && matchesDestination;
+                          });
+                          return activePlanWithHostel ? (
+                            <div className="flex items-center gap-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 mt-2">
+                              <Building2 className="w-4 h-4 text-orange-600 flex-shrink-0" />
+                              <span className="break-words">Staying at {activePlanWithHostel.hostelName}</span>
+                            </div>
+                          ) : null;
                         })()}
                       </div>
-                      {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 flex-shrink-0 self-start">
-                          New to Town
-                        </span>
-                      )}
-                    </div>
-                    {(() => {
-                      const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                      if (!currentTravelPlan) return null;
-                      const now = new Date();
-                      const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
-                        if (!plan.startDate || !plan.endDate) return false;
-                        const start = new Date(plan.startDate);
-                        const end = new Date(plan.endDate);
-                        const isActive = now >= start && now <= end;
-                        const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
-                        const matchesDestination = plan.destination && currentTravelPlan.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
-                        return isActive && hasPublicHostel && matchesDestination;
-                      });
-                      return activePlanWithHostel ? (
-                        <div className="flex items-start gap-1.5 text-sm font-medium text-black flex-wrap mt-1">
-                          <Building2 className="hidden sm:block w-4 h-4 text-black flex-shrink-0 mt-0.5" />
-                          <span className="break-words">🏨 Staying at {activePlanWithHostel.hostelName}</span>
+                    ) : (
+                      <>
+                        <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black dark:text-gray-200 min-w-0">
+                          <div className="flex-shrink-0 mt-0.5 flex flex-col items-center gap-0">
+                            <MapPin className="hidden sm:block w-5 h-5 text-blue-600" />
+                            <Plane className="hidden sm:block w-5 h-5 text-orange-600 mt-1" />
+                          </div>
+                          <div className="flex flex-col gap-0 min-w-0 flex-1">
+                            <span className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</span>
+                            <span className="truncate text-gray-700 dark:text-gray-300" title={hometown}>{hometown}</span>
+                            <span className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-0.5">Nearby Traveler</span>
+                            {(() => {
+                              const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+                              return currentTravelPlan ? (
+                                <span className="truncate text-gray-700 dark:text-gray-300" title={currentTravelPlan}>{currentTravelPlan}</span>
+                              ) : (
+                                <span className="truncate text-gray-700 dark:text-gray-300">--</span>
+                              );
+                            })()}
+                          </div>
+                          {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 flex-shrink-0 self-start">
+                              New to Town
+                            </span>
+                          )}
                         </div>
-                      ) : null;
-                    })()}
-                    {(() => {
-                      const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                      const now = new Date();
-                      now.setHours(0, 0, 0, 0);
-                      const upcomingTrips = (travelPlans || []).filter((plan: any) => {
-                        if (!plan.startDate) return false;
-                        const start = new Date(plan.startDate);
-                        start.setHours(0, 0, 0, 0);
-                        return start > now;
-                      });
-                      return (currentTravelPlan || upcomingTrips.length > 0) && isOwnProfile && (
-                        <Button
-                          onClick={() => {
-                            openTab?.('travel');
-                            setTimeout(() => {
-                              const travelPlansSection = document.querySelector('[data-testid="travel-plans-widget"]');
-                              if (travelPlansSection) {
-                                travelPlansSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                              } else {
-                                const travelSection = document.querySelector('#panel-travel');
-                                if (travelSection) {
-                                  travelSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                }
-                              }
-                            }, 150);
-                          }}
-                          className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 border-0 px-4 py-2 text-sm rounded-lg shadow-md transition-all"
-                          style={{ color: 'black' }}
-                          data-testid="button-connect-travel-plans"
-                        >
-                          <Calendar className="w-4 h-4 mr-2" style={{ color: 'black' }} />
-                          <span style={{ color: 'black' }}>{currentTravelPlan ? 'View Travel Plans' : 'View Upcoming Trips'}</span>
-                        </Button>
-                      );
-                    })()}
+                        {(() => {
+                          const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+                          if (!currentTravelPlan) return null;
+                          const now = new Date();
+                          const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
+                            if (!plan.startDate || !plan.endDate) return false;
+                            const start = new Date(plan.startDate);
+                            const end = new Date(plan.endDate);
+                            const isActive = now >= start && now <= end;
+                            const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
+                            const matchesDestination = plan.destination && currentTravelPlan.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
+                            return isActive && hasPublicHostel && matchesDestination;
+                          });
+                          return activePlanWithHostel ? (
+                            <div className="flex items-start gap-1.5 text-sm font-medium text-black flex-wrap mt-1">
+                              <Building2 className="hidden sm:block w-4 h-4 text-black flex-shrink-0 mt-0.5" />
+                              <span className="break-words">Staying at {activePlanWithHostel.hostelName}</span>
+                            </div>
+                          ) : null;
+                        })()}
+                      </>
+                    )}
                   </>
                 );
               })()}
@@ -245,7 +256,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-bold text-orange-800 dark:text-orange-200">
-                          🏨 You're both staying at {hostelMatch.hostelName}!
+                          You're both staying at {hostelMatch.hostelName}!
                         </p>
                         <p className="text-xs text-orange-600 dark:text-orange-400">
                           in {hostelMatch.destination} during overlapping dates
@@ -256,7 +267,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </div>
               )}
             </div>
-            {!isOwnProfile ? (
+            {!isOwnProfile && (
               <div className="w-full flex items-center gap-3 flex-wrap min-w-0 relative z-50 pointer-events-auto mt-2" style={{ position: 'relative', zIndex: 9999 }}>
                 <button
                   type="button"
@@ -335,30 +346,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     </button>
                   )
                 )}
-              </div>
-            ) : (
-              <div className="flex items-center gap-3 flex-wrap min-w-0">
-                {user && user.userType !== 'business' && (user.hometownCity || user.location) && (
-                  <Button
-                    onClick={() => {
-                      const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
-                      setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
-                    }}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0 shadow-md rounded-lg inline-flex items-center justify-center gap-2 px-6 py-2 transition-all text-black dark:text-white dark:border dark:border-gray-400"
-                    data-testid="button-chatrooms"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    <span>Go to Chatrooms</span>
-                  </Button>
-                )}
-                <Button
-                  onClick={() => setLocation('/share-qr')}
-                  className="bg-gradient-to-r from-orange-600 to-blue-600 hover:from-orange-700 hover:to-blue-700 border-0 shadow-md rounded-lg inline-flex items-center justify-center gap-2 px-6 py-2 transition-all text-black dark:text-white dark:border dark:border-gray-400"
-                  data-testid="button-share-qr"
-                >
-                  <Share2 className="w-4 h-4" />
-                  <span>Invite Friends</span>
-                </Button>
               </div>
             )}
           </div>
