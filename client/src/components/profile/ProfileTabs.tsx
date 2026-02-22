@@ -2133,6 +2133,58 @@ export function ProfileTabs(props: ProfilePageProps) {
               </div>
             )}
 
+            {/* Chatrooms Panel - Lazy Loaded */}
+            {activeTab === 'chatrooms' && loadedTabs.has('chatrooms') && (
+              <div 
+                role="tabpanel"
+                id="panel-chatrooms"
+                aria-labelledby="tab-chatrooms"
+                ref={tabRefs.chatrooms}
+                className="space-y-4 mt-6" 
+                style={{zIndex: 10, position: 'relative'}} 
+                data-testid="chatrooms-content"
+              >
+                <Card className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+                  <CardHeader className="bg-white dark:bg-gray-900">
+                    <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+                      <MessageCircle className="w-5 h-5" />
+                      My Chatrooms ({userChatrooms?.length || 0})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {userChatrooms && userChatrooms.length > 0 ? (
+                      <div className="space-y-2">
+                        {userChatrooms.map((chatroom: any) => (
+                          <button
+                            key={chatroom.id}
+                            onClick={() => setLocation(`/chat/${chatroom.id}`)}
+                            className="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-orange-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                                {(chatroom.name || chatroom.cityName || '?')[0].toUpperCase()}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="font-semibold text-gray-900 dark:text-white truncate">
+                                  {chatroom.name || chatroom.cityName || 'Chatroom'}
+                                </div>
+                                {chatroom.cityName && chatroom.name && (
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{chatroom.cityName}</div>
+                                )}
+                              </div>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">You haven't joined any chatrooms yet. Visit a city page to join its chatroom!</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
             {/* Vouches Tab Panel - Only shows when user has vouches */}
             {activeTab === 'vouches' && loadedTabs.has('vouches') && (userVouches?.length || 0) > 0 && (
               <div 
@@ -3551,48 +3603,6 @@ export function ProfileTabs(props: ProfilePageProps) {
             )}
 
 
-
-            {/* Chatrooms Panel - Own profile only */}
-            <div ref={tabRefs.chatrooms} />
-            {activeTab === 'chatrooms' && isOwnProfile && user?.userType !== 'business' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>
-                    <span className="text-black dark:text-white">My Chatrooms ({userChatrooms?.length || 0})</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {userChatrooms && userChatrooms.length > 0 ? (
-                    <div className="space-y-2">
-                      {userChatrooms.map((chatroom: any) => (
-                        <button
-                          key={chatroom.id}
-                          onClick={() => setLocation(`/chat/${chatroom.id}`)}
-                          className="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
-                        >
-                          <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-orange-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                              {(chatroom.name || chatroom.cityName || '?')[0].toUpperCase()}
-                            </div>
-                            <div className="min-w-0">
-                              <div className="font-semibold text-gray-900 dark:text-white truncate">
-                                {chatroom.name || chatroom.cityName || 'Chatroom'}
-                              </div>
-                              {chatroom.cityName && chatroom.name && (
-                                <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{chatroom.cityName}</div>
-                              )}
-                            </div>
-                          </div>
-                          <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">You haven't joined any chatrooms yet. Visit a city page to join its chatroom!</p>
-                  )}
-                </CardContent>
-              </Card>
-            )}
 
             {/* Comprehensive Geolocation System - Enhanced location sharing for users, businesses, and events */}
             {console.log('ðŸ”§ Profile: Checking if location sharing should render:', { isOwnProfile, userId: user?.id })}
