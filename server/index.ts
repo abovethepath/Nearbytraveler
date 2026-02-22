@@ -554,9 +554,9 @@ app.use(
     saveUninitialized: false,
     rolling: true,
     cookie: {
-      secure: isProduction,
+      secure: true,
       httpOnly: true,
-      sameSite: "lax" as const,
+      sameSite: "none",
       maxAge: 365 * 24 * 60 * 60 * 1000,
       path: "/", // Explicit path
     },

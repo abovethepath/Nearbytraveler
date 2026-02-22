@@ -6,7 +6,16 @@ export function getProfileImageUrl(user: { profileImage?: string | null; profile
   if (!user) return null;
   const url = (user as any).profileImage ?? (user as any).profilePhoto ?? (user as any).profile_image ?? (user as any).avatar;
   if (!url || typeof url !== 'string' || url.trim() === '') return null;
-  if (url.startsWith('data:image/') || url.startsWith('http')) return url;
+  if (url.startsWith('data:image/')) return url;
+  if (url.startsWith('https://')) return url;
+  if (url.startsWith('http://')) return url.replace('http://', 'https://');
+  if (url.startsWith('/')) {
+    if (typeof window !== 'undefined' && window.location.origin) {
+      return `${window.location.origin}${url}`;
+    }
+    return url;
+  }
+  if (url.startsWith('blob:')) return url;
   return null;
 }
 
