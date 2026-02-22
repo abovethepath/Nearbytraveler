@@ -910,6 +910,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
               </Card>
             );
           })}
+          </div>
         </div>
       )}
     </div>

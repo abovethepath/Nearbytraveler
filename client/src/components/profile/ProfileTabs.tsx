@@ -131,7 +131,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   }`}
                   data-testid="tab-travel"
                 >
-                  Travel
+                  Travel Plans
                   {!!(travelPlans?.length) && (
                     <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                       activeTab === 'travel' 
@@ -139,6 +139,23 @@ export function ProfileTabs(props: ProfilePageProps) {
                         : 'bg-orange-500 text-white'
                     }`}>
                       {travelPlans.length}
+                    </span>
+                  )}
+                </button>
+              )}
+
+              {user?.userType !== 'business' && isOwnProfile && (
+                <button
+                  role="tab"
+                  aria-label="Open chatrooms"
+                  onClick={() => setShowChatroomList?.(true)}
+                  className="text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400"
+                  data-testid="tab-chatrooms"
+                >
+                  Chatrooms
+                  {!!(userChatrooms?.length) && (
+                    <span className="ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-orange-500 text-white">
+                      {userChatrooms.length}
                     </span>
                   )}
                 </button>
@@ -2312,6 +2329,19 @@ export function ProfileTabs(props: ProfilePageProps) {
                   <CardTitle className="dark:text-white">Travel Stats</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 break-words overflow-hidden">
+                  {isOwnProfile && gradientOptions?.length > 0 && (
+                    <button
+                      type="button"
+                      className="flex items-center justify-between cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                      onClick={() => setSelectedGradient?.((prev: number) => (prev + 1) % (gradientOptions?.length ?? 1))}
+                    >
+                      <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                        <span className="text-base" aria-hidden>🎨</span>
+                        Change header color
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </button>
+                  )}
                   {isOwnProfile ? (
                     <HoverCard>
                       <HoverCardTrigger asChild>
@@ -2414,21 +2444,22 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </div>
                   </button>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                      <Shield className="w-4 h-4 text-blue-500" />
-                      <span className="hidden sm:inline">Vouches</span>
-                      <span className="sm:hidden">Vouches {(vouches?.length || 0) === 0 ? 'â€¢ Get vouched by community' : ''}</span>
-                    </span>
-                    <span className="font-semibold text-blue-600 dark:text-blue-400">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <span className="text-gray-600 dark:text-gray-300">Vouches</span>
+                      </div>
+                      {(vouches?.length || 0) === 0 && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6 break-words">
+                          Get vouched by community members who know you personally
+                        </p>
+                      )}
+                    </div>
+                    <span className="font-semibold text-blue-600 dark:text-blue-400 flex-shrink-0">
                       {(vouches?.length || 0) === 0 ? '—' : (vouches?.length || 0)}
                     </span>
                   </div>
-                  {(vouches?.length || 0) === 0 && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6 hidden sm:block">
-                      Get vouched by vouched community members who know you personally
-                    </div>
-                  )}
                 </CardContent>
               </Card>
             )}

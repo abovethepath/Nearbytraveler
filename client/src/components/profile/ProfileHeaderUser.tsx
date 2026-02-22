@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, MapPin, MessageCircle, MessageSquare, Share2, Shield, Users, Building2, Calendar, Plane } from "lucide-react";
+import { Camera, MapPin, MessageCircle, MessageSquare, Share2, Shield, Users, Building2, Plane } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { VouchButton } from "@/components/VouchButton";
@@ -37,16 +37,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 relative isolate`}
       style={{ width: '100vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
     >
-      {isOwnProfile && (
-        <button
-          type="button"
-          onClick={() => setSelectedGradient((prev: number) => (prev + 1) % (gradientOptions?.length ?? 1))}
-          aria-label="Change header colors"
-          className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white"
-        >
-          🎨
-        </button>
-      )}
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6 relative z-20">
           <div className="relative flex-shrink-0 flex flex-col items-center gap-2">
@@ -72,21 +62,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <input id="avatar-upload-input" type="file" accept="image/*" onChange={(e) => { handleAvatarUpload?.(e); }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" style={{ fontSize: '200px' }} disabled={uploadingPhoto} aria-label="Change avatar" />
                 </div>
               </>
-            )}
-            {isOwnProfile && user && user.userType !== 'business' && (user.hometownCity || user.location) && (
-              <Button
-                onClick={() => {
-                  const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
-                  setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
-                }}
-                variant="outline"
-                size="sm"
-                className="w-full max-w-[160px] border-gray-300 dark:border-gray-500 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 shadow-sm"
-                data-testid="button-chatrooms"
-              >
-                <MessageCircle className="w-4 h-4 shrink-0" />
-                <span className="truncate">Chatrooms</span>
-              </Button>
             )}
           </div>
           <div className="flex-1 min-w-0 overflow-hidden">
@@ -193,41 +168,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <span className="break-words">🏨 Staying at {activePlanWithHostel.hostelName}</span>
                         </div>
                       ) : null;
-                    })()}
-                    {(() => {
-                      const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                      const now = new Date();
-                      now.setHours(0, 0, 0, 0);
-                      const upcomingTrips = (travelPlans || []).filter((plan: any) => {
-                        if (!plan.startDate) return false;
-                        const start = new Date(plan.startDate);
-                        start.setHours(0, 0, 0, 0);
-                        return start > now;
-                      });
-                      return (currentTravelPlan || upcomingTrips.length > 0) && isOwnProfile && (
-                        <Button
-                          onClick={() => {
-                            openTab?.('travel');
-                            setTimeout(() => {
-                              const travelPlansSection = document.querySelector('[data-testid="travel-plans-widget"]');
-                              if (travelPlansSection) {
-                                travelPlansSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                              } else {
-                                const travelSection = document.querySelector('#panel-travel');
-                                if (travelSection) {
-                                  travelSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                }
-                              }
-                            }, 150);
-                          }}
-                          className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 border-0 px-4 py-2 text-sm rounded-lg shadow-md transition-all"
-                          style={{ color: 'black' }}
-                          data-testid="button-connect-travel-plans"
-                        >
-                          <Calendar className="w-4 h-4 mr-2" style={{ color: 'black' }} />
-                          <span style={{ color: 'black' }}>{currentTravelPlan ? 'View Travel Plans' : 'View Upcoming Trips'}</span>
-                        </Button>
-                      );
                     })()}
                   </>
                 );

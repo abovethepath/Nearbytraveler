@@ -64,6 +64,8 @@ import type { ProfilePageProps } from "./profile-complete-types";
 
 export function ProfileDialogs(props: ProfilePageProps) {
   const {
+    gradientOptions,
+    setSelectedGradient,
     photos,
     selectedPhotoIndex,
     setSelectedPhotoIndex,
@@ -2279,6 +2281,26 @@ export function ProfileDialogs(props: ProfilePageProps) {
           <div className="px-4 pt-3 pb-2">
             <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Navigate</p>
           </div>
+          {/* Palette / Change header color - moved from hero */}
+          {gradientOptions?.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setSelectedGradient?.((prev: number) => (prev + 1) % (gradientOptions?.length ?? 1))}
+              className="w-full flex items-center gap-3 px-4 text-left text-[15px] text-gray-900 dark:text-gray-100 active:bg-gray-100 dark:active:bg-gray-800"
+              style={{
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+                minHeight: '44px',
+                borderBottom: '0.5px solid rgba(0,0,0,0.08)',
+              } as React.CSSProperties}
+            >
+              <div className="w-7 h-7 rounded-md bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
+                <span className="text-base" aria-hidden>🎨</span>
+              </div>
+              <span className="flex-1">Change header color</span>
+              <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600" />
+            </button>
+          )}
           {[
             ...(user?.userType === 'business' ? [
               { icon: Home, label: "Dashboard", path: "/" },
