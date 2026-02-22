@@ -202,32 +202,39 @@ export function PeopleDiscoveryWidget({
       );
     }
 
-    // ALWAYS show both hometown AND current location - NEVER hide travel info
+    // ALWAYS show both hometown AND travel destination - NEVER hide travel info
     const getCurrentLocation = () => {
-      const hometown = person.hometownCity || person.location?.split(',')[0] || 'Hometown';
-      
-      // Use proper travel detection logic like other components
-      const currentDestination = getCurrentTravelDestination(travelPlans || []);
-      if (currentDestination && person.hometownCity) {
-        const travelDestination = currentDestination.toLowerCase();
-        const hometownLower = person.hometownCity.toLowerCase();
-        
-        // Only show as traveler if destination is different from hometown
-        if (!travelDestination.includes(hometownLower) && !hometownLower.includes(travelDestination)) {
-          console.log(`🏷️ PEOPLE WIDGET: ${person.username} traveling to ${currentDestination}`);
-          return {
-            isTraveling: true,
-            currentLocation: currentDestination,
-            hometown: hometown
-          };
+      const hometown = (person as any).hometownCity || person.location?.split(',')[0] || 'Hometown';
+      const raw = person as any;
+
+      // 1) Active travel plan by date
+      let currentDestination = getCurrentTravelDestination(travelPlans || []);
+      if (currentDestination && (person as any).hometownCity) {
+        const travelDestLower = currentDestination.toLowerCase();
+        const hometownLower = ((person as any).hometownCity || '').toLowerCase();
+        if (!travelDestLower.includes(hometownLower) && !hometownLower.includes(travelDestLower)) {
+          return { isTraveling: true, travelTo: currentDestination, hometown };
         }
       }
-      
-      return {
-        isTraveling: false,
-        currentLocation: hometown,
-        hometown: hometown
-      };
+
+      // 2) destinationCity / travelDestination from API
+      const destCity = raw.destinationCity ?? raw.destination_city;
+      if (destCity && String(destCity).toLowerCase() !== 'null') {
+        const city = String(destCity).trim();
+        if (city !== hometown) return { isTraveling: true, travelTo: city, hometown };
+      }
+      const td = person.travelDestination ?? raw.travel_destination;
+      if (td && typeof td === 'string') {
+        const city = td.split(',')[0].trim();
+        if (city && city.toLowerCase() !== 'null' && city !== hometown) return { isTraveling: true, travelTo: city, hometown };
+      }
+
+      // 3) isCurrentlyTraveling flag (show "Traveling" if no destination)
+      if (person.isCurrentlyTraveling || raw.is_currently_traveling) {
+        return { isTraveling: true, travelTo: currentDestination || td?.split(',')[0]?.trim() || 'away', hometown };
+      }
+
+      return { isTraveling: false, travelTo: null, hometown };
     };
 
     const locationInfo = getCurrentLocation();
@@ -308,19 +315,12 @@ export function PeopleDiscoveryWidget({
                   </p>
                 </div>
                 
-                {/* ALWAYS show travel status */}
-                {locationInfo.isTraveling ? (
+                {/* Under hometown: plane + "Traveling to [place]" when traveling */}
+                {locationInfo.isTraveling && (
                   <div className="flex items-center justify-center gap-1">
-                    <Plane className="w-4 h-4 text-blue-500" />
+                    <Plane className="w-4 h-4 text-blue-500 flex-shrink-0" aria-hidden />
                     <p className="text-blue-600 dark:text-blue-400 text-sm font-medium break-words px-1 text-center">
-                      Currently in {locationInfo.currentLocation}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center gap-1">
-                    <MapPin className="w-4 h-4 text-green-500" />
-                    <p className="text-green-600 dark:text-green-400 text-sm break-words px-1 text-center">
-                      Currently in {locationInfo.hometown}
+                      {locationInfo.travelTo && locationInfo.travelTo !== 'away' ? `Traveling to ${locationInfo.travelTo}` : 'Traveling'}
                     </p>
                   </div>
                 )}
@@ -411,11 +411,22 @@ export function PeopleDiscoveryWidget({
               @{person.username}
             </h4>
             
-            {/* Location Info - Centralized display */}
-            <div className="mb-2">
-              <p className="text-xs text-gray-600 dark:text-gray-400 text-center break-words px-1">
-                From: {locationInfo.hometown} • {locationInfo.isTraveling ? `Currently in ${locationInfo.currentLocation}` : 'Currently home'}
-              </p>
+            {/* Location: hometown then under it plane + "Traveling to [place]" when traveling */}
+            <div className="mb-2 space-y-1">
+              <div className="flex items-center justify-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden />
+                <p className="text-xs text-gray-600 dark:text-gray-400 text-center break-words px-1">
+                  From {locationInfo.hometown}
+                </p>
+              </div>
+              {locationInfo.isTraveling && (
+                <div className="flex items-center justify-center gap-1">
+                  <Plane className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" aria-hidden />
+                  <p className="text-xs text-blue-600 dark:text-blue-400 font-medium text-center break-words px-1">
+                    {locationInfo.travelTo && locationInfo.travelTo !== 'away' ? `Traveling to ${locationInfo.travelTo}` : 'Traveling'}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Stats */}

@@ -116,17 +116,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           {connectionDegreeData.degree === 1 ? '1st' : connectionDegreeData.degree === 2 ? '2nd' : '3rd'}
                         </Badge>
                       )}
-                      {user?.userType !== 'business' && (
+                      {user?.userType !== 'business' && (userVouches?.length || 0) > 0 && (
                         <Badge
-                          className={`text-xs px-2 py-0.5 font-semibold ${
-                            (userVouches?.length || 0) > 0
-                              ? 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900 dark:text-purple-200 dark:border-purple-600'
-                              : 'bg-gray-100 text-gray-600 border-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600'
-                          }`}
+                          className="text-xs px-2 py-0.5 font-semibold bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900 dark:text-purple-200 dark:border-purple-600"
                           data-testid="badge-vouch-count"
                         >
                           <Shield className="w-3 h-3 mr-1 inline" />
-                          {userVouches?.length || 0} {(userVouches?.length || 0) === 1 ? 'Vouch' : 'Vouches'}
+                          {userVouches?.length} {(userVouches?.length || 0) === 1 ? 'Vouch' : 'Vouches'}
                         </Badge>
                       )}
                     </div>

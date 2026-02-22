@@ -4,21 +4,52 @@ import { useAuth } from '../services/AuthContext';
 import api from '../services/api';
 import UserAvatar from '../components/UserAvatar';
 
-const UserCard = ({ user, onPress, navigation }) => (
-  <TouchableOpacity style={styles.userCard} onPress={() => onPress(user)} activeOpacity={0.7}>
-    <UserAvatar user={user} size={60} navigation={navigation} style={styles.avatar} />
-    <View style={styles.userInfo}>
-      <Text style={styles.userName} numberOfLines={1}>{user.fullName || user.username}</Text>
-      <Text style={styles.userCity} numberOfLines={1}>&#x1F4CD; {user.city || 'Unknown location'}</Text>
-      {user.bio ? <Text style={styles.userBio} numberOfLines={2}>{user.bio}</Text> : null}
-      <View style={styles.tagRow}>
-        {user.userType === 'traveler' && <View style={[styles.tag, styles.travelerTag]}><Text style={styles.tagText}>Traveler</Text></View>}
-        {user.userType === 'local' && <View style={[styles.tag, styles.localTag]}><Text style={styles.tagText}>Local</Text></View>}
-        {user.availableToMeet && <View style={[styles.tag, styles.availableTag]}><Text style={styles.tagText}>Available</Text></View>}
+// Resolve display destination from API (destinationCity, travelDestination, travelPlans)
+function getTravelDestination(user) {
+  const dest = user.destinationCity || (user.destination_city && user.destination_city.trim()) || null;
+  if (dest && dest.toLowerCase() !== 'null') return dest.trim();
+  const td = user.travelDestination || user.travel_destination;
+  if (td && typeof td === 'string') {
+    const city = td.split(',')[0].trim();
+    if (city && city.toLowerCase() !== 'null') return city;
+  }
+  if (user.travelPlans && Array.isArray(user.travelPlans) && user.travelPlans.length > 0) {
+    const plan = user.travelPlans.find((p) => p.destinationCity || p.destination_city || p.destination);
+    if (plan) {
+      const c = plan.destinationCity || plan.destination_city || (plan.destination && String(plan.destination).split(',')[0].trim());
+      if (c && String(c).toLowerCase() !== 'null') return String(c).trim();
+    }
+  }
+  if (user.isCurrentlyTraveling || user.is_currently_traveling) return 'away';
+  return null;
+}
+
+const UserCard = ({ user, onPress, navigation }) => {
+  const hometown = user.hometownCity || user.hometown_city || user.city || 'Unknown';
+  const destination = getTravelDestination(user);
+  const isTraveler = user.userType === 'traveler' || user.user_type === 'traveler';
+  const showTravelLine = isTraveler || destination;
+  const travelLabel = destination && destination !== 'away' ? `Traveling to ${destination}` : (isTraveler ? 'Traveler' : 'Traveling');
+
+  return (
+    <TouchableOpacity style={styles.userCard} onPress={() => onPress(user)} activeOpacity={0.7}>
+      <UserAvatar user={user} size={60} navigation={navigation} style={styles.avatar} />
+      <View style={styles.userInfo}>
+        <Text style={styles.userName} numberOfLines={1}>{user.fullName || user.username}</Text>
+        <Text style={styles.userCity} numberOfLines={1}>&#x1F4CD; From {hometown}</Text>
+        {showTravelLine && user.userType !== 'business' && (
+          <Text style={styles.travelLine} numberOfLines={1}>✈️ {travelLabel}</Text>
+        )}
+        {user.bio ? <Text style={styles.userBio} numberOfLines={2}>{user.bio}</Text> : null}
+        <View style={styles.tagRow}>
+          {user.userType === 'traveler' && <View style={[styles.tag, styles.travelerTag]}><Text style={styles.tagText}>Traveler</Text></View>}
+          {user.userType === 'local' && <View style={[styles.tag, styles.localTag]}><Text style={styles.tagText}>Local</Text></View>}
+          {user.availableToMeet && <View style={[styles.tag, styles.availableTag]}><Text style={styles.tagText}>Available</Text></View>}
+        </View>
       </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 export default function ExploreScreen({ navigation }) {
   const { user } = useAuth();
@@ -84,7 +115,8 @@ const styles = StyleSheet.create({
   avatar: { marginRight: 14 },
   userInfo: { flex: 1 },
   userName: { fontSize: 17, fontWeight: '700', color: '#111827', marginBottom: 2 },
-  userCity: { fontSize: 14, color: '#6B7280', marginBottom: 4 },
+  userCity: { fontSize: 14, color: '#6B7280', marginBottom: 2 },
+  travelLine: { fontSize: 13, color: '#2563EB', fontWeight: '600', marginBottom: 4 },
   userBio: { fontSize: 13, color: '#9CA3AF', lineHeight: 18, marginBottom: 8 },
   tagRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
   tag: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },

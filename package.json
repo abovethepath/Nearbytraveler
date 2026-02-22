@@ -11,7 +11,9 @@
     "build": "tsc -p tsconfig.json && vite build",
     "start": "node dist/server/index.cjs",
     "check": "tsc",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "db:migrate-new-to-town": "node -r dotenv/config scripts/run-new-to-town-migration.js",
+    "db:migrate-apple-id": "node -r dotenv/config scripts/run-apple-id-migration.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.37.0",

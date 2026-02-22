@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 // REMOVED: openFloatingChat import - IM functionality removed
 import { UniversalBackButton } from '@/components/UniversalBackButton';
 import { isNativeIOSApp } from '@/lib/nativeApp';
+import { AuthContext } from '@/App';
 
 function getInitialTargetUserId(): number | null {
   try {
@@ -31,9 +32,38 @@ function getInitialTargetUserId(): number | null {
 }
 
 export default function Messages() {
-  const user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
+  const authContextUser = useContext(AuthContext)?.user ?? null;
+  const [fetchedUser, setFetchedUser] = useState<any>(null);
+  const storageUser = (() => {
+    try {
+      const raw = localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}';
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === 'object' && parsed.id ? parsed : null;
+    } catch {
+      return null;
+    }
+  })();
+  const user = authContextUser || fetchedUser || storageUser || null;
   const hasUser = !!(user && user.id);
   const { toast } = useToast();
+
+  // When no user from context or storage (e.g. iOS WebView before inject), fetch session so messages load
+  useEffect(() => {
+    if (hasUser) return;
+    let cancelled = false;
+    fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((u) => {
+        if (cancelled || !u?.id) return;
+        try {
+          localStorage.setItem('user', JSON.stringify(u));
+          localStorage.setItem('travelconnect_user', JSON.stringify(u));
+        } catch (_) {}
+        setFetchedUser(u);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [hasUser]);
   const [selectedConversation, setSelectedConversation] = useState<number | null>(getInitialTargetUserId);
   const [newMessage, setNewMessage] = useState('');
   const [connectionSearch, setConnectionSearch] = useState('');
@@ -575,7 +605,7 @@ export default function Messages() {
                   }`}
                   onClick={() => {
                     console.log('🔥 CONVERSATION CLICKED:', conv.username, 'ID:', conv.userId);
-                    navigate(`/messages/${conv.userId}`);
+                    navigate(`/messages?user=${conv.userId}`);
                   }}
                 >
                   <div className="flex items-center gap-3">

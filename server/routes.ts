@@ -2610,11 +2610,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           ...plan,
           destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
         }));
+        const travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
+        const destinationCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
         return {
           ...user,
           travelPlans: formattedPlans,
-          isCurrentlyTraveling: !!activePlan,
-          travelDestination: activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null)
+          isCurrentlyTraveling: !!activePlan || !!(user.isCurrentlyTraveling),
+          travelDestination: travelDestination || null,
+          destinationCity
         };
       }));
       
@@ -3074,9 +3077,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           return now >= start && now <= end;
         });
         
-        const travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
-        const isCurrentlyTraveling = !!activePlan || !!(user as any).isCurrentlyTraveling;
-        const destCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
+        const profileTravelDest = (user as any).travelDestination || (user as any).travel_destination;
+        const travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (profileTravelDest || null);
+        const isCurrentlyTraveling = !!activePlan || !!(user as any).isCurrentlyTraveling || !!(user as any).is_currently_traveling;
+        const destCity = activePlan?.destinationCity || (user as any).destinationCity || (user as any).destination_city || (travelDestination && travelDestination.split(',')[0].trim()) || null;
         return {
           ...user,
           travelPlans: userTravelPlans.map(plan => ({
@@ -3084,7 +3088,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
           })),
           isCurrentlyTraveling,
-          travelDestination: travelDestination || null,
+          travelDestination: travelDestination || profileTravelDest || null,
           destinationCity: destCity
         };
       }));
@@ -7242,16 +7246,18 @@ Questions? Just reply to this message. Welcome aboard!
         
         // Remove password and add travel plans + travel status
         const { password: _, ...userWithoutPassword } = user;
-        const travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
-        const destCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
+        const profileTravelDest = (user as any).travelDestination || (user as any).travel_destination;
+        const travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (profileTravelDest || null);
+        const destCity = activePlan?.destinationCity || (user as any).destinationCity || (user as any).destination_city || (travelDestination && travelDestination.split(',')[0].trim()) || null;
+        const isCurrentlyTraveling = !!activePlan || !!(user as any).isCurrentlyTraveling || !!(user as any).is_currently_traveling;
         return {
           ...userWithoutPassword,
-          hometownCity: user.hometownCity || '',
+          hometownCity: user.hometownCity || (user as any).hometown_city || '',
           location: user.location,
           travelPlans: formattedTravelPlans,
           // CRITICAL: Include travel status for airplane badge + destination on user cards (web + iOS)
-          isCurrentlyTraveling: !!activePlan,
-          travelDestination,
+          isCurrentlyTraveling,
+          travelDestination: travelDestination || profileTravelDest || null,
           destinationCity: destCity
         };
       }));
@@ -9920,54 +9926,69 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
+      // Drizzle join result: keys may be table/alias names (messages, sender_user, receiver_user)
+      const firstRow = queryResult[0];
+      const messagesKey = firstRow && typeof firstRow === 'object' && Object.keys(firstRow).length
+        ? (('messages' in firstRow && firstRow.messages != null) ? 'messages' : Object.keys(firstRow)[0])
+        : 'messages';
+      const senderKey = firstRow && typeof firstRow === 'object' && ('sender_user' in firstRow || 'senderUser' in firstRow)
+        ? ('sender_user' in firstRow ? 'sender_user' : 'senderUser')
+        : 'sender_user';
+      const receiverKey = firstRow && typeof firstRow === 'object' && ('receiver_user' in firstRow || 'receiverUser' in firstRow)
+        ? ('receiver_user' in firstRow ? 'receiver_user' : 'receiverUser')
+        : 'receiver_user';
+
       // Get reply messages for all messages that have replyToId
-      const replyToIds = queryResult.map(row => row.messages?.replyToId).filter((id): id is number => id !== null && id !== undefined);
+      const replyToIds = queryResult
+        .map((row: any) => (row[messagesKey] || row.messages || row)?.replyToId ?? (row[messagesKey] || row.messages || row)?.reply_to_id)
+        .filter((id: any): id is number => id != null && !isNaN(Number(id)));
       const replyMessages = replyToIds.length > 0 ? await db
         .select()
         .from(messages)
         .where(inArray(messages.id, replyToIds))
         : [];
       
-      const replyMessagesMap = new Map(replyMessages.map(msg => [msg.id, msg]));
+      const replyMessagesMap = new Map(replyMessages.map((msg: any) => [msg.id, msg]));
 
       // Transform the joined data to include embedded user objects and reply data
-      const allMessages = queryResult.map(row => {
-        const messageData = row.messages;
-        const senderData = row.sender_user;
-        const receiverData = row.receiver_user;
-        const repliedMessage = messageData?.replyToId ? replyMessagesMap.get(messageData.replyToId) : null;
+      const allMessages = queryResult.map((row: any) => {
+        const messageData = row[messagesKey] ?? row.messages ?? row;
+        const senderData = row[senderKey] ?? row.sender_user ?? row.senderUser;
+        const receiverData = row[receiverKey] ?? row.receiver_user ?? row.receiverUser;
+        const replyToId = messageData?.replyToId ?? messageData?.reply_to_id;
+        const repliedMessage = replyToId != null ? replyMessagesMap.get(Number(replyToId)) : null;
         
         return {
           id: messageData?.id,
-          senderId: messageData?.senderId,
-          receiverId: messageData?.receiverId,
+          senderId: messageData?.senderId ?? messageData?.sender_id,
+          receiverId: messageData?.receiverId ?? messageData?.receiver_id,
           content: messageData?.content,
-          messageType: messageData?.messageType,
-          isRead: messageData?.isRead,
-          isEdited: messageData?.isEdited,
+          messageType: messageData?.messageType ?? messageData?.message_type,
+          isRead: messageData?.isRead ?? messageData?.is_read,
+          isEdited: messageData?.isEdited ?? messageData?.is_edited,
           reactions: messageData?.reactions,
-          replyToId: messageData?.replyToId,
+          replyToId: messageData?.replyToId ?? messageData?.reply_to_id,
           repliedMessage: repliedMessage ? {
             id: repliedMessage.id,
             senderId: repliedMessage.senderId,
             content: repliedMessage.content
           } : null,
-          createdAt: messageData?.createdAt,
+          createdAt: messageData?.createdAt ?? messageData?.created_at,
           // Add a field to identify the other person in the conversation
-          otherPersonId: messageData?.senderId === userId ? messageData?.receiverId : messageData?.senderId,
+          otherPersonId: (messageData?.senderId ?? messageData?.sender_id) === userId ? (messageData?.receiverId ?? messageData?.receiver_id) : (messageData?.senderId ?? messageData?.sender_id),
           // Include embedded sender user data
           senderUser: {
             id: senderData?.id,
             username: senderData?.username,
             name: senderData?.name,
-            profileImage: senderData?.profileImage
+            profileImage: senderData?.profileImage ?? senderData?.profile_image
           },
           // Include embedded receiver user data
           receiverUser: {
             id: receiverData?.id,
             username: receiverData?.username,
             name: receiverData?.name,
-            profileImage: receiverData?.profileImage
+            profileImage: receiverData?.profileImage ?? receiverData?.profile_image
           }
         };
       });
@@ -9987,8 +10008,12 @@ Questions? Just reply to this message. Welcome aboard!
 
       return res.json(allMessages || []);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error fetching messages:", error);
-      return res.status(500).json({ message: "Failed to fetch messages" });
+      const errMsg = error?.message ?? String(error);
+      console.error("Error fetching messages:", errMsg, error?.stack);
+      return res.status(500).json({
+        message: "Failed to fetch messages",
+        ...(process.env.NODE_ENV === 'development' && { error: errMsg }),
+      });
     }
   });
 

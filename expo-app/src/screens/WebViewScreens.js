@@ -412,8 +412,15 @@ function WebViewWithChrome({ path, navigation }) {
         source={effectiveSource}
         style={[styles.webview, dark && { backgroundColor: DARK.bg }]}
         injectedJavaScriptBeforeContentLoaded={
-          displayUser
-            ? NATIVE_INJECT_JS + `
+          NATIVE_INJECT_JS +
+          (sessionCookie ? `
+(function() {
+  try {
+    document.cookie = ${JSON.stringify(sessionCookie + '; path=/; max-age=86400')};
+  } catch(e) {}
+})();
+` : '') +
+          (displayUser ? `
 (function() {
   try {
     var u = ${JSON.stringify(displayUser)};
@@ -424,9 +431,7 @@ function WebViewWithChrome({ path, navigation }) {
     console.log('[NearbyTraveler Native] Auth injection fired - user and token set');
   } catch(e) {}
 })();
-true;
-`
-            : NATIVE_INJECT_JS
+` : '') + '\ntrue;'
         }
         onLoadStart={onLoadStart}
         onLoadEnd={onLoadEnd}

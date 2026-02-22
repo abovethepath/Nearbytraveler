@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Heart, MapPin, Star } from "lucide-react";
+import { Heart, MapPin, Star, Plane } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { SimpleAvatar } from "@/components/simple-avatar";
@@ -22,6 +22,7 @@ interface User {
   userType?: string;
   aura?: number;
   isCurrentlyTraveling?: boolean;
+  travelPlans?: Array<{ startDate?: string; endDate?: string; destinationCity?: string; destination?: string }>;
 }
 
 interface ResponsiveUserGridProps {
@@ -58,23 +59,59 @@ export default function ResponsiveUserGrid({
     return "Location not set";
   };
 
-  // 4-line block: Line 1 Nearby Local, Line 2 city, Line 3 Nearby Traveler, Line 4 destination (mobile-friendly, no mid-word wrap)
+  // Get current travel destination from any source (travelPlans, destinationCity, travelDestination, isCurrentlyTraveling). Show whenever we have any signal.
+  const getTravelDestination = (u: User): string | null => {
+    const raw = u as any;
+    const plans = raw.travelPlans;
+    if (Array.isArray(plans)) {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      const current = plans.find((p: any) => {
+        if (!p?.startDate || !p?.endDate) return false;
+        const start = new Date(p.startDate);
+        const end = new Date(p.endDate);
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+        return now >= start && now <= end;
+      });
+      if (current?.destinationCity) return current.destinationCity.trim();
+      if (current?.destination) return String(current.destination).split(',')[0].trim();
+    }
+    if (u.destinationCity && String(u.destinationCity).toLowerCase() !== 'null') return String(u.destinationCity).trim();
+    if (raw.destination_city && String(raw.destination_city).toLowerCase() !== 'null') return String(raw.destination_city).trim();
+    const td = u.travelDestination ?? raw.travel_destination;
+    if (td && typeof td === 'string') {
+      const city = td.split(',')[0].trim();
+      if (city && city.toLowerCase() !== 'null') return city;
+    }
+    if (raw.destination_state && String(raw.destination_state).toLowerCase() !== 'null') return String(raw.destination_state).trim();
+    if (raw.destination_country && String(raw.destination_country).toLowerCase() !== 'null') return String(raw.destination_country).trim();
+    if (u.isCurrentlyTraveling || raw.is_currently_traveling) return td ? String(td).split(',')[0].trim() : 'away';
+    return null;
+  };
+
+  // Hometown with map pin, then under it: plane icon + "Traveling to [place]" when they're traveling (or "Traveler" for traveler type)
   const UserLocationLines = ({ user }: { user: User }) => {
     if (user.userType === 'business') {
       return <span className="text-gray-600 dark:text-gray-400 whitespace-nowrap">Business User</span>;
     }
-    const hometown = user.hometownCity || '—';
-    const travelDest = user.travelDestination;
-    const destination = user.destinationCity || (travelDest && typeof travelDest === 'string' ? travelDest.split(',')[0].trim() : null) || null;
+    const raw = user as any;
+    const hometown = user.hometownCity || raw.hometown_city || '—';
+    const travelingTo = getTravelDestination(user);
+    const isTravelerType = user.userType === 'traveler' || raw.user_type === 'traveler';
+    const hasTravelSignal = !!travelingTo || isTravelerType || raw.isCurrentlyTraveling || raw.is_currently_traveling || raw.destinationCity || raw.destination_city || raw.travelDestination || raw.travel_destination;
     return (
       <div className="text-center text-gray-600 dark:text-gray-400 font-medium min-w-0">
         <div className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</div>
-        <div className="truncate px-0.5" title={hometown}>{hometown}</div>
-        {destination && (
-          <>
-            <div className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap">Nearby Traveler</div>
-            <div className="truncate px-0.5" title={destination}>{destination}</div>
-          </>
+        <div className="flex items-center justify-center gap-1 truncate px-0.5" title={hometown}>
+          <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-gray-500 dark:text-gray-400" aria-hidden />
+          <span className="truncate">From {hometown}</span>
+        </div>
+        {(travelingTo || hasTravelSignal) && (
+          <div className="flex items-center justify-center gap-1 mt-0.5 text-blue-600 dark:text-blue-400" title={travelingTo === 'away' ? 'Traveling' : travelingTo ? `Traveling to ${travelingTo}` : (isTravelerType ? 'Traveler' : 'Traveling')}>
+            <Plane className="w-3.5 h-3.5 flex-shrink-0" aria-hidden />
+            <span className="truncate text-xs sm:text-sm font-semibold">{travelingTo === 'away' ? 'Traveling' : travelingTo ? `Traveling to ${travelingTo}` : (isTravelerType ? 'Traveler' : 'Traveling')}</span>
+          </div>
         )}
       </div>
     );

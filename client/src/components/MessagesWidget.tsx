@@ -38,12 +38,21 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
       <Card className="relative backdrop-blur-sm bg-white/90 dark:bg-gray-900/60 border-2 border-gray-300 dark:border-gray-700/30 shadow-2xl transition-all duration-300 group-hover:shadow-3xl group-hover:bg-white/95 dark:group-hover:bg-gray-900/70">
         <CardContent className="p-6">
         <div className="mb-4">
-          <div className="flex items-center gap-2 mb-3">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLocation("/messages");
+            }}
+            className="flex items-center gap-2 mb-3 w-full text-left rounded-xl p-1 -m-1 hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
+            data-testid="messages-widget-open-all"
+            aria-label="Open all messages"
+          >
             <div className="p-2 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 dark:from-orange-900/30 dark:to-amber-900/30">
               <MessageCircle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
             </div>
             <h3 className="text-2xl font-black bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Messages</h3>
-          </div>
+          </button>
           <Button 
             variant="outline" 
             size="sm" 

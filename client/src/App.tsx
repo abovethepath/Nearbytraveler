@@ -1141,8 +1141,8 @@ function Router() {
       return <ProfileComplete userId={parseInt(businessId)} />;
     }
 
-    // Home screen message links go to /messages?user=123 — must match so Messages page renders
-    // Support both /messages and /messages/ (trailing slash) so bottom nav never shows blank
+    // Direct messages: list + chat. Match /messages and /messages/ so bottom nav and iOS tab always open list.
+    // /messages?user=123 opens that conversation on the same page (query handled by Messages component).
     if (location === '/messages' || location === '/messages/' || location.startsWith('/messages?')) {
       return <Messages />;
     }
@@ -1466,7 +1466,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
-          <HelpChatbot />
+          {!isNativeIOSApp() && <HelpChatbot />}
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>

@@ -283,41 +283,30 @@ export function getCurrentTravelDestination(travelPlans: any[]): string | null {
   
   // Check travel plans array for active trips - ONLY active trips make someone a NEARBY TRAVELER
   for (const plan of travelPlans) {
-    if (plan.startDate && plan.endDate && plan.destination) {
-      // Use simple date parsing that works with the fixed API dates
-      const parseDate = (dateString: string | Date): Date => {
-        if (!dateString) return new Date();
-        
-        // The API now sends dates like "2025-09-02T00:00:00.000Z" - parse these correctly
-        const date = new Date(dateString);
-        // Create a new date in local timezone at midnight
-        const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-        return localDate;
-      };
-      
-      const startDate = parseDate(plan.startDate);
-      const endDate = parseDate(plan.endDate);
-      startDate.setHours(0, 0, 0, 0);
-      endDate.setHours(23, 59, 59, 999);
-      
-      // TEMPORAL LOGIC: Only active trips count - future trips don't make someone a traveler yet
-      // Debug disabled for performance
-      
-      if (today >= startDate && today <= endDate) {
-        // Parse destination into consistent field naming
-        const destinationParts = plan.destination.split(', ');
-        const [destinationCity, destinationState = null, destinationCountry] = destinationParts;
-        
-        // Debug disabled for performance
-        // ALWAYS return the destination if there's an active trip, even if it's the same as hometown
-        // Clean up redundant prefecture names and duplicate city names for better display
-        const cleanDestination = plan.destination
-          .replace(/,\s*\w+\s+Prefecture/g, '') // Remove "Prefecture" mentions
-          .replace(/(\w+),\s*\1/g, '$1'); // Remove duplicate city names
-        
-        // CRITICAL: Sanitize to reject placeholder values like 'null', 'undefined', etc.
-        return sanitizeDestination(cleanDestination);
-      }
+    const startRaw = plan.startDate ?? (plan as any).start_date;
+    const endRaw = plan.endDate ?? (plan as any).end_date;
+    const destRaw = plan.destination ?? plan.destinationCity;
+    if (!startRaw || !endRaw || !destRaw) continue;
+
+    const parseDate = (dateString: string | Date): Date => {
+      if (!dateString) return new Date();
+      const date = new Date(dateString);
+      const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      return localDate;
+    };
+
+    const startDate = parseDate(startRaw);
+    const endDate = parseDate(endRaw);
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+
+    if (today >= startDate && today <= endDate) {
+      const str = typeof destRaw === 'string' ? destRaw : String(destRaw || '').trim();
+      if (!str || str.toLowerCase() === 'null' || str.toLowerCase() === 'undefined') continue;
+      const cleanDestination = str
+        .replace(/,\s*\w+\s+Prefecture/g, '')
+        .replace(/(\w+),\s*\1/g, '$1');
+      return sanitizeDestination(cleanDestination);
     }
   }
   

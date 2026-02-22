@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Clock, Users, Zap, Coffee, Camera, UtensilsCrossed, Dumbbell, Music, Mountain, Palette, Globe, ArrowRight, Share2, Sparkles, Timer, Plus, Send, Heart, Star, ChevronRight, Flag, Lock, Trash2, AlertTriangle } from "lucide-react";
+import { MapPin, Clock, Users, Zap, Coffee, Camera, UtensilsCrossed, Dumbbell, Music, Mountain, Palette, Globe, ArrowRight, Share2, Sparkles, Timer, Plus, Send, Heart, Star, ChevronRight, Flag, Lock, Trash2, AlertTriangle, Plane } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getMetroAreaName } from "../../../shared/metro-areas";
@@ -356,22 +356,22 @@ export default function Explore() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-4">
-        {/* Tabs first: Live, Activities, Templates, Groups, Stories — before People in city */}
+        {/* Tabs: Live, Activities, Templates, Groups, Stories — compact 2 rows */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-3 gap-2 mb-4 w-full h-auto p-1.5">
-            <TabsTrigger value="live" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap">
+          <TabsList className="grid grid-cols-3 gap-1.5 mb-4 w-full max-w-md mx-auto h-auto p-1">
+            <TabsTrigger value="live" className="flex items-center justify-center gap-1 py-2 px-2 text-xs sm:text-sm whitespace-nowrap">
               <MapPin className="w-3.5 h-3.5 shrink-0" /> <span>Live</span>
             </TabsTrigger>
-            <TabsTrigger value="experiences" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap">
+            <TabsTrigger value="experiences" className="flex items-center justify-center gap-1 py-2 px-2 text-xs sm:text-sm whitespace-nowrap">
               <Sparkles className="w-3.5 h-3.5 shrink-0" /> <span>Activities</span>
             </TabsTrigger>
-            <TabsTrigger value="templates" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap">
+            <TabsTrigger value="templates" className="flex items-center justify-center gap-1 py-2 px-2 text-xs sm:text-sm whitespace-nowrap">
               <Star className="w-3.5 h-3.5 shrink-0" /> <span>Templates</span>
             </TabsTrigger>
-            <TabsTrigger value="communities" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap">
+            <TabsTrigger value="communities" className="flex items-center justify-center gap-1 py-2 px-2 text-xs sm:text-sm whitespace-nowrap">
               <Globe className="w-3.5 h-3.5 shrink-0" /> <span>Groups</span>
             </TabsTrigger>
-            <TabsTrigger value="cards" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap col-span-2">
+            <TabsTrigger value="cards" className="flex items-center justify-center gap-1 py-2 px-2 text-xs sm:text-sm whitespace-nowrap">
               <Share2 className="w-3.5 h-3.5 shrink-0" /> <span>Stories</span>
             </TabsTrigger>
           </TabsList>
@@ -1022,8 +1022,40 @@ export default function Explore() {
               </Card>
             ) : (
               <div className="flex gap-3 overflow-x-auto pb-2">
-                {nearbyUsers.filter((u: any) => u.id !== currentUser?.id).slice(0, 20).map((user: any) => (
-                  <div key={user.id} className="flex-shrink-0 w-20 text-center cursor-pointer" onClick={() => setLocation(`/profile/${user.id}`)}>
+                {nearbyUsers.filter((u: any) => u.id !== currentUser?.id).slice(0, 20).map((user: any) => {
+                  const hometown = user.hometownCity || (user as any).hometown_city || user.location?.split(',')[0] || "—";
+                  // Same logic as UserCard: travelPlans (active by date) → destinationCity → travelDestination
+                  let travelDest: string | null = null;
+                  const plans = user.travelPlans;
+                  if (plans && Array.isArray(plans)) {
+                    const now = new Date();
+                    now.setHours(0, 0, 0, 0);
+                    const active = plans.find((p: any) => {
+                      const start = new Date(p.startDate ?? p.start_date);
+                      const end = new Date(p.endDate ?? p.end_date);
+                      start.setHours(0, 0, 0, 0);
+                      end.setHours(23, 59, 59, 999);
+                      return now >= start && now <= end;
+                    });
+                    if (active?.destinationCity) travelDest = String(active.destinationCity).trim();
+                    else if (active?.destination_city) travelDest = String(active.destination_city).trim();
+                    else if (active?.destination) travelDest = String(active.destination).split(',')[0].trim();
+                  }
+                  if (!travelDest && (user.destinationCity || (user as any).destination_city)) {
+                    const d = user.destinationCity ?? (user as any).destination_city;
+                    if (String(d).toLowerCase() !== 'null') travelDest = String(d).trim();
+                  }
+                  if (!travelDest && (user.travelDestination || (user as any).travel_destination)) {
+                    const td = user.travelDestination ?? (user as any).travel_destination;
+                    const c = String(td).split(',')[0].trim();
+                    if (c && c.toLowerCase() !== 'null') travelDest = c;
+                  }
+                  if (!travelDest && (user.destinationState || (user as any).destination_state)) travelDest = String(user.destinationState ?? (user as any).destination_state).trim();
+                  if (!travelDest && (user.destinationCountry || (user as any).destination_country)) travelDest = String(user.destinationCountry ?? (user as any).destination_country).trim();
+                  const isTravelerType = user.userType === 'traveler' || (user as any).user_type === 'traveler';
+                  const showTraveling = !!travelDest || !!(user.isCurrentlyTraveling ?? (user as any).is_currently_traveling) || isTravelerType;
+                  return (
+                  <div key={user.id} className="flex-shrink-0 w-24 text-center cursor-pointer" onClick={() => setLocation(`/profile/${user.id}`)}>
                     <div className="relative mx-auto w-14 h-14 mb-1">
                       {user.profileImage ? (
                         <img src={user.profileImage} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-orange-300 dark:border-orange-600" />
@@ -1038,9 +1070,19 @@ export default function Explore() {
                       )}
                     </div>
                     <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">{user.username}</p>
-                    <p className="text-[10px] text-gray-400 truncate">{user.userType === "business" ? "Business" : user.isCurrentlyTraveling ? "Traveler" : "Local"}</p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate" title={hometown}>From {hometown}</p>
+                    {showTraveling && user.userType !== "business" && (
+                      <p className="text-[10px] text-blue-600 dark:text-blue-400 truncate flex items-center justify-center gap-0.5 mt-0.5" title={travelDest ? `Traveling to ${travelDest}` : (isTravelerType ? 'Traveler' : 'Traveling')}>
+                        <Plane className="w-3 h-3 flex-shrink-0" aria-hidden />
+                        <span>{travelDest ? `Traveling to ${travelDest}` : (isTravelerType ? 'Traveler' : 'Traveling')}</span>
+                      </p>
+                    )}
+                    {!showTraveling && user.userType !== "business" && (
+                      <p className="text-[10px] text-gray-400 truncate mt-0.5">Local</p>
+                    )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

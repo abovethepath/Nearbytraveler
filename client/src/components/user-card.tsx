@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation } from "wouter";
+import { Plane, MapPin } from "lucide-react";
 
 export interface User {
   id: number;
@@ -78,32 +79,63 @@ export default function UserCard({
     return gradients[user.id % gradients.length];
   };
 
+  const u = user as any;
+  // Get current travel destination: travelPlans (active trip) → destinationCity → travelDestination (camelCase or snake_case from API). Show whenever we have any signal.
   const getTravelCity = (): string | null => {
-    if ((user as any).travelPlans && Array.isArray((user as any).travelPlans)) {
+    // 1) Active travel plan by date
+    if (u.travelPlans && Array.isArray(u.travelPlans)) {
       const now = new Date();
       now.setHours(0, 0, 0, 0);
-      const currentTrip = (user as any).travelPlans.find((plan: any) => {
-        const start = new Date(plan.startDate);
+      const currentTrip = u.travelPlans.find((plan: any) => {
+        const startDate = plan?.startDate ?? plan?.start_date;
+        const endDate = plan?.endDate ?? plan?.end_date;
+        if (!startDate || !endDate) return false;
+        const start = new Date(startDate);
+        const end = new Date(endDate);
         start.setHours(0, 0, 0, 0);
-        const end = new Date(plan.endDate);
         end.setHours(23, 59, 59, 999);
         return now >= start && now <= end;
       });
-      if (currentTrip?.destinationCity) return currentTrip.destinationCity;
+      if (currentTrip?.destinationCity) return String(currentTrip.destinationCity).trim();
+      if (currentTrip?.destination_city) return String(currentTrip.destination_city).trim();
+      if (currentTrip?.destination) return String(currentTrip.destination).split(',')[0].trim();
+      // No active trip by date: use next/any plan's destination so we still show "Traveling to X"
+      for (const plan of u.travelPlans) {
+        const city = plan?.destinationCity ?? plan?.destination_city ?? (plan?.destination ? String(plan.destination).split(',')[0].trim() : null);
+        if (city && String(city).toLowerCase() !== 'null') return String(city).trim();
+      }
     }
-    if ((user as any).destinationCity) {
-      const c = (user as any).destinationCity;
-      if (c && String(c).toLowerCase() !== 'null') return String(c).trim();
-    }
-    if (user.isCurrentlyTraveling && user.travelDestination) {
-      const city = user.travelDestination.split(',')[0].trim();
+    // 2) destinationCity (from API enrichment or profile) – always trust server
+    const destCity = u.destinationCity ?? u.destination_city;
+    if (destCity && String(destCity).toLowerCase() !== 'null') return String(destCity).trim();
+    // 3) travelDestination string (e.g. "Los Angeles, CA, USA" → show "Los Angeles")
+    const travelDest = user.travelDestination ?? u.travel_destination;
+    if (travelDest && typeof travelDest === 'string') {
+      const city = travelDest.split(',')[0].trim();
       if (city && city.toLowerCase() !== 'null') return city;
+    }
+    // 4) Build from destination state/country if no city (API sometimes returns these only)
+    const destState = u.destinationState ?? u.destination_state;
+    const destCountry = u.destinationCountry ?? u.destination_country;
+    if (destState && String(destState).toLowerCase() !== 'null') return String(destState).trim();
+    if (destCountry && String(destCountry).toLowerCase() !== 'null') return String(destCountry).trim();
+    // 5) If marked as traveling but no destination yet, show generic "Traveling" so the plane line still appears
+    if (user.isCurrentlyTraveling || u.is_currently_traveling) {
+      return travelDest ? String(travelDest).split(',')[0].trim() : 'away';
     }
     return null;
   };
 
   const travelCity = getTravelCity();
-  const displayCity = user.hometownCity || 'Unknown';
+  const displayCity = user.hometownCity || u.hometown_city || 'Unknown';
+  // Show traveling whenever we have destination, flag, any travel plan with destination, OR userType is traveler (always show line under hometown)
+  const hasTravelPlansWithDestination = Array.isArray(u.travelPlans) && u.travelPlans.some((p: any) => p?.destinationCity || p?.destination_city || p?.destination);
+  const hasTravelSignal = !!(u.destinationCity ?? u.destination_city ?? u.destinationState ?? u.destination_state ?? u.destinationCountry ?? u.destination_country ?? u.travelDestination ?? u.travel_destination ?? u.isCurrentlyTraveling ?? u.is_currently_traveling ?? hasTravelPlansWithDestination);
+  const isTravelerType = user.userType === 'traveler' || u.user_type === 'traveler';
+  const isTraveling = !!travelCity || hasTravelSignal || isTravelerType;
+  // Text under hometown: specific destination > "Traveling" > "Traveler" for traveler type (always show plane + line for non-business when traveling)
+  const travelingLineText = travelCity && travelCity !== 'away' ? `Traveling to ${travelCity}` : (isTravelerType ? 'Traveler' : 'Traveling');
+  const travelingLabel = travelingLineText;
   const displayName = user.userType === 'business' && user.businessName 
     ? user.businessName 
     : `@${user.username}`;
@@ -151,12 +183,11 @@ export default function UserCard({
           </div>
         )}
         
-        {/* Travel badge on photo - only when we have a destination (there's never traveling without one) */}
-        {travelCity && (
-          <div className="absolute top-1.5 left-1.5 z-10">
-            <span className="bg-blue-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap">
-              ✈️ {travelCity}
-            </span>
+        {/* Travel badge on photo - plane icon + destination when they're traveling */}
+        {isTraveling && user.userType !== 'business' && (
+          <div className="absolute top-1.5 left-1.5 z-10 flex items-center gap-0.5 bg-blue-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap max-w-[85%]">
+            <Plane className="w-3 h-3 flex-shrink-0" aria-hidden />
+            <span className="truncate">{travelCity && travelCity !== 'away' ? travelCity : 'Traveling'}</span>
           </div>
         )}
         
@@ -192,14 +223,22 @@ export default function UserCard({
               {user.businessType}
             </div>
           )}
-          <div className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
-            {user.userType === 'business' && user.streetAddress 
-              ? `📍 ${user.streetAddress}` 
-              : displayCity}
+          {/* Line 1: Hometown – "From [city]" with map pin */}
+          <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5" title={displayCity}>
+            {user.userType === 'business' && user.streetAddress ? (
+              <>📍 {user.streetAddress}</>
+            ) : (
+              <>
+                <MapPin className="w-3 h-3 flex-shrink-0 text-gray-400 dark:text-gray-500" aria-hidden />
+                <span>From {displayCity}</span>
+              </>
+            )}
           </div>
-          {travelCity && user.userType !== 'business' && (
-            <div className="text-[10px] font-medium text-blue-600 dark:text-blue-400 truncate mt-0.5">
-              ✈️ Traveling to {travelCity}
+          {/* Line 2: Under hometown – plane icon + where they're traveling (always show when we have travel data) */}
+          {isTraveling && user.userType !== 'business' && (
+            <div className="flex items-center gap-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400 mt-0.5 truncate" title={travelCity === 'away' ? 'Traveling' : `Traveling to ${travelCity}`}>
+              <Plane className="w-3 h-3 flex-shrink-0" aria-hidden />
+              <span className="truncate">{travelCity === 'away' ? 'Traveling' : `Traveling to ${travelCity}`}</span>
             </div>
           )}
           {!compact && (
@@ -230,10 +269,14 @@ export default function UserCard({
             {displayName}
           </div>
           <div className="truncate">
-            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{displayCity}</div>
-            {travelCity && user.userType !== 'business' && (
-              <div className="text-[10px] font-medium text-blue-600 dark:text-blue-400 truncate">
-                ✈️ To {travelCity}
+            <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 truncate" title={displayCity}>
+              <MapPin className="w-3 h-3 flex-shrink-0 text-gray-400" aria-hidden />
+              <span>From {displayCity}</span>
+            </div>
+            {isTraveling && user.userType !== 'business' && (
+              <div className="flex items-center gap-0.5 text-[10px] font-semibold text-blue-600 dark:text-blue-400 truncate" title={travelCity === 'away' ? 'Traveling' : `Traveling to ${travelCity}`}>
+                <Plane className="w-2.5 h-2.5 flex-shrink-0" aria-hidden />
+                <span>{travelCity === 'away' ? 'Traveling' : `Traveling to ${travelCity}`}</span>
               </div>
             )}
           </div>

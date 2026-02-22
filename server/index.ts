@@ -31,6 +31,7 @@ import path from "path";
 import { db, checkDatabaseHealth, getDatabaseStatus } from "./db";
 import {
   users,
+  travelPlans,
   events,
   businessOffers,
   quickMeetups,
@@ -418,10 +419,45 @@ app.get("/api/users-by-location/:city/:userType", async (req, res) => {
 
     const safeResults = results.map(({ password, ...rest }) => rest);
 
-    console.log(
-      `🌍 users-by-location [CRITICAL]: found ${safeResults.length} ${userType} users for "${searchCity}"`,
+    // Enrich with travel status so user cards show "Traveling to X" under hometown
+    const now = new Date();
+    const enrichedResults = await Promise.all(
+      safeResults.map(async (user: any) => {
+        const userTravelPlans = await db
+          .select()
+          .from(travelPlans)
+          .where(eq(travelPlans.userId, user.id));
+        const activePlan = userTravelPlans.find((plan: any) => {
+          if (!plan.startDate || !plan.endDate) return false;
+          const start = new Date(plan.startDate);
+          const end = new Date(plan.endDate);
+          return now >= start && now <= end;
+        });
+        const formattedPlans = userTravelPlans.map((plan: any) => ({
+          ...plan,
+          destination: `${plan.destinationCity || ""}${plan.destinationState ? `, ${plan.destinationState}` : ""}, ${plan.destinationCountry || ""}`,
+        }));
+        const travelDestination = activePlan
+          ? `${activePlan.destinationCity || ""}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ""}, ${activePlan.destinationCountry || ""}`.trim()
+          : user.travelDestination || null;
+        const destinationCity =
+          activePlan?.destinationCity ||
+          (travelDestination && travelDestination.split(",")[0]?.trim()) ||
+          null;
+        return {
+          ...user,
+          travelPlans: formattedPlans,
+          isCurrentlyTraveling: !!activePlan || !!user.isCurrentlyTraveling,
+          travelDestination: travelDestination || null,
+          destinationCity,
+        };
+      })
     );
-    res.json(safeResults);
+
+    console.log(
+      `🌍 users-by-location [CRITICAL]: found ${enrichedResults.length} ${userType} users for "${searchCity}"`,
+    );
+    res.json(enrichedResults);
   } catch (error: any) {
     console.error("Error in users-by-location endpoint:", error);
     res
