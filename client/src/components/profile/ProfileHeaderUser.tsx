@@ -49,7 +49,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       )}
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6 relative z-20">
-          <div className="relative flex-shrink-0">
+          <div className="relative flex-shrink-0 flex flex-col items-center gap-2">
             <div
               className={`rounded-full border-4 border-white dark:border-gray-600 shadow-xl overflow-hidden ${!isOwnProfile && user?.profileImage ? 'cursor-pointer hover:border-orange-400 transition-all' : ''}`}
               onClick={() => { if (!isOwnProfile && user?.profileImage) setShowExpandedPhoto(true); }}
@@ -72,6 +72,21 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <input id="avatar-upload-input" type="file" accept="image/*" onChange={(e) => { handleAvatarUpload?.(e); }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" style={{ fontSize: '200px' }} disabled={uploadingPhoto} aria-label="Change avatar" />
                 </div>
               </>
+            )}
+            {isOwnProfile && user && user.userType !== 'business' && (user.hometownCity || user.location) && (
+              <Button
+                onClick={() => {
+                  const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
+                  setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
+                }}
+                variant="outline"
+                size="sm"
+                className="w-full max-w-[160px] border-gray-300 dark:border-gray-500 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 shadow-sm"
+                data-testid="button-chatrooms"
+              >
+                <MessageCircle className="w-4 h-4 shrink-0" />
+                <span className="truncate">Chatrooms</span>
+              </Button>
             )}
           </div>
           <div className="flex-1 min-w-0 overflow-hidden">
@@ -126,21 +141,21 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black dark:text-gray-200 min-w-0">
+                    <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium min-w-0">
                       <div className="flex-shrink-0 mt-0.5 flex flex-col items-center gap-0">
                         <MapPin className="hidden sm:block w-5 h-5 text-blue-600" />
                         <Plane className="hidden sm:block w-5 h-5 text-orange-600 mt-1" />
                       </div>
-                      <div className="flex flex-col gap-0 min-w-0 flex-1">
+                      <div className="flex flex-col gap-0 min-w-0 flex-1" style={{ maxWidth: '100%' }}>
                         <span className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</span>
-                        <span className="truncate text-gray-700 dark:text-gray-300" title={hometown}>{hometown}</span>
+                        <span className="text-gray-900 dark:text-gray-100 whitespace-normal break-words line-clamp-2" style={{ WebkitLineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }} title={hometown}>{hometown}</span>
                         <span className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-0.5">Nearby Traveler</span>
                         {(() => {
                           const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
                           return currentTravelPlan ? (
-                            <span className="truncate text-gray-700 dark:text-gray-300" title={currentTravelPlan}>{currentTravelPlan}</span>
+                            <span className="text-gray-900 dark:text-gray-100 whitespace-normal break-words line-clamp-2" style={{ WebkitLineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }} title={currentTravelPlan}>{currentTravelPlan}</span>
                           ) : (
-                            <span className="truncate text-gray-700 dark:text-gray-300">—</span>
+                            <span className="text-gray-900 dark:text-gray-100">—</span>
                           );
                         })()}
                       </div>
@@ -332,31 +347,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   )
                 )}
               </div>
-            ) : (
-              <div className="flex items-center gap-3 flex-wrap min-w-0">
-                {user && user.userType !== 'business' && (user.hometownCity || user.location) && (
-                  <Button
-                    onClick={() => {
-                      const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
-                      setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
-                    }}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0 shadow-md rounded-lg inline-flex items-center justify-center gap-2 px-6 py-2 transition-all text-black dark:text-white dark:border dark:border-gray-400"
-                    data-testid="button-chatrooms"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    <span>Go to Chatrooms</span>
-                  </Button>
-                )}
-                <Button
-                  onClick={() => setLocation('/share-qr')}
-                  className="bg-gradient-to-r from-orange-600 to-blue-600 hover:from-orange-700 hover:to-blue-700 border-0 shadow-md rounded-lg inline-flex items-center justify-center gap-2 px-6 py-2 transition-all text-black dark:text-white dark:border dark:border-gray-400"
-                  data-testid="button-share-qr"
-                >
-                  <Share2 className="w-4 h-4" />
-                  <span>Invite Friends</span>
-                </Button>
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

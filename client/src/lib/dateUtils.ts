@@ -315,6 +315,44 @@ export function getCurrentTravelDestination(travelPlans: any[]): string | null {
 }
 
 /**
+ * Return the active trip plan object (by date) for location defaults.
+ * Use: activeTrip.destinationCity, .destinationCountry, .destinationState
+ */
+export function getActiveTripPlan(travelPlans: any[]): { destinationCity?: string; destinationCountry?: string; destinationState?: string } | null {
+  if (!travelPlans || !Array.isArray(travelPlans) || travelPlans.length === 0) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  for (const plan of travelPlans) {
+    const startRaw = plan.startDate ?? (plan as any).start_date;
+    const endRaw = plan.endDate ?? (plan as any).end_date;
+    if (!startRaw || !endRaw) continue;
+    const parseDate = (dateString: string | Date): Date => {
+      if (!dateString) return new Date();
+      const date = new Date(dateString);
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    };
+    const startDate = parseDate(startRaw);
+    const endDate = parseDate(endRaw);
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+    if (today >= startDate && today <= endDate) {
+      const city = plan.destinationCity ?? (plan as any).destination_city;
+      const country = plan.destinationCountry ?? (plan as any).destination_country;
+      const state = plan.destinationState ?? (plan as any).destination_state;
+      if (city && String(city).toLowerCase() !== 'null') {
+        return { destinationCity: String(city).trim(), destinationCountry: country ? String(country).trim() : undefined, destinationState: state ? String(state).trim() : undefined };
+      }
+      const dest = plan.destination ?? plan.destinationCity;
+      if (dest && String(dest).toLowerCase() !== 'null') {
+        const parts = String(dest).split(',').map((s: string) => s.trim());
+        return { destinationCity: parts[0] || undefined, destinationCountry: parts[2] || undefined, destinationState: parts[1] || undefined };
+      }
+    }
+  }
+  return null;
+}
+
+/**
  * Abbreviate US state names to 2-letter codes for compact display
  */
 const US_STATE_ABBREVIATIONS: Record<string, string> = {

@@ -36,7 +36,7 @@ const NATIVE_INJECT_JS = `
     var s = document.createElement('style');
     s.id = 'native-ios-css';
     s.textContent = ':root { --native-tabbar-height: 88px; --native-bottom-inset: 88px; --native-header-height: 56px; } .mobile-top-nav, .mobile-bottom-nav, .desktop-navbar, [data-testid="button-mobile-menu"], .ios-nav-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; } body[data-native-ios] .mobile-top-nav, body[data-native-ios] .mobile-bottom-nav, body[data-native-ios] .desktop-navbar { display: none !important; }'
-      + ' body.native-ios-app div.bg-gradient-to-r[style*="100vw"], body.native-ios-app div[style*="100vw"][style*="translateX(-50%)"] { width: 100% !important; max-width: 100% !important; left: 0 !important; transform: none !important; overflow-x: clip !important; box-sizing: border-box !important; min-height: 220px !important; }'
+      + ' body.native-ios-app div.bg-gradient-to-r[style*="100vw"], body.native-ios-app div[style*="100vw"][style*="translateX(-50%)"] { width: 100% !important; max-width: 100% !important; left: 0 !important; transform: none !important; overflow-x: clip !important; box-sizing: border-box !important; min-height: 220px !important; padding-top: env(safe-area-inset-top, 0) !important; }'
       + ' body.native-ios-app div.flex.items-start.gap-1\\.5.min-w-0 { flex-wrap: wrap !important; min-width: 0 !important; gap: 10px !important; row-gap: 8px !important; }'
       + ' body.native-ios-app div.flex.items-start.gap-1\\.5.min-w-0 > span.flex-shrink-0.self-start { flex-basis: 100% !important; margin-top: 8px !important; align-self: flex-start !important; }';
     if (document.head) document.head.appendChild(s);
@@ -66,19 +66,36 @@ const NATIVE_INJECT_JS = `
         }
       }
     }
+    function applyCitySpanStyle(el) {
+      if (!el) return;
+      el.style.whiteSpace = 'normal';
+      el.style.maxWidth = '100%';
+      el.style.display = '-webkit-box';
+      el.style.webkitBoxOrient = 'vertical';
+      el.style.webkitLineClamp = '2';
+      el.style.overflow = 'hidden';
+      el.style.textOverflow = 'ellipsis';
+      el.style.color = 'rgba(0,0,0,0.92)';
+    }
     function patchHeroHometownLine() {
       var spans = document.querySelectorAll('body.native-ios-app span');
       for (var i = 0; i < spans.length; i++) {
         if ((spans[i].textContent || '').trim() !== 'Nearby Local') continue;
         var hometownEl = spans[i].nextElementSibling;
-        if (!hometownEl || !(hometownEl.textContent || '').trim()) continue;
-        hometownEl.style.whiteSpace = 'normal';
-        hometownEl.style.overflow = 'visible';
-        hometownEl.style.textOverflow = 'clip';
-        hometownEl.style.maxWidth = '100%';
-        var t = hometownEl.textContent || '';
-        if (t.indexOf('United States') !== -1) {
-          hometownEl.textContent = t.replace(/\\bUnited States\\b/g, 'USA');
+        if (hometownEl) {
+          applyCitySpanStyle(hometownEl);
+          var t = hometownEl.textContent || '';
+          if (t.indexOf('United States') !== -1) {
+            hometownEl.textContent = t.replace(/\bUnited States\b/g, 'USA');
+          }
+        }
+        for (var j = 0; j < spans.length; j++) {
+          if ((spans[j].textContent || '').trim() !== 'Nearby Traveler') continue;
+          var destEl = spans[j].nextElementSibling;
+          if (destEl && (destEl.textContent || '').trim() && (destEl.textContent || '').trim() !== '—') {
+            applyCitySpanStyle(destEl);
+          }
+          break;
         }
         break;
       }
@@ -229,9 +246,23 @@ function WebViewWithChrome({ path, navigation }) {
   const displayUser = authUser || user;
   const source = webViewSource(path);
   const [messagesBootstrapUri, setMessagesBootstrapUri] = useState(null);
+  const [messagesBootstrapError, setMessagesBootstrapError] = useState(null);
+  const [messagesBootstrapLoading, setMessagesBootstrapLoading] = useState(false);
+  const [currentWebPath, setCurrentWebPath] = useState(null);
 
-  // Wait for auth on Messages and chat paths so the page never loads without user (avoids blank / "Please log in")
-  const isMessagesPath = path === '/messages' || (path && path.startsWith('/messages'));
+  // Use actual current path: from WebView nav (when navigated to /messages from Home) or from route prop (Messages tab)
+  const effectivePath = currentWebPath || (typeof path === 'string' ? path : '');
+  // Treat ANY path that contains /messages as Messages (tab + widget + deep links)
+  const isMessagesPath = !!(effectivePath && String(effectivePath).includes('/messages'));
+
+  // Build a SAFE redirect path for the server (path + query, no protocol-relative)
+  const rawPath = typeof effectivePath === 'string' ? effectivePath : '';
+  const pathAndQuery = (rawPath || '/messages').trim();
+  const safeMessagesRedirect =
+    pathAndQuery.startsWith('/') && !pathAndQuery.startsWith('//')
+      ? pathAndQuery
+      : '/messages';
+
   const isChatroomPath = path && path.startsWith('/chatroom');
   const isEventChatPath = path && path.startsWith('/event-chat');
   const wantsAuth = isMessagesPath || isChatroomPath || isEventChatPath;
@@ -247,20 +278,59 @@ function WebViewWithChrome({ path, navigation }) {
     if (displayUser) setAuthWaitExpired(false);
   }, [displayUser]);
 
+  const runMessagesBootstrap = useCallback(() => {
+    if (!isMessagesPath || !displayUser) return;
+    setMessagesBootstrapError(null);
+    setMessagesBootstrapUri(null);
+    setMessagesBootstrapLoading(true);
+    let resolved = false;
+    const timeoutId = setTimeout(() => {
+      if (resolved) return;
+      setMessagesBootstrapError((e) => (!e ? 'Bootstrap timeout' : e));
+      setMessagesBootstrapLoading(false);
+    }, 10000);
+    api.getWebViewToken()
+      .then((token) => {
+        resolved = true;
+        if (!token) {
+          setMessagesBootstrapError('No token (401 or empty)');
+          setMessagesBootstrapLoading(false);
+          return;
+        }
+        const uri = `${BASE_URL}/api/auth/webview-login?token=${encodeURIComponent(token)}&redirect=${encodeURIComponent(safeMessagesRedirect)}`;
+        setMessagesBootstrapUri(uri);
+        setMessagesBootstrapError(null);
+        setMessagesBootstrapLoading(false);
+      })
+      .catch((err) => {
+        resolved = true;
+        setMessagesBootstrapError(err?.message || String(err) || 'Token request failed');
+        setMessagesBootstrapLoading(false);
+      })
+      .finally(() => clearTimeout(timeoutId));
+  }, [isMessagesPath, !!displayUser, safeMessagesRedirect]);
+  const handleMessagesRetry = useCallback(() => {
+    setMessagesBootstrapError(null);
+    runMessagesBootstrap();
+  }, [runMessagesBootstrap]);
+
   useEffect(() => {
-    if (!isMessagesPath) {
-      setMessagesBootstrapUri(null);
-      return;
-    }
-    if (!displayUser) return;
-    let cancelled = false;
-    api.getWebViewToken().then((token) => {
-      if (cancelled || !token) return;
-      const uri = `${BASE_URL}/api/auth/webview-login?token=${encodeURIComponent(token)}&redirect=${encodeURIComponent('/messages')}`;
-      setMessagesBootstrapUri(uri);
-    }).catch(() => {});
-    return () => { cancelled = true; };
-  }, [isMessagesPath, displayUser?.id]);
+  // Leaving messages: reset everything
+  if (!isMessagesPath) {
+    setMessagesBootstrapUri(null);
+    setMessagesBootstrapError(null);
+    setMessagesBootstrapLoading(false);
+    return;
+  }
+
+  // Messages path changed (widget vs tab): reset uri so we re-bootstrap cleanly
+  setMessagesBootstrapUri(null);
+  setMessagesBootstrapError(null);
+
+  if (!displayUser) return;
+  runMessagesBootstrap();
+  // IMPORTANT: include safeMessagesRedirect so changing /messages vs /messages?... triggers bootstrap
+}, [isMessagesPath, safeMessagesRedirect, displayUser?.id, runMessagesBootstrap]);
 
   const authReady = !!displayUser;
   const messagesBootstrapReady = isMessagesPath && authReady && !!messagesBootstrapUri;
@@ -268,7 +338,7 @@ function WebViewWithChrome({ path, navigation }) {
     ? (messagesBootstrapReady ? { uri: messagesBootstrapUri } : null)
     : ((shouldWaitForAuth && !authWaitExpired) ? null : source);
   const showAuthWaiting = shouldWaitForAuth && !authWaitExpired;
-  const isMessagesWaiting = isMessagesPath && (!authReady || !messagesBootstrapUri);
+  const isMessagesWaiting = isMessagesPath && (!authReady || !messagesBootstrapUri) && !messagesBootstrapError;
 
   const loadUser = useCallback(() => {
     api.getUser().then((u) => {
@@ -543,10 +613,30 @@ function WebViewWithChrome({ path, navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-      {isMessagesWaiting ? (
+      {isMessagesPath && messagesBootstrapError ? (
+        <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg, padding: 24 }]}>
+          <View style={{ position: 'absolute', top: 8, left: 8, backgroundColor: 'rgba(0,0,0,0.75)', padding: 6, borderRadius: 8, maxWidth: '92%' }}>
+            <Text style={{ color: '#fff', fontSize: 11 }}>authReady: {authReady ? '1' : '0'}</Text>
+            <Text style={{ color: '#fff', fontSize: 11 }}>token: fail</Text>
+            <Text style={{ color: '#fff', fontSize: 11 }}>bootstrapUri: {messagesBootstrapUri ? 'set' : 'not'}</Text>
+          </View>
+          <Text style={[styles.loadingMessage, { marginBottom: 8, fontWeight: '600' }, dark && { color: DARK.textMuted }]}>Messages failed to start</Text>
+          <Text style={[styles.loadingMessage, { marginBottom: 16, textAlign: 'center' }, dark && { color: DARK.textMuted }]}>{messagesBootstrapError}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={handleMessagesRetry}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      ) : isMessagesWaiting ? (
         <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg }]}>
           <ActivityIndicator size="large" color="#F97316" />
           <Text style={[styles.loadingMessage, dark && { color: DARK.textMuted }]}>Preparing Messages…</Text>
+          {isMessagesPath && (
+            <View style={{ position: 'absolute', top: 8, left: 8, backgroundColor: 'rgba(0,0,0,0.75)', padding: 6, borderRadius: 8, maxWidth: '92%' }}>
+              <Text style={{ color: '#fff', fontSize: 11 }}>authReady: {authReady ? '1' : '0'}</Text>
+              <Text style={{ color: '#fff', fontSize: 11 }}>token: {messagesBootstrapError ? 'fail' : (messagesBootstrapUri ? 'ok' : (messagesBootstrapLoading ? '…' : '—'))}</Text>
+              <Text style={{ color: '#fff', fontSize: 11 }}>bootstrapUri: {messagesBootstrapUri ? 'set' : 'not'}</Text>
+            </View>
+          )}
         </View>
       ) : showAuthWaiting ? (
         <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg }]}>
@@ -592,7 +682,10 @@ function WebViewWithChrome({ path, navigation }) {
           setCanGoBackWeb(navState.canGoBack);
           const url = navState?.url || '';
           if (!url.includes(HOST)) return;
-          const pathname = (url.replace(BASE_URL, '').split('?')[0] || '/').replace(/\/$/, '') || '/';
+          const afterBase = url.replace(BASE_URL, '').split('?');
+          const pathname = (afterBase[0] || '/').replace(/\/$/, '') || '/';
+          const search = afterBase[1] ? '?' + afterBase[1] : '';
+          if (!pathname.startsWith('/api/')) setCurrentWebPath(pathname + search);
           if (pathname === '/' || pathname === '/landing' || pathname.indexOf('/landing') === 0) {
             webViewRef.current?.injectJavaScript(
               `window.location.replace('${BASE_URL}${pathWithNativeIOS('/home')}');true;`

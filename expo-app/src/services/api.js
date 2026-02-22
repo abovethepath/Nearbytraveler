@@ -172,13 +172,26 @@ const api = {
 
   /** One-time token for iOS Messages WebView bootstrap (requires existing session). */
   async getWebViewToken() {
-    const r = await fetch(`${BASE_URL}/api/auth/webview-token`, {
+    const url = `${BASE_URL}/api/auth/webview-token`;
+    const opts = {
+      method: 'GET',
       headers: getHeaders(),
       credentials: 'include',
-    });
-    if (!r.ok) return null;
-    const data = await r.json();
-    return data?.token || null;
+    };
+    try {
+      const r = await fetch(url, opts);
+      let body = null;
+      try {
+        body = await r.text();
+      } catch (_) {}
+      console.log('[getWebViewToken] status:', r.status, 'body:', body?.slice(0, 200) || '(empty)');
+      if (!r.ok) return null;
+      const data = body ? JSON.parse(body) : {};
+      return data?.token || null;
+    } catch (e) {
+      console.log('[getWebViewToken] error:', e?.message || e);
+      throw e;
+    }
   },
 
   async register(userData) {

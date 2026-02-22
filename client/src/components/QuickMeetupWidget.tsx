@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,7 @@ import SmartLocationInput from '@/components/SmartLocationInput';
 import { isStateOptionalForCountry } from '@/lib/locationHelpers';
 import { useLocation } from 'wouter';
 import { AIQuickCreateMeetup } from '@/components/AIQuickCreateMeetup';
+import { getActiveTripPlan } from '@/lib/dateUtils';
 
 interface NewMeetup {
   title: string;
@@ -42,6 +43,31 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
   // CRITICAL FIX: Get user data like navbar does (authStorage is more reliable)
   const actualUser = user || authStorage.getUser();
 
+  // Default location for new meetup: active trip → current location (session/GPS) → home. Never let hometown override active trip.
+  const getDefaultLocation = (): { city: string; state: string; country: string } => {
+    const homeCity = actualUser?.hometownCity ?? '';
+    const homeState = actualUser?.hometownState ?? '';
+    const homeCountry = actualUser?.hometownCountry ?? 'United States';
+    const activeTrip = getActiveTripPlan(actualUser?.travelPlans ?? []);
+    if (activeTrip?.destinationCity) {
+      return {
+        city: activeTrip.destinationCity,
+        state: activeTrip.destinationState ?? '',
+        country: activeTrip.destinationCountry ?? homeCountry,
+      };
+    }
+    const currentCity = (actualUser as any)?.currentLocation?.city ?? (actualUser as any)?.currentCity;
+    const currentCountry = (actualUser as any)?.currentLocation?.country ?? (actualUser as any)?.currentCountry;
+    if (currentCity && currentCountry) {
+      return {
+        city: currentCity,
+        state: ((actualUser as any)?.currentLocation?.state ?? (actualUser as any)?.currentState) ?? '',
+        country: currentCountry,
+      };
+    }
+    return { city: homeCity, state: homeState, country: homeCountry };
+  };
+
   // Fetch existing quick meetups
   const { data: quickMeetups, isLoading } = useQuery({
     queryKey: ['/api/quick-meets', city, profileUserId],
@@ -64,14 +90,15 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
     },
     refetchInterval: 30000, // Refresh every 30 seconds for real-time updates
   });
+  const defaults = getDefaultLocation();
   const [newMeetup, setNewMeetup] = useState<NewMeetup>({
     title: '',
     description: '',
     meetingPoint: '',
     streetAddress: '',
-    city: actualUser?.hometownCity || '',
-    state: actualUser?.hometownState || '',
-    country: actualUser?.hometownCountry || 'United States',
+    city: defaults.city,
+    state: defaults.state,
+    country: defaults.country,
     zipcode: '',
     responseTime: '24hours',
     organizerNotes: '' // Contact info like "call me if lost"
@@ -89,9 +116,20 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
     }
   }, [triggerCreate]);
 
+  const prevShowCreateForm = useRef(false);
+  // Apply default location only when create form first opens (do not overwrite manual edits)
+  useEffect(() => {
+    if (showCreateForm && !prevShowCreateForm.current) {
+      prevShowCreateForm.current = true;
+      const { city: c, state: s, country: co } = getDefaultLocation();
+      setNewMeetup((prev) => ({ ...prev, city: c, state: s, country: co }));
+    }
+    if (!showCreateForm) prevShowCreateForm.current = false;
+  }, [showCreateForm]);
+
   // Debug logging - check authentication (REMOVED - using actualUser now)
 
-  // Join meetup mutation
+  // Join meetup mutation - handles 404/410 with refresh and friendly message
   const joinMutation = useMutation({
     mutationFn: async (meetupId: number) => {
       if (!actualUser?.id) {
@@ -99,13 +137,30 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
         throw new Error("Please log in to join quick meets");
       }
 
-      console.log('🚀 ATTEMPTING JOIN:', { meetupId, userId: actualUser.id });
-      
-      const result = await apiRequest('POST', `/api/quick-meets/${meetupId}/join`, {
-        userId: actualUser.id
+      const res = await fetch(`/api/quick-meets/${meetupId}/join`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': actualUser.id.toString(),
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId: actualUser.id }),
       });
 
-      console.log('✅ JOIN SUCCESS:', result);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        const code = body?.code;
+        if (res.status === 404 || res.status === 410) {
+          await queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
+          const msg = res.status === 410 || code === 'EXPIRED'
+            ? 'This meetup has expired'
+            : 'This meetup is no longer available';
+          throw new Error(msg);
+        }
+        throw new Error(body?.message || res.statusText || 'Failed to join');
+      }
+
+      const result = await res.json();
       return { meetupId, result };
     },
     onSuccess: (data) => {
@@ -114,13 +169,12 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
         title: "Joined!",
         description: "You've successfully joined the quick meet.",
       });
-      // Navigate to chatroom after joining
       window.location.href = `/quick-meetup-chat/${data.meetupId}`;
     },
     onError: (error: any) => {
       toast({
-        title: "Error",
-        description: error.message || "Failed to join quick meet",
+        title: "Couldn't join",
+        description: error.message || "This meetup is no longer available",
         variant: "destructive",
       });
     },
@@ -517,17 +571,18 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
 
               {useAiVoice ? (
                 <AIQuickCreateMeetup
-                  defaultCity={actualUser?.hometownCity || city?.split(',')[0] || ''}
+                  defaultCity={getDefaultLocation().city || city?.split(',')[0] || ''}
                   autoStartListening={true}
                   onDraftReady={(draft) => {
+                    const loc = getDefaultLocation();
                     setNewMeetup({
                       title: draft.title || '',
                       description: draft.description || '',
                       meetingPoint: draft.meetingPoint || '',
                       streetAddress: draft.streetAddress || '',
-                      city: draft.city || actualUser?.hometownCity || '',
-                      state: draft.state || actualUser?.hometownState || '',
-                      country: draft.country || actualUser?.hometownCountry || 'United States',
+                      city: draft.city || loc.city,
+                      state: draft.state || loc.state,
+                      country: draft.country || loc.country,
                       zipcode: draft.zipcode || '',
                       responseTime: draft.responseTime || '2hours',
                       organizerNotes: draft.organizerNotes || ''

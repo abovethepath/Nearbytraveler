@@ -40,10 +40,40 @@ function getTravelDestination(user) {
   );
 }
 
-// Only place we build the travel line text. Never interpolate destination elsewhere.
+// Only place we build the travel line text. Never interpolate destination elsewhere. Never render literal "null".
+// Returns label only when we have a valid destination; otherwise null (hide the line entirely, no space taken).
 function getTravelLabel(user) {
   const dest = getTravelDestination(user);
-  return dest ? `✈️ Traveling to ${dest}` : '✈️ Traveler';
+  const safe = dest && String(dest).toLowerCase().indexOf('null') === -1 ? dest : '';
+  return safe ? `✈️ Traveling to ${safe}` : null;
+}
+
+// Resolve city for Explore: active trip destination → session/current location → home. No hardcoded fallback.
+function getResolvedCity(user) {
+  if (!user) return '';
+  const from = (v) => (v != null && String(v).trim() && String(v).toLowerCase() !== 'null' ? String(v).trim() : '');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (Array.isArray(user.travelPlans) && user.travelPlans.length > 0) {
+    for (const plan of user.travelPlans) {
+      const startRaw = plan.startDate ?? plan.start_date;
+      const endRaw = plan.endDate ?? plan.end_date;
+      if (startRaw && endRaw) {
+        const start = new Date(startRaw);
+        const end = new Date(endRaw);
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+        if (today >= start && today <= end) {
+          const city = from(plan.destinationCity ?? plan.destination_city) || (() => {
+            const d = plan.destination ?? plan.destinationCity;
+            return d && typeof d === 'string' ? from(d.split(',')[0]) : '';
+          })();
+          if (city) return city;
+        }
+      }
+    }
+  }
+  return from(user.destinationCity) || from(user.destination_city) || from(user.travelCity) || from(user.city) || from(user.hometownCity) || from(user.hometown_city) || '';
 }
 
 const UserCard = ({ user, onPress, navigation }) => {
@@ -59,7 +89,7 @@ const UserCard = ({ user, onPress, navigation }) => {
         <Text style={styles.userName} numberOfLines={1}>{user.fullName || user.username}</Text>
         <Text style={styles.userCity} numberOfLines={1}>&#x1F4CD; From {hometown}</Text>
         {showTravelLine && (
-          <Text style={styles.travelLine} numberOfLines={1}>{getTravelLabel(user)}</Text>
+          <Text style={styles.travelLine} numberOfLines={1}>{travelLabel}</Text>
         )}
         {user.bio ? <Text style={styles.userBio} numberOfLines={2}>{user.bio}</Text> : null}
         <View style={styles.tagRow}>
@@ -77,18 +107,26 @@ export default function ExploreScreen({ navigation }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [city, setCity] = useState(user?.city || 'Los Angeles');
   const [filter, setFilter] = useState('all');
+  const resolvedCity = getResolvedCity(user);
+  const [city, setCity] = useState('');
+
+  // Recalculate displayed/search city when user or active trip changes
+  useEffect(() => {
+    if (resolvedCity) setCity(resolvedCity);
+  }, [resolvedCity]);
 
   const fetchUsers = useCallback(async () => {
+    const searchCity = (city && city.trim()) || resolvedCity;
+    if (!searchCity) return;
     try {
-      const data = await api.getUsersByLocation(city, filter);
+      const data = await api.getUsersByLocation(searchCity, filter);
       setUsers(Array.isArray(data) ? data : []);
     } catch (e) { console.log('Failed to fetch users:', e); }
     finally { setLoading(false); setRefreshing(false); }
-  }, [city, filter]);
+  }, [city, resolvedCity, filter]);
 
-  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+  useEffect(() => { if (resolvedCity || city) fetchUsers(); }, [fetchUsers]);
   const onRefresh = () => { setRefreshing(true); fetchUsers(); };
   const rootNav = navigation.getParent?.()?.getParent?.() ?? navigation;
   const handleUserPress = (selectedUser) => {

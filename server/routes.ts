@@ -15687,7 +15687,7 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // Get quick meets - ACTIVE FIRST, NEWEST FIRST
+  // Get quick meets - ACTIVE FIRST, NEWEST FIRST (exclude expired so join won't 404)
   app.get("/api/quick-meets", async (req, res) => {
     console.log(`🔧 ROUTE HIT: /api/quick-meets called at ${new Date().toISOString()}`);
     console.log(`🔧 NODE_ENV:`, process.env.NODE_ENV);
@@ -15697,68 +15697,33 @@ Questions? Just reply to this message. Welcome aboard!
 
       console.log(`🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info`);
 
-      // Build conditions array for proper AND/OR logic
-      const conditions = [eq(quickMeetups.isActive, true)];
+      // Build conditions - exclude expired so feed never shows "active" meetups that would 404 on join
+      const conditions = [eq(quickMeetups.isActive, true), gt(quickMeetups.expiresAt, now)];
 
-      // CRITICAL FIX: Get country for filtering to prevent cross-border meetup leaking
-      let userCountry: string | null = null;
-      
-      // Case 1: When viewing a specific user's profile (userId param), use their country
+      // Case 1: When viewing a specific user's profile (userId param)
       if (userId && typeof userId === 'string') {
         const targetUserId = parseInt(userId as string);
         if (!isNaN(targetUserId)) {
           if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETS: Filtering by userId: ${targetUserId}`);
           conditions.push(eq(quickMeetups.organizerId, targetUserId));
-          
-          // Fetch the user's country for filtering
-          try {
-            const user = await storage.getUser(targetUserId);
-            if (user && user.hometownCountry) {
-              userCountry = user.hometownCountry;
-              if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETS: Profile owner country detected: ${userCountry}`);
-            }
-          } catch (error) {
-            if (process.env.NODE_ENV === 'development') console.error('Error fetching user for country filter:', error);
-          }
-        }
-      }
-      // Case 2: For general discovery, use current logged-in user's country
-      else if (req.user?.id) {
-        try {
-          const currentUser = await storage.getUser(req.user.id);
-          if (currentUser && currentUser.hometownCountry) {
-            userCountry = currentUser.hometownCountry;
-            if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETS: Current user country detected: ${userCountry}`);
-          }
-        } catch (error) {
-          if (process.env.NODE_ENV === 'development') console.error('Error fetching current user for country filter:', error);
         }
       }
 
-      // Add city filtering if specified
+      // Add city filtering if specified (optional - when provided, narrow results to that city)
       if (city && typeof city === 'string') {
         const cityName = city.toString().split(',')[0].trim();
-        if (process.env.NODE_ENV === 'development') console.log(`QUICK MEETS: Filtering by city: ${cityName}`);
+        if (cityName && process.env.NODE_ENV === 'development') console.log(`QUICK MEETS: Filtering by city: ${cityName}`);
         
-        const searchCities = [cityName];
-        
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETS: Searching single city:`, searchCities);
-        
-        const cityConditions = searchCities.map(searchCity => 
-          or(
-            ilike(quickMeetups.location, `%${searchCity}%`),
-            ilike(quickMeetups.city, `%${searchCity}%`)
-          )
-        );
-        
-        conditions.push(or(...cityConditions));
+        if (cityName) {
+          const cityConditions = or(
+            ilike(quickMeetups.location, `%${cityName}%`),
+            ilike(quickMeetups.city, `%${cityName}%`)
+          );
+          conditions.push(cityConditions);
+        }
       }
 
-      // BUG FIX: Add country filtering to prevent cross-border meetups from appearing
-      if (userCountry) {
-        conditions.push(eq(quickMeetups.country, userCountry));
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETS: Added country filter: ${userCountry}`);
-      }
+      // NOTE: No country filter - any user can see and join meetups from any city/country (travel app)
 
       // Query with filters and JOIN to get organizer information including displayNamePreference
       const queryResult = await db
@@ -15921,14 +15886,13 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`🤝 USER ${userId} JOINING QUICK MEET ${meetupId}`);
 
-      // Check if meetup exists and is active
       const meetup = await storage.getQuickMeetup(meetupId);
       if (!meetup) {
-        return res.status(404).json({ message: "Quick meet not found" });
+        return res.status(404).json({ message: "Quick meet not found", code: "NOT_FOUND" });
       }
 
       if (new Date(meetup.expiresAt) <= new Date()) {
-        return res.status(400).json({ message: "This quick meet has expired" });
+        return res.status(410).json({ message: "This quick meet has expired", code: "EXPIRED" });
       }
 
       // Join the meetup

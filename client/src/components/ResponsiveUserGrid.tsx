@@ -98,8 +98,7 @@ export default function ResponsiveUserGrid({
     const raw = user as any;
     const hometown = user.hometownCity || raw.hometown_city || '—';
     const travelingTo = getTravelDestination(user);
-    const isTravelerType = user.userType === 'traveler' || raw.user_type === 'traveler';
-    const hasTravelSignal = !!travelingTo || isTravelerType || raw.isCurrentlyTraveling || raw.is_currently_traveling || raw.destinationCity || raw.destination_city || raw.travelDestination || raw.travel_destination;
+    const hasValidDestination = travelingTo && travelingTo !== 'away' && String(travelingTo).toLowerCase() !== 'null';
     return (
       <div className="text-center text-gray-600 dark:text-gray-400 font-medium min-w-0">
         <div className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</div>
@@ -107,10 +106,10 @@ export default function ResponsiveUserGrid({
           <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-gray-500 dark:text-gray-400" aria-hidden />
           <span className="truncate">From {hometown}</span>
         </div>
-        {(travelingTo || hasTravelSignal) && (
-          <div className="flex items-center justify-center gap-1 mt-0.5 text-blue-600 dark:text-blue-400" title={travelingTo === 'away' ? 'Traveling' : travelingTo ? `Traveling to ${travelingTo}` : (isTravelerType ? 'Traveler' : 'Traveling')}>
+        {hasValidDestination && (
+          <div className="flex items-center justify-center gap-1 mt-0.5 text-blue-600 dark:text-blue-400" title={`Traveling to ${travelingTo}`}>
             <Plane className="w-3.5 h-3.5 flex-shrink-0" aria-hidden />
-            <span className="truncate text-xs sm:text-sm font-semibold">{travelingTo === 'away' ? 'Traveling' : travelingTo ? `Traveling to ${travelingTo}` : (isTravelerType ? 'Traveler' : 'Traveling')}</span>
+            <span className="truncate text-xs sm:text-sm font-semibold">Traveling to {travelingTo}</span>
           </div>
         )}
       </div>
@@ -132,7 +131,7 @@ export default function ResponsiveUserGrid({
     const isAvailable = availableNowIds.includes(user.id);
     return (
     <Card 
-      className={`group cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
+      className={`group cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden h-full flex flex-col ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={() => setLocation(`/profile/${user.id}`)}
     >
       {/* Cover Background */}
@@ -147,8 +146,8 @@ export default function ResponsiveUserGrid({
         )}
       </div>
       
-      {/* Content */}
-      <div className="px-6 pb-6 -mt-12 text-center">
+      {/* Content - fixed min-height so variable content doesn't change card height */}
+      <div className="px-6 pb-6 -mt-12 text-center flex-1 flex flex-col justify-start min-h-[140px]">
         {/* Large Circular Avatar with white ring */}
         <div className="flex justify-center mb-4">
           <div className="relative">
@@ -219,8 +218,8 @@ export default function ResponsiveUserGrid({
         )}
       </div>
       
-      {/* Content */}
-      <div className="px-3 pb-4 -mt-8 text-center">
+      {/* Content - fixed min-height so variable content doesn't change card height */}
+      <div className="px-3 pb-4 -mt-8 text-center flex-1 flex flex-col justify-start min-h-[100px]">
         {/* Circular Avatar with white ring */}
         <div className="flex justify-center mb-3">
           <div className="w-16 h-16 rounded-full bg-white dark:bg-gray-800 p-1 shadow-lg">
@@ -278,14 +277,14 @@ export default function ResponsiveUserGrid({
       )}
 
       {/* Desktop Grid (hidden on mobile) */}
-      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
         {displayUsers.map((user) => (
           <DesktopUserCard key={user.id} user={user} />
         ))}
       </div>
 
       {/* Mobile Grid (hidden on desktop) */}
-      <div className="md:hidden grid grid-cols-2 gap-3">
+      <div className="md:hidden grid grid-cols-2 gap-3 items-stretch">
         {displayUsers.map((user) => (
           <MobileUserCard key={user.id} user={user} />
         ))}

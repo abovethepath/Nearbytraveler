@@ -128,14 +128,9 @@ export default function UserCard({
 
   const travelCity = getTravelCity();
   const displayCity = user.hometownCity || u.hometown_city || 'Unknown';
-  // Show traveling whenever we have destination, flag, any travel plan with destination, OR userType is traveler (always show line under hometown)
-  const hasTravelPlansWithDestination = Array.isArray(u.travelPlans) && u.travelPlans.some((p: any) => p?.destinationCity || p?.destination_city || p?.destination);
-  const hasTravelSignal = !!(u.destinationCity ?? u.destination_city ?? u.destinationState ?? u.destination_state ?? u.destinationCountry ?? u.destination_country ?? u.travelDestination ?? u.travel_destination ?? u.isCurrentlyTraveling ?? u.is_currently_traveling ?? hasTravelPlansWithDestination);
-  const isTravelerType = user.userType === 'traveler' || u.user_type === 'traveler';
-  const isTraveling = !!travelCity || hasTravelSignal || isTravelerType;
-  // Text under hometown: specific destination > "Traveling" > "Traveler" for traveler type (always show plane + line for non-business when traveling)
-  const travelingLineText = travelCity && travelCity !== 'away' ? `Traveling to ${travelCity}` : (isTravelerType ? 'Traveler' : 'Traveling');
-  const travelingLabel = travelingLineText;
+  // Only show travel line when we have a valid destination - no placeholder text, no space taken
+  const hasValidDestination = travelCity && travelCity !== 'away' && String(travelCity).toLowerCase() !== 'null';
+  const travelingLabel = hasValidDestination ? `Traveling to ${travelCity}` : '';
   const displayName = user.userType === 'business' && user.businessName 
     ? user.businessName 
     : `@${user.username}`;
@@ -159,12 +154,12 @@ export default function UserCard({
 
   return (
     <button 
-      className={`w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border shadow-sm hover:shadow-md transition-all text-left ${compact ? 'rounded-lg' : 'lg:rounded-2xl'} ${isAvailableNow ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
+      className={`w-full h-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border shadow-sm hover:shadow-md transition-all text-left flex flex-col ${compact ? 'rounded-lg' : 'lg:rounded-2xl'} ${isAvailableNow ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
-      {/* Photo section - square when compact, else taller on desktop */}
-      <div className={`relative ${compact ? 'aspect-square' : 'aspect-square lg:aspect-[3/4]'}`}>
+      {/* Photo section - fixed aspect ratio so card height is consistent */}
+      <div className={`relative w-full flex-shrink-0 ${compact ? 'aspect-square' : 'aspect-square lg:aspect-[4/3]'}`}>
         {user.profileImage ? (
           <img 
             src={user.profileImage} 
@@ -183,11 +178,11 @@ export default function UserCard({
           </div>
         )}
         
-        {/* Travel badge on photo - plane icon + destination when they're traveling */}
-        {isTraveling && user.userType !== 'business' && (
+        {/* Travel badge on photo - only when we have a valid destination */}
+        {hasValidDestination && user.userType !== 'business' && (
           <div className="absolute top-1.5 left-1.5 z-10 flex items-center gap-0.5 bg-blue-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap max-w-[85%]">
             <Plane className="w-3 h-3 flex-shrink-0" aria-hidden />
-            <span className="truncate">{travelCity && travelCity !== 'away' ? travelCity : 'Traveling'}</span>
+            <span className="truncate">{travelCity}</span>
           </div>
         )}
         
@@ -211,8 +206,8 @@ export default function UserCard({
         )}
       </div>
       
-      {/* Info box - compact when compact prop, else spacious on desktop */}
-      <div className={`bg-white dark:bg-gray-800 ${compact ? 'p-2' : 'p-2 lg:p-4'}`}>
+      {/* Info box - fixed min-height so "things in common" / missing fields don't change card height */}
+      <div className={`bg-white dark:bg-gray-800 flex flex-col justify-start flex-1 min-h-[72px] ${compact ? 'p-2' : 'p-2 lg:p-4'}`}>
         {/* Mobile / compact: simple stacked layout */}
         <div className={compact ? '' : 'lg:hidden'}>
           <div className={`font-semibold text-gray-900 dark:text-white ${compact ? 'text-sm leading-tight' : 'text-sm'}`} style={compact ? { display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' } : { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
@@ -234,11 +229,11 @@ export default function UserCard({
               </>
             )}
           </div>
-          {/* Line 2: Under hometown – plane icon + where they're traveling (always show when we have travel data) */}
-          {isTraveling && user.userType !== 'business' && (
-            <div className="flex items-center gap-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400 mt-0.5 truncate" title={travelCity === 'away' ? 'Traveling' : `Traveling to ${travelCity}`}>
+          {/* Line 2: Under hometown – plane icon + destination (only when we have a valid destination) */}
+          {hasValidDestination && user.userType !== 'business' && (
+            <div className="flex items-center gap-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400 mt-0.5 truncate" title={travelingLabel}>
               <Plane className="w-3 h-3 flex-shrink-0" aria-hidden />
-              <span className="truncate">{travelCity === 'away' ? 'Traveling' : `Traveling to ${travelCity}`}</span>
+              <span className="truncate">{travelingLabel}</span>
             </div>
           )}
           {!compact && (
@@ -273,10 +268,10 @@ export default function UserCard({
               <MapPin className="w-3 h-3 flex-shrink-0 text-gray-400" aria-hidden />
               <span>From {displayCity}</span>
             </div>
-            {isTraveling && user.userType !== 'business' && (
-              <div className="flex items-center gap-0.5 text-[10px] font-semibold text-blue-600 dark:text-blue-400 truncate" title={travelCity === 'away' ? 'Traveling' : `Traveling to ${travelCity}`}>
+            {hasValidDestination && user.userType !== 'business' && (
+              <div className="flex items-center gap-0.5 text-[10px] font-semibold text-blue-600 dark:text-blue-400 truncate" title={travelingLabel}>
                 <Plane className="w-2.5 h-2.5 flex-shrink-0" aria-hidden />
-                <span>{travelCity === 'away' ? 'Traveling' : `Traveling to ${travelCity}`}</span>
+                <span>{travelingLabel}</span>
               </div>
             )}
           </div>

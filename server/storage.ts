@@ -9241,42 +9241,7 @@ export class DatabaseStorage implements IStorage {
 
   async getQuickMeetup(id: number): Promise<any> {
     try {
-      const [meetup] = await db
-        .select({
-          id: quickMeetups.id,
-          title: quickMeetups.title,
-          description: quickMeetups.description,
-          category: quickMeetups.category,
-          location: quickMeetups.location,
-          meetingPoint: quickMeetups.meetingPoint,
-          date: quickMeetups.date,
-          endDate: quickMeetups.endDate,
-          organizerId: quickMeetups.organizerId,
-          maxParticipants: quickMeetups.maxParticipants,
-          eventType: quickMeetups.eventType,
-          isSpontaneous: quickMeetups.isSpontaneous,
-          costEstimate: quickMeetups.costEstimate,
-          urgency: quickMeetups.urgency,
-          responseTime: quickMeetups.responseTime,
-          minParticipants: quickMeetups.minParticipants,
-          autoCancel: quickMeetups.autoCancel,
-          participantCount: quickMeetups.participantCount,
-          city: quickMeetups.city,
-          state: quickMeetups.state,
-          country: quickMeetups.country,
-          createdAt: quickMeetups.createdAt,
-          organizer: {
-            id: users.id,
-            username: users.username,
-            name: users.name,
-            profileImage: users.profileImage
-          }
-        })
-        .from(quickMeetups)
-        .leftJoin(users, eq(quickMeetups.organizerId, users.id))
-        .where(eq(quickMeetups.id, id));
-
-      return meetup;
+      return await this.getQuickMeetupById(id);
     } catch (error) {
       console.error('Error fetching quick meetup:', error);
       return undefined;

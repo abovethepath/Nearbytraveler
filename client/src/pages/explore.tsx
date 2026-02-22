@@ -15,6 +15,7 @@ import { MapPin, Clock, Users, Zap, Coffee, Camera, UtensilsCrossed, Dumbbell, M
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getMetroAreaName } from "../../../shared/metro-areas";
+import { getActiveTripPlan } from "@/lib/dateUtils";
 
 function UserAvatar({ user, size = "sm" }: { user: any; size?: string }) {
   const sizeClass = size === "sm" ? "w-8 h-8 text-xs" : size === "md" ? "w-10 h-10 text-sm" : "w-12 h-12 text-base";
@@ -51,8 +52,16 @@ export default function Explore() {
   const queryClient = useQueryClient();
   const storedUser = localStorage.getItem("user");
   const currentUser = storedUser ? JSON.parse(storedUser) : null;
-  const rawCity = currentUser?.hometownCity || currentUser?.travelDestination || "";
-  const userCity = rawCity ? getMetroAreaName(rawCity) : "";
+  // Resolved city: active trip → current location → home (never stale/hardcoded)
+  const activeTrip = getActiveTripPlan(currentUser?.travelPlans ?? []);
+  const currentLocationCity = (currentUser as any)?.currentLocation?.city ?? (currentUser as any)?.currentCity;
+  const rawCity =
+    activeTrip?.destinationCity
+    || currentLocationCity
+    || currentUser?.hometownCity
+    || (currentUser?.travelDestination && String(currentUser.travelDestination).split(",")[0]?.trim())
+    || "";
+  const userCity = rawCity ? getMetroAreaName(rawCity.includes(",") ? rawCity.split(",")[0].trim() : rawCity) : "";
   const userCountry = currentUser?.hometownCountry || currentUser?.country || "United States";
 
   const [activeTab, setActiveTab] = useState("live");

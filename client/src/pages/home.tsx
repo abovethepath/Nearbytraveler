@@ -1792,7 +1792,7 @@ export default function Home() {
               
               return (
                 <>
-                  <div className="!grid !grid-cols-2 md:!grid-cols-3 lg:!grid-cols-3 xl:!grid-cols-4 !gap-2 lg:!gap-4">
+                  <div className="!grid !grid-cols-2 md:!grid-cols-3 lg:!grid-cols-3 xl:!grid-cols-4 !gap-2 lg:!gap-4 !items-stretch">
                     {sortedAndFilteredUsers.length > 0 ? (
                       sortedAndFilteredUsers.slice(0, showAllUsers ? sortedAndFilteredUsers.length : 12).map((otherUser) => (
                           <UserCard 

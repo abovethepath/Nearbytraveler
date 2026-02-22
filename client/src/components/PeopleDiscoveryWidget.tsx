@@ -55,9 +55,9 @@ export function PeopleDiscoveryWidget({
     return new Set(availableActiveIds || []);
   }, [availableActiveIds]);
 
-  // Helper function to display travel destinations exactly as entered by user
+  // Helper function to display travel destinations exactly as entered by user. Never render literal "null".
   const formatTravelDestination = (destination: string | null): string => {
-    if (!destination) return "Location not specified";
+    if (!destination || String(destination).toLowerCase() === 'null') return "Location not specified";
     
     // Simply return the destination as stored - no restrictions
     // Users can enter any city/destination: Anaheim, Madrid, small towns, etc.
@@ -315,12 +315,12 @@ export function PeopleDiscoveryWidget({
                   </p>
                 </div>
                 
-                {/* Under hometown: plane + "Traveling to [place]" when traveling */}
-                {locationInfo.isTraveling && (
+                {/* Under hometown: plane + destination (only when we have a valid destination) */}
+                {locationInfo.travelTo && locationInfo.travelTo !== 'away' && String(locationInfo.travelTo).toLowerCase() !== 'null' && (
                   <div className="flex items-center justify-center gap-1">
                     <Plane className="w-4 h-4 text-blue-500 flex-shrink-0" aria-hidden />
                     <p className="text-blue-600 dark:text-blue-400 text-sm font-medium break-words px-1 text-center">
-                      {locationInfo.travelTo && locationInfo.travelTo !== 'away' ? `Traveling to ${locationInfo.travelTo}` : 'Traveling'}
+                      Traveling to {locationInfo.travelTo}
                     </p>
                   </div>
                 )}
@@ -347,7 +347,7 @@ export function PeopleDiscoveryWidget({
 
     return (
       <div
-        className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-lg transition-all duration-200 cursor-pointer text-gray-900 dark:text-white relative h-auto"
+        className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-lg transition-all duration-200 cursor-pointer text-gray-900 dark:text-white relative h-full flex flex-col"
         onClick={handleCardClick}
       >
         {/* Available Now Badge - Top Right */}
@@ -368,44 +368,46 @@ export function PeopleDiscoveryWidget({
         
         {/* Main Content */}
         <div className="flex flex-col h-full">
-          {/* Things in Common - At the very top */}
-          {(countInCommon > 0 || compatibilityData) && (
-            <div className="mb-3 bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-900/30 dark:to-blue-900/30 rounded-lg p-2">
-              <p className="text-gray-800 dark:text-gray-200 text-sm font-medium text-center">
-                <span className="text-green-700 dark:text-green-300 font-bold">{countInCommon || 0} Things</span>{' '}
-                <span className="text-blue-700 dark:text-blue-300">in Common</span>
-              </p>
-              {topCommon.length > 0 && (
-                <p className="text-gray-600 dark:text-gray-300 text-xs text-center mt-1">
-                  {topCommon.join(' • ')}
+          {/* Things in Common - fixed height slot so card height doesn't change when absent */}
+          <div className="mb-3 h-[52px] flex items-center justify-center overflow-hidden">
+            {(countInCommon > 0 || compatibilityData) ? (
+              <div className="w-full bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-900/30 dark:to-blue-900/30 rounded-lg p-2">
+                <p className="text-gray-800 dark:text-gray-200 text-sm font-medium text-center">
+                  <span className="text-green-700 dark:text-green-300 font-bold">{countInCommon || 0} Things</span>{' '}
+                  <span className="text-blue-700 dark:text-blue-300">in Common</span>
                 </p>
-              )}
-            </div>
-          )}
+                {topCommon.length > 0 && (
+                  <p className="text-gray-600 dark:text-gray-300 text-xs text-center mt-1">
+                    {topCommon.join(' • ')}
+                  </p>
+                )}
+              </div>
+            ) : null}
+          </div>
 
-          {/* Large Profile Photo - Clickable */}
-          <div className="flex-1 flex items-center justify-center">
+          {/* Large Profile Photo - fixed aspect ratio for consistent card height */}
+          <div className="w-full aspect-square flex-shrink-0 overflow-hidden rounded-lg border-2 border-white dark:border-gray-600 shadow-lg">
             <div 
-              className="cursor-pointer hover:opacity-80 transition-opacity"
+              className="cursor-pointer hover:opacity-80 transition-opacity w-full h-full"
               onClick={handleAvatarClick}
             >
               {person.profileImage ? (
                 <img 
                   src={person.profileImage} 
                   alt={person.name}
-                  className="w-48 h-48 object-cover rounded-lg border-2 border-white dark:border-gray-600 shadow-lg"
+                  className="w-full h-full object-cover"
                   loading="lazy"
                 />
               ) : (
-                <div className="w-48 h-48 text-7xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-lg flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-lg">
+                <div className="w-full h-full text-7xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold flex items-center justify-center">
                   {person.username?.charAt(0)?.toUpperCase() || "U"}
                 </div>
               )}
             </div>
           </div>
           
-          {/* Bottom Section */}
-          <div className="text-center mt-4">
+          {/* Bottom Section - fixed min-height so variable content doesn't change card height */}
+          <div className="text-center mt-4 flex-1 flex flex-col justify-start min-h-[100px]">
             {/* Username */}
             <h4 className="font-bold text-gray-900 dark:text-white text-xl mb-2 truncate px-2">
               @{person.username}
@@ -419,14 +421,14 @@ export function PeopleDiscoveryWidget({
                   From {locationInfo.hometown}
                 </p>
               </div>
-              {locationInfo.isTraveling && (
-                <div className="flex items-center justify-center gap-1">
-                  <Plane className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" aria-hidden />
-                  <p className="text-xs text-blue-600 dark:text-blue-400 font-medium text-center break-words px-1">
-                    {locationInfo.travelTo && locationInfo.travelTo !== 'away' ? `Traveling to ${locationInfo.travelTo}` : 'Traveling'}
-                  </p>
-                </div>
-              )}
+{locationInfo.travelTo && locationInfo.travelTo !== 'away' && String(locationInfo.travelTo).toLowerCase() !== 'null' && (
+                  <div className="flex items-center justify-center gap-1">
+                    <Plane className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" aria-hidden />
+                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium text-center break-words px-1">
+                      Traveling to {locationInfo.travelTo}
+                    </p>
+                  </div>
+                )}
             </div>
 
             {/* Stats */}
@@ -475,7 +477,7 @@ export function PeopleDiscoveryWidget({
       {/* People Grid - 2 per row on all screen sizes */}
       {/* ✅ Click capture protection to prevent parent handlers from interfering */}
       <div 
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-stretch"
         onClickCapture={(e) => e.stopPropagation()}
       >
         {people.slice(0, displayCount).map((person) => (
