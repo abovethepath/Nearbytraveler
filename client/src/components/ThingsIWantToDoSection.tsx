@@ -405,7 +405,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   if (loadingCityActivities || loadingJoinedEvents || loadingEventInterests || loadingTravelPlans) {
     return (
-      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">⭐ Things I Want to Do in...</h2>
         <div className="text-gray-600 dark:text-gray-400">Loading...</div>
       </div>
@@ -418,43 +418,44 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
-      <h2 
-        className={`font-semibold text-gray-900 dark:text-white mb-4 ${isMobile ? 'text-base' : 'text-lg'}`}
-        data-testid="things-i-want-to-do-section"
-        data-section="things-i-want-to-do"
-      >
-        ⭐ Things I Want to Do in...
-      </h2>
-
+    <div 
+      data-testid="things-i-want-to-do-section"
+      data-section="things-i-want-to-do"
+    >
       {cities.length > 0 ? (
         <div className={`${isMobile ? 'space-y-4' : 'space-y-6'}`}>
           {cities.map((cityName) => {
             const cityData = citiesByName[cityName];
             const isPastTrip = cityData.travelPlan?.isPast || false;
+            const isHometown = !cityData.travelPlan;
             
             return (
-              <div key={cityName} className={isPastTrip ? 'opacity-50' : ''}>
-                {/* City Header */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    {cityData.travelPlan && (
+              <div key={cityName} className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'} ${isPastTrip ? 'opacity-50' : ''}`}>
+                {/* City Header with full descriptive title */}
+                <h2 className={`font-semibold mb-4 ${isMobile ? 'text-base' : 'text-lg'} ${isPastTrip ? 'text-gray-500 dark:text-gray-500' : 'text-gray-900 dark:text-white'}`}>
+                  {isHometown ? (
+                    <span className="flex items-center gap-2">
+                      <MapPin className="w-5 h-5 text-blue-500" />
+                      ⭐ Things I Want to Do in... <span className="text-blue-600 dark:text-blue-400">{cityName}</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2 flex-wrap">
                       <Plane className={`w-5 h-5 ${isPastTrip ? 'text-gray-400' : 'text-orange-500'}`} />
-                    )}
-                    <h3 className={`font-semibold text-xl ${isPastTrip ? 'text-gray-500 dark:text-gray-500' : 'text-blue-600 dark:text-blue-400'}`}>
-                      {cityName}
-                    </h3>
-                    {cityData.travelPlan && (
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        ({new Date(cityData.travelPlan.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(cityData.travelPlan.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
-                      </span>
-                    )}
-                    {isPastTrip && (
-                      <Badge variant="outline" className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">
-                        Past
-                      </Badge>
-                    )}
-                  </div>
+                      ⭐ Things I Want to Do in... <span className="text-orange-600 dark:text-orange-400">{cityName}</span>
+                      {cityData.travelPlan && (
+                        <span className="text-xs font-normal text-gray-500 dark:text-gray-400">
+                          ({new Date(cityData.travelPlan.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(cityData.travelPlan.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
+                        </span>
+                      )}
+                      {isPastTrip && (
+                        <Badge variant="outline" className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">
+                          Past
+                        </Badge>
+                      )}
+                    </span>
+                  )}
+                </h2>
+                <div className="flex items-center justify-end mb-3">
                   <div className="flex items-center gap-2">
                     {isOwnProfile && !isPastTrip && (
                       <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`}>
@@ -559,16 +560,21 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           })}
         </div>
       ) : (
-        <Link href="/match-in-city">
-          <div className="text-center py-12 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors">
-            <p className={`text-orange-600 dark:text-orange-500 font-semibold mb-3 ${isMobile ? 'text-base' : 'text-xl'}`}>
-              No activities or events selected yet.
-            </p>
-            <p className={`text-orange-500 dark:text-orange-400 underline hover:text-orange-600 dark:hover:text-orange-300 ${isMobile ? 'text-sm' : 'text-lg'}`}>
-              Go to City Plans to select activities and events!
-            </p>
-          </div>
-        </Link>
+        <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
+          <h2 className={`font-semibold text-gray-900 dark:text-white mb-4 ${isMobile ? 'text-base' : 'text-lg'}`}>
+            ⭐ Things I Want to Do in...
+          </h2>
+          <Link href="/match-in-city">
+            <div className="text-center py-12 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors">
+              <p className={`text-orange-600 dark:text-orange-500 font-semibold mb-3 ${isMobile ? 'text-base' : 'text-xl'}`}>
+                No activities or events selected yet.
+              </p>
+              <p className={`text-orange-500 dark:text-orange-400 underline hover:text-orange-600 dark:hover:text-orange-300 ${isMobile ? 'text-sm' : 'text-lg'}`}>
+                Go to City Plans to select activities and events!
+              </p>
+            </div>
+          </Link>
+        </div>
       )}
       <AlertDialog open={!!confirmDialog?.open} onOpenChange={(open) => !open && setConfirmDialog(null)}>
         <AlertDialogContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
