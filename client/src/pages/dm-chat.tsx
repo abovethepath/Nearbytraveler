@@ -1,8 +1,11 @@
+import React, { useState, useEffect, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import WhatsAppChat from "@/components/WhatsAppChat";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { AuthContext } from "@/App";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 interface UserDetails {
   id: number;
@@ -12,12 +15,47 @@ interface UserDetails {
   hometown?: string;
 }
 
+function getStoredUser() {
+  try {
+    const stored = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+    if (stored) return JSON.parse(stored);
+  } catch {}
+  return null;
+}
+
 export default function DMChat() {
   const [, setLocation] = useLocation();
   const pathParts = window.location.pathname.split('/');
   const otherUserId = parseInt(pathParts[2] || '0');
 
-  const user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
+  const authContext = useContext(AuthContext);
+  const contextUser = authContext?.user;
+  const [resolvedUser, setResolvedUser] = useState<any>(contextUser || getStoredUser() || {});
+
+  useEffect(() => {
+    if (contextUser?.id) {
+      setResolvedUser(contextUser);
+      return;
+    }
+    const stored = getStoredUser();
+    if (stored?.id) {
+      setResolvedUser(stored);
+      return;
+    }
+    let cancelled = false;
+    fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' })
+      .then(res => res.ok ? res.json() : null)
+      .then(sessionUser => {
+        if (!cancelled && sessionUser?.id) {
+          setResolvedUser(sessionUser);
+          try { localStorage.setItem('user', JSON.stringify(sessionUser)); } catch {}
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [contextUser?.id]);
+
+  const user = resolvedUser;
 
   const { data: otherUser, isLoading, isError } = useQuery<UserDetails>({
     queryKey: ['/api/users', otherUserId],

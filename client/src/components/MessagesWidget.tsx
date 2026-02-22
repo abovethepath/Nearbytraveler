@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
 import type { Message, User } from "@shared/schema";
+import { AuthContext } from "@/App";
 
-// Extended message type that includes embedded user data from API
 interface MessageWithUsers extends Message {
   senderUser?: { id: number; username: string; name: string; profileImage: string | null };
   receiverUser?: { id: number; username: string; name: string; profileImage: string | null };
@@ -16,13 +16,29 @@ interface MessagesWidgetProps {
   userId?: number;
 }
 
-function MessagesWidget({ userId }: MessagesWidgetProps) {
+function MessagesWidget({ userId: propUserId }: MessagesWidgetProps) {
   const [, setLocation] = useLocation();
+  const authContext = useContext(AuthContext);
+
+  const userId = propUserId || authContext?.user?.id || (() => {
+    try {
+      const stored = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+      return stored ? JSON.parse(stored)?.id : undefined;
+    } catch { return undefined; }
+  })();
 
   const { data: messages = [], isLoading: messagesLoading } = useQuery<MessageWithUsers[]>({
-    queryKey: [`/api/messages/${userId}`],
+    queryKey: ['/api/messages', userId],
+    queryFn: async () => {
+      const res = await fetch(`/api/messages/${userId}`, {
+        credentials: 'include',
+        headers: userId ? { 'x-user-id': String(userId) } : {},
+      });
+      if (!res.ok) throw new Error('Failed to fetch messages');
+      return res.json();
+    },
     enabled: !!userId,
-    staleTime: 0, // Always fetch fresh data
+    staleTime: 0,
     refetchOnWindowFocus: true,
   });
 

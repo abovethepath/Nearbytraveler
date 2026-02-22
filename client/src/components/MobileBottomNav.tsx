@@ -4,6 +4,8 @@ import { Home, Plus, MessageSquare, User, Calendar, Search, X, MapPin, Zap, User
 import { AuthContext } from "@/App";
 import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import { useQuery } from "@tanstack/react-query";
+import { getApiBaseUrl } from "@/lib/queryClient";
+
 function useIsDarkMode() {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
   useEffect(() => {
@@ -22,21 +24,43 @@ export function MobileBottomNav() {
   const isDark = useIsDarkMode();
   const [showSearchWidget, setShowSearchWidget] = useState(false);
   const authContext = React.useContext(AuthContext);
-  let user = authContext?.user;
-  
-  if (!user) {
-    const storedUser = localStorage.getItem('user') || localStorage.getItem('currentUser') || localStorage.getItem('authUser');
-    if (storedUser) {
-      try {
-        user = JSON.parse(storedUser);
-      } catch (e) {
-        console.error('Error parsing stored user in MobileBottomNav:', e);
-      }
+  const [resolvedUser, setResolvedUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (authContext?.user?.id) {
+      setResolvedUser(authContext.user);
+      return;
     }
-  }
+    try {
+      const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('currentUser');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        if (parsed?.id) { setResolvedUser(parsed); return; }
+      }
+    } catch {}
+    fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' })
+      .then(res => res.ok ? res.json() : null)
+      .then(sessionUser => {
+        if (sessionUser?.id) {
+          setResolvedUser(sessionUser);
+          try { localStorage.setItem('user', JSON.stringify(sessionUser)); } catch {}
+        }
+      })
+      .catch(() => {});
+  }, [authContext?.user?.id]);
+
+  const user = resolvedUser;
 
   const { data: unreadData } = useQuery({
-    queryKey: [`/api/messages/${user?.id}/unread-count`],
+    queryKey: ['/api/messages', user?.id, 'unread-count'],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/messages/${user.id}/unread-count`, {
+        credentials: 'include',
+        headers: user?.id ? { 'x-user-id': user.id.toString() } : {},
+      });
+      if (!res.ok) throw new Error('Failed to fetch unread count');
+      return res.json();
+    },
     enabled: !!user?.id,
     refetchInterval: 30000,
   });

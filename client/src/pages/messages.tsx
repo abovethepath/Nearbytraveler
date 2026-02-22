@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -13,9 +13,9 @@ import { SimpleAvatar, getProfileImageUrl } from '@/components/simple-avatar';
 import websocketService from '@/services/websocketService';
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
-// REMOVED: openFloatingChat import - IM functionality removed
 import { UniversalBackButton } from '@/components/UniversalBackButton';
 import { isNativeIOSApp } from '@/lib/nativeApp';
+import { AuthContext } from '@/App';
 
 function getInitialTargetUserId(): number | null {
   try {
@@ -30,8 +30,43 @@ function getInitialTargetUserId(): number | null {
   return null;
 }
 
+function getStoredUser() {
+  try {
+    const stored = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+    if (stored) return JSON.parse(stored);
+  } catch {}
+  return null;
+}
+
 export default function Messages() {
-  const user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
+  const authContext = useContext(AuthContext);
+  const contextUser = authContext?.user;
+  const [resolvedUser, setResolvedUser] = useState<any>(contextUser || getStoredUser() || {});
+
+  useEffect(() => {
+    if (contextUser?.id) {
+      setResolvedUser(contextUser);
+      return;
+    }
+    const stored = getStoredUser();
+    if (stored?.id) {
+      setResolvedUser(stored);
+      return;
+    }
+    let cancelled = false;
+    fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' })
+      .then(res => res.ok ? res.json() : null)
+      .then(sessionUser => {
+        if (!cancelled && sessionUser?.id) {
+          setResolvedUser(sessionUser);
+          try { localStorage.setItem('user', JSON.stringify(sessionUser)); } catch {}
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [contextUser?.id]);
+
+  const user = resolvedUser;
   const hasUser = !!(user && user.id);
   const { toast } = useToast();
   const [selectedConversation, setSelectedConversation] = useState<number | null>(getInitialTargetUserId);
@@ -97,24 +132,37 @@ export default function Messages() {
   // Use path format first, fall back to query parameter
   const targetUserId = pathUserId || queryUserId;
 
-  // Fetch connections - OPTIMIZED: Show cached data instantly
   const { data: connections = [], isLoading: connectionsLoading } = useQuery({
-    queryKey: [`/api/connections/${user?.id}`],
+    queryKey: ['/api/connections', user?.id],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/connections/${user.id}`, {
+        credentials: 'include',
+        headers: { 'x-user-id': String(user.id) },
+      });
+      if (!res.ok) throw new Error('Failed to fetch connections');
+      return res.json();
+    },
     enabled: !!user?.id,
-    staleTime: 60000, // Cache connections for 1 minute (they don't change often)
-    gcTime: 300000, // Keep in cache for 5 minutes
+    staleTime: 60000,
+    gcTime: 300000,
   });
 
-  // Fetch messages with automatic polling for instant updates
-  // OPTIMIZED: Show cached messages instantly, refetch in background
   const { data: messages = [], isLoading: messagesLoading, refetch: refetchMessages } = useQuery({
-    queryKey: [`/api/messages/${user?.id}`],
+    queryKey: ['/api/messages', user?.id],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/messages/${user.id}`, {
+        credentials: 'include',
+        headers: { 'x-user-id': String(user.id) },
+      });
+      if (!res.ok) throw new Error('Failed to fetch messages');
+      return res.json();
+    },
     enabled: !!user?.id,
-    staleTime: 30000, // Show cached data instantly for 30 seconds before refetching
-    gcTime: 300000, // Keep in cache for 5 minutes for instant re-entry
-    refetchOnMount: true, // Refetch in background when mounting (but show cache first)
-    refetchOnWindowFocus: true, // Refetch when user returns to tab
-    refetchInterval: 10000, // Poll every 10 seconds for new messages
+    staleTime: 30000,
+    gcTime: 300000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchInterval: 10000,
   });
 
   // CRITICAL: Handle mobile app resume - reconnect WebSocket and refetch messages
@@ -332,11 +380,8 @@ export default function Messages() {
       return apiRequest('POST', `/api/messages/${user?.id}/mark-read`, { senderId });
     },
     onSuccess: () => {
-      // Invalidate and refetch BOTH the unread count AND the messages list
-      queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}/unread-count`] });
-      queryClient.refetchQueries({ queryKey: [`/api/messages/${user?.id}/unread-count`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
-      queryClient.refetchQueries({ queryKey: [`/api/messages/${user?.id}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id, 'unread-count'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id] });
     },
   });
 
@@ -357,9 +402,8 @@ export default function Messages() {
       refetchMessages();
       
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
-        queryClient.refetchQueries({ queryKey: [`/api/messages/${user?.id}`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/connections/${user?.id}`] });
+        queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['/api/connections', user?.id] });
       }, 100);
     },
     onError: (error: any) => {
@@ -421,13 +465,12 @@ export default function Messages() {
       toast({ title: "Message edited successfully" });
       setEditingMessageId(null);
       setEditText("");
-      queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id] });
     } catch (error: any) {
       toast({ title: "Failed to edit message", variant: "destructive" });
     }
   };
 
-  // Handle message deletion
   const handleDeleteMessage = async (messageId: number) => {
     if (!confirm('Are you sure you want to delete this message?')) return;
     
@@ -437,14 +480,15 @@ export default function Messages() {
         headers: { 
           'Content-Type': 'application/json',
           'x-user-id': user?.id?.toString() || '' 
-        }
+        },
+        credentials: 'include',
       });
       
       if (!response.ok) throw new Error('Failed to delete message');
       
       toast({ title: "Message deleted successfully" });
       setSelectedMessage(null);
-      queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id] });
     } catch (error: any) {
       toast({ title: "Failed to delete message", variant: "destructive" });
     }
@@ -462,7 +506,7 @@ export default function Messages() {
       
       toast({ title: "Liked!" });
       setSelectedMessage(null);
-      queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id] });
     } catch (error: any) {
       console.error('❌ Reaction failed:', error);
       toast({ title: "Failed to react to message", variant: "destructive" });
