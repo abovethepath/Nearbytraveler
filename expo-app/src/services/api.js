@@ -170,6 +170,33 @@ const api = {
   /** For WebView: pass this as Cookie header so the site sees the user as logged in. */
   getSessionCookie: () => sessionCookie,
 
+  /** One-time token for iOS Messages WebView bootstrap (requires existing session). */
+  async getWebViewToken() {
+    await restoreSession();
+    const url = `${BASE_URL}/api/auth/webview-token`;
+    const headers = { ...getHeaders() };
+    if (sessionCookie && !headers['Cookie']) headers['Cookie'] = sessionCookie;
+    const opts = {
+      method: 'GET',
+      headers,
+      credentials: 'include',
+    };
+    try {
+      const r = await fetch(url, opts);
+      let body = null;
+      try {
+        body = await r.text();
+      } catch (_) {}
+      console.log('[getWebViewToken] status:', r.status, 'body:', body?.slice(0, 200) || '(empty)');
+      if (!r.ok) return null;
+      const data = body ? JSON.parse(body) : {};
+      return data?.token || null;
+    } catch (e) {
+      console.log('[getWebViewToken] error:', e?.message || e);
+      throw e;
+    }
+  },
+
   async register(userData) {
     const r = await fetchWithConnectionMessage(`${BASE_URL}/api/register`, {
       method: 'POST',
@@ -189,6 +216,31 @@ const api = {
     if (d.user) {
       await offlineStorage.cacheProfile(d.user);
     }
+    return d;
+  },
+
+  /** Sign in with Apple: send identity token to backend; returns { ok, user } or { needsOnboarding, pendingApple }. */
+  async appleLogin({ identityToken, email, fullName }) {
+    const r = await fetchWithConnectionMessage(`${BASE_URL}/api/auth/apple`, {
+      method: 'POST',
+      headers: getHeaders(),
+      credentials: 'include',
+      body: JSON.stringify({
+        identityToken,
+        email: email || undefined,
+        fullName: fullName || undefined,
+      }),
+    });
+    extractCookie(r);
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.message || 'Apple sign-in failed');
+    if (d.sessionId) {
+      sessionCookie = `nt.sid=${d.sessionId}`;
+      try {
+        await AsyncStorage.setItem(SESSION_KEY, d.sessionId);
+      } catch (e) {}
+    }
+    if (d.user) await offlineStorage.cacheProfile(d.user);
     return d;
   },
 

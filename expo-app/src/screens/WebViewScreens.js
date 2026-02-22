@@ -35,21 +35,122 @@ const NATIVE_INJECT_JS = `
     }
     var s = document.createElement('style');
     s.id = 'native-ios-css';
-    s.textContent = ':root { --native-tabbar-height: 88px; --native-bottom-inset: 88px; } .mobile-top-nav, .mobile-bottom-nav, .desktop-navbar, [data-testid="button-mobile-menu"], .ios-nav-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; } body[data-native-ios] .mobile-top-nav, body[data-native-ios] .mobile-bottom-nav, body[data-native-ios] .desktop-navbar { display: none !important; }';
+    s.textContent = ':root { --native-tabbar-height: 88px; --native-bottom-inset: 88px; --native-header-height: 56px; } .mobile-top-nav, .mobile-bottom-nav, .desktop-navbar, [data-testid="button-mobile-menu"], .ios-nav-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; } body[data-native-ios] .mobile-top-nav, body[data-native-ios] .mobile-bottom-nav, body[data-native-ios] .desktop-navbar { display: none !important; }'
+      + ' body.native-ios-app div.bg-gradient-to-r[style*="100vw"], body.native-ios-app div[style*="100vw"][style*="translateX(-50%)"] { width: 100% !important; max-width: 100% !important; left: 0 !important; transform: none !important; overflow-x: clip !important; box-sizing: border-box !important; min-height: 220px !important; padding-top: env(safe-area-inset-top, 0) !important; }'
+      + ' body.native-ios-app div.flex.items-start.gap-1\\.5.min-w-0 { flex-wrap: wrap !important; min-width: 0 !important; gap: 10px !important; row-gap: 8px !important; }'
+      + ' body.native-ios-app div.flex.items-start.gap-1\\.5.min-w-0 > span.flex-shrink-0.self-start { flex-basis: 100% !important; margin-top: 8px !important; align-self: flex-start !important; }';
     if (document.head) document.head.appendChild(s);
     else document.addEventListener('DOMContentLoaded', function() { document.head.appendChild(s); });
     function setBodyAttr() {
       if (document.body) {
         document.body.setAttribute('data-native-ios', 'true');
         document.body.classList.add('native-ios-app');
+        document.body.setAttribute('data-native-hero-patch', 'ok');
       }
     }
     setBodyAttr();
     document.addEventListener('DOMContentLoaded', setBodyAttr);
     var mo = new MutationObserver(function() { if (document.body) { setBodyAttr(); mo.disconnect(); } });
     mo.observe(document.documentElement, { childList: true });
+    function hideNearbyTravelerWhenEmpty() {
+      var spans = document.querySelectorAll('body.native-ios-app span');
+      for (var i = 0; i < spans.length; i++) {
+        var span = spans[i];
+        if ((span.textContent || '').trim() !== 'Nearby Traveler') continue;
+        var destSpan = span.nextElementSibling;
+        if (!destSpan) continue;
+        var dest = (destSpan.textContent || '').trim();
+        if (dest === '' || dest === '—' || dest === '--' || dest.toLowerCase() === 'null') {
+          span.style.display = 'none';
+          destSpan.style.display = 'none';
+        }
+      }
+    }
+    function applyCitySpanStyle(el) {
+      if (!el) return;
+      el.style.whiteSpace = 'normal';
+      el.style.maxWidth = '100%';
+      el.style.display = '-webkit-box';
+      el.style.webkitBoxOrient = 'vertical';
+      el.style.webkitLineClamp = '2';
+      el.style.overflow = 'hidden';
+      el.style.textOverflow = 'ellipsis';
+      el.style.color = 'rgba(0,0,0,0.92)';
+    }
+    function patchHeroHometownLine() {
+      var spans = document.querySelectorAll('body.native-ios-app span');
+      for (var i = 0; i < spans.length; i++) {
+        if ((spans[i].textContent || '').trim() !== 'Nearby Local') continue;
+        var hometownEl = spans[i].nextElementSibling;
+        if (hometownEl) {
+          applyCitySpanStyle(hometownEl);
+          var t = hometownEl.textContent || '';
+          if (t.indexOf('United States') !== -1) {
+            hometownEl.textContent = t.replace(/\bUnited States\b/g, 'USA');
+          }
+        }
+        for (var j = 0; j < spans.length; j++) {
+          if ((spans[j].textContent || '').trim() !== 'Nearby Traveler') continue;
+          var destEl = spans[j].nextElementSibling;
+          if (destEl && (destEl.textContent || '').trim() && (destEl.textContent || '').trim() !== '—') {
+            applyCitySpanStyle(destEl);
+          }
+          break;
+        }
+        break;
+      }
+    }
+    function runHeroPatch() {
+      hideNearbyTravelerWhenEmpty();
+      patchHeroHometownLine();
+      if (document.body) document.body.setAttribute('data-native-hero-patch', 'ok');
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', runHeroPatch);
+    } else {
+      runHeroPatch();
+    }
+    setTimeout(runHeroPatch, 800);
   })();
   true;
+`;
+
+// Messages page: prevent blank collapse + one-time reload if content missing (iOS WebView only).
+const MESSAGES_PAGE_INJECT_JS = `
+(function() {
+  function applyStickyHeights() {
+    try {
+      if (document.documentElement) document.documentElement.style.height = '100%';
+      if (document.body) {
+        document.body.style.height = 'auto';
+        document.body.style.minHeight = '120vh';
+      }
+    } catch(e) {}
+  }
+  var end = Date.now() + 10000;
+  var mo = new MutationObserver(function() {
+    if (Date.now() > end) { mo.disconnect(); return; }
+    applyStickyHeights();
+  });
+  function run() {
+    applyStickyHeights();
+    try {
+      if (document.body) mo.observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
+    } catch(e) {}
+    setTimeout(function() { mo.disconnect(); }, 10000);
+    setTimeout(function() {
+      try {
+        var hasContent = document.querySelector('[data-testid="messages-list"], [data-testid="message-list"], .messages, [class*="MessagesList"], [class*="message-list"], [class*="message-thread"]') || (document.body && document.body.innerText && document.body.innerText.length > 200);
+        if (hasContent) return;
+        if (sessionStorage.getItem('__reloaded_messages_once')) return;
+        sessionStorage.setItem('__reloaded_messages_once', '1');
+        location.reload();
+      } catch(e) {}
+    }, 3000);
+  }
+  if (document.body) run(); else document.addEventListener('DOMContentLoaded', run);
+})();
+true;
 `;
 
 function pathWithNativeIOS(path) {
@@ -110,24 +211,116 @@ function WebViewWithChrome({ path, navigation }) {
   const webViewRef = useRef(null);
   const displayUser = authUser || user;
   const source = webViewSource(path);
+  const [messagesBootstrapUri, setMessagesBootstrapUri] = useState(null);
+  const [messagesBootstrapError, setMessagesBootstrapError] = useState(null);
+  const [messagesBootstrapLoading, setMessagesBootstrapLoading] = useState(false);
+  const [currentWebPath, setCurrentWebPath] = useState(null);
 
-  // Wait for auth on Messages and chat paths so the page never loads without user (avoids blank / "Please log in")
-  const isMessagesPath = path === '/messages' || (path && path.startsWith('/messages'));
+  // Use actual current path: from WebView nav (when navigated to /messages from Home) or from route prop (Messages tab)
+  const effectivePath = currentWebPath || (typeof path === 'string' ? path : '');
+  // Treat ANY path that contains /messages as Messages (tab + widget + deep links)
+  const isMessagesPath = !!(effectivePath && String(effectivePath).includes('/messages'));
+
+  // Build a SAFE redirect path for the server (path + query, no protocol-relative)
+  const rawPath = typeof effectivePath === 'string' ? effectivePath : '';
+  const pathAndQuery = (rawPath || '/messages').trim();
+  const safeMessagesRedirect =
+    pathAndQuery.startsWith('/') && !pathAndQuery.startsWith('//')
+      ? pathAndQuery
+      : '/messages';
+
   const isChatroomPath = path && path.startsWith('/chatroom');
   const isEventChatPath = path && path.startsWith('/event-chat');
   const wantsAuth = isMessagesPath || isChatroomPath || isEventChatPath;
   const shouldWaitForAuth = wantsAuth && !displayUser;
   const [authWaitExpired, setAuthWaitExpired] = useState(false);
+  const authWaitMs = isMessagesPath ? 6000 : 2500;
   useEffect(() => {
     if (!wantsAuth || displayUser) return;
-    const t = setTimeout(() => setAuthWaitExpired(true), 2500);
+    const t = setTimeout(() => setAuthWaitExpired(true), authWaitMs);
     return () => clearTimeout(t);
-  }, [wantsAuth, displayUser]);
+  }, [wantsAuth, displayUser, authWaitMs]);
   useEffect(() => {
     if (displayUser) setAuthWaitExpired(false);
   }, [displayUser]);
-  const effectiveSource = (shouldWaitForAuth && !authWaitExpired) ? null : source;
+
+  const runMessagesBootstrap = useCallback(() => {
+    if (!isMessagesPath || !displayUser) return;
+    setMessagesBootstrapError(null);
+    setMessagesBootstrapUri(null);
+    setMessagesBootstrapLoading(true);
+    let resolved = false;
+    const timeoutId = setTimeout(() => {
+      if (resolved) return;
+      if (sessionCookie) {
+        resolved = true;
+        const fallbackUri = `${BASE_URL}${pathWithNativeIOS(safeMessagesRedirect)}`;
+        setMessagesBootstrapUri({ uri: fallbackUri, headers: { Cookie: sessionCookie } });
+        setMessagesBootstrapError(null);
+      } else {
+        setMessagesBootstrapError((e) => (!e ? 'Bootstrap timeout' : e));
+      }
+      setMessagesBootstrapLoading(false);
+    }, 10000);
+    api.getWebViewToken()
+      .then((token) => {
+        resolved = true;
+        if (token) {
+          const uri = `${BASE_URL}/api/auth/webview-login?token=${encodeURIComponent(token)}&redirect=${encodeURIComponent(safeMessagesRedirect)}`;
+          setMessagesBootstrapUri({ uri, headers: sessionCookie ? { Cookie: sessionCookie } : undefined });
+          setMessagesBootstrapError(null);
+        } else if (sessionCookie) {
+          const fallbackUri = `${BASE_URL}${pathWithNativeIOS(safeMessagesRedirect)}`;
+          setMessagesBootstrapUri({ uri: fallbackUri, headers: { Cookie: sessionCookie } });
+          setMessagesBootstrapError(null);
+        } else {
+          setMessagesBootstrapError('No token (401 or empty)');
+        }
+        setMessagesBootstrapLoading(false);
+      })
+      .catch((err) => {
+        resolved = true;
+        if (sessionCookie) {
+          const fallbackUri = `${BASE_URL}${pathWithNativeIOS(safeMessagesRedirect)}`;
+          setMessagesBootstrapUri({ uri: fallbackUri, headers: { Cookie: sessionCookie } });
+          setMessagesBootstrapError(null);
+        } else {
+          setMessagesBootstrapError(err?.message || String(err) || 'Token request failed');
+        }
+        setMessagesBootstrapLoading(false);
+      })
+      .finally(() => clearTimeout(timeoutId));
+  }, [isMessagesPath, !!displayUser, safeMessagesRedirect, sessionCookie]);
+  const handleMessagesRetry = useCallback(() => {
+    setMessagesBootstrapError(null);
+    runMessagesBootstrap();
+  }, [runMessagesBootstrap]);
+
+  useEffect(() => {
+  // Leaving messages: reset everything
+  if (!isMessagesPath) {
+    setMessagesBootstrapUri(null);
+    setMessagesBootstrapError(null);
+    setMessagesBootstrapLoading(false);
+    return;
+  }
+
+  // Messages path changed (widget vs tab): reset uri so we re-bootstrap cleanly
+  setMessagesBootstrapUri(null);
+  setMessagesBootstrapError(null);
+
+  if (!displayUser) return;
+  runMessagesBootstrap();
+  // IMPORTANT: include safeMessagesRedirect so changing /messages vs /messages?... triggers bootstrap
+}, [isMessagesPath, safeMessagesRedirect, displayUser?.id, runMessagesBootstrap]);
+
+  const authReady = !!displayUser;
+  const messagesBootstrapReady = isMessagesPath && authReady && !!messagesBootstrapUri;
+  const effectiveSource = isMessagesPath && authReady
+    ? (messagesBootstrapReady ? (typeof messagesBootstrapUri === 'object' && messagesBootstrapUri?.uri ? messagesBootstrapUri : { uri: messagesBootstrapUri }) : null)
+    : ((shouldWaitForAuth && !authWaitExpired) ? null : source);
   const showAuthWaiting = shouldWaitForAuth && !authWaitExpired;
+  const isMessagesWaiting = isMessagesPath && (!authReady || !messagesBootstrapUri) && !messagesBootstrapError;
 
   const loadUser = useCallback(() => {
     api.getUser().then((u) => {
@@ -402,18 +595,39 @@ function WebViewWithChrome({ path, navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-      {showAuthWaiting ? (
+      {isMessagesPath && messagesBootstrapError ? (
+        <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg, padding: 24 }]}>
+          <Text style={[styles.loadingMessage, { marginBottom: 8, fontWeight: '600' }, dark && { color: DARK.textMuted }]}>Messages failed to start</Text>
+          <Text style={[styles.loadingMessage, { marginBottom: 16, textAlign: 'center' }, dark && { color: DARK.textMuted }]}>{messagesBootstrapError}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={handleMessagesRetry}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      ) : isMessagesWaiting ? (
+        <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg }]}>
+          <ActivityIndicator size="large" color="#F97316" />
+          <Text style={[styles.loadingMessage, dark && { color: DARK.textMuted }]}>Preparing Messages…</Text>
+        </View>
+      ) : showAuthWaiting ? (
         <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg }]}>
           <ActivityIndicator size="large" color="#F97316" />
         </View>
       ) : (
       <WebView
+        key={isMessagesPath ? `${path}|${authReady ? 1 : 0}` : undefined}
         ref={webViewRef}
         source={effectiveSource}
         style={[styles.webview, dark && { backgroundColor: DARK.bg }]}
         injectedJavaScriptBeforeContentLoaded={
-          displayUser
-            ? NATIVE_INJECT_JS + `
+          NATIVE_INJECT_JS +
+          (sessionCookie ? `
+(function() {
+  try {
+    document.cookie = ${JSON.stringify(sessionCookie + '; path=/; max-age=86400')};
+  } catch(e) {}
+})();
+` : '') +
+          (displayUser ? `
 (function() {
   try {
     var u = ${JSON.stringify(displayUser)};
@@ -424,9 +638,8 @@ function WebViewWithChrome({ path, navigation }) {
     console.log('[NearbyTraveler Native] Auth injection fired - user and token set');
   } catch(e) {}
 })();
-true;
-`
-            : NATIVE_INJECT_JS
+` : '') +
+          (isMessagesPath ? MESSAGES_PAGE_INJECT_JS : '') + '\ntrue;'
         }
         onLoadStart={onLoadStart}
         onLoadEnd={onLoadEnd}
@@ -438,7 +651,10 @@ true;
           setCanGoBackWeb(navState.canGoBack);
           const url = navState?.url || '';
           if (!url.includes(HOST)) return;
-          const pathname = (url.replace(BASE_URL, '').split('?')[0] || '/').replace(/\/$/, '') || '/';
+          const afterBase = url.replace(BASE_URL, '').split('?');
+          const pathname = (afterBase[0] || '/').replace(/\/$/, '') || '/';
+          const search = afterBase[1] ? '?' + afterBase[1] : '';
+          if (!pathname.startsWith('/api/')) setCurrentWebPath(pathname + search);
           if (pathname === '/' || pathname === '/landing' || pathname.indexOf('/landing') === 0) {
             webViewRef.current?.injectJavaScript(
               `window.location.replace('${BASE_URL}${pathWithNativeIOS('/home')}');true;`
@@ -453,6 +669,7 @@ true;
         pullToRefreshEnabled={true}
         sharedCookiesEnabled={true}
         thirdPartyCookiesEnabled={true}
+        {...(isMessagesPath && Platform.OS === 'ios' ? { useSharedProcessPool: true, incognito: false } : {})}
         fadeDuration={0}
         renderLoading={() => (
           <View style={{ flex: 1, backgroundColor: loadingBg, justifyContent: 'center', alignItems: 'center' }}>
@@ -818,6 +1035,76 @@ export function SettingsScreen({ navigation }) {
   );
 }
 
+/**
+ * In-app Terms (or any single URL) screen for Auth flow.
+ * Opens the given URL in a WebView with a Back button so the user stays in the app
+ * and returns to sign-in/signup when they tap Back (instead of leaving the app).
+ */
+export function TermsWebViewScreen({ route, navigation }) {
+  const { url, title = 'Terms and Conditions' } = route?.params || {};
+  const colorScheme = useColorScheme();
+  const dark = colorScheme === 'dark';
+  const [loading, setLoading] = useState(true);
+  const effectiveUrl = url || `${BASE_URL}/terms`;
+  const source = { uri: effectiveUrl };
+
+  const onShouldStartLoadWithRequest = useCallback((req) => {
+    if (isExternalUrl(req?.url)) {
+      Linking.openURL(req.url).catch(() => {});
+      return false;
+    }
+    // When the terms page "Back" / "Back to Sign In" navigates to /auth, /, or /landing,
+    // stay in the app: pop the Terms screen and return to sign-up/sign-in instead of loading the site.
+    const reqUrl = (req?.url || '').trim();
+    if (reqUrl && reqUrl.includes(HOST)) {
+      try {
+        const pathname = (new URL(reqUrl).pathname || '/').replace(/\/$/, '') || '/';
+        if (pathname === '/' || pathname === '/auth' || pathname === '/landing' || pathname.indexOf('/landing') === 0) {
+          navigation.goBack();
+          return false;
+        }
+      } catch (_) {}
+    }
+    return true;
+  }, [navigation]);
+
+  const headerBg = dark ? DARK.bg : '#FFFFFF';
+  const headerBorder = dark ? DARK.border : '#F3F4F6';
+  const titleColor = dark ? DARK.text : '#111827';
+  const backColor = '#F97316';
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: headerBg }]}>
+      <View style={[styles.termsHeader, { borderBottomColor: headerBorder }]}>
+        <TouchableOpacity
+          style={styles.termsBackButton}
+          onPress={() => navigation.goBack()}
+          accessibilityLabel="Back to sign up"
+        >
+          <Text style={[styles.backChevron, { color: backColor }]}>&lsaquo;</Text>
+          <Text style={[styles.backText, { color: backColor }]}>Back</Text>
+        </TouchableOpacity>
+        <Text style={[styles.termsTitle, { color: titleColor }]} numberOfLines={1}>
+          {title}
+        </Text>
+        <View style={styles.termsBackButton} />
+      </View>
+      <WebView
+        source={source}
+        style={[styles.webview, dark && { backgroundColor: DARK.bg }]}
+        onLoadStart={() => setLoading(true)}
+        onLoadEnd={() => setLoading(false)}
+        onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+      />
+      {loading && (
+        <View style={[styles.loadingOverlay, { top: HEADER_HEIGHT, backgroundColor: dark ? 'rgba(28,28,30,0.9)' : 'rgba(255,255,255,0.8)' }]}>
+          <ActivityIndicator size="large" color="#F97316" />
+        </View>
+      )}
+    </SafeAreaView>
+  );
+}
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: '#F3F4F6', height: HEADER_HEIGHT },
@@ -845,4 +1132,7 @@ const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1 },
   webview: { flex: 1, backgroundColor: '#FFFFFF' },
   loadingMessage: { marginTop: 12, fontSize: 16, color: '#6B7280' },
+  termsHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4, paddingHorizontal: 8, borderBottomWidth: 1, height: HEADER_HEIGHT },
+  termsBackButton: { minWidth: 72, flexShrink: 0, flexDirection: 'row', alignItems: 'center', paddingVertical: 4, paddingHorizontal: 8 },
+  termsTitle: { flex: 1, textAlign: 'center', fontSize: 17, fontWeight: '600', paddingHorizontal: 8 },
 });
