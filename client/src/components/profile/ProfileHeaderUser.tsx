@@ -17,7 +17,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     isOwnProfile,
     gradientOptions,
     selectedGradient,
-    setSelectedGradient,
     setShowExpandedPhoto,
     uploadingPhoto,
     handleAvatarUpload,
@@ -37,16 +36,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 relative isolate`}
       style={{ width: '100vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
     >
-      {isOwnProfile && (
-        <button
-          type="button"
-          onClick={() => setSelectedGradient((prev: number) => (prev + 1) % (gradientOptions?.length ?? 1))}
-          aria-label="Change header colors"
-          className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white"
-        >
-          🎨
-        </button>
-      )}
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6 relative z-20">
           <div className="relative flex-shrink-0">
@@ -182,14 +171,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </div>
                           <div className="flex flex-col gap-0 min-w-0 flex-1">
                             <span className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</span>
-                            <span className="truncate text-gray-700 dark:text-gray-300" title={hometown}>{hometown}</span>
+                            <span className="truncate text-black dark:text-gray-100" title={hometown}>{hometown}</span>
                             {(() => {
                               const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
                               if (!currentTravelPlan) return null;
                               return (
                                 <>
                                   <span className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-0.5">Nearby Traveler</span>
-                                  <span className="truncate text-gray-700 dark:text-gray-300" title={currentTravelPlan}>{currentTravelPlan}</span>
+                                  <span className="truncate text-black dark:text-gray-100" title={currentTravelPlan}>{currentTravelPlan}</span>
                                 </>
                               );
                             })()}

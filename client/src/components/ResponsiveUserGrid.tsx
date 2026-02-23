@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Heart, MapPin, Star } from "lucide-react";
+import { Heart, MapPin, Star, Plane } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { SimpleAvatar } from "@/components/simple-avatar";
@@ -22,6 +22,8 @@ interface User {
   userType?: string;
   aura?: number;
   isCurrentlyTraveling?: boolean;
+  travelPlans?: any[];
+  destinationCity?: string | null;
 }
 
 interface ResponsiveUserGridProps {
@@ -58,22 +60,45 @@ export default function ResponsiveUserGrid({
     return "Location not set";
   };
 
-  // 4-line block: Line 1 Nearby Local, Line 2 city, Line 3 Nearby Traveler, Line 4 destination (mobile-friendly, no mid-word wrap)
+  // CRITICAL: Get travel destination from ALL sources - MUST show when user is Nearby Traveler
+  const getTravelDestination = (user: User): string | null => {
+    if (user.userType === 'business') return null;
+    const dest = user.destinationCity || (user.travelDestination && user.travelDestination.split(',')[0]?.trim());
+    if (dest && String(dest).toLowerCase() !== 'null') return dest;
+    const plans = (user as any).travelPlans;
+    if (Array.isArray(plans)) {
+      const now = new Date();
+      const active = plans.find((p: any) => {
+        try {
+          const start = new Date(p.startDate);
+          const end = new Date(p.endDate);
+          return now >= start && now <= end;
+        } catch { return false; }
+      });
+      const c = active?.destinationCity || (active?.destination && active.destination.split(',')[0]?.trim());
+      if (c) return c;
+    }
+    return null;
+  };
+
+  // 4-line block: Line 1 Nearby Local, Line 2 city, Line 3 Nearby Traveler, Line 4 destination (mobile-friendly)
   const UserLocationLines = ({ user }: { user: User }) => {
     if (user.userType === 'business') {
       return <span className="text-gray-600 dark:text-gray-400 whitespace-nowrap">Business User</span>;
     }
     const hometown = user.hometownCity || '—';
-    const travelDest = user.travelDestination;
-    const destination = user.isCurrentlyTraveling ? (user.destinationCity || (travelDest && typeof travelDest === 'string' ? travelDest.split(',')[0].trim() : null) || null) : null;
+    const destination = getTravelDestination(user);
+    const isTraveling = !!destination || !!(user as any).isCurrentlyTraveling;
     return (
       <div className="text-center text-gray-600 dark:text-gray-400 font-medium min-w-0">
         <div className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</div>
         <div className="truncate px-0.5" title={hometown}>{hometown}</div>
-        {destination && (
+        {isTraveling && (destination || (user as any).travelDestination) && (
           <>
             <div className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap">Nearby Traveler</div>
-            <div className="truncate px-0.5" title={destination}>{destination}</div>
+            <div className="truncate px-0.5 font-semibold text-blue-600 dark:text-blue-400" title={destination || ''}>
+              {destination || ((user as any).travelDestination && (user as any).travelDestination.split(',')[0]?.trim()) || '—'}
+            </div>
           </>
         )}
       </div>
@@ -93,6 +118,7 @@ export default function ResponsiveUserGrid({
   // Desktop Card Component - LINKEDIN INSPIRED PROFESSIONAL DESIGN
   const DesktopUserCard = ({ user }: { user: User }) => {
     const isAvailable = availableNowIds.includes(user.id);
+    const travelDest = getTravelDestination(user);
     return (
     <Card 
       className={`group cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
@@ -100,6 +126,15 @@ export default function ResponsiveUserGrid({
     >
       {/* Cover Background */}
       <div className="h-16 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 relative">
+        {/* CRITICAL: Travel badge on hero - left corner, airplane icon */}
+        {travelDest && user.userType !== 'business' && (
+          <div className="absolute top-1.5 left-1.5 z-10">
+            <span className="flex items-center gap-1 bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-md shadow-md">
+              <Plane className="w-3 h-3" />
+              {travelDest}
+            </span>
+          </div>
+        )}
         {isAvailable && (
           <div className="absolute top-2 right-2">
             <span className="flex items-center gap-1 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-pulse">
@@ -165,6 +200,7 @@ export default function ResponsiveUserGrid({
   // Mobile Card Component - LINKEDIN INSPIRED PROFESSIONAL DESIGN
   const MobileUserCard = ({ user }: { user: User }) => {
     const isAvailable = availableNowIds.includes(user.id);
+    const travelDest = getTravelDestination(user);
     return (
     <Card 
       className={`cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden h-full ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
@@ -172,6 +208,15 @@ export default function ResponsiveUserGrid({
     >
       {/* Gradient Cover - smaller for mobile */}
       <div className="h-12 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 relative">
+        {/* CRITICAL: Travel badge on hero - left corner */}
+        {travelDest && user.userType !== 'business' && (
+          <div className="absolute top-1 left-1 z-10">
+            <span className="flex items-center gap-0.5 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-md">
+              <Plane className="w-2.5 h-2.5" />
+              {travelDest}
+            </span>
+          </div>
+        )}
         {isAvailable && (
           <div className="absolute top-1 right-1">
             <span className="flex items-center gap-1 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-lg animate-pulse">

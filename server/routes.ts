@@ -15828,8 +15828,8 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`🤝 USER ${userId} JOINING QUICK MEET ${meetupId}`);
 
-      // Check if meetup exists and is active
-      const meetup = await storage.getQuickMeetup(meetupId);
+      // Check if meetup exists and is active (use getQuickMeetupById - getQuickMeetup has schema mismatch)
+      const meetup = await storage.getQuickMeetupById(meetupId);
       if (!meetup) {
         return res.status(404).json({ message: "Quick meet not found" });
       }

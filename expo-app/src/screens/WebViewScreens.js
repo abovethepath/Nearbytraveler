@@ -420,8 +420,12 @@ function WebViewWithChrome({ path, navigation }) {
     localStorage.setItem('user', JSON.stringify(u));
     localStorage.setItem('userData', JSON.stringify(u));
     localStorage.setItem('travelconnect_user', JSON.stringify(u));
-    ${sessionId ? `localStorage.setItem('auth_token', ${JSON.stringify(sessionId)});` : ''}
-    console.log('[NearbyTraveler Native] Auth injection fired - user and token set');
+    localStorage.setItem('auth_token', 'authenticated');
+    ${sessionId ? `
+    // CRITICAL: Set session cookie so fetch(credentials:'include') sends it - WebView does not persist Cookie from initial request
+    document.cookie = 'nt.sid=' + ${JSON.stringify(sessionId)} + '; path=/; max-age=2592000; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : '');
+    ` : ''}
+    console.log('[NearbyTraveler Native] Auth injection fired - user and session cookie set');
   } catch(e) {}
 })();
 true;
@@ -522,6 +526,7 @@ export function JoinWebViewScreen({ navigation }) {
       if (data.type === 'SIGNUP_COMPLETE' && data.user) {
         const AsyncStorage = require('@react-native-async-storage/async-storage').default;
         await AsyncStorage.setItem('user', JSON.stringify(data.user));
+        if (data.sessionId) await api.setSessionFromSignup(data.sessionId);
         setUser(data.user);
         signupCompletedRef.current = true;
       }
@@ -660,6 +665,7 @@ export function BusinessSignupWebViewScreen({ navigation }) {
       if (data.type === 'SIGNUP_COMPLETE' && data.user) {
         const AsyncStorage = require('@react-native-async-storage/async-storage').default;
         await AsyncStorage.setItem('user', JSON.stringify(data.user));
+        if (data.sessionId) await api.setSessionFromSignup(data.sessionId);
         await AsyncStorage.removeItem('signup_data');
         setUser(data.user);
       }

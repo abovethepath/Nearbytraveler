@@ -1,0 +1,28 @@
+---
+description: Only modify iOS build code — never touch the website (client/server)
+alwaysApply: true
+---
+
+# iOS Build Scope — Do Not Touch the Website
+
+When making changes to this codebase, **only modify files that affect the iOS build**. Do not touch the actual website.
+
+## Allowed (iOS build only)
+
+- `ios-app/` — iOS native wrapper
+- `capacitor-app/` — Capacitor mobile wrapper
+- `expo-app/` — React Native / Expo mobile app
+- `capacitor.config.ts` — Capacitor configuration
+- Root `package.json` — only scripts/deps related to iOS/Capacitor/Expo builds
+
+## Forbidden (website — do not modify)
+
+- `client/` — React web app (pages, components, routing, etc.)
+- `server/` — Express backend, API routes, services
+- `shared/` — Database schema, shared constants
+- `vite.config.ts`, `tailwind.config.ts` — web build config
+- `migrations/` — database migrations
+
+## If a change requires website code
+
+Stop and ask the user before modifying any forbidden paths. Do not assume it is okay to touch `client/` or `server/` for an iOS fix.

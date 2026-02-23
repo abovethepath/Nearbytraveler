@@ -263,7 +263,8 @@ export default function SignupLocal() {
           
           localStorage.setItem('just_registered', 'true');
           if ((window as any).ReactNativeWebView && data.user) {
-            (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: 'SIGNUP_COMPLETE', user: data.user }));
+            const sid = (data as any).sessionId || document.cookie.split(';').find(c => c.trim().startsWith('nt.sid='))?.split('=')[1]?.trim();
+            (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: 'SIGNUP_COMPLETE', user: data.user, sessionId: sid }));
           }
           const username = data.user?.username;
           // Keep user on signup page while profile builds — calm transition

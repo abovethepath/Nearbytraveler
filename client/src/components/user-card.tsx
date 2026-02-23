@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation } from "wouter";
+import { Plane } from "lucide-react";
 
 export interface User {
   id: number;
@@ -78,31 +79,49 @@ export default function UserCard({
     return gradients[user.id % gradients.length];
   };
 
+  // CRITICAL: Must show destination when user is a Nearby Traveler - use ALL possible sources
   const getTravelCity = (): string | null => {
-    if ((user as any).travelPlans && Array.isArray((user as any).travelPlans)) {
+    const clean = (s: string | null | undefined): string | null => {
+      if (!s || String(s).toLowerCase() === 'null') return null;
+      const t = String(s).trim();
+      return t || null;
+    };
+    // 1. From travelPlans (active trip)
+    const plans = (user as any).travelPlans;
+    if (Array.isArray(plans)) {
       const now = new Date();
-      now.setHours(0, 0, 0, 0);
-      const currentTrip = (user as any).travelPlans.find((plan: any) => {
-        const start = new Date(plan.startDate);
-        start.setHours(0, 0, 0, 0);
-        const end = new Date(plan.endDate);
-        end.setHours(23, 59, 59, 999);
-        return now >= start && now <= end;
+      const currentTrip = plans.find((plan: any) => {
+        try {
+          const start = new Date(plan.startDate);
+          const end = new Date(plan.endDate);
+          return now >= start && now <= end;
+        } catch { return false; }
       });
-      if (currentTrip?.destinationCity) return currentTrip.destinationCity;
+      if (currentTrip) {
+        const c = currentTrip.destinationCity || (currentTrip.destination && currentTrip.destination.split(',')[0]?.trim());
+        const r = clean(c);
+        if (r) return r;
+      }
     }
-    if ((user as any).destinationCity) {
-      const c = (user as any).destinationCity;
-      if (c && String(c).toLowerCase() !== 'null') return String(c).trim();
-    }
-    if (user.isCurrentlyTraveling && user.travelDestination) {
-      const city = user.travelDestination.split(',')[0].trim();
-      if (city && city.toLowerCase() !== 'null') return city;
+    // 2. From destinationCity (API-enriched)
+    const destCity = clean((user as any).destinationCity);
+    if (destCity) return destCity;
+    // 3. From isCurrentlyTraveling + travelDestination (API fallback)
+    if ((user as any).isCurrentlyTraveling && user.travelDestination) {
+      const city = user.travelDestination.split(',')[0]?.trim();
+      const r = clean(city);
+      if (r) return r;
     }
     return null;
   };
 
   const travelCity = getTravelCity();
+  // When API says traveling but getTravelCity missed it, try travelDestination once more
+  const travelCityFinal = travelCity || (
+    (user as any).isCurrentlyTraveling && user.travelDestination
+      ? user.travelDestination.split(',')[0]?.trim() || null
+      : null
+  );
   const displayCity = user.hometownCity || 'Unknown';
   const displayName = user.userType === 'business' && user.businessName 
     ? user.businessName 
@@ -151,11 +170,12 @@ export default function UserCard({
           </div>
         )}
         
-        {/* Travel badge on photo - only when we have a destination (there's never traveling without one) */}
-        {travelCity && (
-          <div className="absolute top-1.5 left-1.5 z-10">
-            <span className="bg-blue-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full whitespace-nowrap">
-              ✈️ {travelCity}
+        {/* CRITICAL: Travel badge on photo - MUST show when Nearby Traveler (airplane icon, left corner) */}
+        {travelCityFinal && user.userType !== 'business' && (
+          <div className="absolute top-1.5 left-1.5 z-10 flex items-center gap-1">
+            <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-md whitespace-nowrap flex items-center gap-1">
+              <Plane className="w-3 h-3 flex-shrink-0" />
+              {travelCityFinal}
             </span>
           </div>
         )}
@@ -197,9 +217,11 @@ export default function UserCard({
               ? `📍 ${user.streetAddress}` 
               : displayCity}
           </div>
-          {travelCity && user.userType !== 'business' && (
-            <div className="text-[10px] font-medium text-blue-600 dark:text-blue-400 truncate mt-0.5">
-              ✈️ Traveling to {travelCity}
+          {/* CRITICAL: Travel destination MUST appear under hometown - users must see immediately if traveling */}
+          {travelCityFinal && user.userType !== 'business' && (
+            <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 mt-0.5 flex items-center gap-1 truncate">
+              <Plane className="w-3 h-3 flex-shrink-0 text-blue-600 dark:text-blue-400" />
+              <span>Nearby Traveler → {travelCityFinal}</span>
             </div>
           )}
           {!compact && (
@@ -231,9 +253,11 @@ export default function UserCard({
           </div>
           <div className="truncate">
             <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{displayCity}</div>
-            {travelCity && user.userType !== 'business' && (
-              <div className="text-[10px] font-medium text-blue-600 dark:text-blue-400 truncate">
-                ✈️ To {travelCity}
+            {/* CRITICAL: Travel destination under hometown on desktop - MUST be visible */}
+            {travelCityFinal && user.userType !== 'business' && (
+              <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 truncate flex items-center gap-1 mt-0.5">
+                <Plane className="w-3 h-3 flex-shrink-0" />
+                <span>Nearby Traveler → {travelCityFinal}</span>
               </div>
             )}
           </div>

@@ -2157,7 +2157,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                         {userChatrooms.map((chatroom: any) => (
                           <button
                             key={chatroom.id}
-                            onClick={() => setLocation(`/chat/${chatroom.id}`)}
+                            onClick={() => setLocation(`/chatroom/${chatroom.id}`)}
                             className="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                           >
                             <div className="flex items-center gap-3 min-w-0">

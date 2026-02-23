@@ -167,6 +167,14 @@ const api = {
   },
 
   restoreSession,
+  /** Store session from WebView signup so Messages/API work in native tabs. */
+  async setSessionFromSignup(sessionId) {
+    if (!sessionId) return;
+    try {
+      await AsyncStorage.setItem(SESSION_KEY, sessionId);
+      sessionCookie = `nt.sid=${sessionId}`;
+    } catch (e) {}
+  },
   /** For WebView: pass this as Cookie header so the site sees the user as logged in. */
   getSessionCookie: () => sessionCookie,
 

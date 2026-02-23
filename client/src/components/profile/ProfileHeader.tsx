@@ -19,7 +19,6 @@ export function ProfileHeader(props: ProfilePageProps) {
     shouldShowBackToChat,
     gradientOptions,
     selectedGradient,
-    setSelectedGradient,
     setShowExpandedPhoto,
     uploadingPhoto,
     handleAvatarUpload,
@@ -68,16 +67,6 @@ export function ProfileHeader(props: ProfilePageProps) {
             className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 pt-6 sm:pt-8 pb-10 sm:pb-12 relative isolate`}
             style={{ width: '100vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
           >
-            {isOwnProfile && (
-              <button
-                type="button"
-                onClick={() => setSelectedGradient((prev: number) => (prev + 1) % (gradientOptions?.length ?? 1))}
-                aria-label="Change header colors"
-                className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white"
-              >
-                🎨
-              </button>
-            )}
             <div className="max-w-7xl mx-auto flex flex-col items-center relative z-10">
               <div className="relative flex-shrink-0">
                 <div

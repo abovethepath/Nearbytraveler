@@ -302,7 +302,8 @@ export default function SignupBusinessSimple() {
       
       localStorage.setItem('just_registered', 'true');
       if ((window as any).ReactNativeWebView && response.user) {
-        (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: 'SIGNUP_COMPLETE', user: response.user }));
+        const sid = (response as any).sessionId || document.cookie.split(';').find(c => c.trim().startsWith('nt.sid='))?.split('=')[1]?.trim();
+        (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: 'SIGNUP_COMPLETE', user: response.user, sessionId: sid }));
       }
       // Keep user on signup page while profile builds — calm transition
       setIsRedirecting(true);
