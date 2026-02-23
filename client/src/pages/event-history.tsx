@@ -25,6 +25,8 @@ import {
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { getApiBaseUrl } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { openPrivateChatWithUser } from "@/lib/iosPrivateChat";
 
 interface EventParticipant {
   userId: number;
@@ -71,6 +73,7 @@ interface EventHistoryResponse {
 export default function EventHistory() {
   const [, navigate] = useLocation();
   const { user } = useAuth();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedCity, setSelectedCity] = useState<string>("");
@@ -128,8 +131,14 @@ export default function EventHistory() {
     return colors[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
   };
 
-  const handleContactAttendee = (userId: number) => {
-    navigate(`/messages?userId=${userId}`);
+  const handleContactAttendee = async (userId: number) => {
+    const handled = await openPrivateChatWithUser(userId, navigate, {
+      currentUserId: user?.id,
+      toast,
+    });
+    if (!handled) {
+      navigate(`/messages?userId=${userId}`);
+    }
   };
 
   const handleViewProfile = (userId: number) => {

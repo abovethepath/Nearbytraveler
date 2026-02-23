@@ -62,49 +62,38 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     >
       {!isOwnProfile && shareButton}
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className={`flex flex-row flex-wrap gap-4 sm:gap-6 relative z-20 ${!isNativeIOSApp() ? 'md:items-center md:gap-8' : 'items-start'}`}>
-          {/* Avatar block: avatar + camera (camera positioned relative to avatar only) */}
-          <div className={`flex-shrink-0 ${isNativeIOSApp() ? 'flex flex-col items-center' : ''}`}>
-            <div className="relative w-fit">
-              <div
-                className={`rounded-full border-4 border-white dark:border-gray-600 shadow-xl overflow-hidden ${!isOwnProfile && user?.profileImage ? 'cursor-pointer hover:border-orange-400 transition-all' : ''}`}
-                onClick={() => { if (!isOwnProfile && user?.profileImage) setShowExpandedPhoto(true); }}
-                title={!isOwnProfile && user?.profileImage ? "Click to enlarge photo" : undefined}
-              >
-                <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
-                  <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
-                </div>
+        <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6 relative z-20">
+          <div className={`relative flex-shrink-0 ${isNativeIOSApp() ? 'flex flex-col items-center' : ''}`}>
+            <div
+              className={`rounded-full border-4 border-white dark:border-gray-600 shadow-xl overflow-hidden ${!isOwnProfile && user?.profileImage ? 'cursor-pointer hover:border-orange-400 transition-all' : ''}`}
+              onClick={() => { if (!isOwnProfile && user?.profileImage) setShowExpandedPhoto(true); }}
+              title={!isOwnProfile && user?.profileImage ? "Click to enlarge photo" : undefined}
+            >
+              <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
+                <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
               </div>
-              {isOwnProfile && (
-                <>
-                  {!user?.profileImage && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg whitespace-nowrap z-20 animate-pulse">Add Photo</div>
-                  )}
-                  <div
-                    className={`absolute bottom-2 right-2 h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600 animate-bounce' : 'bg-gray-600 hover:bg-gray-500'} text-white shadow-lg border-2 border-white z-10 overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
-                    data-testid="button-upload-avatar"
-                  >
-                    <Camera className="h-4 w-4 sm:h-5 sm:w-5 pointer-events-none" />
-                    <input id="avatar-upload-input" type="file" accept="image/*" onChange={(e) => { handleAvatarUpload?.(e); }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" style={{ fontSize: '200px' }} disabled={uploadingPhoto} aria-label="Change avatar" />
-                  </div>
-                </>
-              )}
             </div>
             {isNativeIOSApp() && !isOwnProfile && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-2">
                 New to Town
               </span>
             )}
-            {/* City info: on iOS, below avatar; on desktop, in separate block to the right (see below) */}
-            {isNativeIOSApp() && (() => {
+            {(() => {
               const hometown = formatLocationCompact(user?.hometownCity, user?.hometownState, user?.hometownCountry);
               const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
               return (
                 <div className="flex flex-col gap-1 min-w-0 mt-3 w-full max-w-[280px] sm:max-w-none">
                   <span className="text-base sm:text-lg font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
-                  <span className="text-base sm:text-lg font-medium break-words" title={hometown} style={{ color: '#000' }}>{hometown}</span>
-                  <span className="text-base sm:text-lg font-semibold text-blue-600 dark:text-blue-400 mt-1">Nearby Traveler</span>
-                  <span className="text-base sm:text-lg font-medium break-words" title={currentTravelPlan || undefined} style={{ color: '#000' }}>{currentTravelPlan || '—'}</span>
+                  <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
+                  <>
+                    <span className="text-base sm:text-lg font-semibold text-blue-600 dark:text-blue-400 mt-1">Nearby Traveler</span>
+                    <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={currentTravelPlan || undefined} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{currentTravelPlan || '—'}</span>
+                  </>
+                  {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && !isNativeIOSApp() && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-1 self-start">
+                      New to Town
+                    </span>
+                  )}
                   {(() => {
                     if (!currentTravelPlan) return null;
                     const now = new Date();
@@ -127,49 +116,21 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </div>
               );
             })()}
+            {isOwnProfile && (
+              <>
+                {!user?.profileImage && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg whitespace-nowrap z-20 animate-pulse">Add Photo</div>
+                )}
+                <div
+                  className={`absolute bottom-2 right-2 h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600 animate-bounce' : 'bg-gray-600 hover:bg-gray-500'} text-white shadow-lg border-2 border-white z-10 overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
+                  data-testid="button-upload-avatar"
+                >
+                  <Camera className="h-4 w-4 sm:h-5 sm:w-5 pointer-events-none" />
+                  <input id="avatar-upload-input" type="file" accept="image/*" onChange={(e) => { handleAvatarUpload?.(e); }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" style={{ fontSize: '200px' }} disabled={uploadingPhoto} aria-label="Change avatar" />
+                </div>
+              </>
+            )}
           </div>
-          {/* City info: desktop only - to the RIGHT of avatar */}
-          {!isNativeIOSApp() && (() => {
-            const hometown = formatLocationCompact(user?.hometownCity, user?.hometownState, user?.hometownCountry);
-            const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-            const hasTravelDestination = currentTravelPlan && String(currentTravelPlan).trim() !== '';
-            return (
-              <div className="flex flex-col gap-1 min-w-0 max-w-[280px] sm:max-w-none">
-                <span className="text-base sm:text-lg font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
-                <span className="text-base sm:text-lg font-medium break-words text-black dark:text-gray-100 md:text-black md:dark:text-black" title={hometown}>{hometown}</span>
-                {hasTravelDestination && (
-                  <>
-                    <span className="text-base sm:text-lg font-semibold text-blue-600 dark:text-blue-400 mt-1">Nearby Traveler</span>
-                    <span className="text-base sm:text-lg font-medium break-words text-black dark:text-gray-100 md:text-black md:dark:text-black" title={currentTravelPlan || undefined}>{currentTravelPlan}</span>
-                  </>
-                )}
-                {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-1 self-start">
-                    New to Town
-                  </span>
-                )}
-                {(() => {
-                  if (!currentTravelPlan) return null;
-                  const now = new Date();
-                  const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
-                    if (!plan.startDate || !plan.endDate) return false;
-                    const start = new Date(plan.startDate);
-                    const end = new Date(plan.endDate);
-                    const isActive = now >= start && now <= end;
-                    const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
-                    const matchesDestination = plan.destination && currentTravelPlan.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
-                    return isActive && hasPublicHostel && matchesDestination;
-                  });
-                  return activePlanWithHostel ? (
-                    <div className="flex items-center gap-1.5 text-sm font-medium text-black dark:text-gray-100 mt-1">
-                      <Building2 className="w-4 h-4 text-orange-600 flex-shrink-0" />
-                      <span className="break-words">Staying at {activePlanWithHostel.hostelName}</span>
-                    </div>
-                  ) : null;
-                })()}
-              </div>
-            );
-          })()}
           <div className="flex-1 min-w-0 overflow-hidden">
             <div className="space-y-2 w-full mt-2 overflow-hidden">
               {(() => {
@@ -194,7 +155,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     </div>
 
                     {!isOwnProfile && (
-                      <div className={isNativeIOSApp() ? 'flex flex-row flex-wrap justify-center items-center gap-2 mt-2' : 'flex flex-col items-stretch gap-2 mt-2'}>
+                      <div className={`flex flex-row items-center gap-2 mt-2 flex-wrap ${!isNativeIOSApp() ? 'justify-start' : 'justify-center'}`}>
                         <button
                           type="button"
                           className={`inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 rounded-lg shadow-md transition-all text-black font-medium cursor-pointer ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-4 py-1.5 text-sm'}`}

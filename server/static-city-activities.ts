@@ -270,7 +270,23 @@ export const FEATURED_CITY_ACTIVITIES: Record<string, Array<{name: string, descr
   ],
 };
 
-// Helper to get featured activities for a city
+// City name variations for mapping metro/alternate names to canonical keys in FEATURED_CITY_ACTIVITIES
+const FEATURED_CITY_VARIATIONS: Record<string, string> = {
+  "NYC": "New York City",
+  "New York": "New York City",
+  "LA": "Los Angeles",
+  "Los Angeles Metro": "Los Angeles",
+  "SF": "San Francisco",
+  "San Fran": "San Francisco",
+  "Vegas": "Las Vegas",
+  "LV": "Las Vegas",
+  "DC": "Washington DC",
+  "Washington": "Washington DC",
+  "NOLA": "New Orleans",
+  "The Big Easy": "New Orleans",
+};
+
+// Helper to get featured activities for a city (Group 1 - shown first on City Match page)
 export function getFeaturedActivitiesForCity(cityName: string): Array<{name: string, description: string, category: string, rank: number}> {
   const normalizedCity = cityName.trim();
   
@@ -279,7 +295,13 @@ export function getFeaturedActivitiesForCity(cityName: string): Array<{name: str
     return FEATURED_CITY_ACTIVITIES[normalizedCity];
   }
   
-  // Check LA Metro cities
+  // Check city variations (e.g. "Los Angeles Metro" -> "Los Angeles")
+  const mappedCity = FEATURED_CITY_VARIATIONS[normalizedCity];
+  if (mappedCity && FEATURED_CITY_ACTIVITIES[mappedCity]) {
+    return FEATURED_CITY_ACTIVITIES[mappedCity];
+  }
+  
+  // Check LA Metro cities (suburbs that use LA's featured list)
   if (['Playa del Rey', 'Santa Monica', 'Venice', 'Culver City', 'West Hollywood', 'Beverly Hills', 
        'Malibu', 'Manhattan Beach', 'Hermosa Beach', 'Redondo Beach', 'Long Beach', 'Pasadena'].includes(normalizedCity)) {
     return FEATURED_CITY_ACTIVITIES['Los Angeles'] || [];

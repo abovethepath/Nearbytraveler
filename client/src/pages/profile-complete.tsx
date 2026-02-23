@@ -44,6 +44,7 @@ import { VouchButton } from "@/components/VouchButton";
 
 import { formatDateForDisplay, getCurrentTravelDestination, formatLocationCompact } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { openPrivateChatWithUser } from "@/lib/iosPrivateChat";
 import { NativeAppProfileMenu } from "@/components/NativeAppProfileMenu";
 import { METRO_AREAS } from "@shared/constants";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
@@ -3552,8 +3553,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Removed old shared connectMutation - now using individual ConnectButton components
 
-  const handleMessage = () => {
-    setLocation(`/messages/${user?.id}`);
+  const handleMessage = async () => {
+    if (!user?.id) return;
+    const handled = await openPrivateChatWithUser(user.id, setLocation, {
+      currentUserId: currentUser?.id,
+      toast,
+    });
+    if (!handled) {
+      setLocation(`/messages/${user.id}`);
+    }
   };
 
   const handleWriteReference = () => {

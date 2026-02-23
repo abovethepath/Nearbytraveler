@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Users, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 import { getApiBaseUrl } from "@/lib/queryClient";
 interface CityChatlroomsWidgetProps {
   city: string;
@@ -173,7 +174,9 @@ export function CityChatlroomsWidget({ city, state, country }: CityChatlroomsWid
               e.stopPropagation();
               viewAllChatrooms();
             }}
-            className="w-full text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+            className={`w-full text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 ${
+              !isNativeIOSApp() ? 'min-w-0 overflow-hidden whitespace-normal break-words text-left justify-start h-auto py-2' : ''
+            }`}
           >
             View All Chatrooms in {city}
           </Button>

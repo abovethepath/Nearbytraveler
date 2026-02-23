@@ -41,6 +41,15 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
     enabled: !!userId,
   });
 
+  // Available Now user IDs for green badge on user cards
+  const { data: availableNowIds = [] } = useQuery<number[]>({
+    queryKey: ['/api/available-now/active-ids'],
+    refetchInterval: 30000,
+  });
+  const effectiveAvailableNowIds = useMemo(() => {
+    return new Set((Array.isArray(availableNowIds) ? availableNowIds : []).map((id) => Number(id)));
+  }, [availableNowIds]);
+
   // Enhanced discovery locations
   const discoveryLocations = useMemo(() => {
     const locations = [];
@@ -333,6 +342,7 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
                         showCompatibilityScore={sortBy === 'compatibility'}
                         compatibilityScore={calculateCompatibilityScore(discoveredUser, effectiveUser)}
                         currentUserId={effectiveUser?.id}
+                        isAvailableNow={effectiveAvailableNowIds.has(Number(discoveredUser.id))}
                       />
                     ))}
                     

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
+import { openPrivateChatWithUser } from "@/lib/iosPrivateChat";
 
 interface ConnectButtonProps {
   currentUserId: number;
@@ -97,7 +98,7 @@ export default function ConnectButton({
     },
   });
 
-  const handleConnect = (e: React.MouseEvent) => {
+  const handleConnect = async (e: React.MouseEvent) => {
     // Stop event propagation to prevent card click from navigating
     e.stopPropagation();
     
@@ -121,8 +122,14 @@ export default function ConnectButton({
     }
 
     if (connectionStatus?.status === 'accepted') {
-      // Already connected - navigate to messages
-      setLocation(`/messages?userId=${targetUserId}`);
+      // Already connected - on iOS use private chatroom (DM broken); on web use messages
+      const handled = await openPrivateChatWithUser(targetUserId, setLocation, {
+        currentUserId,
+        toast,
+      });
+      if (!handled) {
+        setLocation(`/messages?userId=${targetUserId}`);
+      }
       return;
     }
     

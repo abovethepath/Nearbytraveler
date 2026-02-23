@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp } from "lucide-react";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
@@ -155,11 +156,12 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     console.log('📡 WhatsApp Chat: Fetching messages via HTTP fallback for chatId:', chatId, 'chatType:', chatType);
     try {
       let user: any = {};
-      try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { user = {}; }
+      try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}'); } catch { user = {}; }
+      const uid = (currentUserId || user.id || '').toString();
+      const headers: Record<string, string> = { 'x-user-id': uid };
+      if (user?.id) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name });
       const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`, {
-        headers: {
-          'x-user-id': (currentUserId || user.id || '').toString()
-        }
+        headers
       });
       
       if (response.ok) {
@@ -298,11 +300,12 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     const loadMessagesImmediately = async () => {
       try {
         let user: any = {};
-        try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { user = {}; }
+        try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}'); } catch { user = {}; }
+        const uid = (currentUserId || user.id || '').toString();
+        const headers: Record<string, string> = { 'x-user-id': uid };
+        if (user?.id) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name });
         const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`, {
-          headers: {
-            'x-user-id': (currentUserId || user.id || '').toString()
-          }
+          headers
         });
         
         if (response.ok) {
@@ -334,7 +337,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       ws.onopen = () => {
         console.log('🟢 WhatsApp Chat: WebSocket connected');
         let user: any = {};
-        try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { user = {}; }
+        try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}'); } catch { user = {}; }
         
         // Authenticate
         console.log('🔐 WhatsApp Chat: Authenticating with userId:', currentUserId, 'chatId:', chatId, 'chatType:', chatType);
@@ -548,7 +551,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       console.log('📡 Sending message via HTTP fallback...');
       try {
         let user: any = {};
-        try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { user = {}; }
+        try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}'); } catch { user = {}; }
         let endpoint = '';
         let body: any = { content, messageType: 'text', replyToId };
         
@@ -832,8 +835,10 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       
       {/* Main Chat Area */}
       <div className="flex flex-col flex-1 min-w-0">
-      {/* Header */}
-      <div className="flex items-center gap-1.5 px-2 py-1.5 bg-gray-800 border-b border-gray-700">
+      {/* Header - desktop web: more height, minimal horizontal padding for title room; iOS: compact */}
+      <div className={`flex items-center bg-gray-800 border-b border-gray-700 ${
+        isNativeIOSApp() ? 'gap-1.5 px-2 py-1.5' : 'gap-2 px-2 py-2.5 md:py-3 min-h-[52px] md:min-h-[56px]'
+      }`}>
         <Button
           variant="ghost"
           size="icon"
@@ -886,7 +891,12 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         
         <div className="flex-1 min-w-0 overflow-hidden">
           <div className="flex items-center gap-1.5 min-w-0">
-            <h1 className="font-semibold text-xs lg:text-[10px] min-w-0 truncate" title={title}>{title}</h1>
+            <h1
+              className={`font-semibold flex-1 min-w-0 truncate ${isNativeIOSApp() ? 'text-xs lg:text-[10px]' : 'text-sm md:text-base'}`}
+              title={title}
+            >
+              {title}
+            </h1>
             {/* Show green once messages are loaded (chat is usable), not just WebSocket */}
             <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
               messagesLoaded || isWsConnected 
@@ -895,7 +905,11 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             }`} 
                   title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
           </div>
-          {subtitle && <p className="text-[11px] text-gray-400 truncate leading-tight">{subtitle}</p>}
+          {subtitle && (
+            <p className={`text-gray-400 truncate leading-tight ${isNativeIOSApp() ? 'text-[11px]' : 'text-xs md:text-sm'}`}>
+              {subtitle}
+            </p>
+          )}
         </div>
         {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
           <Sheet open={showMembers} onOpenChange={setShowMembers}>

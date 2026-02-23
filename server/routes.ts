@@ -7167,6 +7167,7 @@ Questions? Just reply to this message. Welcome aboard!
       const conditions = [];
       
       // LOCATION FILTER with LA Metro consolidation
+      // Include: (1) hometown/location match, (2) users currently traveling TO the search city
       if (location && typeof location === 'string' && location.trim() !== '' && location !== ', United States') {
         const searchLocation = location.toString().trim();
         const locationParts = searchLocation.split(',').map(part => part.trim());
@@ -7178,13 +7179,42 @@ Questions? Just reply to this message. Welcome aboard!
         const expandedCities = getExpandedCityList(searchCity);
         if (process.env.NODE_ENV === 'development') console.log(`🌍 USERS SEARCH: ${searchCity} → ${expandedCities.length} cities`);
         
-        const locationConditions = expandedCities.map(city => 
+        // (1) Hometown or location matches
+        const hometownLocationConditions = expandedCities.map(city => 
           or(
             ilike(users.location, `%${city}%`),
             ilike(users.hometownCity, `%${city}%`)
           )
         );
-        conditions.push(or(...locationConditions));
+        
+        // (2) Users currently traveling TO the search city (active travel plan destination matches)
+        const now = new Date();
+        const travelersToCity = await db
+          .selectDistinct({ userId: travelPlans.userId })
+          .from(travelPlans)
+          .innerJoin(users, eq(travelPlans.userId, users.id))
+          .where(
+            and(
+              lte(travelPlans.startDate, now),
+              gte(travelPlans.endDate, now),
+              or(
+                ...expandedCities.flatMap(city => [
+                  ilike(travelPlans.destination, `%${city}%`),
+                  ilike(travelPlans.destinationCity, `%${city}%`)
+                ])
+              )
+            )
+          );
+        const travelerIds = travelersToCity.map(r => r.userId).filter((id): id is number => id != null);
+        if (process.env.NODE_ENV === 'development' && travelerIds.length > 0) {
+          console.log(`🌍 USERS: Including ${travelerIds.length} users traveling to ${searchCity}`);
+        }
+        
+        // Combine: hometown/location match OR traveling to city
+        const locationOrTravelConditions = travelerIds.length > 0
+          ? [...hometownLocationConditions, inArray(users.id, travelerIds)]
+          : hometownLocationConditions;
+        conditions.push(or(...locationOrTravelConditions));
       }
       
       // INTERESTS FILTER
@@ -18985,6 +19015,65 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error creating chatroom:", error);
       res.status(500).json({ message: "Failed to create chatroom" });
+    }
+  });
+
+  // iOS: Create or get private chatroom between 2 users (replaces broken DM on iOS)
+  app.post("/api/chatrooms/private/dm", async (req, res) => {
+    try {
+      let currentUserId: number | undefined;
+      if (req.headers['x-user-id']) {
+        currentUserId = parseInt(req.headers['x-user-id'] as string || '0');
+      }
+      if (!currentUserId && req.headers['x-user-data']) {
+        try {
+          currentUserId = JSON.parse(req.headers['x-user-data'] as string).id;
+        } catch {}
+      }
+      if (!currentUserId && (req as any).session?.user?.id) {
+        currentUserId = (req as any).session.user.id;
+      }
+      const targetUserId = parseInt(String(req.body?.targetUserId ?? 0), 10);
+      if (!currentUserId || !targetUserId || currentUserId === targetUserId) {
+        return res.status(400).json({ message: "Valid current user and target user required" });
+      }
+      const [uid, tid] = currentUserId < targetUserId ? [currentUserId, targetUserId] : [targetUserId, currentUserId];
+      const existing = await db.execute(sql`
+        SELECT c.id, c.name FROM city_chatrooms c
+        INNER JOIN chatroom_members m1 ON m1.chatroom_id = c.id AND m1.user_id = ${uid} AND m1.is_active = true
+        INNER JOIN chatroom_members m2 ON m2.chatroom_id = c.id AND m2.user_id = ${tid} AND m2.is_active = true
+        WHERE c.city = 'Private' AND c.country = 'DM' AND c.max_members = 2
+        LIMIT 1
+      `);
+      const rows = existing.rows as { id: number; name: string }[];
+      if (rows && rows.length > 0) {
+        if (process.env.NODE_ENV === 'development') console.log(`📱 iOS DM: Found existing private chatroom ${rows[0].id}`);
+        return res.json({ chatroomId: rows[0].id, created: false });
+      }
+      const targetUser = await storage.getUser(String(targetUserId));
+      const targetUsername = targetUser?.username || `User ${targetUserId}`;
+      const name = `Chat with @${targetUsername}`;
+      const [newRoom] = await db.insert(citychatrooms).values({
+        name,
+        description: 'Private chat',
+        city: 'Private',
+        state: null,
+        country: 'DM',
+        createdById: currentUserId,
+        isPublic: false,
+        maxMembers: 2,
+        tags: ['private', 'dm'],
+        rules: null
+      }).returning();
+      await db.insert(chatroomMembers).values([
+        { chatroomId: newRoom.id, userId: currentUserId, role: 'admin', isActive: true },
+        { chatroomId: newRoom.id, userId: targetUserId, role: 'member', isActive: true }
+      ]);
+      if (process.env.NODE_ENV === 'development') console.log(`📱 iOS DM: Created private chatroom ${newRoom.id} between ${currentUserId} and ${targetUserId}`);
+      return res.status(201).json({ chatroomId: newRoom.id, created: true });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error creating private chatroom:", error);
+      res.status(500).json({ message: "Failed to create private chatroom" });
     }
   });
 

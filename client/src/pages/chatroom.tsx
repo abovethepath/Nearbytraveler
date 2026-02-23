@@ -17,11 +17,11 @@ export default function ChatroomPage() {
   let user: any = {};
   try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}'); } catch { }
 
-  const { data: chatroomArray } = useQuery<ChatroomDetails[]>({
+  const { data: chatroomData } = useQuery<ChatroomDetails | ChatroomDetails[]>({
     queryKey: [`/api/chatrooms/${chatroomId}`],
     enabled: !!chatroomId
   });
-  const chatroom = chatroomArray?.[0];
+  const chatroom = Array.isArray(chatroomData) ? chatroomData[0] : chatroomData;
 
   if (!chatroom) {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading...</div>;

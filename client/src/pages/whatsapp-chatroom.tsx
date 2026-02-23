@@ -56,8 +56,11 @@ export default function WhatsAppChatroom() {
     enabled: isValidChatroomId && !!currentUserId && !hasJoined,
     queryFn: async () => {
       try {
+        const u = authStorage.getUser();
+        const headers: Record<string, string> = { 'x-user-id': currentUserId?.toString() || '' };
+        if (u) headers['x-user-data'] = JSON.stringify({ id: u.id, username: u.username, email: u.email, name: u.name });
         const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatroomId}/members`, {
-          headers: { 'x-user-id': currentUserId?.toString() || '' }
+          headers
         });
         if (response.status === 403) {
           return { isMember: false };
@@ -109,6 +112,8 @@ export default function WhatsAppChatroom() {
   const isMember = hasJoined || membershipCheck?.isMember;
 
   if (isMember) {
+    // Private DM chatrooms (iOS): go back to previous page (e.g. profile). City chatrooms: go to /chatrooms
+    const isPrivateDM = chatroom.city === 'Private' && chatroom.country === 'DM';
     return (
       <WhatsAppChat
         chatId={chatroomId}
@@ -116,7 +121,7 @@ export default function WhatsAppChatroom() {
         title={chatroom.name}
         subtitle={`${chatroom.memberCount} members`}
         currentUserId={currentUserId}
-        onBack={() => navigate('/chatrooms')}
+        onBack={() => (isPrivateDM ? navigate(-1 as any) : navigate('/chatrooms'))}
       />
     );
   }

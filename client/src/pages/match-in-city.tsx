@@ -387,7 +387,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   
   // Launch cities that have pre-built featured activities
   const LAUNCH_CITY_NAMES = [
-    'Los Angeles', 'New York City', 'San Francisco', 'Austin', 'Chicago',
+    'Los Angeles', 'Los Angeles Metro', 'New York City', 'San Francisco', 'Austin', 'Chicago',
     'Miami', 'New Orleans', 'Tokyo', 'Paris', 'London', 'Rome',
     'Barcelona', 'Amsterdam', 'Bangkok', 'Singapore', 'Dubai', 'Istanbul'
   ];

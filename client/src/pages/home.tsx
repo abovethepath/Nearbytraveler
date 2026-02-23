@@ -362,9 +362,11 @@ export default function Home() {
     enabled: !!effectiveUser?.id,
   });
   const effectiveAvailableNowIds = React.useMemo(() => {
-    const ids = Array.isArray(availableNowIds) ? [...availableNowIds] : [];
-    if (myAvailableStatus?.isAvailable && effectiveUser?.id && !ids.includes(effectiveUser.id)) {
-      ids.push(effectiveUser.id);
+    const ids = new Set(
+      (Array.isArray(availableNowIds) ? availableNowIds : []).map((id) => Number(id))
+    );
+    if (myAvailableStatus?.isAvailable && effectiveUser?.id) {
+      ids.add(Number(effectiveUser.id));
     }
     return ids;
   }, [availableNowIds, myAvailableStatus?.isAvailable, effectiveUser?.id]);
@@ -633,8 +635,8 @@ export default function Home() {
           const bCountries = b.countriesVisited?.length || 0;
           return bCountries - aCountries;
         case 'available_now':
-          const aAvail = effectiveAvailableNowIds.includes(a.id) ? 1 : 0;
-          const bAvail = effectiveAvailableNowIds.includes(b.id) ? 1 : 0;
+          const aAvail = effectiveAvailableNowIds.has(Number(a.id)) ? 1 : 0;
+          const bAvail = effectiveAvailableNowIds.has(Number(b.id)) ? 1 : 0;
           if (bAvail !== aAvail) return bAvail - aAvail;
           return new Date(b.lastLocationUpdate || b.createdAt || 0).getTime() - new Date(a.lastLocationUpdate || a.createdAt || 0).getTime();
         case 'alphabetical':
@@ -1137,7 +1139,7 @@ export default function Home() {
       // 3. They're currently traveling (should see themselves in their destination)
       // 4. Sorted by "recent" (newest members) - user should see themselves as newest
       // 5. They have Available Now active - show their card with green badge
-      if (filters.location || filters.search || effectiveUser?.isCurrentlyTraveling || sortBy === 'recent' || sortBy === 'available_now' || effectiveAvailableNowIds.includes(otherUser.id)) return true;
+      if (filters.location || filters.search || effectiveUser?.isCurrentlyTraveling || sortBy === 'recent' || sortBy === 'available_now' || effectiveAvailableNowIds.has(Number(otherUser.id))) return true;
 
       // Only exclude from general browsing without any specific context
       return false;
@@ -1807,7 +1809,7 @@ export default function Home() {
                             compatibilityData={compatibilityData?.find((match: any) => match.userId === otherUser.id)}
                             compact={isCompactMode}
                             connectionDegree={connectionDegreesData?.degrees?.[otherUser.id]}
-                            isAvailableNow={effectiveAvailableNowIds.includes(otherUser.id)}
+                            isAvailableNow={effectiveAvailableNowIds.has(Number(otherUser.id))}
                           />
                       ))
                     ) : (

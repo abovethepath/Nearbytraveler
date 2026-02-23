@@ -81,8 +81,8 @@ export default function UserCard({
     return gradients[user.id % gradients.length];
   };
 
-  // Get travel destination for display - same logic for current user AND other users (each user's own travel data)
-  // CRITICAL: Check ALL sources so travel badge shows for every user who is traveling (API enriches each user)
+  // Get travel destination for display - SAME logic as ResponsiveUserGrid/current user card
+  // Every user who is currently traveling shows badge: plane icon + city name in top-left
   const getTravelCity = (): string | null => {
     const toDisplay = (s: string | null | undefined): string | null => {
       if (s == null || s === '') return null;
@@ -90,17 +90,7 @@ export default function UserCard({
       if (!t || t.toLowerCase() === 'null' || t.toLowerCase() === 'undefined') return null;
       return t;
     };
-    // 1. From destinationCity (API-enriched - server sets this for ALL users with active travel - most reliable)
-    const destCity = toDisplay((user as any).destinationCity);
-    if (destCity) return destCity;
-    // 2. From travelDestination (API fallback - when user is traveling)
-    const td = user.travelDestination;
-    if (td) {
-      const city = String(td).split(',')[0]?.trim();
-      const r = toDisplay(city);
-      if (r) return r;
-    }
-    // 3. From travelPlans (active trip) - use dateUtils for consistent date parsing across all users
+    // 1. From travelPlans (active trip) - same as current user's Los Angeles badge
     const plans = (user as any).travelPlans;
     if (Array.isArray(plans) && plans.length > 0) {
       const dest = getCurrentTravelDestination(plans);
@@ -109,6 +99,16 @@ export default function UserCard({
         const r = toDisplay(city);
         if (r) return r;
       }
+    }
+    // 2. From destinationCity (API-enriched - server sets for ALL users with active travel)
+    const destCity = toDisplay((user as any).destinationCity);
+    if (destCity) return destCity;
+    // 3. From travelDestination (API fallback)
+    const td = user.travelDestination;
+    if (td) {
+      const city = String(td).split(',')[0]?.trim();
+      const r = toDisplay(city);
+      if (r) return r;
     }
     return null;
   };
