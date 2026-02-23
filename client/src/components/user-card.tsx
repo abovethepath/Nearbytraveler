@@ -117,9 +117,14 @@ export default function UserCard({
 
   const travelCity = getTravelCity();
   // When API says traveling but getTravelCity missed it, try travelDestination once more
-  const travelCityFinal = travelCity || (
+  const cleanDest = (s: string | null | undefined): string | null => {
+    if (!s || String(s).toLowerCase() === 'null' || String(s).trim() === '') return null;
+    const t = String(s).trim();
+    return t || null;
+  };
+  const travelCityFinal = travelCity || cleanDest(
     (user as any).isCurrentlyTraveling && user.travelDestination
-      ? user.travelDestination.split(',')[0]?.trim() || null
+      ? user.travelDestination.split(',')[0]?.trim()
       : null
   );
   const displayCity = user.hometownCity || 'Unknown';
@@ -253,7 +258,6 @@ export default function UserCard({
           </div>
           <div className="truncate">
             <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{displayCity}</div>
-            {/* CRITICAL: Travel destination under hometown on desktop - MUST be visible */}
             {travelCityFinal && user.userType !== 'business' && (
               <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 truncate flex items-center gap-1 mt-0.5">
                 <Plane className="w-3 h-3 flex-shrink-0" />

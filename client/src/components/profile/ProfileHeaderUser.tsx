@@ -5,9 +5,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, MapPin, MessageCircle, MessageSquare, Share2, Shield, Users, Building2, Calendar, Plane } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
-import { VouchButton } from "@/components/VouchButton";
 import { ReportUserButton } from "@/components/report-user-button";
 import { formatLocationCompact, getCurrentTravelDestination } from "@/lib/dateUtils";
+import { isNativeIOSApp } from "@/lib/nativeApp";
+import { VouchButton } from "@/components/VouchButton";
 import type { ProfilePageProps } from "./profile-complete-types";
 
 export function ProfileHeaderUser(props: ProfilePageProps) {
@@ -38,7 +39,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     >
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6 relative z-20">
-          <div className="relative flex-shrink-0">
+          <div className={`relative flex-shrink-0 ${isNativeIOSApp() ? 'flex flex-col items-center' : ''}`}>
             <div
               className={`rounded-full border-4 border-white dark:border-gray-600 shadow-xl overflow-hidden ${!isOwnProfile && user?.profileImage ? 'cursor-pointer hover:border-orange-400 transition-all' : ''}`}
               onClick={() => { if (!isOwnProfile && user?.profileImage) setShowExpandedPhoto(true); }}
@@ -48,6 +49,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
               </div>
             </div>
+            {isNativeIOSApp() && !isOwnProfile && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-2">
+                New to Town
+              </span>
+            )}
             {isOwnProfile && (
               <>
                 {!user?.profileImage && (
@@ -64,7 +70,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             )}
           </div>
           <div className="flex-1 min-w-0 overflow-hidden">
-            <div className="space-y-2 text-black w-full mt-2 overflow-hidden">
+            <div className="space-y-2 w-full mt-2 overflow-hidden">
               {(() => {
                 const hometown = formatLocationCompact(user?.hometownCity, user?.hometownState, user?.hometownCountry);
                 return (
@@ -123,14 +129,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     {isOwnProfile ? (
                       <div className="flex flex-col gap-1 min-w-0 mt-1">
                         <span className="text-base sm:text-lg font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
-                        <span className="text-base sm:text-lg font-medium text-black dark:text-gray-100 break-words" title={hometown}>{hometown}</span>
+                        <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
                         {(() => {
                           const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
                           if (!currentTravelPlan) return null;
                           return (
                             <>
                               <span className="text-base sm:text-lg font-semibold text-blue-600 dark:text-blue-400 mt-1">Nearby Traveler</span>
-                              <span className="text-base sm:text-lg font-medium text-black dark:text-gray-100 break-words" title={currentTravelPlan}>{currentTravelPlan}</span>
+                              <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100' : ''}`} title={currentTravelPlan} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{currentTravelPlan}</span>
                             </>
                           );
                         })()}
@@ -171,19 +177,19 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </div>
                           <div className="flex flex-col gap-0 min-w-0 flex-1">
                             <span className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</span>
-                            <span className="truncate text-black dark:text-gray-100" title={hometown}>{hometown}</span>
+                            <span className={`truncate ${!isNativeIOSApp() ? 'text-black dark:text-gray-100' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
                             {(() => {
                               const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
                               if (!currentTravelPlan) return null;
                               return (
                                 <>
                                   <span className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-0.5">Nearby Traveler</span>
-                                  <span className="truncate text-black dark:text-gray-100" title={currentTravelPlan}>{currentTravelPlan}</span>
+                                  <span className={`truncate ${!isNativeIOSApp() ? 'text-black dark:text-gray-100' : ''}`} title={currentTravelPlan} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{currentTravelPlan}</span>
                                 </>
                               );
                             })()}
                           </div>
-                          {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                          {!isNativeIOSApp() && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 flex-shrink-0 self-start">
                               New to Town
                             </span>
@@ -259,10 +265,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               )}
             </div>
             {!isOwnProfile && (
-              <div className="w-full flex items-center gap-3 flex-wrap min-w-0 relative z-50 pointer-events-auto mt-2" style={{ position: 'relative', zIndex: 9999 }}>
+              <div className={`w-full flex items-center min-w-0 relative z-50 pointer-events-auto mt-2 ${isNativeIOSApp() ? 'gap-2 flex-nowrap overflow-x-auto pb-1' : 'gap-3 flex-wrap'}`} style={{ position: 'relative', zIndex: 9999 }}>
                 <button
                   type="button"
-                  className="inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 px-6 py-2 rounded-lg shadow-md transition-all text-black font-medium cursor-pointer"
+                  className={`inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 rounded-lg shadow-md transition-all text-black font-medium cursor-pointer ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-6 py-2'}`}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -280,13 +286,15 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   targetUserId={user?.id || 0}
                   targetUsername={user?.username}
                   targetName={user?.name}
-                  className="px-6 py-2 rounded-lg shadow-md transition-all"
+                  className={`rounded-lg shadow-md transition-all ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-6 py-2'}`}
                 />
-                <VouchButton
-                  currentUserId={currentUser?.id || 0}
-                  targetUserId={user?.id || 0}
-                  targetUsername={user?.username}
-                />
+                {!isNativeIOSApp() && (
+                  <VouchButton
+                    currentUserId={currentUser?.id || 0}
+                    targetUserId={user?.id || 0}
+                    targetUsername={user?.username}
+                  />
+                )}
                 {currentUser ? (
                   <Button
                     type="button"
@@ -295,7 +303,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       e.stopPropagation();
                       setShowWriteReferenceModal?.(true);
                     }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+                    className={`bg-blue-600 hover:bg-blue-700 text-white ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-6 py-2'}`}
                     data-testid="button-write-reference"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
@@ -305,7 +313,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <Button
                     type="button"
                     onClick={() => setLocation('/auth')}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+                    className={`bg-blue-600 hover:bg-blue-700 text-white ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-6 py-2'}`}
                     data-testid="button-write-reference"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />

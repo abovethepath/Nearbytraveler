@@ -63,8 +63,9 @@ export default function ResponsiveUserGrid({
   // CRITICAL: Get travel destination from ALL sources - MUST show when user is Nearby Traveler
   const getTravelDestination = (user: User): string | null => {
     if (user.userType === 'business') return null;
-    const dest = user.destinationCity || (user.travelDestination && user.travelDestination.split(',')[0]?.trim());
-    if (dest && String(dest).toLowerCase() !== 'null') return dest;
+    const raw = user.destinationCity || (user.travelDestination && user.travelDestination.split(',')[0]?.trim());
+    const dest = raw && String(raw).toLowerCase() !== 'null' && String(raw).trim() ? raw.trim() : null;
+    if (dest) return dest;
     const plans = (user as any).travelPlans;
     if (Array.isArray(plans)) {
       const now = new Date();
@@ -76,7 +77,7 @@ export default function ResponsiveUserGrid({
         } catch { return false; }
       });
       const c = active?.destinationCity || (active?.destination && active.destination.split(',')[0]?.trim());
-      if (c) return c;
+      if (c && String(c).toLowerCase() !== 'null') return c;
     }
     return null;
   };
@@ -93,11 +94,11 @@ export default function ResponsiveUserGrid({
       <div className="text-center text-gray-600 dark:text-gray-400 font-medium min-w-0">
         <div className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</div>
         <div className="truncate px-0.5" title={hometown}>{hometown}</div>
-        {isTraveling && (destination || (user as any).travelDestination) && (
+        {isTraveling && destination && (
           <>
             <div className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap">Nearby Traveler</div>
-            <div className="truncate px-0.5 font-semibold text-blue-600 dark:text-blue-400" title={destination || ''}>
-              {destination || ((user as any).travelDestination && (user as any).travelDestination.split(',')[0]?.trim()) || '—'}
+            <div className="truncate px-0.5 font-semibold text-blue-600 dark:text-blue-400" title={destination}>
+              {destination}
             </div>
           </>
         )}

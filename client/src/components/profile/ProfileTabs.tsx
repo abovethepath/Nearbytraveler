@@ -25,6 +25,7 @@ import { PhotoAlbumWidget } from "@/components/photo-album-widget";
 import ReferencesWidgetNew from "@/components/references-widget-new";
 import { VouchWidget } from "@/components/vouch-widget";
 import { VouchButton } from "@/components/VouchButton";
+import { ConditionalVouchCard } from "@/components/ConditionalVouchCard";
 import { WhatYouHaveInCommon } from "@/components/what-you-have-in-common";
 import BusinessEventsWidget from "@/components/business-events-widget";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
@@ -2496,7 +2497,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                     <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                       <Shield className="w-4 h-4 text-blue-500" />
                       <span className="hidden sm:inline">Vouches</span>
-                      <span className="sm:hidden">Vouches {(vouches?.length || 0) === 0 ? 'â€¢ Get vouched by community' : ''}</span>
+                      <span className="sm:hidden">Vouches {(vouches?.length || 0) === 0 ? ' • Get vouched by community' : ''}</span>
                     </span>
                     <span className="font-semibold text-blue-600 dark:text-blue-400">{vouches?.length || 0}</span>
                   </div>
@@ -3154,11 +3155,17 @@ export function ProfileTabs(props: ProfilePageProps) {
                   </div>
                 )}
 
-                {/* Vouch Section - includes Vouch button for visitors */}
+                {/* Vouch Section - iOS: ConditionalVouchCard only when can vouch; Desktop: full Vouch card */}
               {user?.id && (
                 <div className="space-y-4 mt-4">
-                  {/* VouchButton for non-own profiles - moved from header for cleaner layout */}
-                  {!isOwnProfile && currentUser?.id && (
+                  {!isOwnProfile && currentUser?.id && isNativeIOSApp() && (
+                    <ConditionalVouchCard
+                      currentUserId={currentUser.id}
+                      targetUserId={user.id}
+                      targetUsername={user.username}
+                    />
+                  )}
+                  {!isOwnProfile && currentUser?.id && !isNativeIOSApp() && (
                     <Card className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700">
                       <CardContent className="py-4">
                         <div className="flex items-center justify-between">

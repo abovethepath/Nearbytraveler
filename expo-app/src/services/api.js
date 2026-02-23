@@ -200,6 +200,31 @@ const api = {
     return d;
   },
 
+  /** Sign in with Apple: send identity token to backend; returns { ok, user } or { needsOnboarding, pendingApple }. */
+  async appleLogin({ identityToken, email, fullName }) {
+    const r = await fetchWithConnectionMessage(`${BASE_URL}/api/auth/apple`, {
+      method: 'POST',
+      headers: getHeaders(),
+      credentials: 'include',
+      body: JSON.stringify({
+        identityToken,
+        email: email || undefined,
+        fullName: fullName || undefined,
+      }),
+    });
+    extractCookie(r);
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.message || 'Apple sign-in failed');
+    if (d.sessionId) {
+      sessionCookie = `nt.sid=${d.sessionId}`;
+      try {
+        await AsyncStorage.setItem(SESSION_KEY, d.sessionId);
+      } catch (e) {}
+    }
+    if (d.user) await offlineStorage.cacheProfile(d.user);
+    return d;
+  },
+
   /** Run post-registration bootstrap (chatroom auto-join, etc.). Call after register(). */
   async bootstrapAfterRegister() {
     const r = await fetch(`${BASE_URL}/api/bootstrap/after-register`, {

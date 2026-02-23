@@ -16,9 +16,11 @@ interface VouchButtonProps {
   currentUserId: number;
   targetUserId: number;
   targetUsername?: string;
+  /** When true, render nothing when user cannot vouch and has not already vouched */
+  hideWhenDisabled?: boolean;
 }
 
-export function VouchButton({ currentUserId, targetUserId, targetUsername }: VouchButtonProps) {
+export function VouchButton({ currentUserId, targetUserId, targetUsername, hideWhenDisabled }: VouchButtonProps) {
   const { toast } = useToast();
   const [showVouchDialog, setShowVouchDialog] = useState(false);
   const [vouchMessage, setVouchMessage] = useState("");
@@ -160,6 +162,8 @@ export function VouchButton({ currentUserId, targetUserId, targetUsername }: Vou
       </>
     );
   }
+
+  if (hideWhenDisabled) return null;
 
   return (
     <Button
