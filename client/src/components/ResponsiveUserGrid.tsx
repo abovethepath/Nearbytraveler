@@ -4,6 +4,7 @@ import { Heart, MapPin, Star, Plane } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { SimpleAvatar } from "@/components/simple-avatar";
+import { getCurrentTravelDestination } from "@/lib/dateUtils";
 
 interface User {
   id: number;
@@ -32,6 +33,7 @@ interface ResponsiveUserGridProps {
   showViewAll?: boolean;
   onViewAll?: () => void;
   limit?: number;
+  currentUserId?: number;
 }
 
 export default function ResponsiveUserGrid({ 
@@ -39,7 +41,8 @@ export default function ResponsiveUserGrid({
   title, 
   showViewAll, 
   onViewAll, 
-  limit = 6 
+  limit = 6,
+  currentUserId
 }: ResponsiveUserGridProps) {
   const [, setLocation] = useLocation();
   const displayUsers = limit ? users.slice(0, limit) : users;
@@ -60,24 +63,34 @@ export default function ResponsiveUserGrid({
     return "Location not set";
   };
 
-  // CRITICAL: Get travel destination from ALL sources - MUST show when user is Nearby Traveler
+  // Get travel destination for display - same logic for ALL users (each user's own travel data)
   const getTravelDestination = (user: User): string | null => {
     if (user.userType === 'business') return null;
-    const raw = user.destinationCity || (user.travelDestination && user.travelDestination.split(',')[0]?.trim());
-    const dest = raw && String(raw).toLowerCase() !== 'null' && String(raw).trim() ? raw.trim() : null;
-    if (dest) return dest;
+    const toDisplay = (s: string | null | undefined): string | null => {
+      if (s == null || s === '') return null;
+      const t = String(s).trim();
+      if (!t || t.toLowerCase() === 'null' || t.toLowerCase() === 'undefined') return null;
+      return t;
+    };
+    // 1. From travelPlans (active trip) - use dateUtils for consistent date parsing
     const plans = (user as any).travelPlans;
-    if (Array.isArray(plans)) {
-      const now = new Date();
-      const active = plans.find((p: any) => {
-        try {
-          const start = new Date(p.startDate);
-          const end = new Date(p.endDate);
-          return now >= start && now <= end;
-        } catch { return false; }
-      });
-      const c = active?.destinationCity || (active?.destination && active.destination.split(',')[0]?.trim());
-      if (c && String(c).toLowerCase() !== 'null') return c;
+    if (Array.isArray(plans) && plans.length > 0) {
+      const dest = getCurrentTravelDestination(plans);
+      if (dest) {
+        const city = String(dest).split(',')[0]?.trim();
+        const r = toDisplay(city);
+        if (r) return r;
+      }
+    }
+    // 2. From destinationCity (API-enriched)
+    const destCity = toDisplay(user.destinationCity);
+    if (destCity) return destCity;
+    // 3. From travelDestination
+    const td = user.travelDestination;
+    if (td) {
+      const city = String(td).split(',')[0]?.trim();
+      const r = toDisplay(city);
+      if (r) return r;
     }
     return null;
   };
@@ -93,11 +106,11 @@ export default function ResponsiveUserGrid({
     return (
       <div className="text-center text-gray-600 dark:text-gray-400 font-medium min-w-0">
         <div className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</div>
-        <div className="truncate px-0.5" title={hometown}>{hometown}</div>
+        <div className="break-words px-0.5" title={hometown}>{hometown}</div>
         {isTraveling && destination && (
           <>
             <div className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap">Nearby Traveler</div>
-            <div className="truncate px-0.5 font-semibold text-blue-600 dark:text-blue-400" title={destination}>
+            <div className="break-words px-0.5 font-semibold text-blue-600 dark:text-blue-400" title={destination}>
               {destination}
             </div>
           </>
@@ -119,6 +132,7 @@ export default function ResponsiveUserGrid({
   // Desktop Card Component - LINKEDIN INSPIRED PROFESSIONAL DESIGN
   const DesktopUserCard = ({ user }: { user: User }) => {
     const isAvailable = availableNowIds.includes(user.id);
+    const isCurrentUser = currentUserId != null && user.id === currentUserId;
     const travelDest = getTravelDestination(user);
     return (
     <Card 
@@ -183,7 +197,8 @@ export default function ResponsiveUserGrid({
           {getInterestsBadge(user)}
         </div>
         
-        {/* Connect Button - LinkedIn style */}
+        {/* Connect Button - LinkedIn style (hidden for current user) */}
+        {!isCurrentUser && (
         <button 
           className="w-full py-2 px-4 border-2 border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-400 rounded-full font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
           onClick={(e) => {
@@ -193,6 +208,7 @@ export default function ResponsiveUserGrid({
         >
           View Profile
         </button>
+        )}
       </div>
     </Card>
   );

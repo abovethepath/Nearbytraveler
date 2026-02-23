@@ -177,7 +177,8 @@ export default function ConnectPage() {
     },
     onSuccess: (data: User[]) => {
       console.log('ConnectModal onSuccess with data:', data);
-      setSearchResults(data);
+      // Include current user in list - they appear but without action buttons
+      setSearchResults(data || []);
       setIsSearching(false);
       setHasSearched(true);
     },
@@ -581,6 +582,7 @@ export default function ConnectPage() {
                   <ResponsiveUserGrid 
                     users={searchResults as any}
                     title={`Found ${searchResults.length} ${searchResults.length === 1 ? 'person' : 'people'} in ${searchLocation}`}
+                    currentUserId={user?.id}
                   />
                 )}
               </CardContent>

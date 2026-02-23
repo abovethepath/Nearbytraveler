@@ -884,9 +884,9 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </div>
         )}
         
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <h1 className="font-semibold text-sm break-words line-clamp-2">{title}</h1>
+        <div className="flex-1 min-w-0 overflow-hidden">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <h1 className="font-semibold text-xs truncate" title={title}>{title}</h1>
             {/* Show green once messages are loaded (chat is usable), not just WebSocket */}
             <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
               messagesLoaded || isWsConnected 
@@ -1190,8 +1190,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </div>
         )}
 
-        {/* Input box - fixed at bottom, minimal padding above bottom nav */}
-        <div className="px-3 py-1.5 bg-gray-800 border-t border-gray-700">
+        {/* Input box - fixed at bottom, padding above bottom nav */}
+        <div className="px-3 py-1.5 pb-20 bg-gray-800 border-t border-gray-700">
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
           {!messagesLoaded && !isWsConnected && (
             <div className="text-center text-yellow-400 text-xs mb-2 animate-pulse">

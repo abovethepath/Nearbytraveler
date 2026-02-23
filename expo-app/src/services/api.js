@@ -167,6 +167,10 @@ const api = {
   },
 
   restoreSession,
+  /** Ensure session is loaded from storage (call before WebView load so cookie is available). */
+  async ensureSessionReady() {
+    await restoreSession();
+  },
   /** Store session from WebView signup so Messages/API work in native tabs. */
   async setSessionFromSignup(sessionId) {
     if (!sessionId) return;
@@ -244,6 +248,20 @@ const api = {
       `cached_events_${city}`,
       () => offlineStorage.getCachedEvents(city)
     );
+  },
+
+  async getTravelPlans(userId) {
+    if (!userId) return [];
+    try {
+      const r = await fetch(`${BASE_URL}/api/travel-plans/${userId}`, {
+        headers: getHeaders(),
+        credentials: 'include',
+      });
+      if (!r.ok) return [];
+      return await r.json();
+    } catch (e) {
+      return [];
+    }
   },
 
   async getEvent(id) {

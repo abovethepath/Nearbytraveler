@@ -129,46 +129,74 @@ export default function Events() {
     return activePlan?.destination || null;
   };
 
-  // Determine which city to query based on selected location
-  const getCityToQuery = () => {
-    if (selectedLocation === "custom") return customCity;
-    if (selectedLocation === "hometown") return user?.hometownCity || "Boston";
+  // Determine which cities to query based on selected location
+  // When user is traveling and viewing "hometown", show BOTH hometown AND travel destination
+  const getCitiesToQuery = (): string[] => {
+    if (selectedLocation === "custom") return customCity ? [customCity] : [];
+    if (selectedLocation === "hometown") {
+      const hometown = user?.hometownCity || "Boston";
+      const currentDestination = getCurrentTravelDestination();
+      if (currentDestination) {
+        const travelCity = currentDestination.split(',')[0].trim();
+        if (travelCity && travelCity !== hometown) {
+          // User is traveling: show both travel destination first, then hometown
+          return [travelCity, hometown];
+        }
+      }
+      return [hometown];
+    }
     if (selectedLocation.startsWith("destination-")) {
       const planId = selectedLocation.replace("destination-", "");
       const plan = userTravelPlans.find((p: any) => p.id.toString() === planId);
-      return plan?.destination || plan?.destinationCity || "London";
+      const dest = plan?.destination || plan?.destinationCity || "London";
+      return [typeof dest === 'string' ? dest.split(',')[0].trim() : dest];
     }
 
     // For "current" location: check if user is currently traveling
     const currentDestination = getCurrentTravelDestination();
     if (currentDestination) {
-      console.log(`Events page: User is currently traveling to ${currentDestination}`);
-      // Parse destination format like "Denver, Colorado, United States" to get city
-      return currentDestination.split(',')[0].trim();
+      return [currentDestination.split(',')[0].trim()];
     }
 
-    // Fallback to hometown if not traveling
-    console.log(`Events page: User not traveling, using hometown ${user?.hometownCity}`);
-    return user?.hometownCity || "Boston";
+    return [user?.hometownCity || "Boston"];
   };
 
-  console.log(`Events page: selectedLocation = ${selectedLocation}, userTravelPlans =`, userTravelPlans);
+  const citiesToQuery = getCitiesToQuery();
+  const cityToQuery = citiesToQuery[0] || ""; // Primary city for single-city queries / display
 
-  const cityToQuery = getCityToQuery();
-
-  // Fetch events based on selected city with optimized loading
+  // Fetch events based on selected city/cities with optimized loading
+  // When traveling and viewing hometown: fetches from BOTH travel destination AND hometown
   const { data: events = [], isLoading, error } = useQuery<Event[]>({
-    queryKey: ["/api/events", cityToQuery],
+    queryKey: ["/api/events", citiesToQuery.join(",")],
     queryFn: async () => {
-      const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(cityToQuery)}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch events');
+      if (citiesToQuery.length === 0) return [];
+      if (citiesToQuery.length === 1) {
+        const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(citiesToQuery[0])}`);
+        if (!response.ok) throw new Error('Failed to fetch events');
+        return response.json();
       }
-      const data = await response.json();
-      // Backend handles metro area aggregation - return all events from API
-      return data;
+      // Multiple cities: fetch from each and merge (dedupe by id)
+      const allEvents: Event[] = [];
+      const seenIds = new Set<number>();
+      for (const city of citiesToQuery) {
+        try {
+          const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(city)}`);
+          if (!response.ok) continue;
+          const data = await response.json();
+          for (const ev of Array.isArray(data) ? data : []) {
+            if (ev.id && !seenIds.has(ev.id)) {
+              seenIds.add(ev.id);
+              allEvents.push(ev);
+            }
+          }
+        } catch (e) {
+          console.error(`Failed to fetch events for ${city}:`, e);
+        }
+      }
+      allEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      return allEvents;
     },
-    enabled: !(selectedLocation === "custom" && showCustomInput), // Don't auto-fetch while typing
+    enabled: !(selectedLocation === "custom" && showCustomInput) && citiesToQuery.length > 0,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
@@ -193,7 +221,7 @@ export default function Events() {
 
   // Optimized participants fetch - only fetch for visible events and cache results
   const { data: participants = [] } = useQuery<EventParticipant[]>({
-    queryKey: ["/api/events/participants", cityToQuery],
+    queryKey: ["/api/events/participants", citiesToQuery.join(",")],
     queryFn: async () => {
       // Only fetch participants for the first 6 visible events to speed up initial load
       const visibleEvents = events.slice(0, 6);
@@ -232,31 +260,62 @@ export default function Events() {
     staleTime: 300000, // Cache for 5 minutes
   });
 
-  // Fetch external events (Meetup and Eventbrite)
+  // Fetch external events (Meetup) - from all cities when traveling
   const { data: meetupEvents = [], isLoading: meetupLoading } = useQuery({
-    queryKey: ["/api/external-events/meetup", cityToQuery],
+    queryKey: ["/api/external-events/meetup", citiesToQuery.join(",")],
     queryFn: async () => {
-      const response = await fetch(`${getApiBaseUrl()}/api/external-events/meetup?city=${encodeURIComponent(cityToQuery)}`);
-      if (!response.ok) return { events: [] };
-      return response.json();
+      if (citiesToQuery.length === 0) return { events: [] };
+      const allEvents: any[] = [];
+      const seenIds = new Set<string>();
+      for (const city of citiesToQuery) {
+        try {
+          const response = await fetch(`${getApiBaseUrl()}/api/external-events/meetup?city=${encodeURIComponent(city)}`);
+          if (!response.ok) continue;
+          const data = await response.json();
+          const evts = data?.events || data || [];
+          for (const ev of Array.isArray(evts) ? evts : []) {
+            const id = ev.id || ev.url || ev.title;
+            if (id && !seenIds.has(id)) {
+              seenIds.add(id);
+              allEvents.push(ev);
+            }
+          }
+        } catch (e) {
+          console.error(`Failed to fetch meetup for ${city}:`, e);
+        }
+      }
+      return { events: allEvents };
     },
-    enabled: selectedTab === 'meetup' && !!cityToQuery,
-    staleTime: 300000, // Cache for 5 minutes
+    enabled: selectedTab === 'meetup' && citiesToQuery.length > 0,
+    staleTime: 300000,
   });
 
-
-
-
-
   const { data: communityEvents = [], isLoading: communityLoading } = useQuery<CommunityEvent[]>({
-    queryKey: ["/api/community-events", cityToQuery],
+    queryKey: ["/api/community-events", citiesToQuery.join(",")],
     queryFn: async () => {
-      if (!cityToQuery) return [];
-      const response = await fetch(`${getApiBaseUrl()}/api/community-events?city=${encodeURIComponent(cityToQuery)}&limit=20`);
-      if (!response.ok) return [];
-      return response.json();
+      if (citiesToQuery.length === 0) return [];
+      const allEvents: CommunityEvent[] = [];
+      const seenIds = new Set<string | number>();
+      for (const city of citiesToQuery) {
+        try {
+          const response = await fetch(`${getApiBaseUrl()}/api/community-events?city=${encodeURIComponent(city)}&limit=20`);
+          if (!response.ok) continue;
+          const data = await response.json();
+          const evts = Array.isArray(data) ? data : (data?.events || []);
+          for (const ev of evts) {
+            const id = ev.id ?? ev.externalId;
+            if (id != null && !seenIds.has(id)) {
+              seenIds.add(id);
+              allEvents.push(ev);
+            }
+          }
+        } catch (e) {
+          console.error(`Failed to fetch community events for ${city}:`, e);
+        }
+      }
+      return allEvents;
     },
-    enabled: !!cityToQuery,
+    enabled: citiesToQuery.length > 0,
     staleTime: 300000,
   });
 
@@ -467,7 +526,7 @@ export default function Events() {
 
       {/* HERO SECTION — Standardized Layout */}
       {!isNativeIOSApp() && isHeroVisible && (
-        <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden bg-white dark:bg-gray-900">
+        <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white dark:from-gray-800 dark:via-gray-800 dark:to-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-4 flex items-center justify-between">
               <BackButton fallbackRoute="/events-landing" />
@@ -494,7 +553,7 @@ export default function Events() {
               
               <div className="mb-6 flex justify-center px-4">
                 <div className="relative w-full max-w-sm">
-                  <div className="relative rounded-2xl overflow-hidden shadow-xl aspect-[4/3]">
+                  <div className="relative rounded-2xl overflow-hidden shadow-xl aspect-[4/3] ring-2 ring-white/40 dark:ring-gray-500/50 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_12px_40px_-8px_rgba(0,0,0,0.25)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_12px_40px_-8px_rgba(0,0,0,0.6)]">
                     <img 
                       src={eventsBgImage}
                       alt="Events and experiences"
@@ -546,7 +605,7 @@ export default function Events() {
                 <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
                   <div className="relative group">
                     <div className="relative">
-                      <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50">
+                      <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl ring-2 ring-white/40 dark:ring-gray-500/50 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_12px_40px_-8px_rgba(0,0,0,0.25)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_12px_40px_-8px_rgba(0,0,0,0.6)]">
                         <img
                           src={eventsBgImage}
                           alt="Events and experiences"
@@ -647,6 +706,11 @@ export default function Events() {
               </SelectContent>
             </Select>
 
+            {selectedLocation === "hometown" && citiesToQuery.length > 1 && (
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                Showing events from {citiesToQuery.join(" + ")}
+              </p>
+            )}
             {selectedLocation === "custom" && (
               <div className="flex gap-2 mt-2">
                 <Input

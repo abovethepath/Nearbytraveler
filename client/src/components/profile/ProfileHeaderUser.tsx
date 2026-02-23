@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, MapPin, MessageCircle, MessageSquare, Share2, Shield, Users, Building2, Calendar, Plane } from "lucide-react";
+import { Camera, MapPin, MessageSquare, Share2, Users, Building2, Calendar, Plane } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { ReportUserButton } from "@/components/report-user-button";
@@ -32,11 +32,35 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     setShowWriteReferenceModal,
   } = props as Record<string, any>;
 
+  const shareButton = (
+    <button
+      type="button"
+      onClick={async () => {
+        const profileUrl = `https://nearbytraveler.org/profile/${user?.username}`;
+        const shareText = `Check out @${user?.username} on Nearby Traveler`;
+        if (navigator.share) {
+          try {
+            await navigator.share({ title: shareText, url: profileUrl });
+          } catch (e) {}
+        } else {
+          await navigator.clipboard.writeText(profileUrl);
+          toast?.({ title: "Profile link copied!", description: "You can now paste it anywhere." });
+        }
+      }}
+      className="absolute top-4 right-4 z-20 p-1.5 rounded-full bg-white/80 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+      style={{ touchAction: 'manipulation' }}
+      title="Share profile"
+    >
+      <Share2 className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+    </button>
+  );
+
   return (
     <div
       className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 relative isolate`}
       style={{ width: '100vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
     >
+      {!isOwnProfile && shareButton}
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6 relative z-20">
           <div className={`relative flex-shrink-0 ${isNativeIOSApp() ? 'flex flex-col items-center' : ''}`}>
@@ -54,6 +78,44 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 New to Town
               </span>
             )}
+            {(() => {
+              const hometown = formatLocationCompact(user?.hometownCity, user?.hometownState, user?.hometownCountry);
+              const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+              return (
+                <div className="flex flex-col gap-1 min-w-0 mt-3 w-full max-w-[280px] sm:max-w-none">
+                  <span className="text-base sm:text-lg font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
+                  <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
+                  <>
+                    <span className="text-base sm:text-lg font-semibold text-blue-600 dark:text-blue-400 mt-1">Nearby Traveler</span>
+                    <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={currentTravelPlan || undefined} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{currentTravelPlan || '—'}</span>
+                  </>
+                  {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && !isNativeIOSApp() && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-1 self-start">
+                      New to Town
+                    </span>
+                  )}
+                  {(() => {
+                    if (!currentTravelPlan) return null;
+                    const now = new Date();
+                    const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
+                      if (!plan.startDate || !plan.endDate) return false;
+                      const start = new Date(plan.startDate);
+                      const end = new Date(plan.endDate);
+                      const isActive = now >= start && now <= end;
+                      const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
+                      const matchesDestination = plan.destination && currentTravelPlan.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
+                      return isActive && hasPublicHostel && matchesDestination;
+                    });
+                    return activePlanWithHostel ? (
+                      <div className="flex items-center gap-1.5 text-sm font-medium text-black dark:text-gray-100 mt-1">
+                        <Building2 className="w-4 h-4 text-orange-600 flex-shrink-0" />
+                        <span className="break-words">Staying at {activePlanWithHostel.hostelName}</span>
+                      </div>
+                    ) : null;
+                  })()}
+                </div>
+              );
+            })()}
             {isOwnProfile && (
               <>
                 {!user?.profileImage && (
@@ -72,31 +134,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
           <div className="flex-1 min-w-0 overflow-hidden">
             <div className="space-y-2 w-full mt-2 overflow-hidden">
               {(() => {
-                const hometown = formatLocationCompact(user?.hometownCity, user?.hometownState, user?.hometownCountry);
                 return (
                   <>
                     <div className="flex items-center gap-2 flex-wrap">
                       <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user?.username}</h1>
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          const profileUrl = `https://nearbytraveler.org/profile/${user?.username}`;
-                          const shareText = `Check out @${user?.username} on Nearby Traveler`;
-                          if (navigator.share) {
-                            try {
-                              await navigator.share({ title: shareText, url: profileUrl });
-                            } catch (e) {}
-                          } else {
-                            await navigator.clipboard.writeText(profileUrl);
-                            toast?.({ title: "Profile link copied!", description: "You can now paste it anywhere." });
-                          }
-                        }}
-                        className="p-1.5 rounded-full bg-white/80 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
-                        style={{ touchAction: 'manipulation' }}
-                        title="Share profile"
-                      >
-                        <Share2 className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                      </button>
                       {!isOwnProfile && connectionDegreeData?.degree && connectionDegreeData.degree > 0 && (
                         <Badge
                           className={`text-xs px-2 py-0.5 font-semibold ${
@@ -111,111 +152,87 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           {connectionDegreeData.degree === 1 ? '1st' : connectionDegreeData.degree === 2 ? '2nd' : '3rd'}
                         </Badge>
                       )}
-                      {user?.userType !== 'business' && (
-                        <Badge
-                          className={`text-xs px-2 py-0.5 font-semibold ${
-                            (userVouches?.length || 0) > 0
-                              ? 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900 dark:text-purple-200 dark:border-purple-600'
-                              : 'bg-gray-100 text-gray-600 border-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600'
-                          }`}
-                          data-testid="badge-vouch-count"
-                        >
-                          <Shield className="w-3 h-3 mr-1 inline" />
-                          {userVouches?.length || 0} {(userVouches?.length || 0) === 1 ? 'Vouch' : 'Vouches'}
-                        </Badge>
-                      )}
                     </div>
 
-                    {isOwnProfile ? (
-                      <div className="flex flex-col gap-1 min-w-0 mt-1">
-                        <span className="text-base sm:text-lg font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
-                        <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
-                        {(() => {
-                          const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                          if (!currentTravelPlan) return null;
-                          return (
-                            <>
-                              <span className="text-base sm:text-lg font-semibold text-blue-600 dark:text-blue-400 mt-1">Nearby Traveler</span>
-                              <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100' : ''}`} title={currentTravelPlan} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{currentTravelPlan}</span>
-                            </>
-                          );
-                        })()}
-                        {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-1 self-start">
-                            New to Town
-                          </span>
+                    {!isOwnProfile && (
+                      <div className={`flex flex-row items-center gap-2 mt-2 flex-wrap ${!isNativeIOSApp() ? 'justify-start' : 'justify-center'}`}>
+                        <button
+                          type="button"
+                          className={`inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 rounded-lg shadow-md transition-all text-black font-medium cursor-pointer ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-4 py-1.5 text-sm'}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleMessage?.();
+                          }}
+                          onPointerDown={(e) => e.stopPropagation()}
+                          data-testid="button-message"
+                          data-radix-dismissable-layer-ignore=""
+                        >
+                          <span className="text-black">Message</span>
+                        </button>
+                        <ConnectButton
+                          currentUserId={currentUser?.id || 0}
+                          targetUserId={user?.id || 0}
+                          targetUsername={user?.username}
+                          targetName={user?.name}
+                          className={`rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm text-black hover:text-black`}
+                        />
+                        {!isNativeIOSApp() && (
+                          <VouchButton
+                            currentUserId={currentUser?.id || 0}
+                            targetUserId={user?.id || 0}
+                            targetUsername={user?.username}
+                          />
                         )}
-                        {(() => {
-                          const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                          if (!currentTravelPlan) return null;
-                          const now = new Date();
-                          const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
-                            if (!plan.startDate || !plan.endDate) return false;
-                            const start = new Date(plan.startDate);
-                            const end = new Date(plan.endDate);
-                            const isActive = now >= start && now <= end;
-                            const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
-                            const matchesDestination = plan.destination && currentTravelPlan.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
-                            return isActive && hasPublicHostel && matchesDestination;
-                          });
-                          return activePlanWithHostel ? (
-                            <div className="flex items-center gap-1.5 text-sm font-medium text-black dark:text-gray-100 mt-1">
-                              <Building2 className="w-4 h-4 text-orange-600 flex-shrink-0" />
-                              <span className="break-words">Staying at {activePlanWithHostel.hostelName}</span>
-                            </div>
-                          ) : null;
-                        })()}
+                        {currentUser ? (
+                          <Button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setShowWriteReferenceModal?.(true);
+                            }}
+                            className="bg-blue-600 hover:bg-blue-700 text-black shrink-0 px-4 py-1.5 text-sm"
+                            data-testid="button-write-reference"
+                          >
+                            Write Reference
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            onClick={() => setLocation('/auth')}
+                            className="bg-blue-600 hover:bg-blue-700 text-black shrink-0 px-4 py-1.5 text-sm"
+                            data-testid="button-write-reference"
+                          >
+                            Write Reference
+                          </Button>
+                        )}
+                        {user && (
+                          currentUser ? (
+                            <ReportUserButton
+                              userId={currentUser.id}
+                              targetUserId={user.id}
+                              targetUsername={user.username}
+                              variant="ghost"
+                              size="sm"
+                            />
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setLocation('/auth');
+                              }}
+                              onPointerDown={(e) => e.stopPropagation()}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 text-sm rounded font-medium cursor-pointer shrink-0"
+                              data-radix-dismissable-layer-ignore=""
+                            >
+                              Report
+                            </button>
+                          )
+                        )}
                       </div>
-                    ) : (
-                      <>
-                        <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black dark:text-gray-200 min-w-0">
-                          <div className="flex-shrink-0 mt-0.5 flex flex-col items-center gap-0">
-                            <MapPin className="hidden sm:block w-5 h-5 text-blue-600" />
-                            {getCurrentTravelDestination(travelPlans || []) && (
-                              <Plane className="hidden sm:block w-5 h-5 text-orange-600 mt-1" />
-                            )}
-                          </div>
-                          <div className="flex flex-col gap-0 min-w-0 flex-1">
-                            <span className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</span>
-                            <span className={`truncate ${!isNativeIOSApp() ? 'text-black dark:text-gray-100' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
-                            {(() => {
-                              const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                              if (!currentTravelPlan) return null;
-                              return (
-                                <>
-                                  <span className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-0.5">Nearby Traveler</span>
-                                  <span className={`truncate ${!isNativeIOSApp() ? 'text-black dark:text-gray-100' : ''}`} title={currentTravelPlan} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{currentTravelPlan}</span>
-                                </>
-                              );
-                            })()}
-                          </div>
-                          {!isNativeIOSApp() && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 flex-shrink-0 self-start">
-                              New to Town
-                            </span>
-                          )}
-                        </div>
-                        {(() => {
-                          const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                          if (!currentTravelPlan) return null;
-                          const now = new Date();
-                          const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
-                            if (!plan.startDate || !plan.endDate) return false;
-                            const start = new Date(plan.startDate);
-                            const end = new Date(plan.endDate);
-                            const isActive = now >= start && now <= end;
-                            const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
-                            const matchesDestination = plan.destination && currentTravelPlan.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
-                            return isActive && hasPublicHostel && matchesDestination;
-                          });
-                          return activePlanWithHostel ? (
-                            <div className="flex items-start gap-1.5 text-sm font-medium text-black flex-wrap mt-1">
-                              <Building2 className="hidden sm:block w-4 h-4 text-black flex-shrink-0 mt-0.5" />
-                              <span className="break-words">Staying at {activePlanWithHostel.hostelName}</span>
-                            </div>
-                          ) : null;
-                        })()}
-                      </>
                     )}
                   </>
                 );
@@ -264,89 +281,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </div>
               )}
             </div>
-            {!isOwnProfile && (
-              <div className={`w-full flex items-center min-w-0 relative z-50 pointer-events-auto mt-2 ${isNativeIOSApp() ? 'gap-2 flex-nowrap overflow-x-auto pb-1' : 'gap-3 flex-wrap'}`} style={{ position: 'relative', zIndex: 9999 }}>
-                <button
-                  type="button"
-                  className={`inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 rounded-lg shadow-md transition-all text-black font-medium cursor-pointer ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-6 py-2'}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleMessage?.();
-                  }}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  data-testid="button-message"
-                  data-radix-dismissable-layer-ignore=""
-                >
-                  <MessageCircle className="w-4 h-4 mr-2 text-black" />
-                  <span className="text-black">Message</span>
-                </button>
-                <ConnectButton
-                  currentUserId={currentUser?.id || 0}
-                  targetUserId={user?.id || 0}
-                  targetUsername={user?.username}
-                  targetName={user?.name}
-                  className={`rounded-lg shadow-md transition-all ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-6 py-2'}`}
-                />
-                {!isNativeIOSApp() && (
-                  <VouchButton
-                    currentUserId={currentUser?.id || 0}
-                    targetUserId={user?.id || 0}
-                    targetUsername={user?.username}
-                  />
-                )}
-                {currentUser ? (
-                  <Button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setShowWriteReferenceModal?.(true);
-                    }}
-                    className={`bg-blue-600 hover:bg-blue-700 text-white ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-6 py-2'}`}
-                    data-testid="button-write-reference"
-                  >
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Write Reference
-                  </Button>
-                ) : (
-                  <Button
-                    type="button"
-                    onClick={() => setLocation('/auth')}
-                    className={`bg-blue-600 hover:bg-blue-700 text-white ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-6 py-2'}`}
-                    data-testid="button-write-reference"
-                  >
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Write Reference
-                  </Button>
-                )}
-                {user && (
-                  currentUser ? (
-                    <ReportUserButton
-                      userId={currentUser.id}
-                      targetUserId={user.id}
-                      targetUsername={user.username}
-                      variant="ghost"
-                      size="sm"
-                    />
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setLocation('/auth');
-                      }}
-                      onPointerDown={(e) => e.stopPropagation()}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 text-sm rounded font-medium cursor-pointer"
-                      data-radix-dismissable-layer-ignore=""
-                    >
-                      Report
-                    </button>
-                  )
-                )}
-              </div>
-            )}
           </div>
         </div>
       </div>

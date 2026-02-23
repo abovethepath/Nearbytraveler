@@ -4,12 +4,59 @@ import { useAuth } from '../services/AuthContext';
 import api from '../services/api';
 import UserAvatar from '../components/UserAvatar';
 
-const UserCard = ({ user, onPress, navigation }) => (
+// Get travel destination for display - same logic as web (each user's own travel data)
+function getTravelDestination(user) {
+  if (user?.userType === 'business') return null;
+  const toDisplay = (s) => {
+    if (s == null || s === '') return null;
+    const t = String(s).trim();
+    if (!t || t.toLowerCase() === 'null' || t.toLowerCase() === 'undefined') return null;
+    return t;
+  };
+  // 1. From travelPlans (active trip)
+  const plans = user?.travelPlans;
+  if (Array.isArray(plans) && plans.length > 0) {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const active = plans.find((p) => {
+      try {
+        const start = new Date(p.startDate);
+        const end = new Date(p.endDate);
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+        return now >= start && now <= end;
+      } catch { return false; }
+    });
+    if (active) {
+      const c = active.destinationCity || (active.destination && active.destination.split(',')[0]?.trim());
+      const r = toDisplay(c);
+      if (r) return r;
+    }
+  }
+  // 2. From destinationCity (API-enriched)
+  const destCity = toDisplay(user?.destinationCity);
+  if (destCity) return destCity;
+  // 3. From travelDestination
+  const td = user?.travelDestination;
+  if (td) {
+    const city = String(td).split(',')[0]?.trim();
+    const r = toDisplay(city);
+    if (r) return r;
+  }
+  return null;
+}
+
+const UserCard = ({ user, onPress, navigation }) => {
+  const travelDest = getTravelDestination(user);
+  return (
   <TouchableOpacity style={styles.userCard} onPress={() => onPress(user)} activeOpacity={0.7}>
     <UserAvatar user={user} size={60} navigation={navigation} style={styles.avatar} />
     <View style={styles.userInfo}>
       <Text style={styles.userName} numberOfLines={1}>{user.fullName || user.username}</Text>
-      <Text style={styles.userCity} numberOfLines={1}>&#x1F4CD; {user.city || 'Unknown location'}</Text>
+      <Text style={styles.userCity} numberOfLines={1}>&#x1F4CD; {user.city || user.hometownCity || 'Unknown location'}</Text>
+      {travelDest && user.userType !== 'business' && (
+        <Text style={styles.travelDest} numberOfLines={2}>&#x2708;&#xFE0F; {travelDest}</Text>
+      )}
       {user.bio ? <Text style={styles.userBio} numberOfLines={2}>{user.bio}</Text> : null}
       <View style={styles.tagRow}>
         {user.userType === 'traveler' && <View style={[styles.tag, styles.travelerTag]}><Text style={styles.tagText}>Traveler</Text></View>}
@@ -18,7 +65,8 @@ const UserCard = ({ user, onPress, navigation }) => (
       </View>
     </View>
   </TouchableOpacity>
-);
+  );
+};
 
 export default function ExploreScreen({ navigation }) {
   const { user } = useAuth();
@@ -85,6 +133,7 @@ const styles = StyleSheet.create({
   userInfo: { flex: 1 },
   userName: { fontSize: 17, fontWeight: '700', color: '#111827', marginBottom: 2 },
   userCity: { fontSize: 14, color: '#6B7280', marginBottom: 4 },
+  travelDest: { fontSize: 13, color: '#F97316', marginBottom: 4 },
   userBio: { fontSize: 13, color: '#9CA3AF', lineHeight: 18, marginBottom: 8 },
   tagRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
   tag: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },

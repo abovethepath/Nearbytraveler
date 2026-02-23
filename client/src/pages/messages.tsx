@@ -705,8 +705,8 @@ export default function Messages() {
                     </AvatarFallback>
                   </Avatar>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h2 className="font-semibold text-gray-900 dark:text-white truncate">@{selectedUser.username}</h2>
+                <div className="flex-1 min-w-0 overflow-hidden">
+                  <h2 className="text-sm font-semibold text-gray-900 dark:text-white truncate" title={`@${selectedUser.username}`}>@{selectedUser.username}</h2>
                   <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{selectedUser.location}</p>
                 </div>
               </div>
@@ -836,7 +836,7 @@ export default function Messages() {
               </div>
 
             {/* Message Input - Fixed at bottom in flex layout */}
-            <div ref={inputContainerRef} className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0">
+            <div ref={inputContainerRef} className="px-4 py-2 pb-20 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0">
                 {/* Reply Bar */}
                 {replyingTo && (
                   <div className="flex items-center gap-2 px-3 py-2 mb-2 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded max-w-4xl mx-auto">

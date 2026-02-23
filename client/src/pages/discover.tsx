@@ -9,7 +9,6 @@ import { useLocation } from "wouter";
 import { ArrowLeft } from "lucide-react";
 import BackButton from "@/components/back-button";
 import { AuthContext } from "@/App";
-import { MobilePreview } from "@/components/MobilePreview";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { isNativeIOSApp } from "@/lib/nativeApp";
@@ -404,12 +403,5 @@ export default function DiscoverPage() {
     </div>
   );
 
-  return (
-    <>
-      {pageContent}
-      <MobilePreview>
-        {pageContent}
-      </MobilePreview>
-    </>
-  );
+  return pageContent;
 }

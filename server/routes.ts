@@ -2934,7 +2934,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
         }));
         
-        const travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
+        let travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
+        if (travelDestination && (String(travelDestination).toLowerCase() === 'null' || String(travelDestination).trim() === '')) travelDestination = null;
         const destinationCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
         return {
           ...userWithoutPassword,
@@ -7287,7 +7288,8 @@ Questions? Just reply to this message. Welcome aboard!
         
         // Remove password and add travel plans + travel status
         const { password: _, ...userWithoutPassword } = user;
-        const travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
+        let travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
+        if (travelDestination && (String(travelDestination).toLowerCase() === 'null' || String(travelDestination).trim() === '')) travelDestination = null;
         const destCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
         return {
           ...userWithoutPassword,
@@ -7296,7 +7298,7 @@ Questions? Just reply to this message. Welcome aboard!
           travelPlans: formattedTravelPlans,
           // CRITICAL: Include travel status for airplane badge + destination on user cards (web + iOS)
           isCurrentlyTraveling: !!activePlan,
-          travelDestination,
+          travelDestination: travelDestination || null,
           destinationCity: destCity
         };
       }));
@@ -15798,6 +15800,23 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Combine: active first, then expired
       const sortedMeetups = [...activeMeetups, ...expiredMeetups];
+
+      // Add participantIds for each meetup (used by Active Quick Meetup card to show "Open Hangout" vs "Join")
+      if (sortedMeetups.length > 0) {
+        const meetupIds = sortedMeetups.map((m: any) => m.id);
+        const participantRows = await db
+          .select({ meetupId: quickMeetupParticipants.meetupId, userId: quickMeetupParticipants.userId })
+          .from(quickMeetupParticipants)
+          .where(inArray(quickMeetupParticipants.meetupId, meetupIds));
+        const participantIdsByMeetup = new Map<number, number[]>();
+        for (const row of participantRows) {
+          if (!participantIdsByMeetup.has(row.meetupId)) participantIdsByMeetup.set(row.meetupId, []);
+          participantIdsByMeetup.get(row.meetupId)!.push(row.userId);
+        }
+        for (const meetup of sortedMeetups) {
+          (meetup as any).participantIds = participantIdsByMeetup.get(meetup.id) || [];
+        }
+      }
 
       if (process.env.NODE_ENV === 'development') console.log(`QUICK MEETS: Found ${activeMeetups.length} active + ${expiredMeetups.length} expired = ${sortedMeetups.length} total meets`);
 

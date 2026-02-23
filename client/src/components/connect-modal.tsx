@@ -742,7 +742,8 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                             </div>
                           </div>
                           
-                          {/* Action buttons - full width stack on mobile, side-by-side on desktop */}
+                          {/* Action buttons - full width stack on mobile, side-by-side on desktop (hidden for current user) */}
+                          {user.id !== (currentUser?.id ?? authStorage.getUser()?.id) && (
                           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                             <Button
                               size="lg"
@@ -763,6 +764,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                               className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 hover:from-orange-600 hover:to-orange-700 font-semibold px-4 sm:px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
                             />
                           </div>
+                          )}
                         </div>
                       </CardContent>
                     </Card>

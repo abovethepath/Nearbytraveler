@@ -1466,7 +1466,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
-          <HelpChatbot />
+          {!isNativeIOSApp() && <HelpChatbot />}
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>

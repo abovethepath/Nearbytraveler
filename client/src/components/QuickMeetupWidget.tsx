@@ -379,6 +379,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
               <div className="space-y-2 max-h-[300px] overflow-y-auto">
                 {allActiveMeetups.slice(0, 5).map((meetup: any) => {
                   const isOwn = meetup.organizerId === actualUser?.id;
+                  const isJoined = (meetup.participantIds || []).includes(actualUser?.id);
                   const expiresAt = new Date(meetup.expiresAt);
                   const timeLeft = Math.max(0, expiresAt.getTime() - Date.now());
                   const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
@@ -436,7 +437,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                             : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600'} text-white`}
                         >
                           {isOwn ? <Edit3 className="w-3 h-3 mr-1" /> : <MessageSquare className="w-3 h-3 mr-1" />}
-                          {isOwn ? 'Manage Your Meetup' : 'Join This Hangout!'}
+                          {isOwn ? 'Manage Your Meetup' : isJoined ? 'Open Hangout' : 'Join This Hangout!'}
                         </Button>
                       </div>
                     </div>

@@ -114,7 +114,7 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
 
   return (
     <>
-      <div className="space-y-3 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-4 lg:space-y-0">
+      <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0 min-w-0">
         {visible.map((b: any) => {
           const title = b.businessName || b.name || b.username || "Business";
           const category = b.businessType || b.category || b.specialty;
@@ -131,7 +131,7 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
           return (
             <div
               key={b.id}
-              className="rounded-xl border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow cursor-pointer overflow-hidden flex flex-col"
+              className="rounded-xl border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow cursor-pointer overflow-hidden flex flex-col min-w-0"
               onClick={() => setLocation(`/business/${b.id}`)}
             >
               {/* Large hero image */}
@@ -177,19 +177,19 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                   )}
                 </div>
 
-                <div className="mt-5 flex gap-3">
+                <div className="mt-5 flex flex-wrap gap-2 sm:gap-3">
                   <Button
-                    className="flex-1 h-11 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold"
+                    className="flex-1 min-w-[120px] h-11 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shrink-0"
                     onClick={(e) => { e.stopPropagation(); setLocation(`/business/${b.id}`); }}
                   >
                     View Business
                   </Button>
                   <Button
                     variant="outline"
-                    className="flex-1 h-11 border-2 border-orange-400 dark:border-orange-500 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-sm font-semibold"
+                    className="flex-1 min-w-[100px] h-11 border-2 border-orange-400 dark:border-orange-500 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-sm font-semibold shrink-0"
                     onClick={(e) => { e.stopPropagation(); setLocation(`/business/${b.id}/offers`); }}
                   >
-                    <Tag className="h-4 w-4 mr-1.5" />
+                    <Tag className="h-4 w-4 mr-1.5 shrink-0" />
                     Deals
                   </Button>
                 </div>

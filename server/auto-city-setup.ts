@@ -7,75 +7,9 @@ import { getStaticActivitiesForCity, getFeaturedActivitiesForCity } from './stat
 
 export async function ensureCityHasActivities(cityName: string, state?: string, country?: string, userId: number = 1): Promise<void> {
   try {
-    console.log(`🏙️ AUTO-SETUP: Checking if ${cityName} has universal activities...`);
+    console.log(`🏙️ AUTO-SETUP: Setting up activities for ${cityName} (Group 1: city-specific first, Group 2: generic)...`);
     
-    // Check if city has ALL universal activities - we need to ensure ALL exist
-    // Don't exit early if city has some activities - we need to check each universal activity
-    const universalActivitiesNames = GENERIC_CITY_ACTIVITIES.map(a => a.name);
-    
-    let missingCount = 0;
-    for (const universalName of universalActivitiesNames) {
-      const existing = await db
-        .select()
-        .from(cityActivities)
-        .where(and(
-          eq(cityActivities.cityName, cityName),
-          eq(cityActivities.activityName, universalName)
-        ))
-        .limit(1);
-        
-      if (existing.length === 0) {
-        missingCount++;
-      }
-    }
-    
-    if (missingCount === 0) {
-      console.log(`✅ AUTO-SETUP: ${cityName} already has all ${universalActivitiesNames.length} universal activities`);
-      return;
-    }
-    
-    console.log(`🔧 AUTO-SETUP: Adding ${missingCount} missing universal activities to ${cityName}...`);
-    
-    // Add ONLY the missing universal activities (not city-specific ones)
-    const savedActivities = [];
-    for (const universalActivity of GENERIC_CITY_ACTIVITIES) {
-      try {
-        // Check if this specific universal activity exists
-        const existing = await db
-          .select()
-          .from(cityActivities)
-          .where(and(
-            eq(cityActivities.cityName, cityName),
-            eq(cityActivities.activityName, universalActivity.name)
-          ))
-          .limit(1);
-          
-        if (existing.length === 0) {
-          // Add missing universal activity
-          const newActivity = await db.insert(cityActivities).values({
-            cityName,
-            activityName: universalActivity.name,
-            description: universalActivity.description,
-            category: universalActivity.category,
-            state: state || '',
-            country: country || 'United States',
-            createdByUserId: userId,
-            isActive: true
-          }).returning();
-          
-          savedActivities.push(newActivity[0]);
-        }
-      } catch (error) {
-        // Skip duplicates silently
-        if (!(error as any)?.message?.includes('duplicate key')) {
-          console.error(`Error saving universal activity ${universalActivity.name}:`, error);
-        }
-      }
-    }
-    
-    console.log(`✅ AUTO-SETUP: Added ${savedActivities.length} universal activities to ${cityName}`);
-    
-    // First, add FEATURED activities (curated top 12 for Popular section)
+    // GROUP 1: Add FEATURED activities first (city-specific, curated top 12)
     const featuredActivities = getFeaturedActivitiesForCity(cityName);
     if (featuredActivities.length > 0) {
       console.log(`⭐ AUTO-SETUP: Adding ${featuredActivities.length} FEATURED activities to ${cityName}...`);
@@ -180,6 +114,51 @@ export async function ensureCityHasActivities(cityName: string, state?: string, 
       }
       
       console.log(`✅ AUTO-SETUP: Added ${staticActivitiesAdded} static city-specific activities to ${cityName}`);
+    }
+    
+    // GROUP 2: Add generic travel-social activities (apply to all cities)
+    let genericAdded = 0;
+    for (const genericActivity of GENERIC_CITY_ACTIVITIES) {
+      try {
+        const existing = await db
+          .select()
+          .from(cityActivities)
+          .where(and(
+            eq(cityActivities.cityName, cityName),
+            eq(cityActivities.activityName, genericActivity.name)
+          ))
+          .limit(1);
+          
+        if (existing.length === 0) {
+          await db.insert(cityActivities).values({
+            cityName,
+            activityName: genericActivity.name,
+            description: genericActivity.description,
+            category: genericActivity.category,
+            state: state || '',
+            country: country || 'United States',
+            createdByUserId: userId,
+            isActive: true,
+            source: 'generic'
+          });
+          genericAdded++;
+        } else if ((existing[0] as any).source !== 'generic') {
+          // Update existing to have source generic for display grouping
+          await db.update(cityActivities)
+            .set({ source: 'generic' })
+            .where(and(
+              eq(cityActivities.cityName, cityName),
+              eq(cityActivities.activityName, genericActivity.name)
+            ));
+        }
+      } catch (error) {
+        if (!(error as any)?.message?.includes('duplicate key')) {
+          console.error(`Error saving generic activity ${genericActivity.name}:`, error);
+        }
+      }
+    }
+    if (genericAdded > 0) {
+      console.log(`✅ AUTO-SETUP: Added ${genericAdded} generic (Group 2) activities to ${cityName}`);
     }
     
   } catch (error) {

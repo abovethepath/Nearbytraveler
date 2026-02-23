@@ -1918,8 +1918,8 @@ export default function Home() {
             </Card>
 
             {/* Local Businesses Section */}
-            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm" data-testid="local-businesses-section">
-              <div className="p-4 sm:p-6">
+            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm min-w-0" data-testid="local-businesses-section">
+              <div className="p-4 sm:p-6 min-w-0">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
                     <Package className="w-6 h-6 mr-3 text-orange-500" />

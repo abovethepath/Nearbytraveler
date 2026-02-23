@@ -13,7 +13,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/App";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
-import { getTravelActivities } from "@shared/base-options";
 import { METRO_AREAS } from "@shared/constants";
 import { getMetroAreaName } from "@shared/metro-areas";
 import SubInterestSelector from "@/components/SubInterestSelector";
@@ -2308,30 +2307,19 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 </DialogContent>
               </Dialog>
               
-              {/* Dynamic City Activities - City-Specific First, Then Universal, Then Deeper */}
+              {/* Dynamic City Activities - Group 1: City-Specific First, Group 2: Generic Travel-Social */}
               <div className="space-y-8">
                 
-                {/* SECTION 1: Things to Do in {City} - Featured + AI Activities (FIRST) */}
+                {/* GROUP 1: City-Specific Activities (each city's hardcoded list) */}
                 {(() => {
-                  const universalActivities = getTravelActivities();
-                  const isSimilarToUniversal = (activityName: string) => {
-                    const normalized = activityName.toLowerCase().trim();
-                    return universalActivities.some(universal => {
-                      const universalNormalized = universal.toLowerCase().trim();
-                      return normalized === universalNormalized || 
-                             normalized.includes(universalNormalized) || 
-                             universalNormalized.includes(normalized);
-                    });
-                  };
-                  
                   const storedUser2 = localStorage.getItem('travelconnect_user');
                   const actualUser2 = user || (storedUser2 ? JSON.parse(storedUser2) : null);
                   const currentUserId2 = actualUser2?.id;
                   
-                  const allCityActivities = cityActivities
+                  const group1CitySpecific = cityActivities
                     .filter(activity => {
+                      if ((activity as any).source === 'generic') return false;
                       if (activity.category === 'universal') return false;
-                      if (isSimilarToUniversal(activity.activityName)) return false;
                       if (activity.createdByUserId === 1 && dismissedAIActivities.has(activity.id)) return false;
                       const activityDate = (activity as any).activityDate;
                       if (activityDate) {
@@ -2352,18 +2340,25 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       return aRank - bRank;
                     });
                   
+                  const group2Generic = cityActivities
+                    .filter(activity => (activity as any).source === 'generic')
+                    .filter(activity => !activitySearchFilter || activity.activityName.toLowerCase().includes(activitySearchFilter.toLowerCase()));
+                  
+                  const allCityActivities = [...group1CitySpecific, ...group2Generic];
+                  
                   if (allCityActivities.length === 0 && !activitySearchFilter) return null;
                   
                   const isMobileVisible = activeMobileSection === 'popular' || activeMobileSection === 'ai' || activeMobileSection === 'all';
-                  const totalCount = allCityActivities.length;
-                  const displayedActivities = allCityActivities.slice(0, displayedActivitiesLimit);
-                  const hasMore = totalCount > displayedActivitiesLimit;
+                  const displayedGroup1 = group1CitySpecific.slice(0, displayedActivitiesLimit);
+                  const displayedGroup2 = group2Generic;
+                  const hasMoreGroup1 = group1CitySpecific.length > displayedActivitiesLimit;
                   
                   return (
                     <div id="mobile-section-popular" className={`md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
+                      {/* GROUP 1: City-Specific Activities */}
                       <div className="text-center mb-6">
-                        <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-2">🎯 Things to Do in {selectedCity}</h3>
-                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Popular spots, local favorites, and unique ideas — tap to add to your plans</p>
+                        <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-2">🎯 Group 1: Things to Do in {selectedCity}</h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">City-specific spots, local favorites, and unique ideas — tap to add to your plans</p>
                         <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-yellow-500 to-orange-500 mx-auto rounded-full mt-2"></div>
                         {/* Inline text box: add custom "thing I want to do" — editable/deletable by all */}
                         <div className="flex flex-col sm:flex-row gap-2 mt-4 max-w-xl mx-auto">
@@ -2430,7 +2425,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         </div>
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                        {displayedActivities.map((activity) => {
+                        {displayedGroup1.map((activity) => {
                           const isSelected = userActivities.some(ua => 
                             ua.activityId === activity.id || 
                             (ua.activityName && activity.activityName && ua.activityName.toLowerCase().trim() === activity.activityName.toLowerCase().trim() && ua.cityName === selectedCity)
@@ -2511,14 +2506,49 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         })}
                       </div>
                       
+                      {/* GROUP 2: Generic Travel-Social Activities (apply to all cities) */}
+                      {group2Generic.length > 0 && (
+                        <div className="mt-8">
+                          <div className="text-center mb-4">
+                            <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-1">✈️ Group 2: Connect On</h3>
+                            <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Popular ways to connect with travelers & locals in any city</p>
+                          </div>
+                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+                            {displayedGroup2.map((activity) => {
+                              const isSelected = userActivities.some(ua => 
+                                ua.activityId === activity.id || 
+                                (ua.activityName && activity.activityName && ua.activityName.toLowerCase().trim() === activity.activityName.toLowerCase().trim() && ua.cityName === selectedCity)
+                              );
+                              return (
+                                <button
+                                  key={activity.id}
+                                  type="button"
+                                  className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
+                                    isSelected 
+                                      ? 'bg-gradient-to-r from-blue-600 to-orange-600 text-white border-blue-400 shadow-blue-200'
+                                      : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300'
+                                  }`}
+                                  onClick={() => toggleActivity(activity)}
+                                >
+                                  <span className="flex items-center justify-center gap-1.5">
+                                    {isSelected && <span className="text-xs">✓</span>}
+                                    {activity.activityName}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      
                       <div className="flex items-center justify-center gap-3 mt-4">
-                        {hasMore && (
+                        {hasMoreGroup1 && (
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => setDisplayedActivitiesLimit(prev => prev + 30)}
                           >
-                            Show {Math.min(30, totalCount - displayedActivitiesLimit)} more
+                            Show {Math.min(30, group1CitySpecific.length - displayedActivitiesLimit)} more
                           </Button>
                         )}
                         <Button
@@ -2554,98 +2584,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   );
                 })()}
 
-
-                {/* SECTION 2: Universal Match Preferences - Activities that work in ANY city */}
-                <div id="mobile-section-preferences" className={`mt-8 md:block ${activeMobileSection === 'preferences' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
-                  <div className="text-center mb-6">
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2 px-2">✈️ Connect On</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm px-2">Universal activities to match with travelers & locals in any city</p>
-                    <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-orange-500 mx-auto rounded-full mt-2"></div>
-                  </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-                    {(() => {
-                      const travelActivities = getTravelActivities()
-                        .filter(a => !activitySearchFilter || a.toLowerCase().includes(activitySearchFilter.toLowerCase()));
-                      
-                      return travelActivities.map((activity) => {
-                      const isSelected = userActivities.some(ua => ua.activityName === activity && ua.cityName === selectedCity);
-                      
-                      return (
-                        <button
-                          key={activity}
-                          type="button"
-                          className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
-                            isSelected 
-                              ? 'bg-gradient-to-r from-blue-600 to-orange-600 text-white border-blue-400 shadow-blue-200'
-                              : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-blue-100 dark:hover:shadow-blue-900/50'
-                          }`}
-                          onClick={async () => {
-                            const storedUser = localStorage.getItem('travelconnect_user');
-                            const authStorageUser = localStorage.getItem('user');
-                            let actualUser = user;
-                            if (!actualUser && storedUser) {
-                              try { actualUser = JSON.parse(storedUser); } catch (e) {}
-                            }
-                            if (!actualUser && authStorageUser) {
-                              try { actualUser = JSON.parse(authStorageUser); } catch (e) {}
-                            }
-                            if (!actualUser?.id) return;
-                            const userId = actualUser.id;
-                            try {
-                              const apiBase = getApiBaseUrl();
-                              if (!isSelected) {
-                                const optId = `opt-uni-${activity.replace(/\s/g, '_')}-${Date.now()}`;
-                                setUserActivities(prev => [...prev, { id: optId, activityName: activity, cityName: selectedCity }]);
-                                const response = await fetch(`${apiBase}/api/user-city-interests`, {
-                                  method: 'POST',
-                                  headers: { 'Content-Type': 'application/json', 'x-user-id': userId.toString() },
-                                  body: JSON.stringify({ activityName: activity, cityName: selectedCity })
-                                });
-                                if (response.ok) {
-                                  const result = await response.json();
-                                  if (!result.removed) {
-                                    const toAdd = result.activityName ? result : { ...result, activityName: activity, cityName: selectedCity };
-                                    setUserActivities(prev => prev.map(ua => ua.id === optId ? toAdd : ua));
-                                    await fetchUserActivities();
-                                    const updatedActivities = await fetch(`${apiBase}/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
-                                    if (updatedActivities.ok) {
-                                      const allActivities = await updatedActivities.json();
-                                      syncActivitiesToProfile(allActivities.map((ua: any) => ua.activityName), selectedCity);
-                                    }
-                                  } else {
-                                    setUserActivities(prev => prev.filter(ua => ua.id !== optId));
-                                  }
-                                } else {
-                                  setUserActivities(prev => prev.filter(ua => ua.id !== optId));
-                                }
-                              } else {
-                                const response = await fetch(`${apiBase}/api/user-city-interests`, {
-                                  method: 'POST',
-                                  headers: { 'Content-Type': 'application/json', 'x-user-id': userId.toString() },
-                                  body: JSON.stringify({ activityName: activity, cityName: selectedCity })
-                                });
-                                if (response.ok) {
-                                  await fetchUserActivities();
-                                  const updatedActivities = await fetch(`${apiBase}/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
-                                  if (updatedActivities.ok) {
-                                    const allActivities = await updatedActivities.json();
-                                    syncActivitiesToProfile(allActivities.map((ua: any) => ua.activityName), selectedCity);
-                                  }
-                                }
-                              }
-                            } catch (error) {
-                              console.error('Error handling universal activity:', error);
-                            }
-                          }}
-                          data-testid={`universal-activity-${activity.replace(/\s+/g, '-').toLowerCase()}`}
-                        >
-                          {activity}
-                        </button>
-                      );
-                    });
-                    })()}
-                  </div>
-                </div>
 
                 {/* SAVE & FIND MATCHES BUTTON */}
                 <div className="my-8 text-center">

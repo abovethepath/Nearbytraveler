@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation } from "wouter";
 import { Plane } from "lucide-react";
+import { getCurrentTravelDestination } from "@/lib/dateUtils";
 
 export interface User {
   id: number;
@@ -79,54 +80,38 @@ export default function UserCard({
     return gradients[user.id % gradients.length];
   };
 
-  // CRITICAL: Must show destination when user is a Nearby Traveler - use ALL possible sources
+  // Get travel destination for display - same logic for current user AND other users (each user's own travel data)
   const getTravelCity = (): string | null => {
-    const clean = (s: string | null | undefined): string | null => {
-      if (!s || String(s).toLowerCase() === 'null') return null;
+    const toDisplay = (s: string | null | undefined): string | null => {
+      if (s == null || s === '') return null;
       const t = String(s).trim();
-      return t || null;
+      if (!t || t.toLowerCase() === 'null' || t.toLowerCase() === 'undefined') return null;
+      return t;
     };
-    // 1. From travelPlans (active trip)
+    // 1. From travelPlans (active trip) - use dateUtils for consistent date parsing across all users
     const plans = (user as any).travelPlans;
-    if (Array.isArray(plans)) {
-      const now = new Date();
-      const currentTrip = plans.find((plan: any) => {
-        try {
-          const start = new Date(plan.startDate);
-          const end = new Date(plan.endDate);
-          return now >= start && now <= end;
-        } catch { return false; }
-      });
-      if (currentTrip) {
-        const c = currentTrip.destinationCity || (currentTrip.destination && currentTrip.destination.split(',')[0]?.trim());
-        const r = clean(c);
+    if (Array.isArray(plans) && plans.length > 0) {
+      const dest = getCurrentTravelDestination(plans);
+      if (dest) {
+        const city = String(dest).split(',')[0]?.trim();
+        const r = toDisplay(city);
         if (r) return r;
       }
     }
     // 2. From destinationCity (API-enriched)
-    const destCity = clean((user as any).destinationCity);
+    const destCity = toDisplay((user as any).destinationCity);
     if (destCity) return destCity;
-    // 3. From isCurrentlyTraveling + travelDestination (API fallback)
-    if ((user as any).isCurrentlyTraveling && user.travelDestination) {
-      const city = user.travelDestination.split(',')[0]?.trim();
-      const r = clean(city);
+    // 3. From travelDestination (API fallback - when user is traveling)
+    const td = user.travelDestination;
+    if (td) {
+      const city = String(td).split(',')[0]?.trim();
+      const r = toDisplay(city);
       if (r) return r;
     }
     return null;
   };
 
-  const travelCity = getTravelCity();
-  // When API says traveling but getTravelCity missed it, try travelDestination once more
-  const cleanDest = (s: string | null | undefined): string | null => {
-    if (!s || String(s).toLowerCase() === 'null' || String(s).trim() === '') return null;
-    const t = String(s).trim();
-    return t || null;
-  };
-  const travelCityFinal = travelCity || cleanDest(
-    (user as any).isCurrentlyTraveling && user.travelDestination
-      ? user.travelDestination.split(',')[0]?.trim()
-      : null
-  );
+  const travelCityFinal = getTravelCity();
   const displayCity = user.hometownCity || 'Unknown';
   const displayName = user.userType === 'business' && user.businessName 
     ? user.businessName 
@@ -246,7 +231,7 @@ export default function UserCard({
         </div>
         
         {/* Desktop (non-compact only): fixed 4-row grid with social proof first */}
-        <div className={compact ? 'hidden' : 'hidden lg:grid lg:grid-rows-4 gap-0 leading-tight min-h-[88px]'}>
+        <div className={compact ? 'hidden' : 'hidden lg:grid lg:grid-rows-4 gap-0 leading-tight min-h-[100px]'}>
           <div className="text-sm font-semibold truncate text-orange-500">
             {thingsInCommon > 0 ? `${thingsInCommon} things in common` : '\u00A0'}
           </div>
@@ -256,12 +241,12 @@ export default function UserCard({
           <div className="text-sm font-semibold text-gray-900 dark:text-white truncate mt-1">
             {displayName}
           </div>
-          <div className="truncate">
+          <div className="min-w-0">
             <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{displayCity}</div>
             {travelCityFinal && user.userType !== 'business' && (
-              <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 truncate flex items-center gap-1 mt-0.5">
+              <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1 mt-0.5 break-words min-w-0">
                 <Plane className="w-3 h-3 flex-shrink-0" />
-                <span>Nearby Traveler → {travelCityFinal}</span>
+                <span className="break-words">Nearby Traveler → {travelCityFinal}</span>
               </div>
             )}
           </div>

@@ -61,7 +61,8 @@ function webViewSource(path) {
   const uri = `${BASE_URL}${pathWithNativeIOS(path)}`;
   const cookie = api.getSessionCookie();
   if (cookie) {
-    return { uri, headers: { Cookie: cookie } };
+    // Native iOS RNCWebViewImpl.m expects lowercase "cookie" key (line 849)
+    return { uri, headers: { cookie } };
   }
   return { uri };
 }
@@ -107,9 +108,15 @@ function WebViewWithChrome({ path, navigation }) {
   const [user, setUser] = useState(null);
   const [headerProfileImage, setHeaderProfileImage] = useState(null);
   const [canGoBackWeb, setCanGoBackWeb] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
   const webViewRef = useRef(null);
   const displayUser = authUser || user;
   const source = webViewSource(path);
+
+  // Ensure session is loaded from AsyncStorage before WebView loads (so cookie is available)
+  useEffect(() => {
+    api.ensureSessionReady().then(() => setSessionReady(true));
+  }, []);
 
   // Wait for auth on Messages and chat paths so the page never loads without user (avoids blank / "Please log in")
   const isMessagesPath = path === '/messages' || (path && path.startsWith('/messages'));
@@ -126,7 +133,7 @@ function WebViewWithChrome({ path, navigation }) {
   useEffect(() => {
     if (displayUser) setAuthWaitExpired(false);
   }, [displayUser]);
-  const effectiveSource = (shouldWaitForAuth && !authWaitExpired) ? null : source;
+  const effectiveSource = (shouldWaitForAuth && !authWaitExpired) || !sessionReady ? null : source;
   const showAuthWaiting = shouldWaitForAuth && !authWaitExpired;
 
   const loadUser = useCallback(() => {
@@ -402,7 +409,7 @@ function WebViewWithChrome({ path, navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-      {showAuthWaiting ? (
+      {!effectiveSource ? (
         <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg }]}>
           <ActivityIndicator size="large" color="#F97316" />
         </View>

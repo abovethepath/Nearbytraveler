@@ -326,7 +326,7 @@ Return valid JSON only.`;
     // Deduplicate all activities to remove similar ones
     const uniqueActivities = deduplicateActivities(allActivities);
     
-    console.log(`✅ AI GENERATION: Generated ${GENERIC_CITY_ACTIVITIES.length} generic + ${citySpecificActivities.length} city-specific activities for ${cityName}`);
+    console.log(`✅ AI GENERATION: Generated ${citySpecificActivities.length} city-specific activities for ${cityName}`);
     console.log(`🔄 DEDUPLICATION: Removed ${allActivities.length - uniqueActivities.length} duplicate/similar activities`);
     
     return uniqueActivities;

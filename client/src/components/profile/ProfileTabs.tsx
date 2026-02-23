@@ -215,8 +215,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                 </button>
               )}
 
-              {/* Vouches Tab - Only shows if user has at least 1 vouch */}
-              {user?.userType !== 'business' && (userVouches?.length || 0) > 0 && (
+              {/* Vouches Tab - Shows alongside Travel Plans and Countries for non-business users */}
+              {user?.userType !== 'business' && (
                 <button
                   role="tab"
                   aria-selected={activeTab === 'vouches'}
@@ -2186,8 +2186,8 @@ export function ProfileTabs(props: ProfilePageProps) {
               </div>
             )}
 
-            {/* Vouches Tab Panel - Only shows when user has vouches */}
-            {activeTab === 'vouches' && loadedTabs.has('vouches') && (userVouches?.length || 0) > 0 && (
+            {/* Vouches Tab Panel */}
+            {activeTab === 'vouches' && loadedTabs.has('vouches') && (
               <div 
                 role="tabpanel"
                 id="panel-vouches"
@@ -2205,7 +2205,10 @@ export function ProfileTabs(props: ProfilePageProps) {
                   </CardHeader>
                   <CardContent className="bg-white dark:bg-gray-900 pt-4">
                     <div className="space-y-3">
-                      {userVouches?.map((vouch: any) => (
+                      {(userVouches?.length || 0) === 0 ? (
+                        <p className="text-sm text-gray-500 dark:text-gray-400 py-4">No vouches yet.</p>
+                      ) : (
+                      userVouches?.map((vouch: any) => (
                         <div 
                           key={vouch.id} 
                           className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-700"
@@ -2225,7 +2228,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                             {new Date(vouch.createdAt).toLocaleDateString()}
                           </p>
                         </div>
-                      ))}
+                      ))
+                      )}
                     </div>
                   </CardContent>
                 </Card>

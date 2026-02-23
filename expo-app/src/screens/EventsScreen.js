@@ -1,7 +1,26 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, RefreshControl, ActivityIndicator, SafeAreaView } from 'react-native';
 import { useAuth } from '../services/AuthContext';
 import api from '../services/api';
+
+// Check if user has an active travel plan (currently traveling)
+const getCurrentTravelDestination = (travelPlans) => {
+  if (!travelPlans || !Array.isArray(travelPlans) || travelPlans.length === 0) return null;
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  for (const plan of travelPlans) {
+    if (plan.startDate && plan.endDate && plan.destination) {
+      const start = new Date(plan.startDate);
+      const end = new Date(plan.endDate);
+      start.setHours(0, 0, 0, 0);
+      end.setHours(23, 59, 59, 999);
+      if (now >= start && now <= end) {
+        return plan.destination;
+      }
+    }
+  }
+  return null;
+};
 
 const formatDate = (dateStr) => {
   if (!dateStr) return '';
@@ -39,13 +58,55 @@ export default function EventsScreen({ navigation }) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const city = user?.city || 'Los Angeles';
+  const [travelPlans, setTravelPlans] = useState([]);
+
+  const hometownCity = user?.hometownCity || user?.city || 'Los Angeles';
+  const currentDestination = getCurrentTravelDestination(travelPlans);
+  const travelCity = currentDestination ? String(currentDestination).split(',')[0].trim() : null;
+  const citiesToFetch = travelCity && travelCity !== hometownCity
+    ? [travelCity, hometownCity]
+    : [hometownCity];
+  const locationLabel = citiesToFetch.length > 1 ? `${citiesToFetch.join(' + ')}` : citiesToFetch[0];
 
   const fetchEvents = useCallback(async () => {
-    try { const data = await api.getEvents(city); setEvents(Array.isArray(data) ? data : []); }
-    catch (e) { console.log('Failed to fetch events:', e); }
-    finally { setLoading(false); setRefreshing(false); }
-  }, [city]);
+    try {
+      if (citiesToFetch.length === 1) {
+        const data = await api.getEvents(citiesToFetch[0]);
+        setEvents(Array.isArray(data) ? data : []);
+      } else {
+        const allEvents = [];
+        const seenIds = new Set();
+        for (const city of citiesToFetch) {
+          try {
+            const data = await api.getEvents(city);
+            const arr = Array.isArray(data) ? data : [];
+            for (const ev of arr) {
+              if (ev.id && !seenIds.has(ev.id)) {
+                seenIds.add(ev.id);
+                allEvents.push(ev);
+              }
+            }
+          } catch (e) {
+            console.log('Failed to fetch events for', city, e);
+          }
+        }
+        allEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        setEvents(allEvents);
+      }
+    } catch (e) {
+      console.log('Failed to fetch events:', e);
+      setEvents([]);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [citiesToFetch.join(',')]);
+
+  useEffect(() => {
+    if (user?.id) {
+      api.getTravelPlans(user.id).then(setTravelPlans).catch(() => setTravelPlans([]));
+    }
+  }, [user?.id]);
 
   useEffect(() => { fetchEvents(); }, [fetchEvents]);
   const onRefresh = () => { setRefreshing(true); fetchEvents(); };
@@ -53,11 +114,11 @@ export default function EventsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}><Text style={styles.headerTitle}>Events</Text><Text style={styles.headerSubtitle}>&#x1F4CD; {city}</Text></View>
+      <View style={styles.header}><Text style={styles.headerTitle}>Events</Text><Text style={styles.headerSubtitle}>&#x1F4CD; {locationLabel}</Text></View>
       {loading ? <View style={styles.centered}><ActivityIndicator size={36} color="#F97316" /></View> : (
         <FlatList data={events} keyExtractor={(item) => String(item.id)} renderItem={({ item }) => <EventCard event={item} onPress={handleEventPress} />}
           contentContainerStyle={styles.listContent} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F97316" />}
-          ListEmptyComponent={<View style={styles.emptyState}><Text style={styles.emptyIcon}>&#x1F4C5;</Text><Text style={styles.emptyTitle}>No upcoming events</Text><Text style={styles.emptySubtitle}>Check back later for events in {city}</Text></View>}
+          ListEmptyComponent={<View style={styles.emptyState}><Text style={styles.emptyIcon}>&#x1F4C5;</Text><Text style={styles.emptyTitle}>No upcoming events</Text><Text style={styles.emptySubtitle}>Check back later for events in {locationLabel}</Text></View>}
         />
       )}
     </SafeAreaView>
