@@ -1,6 +1,27 @@
 // Static city-specific activities for major destinations
 // These iconic attractions and experiences should always be available for matching
 
+// Generic activity names to EXCLUDE from City Plans (case-insensitive exact or substring match)
+// These appear as generic tags that should not be shown on the City Match page
+export const BANNED_GENERIC_ACTIVITY_NAMES: string[] = [
+  "Temptress", "Ice Cream Parlors", "Dessert Shops", "Food Halls", "Food Hall Tastings", "Brunch Restaurants", "Late Night Diners",
+  "Wine Bars", "Cooking Classes", "Board Game Cafes", "Escape Rooms", "Rock Climbing Gyms",
+  "Soccer Fields", "Basketball Courts", "Tennis Courts", "Skateparks", "Public Swimming Pools",
+  "Spa Day", "Bookstore Browsing", "Flea Markets", "Vintage Shopping", "Farmers Markets",
+  "Vegan/Vegetarian Spots"
+];
+
+export function isBannedActivityName(activityName: string): boolean {
+  const normalized = activityName.trim().toLowerCase();
+  if (!normalized) return false;
+  // Test entry to remove
+  if (normalized.includes("taylor swift") && normalized.includes("july 1")) return true;
+  // Exact match for generic tags (avoids removing e.g. "The Grove Farmers Market" which is LA-specific)
+  return BANNED_GENERIC_ACTIVITY_NAMES.some(banned =>
+    normalized === banned.toLowerCase()
+  );
+}
+
 // CURATED TOP 12 "POPULAR" ACTIVITIES - These are the must-see tourist anchors
 // Used for the "Popular" section - should NOT be AI-generated
 export const FEATURED_CITY_ACTIVITIES: Record<string, Array<{name: string, description: string, category: string, rank: number}>> = {
@@ -17,8 +38,10 @@ export const FEATURED_CITY_ACTIVITIES: Record<string, Array<{name: string, descr
     { name: "LACMA & La Brea Tar Pits", description: "Iconic art museum and active paleontological site", category: "culture", rank: 9 },
     { name: "Universal Studios Hollywood", description: "Movie studio tours and thrilling theme park rides", category: "theme_park", rank: 10 },
     { name: "Grand Central Market", description: "Historic food hall with diverse vendors and cuisines", category: "food", rank: 11 },
-    { name: "Rodeo Drive", description: "World-famous luxury shopping street in Beverly Hills", category: "shopping", rank: 12 },
-    { name: "Malibu Beaches", description: "Scenic coastal drive with pristine beaches and celebrity homes", category: "beach", rank: 13 },
+    { name: "Hollywood Bowl", description: "Outdoor amphitheater for concerts under the stars", category: "entertainment", rank: 12 },
+    { name: "Little Tokyo", description: "Cultural district with authentic Japanese restaurants, shops, and gardens", category: "culture", rank: 13 },
+    { name: "Rodeo Drive", description: "World-famous luxury shopping street in Beverly Hills", category: "shopping", rank: 14 },
+    { name: "Malibu Beaches", description: "Scenic coastal drive with pristine beaches and celebrity homes", category: "beach", rank: 15 },
   ],
   "San Francisco": [
     { name: "Golden Gate Bridge", description: "Walk or bike across the iconic red suspension bridge", category: "landmarks", rank: 1 },
@@ -304,7 +327,6 @@ export const STATIC_CITY_ACTIVITIES: Record<string, Array<{name: string, descrip
     { name: "Celebrity Home Tours", description: "Bus tours through Beverly Hills and Hollywood Hills celebrity neighborhoods", category: "entertainment" },
     { name: "Warner Bros Studio Tour", description: "Behind-the-scenes look at active movie and TV production", category: "entertainment" },
     { name: "Paramount Pictures Studio Tour", description: "Explore the historic movie studio with working soundstages", category: "entertainment" },
-    { name: "Hollywood Bowl", description: "Outdoor amphitheater for concerts under the stars", category: "entertainment" },
     
     // BEACHES & COASTAL
     { name: "Santa Monica Pier", description: "Classic amusement park on the Pacific with Ferris wheel", category: "entertainment" },
@@ -333,13 +355,11 @@ export const STATIC_CITY_ACTIVITIES: Record<string, Array<{name: string, descrip
     // DOWNTOWN LA
     { name: "Downtown LA Arts District", description: "Hip neighborhood with galleries, breweries, and industrial-chic venues", category: "culture" },
     { name: "Grand Central Market", description: "Historic food hall with diverse vendors and cuisines", category: "food" },
-    { name: "Little Tokyo", description: "Cultural district with authentic Japanese restaurants, shops, and gardens", category: "culture" },
     { name: "Olvera Street", description: "Historic Mexican marketplace and birthplace of Los Angeles", category: "history" },
     { name: "LA Live", description: "Entertainment complex with venues, restaurants, and nightlife", category: "entertainment" },
     
     // UNIQUE LA EXPERIENCES
     { name: "La Brea Tar Pits", description: "Active paleontological site with Ice Age fossils and museum", category: "science" },
-    { name: "Farmers Market", description: "Historic market with food vendors and specialty shops since 1934", category: "food" },
     { name: "Sunset Strip", description: "Legendary nightlife district with iconic music venues and clubs", category: "nightlife" },
     { name: "Food Truck Culture", description: "Diverse mobile food scene with gourmet trucks citywide", category: "food" },
     { name: "In-N-Out Burger", description: "California's beloved burger chain - a must-try local institution", category: "food" },

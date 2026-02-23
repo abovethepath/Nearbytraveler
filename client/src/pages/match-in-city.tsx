@@ -2316,49 +2316,51 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   const actualUser2 = user || (storedUser2 ? JSON.parse(storedUser2) : null);
                   const currentUserId2 = actualUser2?.id;
                   
-                  const group1CitySpecific = cityActivities
-                    .filter(activity => {
-                      if ((activity as any).source === 'generic') return false;
-                      if (activity.category === 'universal') return false;
-                      if (activity.createdByUserId === 1 && dismissedAIActivities.has(activity.id)) return false;
-                      const activityDate = (activity as any).activityDate;
-                      if (activityDate) {
-                        const pickDate = new Date(activityDate);
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        if (pickDate < today) return false;
-                      }
-                      if (activitySearchFilter && !activity.activityName.toLowerCase().includes(activitySearchFilter.toLowerCase())) return false;
-                      return true;
-                    })
-                    .sort((a, b) => {
-                      const aFeat = ((a as any).isFeatured || (a as any).source === 'featured') ? 1 : 0;
-                      const bFeat = ((b as any).isFeatured || (b as any).source === 'featured') ? 1 : 0;
-                      if (aFeat !== bFeat) return bFeat - aFeat;
-                      const aRank = (a as any).rank || 999;
-                      const bRank = (b as any).rank || 999;
-                      return aRank - bRank;
-                    });
+                  // Enforce order: Group 1 = FEATURED, Group 2 = STATIC (+ AI/user-created), Group 3 = GENERIC
+                  const isFeatured = (a: any) => (a.isFeatured || a.source === 'featured');
+                  const isStatic = (a: any) => a.source === 'static';
+                  const isGeneric = (a: any) => a.source === 'generic';
+                  const baseFilter = (activity: any) => {
+                    if (activity.category === 'universal') return false;
+                    if (activity.createdByUserId === 1 && dismissedAIActivities.has(activity.id)) return false;
+                    const activityDate = activity.activityDate;
+                    if (activityDate) {
+                      const pickDate = new Date(activityDate);
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      if (pickDate < today) return false;
+                    }
+                    if (activitySearchFilter && !activity.activityName.toLowerCase().includes(activitySearchFilter.toLowerCase())) return false;
+                    return true;
+                  };
                   
-                  const group2Generic = cityActivities
-                    .filter(activity => (activity as any).source === 'generic')
+                  const group1Featured = cityActivities
+                    .filter(activity => isFeatured(activity) && baseFilter(activity))
+                    .sort((a, b) => ((a as any).rank || 999) - ((b as any).rank || 999));
+                  
+                  const group2Static = cityActivities
+                    .filter(activity => !isFeatured(activity) && !isGeneric(activity) && baseFilter(activity));
+                  
+                  const group3Generic = cityActivities
+                    .filter(activity => isGeneric(activity))
                     .filter(activity => !activitySearchFilter || activity.activityName.toLowerCase().includes(activitySearchFilter.toLowerCase()));
                   
-                  const allCityActivities = [...group1CitySpecific, ...group2Generic];
+                  const allCityActivities = [...group1Featured, ...group2Static, ...group3Generic];
                   
                   if (allCityActivities.length === 0 && !activitySearchFilter) return null;
                   
                   const isMobileVisible = activeMobileSection === 'popular' || activeMobileSection === 'ai' || activeMobileSection === 'all';
-                  const displayedGroup1 = group1CitySpecific.slice(0, displayedActivitiesLimit);
-                  const displayedGroup2 = group2Generic;
-                  const hasMoreGroup1 = group1CitySpecific.length > displayedActivitiesLimit;
+                  const displayedGroup1 = group1Featured;
+                  const displayedGroup2 = group2Static.slice(0, displayedActivitiesLimit);
+                  const displayedGroup3 = group3Generic;
+                  const hasMoreGroup2 = group2Static.length > displayedActivitiesLimit;
                   
                   return (
                     <div id="mobile-section-popular" className={`md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
-                      {/* GROUP 1: City-Specific Activities */}
+                      {/* GROUP 1: Featured (curated top activities) */}
                       <div className="text-center mb-6">
                         <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-2">🎯 Group 1: Things to Do in {selectedCity}</h3>
-                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">City-specific spots, local favorites, and unique ideas — tap to add to your plans</p>
+                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Curated top spots and experiences — tap to add to your plans</p>
                         <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-yellow-500 to-orange-500 mx-auto rounded-full mt-2"></div>
                         {/* Inline text box: add custom "thing I want to do" — editable/deletable by all */}
                         <div className="flex flex-col sm:flex-row gap-2 mt-4 max-w-xl mx-auto">
@@ -2425,7 +2427,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         </div>
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                        {displayedGroup1.map((activity) => {
+                        {displayedGroup1.length > 0 && displayedGroup1.map((activity) => {
                           const isSelected = userActivities.some(ua => 
                             ua.activityId === activity.id || 
                             (ua.activityName && activity.activityName && ua.activityName.toLowerCase().trim() === activity.activityName.toLowerCase().trim() && ua.cityName === selectedCity)
@@ -2506,15 +2508,102 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         })}
                       </div>
                       
-                      {/* GROUP 2: Generic Travel-Social Activities (apply to all cities) */}
-                      {group2Generic.length > 0 && (
+                      {/* GROUP 2: Static + AI/user-created (More Things to Do) */}
+                      {displayedGroup2.length > 0 && (
                         <div className="mt-8">
                           <div className="text-center mb-4">
-                            <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-1">✈️ Group 2: Connect On</h3>
+                            <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent mb-1">📍 Group 2: More Things to Do</h3>
+                            <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Additional spots, local favorites, and unique ideas</p>
+                          </div>
+                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                            {displayedGroup2.map((activity) => {
+                              const isAICreated = activity.createdByUserId === 1;
+                              const isUserCreated = activity.createdByUserId != null && activity.createdByUserId !== 1;
+                              const isCreatedByMe = activity.createdByUserId === currentUserId2;
+                              const isSelected = userActivities.some(ua => 
+                                ua.activityId === activity.id || 
+                                (ua.activityName && activity.activityName && ua.activityName.toLowerCase().trim() === activity.activityName.toLowerCase().trim() && ua.cityName === selectedCity)
+                              );
+                              return (
+                                <div key={activity.id} className="group relative">
+                                  <button
+                                    type="button"
+                                    className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
+                                      isSelected 
+                                        ? 'bg-gradient-to-r from-green-500 to-teal-500 text-white border-green-400'
+                                        : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300'
+                                    }`}
+                                    onClick={() => toggleActivity(activity)}
+                                  >
+                                    <span className="flex items-center justify-center gap-1.5">
+                                      {isSelected && <span className="text-xs">✓</span>}
+                                      {activity.activityName}
+                                    </span>
+                                  </button>
+                                  {isAICreated && !isSelected && (
+                                    <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <button
+                                        className="w-5 h-5 bg-gray-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-gray-600"
+                                        onClick={(e) => { e.stopPropagation(); dismissAIActivity(activity.id); }}
+                                        title="Hide this suggestion"
+                                      >
+                                        <X className="w-2.5 h-2.5" />
+                                      </button>
+                                    </div>
+                                  )}
+                                  {isUserCreated && (
+                                    <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                      {isCreatedByMe && (
+                                        <button
+                                          className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setEditingActivity(activity);
+                                            setEditActivityName(activity.activityName);
+                                            setEditActivityDescription((activity as any).description || '');
+                                            setEditingActivityName(activity.activityName);
+                                          }}
+                                          title="Edit"
+                                        >
+                                          <Edit className="w-2.5 h-2.5" />
+                                        </button>
+                                      )}
+                                      <button
+                                        className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
+                                        onClick={(e) => { e.stopPropagation(); handleDeleteCityActivity(activity.id); }}
+                                        title="Remove"
+                                      >
+                                        <X className="w-2.5 h-2.5" />
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                          {hasMoreGroup2 && (
+                            <div className="flex justify-center mt-3">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setDisplayedActivitiesLimit(prev => prev + 30)}
+                              >
+                                Show {Math.min(30, group2Static.length - displayedActivitiesLimit)} more
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* GROUP 3: Generic (Connect On) */}
+                      {group3Generic.length > 0 && (
+                        <div className="mt-8">
+                          <div className="text-center mb-4">
+                            <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-1">✈️ Group 3: Connect On</h3>
                             <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Popular ways to connect with travelers & locals in any city</p>
                           </div>
                           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-                            {displayedGroup2.map((activity) => {
+                            {displayedGroup3.map((activity) => {
                               const isSelected = userActivities.some(ua => 
                                 ua.activityId === activity.id || 
                                 (ua.activityName && activity.activityName && ua.activityName.toLowerCase().trim() === activity.activityName.toLowerCase().trim() && ua.cityName === selectedCity)
@@ -2542,15 +2631,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       )}
                       
                       <div className="flex items-center justify-center gap-3 mt-4">
-                        {hasMoreGroup1 && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setDisplayedActivitiesLimit(prev => prev + 30)}
-                          >
-                            Show {Math.min(30, group1CitySpecific.length - displayedActivitiesLimit)} more
-                          </Button>
-                        )}
                         <Button
                           onClick={async () => {
                             try {

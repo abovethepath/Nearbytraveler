@@ -269,11 +269,11 @@ export default function Home() {
     return hometown || effectiveUser?.location || 'Unknown';
   };
 
-  const enrichUserWithTravelData = (user: any, travelPlans?: any[]) => {
+  const enrichUserWithTravelData = (user: any, travelPlansParam?: any[]) => {
     if (!user) return user;
     
-    // Use THIS user's individual travel plans, not the current user's travel plans
-    const userTravelPlans = user.travelPlans || [];
+    // Use passed plans (from API or home's travelPlans for current user), else user.travelPlans
+    const userTravelPlans = travelPlansParam ?? user.travelPlans ?? [];
     const currentTravelDestination = getCurrentTravelDestination(userTravelPlans);
     
     if (user.id === effectiveUser?.id) {
@@ -295,13 +295,15 @@ export default function Home() {
     // For other users: prefer travel from their plans, but preserve server-sent travel fields so
     // the destination badge shows when the API already set isCurrentlyTraveling/travelDestination
     const isCurrentlyTraveling = !!currentTravelDestination || !!user.isCurrentlyTraveling;
-    const travelDestination = currentTravelDestination || user.travelDestination || null;
+    const travelDestination = currentTravelDestination || user.travelDestination || (user as any).travelDestination || null;
+    const destCity = (user as any).destinationCity || (travelDestination && String(travelDestination).split(',')[0]?.trim()) || null;
     const displayLocation = travelDestination ||
       [user.hometownCity, user.hometownState, user.hometownCountry].filter(Boolean).join(', ') || user.location;
 
     return {
       ...user,
       travelDestination,
+      destinationCity: destCity,
       isCurrentlyTraveling,
       displayLocation,
       locationContext: isCurrentlyTraveling ? 'traveling' : 'hometown'
@@ -1059,7 +1061,9 @@ export default function Home() {
     const weatherWidgetLocation = getCurrentUserLocation(); // Get EXACT location weather widget uses
     
     return rawUsers.map(user => {
-      const enriched = enrichUserWithTravelData(user, user.travelPlans);
+      // Use each user's own travelPlans from API; for current user, fallback to home's travelPlans if API missed it
+      const plans = user.travelPlans ?? (user.id === effectiveUser?.id ? travelPlans : []);
+      const enriched = enrichUserWithTravelData(user, plans);
       
       // For current user - use WEATHER WIDGET location
       if (user.id === effectiveUser?.id) {

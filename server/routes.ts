@@ -19574,7 +19574,7 @@ Questions? Just reply to this message. Welcome aboard!
           )
         )
         .orderBy(
-          desc(cityActivities.isFeatured), // Featured first
+          desc(cityActivities.isFeatured), // Featured first (Group 1: city-specific)
           cityActivities.rank, // Then by rank
           desc(cityActivities.createdAt) // Then by newest
         );
@@ -19604,6 +19604,10 @@ Questions? Just reply to this message. Welcome aboard!
             );
         }
       }
+      
+      // Filter out banned generic tags (Ice Cream Parlors, Dessert Shops, taylor swift july 1, etc.)
+      const { isBannedActivityName } = await import('./static-city-activities.js');
+      activities = activities.filter(a => !isBannedActivityName(a.activityName));
       
       if (process.env.NODE_ENV === 'development') console.log(`✅ CITY ACTIVITIES GET: Found ${activities.length} activities for ${cityName}`);
       res.json(activities);

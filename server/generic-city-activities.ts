@@ -17,11 +17,6 @@ export const GENERIC_CITY_ACTIVITIES = [
     category: "nightlife"
   },
   {
-    name: "Food Hall Tastings",
-    description: "Sample diverse vendors and cuisines at food halls",
-    category: "food"
-  },
-  {
     name: "Live Music Venues",
     description: "Catch local bands and live performances",
     category: "nightlife"

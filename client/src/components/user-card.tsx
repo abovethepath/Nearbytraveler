@@ -2,6 +2,7 @@ import React from "react";
 import { useLocation } from "wouter";
 import { Plane } from "lucide-react";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export interface User {
   id: number;
@@ -81,6 +82,7 @@ export default function UserCard({
   };
 
   // Get travel destination for display - same logic for current user AND other users (each user's own travel data)
+  // CRITICAL: Check ALL sources so travel badge shows for every user who is traveling (API enriches each user)
   const getTravelCity = (): string | null => {
     const toDisplay = (s: string | null | undefined): string | null => {
       if (s == null || s === '') return null;
@@ -88,7 +90,17 @@ export default function UserCard({
       if (!t || t.toLowerCase() === 'null' || t.toLowerCase() === 'undefined') return null;
       return t;
     };
-    // 1. From travelPlans (active trip) - use dateUtils for consistent date parsing across all users
+    // 1. From destinationCity (API-enriched - server sets this for ALL users with active travel - most reliable)
+    const destCity = toDisplay((user as any).destinationCity);
+    if (destCity) return destCity;
+    // 2. From travelDestination (API fallback - when user is traveling)
+    const td = user.travelDestination;
+    if (td) {
+      const city = String(td).split(',')[0]?.trim();
+      const r = toDisplay(city);
+      if (r) return r;
+    }
+    // 3. From travelPlans (active trip) - use dateUtils for consistent date parsing across all users
     const plans = (user as any).travelPlans;
     if (Array.isArray(plans) && plans.length > 0) {
       const dest = getCurrentTravelDestination(plans);
@@ -97,16 +109,6 @@ export default function UserCard({
         const r = toDisplay(city);
         if (r) return r;
       }
-    }
-    // 2. From destinationCity (API-enriched)
-    const destCity = toDisplay((user as any).destinationCity);
-    if (destCity) return destCity;
-    // 3. From travelDestination (API fallback - when user is traveling)
-    const td = user.travelDestination;
-    if (td) {
-      const city = String(td).split(',')[0]?.trim();
-      const r = toDisplay(city);
-      if (r) return r;
     }
     return null;
   };
@@ -140,8 +142,8 @@ export default function UserCard({
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
-      {/* Photo section - square when compact, else taller on desktop */}
-      <div className={`relative ${compact ? 'aspect-square' : 'aspect-square lg:aspect-[3/4]'}`}>
+      {/* Photo section - compact on desktop web to reduce card height; iOS keeps original */}
+      <div className={`relative ${compact ? 'aspect-square' : isNativeIOSApp() ? 'aspect-square lg:aspect-[3/4]' : 'aspect-square lg:aspect-[4/5]'}`}>
         {user.profileImage ? (
           <img 
             src={user.profileImage} 
@@ -190,8 +192,8 @@ export default function UserCard({
         )}
       </div>
       
-      {/* Info box - compact when compact prop, else spacious on desktop */}
-      <div className={`bg-white dark:bg-gray-800 ${compact ? 'p-2' : 'p-2 lg:p-4'}`}>
+      {/* Info box - compact when compact prop; on desktop web use tighter padding to reduce card height */}
+      <div className={`bg-white dark:bg-gray-800 ${compact ? 'p-2' : isNativeIOSApp() ? 'p-2 lg:p-4' : 'p-2 lg:p-2'}`}>
         {/* Mobile / compact: simple stacked layout */}
         <div className={compact ? '' : 'lg:hidden'}>
           <div className={`font-semibold text-gray-900 dark:text-white ${compact ? 'text-sm leading-tight' : 'text-sm'}`} style={compact ? { display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' } : { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
@@ -230,21 +232,21 @@ export default function UserCard({
           )}
         </div>
         
-        {/* Desktop (non-compact only): fixed 4-row grid with social proof first */}
-        <div className={compact ? 'hidden' : 'hidden lg:grid lg:grid-rows-4 gap-0 leading-tight min-h-[100px]'}>
-          <div className="text-sm font-semibold truncate text-orange-500">
+        {/* Desktop (non-compact only): fixed 4-row grid; on desktop web use tighter spacing to reduce card height */}
+        <div className={compact ? 'hidden' : `hidden lg:grid gap-0 leading-tight ${isNativeIOSApp() ? 'lg:grid-rows-4 min-h-[100px]' : 'lg:grid-rows-4 min-h-0'}`}>
+          <div className={`font-semibold truncate text-orange-500 ${isNativeIOSApp() ? 'text-sm' : 'text-xs'}`}>
             {thingsInCommon > 0 ? `${thingsInCommon} things in common` : '\u00A0'}
           </div>
-          <div className="text-sm font-medium truncate text-cyan-600 dark:text-cyan-400">
+          <div className={`font-medium truncate text-cyan-600 dark:text-cyan-400 ${isNativeIOSApp() ? 'text-sm' : 'text-xs'}`}>
             {mutualFriends > 0 ? `${mutualFriends} mutual friends` : '\u00A0'}
           </div>
-          <div className="text-sm font-semibold text-gray-900 dark:text-white truncate mt-1">
+          <div className={`font-semibold text-gray-900 dark:text-white truncate ${isNativeIOSApp() ? 'text-sm mt-1' : 'text-xs mt-0.5'}`}>
             {displayName}
           </div>
           <div className="min-w-0">
-            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{displayCity}</div>
+            <div className={`text-gray-500 dark:text-gray-400 truncate ${isNativeIOSApp() ? 'text-xs' : 'text-[11px]'}`}>{displayCity}</div>
             {travelCityFinal && user.userType !== 'business' && (
-              <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1 mt-0.5 break-words min-w-0">
+              <div className={`font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1 break-words min-w-0 ${isNativeIOSApp() ? 'text-xs mt-0.5' : 'text-[11px] mt-0.5'}`}>
                 <Plane className="w-3 h-3 flex-shrink-0" />
                 <span className="break-words">Nearby Traveler → {travelCityFinal}</span>
               </div>

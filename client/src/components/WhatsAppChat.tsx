@@ -886,7 +886,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         
         <div className="flex-1 min-w-0 overflow-hidden">
           <div className="flex items-center gap-1.5 min-w-0">
-            <h1 className="font-semibold text-xs truncate" title={title}>{title}</h1>
+            <h1 className="font-semibold text-xs lg:text-[10px] min-w-0 truncate" title={title}>{title}</h1>
             {/* Show green once messages are loaded (chat is usable), not just WebSocket */}
             <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
               messagesLoaded || isWsConnected 
