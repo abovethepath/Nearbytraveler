@@ -553,9 +553,9 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         let body: any = { content, messageType: 'text', replyToId };
         
         if (chatType === 'dm') {
-          // For DMs, use the direct messages endpoint
+          // For DMs, use the direct messages endpoint (senderId required by API)
           endpoint = `${getApiBaseUrl()}/api/messages`;
-          body = { receiverId: chatId, content, messageType: 'text', replyToId };
+          body = { senderId: currentUserId || user.id, receiverId: chatId, content, messageType: 'text', replyToId };
         } else {
           // For chatrooms/events/meetups
           endpoint = `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages`;
@@ -571,12 +571,13 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         });
         
         if (response.ok) {
-          const newMessage = await response.json();
+          const resp = await response.json();
+          const newMessage = resp.message || resp;
           console.log('✅ Message sent via HTTP:', newMessage);
-          // Add optimistic update - message will be added to list
-          if (newMessage && newMessage.id) {
+          // Add optimistic update - message will be added to list (API returns { message, messageId } or { id, ... })
+          if (newMessage && (newMessage.id ?? resp.messageId)) {
             const formattedMessage: Message = {
-              id: newMessage.id,
+              id: newMessage.id ?? resp.messageId,
               senderId: currentUserId,
               content: newMessage.content,
               messageType: newMessage.messageType || 'text',

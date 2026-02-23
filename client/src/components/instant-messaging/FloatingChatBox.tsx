@@ -153,8 +153,9 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
     // Send via WebSocket for instant delivery
     websocketService.sendInstantMessage(targetUser.id, messageContent);
 
-    // Also save to database
+    // Also save to database (senderId required by API)
     sendMessageMutation.mutate({
+      senderId: user?.id,
       receiverId: targetUser.id,
       content: messageContent,
     });

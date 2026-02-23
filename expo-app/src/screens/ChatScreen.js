@@ -34,7 +34,7 @@ export default function ChatScreen({ route, navigation }) {
   const handleSend = async () => {
     if (!text.trim() || sending) return;
     setSending(true);
-    try { await api.sendMessage(userId, text.trim()); setText(''); await fetchMessages(); }
+    try { await api.sendMessage(user?.id, userId, text.trim()); setText(''); await fetchMessages(); }
     catch (e) { console.log('Failed to send:', e); }
     finally { setSending(false); }
   };

@@ -329,12 +329,12 @@ const api = {
     return r.json();
   },
 
-  async sendMessage(receiverId, content) {
+  async sendMessage(senderId, receiverId, content) {
     const r = await fetch(`${BASE_URL}/api/messages`, {
       method: 'POST',
       headers: getHeaders(),
       credentials: 'include',
-      body: JSON.stringify({ receiverId, content }),
+      body: JSON.stringify({ senderId, receiverId, content }),
     });
     return r.json();
   },

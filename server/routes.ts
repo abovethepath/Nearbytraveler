@@ -4337,7 +4337,8 @@ Questions? Just reply to this message!
           travelDestination: processedData.travelDestination
         });
 
-        // Set travel status for travelers
+        // Set travel status for travelers - but ONLY if we have a valid destination
+        // CRITICAL: Travelers must always have a city destination - never allow "traveling null"
         processedData.isCurrentlyTraveling = true;
 
         // CRITICAL: Accept destination fields from new signup form
@@ -4368,6 +4369,15 @@ Questions? Just reply to this message!
           ].filter(part => part && part.trim() && part.toLowerCase() !== 'null' && part.trim().toLowerCase() !== 'undefined');
           processedData.travelDestination = travelDestinationParts.join(', ');
           if (process.env.NODE_ENV === 'development') console.log("  ✓ Set travel destination from currentCity:", processedData.travelDestination);
+        }
+
+        // CRITICAL: Travelers must have a valid city destination - reject if missing
+        const destValid = processedData.travelDestination && String(processedData.travelDestination).trim() && String(processedData.travelDestination).toLowerCase() !== 'null';
+        if (!destValid) {
+          return res.status(400).json({
+            message: "Travel destination (city) is required when signing up as a traveler.",
+            field: "destinationCity"
+          });
         }
         
         // Set travel dates - accept either travelReturnDate or travelEndDate
@@ -4566,6 +4576,15 @@ Questions? Just reply to this message!
               destinationCountry: processedData.destinationCountry
             });
           }
+        }
+
+        // CRITICAL: Travelers must have a valid city destination - reject if still missing
+        const destValidSecondary = processedData.travelDestination && String(processedData.travelDestination).trim() && String(processedData.travelDestination).toLowerCase() !== 'null';
+        if (!destValidSecondary) {
+          return res.status(400).json({
+            message: "Travel destination (city) is required when signing up as a traveler.",
+            field: "destinationCity"
+          });
         }
         
         // Map localActivities and localEvents to main fields
@@ -6587,6 +6606,35 @@ Questions? Just reply to this message. Welcome aboard!
       // MAP USER FIELDS: Convert camelCase to snake_case for database
       const mappedUpdates = { ...updates };
 
+      // CRITICAL: Traveling users must always have a valid city destination - never allow "traveling null"
+      const sanitizeDest = (v: any) => {
+        if (v == null || v === '') return null;
+        const s = String(v).trim();
+        if (!s || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') return null;
+        return s;
+      };
+      if (mappedUpdates.is_currently_traveling === true || mappedUpdates.isCurrentlyTraveling === true) {
+        const currentUser = await storage.getUserById(userId);
+        const destCity = sanitizeDest(updates.destinationCity ?? mappedUpdates.destination_city ?? currentUser?.destinationCity);
+        const destCountry = sanitizeDest(updates.destinationCountry ?? mappedUpdates.destination_country ?? currentUser?.destinationCountry);
+        const travelDest = sanitizeDest(updates.travelDestination ?? mappedUpdates.travel_destination ?? currentUser?.travelDestination);
+        const hasValidDest = (destCity && destCountry) || (travelDest && travelDest.split(',')[0]?.trim());
+        if (!hasValidDest) {
+          return res.status(400).json({
+            message: "Travel destination (city) is required when marking yourself as traveling.",
+            field: "destinationCity"
+          });
+        }
+        // Sanitize stored values - never save "null" string
+        if (updates.travelDestination !== undefined) {
+          const cleaned = sanitizeDest(updates.travelDestination);
+          mappedUpdates.travel_destination = cleaned;
+        }
+        if (updates.destinationCity !== undefined) {
+          mappedUpdates.destination_city = sanitizeDest(updates.destinationCity);
+        }
+      }
+
       // subInterests removed - column doesn't exist in production database
 
       // MAP HOMETOWN FIELDS FIRST
@@ -8079,14 +8127,17 @@ Questions? Just reply to this message. Welcome aboard!
       const now = new Date();
       const isCurrentlyTraveling = new Date(travelPlanData.startDate) <= now && new Date(travelPlanData.endDate) >= now;
       
-      if (isCurrentlyTraveling) {
+      if (isCurrentlyTraveling && travelPlanData.destinationCity) {
+        const travelDestStr = [travelPlanData.destinationCity, travelPlanData.destinationState, travelPlanData.destinationCountry]
+          .filter(Boolean).join(', ').replace(/,\s*,/g, ',').trim();
         console.log(`🧳 TRAVEL STATUS: User ${travelPlanData.userId} is now currently traveling to ${travelPlanData.destinationCity}`);
         await storage.updateUser(travelPlanData.userId, {
           userType: 'traveler',
           isCurrentlyTraveling: true,
           destinationCity: travelPlanData.destinationCity,
           destinationState: travelPlanData.destinationState || null,
-          destinationCountry: travelPlanData.destinationCountry
+          destinationCountry: travelPlanData.destinationCountry,
+          travelDestination: travelDestStr || undefined
         });
         console.log(`✅ TRAVEL STATUS: Updated user ${travelPlanData.userId} to show as currently traveling`);
       } else {
@@ -10131,10 +10182,12 @@ Questions? Just reply to this message. Welcome aboard!
   // CRITICAL: Send message for IM system (handles offline message delivery)
   app.post("/api/messages", async (req, res) => {
     try {
-      const { senderId, receiverId, content, isInstantMessage, replyToId } = req.body;
+      const { senderId: bodySenderId, receiverId, content, isInstantMessage, replyToId } = req.body;
+      // Accept senderId from body or x-user-id header (for clients that send auth in header)
+      const senderId = bodySenderId || (req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null);
 
       if (!senderId || !receiverId || !content) {
-        return res.status(400).json({ message: "senderId, receiverId, and content are required" });
+        return res.status(400).json({ message: "senderId (or x-user-id header), receiverId, and content are required" });
       }
 
       if (process.env.NODE_ENV === 'development') console.log(`💬 ${isInstantMessage ? 'IM' : 'REGULAR'} MESSAGE: Storing message from ${senderId} to ${receiverId}${replyToId ? ` (replying to ${replyToId})` : ''} for offline delivery`);
