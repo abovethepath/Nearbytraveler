@@ -7,6 +7,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useEffect, useState, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Link } from "wouter";
+import { getMetroCities } from "@shared/metro-areas";
 
 interface ThingsIWantToDoSectionProps {
   userId: number;
@@ -503,7 +504,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {isOwnProfile && (
-            <Link href={cityKey ? `/match-in-city?city=${encodeURIComponent(cityKey)}` : '/match-in-city'}>
+            <Link href={cityKey ? `/match-in-city?city=${encodeURIComponent(getMetroCities(cityKey).length > 0 ? getMetroCities(cityKey)[0] : cityKey)}` : '/match-in-city'}>
               <Button
                 variant="outline"
                 size="sm"
@@ -535,25 +536,41 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     );
   };
 
-  // Build rows: Row 1 = hometown, Row 2 = destination (only if currently traveling)
+  // Build rows: Show ALL cities with activities/events (not just hometown + current destination)
+  // This ensures Group 1, 2, 3, and Get More Specific activities from all cities appear on profile
   const rowsToShow: { key: string; displayName: string; isDestination: boolean }[] = [];
-  // Row 1: Hometown - always show for own profile
+  const addedKeys = new Set<string>();
+  // Row 1: Hometown - always show first for own profile
   if (hometownCityKey) {
     rowsToShow.push({ key: hometownCityKey, displayName: hometownDisplayName, isDestination: false });
+    addedKeys.add(hometownCityKey);
   } else if (cities.length > 0) {
     const firstHometown = cities.find(c => !citiesByName[c].travelPlan);
     if (firstHometown) {
       rowsToShow.push({ key: firstHometown, displayName: firstHometown, isDestination: false });
+      addedKeys.add(firstHometown);
     } else {
       rowsToShow.push({ key: '', displayName: hometownDisplayName, isDestination: false });
     }
   } else {
     rowsToShow.push({ key: '', displayName: hometownDisplayName, isDestination: false });
   }
-  // Row 2: Destination - only if currently traveling (and not same as hometown)
-  if (isCurrentlyTraveling && currentDestCityKey && currentDestCityKey !== rowsToShow[0]?.key) {
+  // Row 2: Current destination - only if currently traveling (and not same as hometown)
+  if (isCurrentlyTraveling && currentDestCityKey && !addedKeys.has(currentDestCityKey)) {
     rowsToShow.push({ key: currentDestCityKey, displayName: currentDestination!.cityName, isDestination: true });
+    addedKeys.add(currentDestCityKey);
   }
+  // Rows 3+: All other cities with activities or events (future trips, past trips, etc.)
+  cities.forEach(cityKey => {
+    if (addedKeys.has(cityKey)) return;
+    const cityData = citiesByName[cityKey];
+    const hasContent = cityData.activities.length > 0 || cityData.events.length > 0 || (cityData.travelPlan && (getSubInterestsForCity(cityKey).length > 0));
+    if (hasContent) {
+      const displayName = cityData.travelPlan?.cityName || cityKey;
+      rowsToShow.push({ key: cityKey, displayName, isDestination: !!cityData.travelPlan });
+      addedKeys.add(cityKey);
+    }
+  });
   const uniqueRows = rowsToShow.filter((r, i, arr) => arr.findIndex(x => x.key === r.key) === i);
   const showContent = isOwnProfile ? uniqueRows.length > 0 : cities.length > 0;
 

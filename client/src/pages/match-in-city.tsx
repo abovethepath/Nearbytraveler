@@ -14,7 +14,8 @@ import { useAuth } from "@/App";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import { METRO_AREAS } from "@shared/constants";
-import { getMetroAreaName } from "@shared/metro-areas";
+import { getMetroAreaName, getMetroCities } from "@shared/metro-areas";
+import { SUB_INTEREST_CATEGORIES } from "@shared/base-options";
 import SubInterestSelector from "@/components/SubInterestSelector";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 
@@ -495,74 +496,73 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
   }, [citySearchTerm, allCities, user, userProfile, travelPlans]);
 
-  // Load user's sub-interests from profile - CITY-SPECIFIC
-  // Sub-interests are stored as "CityName: SubInterest" format
+  // Sync userSubInterests from userActivities - sub-interests are persisted as user-city-interests
   useEffect(() => {
-    if (user?.id && userProfile?.subInterests && selectedCity) {
-      // Extract only sub-interests for the current city
-      const cityPrefix = `${selectedCity}: `;
-      const citySpecificSubInterests = userProfile.subInterests
-        .filter((si: string) => si.startsWith(cityPrefix))
-        .map((si: string) => si.replace(cityPrefix, ''));
-      setUserSubInterests(citySpecificSubInterests);
-    } else {
+    if (!selectedCity) {
       setUserSubInterests([]);
-    }
-  }, [user?.id, userProfile?.subInterests, selectedCity]);
-  
-  // Handler to update sub-interests state - selections work locally for filtering
-  // Note: subInterests field was removed from production database
-  const handleSubInterestsChange = async (newSubInterests: string[]) => {
-    setUserSubInterests(newSubInterests);
-    // Local state only - no database persistence for city-specific sub-interests
-  };
-
-  // Hydrate initial selections from user profile
-  useEffect(() => {
-    // Skip hydration for new users who aren't logged in
-    if (!user?.id || !userProfile?.activities || !selectedCity) {
       return;
     }
-    
-    
-    // Extract activities for current city from user profile
-    const cityPrefix = `${selectedCity}:`;
-    const cityActivitiesFromProfile = userProfile.activities
-      .filter((activity: string) => activity.startsWith(cityPrefix))
-      .map((activity: string) => activity.replace(cityPrefix, '').trim());
-    
-    
-    if (cityActivitiesFromProfile.length > 0) {
-      // Cross-reference with cityActivities to get activityIds
-      const hydratedUserActivities = cityActivitiesFromProfile
-        .map((activityName, index) => {
-          // Find the matching activity from cityActivities
-          const matchingActivity = cityActivities.find(activity => 
-            activity.activityName === activityName
-          );
-          
-          if (matchingActivity) {
-            return {
-              id: `hydrated-${selectedCity}-${index}`, // Temporary ID for hydrated items
-              userId: user.id,
-              cityName: selectedCity,
-              activityName: activityName,
-              activityId: matchingActivity.id // Include the required activityId
-            };
-          }
-          return null;
-        })
-        .filter(Boolean); // Remove null entries
-      
-      // Set the hydrated activities to pre-select pills
-      setUserActivities(hydratedUserActivities);
-      
-    } else {
-      // No existing activities for this city, clear any previous selections
-      setUserActivities([]);
+    const allSubInterests = SUB_INTEREST_CATEGORIES.flatMap(c => c.subInterests);
+    const citySubs = userActivities
+      .filter(ua => ua.cityName === selectedCity && allSubInterests.includes(ua.activityName))
+      .map(ua => ua.activityName);
+    setUserSubInterests(citySubs);
+  }, [selectedCity, userActivities]);
+  
+  // Handler to update sub-interests - persist to user-city-interests so they appear on profile
+  const handleSubInterestsChange = async (newSubInterests: string[]) => {
+    const storedUser = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+    const userId = actualUser?.id;
+    if (!userId || !selectedCity) {
+      setUserSubInterests(newSubInterests);
+      return;
     }
-    
-  }, [userProfile?.activities, selectedCity, user?.id, cityActivities]);
+    const prev = userSubInterests;
+    const added = newSubInterests.filter(s => !prev.includes(s));
+    const removed = prev.filter(s => !newSubInterests.includes(s));
+    setUserSubInterests(newSubInterests);
+    setSubInterestsLoading(true);
+    const apiBase = getApiBaseUrl();
+    try {
+      for (const subInterest of added) {
+        const res = await fetch(`${apiBase}/api/user-city-interests`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': String(userId) },
+          body: JSON.stringify({ activityName: subInterest, cityName: selectedCity })
+        });
+        if (res.ok) {
+          const created = await res.json();
+          if (created.removed) {
+            setUserActivities(u => u.filter(x => x.activityName !== subInterest || x.cityName !== selectedCity));
+            continue;
+          }
+          setUserActivities(u => [...u, created]);
+          setCityActivities(c => {
+            const exists = c.some(a => a.activityName === subInterest && a.cityName === selectedCity);
+            if (exists) return c;
+            return [...c, { id: created.activityId, activityName: subInterest, cityName: selectedCity }];
+          });
+        }
+      }
+      for (const subInterest of removed) {
+        const ua = userActivities.find(ua => ua.activityName === subInterest && ua.cityName === selectedCity);
+        if (ua?.id) {
+          await fetch(`${apiBase}/api/user-city-interests/${ua.id}`, { method: 'DELETE', headers: { 'x-user-id': String(userId) } });
+          setUserActivities(u => u.filter(x => x.id !== ua.id));
+        }
+      }
+      queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
+    } catch (e) {
+      console.error('Sub-interests save error:', e);
+      toast({ title: "Error", description: "Failed to save selections", variant: "destructive" });
+    } finally {
+      setSubInterestsLoading(false);
+    }
+  };
+
+  // NOTE: userActivities are loaded from user-city-interests via fetchUserActivities when selectedCity changes.
+  // Do NOT overwrite with userProfile.activities - that caused state loss when navigating.
 
   // Sync selected activities to user profile
   const syncActivitiesToProfile = async (selectedActivityNames: string[], cityName: string) => {
@@ -655,7 +655,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const fetchCityActivities = async () => {
     try {
       const apiBase = getApiBaseUrl();
-      const response = await fetch(`${apiBase}/api/city-activities/${encodeURIComponent(selectedCity)}`);
+      // When selectedCity is a metro area, use first metro city for city-activities API
+      const metroCities = getMetroCities(selectedCity);
+      const cityForFetch = metroCities.length > 0 ? metroCities[0] : selectedCity;
+      const response = await fetch(`${apiBase}/api/city-activities/${encodeURIComponent(cityForFetch)}`);
       if (response.ok) {
         const activities = await response.json();
         const list = Array.isArray(activities) ? activities : [];
@@ -663,10 +666,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         if (process.env.NODE_ENV === 'development') console.log(`🎯 MATCH: Fetched ${list.length} activities for ${selectedCity} (${featuredCount} featured)`);
         setCityActivities(list);
         // If server didn't auto-seed and we got 0 for a launch city, trigger seed then refetch
-        if (list.length === 0 && LAUNCH_CITY_NAMES.some(c => c.toLowerCase() === selectedCity.trim().toLowerCase())) {
+        if (list.length === 0 && LAUNCH_CITY_NAMES.some(c => c.toLowerCase() === cityForFetch.trim().toLowerCase())) {
           try {
-            await fetch(`${apiBase}/api/city-activities/${encodeURIComponent(selectedCity)}/seed-and-refresh`, { method: 'POST' });
-            const retry = await fetch(`${apiBase}/api/city-activities/${encodeURIComponent(selectedCity)}`);
+            await fetch(`${apiBase}/api/city-activities/${encodeURIComponent(cityForFetch)}/seed-and-refresh`, { method: 'POST' });
+            const retry = await fetch(`${apiBase}/api/city-activities/${encodeURIComponent(cityForFetch)}`);
             if (retry.ok) {
               const retryData = await retry.json();
               setCityActivities(Array.isArray(retryData) ? retryData : []);
@@ -715,10 +718,24 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     
     try {
       const apiBase = getApiBaseUrl();
-      const response = await fetch(`${apiBase}/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
-      if (response.ok) {
-        const activities = await response.json();
-        setUserActivities(activities);
+      // When selectedCity is a metro area (e.g. "Los Angeles Metro"), fetch ALL interests and filter to metro cities
+      // This fixes persistence when navigating from profile "Add Plans" link which uses consolidated city names
+      const metroCities = getMetroCities(selectedCity);
+      if (metroCities.length > 0) {
+        const response = await fetch(`${apiBase}/api/user-city-interests/${userId}`);
+        if (response.ok) {
+          const allActivities = await response.json();
+          const filtered = allActivities.filter((ua: any) =>
+            metroCities.some((c: string) => c.toLowerCase() === (ua.cityName || '').toLowerCase())
+          );
+          setUserActivities(filtered);
+        }
+      } else {
+        const response = await fetch(`${apiBase}/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
+        if (response.ok) {
+          const activities = await response.json();
+          setUserActivities(activities);
+        }
       }
     } catch (error) {
       console.error('Error fetching user activities:', error);
@@ -2065,6 +2082,21 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-2">⭐ City Plans for {selectedCity}</h2>
                 <p className="text-lg text-gray-600 dark:text-gray-300 font-medium">Pick to match faster in this city.</p>
+                {/* Save & Find Matches - Top */}
+                <div className="mt-6">
+                  <Button
+                    onClick={() => {
+                      fetchMatchingUsers();
+                      toast({ title: "Plans saved!", description: `Finding matches in ${selectedCity}...` });
+                      const matchSection = document.querySelector('[data-testid="matching-users-section"]');
+                      if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
+                    className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
+                  >
+                    <Check className="w-5 h-5 mr-2" />
+                    Save & Find Matches
+                  </Button>
+                </div>
               </div>
 
               {/* Mobile Section Switcher - Show only on mobile */}
@@ -2594,6 +2626,22 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           )}
                         </div>
                       )}
+                      
+                      {/* Save & Find Matches - Middle (between activity groups) */}
+                      <div className="my-8 text-center">
+                        <Button
+                          onClick={() => {
+                            fetchMatchingUsers();
+                            toast({ title: "Plans saved!", description: `Finding matches in ${selectedCity}...` });
+                            const matchSection = document.querySelector('[data-testid="matching-users-section"]');
+                            if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }}
+                          className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
+                        >
+                          <Check className="w-5 h-5 mr-2" />
+                          Save & Find Matches
+                        </Button>
+                      </div>
                       
                       {/* GROUP 3: Generic (Connect On) */}
                       {group3Generic.length > 0 && (

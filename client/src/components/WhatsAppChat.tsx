@@ -14,7 +14,6 @@ import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, Volu
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
-import { isNativeIOSApp } from "@/lib/nativeApp";
 
 interface Message {
   id: number;
@@ -752,7 +751,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-r border-gray-700">
           <div className="px-4 py-3 border-b border-gray-700">
-            <h2 className="font-medium text-xs text-gray-400 mb-2">Members ({members.length})</h2>
+            <h2 className="font-semibold text-sm text-white mb-2">Members ({members.length})</h2>
             <input
               type="text"
               placeholder="Search members..."
@@ -846,9 +845,9 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           <ArrowLeft className="w-4 h-4" />
         </Button>
         
-        {/* WhatsApp-style member avatars - hidden on desktop (lg+) when sidebar shows members; always show on iOS */}
+        {/* WhatsApp-style member avatars for chatrooms, meetups, and events */}
         {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 && (
-          <div className={`flex -space-x-2 ${!isNativeIOSApp() ? 'lg:hidden' : ''}`}>
+          <div className="flex -space-x-2">
             {members.slice(0, 4).map((member, index) => (
               <div
                 key={member.id}
@@ -887,10 +886,10 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </div>
         )}
         
-        <div className={`flex-1 min-w-0 overflow-hidden ${!isNativeIOSApp() ? 'max-w-[120px] xs:max-w-[140px] sm:max-w-[160px] lg:max-w-[140px]' : 'max-w-[140px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[260px]'}`}>
+        <div className="flex-1 min-w-0 overflow-hidden max-w-[140px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[260px]">
           <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
             <h1
-              className={`font-semibold flex-1 min-w-0 truncate ${!isNativeIOSApp() ? 'text-xs' : 'text-sm'}`}
+              className="font-semibold flex-1 min-w-0 truncate text-sm"
               title={title || 'Chat'}
             >
               {title || 'Chat'}

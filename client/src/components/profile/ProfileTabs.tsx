@@ -38,11 +38,15 @@ export function ProfileTabs(props: ProfilePageProps) {
     activeTab, openTab, user, setLocation, isOwnProfile, userConnections, photos, userTravelMemories, userReferences, travelPlans, userVouches, setTriggerQuickMatch, setTriggerQuickMeetup, triggerQuickMeetup, isProfileIncomplete, setIsEditMode, editFormData, isEditingPublicInterests, setIsEditingPublicInterests, setActiveEditSection, setEditFormData, effectiveUserId, queryClient, toast, tabRefs, loadedTabs, showConnectionFilters, setShowConnectionFilters, connectionFilters, setConnectionFilters, sortedUserConnections, connectionsDisplayCount, setConnectionsDisplayCount, editingConnectionNote, setEditingConnectionNote, connectionNoteText, setConnectionNoteText, currentUser, showWriteReferenceModal, setShowWriteReferenceModal, showReferenceForm, setShowReferenceForm, referenceForm, createReference, connectionRequests, countriesVisited, tempCountries, setTempCountries, customCountryInput, setCustomCountryInput, editingCountries, updateCountries, userChatrooms, setShowChatroomList, vouches, compatibilityData, eventsGoing, eventsInterested, businessDealsLoading, businessDeals, ownerContactForm, setOwnerContactForm, editingOwnerInfo, updateOwnerContact, handleSaveOwnerContact, getMetropolitanArea, apiRequest, handleEditCountries, handleSaveCountries, handleCancelCountries, COUNTRIES_OPTIONS, GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, safeGetAllActivities, getApiBaseUrl, getHometownInterests, getTravelInterests, getProfileInterests, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_INTERESTS, ALL_ACTIVITIES, customInterestInput, setCustomInterestInput, customActivityInput, setCustomActivityInput, editingInterests, editingActivities, showCreateDeal, setShowCreateDeal, quickDeals, setShowFullGallery, setSelectedPhotoIndex, uploadingPhoto, EventOrganizerHubSection, editingLanguages, handleEditLanguages, LANGUAGES_OPTIONS, tempLanguages, setTempLanguages, customLanguageInput, setCustomLanguageInput, handleSaveLanguages, handleCancelLanguages, updateLanguages
   } = props as Record<string, any>;
 
+  /* Desktop user profiles: tabs are integrated into hero (ProfileTabBar); hide duplicate card. iOS + business: show tabs card. */
+  const showTabsCard = isNativeIOSApp() || user?.userType === 'business';
+
   return (
     <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900">
       {/* Main Content Container - with overflow-x-hidden for rest of page */}
 
-      {/* Navigation Tabs - Card Style with Border (desktop: closer to hero; iOS: unchanged) */}
+      {/* Navigation Tabs - Card Style. Desktop user: hidden (tabs in hero). iOS + business: show. */}
+      {showTabsCard && (
       <div className={`w-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg shadow-sm ${isNativeIOSApp() ? 'mt-4' : 'mt-2 sm:mt-2 lg:mt-1'}`}>
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -268,6 +272,7 @@ export function ProfileTabs(props: ProfilePageProps) {
           </div>
         </div>
       </div>
+      )}
       
       {/* Main content section - Mobile Responsive Layout */}
       <div className={`w-full max-w-full mx-auto ${isNativeIOSApp() && activeTab === 'menu' ? 'pb-2' : 'pb-20 sm:pb-4'} px-2 sm:px-4 lg:px-6 mt-2 overflow-x-hidden box-border`}>

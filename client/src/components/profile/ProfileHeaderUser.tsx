@@ -9,6 +9,7 @@ import { ReportUserButton } from "@/components/report-user-button";
 import { formatLocationCompact, getCurrentTravelDestination } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { VouchButton } from "@/components/VouchButton";
+import { ProfileTabBar } from "./ProfileTabBar";
 import type { ProfilePageProps } from "./profile-complete-types";
 
 export function ProfileHeaderUser(props: ProfilePageProps) {
@@ -75,8 +76,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       {!isOwnProfile && shareButton}
       <div className={`max-w-7xl mx-auto relative z-10 ${isDesktopOwnProfile ? 'pl-4 sm:pl-6 lg:pl-8' : ''}`}>
         {isDesktopOwnProfile ? (
-          /* Desktop own profile: balanced layout - larger avatar, readable city text, proportional @username */
-          <div className="flex flex-row items-start gap-6 lg:gap-8">
+          /* Desktop own profile: balanced layout - larger avatar, readable city text, proportional @username, tabs at bottom */
+          <div className="flex flex-col">
+            <div className="flex flex-row items-start gap-6 lg:gap-8">
             {/* LEFT: Larger avatar + Nearby Local/Traveler city text (more readable) */}
             <div className="flex flex-col items-start flex-shrink-0 min-w-0">
               <div className="relative">
@@ -138,8 +140,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </button>
               </div>
             </div>
+            </div>
+            {/* Desktop: tab bar integrated at bottom of hero */}
+            {!isNativeIOSApp() && (
+              <div className="w-full mt-4">
+                <ProfileTabBar {...props} variant="hero" />
+              </div>
+            )}
           </div>
         ) : (
+        <div className="flex flex-col">
         <div className={`flex flex-row flex-wrap items-start relative z-20 ${!isNativeIOSApp() ? 'gap-6 sm:gap-8' : 'gap-4 sm:gap-6'}`}>
           <div className={`relative flex-shrink-0 ${isNativeIOSApp() ? 'flex flex-col items-center' : 'flex flex-col items-start'}`}>
             {/* Avatar + New to Town badge stack (desktop: centered column; iOS: unchanged) */}
@@ -379,6 +389,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               )}
             </div>
           </div>
+        </div>
+            {/* Desktop other-user: tab bar integrated at bottom of hero */}
+            {!isNativeIOSApp() && (
+              <div className="w-full mt-4">
+                <ProfileTabBar {...props} variant="hero" />
+              </div>
+            )}
         </div>
         )}
       </div>
