@@ -11,7 +11,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp } from "lucide-react";
-import { isNativeIOSApp } from "@/lib/nativeApp";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
@@ -835,10 +834,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       
       {/* Main Chat Area */}
       <div className="flex flex-col flex-1 min-w-0">
-      {/* Header - desktop web: more height, minimal horizontal padding for title room; iOS: compact */}
-      <div className={`flex items-center bg-gray-800 border-b border-gray-700 ${
-        isNativeIOSApp() ? 'gap-1.5 px-2 py-1.5' : 'gap-2 px-2 py-2.5 md:py-3 min-h-[52px] md:min-h-[56px]'
-      }`}>
+      {/* Header - compact padding, small title, truncation */}
+      <div className="flex items-center gap-2 px-2 py-1.5 md:py-2 bg-gray-800 border-b border-gray-700 min-w-0">
         <Button
           variant="ghost"
           size="icon"
@@ -892,7 +889,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         <div className="flex-1 min-w-0 overflow-hidden">
           <div className="flex items-center gap-1.5 min-w-0">
             <h1
-              className={`font-semibold flex-1 min-w-0 truncate ${isNativeIOSApp() ? 'text-xs lg:text-[10px]' : 'text-sm md:text-base'}`}
+              className="font-semibold flex-1 min-w-0 truncate text-sm"
               title={title}
             >
               {title}
@@ -906,7 +903,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                   title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
           </div>
           {subtitle && (
-            <p className={`text-gray-400 truncate leading-tight ${isNativeIOSApp() ? 'text-[11px]' : 'text-xs md:text-sm'}`}>
+            <p className="text-gray-400 truncate leading-tight text-xs">
               {subtitle}
             </p>
           )}

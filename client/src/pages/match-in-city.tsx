@@ -658,9 +658,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       const response = await fetch(`${apiBase}/api/city-activities/${encodeURIComponent(selectedCity)}`);
       if (response.ok) {
         const activities = await response.json();
-        setCityActivities(Array.isArray(activities) ? activities : []);
-        // If server didn't auto-seed and we got 0 for a launch city, trigger seed then refetch
         const list = Array.isArray(activities) ? activities : [];
+        const featuredCount = list.filter((a: any) => a.isFeatured || a.source === 'featured').length;
+        if (process.env.NODE_ENV === 'development') console.log(`🎯 MATCH: Fetched ${list.length} activities for ${selectedCity} (${featuredCount} featured)`);
+        setCityActivities(list);
+        // If server didn't auto-seed and we got 0 for a launch city, trigger seed then refetch
         if (list.length === 0 && LAUNCH_CITY_NAMES.some(c => c.toLowerCase() === selectedCity.trim().toLowerCase())) {
           try {
             await fetch(`${apiBase}/api/city-activities/${encodeURIComponent(selectedCity)}/seed-and-refresh`, { method: 'POST' });
@@ -911,10 +913,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         });
         if (response.ok) {
           const newInterest = await response.json();
-          // Immediately update local state
-          setUserActivities(prev => [...prev, newInterest]);
-          // Refresh to sync with database
-          await fetchUserActivities();
+          // Replace optimistic record with real one (avoid duplicate + blink from fetchUserActivities)
+          setUserActivities(prev => prev.filter(ua => ua.id !== optId).concat(newInterest));
           queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
         } else {
           setUserActivities(prev => prev.filter(ua => ua.id !== optId));

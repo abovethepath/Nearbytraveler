@@ -59,6 +59,8 @@ export default function UserCard({
   connectionDegree,
   isAvailableNow = false
 }: UserCardProps) {
+  // Use prop first (from parent's effectiveAvailableNowIds), fallback to API-returned isAvailableNow
+  const showAvailableNow = isAvailableNow || !!(user as any).isAvailableNow || !!(user as any).is_available_now || !!(user as any).availableNow;
   
   const [, setLocation] = useLocation();
   const handleCardClick = (e: React.MouseEvent) => {
@@ -83,6 +85,8 @@ export default function UserCard({
 
   // Get travel destination for display - SAME logic as ResponsiveUserGrid/current user card
   // Every user who is currently traveling shows badge: plane icon + city name in top-left
+  // CRITICAL: Must show for EVERY user with active travel plan, not just current user
+  // API returns camelCase (destinationCity, travelPlans) - support snake_case fallbacks
   const getTravelCity = (): string | null => {
     const toDisplay = (s: string | null | undefined): string | null => {
       if (s == null || s === '') return null;
@@ -90,8 +94,9 @@ export default function UserCard({
       if (!t || t.toLowerCase() === 'null' || t.toLowerCase() === 'undefined') return null;
       return t;
     };
-    // 1. From travelPlans (active trip) - same as current user's Los Angeles badge
-    const plans = (user as any).travelPlans;
+    const u = user as any;
+    // 1. From travelPlans / travel_plans (active trip) - same as current user's Los Angeles badge
+    const plans = u.travelPlans ?? u.travel_plans;
     if (Array.isArray(plans) && plans.length > 0) {
       const dest = getCurrentTravelDestination(plans);
       if (dest) {
@@ -99,12 +104,26 @@ export default function UserCard({
         const r = toDisplay(city);
         if (r) return r;
       }
+      // Fallback: API may format destination as "City, State, Country" - if dest empty, use plan.destinationCity
+      for (const plan of plans) {
+        const start = plan.startDate ?? plan.start_date;
+        const end = plan.endDate ?? plan.end_date;
+        if (start && end) {
+          const now = new Date();
+          const s = new Date(start);
+          const e = new Date(end);
+          if (now >= s && now <= e) {
+            const city = toDisplay(plan.destinationCity ?? plan.destination_city);
+            if (city) return city;
+          }
+        }
+      }
     }
-    // 2. From destinationCity (API-enriched - server sets for ALL users with active travel)
-    const destCity = toDisplay((user as any).destinationCity);
+    // 2. From destinationCity / destination_city (API-enriched - server sets for ALL users with active travel)
+    const destCity = toDisplay(u.destinationCity ?? u.destination_city);
     if (destCity) return destCity;
-    // 3. From travelDestination (API fallback)
-    const td = user.travelDestination;
+    // 3. From travelDestination / travel_destination (API fallback)
+    const td = u.travelDestination ?? u.travel_destination;
     if (td) {
       const city = String(td).split(',')[0]?.trim();
       const r = toDisplay(city);
@@ -115,6 +134,7 @@ export default function UserCard({
 
   const travelCityFinal = getTravelCity();
   const displayCity = user.hometownCity || 'Unknown';
+
   const displayName = user.userType === 'business' && user.businessName 
     ? user.businessName 
     : `@${user.username}`;
@@ -138,7 +158,7 @@ export default function UserCard({
 
   return (
     <button 
-      className={`w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border shadow-sm hover:shadow-md transition-all text-left ${compact ? 'rounded-lg' : 'lg:rounded-2xl'} ${isAvailableNow ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
+      className={`w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border shadow-sm hover:shadow-md transition-all text-left ${compact ? 'rounded-lg' : 'lg:rounded-2xl'} ${showAvailableNow ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
@@ -182,7 +202,7 @@ export default function UserCard({
         )}
         
         {/* Available Now badge - green, visible to everyone (web and native app) */}
-        {isAvailableNow && (
+        {showAvailableNow && (
           <div className="absolute bottom-1.5 left-1.5 right-1.5">
             <span className="status-badge animate-pulsate-green flex items-center justify-center gap-1 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg w-full">
               <span className="status-badge w-1.5 h-1.5 bg-white rounded-full"></span>

@@ -133,17 +133,6 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   // Only use city-specific activities (no general profile interests)
   const allActivities = useMemo(() => {
-    console.log('🔍 ThingsIWantToDoSection - cityActivities:', {
-      userId,
-      cityActivities,
-      isArray: Array.isArray(cityActivities),
-      length: Array.isArray(cityActivities) ? cityActivities.length : 'not array',
-      sample: Array.isArray(cityActivities) && cityActivities[0] ? {
-        id: cityActivities[0].id,
-        activityName: cityActivities[0].activityName,
-        cityName: cityActivities[0].cityName
-      } : 'no sample'
-    });
     return Array.isArray(cityActivities) ? cityActivities : [];
   }, [cityActivities]);
   const [dismissedEventIds, setDismissedEventIds] = useState<Set<number>>(() => {
@@ -431,63 +420,137 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
             
             return (
               <div key={cityName} className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'} ${isPastTrip ? 'opacity-50' : ''}`}>
-                {/* City Header with full descriptive title */}
-                <h2 className={`font-semibold mb-4 ${isMobile ? 'text-base' : 'text-lg'} ${isPastTrip ? 'text-gray-500 dark:text-gray-500' : 'text-gray-900 dark:text-white'}`}>
-                  {isHometown ? (
-                    <span className="flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-blue-500" />
-                      Things I Want to Do in My Hometown: <span className="text-blue-600 dark:text-blue-400">{cityName}</span>
-                    </span>
-                  ) : (
-                    <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`} className="flex items-center gap-2 flex-wrap hover:opacity-80 transition-opacity">
-                      <Plane className={`w-5 h-5 ${isPastTrip ? 'text-gray-400' : 'text-orange-500'}`} />
-                      <span>Things I Want to Do in My Destination:</span>
-                      <span className="text-orange-600 dark:text-orange-400 underline">{cityName}</span>
-                      {cityData.travelPlan && (
-                        <span className="text-xs font-normal text-gray-500 dark:text-gray-400">
-                          ({new Date(cityData.travelPlan.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(cityData.travelPlan.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
+                {/* City Header - desktop: stacked compact layout; mobile: original */}
+                {!isMobile ? (
+                  <div className="mb-4">
+                    {/* Line 1: Heading */}
+                    <h2 className={`font-semibold text-lg ${isPastTrip ? 'text-gray-500 dark:text-gray-500' : 'text-gray-900 dark:text-white'}`}>
+                      {isHometown ? (
+                        <span className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-blue-500 shrink-0" />
+                          Things I Want to Do in My Hometown:
                         </span>
+                      ) : (
+                        <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                          <Plane className={`w-4 h-4 shrink-0 ${isPastTrip ? 'text-gray-400' : 'text-orange-500'}`} />
+                          Things I Want to Do in My Destination:
+                        </Link>
                       )}
-                      {isPastTrip && (
-                        <Badge variant="outline" className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">
-                          Past
-                        </Badge>
+                    </h2>
+                    {/* Line 2: City name in smaller font */}
+                    <div className={`mt-1 text-sm ${isHometown ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                      {isHometown ? (
+                        cityName
+                      ) : (
+                        <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`} className="hover:underline">
+                          {[userProfile?.hometownCity, cityName].filter(Boolean).join(' → ')}
+                          {cityData.travelPlan && (
+                            <span className="text-gray-500 dark:text-gray-400 font-normal ml-1">
+                              ({new Date(cityData.travelPlan.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – {new Date(cityData.travelPlan.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
+                            </span>
+                          )}
+                          {isPastTrip && (
+                            <Badge variant="outline" className="ml-1.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">
+                              Past
+                            </Badge>
+                          )}
+                        </Link>
                       )}
-                    </Link>
-                  )}
-                </h2>
-                <div className="flex items-center justify-end mb-3">
-                  <div className="flex items-center gap-2">
-                    {isOwnProfile && !isPastTrip && (
-                      <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`}>
+                    </div>
+                    {/* Line 3: Buttons inline */}
+                    <div className="flex items-center gap-2 mt-2">
+                      {isOwnProfile && !isPastTrip && (
+                        <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-orange-600 border-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 h-8 text-xs"
+                            title={`Add activities in ${cityName}`}
+                          >
+                            <Plus className="w-3.5 h-3.5 mr-1" />
+                            Add Plans
+                          </Button>
+                        </Link>
+                      )}
+                      {isOwnProfile && (cityData.activities.length > 0 || cityData.events.length > 0 || isPastTrip) && (
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
-                          className="text-orange-600 border-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                          title={`Add activities in ${cityName}`}
+                          onClick={() => setConfirmDialog({ open: true, cityName })}
+                          className={`h-8 text-xs ${isPastTrip 
+                            ? "text-gray-500 hover:text-red-400 hover:bg-red-900/20 border border-gray-400 dark:border-gray-600" 
+                            : "text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                          }`}
+                          title={isPastTrip ? `Clear past trip to ${cityName}` : `Remove all from ${cityName}`}
                         >
-                          <Plus className="w-4 h-4 mr-1" />
-                          <span className="text-sm">Add Plans</span>
+                          <Trash2 className="w-3.5 h-3.5 mr-1" />
+                          {isPastTrip ? 'Clear' : 'Remove'}
                         </Button>
-                      </Link>
-                    )}
-                    {isOwnProfile && (cityData.activities.length > 0 || cityData.events.length > 0 || isPastTrip) && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setConfirmDialog({ open: true, cityName })}
-                        className={isPastTrip 
-                          ? "text-gray-500 hover:text-red-400 hover:bg-red-900/20 border border-gray-400 dark:border-gray-600" 
-                          : "text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                        }
-                        title={isPastTrip ? `Clear past trip to ${cityName}` : `Remove all from ${cityName}`}
-                      >
-                        <Trash2 className="w-4 h-4 mr-1" />
-                        <span className="text-sm">{isPastTrip ? 'Clear' : 'Remove'}</span>
-                      </Button>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    <h2 className={`font-semibold mb-4 ${isMobile ? 'text-base' : 'text-lg'} ${isPastTrip ? 'text-gray-500 dark:text-gray-500' : 'text-gray-900 dark:text-white'}`}>
+                      {isHometown ? (
+                        <span className="flex items-center gap-2">
+                          <MapPin className="w-5 h-5 text-blue-500" />
+                          Things I Want to Do in My Hometown: <span className="text-blue-600 dark:text-blue-400">{cityName}</span>
+                        </span>
+                      ) : (
+                        <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`} className="flex items-center gap-2 flex-wrap hover:opacity-80 transition-opacity">
+                          <Plane className={`w-5 h-5 shrink-0 ${isPastTrip ? 'text-gray-400' : 'text-orange-500'}`} />
+                          <span>Things I Want to Do in My Destination:</span>
+                          <span className="text-xs font-medium text-orange-600 dark:text-orange-400 underline">
+                            {[userProfile?.hometownCity, cityName].filter(Boolean).join(' → ')}
+                          </span>
+                          {cityData.travelPlan && (
+                            <span className="text-xs font-normal text-gray-500 dark:text-gray-400">
+                              ({new Date(cityData.travelPlan.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(cityData.travelPlan.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
+                            </span>
+                          )}
+                          {isPastTrip && (
+                            <Badge variant="outline" className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">
+                              Past
+                            </Badge>
+                          )}
+                        </Link>
+                      )}
+                    </h2>
+                    <div className="flex items-center justify-end mb-3">
+                      <div className="flex items-center gap-2">
+                        {isOwnProfile && !isPastTrip && (
+                          <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-orange-600 border-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                              title={`Add activities in ${cityName}`}
+                            >
+                              <Plus className="w-4 h-4 mr-1" />
+                              <span className="text-sm">Add Plans</span>
+                            </Button>
+                          </Link>
+                        )}
+                        {isOwnProfile && (cityData.activities.length > 0 || cityData.events.length > 0 || isPastTrip) && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setConfirmDialog({ open: true, cityName })}
+                            className={isPastTrip 
+                              ? "text-gray-500 hover:text-red-400 hover:bg-red-900/20 border border-gray-400 dark:border-gray-600" 
+                              : "text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                            }
+                            title={isPastTrip ? `Clear past trip to ${cityName}` : `Remove all from ${cityName}`}
+                          >
+                            <Trash2 className="w-4 h-4 mr-1" />
+                            <span className="text-sm">{isPastTrip ? 'Clear' : 'Remove'}</span>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 {/* Pills or empty state for this destination */}
                 {(() => {

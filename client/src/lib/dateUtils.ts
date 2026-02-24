@@ -283,7 +283,10 @@ export function getCurrentTravelDestination(travelPlans: any[]): string | null {
   
   // Check travel plans array for active trips - ONLY active trips make someone a NEARBY TRAVELER
   for (const plan of travelPlans) {
-    if (plan.startDate && plan.endDate && plan.destination) {
+    const startDate = plan.startDate ?? plan.start_date;
+    const endDate = plan.endDate ?? plan.end_date;
+    const destination = plan.destination ?? (plan.destinationCity || plan.destination_city ? `${plan.destinationCity || plan.destination_city}${plan.destinationState || plan.destination_state ? `, ${plan.destinationState || plan.destination_state}` : ''}${plan.destinationCountry || plan.destination_country ? `, ${plan.destinationCountry || plan.destination_country}` : ''}` : null);
+    if (startDate && endDate && destination) {
       // Use simple date parsing that works with the fixed API dates
       const parseDate = (dateString: string | Date): Date => {
         if (!dateString) return new Date();
@@ -295,28 +298,30 @@ export function getCurrentTravelDestination(travelPlans: any[]): string | null {
         return localDate;
       };
       
-      const startDate = parseDate(plan.startDate);
-      const endDate = parseDate(plan.endDate);
-      startDate.setHours(0, 0, 0, 0);
-      endDate.setHours(23, 59, 59, 999);
+      const startDateParsed = parseDate(startDate);
+      const endDateParsed = parseDate(endDate);
+      startDateParsed.setHours(0, 0, 0, 0);
+      endDateParsed.setHours(23, 59, 59, 999);
       
       // TEMPORAL LOGIC: Only active trips count - future trips don't make someone a traveler yet
       // Debug disabled for performance
       
-      if (today >= startDate && today <= endDate) {
+      if (today >= startDateParsed && today <= endDateParsed) {
         // Parse destination into consistent field naming
-        const destinationParts = plan.destination.split(', ');
+        const destinationParts = String(destination).split(', ');
         const [destinationCity, destinationState = null, destinationCountry] = destinationParts;
         
         // Debug disabled for performance
         // ALWAYS return the destination if there's an active trip, even if it's the same as hometown
         // Clean up redundant prefecture names and duplicate city names for better display
-        const cleanDestination = plan.destination
+        const destStr = String(destination);
+        const cleanDestination = destStr
           .replace(/,\s*\w+\s+Prefecture/g, '') // Remove "Prefecture" mentions
-          .replace(/(\w+),\s*\1/g, '$1'); // Remove duplicate city names
+          .replace(/(\w+),\s*\1/g, '$1') // Remove duplicate city names
+          .replace(/^,\s*|,\s*$/g, '').trim();
         
         // CRITICAL: Sanitize to reject placeholder values like 'null', 'undefined', etc.
-        return sanitizeDestination(cleanDestination);
+        return sanitizeDestination(cleanDestination || destStr);
       }
     }
   }

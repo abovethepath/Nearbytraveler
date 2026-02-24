@@ -2594,8 +2594,12 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       const safeResults = results.map(({ password, ...rest }) => rest);
       
-      // Enrich with travel status so user cards show destination badge for travelers
+      // Enrich with travel status + Available Now for user card badges
       const now = new Date();
+      const availableNowResults = await db.select({ userId: availableNow.userId })
+        .from(availableNow)
+        .where(and(eq(availableNow.isAvailable, true), gte(availableNow.expiresAt, now)));
+      const availableNowUserIds = new Set(availableNowResults.map(r => r.userId));
       const enrichedResults = await Promise.all(safeResults.map(async (user: any) => {
         const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
         const activePlan = userTravelPlans.find((plan: any) => {
@@ -2605,13 +2609,17 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         });
         const formattedPlans = userTravelPlans.map((plan: any) => ({
           ...plan,
-          destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
+          destination: plan.destination || `${plan.destinationCity || ''}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry || ''}`.replace(/^,\s*|,\s*$/g, '').trim()
         }));
+        const travelDestination = activePlan ? `${activePlan.destinationCity || ''}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry || ''}`.replace(/^,\s*|,\s*$/g, '').trim() : (user.travelDestination || null);
+        const destCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0]?.trim()) || null;
         return {
           ...user,
           travelPlans: formattedPlans,
           isCurrentlyTraveling: !!activePlan,
-          travelDestination: activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null)
+          travelDestination: travelDestination || null,
+          destinationCity: destCity,
+          isAvailableNow: availableNowUserIds.has(user.id)
         };
       }));
       
@@ -3060,8 +3068,17 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       }
       
-      // Enrich users with travel status for airplane badge display
+      // Fetch active Available Now user IDs for badge display on user cards
       const now = new Date();
+      const availableNowResults = await db.select({ userId: availableNow.userId })
+        .from(availableNow)
+        .where(and(
+          eq(availableNow.isAvailable, true),
+          gte(availableNow.expiresAt, now)
+        ));
+      const availableNowUserIds = new Set(availableNowResults.map(r => r.userId));
+
+      // Enrich users with travel status for airplane badge display + Available Now badge
       const enrichedUsers = await Promise.all(users.map(async (user) => {
         const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
         
@@ -3072,18 +3089,22 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           return now >= start && now <= end;
         });
         
-        const travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
+        const travelDestination = activePlan ? `${activePlan.destinationCity || ''}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry || ''}`.replace(/^,\s*|,\s*$/g, '').trim() || activePlan.destination : (user.travelDestination || null);
         const isCurrentlyTraveling = !!activePlan || !!(user as any).isCurrentlyTraveling;
         const destCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
+        const isAvail = availableNowUserIds.has(user.id);
         return {
           ...user,
           travelPlans: userTravelPlans.map(plan => ({
             ...plan,
-            destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
+            destination: plan.destination || `${plan.destinationCity || ''}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry || ''}`.replace(/^,\s*|,\s*$/g, '').trim()
           })),
           isCurrentlyTraveling,
           travelDestination: travelDestination || null,
-          destinationCity: destCity
+          destinationCity: destCity,
+          isAvailableNow: isAvail,
+          available_now: isAvail,
+          availableNow: isAvail
         };
       }));
       
@@ -7298,8 +7319,17 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json([]);
       }
       
-      // Enrich filtered users with their travel plans for frontend travel detection
+      // Fetch active Available Now user IDs for badge display
       const now = new Date();
+      const availableNowResults = await db.select({ userId: availableNow.userId })
+        .from(availableNow)
+        .where(and(
+          eq(availableNow.isAvailable, true),
+          gte(availableNow.expiresAt, now)
+        ));
+      const availableNowUserIds = new Set(availableNowResults.map(r => r.userId));
+      
+      // Enrich filtered users with their travel plans for frontend travel detection
       const enrichedUsers = await Promise.all(filteredUsers.map(async (user) => {
         const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
         
@@ -7321,6 +7351,7 @@ Questions? Just reply to this message. Welcome aboard!
         let travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
         if (travelDestination && (String(travelDestination).toLowerCase() === 'null' || String(travelDestination).trim() === '')) travelDestination = null;
         const destCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
+        const isAvail = availableNowUserIds.has(user.id);
         return {
           ...userWithoutPassword,
           hometownCity: user.hometownCity || '',
@@ -7329,7 +7360,11 @@ Questions? Just reply to this message. Welcome aboard!
           // CRITICAL: Include travel status for airplane badge + destination on user cards (web + iOS)
           isCurrentlyTraveling: !!activePlan,
           travelDestination: travelDestination || null,
-          destinationCity: destCity
+          destinationCity: destCity,
+          // Available Now badge for Discover People grid (include all field name variants)
+          isAvailableNow: isAvail,
+          available_now: isAvail,
+          availableNow: isAvail
         };
       }));
       
@@ -19669,11 +19704,33 @@ Questions? Just reply to this message. Welcome aboard!
         );
       
       // Auto-seed launch cities: if we have curated data but DB is empty, seed so users see pre-populated activities
-      if (activities.length === 0) {
-        const { getFeaturedActivitiesForCity } = await import('./static-city-activities.js');
-        const featured = getFeaturedActivitiesForCity(cityName);
-        if (featured.length > 0) {
-          if (process.env.NODE_ENV === 'development') console.log(`🌱 CITY ACTIVITIES GET: Auto-seeding ${cityName} (${featured.length} featured)`);
+      const { getFeaturedActivitiesForCity } = await import('./static-city-activities.js');
+      const featuredFromStatic = getFeaturedActivitiesForCity(cityName);
+      
+      if (activities.length === 0 && featuredFromStatic.length > 0) {
+        if (process.env.NODE_ENV === 'development') console.log(`🌱 CITY ACTIVITIES GET: Auto-seeding ${cityName} (${featuredFromStatic.length} featured) - DB was empty`);
+        const { ensureCityHasActivities } = await import('./auto-city-setup.js');
+        await ensureCityHasActivities(cityName, '', 'United States', 1);
+        activities = await db
+          .select()
+          .from(cityActivities)
+          .where(
+            and(
+              eq(cityActivities.cityName, cityName),
+              eq(cityActivities.isActive, true),
+              eq(cityActivities.isHidden, false)
+            )
+          )
+          .orderBy(
+            desc(cityActivities.isFeatured),
+            cityActivities.rank,
+            desc(cityActivities.createdAt)
+          );
+      } else if (activities.length > 0 && featuredFromStatic.length > 0) {
+        // DB has activities but may have 0 featured (e.g. old AI/generic rows from before featured rules)
+        const featuredCount = activities.filter((a: any) => a.isFeatured || a.source === 'featured').length;
+        if (featuredCount === 0) {
+          if (process.env.NODE_ENV === 'development') console.log(`🌱 CITY ACTIVITIES GET: ${cityName} has ${activities.length} activities but 0 featured - ensuring featured activities exist`);
           const { ensureCityHasActivities } = await import('./auto-city-setup.js');
           await ensureCityHasActivities(cityName, '', 'United States', 1);
           activities = await db
@@ -19698,7 +19755,8 @@ Questions? Just reply to this message. Welcome aboard!
       const { isBannedActivityName } = await import('./static-city-activities.js');
       activities = activities.filter(a => !isBannedActivityName(a.activityName));
       
-      if (process.env.NODE_ENV === 'development') console.log(`✅ CITY ACTIVITIES GET: Found ${activities.length} activities for ${cityName}`);
+      const featuredCount = activities.filter((a: any) => a.isFeatured || a.source === 'featured').length;
+      if (process.env.NODE_ENV === 'development') console.log(`✅ CITY ACTIVITIES GET: Found ${activities.length} activities for ${cityName} (${featuredCount} featured)`);
       res.json(activities);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error('Error fetching city activities:', error);
