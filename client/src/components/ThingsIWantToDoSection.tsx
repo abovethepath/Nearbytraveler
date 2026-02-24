@@ -1,9 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { X, Trash2, Plane, MapPin, Plus } from "lucide-react";
+import { X, Trash2, Plus } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useEffect, useState, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -392,10 +391,39 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     });
   }, [citiesByName]);
 
-  if (loadingCityActivities || loadingJoinedEvents || loadingEventInterests || loadingTravelPlans) {
+  // Hometown city key for lookup (consolidated) and display name
+  const hometownCityKey = useMemo(() => {
+    const hometown = userProfile?.hometownCity;
+    if (hometown) return consolidateCity(hometown);
+    // Fallback: first city without a travel plan
+    const firstHometown = cities.find(c => !citiesByName[c].travelPlan);
+    return firstHometown || '';
+  }, [userProfile?.hometownCity, cities, citiesByName]);
+
+  // Display: city name only, no labels like "Hometown" or "My Hometown"
+  const hometownDisplayName = userProfile?.hometownCity || hometownCityKey || (isOwnProfile ? 'Add your city' : '');
+
+  // Current destination - only when user is actively traveling (startDate <= now <= endDate)
+  const { isCurrentlyTraveling, currentDestination } = useMemo(() => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    for (const dest of travelDestinations) {
+      const start = new Date(dest.startDate);
+      const end = new Date(dest.endDate);
+      end.setHours(23, 59, 59, 999);
+      if (start <= now && end >= now && !dest.isPast) {
+        return { isCurrentlyTraveling: true, currentDestination: dest };
+      }
+    }
+    return { isCurrentlyTraveling: false, currentDestination: null };
+  }, [travelDestinations]);
+
+  const currentDestCityKey = currentDestination ? consolidateCity(currentDestination.cityName) : '';
+
+  if (loadingCityActivities || loadingJoinedEvents || loadingEventInterests || loadingTravelPlans || loadingProfile) {
     return (
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">⭐ Things I Want to Do in...</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Things I Want to Do in:</h2>
         <div className="text-gray-600 dark:text-gray-400">Loading...</div>
       </div>
     );
@@ -406,227 +434,145 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     return null;
   }
 
+  // Render a single city row: city name (no label) | activity pills | + Add Plans
+  const renderCityRow = (cityKey: string, displayName: string, isDestination: boolean) => {
+    const cityData = (cityKey && citiesByName[cityKey]) || { activities: [], events: [], travelPlan: null };
+    const citySubInterests = getSubInterestsForCity(cityKey);
+    const hasContent = cityData.activities.length > 0 || cityData.events.length > 0 || (cityData.travelPlan && citySubInterests.length > 0);
+
+    return (
+      <div key={cityKey} className="flex flex-wrap items-center gap-2 py-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0 last:pb-0 first:pt-0">
+        <span className={`font-semibold shrink-0 basis-full sm:basis-auto ${isDestination ? 'text-orange-600 dark:text-orange-400' : 'text-blue-600 dark:text-blue-400'}`}>
+          {displayName}
+        </span>
+        <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+          {/* Sub-Interest Pills - for travel destinations */}
+          {cityData.travelPlan && citySubInterests.map((subInterest, idx) => (
+            <div key={`sub-${idx}-${subInterest}`} className="relative group">
+              <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-orange-500 to-yellow-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
+                <span style={{ color: 'white' }}>✨ {subInterest}</span>
+              </div>
+            </div>
+          ))}
+          {/* Activity Pills */}
+          {cityData.activities.map((activity) => (
+            <div key={`act-${activity.id}`} className="relative group">
+              <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-600 to-blue-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
+                <span style={{ color: 'black' }}>{activity.activityName}</span>
+              </div>
+              {isOwnProfile && (
+                <button
+                  onClick={() => deleteActivity.mutate(activity.id)}
+                  className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 sm:opacity-0 sm:group-hover:opacity-100 opacity-80"
+                  title="Remove activity"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          ))}
+          {/* Event Pills */}
+          {cityData.events.map((event) => {
+            const eventId = (event as any).eventId || event.id;
+            const eventUrl = `/events/${eventId}`;
+            const eventDate = (event as any).date || (event as any).eventDate;
+            const isEventPast = eventDate ? new Date(eventDate) < new Date() : false;
+            return (
+              <div key={`evt-${event.id}`} className={`relative group ${isEventPast ? 'opacity-60' : ''}`}>
+                <Link href={eventUrl}>
+                  <div className={`inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm cursor-pointer transition-all hover:scale-105 ${isEventPast ? 'bg-gradient-to-r from-gray-500 to-gray-400' : 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600'}`}>
+                    <span style={{ color: 'black' }}>{isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}</span>
+                  </div>
+                </Link>
+                {isOwnProfile && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      deleteEvent.mutate(event);
+                    }}
+                    className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 sm:opacity-0 sm:group-hover:opacity-100 opacity-80"
+                    title="Remove event"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {isOwnProfile && (
+            <Link href={cityKey ? `/match-in-city?city=${encodeURIComponent(cityKey)}` : '/match-in-city'}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-orange-600 border-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 h-8 text-xs"
+                title={`Add activities in ${displayName}`}
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" />
+                Add Plans
+              </Button>
+            </Link>
+          )}
+          {isOwnProfile && cityKey && (hasContent || cityData.travelPlan?.isPast) && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setConfirmDialog({ open: true, cityName: cityKey })}
+              className={`h-8 text-xs ${cityData.travelPlan?.isPast 
+                ? "text-gray-500 hover:text-red-400 hover:bg-red-900/20 border border-gray-400 dark:border-gray-600" 
+                : "text-red-400 hover:text-red-300 hover:bg-red-900/20"
+              }`}
+              title={cityData.travelPlan?.isPast ? `Clear past trip to ${displayName}` : `Remove all from ${displayName}`}
+            >
+              <Trash2 className="w-3.5 h-3.5 mr-1" />
+              {cityData.travelPlan?.isPast ? 'Clear' : 'Remove'}
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Build rows: Row 1 = hometown, Row 2 = destination (only if currently traveling)
+  const rowsToShow: { key: string; displayName: string; isDestination: boolean }[] = [];
+  // Row 1: Hometown - always show for own profile
+  if (hometownCityKey) {
+    rowsToShow.push({ key: hometownCityKey, displayName: hometownDisplayName, isDestination: false });
+  } else if (cities.length > 0) {
+    const firstHometown = cities.find(c => !citiesByName[c].travelPlan);
+    if (firstHometown) {
+      rowsToShow.push({ key: firstHometown, displayName: firstHometown, isDestination: false });
+    } else {
+      rowsToShow.push({ key: '', displayName: hometownDisplayName, isDestination: false });
+    }
+  } else {
+    rowsToShow.push({ key: '', displayName: hometownDisplayName, isDestination: false });
+  }
+  // Row 2: Destination - only if currently traveling (and not same as hometown)
+  if (isCurrentlyTraveling && currentDestCityKey && currentDestCityKey !== rowsToShow[0]?.key) {
+    rowsToShow.push({ key: currentDestCityKey, displayName: currentDestination!.cityName, isDestination: true });
+  }
+  const uniqueRows = rowsToShow.filter((r, i, arr) => arr.findIndex(x => x.key === r.key) === i);
+  const showContent = isOwnProfile ? uniqueRows.length > 0 : cities.length > 0;
+
   return (
     <div 
       data-testid="things-i-want-to-do-section"
       data-section="things-i-want-to-do"
     >
-      {cities.length > 0 ? (
-        <div className={`${isMobile ? 'space-y-4' : 'space-y-6'}`}>
-          {cities.map((cityName) => {
-            const cityData = citiesByName[cityName];
-            const isPastTrip = cityData.travelPlan?.isPast || false;
-            const isHometown = !cityData.travelPlan;
-            
-            return (
-              <div key={cityName} className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'} ${isPastTrip ? 'opacity-50' : ''}`}>
-                {/* City Header - desktop: stacked compact layout; mobile: original */}
-                {!isMobile ? (
-                  <div className="mb-4">
-                    {/* Line 1: Heading */}
-                    <h2 className={`font-semibold text-lg ${isPastTrip ? 'text-gray-500 dark:text-gray-500' : 'text-gray-900 dark:text-white'}`}>
-                      {isHometown ? (
-                        <span className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-blue-500 shrink-0" />
-                          Things I Want to Do in My Hometown:
-                        </span>
-                      ) : (
-                        <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                          <Plane className={`w-4 h-4 shrink-0 ${isPastTrip ? 'text-gray-400' : 'text-orange-500'}`} />
-                          Things I Want to Do in My Destination:
-                        </Link>
-                      )}
-                    </h2>
-                    {/* Line 2: City name in smaller font */}
-                    <div className={`mt-1 text-sm ${isHometown ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
-                      {isHometown ? (
-                        cityName
-                      ) : (
-                        <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`} className="hover:underline">
-                          {[userProfile?.hometownCity, cityName].filter(Boolean).join(' → ')}
-                          {cityData.travelPlan && (
-                            <span className="text-gray-500 dark:text-gray-400 font-normal ml-1">
-                              ({new Date(cityData.travelPlan.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – {new Date(cityData.travelPlan.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
-                            </span>
-                          )}
-                          {isPastTrip && (
-                            <Badge variant="outline" className="ml-1.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">
-                              Past
-                            </Badge>
-                          )}
-                        </Link>
-                      )}
-                    </div>
-                    {/* Line 3: Buttons inline */}
-                    <div className="flex items-center gap-2 mt-2">
-                      {isOwnProfile && !isPastTrip && (
-                        <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-orange-600 border-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 h-8 text-xs"
-                            title={`Add activities in ${cityName}`}
-                          >
-                            <Plus className="w-3.5 h-3.5 mr-1" />
-                            Add Plans
-                          </Button>
-                        </Link>
-                      )}
-                      {isOwnProfile && (cityData.activities.length > 0 || cityData.events.length > 0 || isPastTrip) && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setConfirmDialog({ open: true, cityName })}
-                          className={`h-8 text-xs ${isPastTrip 
-                            ? "text-gray-500 hover:text-red-400 hover:bg-red-900/20 border border-gray-400 dark:border-gray-600" 
-                            : "text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                          }`}
-                          title={isPastTrip ? `Clear past trip to ${cityName}` : `Remove all from ${cityName}`}
-                        >
-                          <Trash2 className="w-3.5 h-3.5 mr-1" />
-                          {isPastTrip ? 'Clear' : 'Remove'}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <h2 className={`font-semibold mb-4 ${isMobile ? 'text-base' : 'text-lg'} ${isPastTrip ? 'text-gray-500 dark:text-gray-500' : 'text-gray-900 dark:text-white'}`}>
-                      {isHometown ? (
-                        <span className="flex items-center gap-2">
-                          <MapPin className="w-5 h-5 text-blue-500" />
-                          Things I Want to Do in My Hometown: <span className="text-blue-600 dark:text-blue-400">{cityName}</span>
-                        </span>
-                      ) : (
-                        <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`} className="flex items-center gap-2 flex-wrap hover:opacity-80 transition-opacity">
-                          <Plane className={`w-5 h-5 shrink-0 ${isPastTrip ? 'text-gray-400' : 'text-orange-500'}`} />
-                          <span>Things I Want to Do in My Destination:</span>
-                          <span className="text-xs font-medium text-orange-600 dark:text-orange-400 underline">
-                            {[userProfile?.hometownCity, cityName].filter(Boolean).join(' → ')}
-                          </span>
-                          {cityData.travelPlan && (
-                            <span className="text-xs font-normal text-gray-500 dark:text-gray-400">
-                              ({new Date(cityData.travelPlan.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(cityData.travelPlan.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
-                            </span>
-                          )}
-                          {isPastTrip && (
-                            <Badge variant="outline" className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">
-                              Past
-                            </Badge>
-                          )}
-                        </Link>
-                      )}
-                    </h2>
-                    <div className="flex items-center justify-end mb-3">
-                      <div className="flex items-center gap-2">
-                        {isOwnProfile && !isPastTrip && (
-                          <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`}>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-orange-600 border-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                              title={`Add activities in ${cityName}`}
-                            >
-                              <Plus className="w-4 h-4 mr-1" />
-                              <span className="text-sm">Add Plans</span>
-                            </Button>
-                          </Link>
-                        )}
-                        {isOwnProfile && (cityData.activities.length > 0 || cityData.events.length > 0 || isPastTrip) && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setConfirmDialog({ open: true, cityName })}
-                            className={isPastTrip 
-                              ? "text-gray-500 hover:text-red-400 hover:bg-red-900/20 border border-gray-400 dark:border-gray-600" 
-                              : "text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                            }
-                            title={isPastTrip ? `Clear past trip to ${cityName}` : `Remove all from ${cityName}`}
-                          >
-                            <Trash2 className="w-4 h-4 mr-1" />
-                            <span className="text-sm">{isPastTrip ? 'Clear' : 'Remove'}</span>
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {/* Pills or empty state for this destination */}
-                {(() => {
-                  const citySubInterests = getSubInterestsForCity(cityName);
-                  return (cityData.activities.length > 0 || cityData.events.length > 0 || (cityData.travelPlan && citySubInterests.length > 0)) ? (
-                  <div className={`flex flex-wrap ${isMobile ? 'gap-2' : 'gap-2'}`}>
-
-                    {/* Sub-Interest Pills - Show for travel destinations (city-specific) */}
-                    {cityData.travelPlan && citySubInterests.map((subInterest, idx) => (
-                      <div key={`sub-${idx}-${subInterest}`} className="relative group">
-                        <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-orange-500 to-yellow-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
-                          <span style={{ color: 'white' }}>✨ {subInterest}</span>
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Activity Pills */}
-                    {cityData.activities.map((activity) => (
-                      <div key={`act-${activity.id}`} className="relative group">
-                        <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-600 to-blue-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
-                          <span style={{ color: 'black' }}>{activity.activityName}</span>
-                        </div>
-                        {isOwnProfile && (
-                          <button
-                            onClick={() => deleteActivity.mutate(activity.id)}
-                            className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 sm:opacity-0 sm:group-hover:opacity-100 opacity-80"
-                            title="Remove activity"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-
-                    {/* Event Pills - Clickable to go to event page */}
-                    {cityData.events.map((event) => {
-                      const eventId = (event as any).eventId || event.id;
-                      const eventUrl = `/events/${eventId}`;
-                      const eventDate = (event as any).date || (event as any).eventDate;
-                      const isEventPast = eventDate ? new Date(eventDate) < new Date() : false;
-                      
-                      return (
-                        <div key={`evt-${event.id}`} className={`relative group ${isEventPast ? 'opacity-60' : ''}`}>
-                          <Link href={eventUrl}>
-                            <div className={`inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm cursor-pointer transition-all hover:scale-105 ${isEventPast ? 'bg-gradient-to-r from-gray-500 to-gray-400' : 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600'}`}>
-                              <span style={{ color: 'black' }}>{isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}</span>
-                            </div>
-                          </Link>
-                          {isOwnProfile && (
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                deleteEvent.mutate(event);
-                              }}
-                              className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 sm:opacity-0 sm:group-hover:opacity-100 opacity-80"
-                              title="Remove event"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
-
-                  </div>
-                ) : null;
-                })()}
-              </div>
-            );
-          })}
+      {showContent ? (
+        <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Things I Want to Do in:</h2>
+          <div className="space-y-0">
+            {uniqueRows.map(({ key, displayName, isDestination }) => renderCityRow(key, displayName, isDestination))}
+          </div>
         </div>
       ) : (
         <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
           <h2 className={`font-semibold text-gray-900 dark:text-white mb-4 ${isMobile ? 'text-base' : 'text-lg'}`}>
-            ⭐ Things I Want to Do in...
+            Things I Want to Do in:
           </h2>
           <Link href="/match-in-city">
             <div className="text-center py-12 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors">

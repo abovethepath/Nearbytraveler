@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, MapPin, MessageSquare, Share2, Users, Building2, Calendar, Plane } from "lucide-react";
+import { Camera, MapPin, MessageSquare, MessageCircle, Share2, Users, Building2, Calendar, Plane } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { ReportUserButton } from "@/components/report-user-button";
@@ -24,13 +24,23 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     toast,
     connectionDegreeData,
     userVouches,
+    userConnections,
     travelPlans,
     openTab,
     hostelMatch,
     currentUser,
     handleMessage,
     setShowWriteReferenceModal,
+    userChatrooms = [],
   } = props as Record<string, any>;
+
+  const hometown = formatLocationCompact(user?.hometownCity, user?.hometownState, user?.hometownCountry);
+  const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+  const invalidDestinations = ['unknown', '—', '–', '-', '--', 'n/a', 'null', ''];
+  const hasValidTravelDestination = currentTravelPlan && typeof currentTravelPlan === 'string' && currentTravelPlan.trim().length > 0 && !invalidDestinations.includes(currentTravelPlan.trim().toLowerCase()) && !/^[\s\-—–]+$/.test(currentTravelPlan);
+  const connectionsCount = (userConnections as any[])?.length ?? 0;
+  const vouchesCount = (userVouches as any[])?.length ?? 0;
+  const bioSnippet = user?.bio ? (user.bio.length > 120 ? user.bio.slice(0, 120).trim() + '…' : user.bio) : null;
 
   const shareButton = (
     <button
@@ -55,13 +65,90 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     </button>
   );
 
+  const isDesktopOwnProfile = !isNativeIOSApp() && isOwnProfile;
+
   return (
     <div
-      className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 relative isolate ${isNativeIOSApp() ? 'py-6 sm:py-8 lg:py-12' : 'pt-12 sm:pt-14 lg:pt-20 pb-6 sm:pb-8 lg:pb-12'}`}
+      className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 relative isolate ${isNativeIOSApp() ? 'py-6 sm:py-8 lg:py-12' : isDesktopOwnProfile ? 'py-4 sm:py-5 lg:py-6' : 'pt-12 sm:pt-14 lg:pt-20 pb-6 sm:pb-8 lg:pb-12'}`}
       style={{ width: '100vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
     >
       {!isOwnProfile && shareButton}
       <div className="max-w-7xl mx-auto relative z-10">
+        {isDesktopOwnProfile ? (
+          /* Desktop own profile: clean balanced layout - left: avatar + labels; right: @username, name, bio, stats */
+          <div className="flex flex-row items-start gap-5 lg:gap-6">
+            {/* LEFT: Avatar (circular, no containers) + Add Photo overlay + Nearby Local/Traveler + New to Town */}
+            <div className="flex flex-col items-start flex-shrink-0">
+              <div className="relative">
+                <div
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden cursor-pointer"
+                  onClick={() => { if (user?.profileImage) setShowExpandedPhoto(true); }}
+                  title={user?.profileImage ? "Click to enlarge photo" : undefined}
+                >
+                  <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
+                </div>
+                {/* Add Photo - small overlay at bottom right of avatar circle */}
+                <label
+                  className={`absolute bottom-0 right-0 w-7 h-7 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-600/90 hover:bg-gray-500'} text-white border-2 border-white overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
+                  data-testid="button-upload-avatar"
+                >
+                  <Camera className="h-3.5 w-3.5 pointer-events-none" />
+                  <input id="avatar-upload-input" type="file" accept="image/*" onChange={(e) => { handleAvatarUpload?.(e); }} className="sr-only" disabled={uploadingPhoto} aria-label="Change avatar" />
+                </label>
+              </div>
+              <div className="mt-2 text-left">
+                <span className="block text-xs font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
+                <span className="block text-sm font-medium text-black dark:text-gray-100">{hometown}</span>
+              </div>
+              {hasValidTravelDestination && (
+                <div className="mt-1 text-left">
+                  <span className="block text-xs font-semibold text-blue-600 dark:text-blue-400">Nearby Traveler</span>
+                  <span className="block text-sm font-medium text-black dark:text-gray-100">{currentTravelPlan}</span>
+                </div>
+              )}
+              {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-2">
+                  New to Town
+                </span>
+              )}
+            </div>
+            {/* RIGHT: @username (large bold), full name, bio snippet, stats badges */}
+            <div className="flex-1 min-w-0 flex flex-col gap-1 pt-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-black dark:text-white break-all leading-tight">@{user?.username}</h1>
+              {user?.name && <p className="text-base text-gray-800 dark:text-gray-200 font-medium">{user.name}</p>}
+              {bioSnippet && <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{bioSnippet}</p>}
+              <div className="flex flex-wrap gap-1.5 mt-0.5">
+                <span className="inline-flex items-center h-5 rounded px-2 text-xs font-medium bg-white/70 dark:bg-gray-800/70 text-gray-800 dark:text-gray-200">
+                  <Users className="w-3 h-3 mr-1 shrink-0" />
+                  {connectionsCount} {connectionsCount === 1 ? 'connection' : 'connections'}
+                </span>
+                <span className="inline-flex items-center h-5 rounded px-2 text-xs font-medium bg-white/70 dark:bg-gray-800/70 text-gray-800 dark:text-gray-200">
+                  <MessageSquare className="w-3 h-3 mr-1 shrink-0" />
+                  {vouchesCount} {vouchesCount === 1 ? 'vouch' : 'vouches'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const chatCity = user?.hometownCity || user?.location?.split(',')[0] || 'General';
+                    setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
+                  }}
+                  className="inline-flex items-center h-5 rounded px-2 text-xs font-medium bg-white/70 dark:bg-gray-800/70 text-gray-800 dark:text-gray-200 hover:bg-white/90 dark:hover:bg-gray-700/70 transition-colors"
+                >
+                  <MessageCircle className="w-3 h-3 mr-1 shrink-0" />
+                  Chatrooms{(userChatrooms?.length || 0) > 0 ? ` (${userChatrooms.length})` : ''}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLocation('/share-qr')}
+                  className="inline-flex items-center h-5 rounded px-2 text-xs font-medium bg-white/70 dark:bg-gray-800/70 text-gray-800 dark:text-gray-200 hover:bg-white/90 dark:hover:bg-gray-700/70 transition-colors"
+                >
+                  <Share2 className="w-3 h-3 mr-1 shrink-0" />
+                  Invite Friends
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
         <div className={`flex flex-row flex-wrap items-start relative z-20 ${!isNativeIOSApp() ? 'gap-6 sm:gap-8' : 'gap-4 sm:gap-6'}`}>
           <div className={`relative flex-shrink-0 ${isNativeIOSApp() ? 'flex flex-col items-center' : 'flex flex-col items-start'}`}>
             {/* Avatar + New to Town badge stack (desktop: centered column; iOS: unchanged) */}
@@ -77,7 +164,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
                   </div>
                 </div>
-                {/* Camera button - over bottom edge of avatar (desktop only) */}
+                {/* Camera button - over bottom edge of avatar (desktop other-user: N/A; iOS own: bottom-right) */}
                 {isOwnProfile && !isNativeIOSApp() && (
                   <>
                     {!user?.profileImage && (
@@ -93,7 +180,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   </>
                 )}
               </div>
-              {/* New to Town badge - directly below avatar (desktop) */}
+              {/* New to Town badge - directly below avatar (desktop other-user) */}
               {!isNativeIOSApp() && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-3">
                   New to Town
@@ -120,43 +207,35 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </div>
               </>
             )}
-            {(() => {
-              const hometown = formatLocationCompact(user?.hometownCity, user?.hometownState, user?.hometownCountry);
-              const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-              const invalidDestinations = ['unknown', '—', '–', '-', '--', 'n/a', 'null', ''];
-              const hasValidTravelDestination = currentTravelPlan && typeof currentTravelPlan === 'string' && currentTravelPlan.trim().length > 0 && !invalidDestinations.includes(currentTravelPlan.trim().toLowerCase()) && !/^[\s\-—–]+$/.test(currentTravelPlan);
-              return (
-                <div className={`flex flex-col gap-1 min-w-0 w-full max-w-[280px] sm:max-w-none ${!isNativeIOSApp() ? 'mt-5' : 'mt-3'}`}>
-                  <span className="text-base sm:text-lg font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
-                  <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
-                  {hasValidTravelDestination && (
-                    <>
-                      <span className="text-base sm:text-lg font-semibold text-blue-600 dark:text-blue-400 mt-1">Nearby Traveler</span>
-                      <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={currentTravelPlan!} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{currentTravelPlan}</span>
-                    </>
-                  )}
-                  {(() => {
-                    if (!hasValidTravelDestination) return null;
-                    const now = new Date();
-                    const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
-                      if (!plan.startDate || !plan.endDate) return false;
-                      const start = new Date(plan.startDate);
-                      const end = new Date(plan.endDate);
-                      const isActive = now >= start && now <= end;
-                      const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
-                      const matchesDestination = plan.destination && currentTravelPlan!.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
-                      return isActive && hasPublicHostel && matchesDestination;
-                    });
-                    return activePlanWithHostel ? (
-                      <div className="flex items-center gap-1.5 text-sm font-medium text-black dark:text-gray-100 mt-1">
-                        <Building2 className="w-4 h-4 text-orange-600 flex-shrink-0" />
-                        <span className="break-words">Staying at {activePlanWithHostel.hostelName}</span>
-                      </div>
-                    ) : null;
-                  })()}
-                </div>
-              );
-            })()}
+            <div className={`flex flex-col gap-1 min-w-0 w-full max-w-[280px] sm:max-w-none ${!isNativeIOSApp() ? 'mt-5' : 'mt-3'}`}>
+              <span className="text-base sm:text-lg font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
+              <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
+              {hasValidTravelDestination && (
+                <>
+                  <span className="text-base sm:text-lg font-semibold text-blue-600 dark:text-blue-400 mt-1">Nearby Traveler</span>
+                  <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={currentTravelPlan!} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{currentTravelPlan}</span>
+                </>
+              )}
+              {(() => {
+                if (!hasValidTravelDestination) return null;
+                const now = new Date();
+                const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
+                  if (!plan.startDate || !plan.endDate) return false;
+                  const start = new Date(plan.startDate);
+                  const end = new Date(plan.endDate);
+                  const isActive = now >= start && now <= end;
+                  const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
+                  const matchesDestination = plan.destination && currentTravelPlan!.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
+                  return isActive && hasPublicHostel && matchesDestination;
+                });
+                return activePlanWithHostel ? (
+                  <div className="flex items-center gap-1.5 text-sm font-medium text-black dark:text-gray-100 mt-1">
+                    <Building2 className="w-4 h-4 text-orange-600 flex-shrink-0" />
+                    <span className="break-words">Staying at {activePlanWithHostel.hostelName}</span>
+                  </div>
+                ) : null;
+              })()}
+            </div>
           </div>
           <div className={`flex-1 min-w-0 overflow-hidden ${!isNativeIOSApp() && isOwnProfile ? 'pt-1' : ''}`}>
             <div className={`space-y-2 w-full overflow-hidden ${!isNativeIOSApp() && isOwnProfile ? 'mt-0 pt-6 sm:pt-8' : 'mt-2'}`}>
@@ -310,6 +389,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             </div>
           </div>
         </div>
+        )}
       </div>
 
       {uploadingPhoto && (

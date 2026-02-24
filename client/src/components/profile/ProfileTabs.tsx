@@ -330,42 +330,6 @@ export function ProfileTabs(props: ProfilePageProps) {
                   />
                 )}
 
-                {/* Edit interests & activities - visible from About for own profile */}
-                {isOwnProfile && (
-                  <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-3">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const userInterests = [...(user?.interests || [])];
-                        const userActivities = [...(user?.activities || [])];
-                        if (user?.customInterests) {
-                          user.customInterests.split(',').map((s: string) => s.trim()).filter(Boolean).forEach((item: string) => {
-                            if (!userInterests.includes(item)) userInterests.push(item);
-                          });
-                        }
-                        if (user?.customActivities) {
-                          user.customActivities.split(',').map((s: string) => s.trim()).filter(Boolean).forEach((item: string) => {
-                            if (!userActivities.includes(item)) userActivities.push(item);
-                          });
-                        }
-                        setEditFormData({ interests: userInterests, activities: userActivities });
-                        setIsEditingPublicInterests(true);
-                        setActiveEditSection(user?.userType === 'business' ? 'activities' : 'interests');
-                        const sectionId = user?.userType === 'business' ? 'business-interests-activities-edit-section' : 'interests-activities-section';
-                        setTimeout(() => {
-                          const el = document.getElementById(sectionId);
-                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }, 100);
-                      }}
-                      className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline"
-                      data-testid="button-edit-interests-activities-from-about"
-                    >
-                      <Edit2 className="w-4 h-4 shrink-0" />
-                      Edit interests & activities
-                    </button>
-                  </div>
-                )}
-
                 {/* Business Contact Information - Prominent placement for business profiles */}
                 {user?.userType === 'business' && (
                   <div className="space-y-3 border-t pt-4 mt-4 bg-gradient-to-br from-blue-50 to-gray-50 dark:from-gray-800 dark:to-gray-900 p-4 rounded-lg">
@@ -2510,7 +2474,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                       Get vouched by vouched community members who know you personally
                     </div>
                   )}
-                  {isOwnProfile && (
+                  {/* Chatrooms + Invite Friends: only in sidebar on iOS; on desktop they live in the profile hero card */}
+                  {isOwnProfile && isNativeIOSApp() && (
                     <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3 flex flex-col gap-2">
                       <button
                         type="button"
