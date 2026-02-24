@@ -66,14 +66,19 @@ export default function ResponsiveUserGrid({
   // Get travel destination for display - same logic for ALL users (each user's own travel data)
   const getTravelDestination = (user: User): string | null => {
     if (user.userType === 'business') return null;
+    const u = user as any;
     const toDisplay = (s: string | null | undefined): string | null => {
       if (s == null || s === '') return null;
       const t = String(s).trim();
       if (!t || t.toLowerCase() === 'null' || t.toLowerCase() === 'undefined') return null;
       return t;
     };
+    const debugUsernames = ['barbara809', 'aml101371'];
+    if (debugUsernames.includes(u.username)) {
+      console.log(`[Travel Badge] ResponsiveUserGrid ${u.username} FULL DATA:`, JSON.stringify(u, null, 2));
+    }
     // 1. From travelPlans (active trip) - use dateUtils for consistent date parsing
-    const plans = (user as any).travelPlans;
+    const plans = u.travelPlans ?? u.travel_plans;
     if (Array.isArray(plans) && plans.length > 0) {
       const dest = getCurrentTravelDestination(plans);
       if (dest) {
@@ -81,17 +86,33 @@ export default function ResponsiveUserGrid({
         const r = toDisplay(city);
         if (r) return r;
       }
+      // Fallback: check plan.destinationCity directly for active plans
+      const now = new Date();
+      for (const plan of plans) {
+        const start = plan.startDate ?? plan.start_date;
+        const end = plan.endDate ?? plan.end_date;
+        if (start && end) {
+          const s = new Date(start);
+          const e = new Date(end);
+          if (now >= s && now <= e) {
+            const city = toDisplay(plan.destinationCity ?? plan.destination_city ?? plan.destination?.split(',')[0]?.trim());
+            if (city) return city;
+          }
+        }
+      }
     }
-    // 2. From destinationCity (API-enriched)
-    const destCity = toDisplay(user.destinationCity);
+    // 2. From destinationCity (API-enriched - server sets ONLY for users with active travel)
+    const destCity = toDisplay(u.destinationCity ?? u.destination_city);
     if (destCity) return destCity;
-    // 3. From travelDestination
-    const td = user.travelDestination;
+    // 3. From travelDestination (API - server sets ONLY from active plan)
+    const td = u.travelDestination ?? u.travel_destination;
     if (td) {
       const city = String(td).split(',')[0]?.trim();
       const r = toDisplay(city);
       if (r) return r;
     }
+    // NOTE: We intentionally do NOT use location, currentCity, or locationBasedStatus here.
+    // The traveling badge must ONLY show for CURRENT travel (trip dates active today), not future travel.
     return null;
   };
 
@@ -160,10 +181,10 @@ export default function ResponsiveUserGrid({
         )}
       </div>
       
-      {/* Content */}
-      <div className="px-6 pb-6 -mt-12 text-center">
+      {/* Content - reduced padding so content fills card better */}
+      <div className="px-2 pb-2 pt-1 -mt-12 text-center">
         {/* Large Circular Avatar with white ring */}
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-2">
           <div className="relative">
             <div className="w-24 h-24 rounded-full bg-white dark:bg-gray-800 p-1.5 shadow-lg">
               <SimpleAvatar 
@@ -176,24 +197,24 @@ export default function ResponsiveUserGrid({
         </div>
         
         {/* User Info */}
-        <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-1 truncate">
+        <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-0.5 truncate">
           {user.username}
         </h3>
         
         {/* Subtitle - 4 lines: Nearby Local, city, Nearby Traveler, destination */}
-        <div className="text-sm text-gray-600 dark:text-gray-400 mb-3 font-medium">
+        <div className="text-sm text-gray-600 dark:text-gray-400 mb-1.5 font-medium">
           <UserLocationLines user={user} />
         </div>
         
         {/* Bio */}
         {user.bio && (
-          <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 mb-4 px-2">
+          <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 mb-2 px-1">
             {user.bio}
           </p>
         )}
         
         {/* Interests Badge */}
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-2">
           {getInterestsBadge(user)}
         </div>
         
@@ -244,10 +265,10 @@ export default function ResponsiveUserGrid({
         )}
       </div>
       
-      {/* Content */}
-      <div className="px-3 pb-4 -mt-8 text-center">
+      {/* Content - reduced padding so content fills card better */}
+      <div className="px-2 pb-2 -mt-8 text-center">
         {/* Circular Avatar with white ring */}
-        <div className="flex justify-center mb-3">
+        <div className="flex justify-center mb-2">
           <div className="w-16 h-16 rounded-full bg-white dark:bg-gray-800 p-1 shadow-lg">
             <SimpleAvatar 
               user={user} 
@@ -263,7 +284,7 @@ export default function ResponsiveUserGrid({
         </h3>
         
         {/* Subtitle - 4 lines: Nearby Local, city, Nearby Traveler, destination */}
-        <div className="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium min-w-0">
+        <div className="text-xs text-gray-600 dark:text-gray-400 mb-2 font-medium min-w-0">
           <UserLocationLines user={user} />
         </div>
         

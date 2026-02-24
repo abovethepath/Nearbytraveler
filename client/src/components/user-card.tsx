@@ -95,6 +95,10 @@ export default function UserCard({
       return t;
     };
     const u = user as any;
+    const debugUsernames = ['barbara809', 'aml101371'];
+    if (debugUsernames.includes(u.username)) {
+      console.log(`[Travel Badge] ${u.username} FULL DATA:`, JSON.stringify(u, null, 2));
+    }
     // 1. From travelPlans / travel_plans (active trip) - same as current user's Los Angeles badge
     const plans = u.travelPlans ?? u.travel_plans;
     if (Array.isArray(plans) && plans.length > 0) {
@@ -113,22 +117,24 @@ export default function UserCard({
           const s = new Date(start);
           const e = new Date(end);
           if (now >= s && now <= e) {
-            const city = toDisplay(plan.destinationCity ?? plan.destination_city);
+            const city = toDisplay(plan.destinationCity ?? plan.destination_city ?? plan.destination?.split(',')[0]?.trim());
             if (city) return city;
           }
         }
       }
     }
-    // 2. From destinationCity / destination_city (API-enriched - server sets for ALL users with active travel)
+    // 2. From destinationCity / destination_city (API-enriched - server sets ONLY for users with active travel)
     const destCity = toDisplay(u.destinationCity ?? u.destination_city);
     if (destCity) return destCity;
-    // 3. From travelDestination / travel_destination (API fallback)
+    // 3. From travelDestination / travel_destination (API - server sets ONLY from active plan)
     const td = u.travelDestination ?? u.travel_destination;
     if (td) {
       const city = String(td).split(',')[0]?.trim();
       const r = toDisplay(city);
       if (r) return r;
     }
+    // NOTE: We intentionally do NOT use location, currentCity, or locationBasedStatus here.
+    // The traveling badge must ONLY show for CURRENT travel (trip dates active today), not future travel.
     return null;
   };
 
@@ -212,8 +218,8 @@ export default function UserCard({
         )}
       </div>
       
-      {/* Info box - compact when compact prop; on desktop web use tighter padding to reduce card height */}
-      <div className={`bg-white dark:bg-gray-800 ${compact ? 'p-2' : isNativeIOSApp() ? 'p-2 lg:p-4' : 'p-2 lg:p-2'}`}>
+      {/* Info box - compact when compact prop; reduced padding so content fills card better */}
+      <div className={`bg-white dark:bg-gray-800 ${compact ? 'p-1' : 'p-1 lg:p-1.5'}`}>
         {/* Mobile / compact: simple stacked layout */}
         <div className={compact ? '' : 'lg:hidden'}>
           <div className={`font-semibold text-gray-900 dark:text-white ${compact ? 'text-sm leading-tight' : 'text-sm'}`} style={compact ? { display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' } : { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
@@ -252,8 +258,8 @@ export default function UserCard({
           )}
         </div>
         
-        {/* Desktop (non-compact only): fixed 4-row grid; on desktop web use tighter spacing to reduce card height */}
-        <div className={compact ? 'hidden' : `hidden lg:grid gap-0 leading-tight ${isNativeIOSApp() ? 'lg:grid-rows-4 min-h-[100px]' : 'lg:grid-rows-4 min-h-0'}`}>
+        {/* Desktop (non-compact only): fixed 4-row grid; tighter spacing to reduce card height */}
+        <div className={compact ? 'hidden' : 'hidden lg:grid gap-0 leading-tight lg:grid-rows-4 min-h-0'}>
           <div className={`font-semibold truncate text-orange-500 ${isNativeIOSApp() ? 'text-sm' : 'text-xs'}`}>
             {thingsInCommon > 0 ? `${thingsInCommon} things in common` : '\u00A0'}
           </div>

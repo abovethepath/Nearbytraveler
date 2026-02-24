@@ -2,6 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Apply theme class immediately to prevent flash of light mode before dark mode loads -->
+    <script>
+      (function() {
+        var storageKey = 'nearby-traveler-theme';
+        var saved = localStorage.getItem(storageKey);
+        var theme = (saved === 'dark' || saved === 'light' || saved === 'system') ? saved : 'dark';
+        var resolved = theme === 'system'
+          ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : theme;
+        document.documentElement.classList.add(resolved);
+      })();
+    </script>
     <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>The NearbyTraveler.com - Social Travel Networking Platform</title>
     

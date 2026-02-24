@@ -2611,7 +2611,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           ...plan,
           destination: plan.destination || `${plan.destinationCity || ''}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry || ''}`.replace(/^,\s*|,\s*$/g, '').trim()
         }));
-        const travelDestination = activePlan ? `${activePlan.destinationCity || ''}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry || ''}`.replace(/^,\s*|,\s*$/g, '').trim() : (user.travelDestination || null);
+        // CRITICAL: Only set travel fields when user has ACTIVE trip (today within dates), not future travel
+        const travelDestination = activePlan ? `${activePlan.destinationCity || ''}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry || ''}`.replace(/^,\s*|,\s*$/g, '').trim() : null;
         const destCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0]?.trim()) || null;
         return {
           ...user,
@@ -2942,7 +2943,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
         }));
         
-        let travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
+        // CRITICAL: Only set travel fields when user has ACTIVE trip (today within dates), not future travel
+        let travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : null;
         if (travelDestination && (String(travelDestination).toLowerCase() === 'null' || String(travelDestination).trim() === '')) travelDestination = null;
         const destinationCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
         return {
@@ -3089,8 +3091,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           return now >= start && now <= end;
         });
         
-        const travelDestination = activePlan ? `${activePlan.destinationCity || ''}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry || ''}`.replace(/^,\s*|,\s*$/g, '').trim() || activePlan.destination : (user.travelDestination || null);
-        const isCurrentlyTraveling = !!activePlan || !!(user as any).isCurrentlyTraveling;
+        // CRITICAL: Only set travel fields when user has ACTIVE trip (today within dates), not future travel
+        const travelDestination = activePlan ? `${activePlan.destinationCity || ''}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry || ''}`.replace(/^,\s*|,\s*$/g, '').trim() || activePlan.destination : null;
+        const isCurrentlyTraveling = !!activePlan;
         const destCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
         const isAvail = availableNowUserIds.has(user.id);
         return {
@@ -7333,11 +7336,13 @@ Questions? Just reply to this message. Welcome aboard!
       const enrichedUsers = await Promise.all(filteredUsers.map(async (user) => {
         const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
         
-        // Format travel plans to match frontend expectations
-        const formattedTravelPlans = userTravelPlans.map(plan => ({
-          ...plan,
-          destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
-        }));
+        // Format travel plans to match frontend expectations (preserve plan.destination when destinationCity is null)
+        const formattedTravelPlans = userTravelPlans.map(plan => {
+          const built = plan.destinationCity
+            ? `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry || ''}`.replace(/^,\s*|,\s*$/g, '').trim()
+            : null;
+          return { ...plan, destination: built || plan.destination };
+        });
         
         // Find active travel plan (currently traveling)
         const activePlan = userTravelPlans.find(plan => {
@@ -7348,9 +7353,14 @@ Questions? Just reply to this message. Welcome aboard!
         
         // Remove password and add travel plans + travel status
         const { password: _, ...userWithoutPassword } = user;
-        let travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : (user.travelDestination || null);
+        // CRITICAL: Only set travel fields when user has ACTIVE trip (today within dates), not future travel
+        let travelDestination = activePlan
+          ? (activePlan.destinationCity
+              ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry || ''}`.replace(/^,\s*|,\s*$/g, '').trim()
+              : activePlan.destination)
+          : null;
         if (travelDestination && (String(travelDestination).toLowerCase() === 'null' || String(travelDestination).trim() === '')) travelDestination = null;
-        const destCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
+        const destCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0]?.trim()) || null;
         const isAvail = availableNowUserIds.has(user.id);
         return {
           ...userWithoutPassword,
@@ -18602,9 +18612,9 @@ Questions? Just reply to this message. Welcome aboard!
             };
           }));
         } else {
-          // Event/meetup chatrooms
+          // Event/meetup chatrooms - roomId is meetup_chatrooms.id (chatroom id)
           const meetupMessages = await db.query.meetupChatroomMessages.findMany({
-            where: eq(meetupChatroomMessages.meetupId, roomId),
+            where: eq(meetupChatroomMessages.meetupChatroomId, roomId),
             orderBy: desc(meetupChatroomMessages.sentAt),
             limit: 50,
           });
