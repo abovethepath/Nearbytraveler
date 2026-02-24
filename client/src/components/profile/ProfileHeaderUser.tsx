@@ -75,35 +75,35 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       {!isOwnProfile && shareButton}
       <div className={`max-w-7xl mx-auto relative z-10 ${isDesktopOwnProfile ? 'pl-4 sm:pl-6 lg:pl-8' : ''}`}>
         {isDesktopOwnProfile ? (
-          /* Desktop own profile: clean balanced layout - left: avatar + labels; right: @username, name, bio, stats */
-          <div className="flex flex-row items-start gap-5 lg:gap-6">
-            {/* LEFT: Avatar (circular, no containers) + Add Photo overlay + Nearby Local/Traveler + New to Town */}
+          /* Desktop own profile: balanced layout - larger avatar, readable city text, proportional @username */
+          <div className="flex flex-row items-start gap-6 lg:gap-8">
+            {/* LEFT: Larger avatar + Nearby Local/Traveler city text (more readable) */}
             <div className="flex flex-col items-start flex-shrink-0 min-w-0">
               <div className="relative">
                 <div
-                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden cursor-pointer"
+                  className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden cursor-pointer"
                   onClick={() => { if (user?.profileImage) setShowExpandedPhoto(true); }}
                   title={user?.profileImage ? "Click to enlarge photo" : undefined}
                 >
                   <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
                 </div>
-                {/* Add Photo - small overlay at bottom right of avatar circle */}
+                {/* Add Photo - overlay at bottom right of avatar circle */}
                 <label
-                  className={`absolute bottom-0 right-0 w-7 h-7 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-600/90 hover:bg-gray-500'} text-white border-2 border-white overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
+                  className={`absolute bottom-0 right-0 w-8 h-8 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-600/90 hover:bg-gray-500'} text-white border-2 border-white overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
                   data-testid="button-upload-avatar"
                 >
-                  <Camera className="h-3.5 w-3.5 pointer-events-none" />
+                  <Camera className="h-4 w-4 pointer-events-none" />
                   <input id="avatar-upload-input" type="file" accept="image/*" onChange={(e) => { handleAvatarUpload?.(e); }} className="sr-only" disabled={uploadingPhoto} aria-label="Change avatar" />
                 </label>
               </div>
-              <div className="mt-2 text-left">
-                <span className="block text-xs font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
-                <span className="block text-sm font-medium text-black">{hometown}</span>
+              <div className="mt-2.5 text-left">
+                <span className="block text-sm font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
+                <span className="block text-base font-medium text-black">{hometown}</span>
               </div>
               {hasValidTravelDestination && (
-                <div className="mt-1 text-left">
-                  <span className="block text-xs font-semibold text-blue-600 dark:text-blue-400">Nearby Traveler</span>
-                  <span className="block text-sm font-medium text-black">{currentTravelPlan}</span>
+                <div className="mt-1.5 text-left">
+                  <span className="block text-sm font-semibold text-blue-600 dark:text-blue-400">Nearby Traveler</span>
+                  <span className="block text-base font-medium text-black">{currentTravelPlan}</span>
                 </div>
               )}
               {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
@@ -112,9 +112,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </span>
               )}
             </div>
-            {/* RIGHT: @username only, bio snippet, action buttons */}
-            <div className="flex-1 min-w-0 flex flex-col gap-1 pt-0">
-              <h1 className="text-2xl sm:text-3xl font-bold text-black break-all leading-tight">@{user?.username}</h1>
+            {/* RIGHT: @username, bio, buttons - proportionally smaller to match city text */}
+            <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0.5">
+              <h1 className="text-lg sm:text-xl font-bold text-black break-all leading-tight">@{user?.username}</h1>
               {bioSnippet && <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{bioSnippet}</p>}
               <div className="flex flex-wrap gap-2 mt-2">
                 <button
@@ -123,17 +123,17 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     const chatCity = user?.hometownCity || user?.location?.split(',')[0] || 'General';
                     setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
                   }}
-                  className="inline-flex items-center h-7 rounded-md px-3 text-xs font-semibold bg-orange-500 hover:bg-orange-600 text-white border-0 shadow-sm transition-colors"
+                  className="inline-flex items-center h-7 rounded-md px-3 text-sm font-semibold bg-orange-500 hover:bg-orange-600 text-white border-0 shadow-sm transition-colors"
                 >
-                  <MessageCircle className="w-3 h-3 mr-1.5 shrink-0" />
+                  <MessageCircle className="w-3.5 h-3.5 mr-1.5 shrink-0" />
                   Chatrooms{(userChatrooms?.length || 0) > 0 ? ` (${userChatrooms.length})` : ''}
                 </button>
                 <button
                   type="button"
                   onClick={() => setLocation('/share-qr')}
-                  className="inline-flex items-center h-7 rounded-md px-3 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-sm transition-colors"
+                  className="inline-flex items-center h-7 rounded-md px-3 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-sm transition-colors"
                 >
-                  <Share2 className="w-3 h-3 mr-1.5 shrink-0" />
+                  <Share2 className="w-3.5 h-3.5 mr-1.5 shrink-0" />
                   Invite Friends
                 </button>
               </div>
