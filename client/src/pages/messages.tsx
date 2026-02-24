@@ -573,7 +573,7 @@ export default function Messages() {
               label=""
               className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent border-none shadow-none hover:bg-gray-200 dark:hover:bg-gray-700/50 p-2"
             />
-            <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">Messages</h1>
+            <h1 className={`font-semibold text-gray-900 dark:text-white ${isNativeIOSApp() ? 'text-base md:text-lg' : 'text-sm'}`}>Messages</h1>
           </div>
           <input
             type="text"
@@ -595,8 +595,8 @@ export default function Messages() {
         <div className="flex-1 overflow-y-auto">
           {conversations.length === 0 ? (
             <div className="p-4 text-center text-gray-600 dark:text-gray-500">
-              <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No conversations yet</p>
+              <MessageCircle className="w-10 h-10 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">No conversations yet</p>
             </div>
           ) : (
             conversations
@@ -640,9 +640,9 @@ export default function Messages() {
                         </AvatarFallback>
                       </Avatar>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className={`font-semibold truncate ${
+                    <div className="flex-1 min-w-0 overflow-hidden">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <h3 className={`text-sm font-semibold truncate ${
                           selectedConversation === conv.userId 
                             ? 'text-white' 
                             : 'text-gray-900 dark:text-white'
@@ -685,29 +685,29 @@ export default function Messages() {
           </div>
         ) : selectedConversation && selectedUser ? (
           <>
-            <div ref={headerRef} className={`${isNativeIOSApp() ? 'px-3 py-1' : 'px-4 py-2'} border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0`}>
-              <div className="flex items-center gap-3">
+            <div ref={headerRef} className={`${isNativeIOSApp() ? 'px-3 py-1.5' : 'px-4 py-2'} border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0 min-w-0`}>
+              <div className="flex items-center gap-2 min-w-0">
                 {/* Back button for mobile */}
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => window.history.back()}
-                  className="lg:hidden text-gray-600 dark:text-gray-400"
+                  className="lg:hidden text-gray-600 dark:text-gray-400 h-8 w-8 shrink-0"
                 >
-                  <ArrowLeft className="w-5 h-5" />
+                  <ArrowLeft className="w-4 h-4" />
                 </Button>
                 
-                <div className="cursor-pointer" onClick={() => navigate(`/profile/${selectedUser.userId}`)}>
-                  <Avatar className="w-10 h-10">
+                <div className="cursor-pointer shrink-0" onClick={() => navigate(`/profile/${selectedUser.userId}`)}>
+                  <Avatar className="w-9 h-9">
                     <AvatarImage src={selectedUser.profileImage} />
-                    <AvatarFallback className="bg-blue-600 text-white">
+                    <AvatarFallback className="bg-blue-600 text-white text-sm">
                       {selectedUser.username?.charAt(0)?.toUpperCase() || '?'}
                     </AvatarFallback>
                   </Avatar>
                 </div>
-                <div className="flex-1 min-w-0 overflow-hidden">
+                <div className="flex-1 min-w-0 overflow-hidden max-w-[140px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[260px]">
                   <h2 className="text-sm font-semibold text-gray-900 dark:text-white truncate" title={`@${selectedUser.username}`}>@{selectedUser.username}</h2>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{selectedUser.location}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 truncate min-w-0">{selectedUser.location}</p>
                 </div>
               </div>
             </div>
@@ -888,10 +888,10 @@ export default function Messages() {
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center">
-            <div className="text-center text-gray-600 dark:text-gray-500">
-              <MessageCircle className="w-20 h-20 mx-auto mb-6 opacity-30" />
-              <h3 className="text-2xl font-medium mb-2 text-gray-800 dark:text-gray-300">Welcome to Messages</h3>
-              <p className="text-gray-600 dark:text-gray-400">Select a conversation to start messaging</p>
+            <div className="text-center text-gray-600 dark:text-gray-500 px-4">
+              <MessageCircle className="w-12 h-12 mx-auto mb-4 opacity-30" />
+              <h3 className="text-base font-medium mb-1.5 text-gray-800 dark:text-gray-300">Welcome to Messages</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Select a conversation to start messaging</p>
             </div>
           </div>
         )}
@@ -900,8 +900,8 @@ export default function Messages() {
       {/* Right Sidebar - Contacts List (Hidden on mobile and tablet) */}
       <div className="hidden xl:flex w-72 h-full bg-gray-50 dark:bg-gray-900 flex-col border-l-2 border-gray-300 dark:border-gray-500">
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <Users className="w-5 h-5" />
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <Users className="w-4 h-4" />
             Contacts
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -934,14 +934,28 @@ export default function Messages() {
                   onClick={() => navigate(`/messages/${contact.id}`)}
                 >
                   <div className="flex items-center gap-3">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage src={getProfileImageUrl(contact) || undefined} />
-                      <AvatarFallback className="bg-green-600 text-white text-sm">
-                        {contact.username?.charAt(0)?.toUpperCase() || '?'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium truncate ${
+                    <div
+                      className="cursor-pointer shrink-0 hover:opacity-80 transition-opacity"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/profile/${contact.id}`);
+                      }}
+                    >
+                      <Avatar className="w-10 h-10">
+                        <AvatarImage src={getProfileImageUrl(contact) || undefined} />
+                        <AvatarFallback className="bg-green-600 text-white text-sm">
+                          {contact.username?.charAt(0)?.toUpperCase() || '?'}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div
+                      className="flex-1 min-w-0 overflow-hidden cursor-pointer hover:underline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/profile/${contact.id}`);
+                      }}
+                    >
+                      <p className={`text-sm font-semibold truncate ${
                         isActive ? 'text-blue-700 dark:text-blue-300' : 'text-gray-900 dark:text-white'
                       }`}>
                         @{contact.username}

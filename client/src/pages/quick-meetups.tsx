@@ -18,6 +18,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { isNativeIOSApp } from '@/lib/nativeApp';
 
 interface QuickMeetup {
   id: number;
@@ -333,11 +334,12 @@ function QuickMeetupsPage() {
 
   const MeetupCard = ({ meetup, isExpired = false }: { meetup: QuickMeetup, isExpired?: boolean }) => {
     const isOwn = meetup.organizerId === actualUser?.id;
+    const useFlexLayout = !isNativeIOSApp();
     
     return (
-      <Card className={`border ${isExpired ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50' : 'border-orange-200 dark:border-orange-700 bg-orange-50/30 dark:bg-orange-900/10'}`}>
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between mb-3">
+      <Card className={`border ${useFlexLayout ? 'h-full flex flex-col' : ''} ${isExpired ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50' : 'border-orange-200 dark:border-orange-700 bg-orange-50/30 dark:bg-orange-900/10'}`}>
+        <CardContent className={`p-4 ${useFlexLayout ? 'flex flex-col flex-1 min-h-0' : ''}`}>
+          <div className={`flex items-start justify-between ${useFlexLayout ? 'mb-3 flex-shrink-0' : 'mb-3'}`}>
             <div className="flex-1">
               <h3 className={`font-semibold text-sm ${isExpired ? 'text-gray-600 dark:text-gray-400' : 'text-orange-800 dark:text-orange-200'}`}>
                 {meetup.title}
@@ -353,7 +355,7 @@ function QuickMeetupsPage() {
             </div>
           </div>
 
-          <div className="space-y-2 mb-3">
+          <div className={`space-y-2 ${useFlexLayout ? 'mb-3 flex-1 min-h-0' : 'mb-3'}`}>
             <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
               <MapPin className="w-3 h-3" />
               <span>{meetup.meetingPoint}</span>
@@ -427,7 +429,7 @@ function QuickMeetupsPage() {
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className={`flex gap-2 ${useFlexLayout ? 'flex-shrink-0 mt-auto' : ''}`}>
             <Button 
               size="sm"
               variant="outline" 

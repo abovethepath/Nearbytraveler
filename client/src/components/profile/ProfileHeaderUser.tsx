@@ -73,12 +73,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       style={{ width: '100vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
     >
       {!isOwnProfile && shareButton}
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className={`max-w-7xl mx-auto relative z-10 ${isDesktopOwnProfile ? 'pl-4 sm:pl-6 lg:pl-8' : ''}`}>
         {isDesktopOwnProfile ? (
           /* Desktop own profile: clean balanced layout - left: avatar + labels; right: @username, name, bio, stats */
           <div className="flex flex-row items-start gap-5 lg:gap-6">
             {/* LEFT: Avatar (circular, no containers) + Add Photo overlay + Nearby Local/Traveler + New to Town */}
-            <div className="flex flex-col items-start flex-shrink-0">
+            <div className="flex flex-col items-start flex-shrink-0 min-w-0">
               <div className="relative">
                 <div
                   className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden cursor-pointer"
@@ -98,12 +98,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               </div>
               <div className="mt-2 text-left">
                 <span className="block text-xs font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
-                <span className="block text-sm font-medium text-black dark:text-gray-100">{hometown}</span>
+                <span className="block text-sm font-medium text-black">{hometown}</span>
               </div>
               {hasValidTravelDestination && (
                 <div className="mt-1 text-left">
                   <span className="block text-xs font-semibold text-blue-600 dark:text-blue-400">Nearby Traveler</span>
-                  <span className="block text-sm font-medium text-black dark:text-gray-100">{currentTravelPlan}</span>
+                  <span className="block text-sm font-medium text-black">{currentTravelPlan}</span>
                 </div>
               )}
               {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
@@ -112,37 +112,28 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </span>
               )}
             </div>
-            {/* RIGHT: @username (large bold), full name, bio snippet, stats badges */}
+            {/* RIGHT: @username only, bio snippet, action buttons */}
             <div className="flex-1 min-w-0 flex flex-col gap-1 pt-0">
-              <h1 className="text-2xl sm:text-3xl font-bold text-black dark:text-white break-all leading-tight">@{user?.username}</h1>
-              {user?.name && <p className="text-base text-gray-800 dark:text-gray-200 font-medium">{user.name}</p>}
+              <h1 className="text-2xl sm:text-3xl font-bold text-black break-all leading-tight">@{user?.username}</h1>
               {bioSnippet && <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{bioSnippet}</p>}
-              <div className="flex flex-wrap gap-1.5 mt-0.5">
-                <span className="inline-flex items-center h-5 rounded px-2 text-xs font-medium bg-white/70 dark:bg-gray-800/70 text-gray-800 dark:text-gray-200">
-                  <Users className="w-3 h-3 mr-1 shrink-0" />
-                  {connectionsCount} {connectionsCount === 1 ? 'connection' : 'connections'}
-                </span>
-                <span className="inline-flex items-center h-5 rounded px-2 text-xs font-medium bg-white/70 dark:bg-gray-800/70 text-gray-800 dark:text-gray-200">
-                  <MessageSquare className="w-3 h-3 mr-1 shrink-0" />
-                  {vouchesCount} {vouchesCount === 1 ? 'vouch' : 'vouches'}
-                </span>
+              <div className="flex flex-wrap gap-2 mt-2">
                 <button
                   type="button"
                   onClick={() => {
                     const chatCity = user?.hometownCity || user?.location?.split(',')[0] || 'General';
                     setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
                   }}
-                  className="inline-flex items-center h-5 rounded px-2 text-xs font-medium bg-white/70 dark:bg-gray-800/70 text-gray-800 dark:text-gray-200 hover:bg-white/90 dark:hover:bg-gray-700/70 transition-colors"
+                  className="inline-flex items-center h-7 rounded-md px-3 text-xs font-semibold bg-orange-500 hover:bg-orange-600 text-white border-0 shadow-sm transition-colors"
                 >
-                  <MessageCircle className="w-3 h-3 mr-1 shrink-0" />
+                  <MessageCircle className="w-3 h-3 mr-1.5 shrink-0" />
                   Chatrooms{(userChatrooms?.length || 0) > 0 ? ` (${userChatrooms.length})` : ''}
                 </button>
                 <button
                   type="button"
                   onClick={() => setLocation('/share-qr')}
-                  className="inline-flex items-center h-5 rounded px-2 text-xs font-medium bg-white/70 dark:bg-gray-800/70 text-gray-800 dark:text-gray-200 hover:bg-white/90 dark:hover:bg-gray-700/70 transition-colors"
+                  className="inline-flex items-center h-7 rounded-md px-3 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-sm transition-colors"
                 >
-                  <Share2 className="w-3 h-3 mr-1 shrink-0" />
+                  <Share2 className="w-3 h-3 mr-1.5 shrink-0" />
                   Invite Friends
                 </button>
               </div>

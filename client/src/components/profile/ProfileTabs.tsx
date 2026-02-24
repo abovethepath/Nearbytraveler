@@ -42,8 +42,8 @@ export function ProfileTabs(props: ProfilePageProps) {
     <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900">
       {/* Main Content Container - with overflow-x-hidden for rest of page */}
 
-      {/* Navigation Tabs - Card Style with Border */}
-      <div className="w-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg mt-4 shadow-sm">
+      {/* Navigation Tabs - Card Style with Border (desktop: closer to hero; iOS: unchanged) */}
+      <div className={`w-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg shadow-sm ${isNativeIOSApp() ? 'mt-4' : 'mt-2 sm:mt-2 lg:mt-1'}`}>
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex flex-wrap gap-2 sm:gap-3 lg:gap-4">
