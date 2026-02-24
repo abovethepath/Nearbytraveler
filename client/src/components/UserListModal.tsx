@@ -221,12 +221,6 @@ export function UserListModal({ isOpen, onClose, city, state, country, userType,
                             {getDisplayLocation(user)}
                           </span>
                         </div>
-                        
-                        {user.bio && (
-                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                            {user.bio}
-                          </p>
-                        )}
                       </div>
                     </div>
                     

@@ -47,10 +47,25 @@ export function ProfileTabs(props: ProfilePageProps) {
 
       {/* Navigation Tabs - Card Style. Desktop user: hidden (tabs in hero). iOS + business: show. */}
       {showTabsCard && (
-      <div className={`w-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg shadow-sm ${isNativeIOSApp() ? 'mt-4' : 'mt-2 sm:mt-2 lg:mt-1'}`}>
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex flex-wrap gap-2 sm:gap-3 lg:gap-4">
+      <div className={`w-full max-w-full min-w-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-2 sm:mx-6 lg:mx-8 rounded-lg shadow-sm overflow-hidden ${isNativeIOSApp() ? 'mt-4' : 'mt-2 sm:mt-2 lg:mt-1'}`}>
+        <div className="max-w-7xl mx-auto min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 min-w-0">
+            <div className="flex flex-nowrap gap-2 sm:gap-3 lg:gap-4 min-w-0 overflow-x-auto overflow-y-hidden scrollbar-hide pb-1 -mb-1 [&>button]:shrink-0">
+              <button
+                role="tab"
+                aria-selected={activeTab === 'about'}
+                aria-controls="panel-about"
+                onClick={() => openTab('about')}
+                className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
+                  activeTab === 'about'
+                    ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
+                }`}
+                data-testid="tab-about"
+              >
+                About
+              </button>
+
               <button
                 role="tab"
                 aria-selected={activeTab === 'contacts'}
@@ -280,7 +295,16 @@ export function ProfileTabs(props: ProfilePageProps) {
           {/* Main Content Column */}
           <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
 
-            {/* About Section - Always Visible */}
+            {/* About Section - Shown only when About tab is active */}
+            {activeTab === 'about' && loadedTabs.has('about') && (
+            <div
+              role="tabpanel"
+              id="panel-about"
+              aria-labelledby="tab-about"
+              ref={tabRefs.about}
+              className="space-y-4"
+              data-testid="about-content"
+            >
             <Card className="mt-2 relative overflow-visible bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-4 lg:px-6 pt-3 sm:pt-4 lg:pt-6">
                 <div className="flex items-center justify-between w-full">
@@ -528,6 +552,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                 </div>
               </CardContent>
             </Card>
+            </div>
+            )}
 
             {/* Secret Activities Section - Separate Card */}
             {user?.userType !== 'business' && user?.secretActivities && (

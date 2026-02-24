@@ -444,7 +444,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
       style={{ touchAction: 'none' }}
     >
       <div 
-        className="relative bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto mx-2 sm:mx-4 my-2 sm:my-4 border border-gray-200 dark:border-gray-700"
+        className="relative bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-2xl max-w-[90vw] sm:max-w-6xl w-full max-h-[90vh] sm:max-h-[90vh] overflow-y-auto mx-2 sm:mx-4 my-2 sm:my-4 border border-gray-200 dark:border-gray-700 min-w-0"
         onClick={(e) => e.stopPropagation()}
         style={{ touchAction: 'auto' }}
       >
@@ -453,25 +453,25 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
           variant="ghost" 
           size="sm" 
           onClick={onClose} 
-          className="absolute top-4 right-4 hover:bg-gray-100/80 dark:hover:bg-gray-700/80 z-[9999] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-full w-8 h-8 p-0"
+          className="absolute top-4 right-4 hover:bg-gray-100/80 dark:hover:bg-gray-700/80 z-[9999] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-full min-h-[44px] min-w-[44px] h-11 w-11 sm:h-8 sm:w-8 p-0 flex items-center justify-center"
         >
           <X className="w-5 h-5" />
         </Button>
         
-        <div className="p-4 sm:p-6 lg:p-8">
+        <div className="p-4 sm:p-6 lg:p-8 min-w-0 overflow-hidden">
 
-          <div className="flex items-center gap-3 mb-6">
-            <div className="bg-gradient-to-r from-blue-600 to-orange-500 p-3 rounded-xl">
+          <div className="flex items-center gap-3 mb-6 min-w-0">
+            <div className="bg-gradient-to-r from-blue-600 to-orange-500 p-3 rounded-xl shrink-0">
               <Users className="w-6 h-6 text-white" />
             </div>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect with Travelers & Locals</h2>
+            <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent truncate min-w-0">Connect with Travelers & Locals</h2>
           </div>
 
-          <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-4 sm:space-y-6 min-w-0">
             {/* Quick Select Locations */}
-            <div>
+            <div className="min-w-0">
               <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-900 dark:text-white">Quick Search</h3>
-              <div className="flex flex-wrap gap-2 sm:gap-3">
+              <div className="flex flex-wrap gap-2 sm:gap-3 min-w-0">
                 {/* WHO IS HERE NOW BUCKET */}
                 <Button
                   variant="outline"
@@ -574,7 +574,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
             </div>
 
             {/* Search Form */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-w-0 overflow-hidden">
               <div className="space-y-2">
                 <Label htmlFor="location">Location</Label>
                 <div className="relative">

@@ -80,7 +80,7 @@ export default function BusinessProfile() {
       {/* Business Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex flex-col lg:flex-row gap-6">
             {/* Business Info */}
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">

@@ -340,17 +340,17 @@ body {
     right: 0 !important;
   }
   
-  /* Ensure modals/dialogs center on tablets */
+  /* Ensure modals/dialogs center on tablets - max-width and max-height */
   [role="dialog"],
   .dialog,
+  [class*="DialogContent"],
   [class*="Dialog"] {
     max-width: 90vw !important;
+    max-height: 90vh !important;
   }
   
-  /* Fix flex layouts for tablets */
-  .flex-col.md\\:flex-row {
-    flex-direction: row !important;
-  }
+  /* Removed: .flex-col.md:flex-row override - was switching to row too early on iPad portrait (768px).
+     Components should use lg:flex-row (1024px) for tablet landscape if needed. */
   
   /* Ensure images scale properly - exclude avatars and icons */
   img:not([class*="rounded-full"]):not([class*="avatar"]), video {
@@ -417,11 +417,38 @@ body {
   }
 }
 
+/* Flex children - allow shrinking to prevent overflow (applies to common flex patterns) */
+.flex > *,
+.flex-wrap > *,
+[class*="flex"] > .flex-1,
+[class*="flex"] > .flex-grow,
+[class*="flex"] > .flex-shrink {
+  min-width: 0;
+}
+
 /* Fix common mobile overflow culprits */
 @media (max-width: 768px) {
   .container, main, #root {
     max-width: 100vw !important;
     overflow-x: hidden;
+  }
+  
+  /* Modals/dialogs - max-width 90vw and proper max-height on mobile */
+  [role="dialog"],
+  .dialog,
+  [class*="DialogContent"],
+  [class*="Dialog"] {
+    max-width: 90vw !important;
+    max-height: 90vh !important;
+  }
+  
+  /* Touch targets: minimum 44x44px for accessibility on mobile */
+  button:not(.no-touch-target),
+  [role="button"]:not(.no-touch-target),
+  .touch-target,
+  a[class*="button"] {
+    min-height: 44px !important;
+    min-width: 44px !important;
   }
   
   /* Prevent fixed elements from causing overflow */
@@ -476,12 +503,11 @@ body {
     word-wrap: break-word !important;
   }
   
-  /* Fix flex containers with buttons */
+  /* Fix flex containers with buttons - preserve 44px touch targets */
   .flex button,
   .flex [role="button"],
   .inline-flex button {
     flex-shrink: 1 !important;
-    min-width: 0 !important;
   }
   
   /* Ensure CTA buttons don't overflow */

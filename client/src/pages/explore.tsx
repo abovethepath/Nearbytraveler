@@ -381,23 +381,23 @@ export default function Explore() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-4">
+      <div className="max-w-6xl mx-auto px-4 py-4 min-w-0 overflow-x-hidden">
         {/* Tabs first: Live, Activities, Templates, Groups, Stories — before People in city */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-3 gap-2 mb-4 w-full h-auto p-1.5">
-            <TabsTrigger value="live" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap">
+          <TabsList className="flex flex-nowrap lg:grid lg:grid-cols-3 gap-2 mb-4 w-full min-w-0 overflow-x-auto overflow-y-hidden p-1.5 scrollbar-hide shrink-0 [&>button]:shrink-0 [&>button]:flex-shrink-0">
+            <TabsTrigger value="live" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap min-w-0">
               <MapPin className="w-3.5 h-3.5 shrink-0" /> <span>Live</span>
             </TabsTrigger>
-            <TabsTrigger value="experiences" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap">
+            <TabsTrigger value="experiences" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap min-w-0">
               <Sparkles className="w-3.5 h-3.5 shrink-0" /> <span>Activities</span>
             </TabsTrigger>
-            <TabsTrigger value="templates" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap">
+            <TabsTrigger value="templates" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap min-w-0">
               <Star className="w-3.5 h-3.5 shrink-0" /> <span>Templates</span>
             </TabsTrigger>
-            <TabsTrigger value="communities" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap">
+            <TabsTrigger value="communities" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap shrink-0 lg:col-span-1">
               <Globe className="w-3.5 h-3.5 shrink-0" /> <span>Groups</span>
             </TabsTrigger>
-            <TabsTrigger value="cards" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap col-span-2">
+            <TabsTrigger value="cards" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap shrink-0 lg:col-span-2">
               <Share2 className="w-3.5 h-3.5 shrink-0" /> <span>Stories</span>
             </TabsTrigger>
           </TabsList>

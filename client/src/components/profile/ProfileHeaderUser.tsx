@@ -41,7 +41,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const hasValidTravelDestination = currentTravelPlan && typeof currentTravelPlan === 'string' && currentTravelPlan.trim().length > 0 && !invalidDestinations.includes(currentTravelPlan.trim().toLowerCase()) && !/^[\s\-—–]+$/.test(currentTravelPlan);
   const connectionsCount = (userConnections as any[])?.length ?? 0;
   const vouchesCount = (userVouches as any[])?.length ?? 0;
-  const bioSnippet = user?.bio ? (user.bio.length > 120 ? user.bio.slice(0, 120).trim() + '…' : user.bio) : null;
 
   const shareButton = (
     <button
@@ -114,10 +113,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </span>
               )}
             </div>
-            {/* RIGHT: @username, bio, buttons - proportionally smaller to match city text */}
+            {/* RIGHT: @username, buttons - bio has its own dedicated section below hero */}
             <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0.5">
               <h1 className="text-lg sm:text-xl font-bold text-black break-all leading-tight">@{user?.username}</h1>
-              {bioSnippet && <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{bioSnippet}</p>}
               <div className="flex flex-wrap gap-2 mt-2">
                 <button
                   type="button"

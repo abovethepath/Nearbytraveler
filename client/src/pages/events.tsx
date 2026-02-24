@@ -758,7 +758,7 @@ export default function Events() {
           {/* Show loading skeleton immediately while data loads */}
           {isLoading && (
             <div className="space-y-6">
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex flex-col lg:flex-row gap-4">
                 <div className="w-full md:w-64 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
                 <div className="w-full md:w-64 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
               </div>

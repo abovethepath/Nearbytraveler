@@ -60,7 +60,7 @@ export default function DMChat() {
   const { data: otherUser, isLoading, isError } = useQuery<UserDetails>({
     queryKey: ['/api/users', otherUserId],
     queryFn: async () => {
-      const res = await fetch(`/api/users/${otherUserId}`, { credentials: 'include' });
+      const res = await fetch(`${getApiBaseUrl()}/api/users/${otherUserId}`, { credentials: 'include' });
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },

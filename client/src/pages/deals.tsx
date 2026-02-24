@@ -463,8 +463,8 @@ export default function Deals() {
   const regularDeals = useMemo(() => activeDeals.filter(deal => deal.category !== 'instant_deal'), [activeDeals]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden break-words">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 overflow-hidden break-words">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden break-words">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 min-w-0 break-words">
         {/* Header - Mobile Responsive */}
         <div className="text-center mb-6 sm:mb-8 overflow-hidden break-words">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 break-words">
@@ -548,8 +548,9 @@ export default function Deals() {
         </Card>
 
         {/* Deals Content - Mobile Responsive */}
-        <Tabs defaultValue="all" className="w-full overflow-hidden break-words">
-          <TabsList className="grid w-full grid-cols-3 mb-6 sm:mb-8 h-10 sm:h-12">
+        <div className="w-full min-w-0 overflow-x-auto">
+        <Tabs defaultValue="all" className="w-full min-w-0 break-words">
+          <TabsList className="grid w-full grid-cols-3 mb-6 sm:mb-8 h-10 sm:h-12 min-w-0 overflow-x-auto overflow-y-hidden scrollbar-hide">
             <TabsTrigger value="all" className="text-xs sm:text-sm">All ({activeDeals.length})</TabsTrigger>
             <TabsTrigger value="instant" className="text-orange-600 text-xs sm:text-sm">
               Flash ({instantDeals.length})
@@ -574,7 +575,7 @@ export default function Deals() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-hidden break-words">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-hidden break-words min-w-0 w-full">
                 {activeDeals.map(renderDealCard)}
               </div>
             )}
@@ -592,7 +593,7 @@ export default function Deals() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-hidden break-words">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-hidden break-words min-w-0 w-full">
                 {instantDeals.map(renderDealCard)}
               </div>
             )}
@@ -610,17 +611,18 @@ export default function Deals() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-hidden break-words">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-hidden break-words min-w-0 w-full">
                 {regularDeals.map(renderDealCard)}
               </div>
             )}
           </TabsContent>
         </Tabs>
+        </div>
       </div>
 
       {/* Business Contact Modal - After Claiming Deal */}
       <Dialog open={!!claimedDeal} onOpenChange={() => setClaimedDeal(null)}>
-        <DialogContent className="max-w-2xl bg-white dark:bg-gray-900">
+        <DialogContent className="max-w-[90vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
               Deal Claimed Successfully! 🎉

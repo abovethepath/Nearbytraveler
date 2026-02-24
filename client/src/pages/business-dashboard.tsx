@@ -741,7 +741,7 @@ export default function BusinessDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Mobile-responsive layout with proper spacing */}
-      <div className="container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
+      <div className="container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl min-w-0 overflow-x-auto">
         {/* Mobile-optimized header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 space-y-4 sm:space-y-0">
           <div>
@@ -775,7 +775,7 @@ export default function BusinessDashboard() {
         </div>
 
         {/* Mobile-responsive analytics cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8 min-w-0 overflow-hidden">
           <Card className="col-span-1">
             <CardContent className="p-3 sm:p-6 text-center">
               <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-blue-600 dark:text-blue-400" />
@@ -855,8 +855,8 @@ export default function BusinessDashboard() {
         {/* Deals & content section - clear separation from subscription, no overlap */}
         <div className="border-t border-gray-200 dark:border-gray-700 pt-6 sm:pt-8">
         {/* Mobile-responsive tabs */}
-        <Tabs defaultValue="active" className="space-y-4 sm:space-y-6">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 gap-1 sm:gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 rounded-lg">
+        <Tabs defaultValue="active" className="space-y-4 sm:space-y-6 min-w-0">
+          <TabsList className="flex flex-nowrap sm:grid sm:grid-cols-5 gap-1 sm:gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 rounded-lg min-w-0 overflow-x-auto overflow-y-hidden scrollbar-hide [&>button]:shrink-0">
             <TabsTrigger 
               value="active" 
               className="text-xs sm:text-sm data-[state=active]:bg-blue-500 data-[state=active]:text-white py-2 sm:py-3"

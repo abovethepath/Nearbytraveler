@@ -206,13 +206,6 @@ export default function ResponsiveUserGrid({
           <UserLocationLines user={user} />
         </div>
         
-        {/* Bio */}
-        {user.bio && (
-          <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 mb-2 px-1">
-            {user.bio}
-          </p>
-        )}
-        
         {/* Interests Badge */}
         <div className="flex justify-center mb-2">
           {getInterestsBadge(user)}

@@ -25,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon, Mail, ThumbsUp, Building2, Award } from "lucide-react";
 
-type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries' | 'vouches' | 'chatrooms' | 'menu';
+type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries' | 'vouches' | 'chatrooms' | 'menu' | 'about';
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -721,9 +721,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showCreateDeal, setShowCreateDeal] = useState(false);
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
   const [showChatroomList, setShowChatroomList] = useState(false);
-  const [activeTab, setActiveTab] = React.useState<TabKey | ''>('');
-  const [loadedTabs, setLoadedTabs] = React.useState<Set<TabKey>>(new Set());
-  console.log('🎯 CURRENT ACTIVE TAB:', activeTab);
+  const [activeTab, setActiveTab] = React.useState<TabKey | ''>('about');
+  const [loadedTabs, setLoadedTabs] = React.useState<Set<TabKey>>(new Set(['about']));
   
   const tabRefs = {
     contacts: React.useRef<HTMLDivElement>(null),
@@ -734,6 +733,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     vouches: React.useRef<HTMLDivElement>(null),
     chatrooms: React.useRef<HTMLDivElement>(null),
     menu: React.useRef<HTMLDivElement>(null),
+    about: React.useRef<HTMLDivElement>(null),
   };
 
   function openTab(key: TabKey) {

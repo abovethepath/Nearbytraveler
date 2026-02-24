@@ -151,13 +151,13 @@ export function ProfileDialogs(props: ProfilePageProps) {
             className="fixed inset-0 bg-black/95" 
             onClick={() => setSelectedPhotoIndex(-1)}
           />
-          <div className="relative bg-white dark:bg-gray-800 rounded-lg max-w-4xl max-h-[90vh] p-6 m-4 overflow-hidden">
+          <div className="relative bg-white dark:bg-gray-800 rounded-lg max-w-[90vw] sm:max-w-4xl max-h-[90vh] p-4 sm:p-6 m-2 sm:m-4 overflow-hidden min-w-0">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Photo {selectedPhotoIndex + 1} of {photos.length}
               </h3>
               <button 
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg -m-2"
                 onClick={() => setSelectedPhotoIndex(-1)}
               >
                 <X className="w-6 h-6" />
@@ -195,7 +195,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
 
       {/* Cover Photo Crop Modal */}
       <Dialog open={showCropModal} onOpenChange={() => setShowCropModal(false)}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-[90vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Crop Cover Photo</DialogTitle>
             <DialogDescription>
@@ -814,7 +814,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
       {/* Profile Edit Modal - inset+margin keeps dialog on-screen in WebView; z-index above overlay so content is clickable */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
         <DialogContent 
-          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700"
+          className="max-w-[90vw] w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700"
         >
           <DialogHeader className="flex-shrink-0 pr-10">
             <div className="flex items-center justify-between">
@@ -1617,7 +1617,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
 
       {/* Travel Plan Delete Confirmation Dialog */}
       <Dialog open={!!deletingTravelPlan} onOpenChange={() => setDeletingTravelPlan(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-[90vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Delete Travel Plan</DialogTitle>
             <DialogDescription>
@@ -1641,7 +1641,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
 
       {/* Travel Plan Details Modal - FIXED WITH PROPER BACK NAVIGATION */}
       <Dialog open={showTravelPlanDetails} onOpenChange={setShowTravelPlanDetails}>
-        <DialogContent className="max-w-2xl bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+        <DialogContent className="max-w-[90vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
               <MapPin className="w-5 h-5" />
@@ -1775,7 +1775,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
       {/* Simplified Cover Photo Selector Dialog */}
       {showCoverPhotoSelector && (
         <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto no-scrollbar">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-[90vw] sm:max-w-2xl w-full max-h-[90vh] overflow-y-auto no-scrollbar">
             <div className="p-4 border-b flex justify-between items-center">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Choose Cover Photo</h2>
               <button
@@ -1890,7 +1890,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
         >
           <div className="fixed inset-0 bg-black/95" />
           <div 
-            className="relative z-[100001] w-full max-w-md bg-white dark:bg-gray-900 rounded-lg shadow-xl p-5"
+            className="relative z-[100001] w-full max-w-[90vw] sm:max-w-md bg-white dark:bg-gray-900 rounded-lg shadow-xl p-5"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -2008,7 +2008,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
 
       {/* Edit Reference Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-[90vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Reference</DialogTitle>
             <DialogDescription>
@@ -2117,7 +2117,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
 
       {/* Photo Upload Modal - ORIGINAL SYSTEM RESTORED */}
       <Dialog open={showPhotoUpload} onOpenChange={setShowPhotoUpload}>
-        <DialogContent>
+        <DialogContent className="max-w-[90vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Upload Photo</DialogTitle>
             <DialogDescription>
@@ -2162,8 +2162,8 @@ export function ProfileDialogs(props: ProfilePageProps) {
 
       {/* Chatroom List Modal - high z-index, scroll contained, pointer events for WebView */}
       <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
-        <DialogContent 
-          className="max-w-2xl max-h-[80vh] bg-white dark:bg-gray-900"
+        <DialogContent
+          className="max-w-[90vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900"
           style={{
             position: 'fixed',
             left: '50%',
@@ -2282,7 +2282,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
 
       {/* Expanded Profile Photo Modal - Only for viewing other users' profiles */}
       <Dialog open={showExpandedPhoto} onOpenChange={setShowExpandedPhoto}>
-        <DialogContent className="max-w-[95vw] sm:max-w-2xl md:max-w-3xl lg:max-w-4xl p-2 sm:p-4 bg-black/95 border-gray-700">
+        <DialogContent className="max-w-[90vw] sm:max-w-2xl md:max-w-3xl lg:max-w-4xl max-h-[90vh] overflow-y-auto p-2 sm:p-4 bg-black/95 border-gray-700">
           <DialogHeader className="sr-only">
             <DialogTitle>Profile Photo</DialogTitle>
             <DialogDescription>Enlarged view of {user?.username}'s profile photo</DialogDescription>

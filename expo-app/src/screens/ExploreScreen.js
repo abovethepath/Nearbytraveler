@@ -57,7 +57,6 @@ const UserCard = ({ user, onPress, navigation }) => {
       {travelDest && user.userType !== 'business' && (
         <Text style={styles.travelDest} numberOfLines={2}>&#x2708;&#xFE0F; {travelDest}</Text>
       )}
-      {user.bio ? <Text style={styles.userBio} numberOfLines={2}>{user.bio}</Text> : null}
       <View style={styles.tagRow}>
         {user.userType === 'traveler' && <View style={[styles.tag, styles.travelerTag]}><Text style={styles.tagText}>Traveler</Text></View>}
         {user.userType === 'local' && <View style={[styles.tag, styles.localTag]}><Text style={styles.tagText}>Local</Text></View>}
@@ -134,7 +133,6 @@ const styles = StyleSheet.create({
   userName: { fontSize: 17, fontWeight: '700', color: '#111827', marginBottom: 2 },
   userCity: { fontSize: 14, color: '#6B7280', marginBottom: 4 },
   travelDest: { fontSize: 13, color: '#F97316', marginBottom: 4 },
-  userBio: { fontSize: 13, color: '#9CA3AF', lineHeight: 18, marginBottom: 8 },
   tagRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
   tag: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
   travelerTag: { backgroundColor: '#EFF6FF' },

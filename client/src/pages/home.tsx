@@ -1665,13 +1665,13 @@ export default function Home() {
 
       <div className="pt-2 sm:pt-4 pb-24 md:pb-8 lg:pb-4 relative">
         
-        <div className="w-full max-w-full px-2 sm:px-4 lg:px-6">
+        <div className="w-full max-w-full min-w-0 px-2 sm:px-4 lg:px-6 overflow-x-hidden">
 
         {/* Main Content - Standard three-column layout */}
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6 px-2 sm:px-4 lg:px-8 mt-2 sm:mt-0">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6 px-2 sm:px-4 lg:px-8 mt-2 sm:mt-0 min-w-0 overflow-x-hidden w-full">
           
           {/* Main Content - Center column */}
-          <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-8 min-w-0 relative">
+          <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-8 min-w-0 relative overflow-hidden flex flex-col w-full max-w-full">
 
             {/* Available Now Widget - FIRST THING on mobile, always visible at top */}
             {effectiveUser?.userType !== 'business' && (
@@ -1947,7 +1947,7 @@ export default function Home() {
           </div>
 
           {/* Right Sidebar - Weather, Messages, Quick Meetups, Events */}
-          <div className="col-span-1 space-y-6 sm:space-y-8 md:space-y-10">
+          <div className="col-span-1 space-y-6 sm:space-y-8 md:space-y-10 min-w-0 overflow-x-hidden max-w-full w-full">
             
             {/* Available Now Widget - Hangout Mode (desktop sidebar only, mobile version is at top of main content) */}
             {effectiveUser?.userType !== 'business' && (
@@ -1964,14 +1964,14 @@ export default function Home() {
 
             {/* Weather Widget */}
             {loadedSections.has('weather') && (
-              <div className="relative">
+              <div className="relative min-w-0 max-w-full overflow-hidden">
                 <CurrentLocationWeatherWidget currentUser={effectiveUser} />
               </div>
             )}
             
             {/* Messages Widget */}
             {loadedSections.has('messages') && (
-              <div className="relative pt-2">
+              <div className="relative pt-2 min-w-0 max-w-full overflow-hidden">
                 <div className="absolute -top-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent"></div>
                 <MessagesWidget userId={currentUserId} />
               </div>

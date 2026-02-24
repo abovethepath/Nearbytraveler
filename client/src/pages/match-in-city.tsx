@@ -2050,7 +2050,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             {isHeroVisible && (
               <div className="max-w-4xl mx-auto mb-6">
                 <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
-                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-2">
+                  <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-2 mb-2">
                     <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200">🎯 How City Plans Works</h3>
                     <Button
                       variant="outline"

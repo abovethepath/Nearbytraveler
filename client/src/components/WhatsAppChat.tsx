@@ -14,6 +14,7 @@ import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, Volu
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 interface Message {
   id: number;
@@ -88,8 +89,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   
   // WhatsApp-style long press detection (500ms)
   const handleTouchStart = (e: React.TouchEvent, message: Message) => {
-    console.log('Touch start on message:', message.id, 'senderId:', message.senderId, 'currentUserId:', currentUserId, 'isOwn:', message.senderId == currentUserId);
-    const touch = e.touches[0];
+    const touch = e.touches?.[0];
+    if (!touch) return;
     touchStartRef.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
     setSwipingMessageId(message.id);
     setSwipeOffset(0);
@@ -106,8 +107,9 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   
   const handleTouchMove = (e: React.TouchEvent, message: Message, isOwn: boolean) => {
     if (!touchStartRef.current) return;
+    const touch = e.touches?.[0];
+    if (!touch) return;
     
-    const touch = e.touches[0];
     const deltaX = touch.clientX - touchStartRef.current.x;
     const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
     
@@ -746,7 +748,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   };
 
   return (
-    <div className="flex bg-gray-900 text-white overflow-hidden h-[calc(100dvh-5.5rem)] md:h-[calc(100dvh-5.5rem)]">
+    <div className="flex bg-gray-900 text-white overflow-hidden h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5.5rem)] min-h-0">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-r border-gray-700">
@@ -840,7 +842,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           variant="ghost"
           size="icon"
           onClick={() => onBack ? onBack() : window.history.back()}
-          className="text-white hover:bg-gray-700 h-8 w-8 shrink-0"
+          className="text-white hover:bg-gray-700 min-h-[44px] min-w-[44px] h-11 w-11 md:h-8 md:w-8 shrink-0 touch-target"
         >
           <ArrowLeft className="w-4 h-4" />
         </Button>
@@ -911,7 +913,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
           <Sheet open={showMembers} onOpenChange={setShowMembers}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden text-white hover:bg-gray-700 h-8 w-8" data-testid="button-members">
+              <Button variant="ghost" size="icon" className="lg:hidden text-white hover:bg-gray-700 min-h-[44px] min-w-[44px] h-11 w-11 touch-target" data-testid="button-members">
                 <Users className="w-4 h-4" />
               </Button>
             </SheetTrigger>
@@ -1012,10 +1014,11 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         </Button>
       </div>
 
-      {/* Messages - Flex wrapper ensures proper spacing */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Messages - Flex wrapper ensures proper spacing; min-h-0 allows flex child to shrink */}
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {/* Scrollable messages area */}
-        <div className="flex-1 overflow-y-auto px-3 py-2 bg-[#e5ddd5] dark:bg-[#0b141a]" style={{
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 py-2 bg-[#e5ddd5] dark:bg-[#0b141a]" style={{
+          WebkitOverflowScrolling: 'touch',
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23999999' stroke-width='2' opacity='0.18'%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Ccircle cx='150' cy='300' r='30'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Ccircle cx='100' cy='500' r='40'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Ccircle cx='150' cy='700' r='35'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3C/svg%3E")`
         }}>
           <div className="flex flex-col min-h-full">
@@ -1196,13 +1199,13 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                 <p className="text-xs text-green-400 font-semibold">Replying to {getFirstName(replyingTo.sender?.name, replyingTo.sender?.username)}</p>
                 <p className="text-xs text-gray-300 truncate">{replyingTo.content}</p>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="text-gray-400 h-6 w-6 p-0">✕</Button>
+              <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="text-gray-400 min-h-[44px] min-w-[44px] h-11 w-11 md:h-6 md:w-6 p-0 flex items-center justify-center">✕</Button>
             </div>
           </div>
         )}
 
-        {/* Input box - fixed at bottom, padding above bottom nav */}
-        <div className="px-3 py-1.5 pb-20 bg-gray-800 border-t border-gray-700">
+        {/* Input box - fixed at bottom; native app: no bottom nav; mobile web: pb for bottom nav + safe area */}
+        <div className={`px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-4' : 'pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))] md:pb-4 lg:pb-4'}`}>
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
           {!messagesLoaded && !isWsConnected && (
             <div className="text-center text-yellow-400 text-xs mb-2 animate-pulse">
@@ -1224,7 +1227,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
               onClick={sendMessage} 
               disabled={!messageText.trim() || !currentUserId || (!messagesLoaded && !isWsConnected)} 
               size="icon" 
-              className={`rounded-full h-9 w-9 shrink-0 ${
+              className={`rounded-full min-h-[44px] min-w-[44px] h-11 w-11 md:h-9 md:w-9 shrink-0 touch-target ${
                 !currentUserId || (!messagesLoaded && !isWsConnected)
                   ? 'bg-gray-500 cursor-not-allowed' 
                   : 'bg-green-600 hover:bg-green-700'
@@ -1303,7 +1306,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           {/* Bottom Sheet Menu - positioned above bottom nav */}
           <div 
             className="fixed left-2 right-2 bg-gray-800 rounded-2xl shadow-2xl z-[99999] border border-gray-700"
-            style={{ touchAction: 'auto', bottom: '90px' }}
+            style={{ touchAction: 'auto', bottom: 'max(90px, calc(env(safe-area-inset-bottom) + 70px))' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Action buttons */}

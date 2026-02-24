@@ -40,6 +40,17 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
     <div className={`flex flex-wrap gap-2 sm:gap-3 lg:gap-4 ${isHero ? "pt-4 mt-4 border-t border-white/30" : ""}`}>
       <button
         role="tab"
+        aria-selected={activeTab === "about"}
+        aria-controls="panel-about"
+        onClick={() => openTab("about")}
+        className={btn(activeTab === "about")}
+        data-testid="tab-about"
+      >
+        About
+      </button>
+
+      <button
+        role="tab"
         aria-selected={activeTab === "contacts"}
         aria-controls="panel-contacts"
         onClick={() => openTab("contacts")}

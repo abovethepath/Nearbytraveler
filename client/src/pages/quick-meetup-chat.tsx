@@ -27,7 +27,12 @@ export default function QuickMeetupChat() {
   const { toast } = useToast();
   const meetupId = params?.meetupId ? parseInt(params.meetupId) : null;
 
-  const user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
+  let user: { id?: number } = {};
+  try {
+    user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
+  } catch {
+    user = {};
+  }
 
   const { data: meetup, isLoading: meetupLoading, isError: meetupError, error, failureCount } = useQuery<QuickMeetup>({
     queryKey: ['/api/quick-meets', meetupId],
@@ -102,6 +107,18 @@ export default function QuickMeetupChat() {
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">Chatroom not found</p>
         <Button onClick={() => setLocation('/quick-meetups')} variant="outline" data-testid="button-back-to-quick-meetups-no-chatroom">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Quick Meetups
+        </Button>
+      </div>
+    );
+  }
+
+  if (!user?.id) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
+        <p className="text-lg">Please log in to view this chat</p>
+        <Button onClick={() => setLocation('/quick-meetups')} variant="outline">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Quick Meetups
         </Button>

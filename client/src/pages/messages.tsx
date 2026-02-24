@@ -563,15 +563,15 @@ export default function Messages() {
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-[calc(100vh-10rem)] md:h-[calc(100vh-5rem)]'}`}>
-      {/* Left Sidebar - Conversations (Always visible on desktop, hidden when chat open on mobile) */}
-      <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-gray-100 dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500`}>
+    <div className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5rem)] lg:h-[calc(100dvh-5rem)]'} min-h-0`}>
+      {/* Left Sidebar - Conversations. Mobile: full screen when no selection; hidden when chat open. Desktop (lg+): always visible. Single column on mobile. */}
+      <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-gray-100 dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500 min-w-0 flex-shrink-0`}>
         <div className={`border-b border-gray-200 dark:border-gray-700 ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'}`}>
           <div className={`flex items-center gap-3 ${isNativeIOSApp() ? 'mb-2' : 'mb-3'}`}>
             <UniversalBackButton 
               destination="/discover"
               label=""
-              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent border-none shadow-none hover:bg-gray-200 dark:hover:bg-gray-700/50 p-2"
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent border-none shadow-none hover:bg-gray-200 dark:hover:bg-gray-700/50 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center touch-target"
             />
             <h1 className={`font-semibold text-gray-900 dark:text-white ${isNativeIOSApp() ? 'text-base md:text-lg' : 'text-sm'}`}>Messages</h1>
           </div>
@@ -674,8 +674,8 @@ export default function Messages() {
         </div>
       </div>
 
-      {/* Main Chat Area - WhatsApp Desktop Style */}
-      <div className="flex-1 flex flex-col h-full min-h-0 bg-white dark:bg-gray-900">
+      {/* Main Chat Area - Mobile: full screen only when conversation selected. Desktop (lg+): always visible. Single column on mobile. */}
+      <div className={`flex-1 flex flex-col h-full min-h-0 bg-white dark:bg-gray-900 min-w-0 ${!selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-auto`}>
         {/* Loading state when conversation is selected but user data not loaded yet */}
         {selectedConversation && !selectedUser && (connectionsLoading || messagesLoading || conversations.length === 0) ? (
           <div className="flex-1 flex items-center justify-center">
@@ -687,12 +687,12 @@ export default function Messages() {
           <>
             <div ref={headerRef} className={`${isNativeIOSApp() ? 'px-3 py-1.5' : 'px-4 py-2'} border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0 min-w-0`}>
               <div className="flex items-center gap-2 min-w-0">
-                {/* Back button for mobile */}
+                {/* Back button for mobile - navigate to list (mobile web) or history back (iOS app) */}
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => window.history.back()}
-                  className="lg:hidden text-gray-600 dark:text-gray-400 h-8 w-8 shrink-0"
+                  onClick={() => isNativeIOSApp() ? window.history.back() : navigate('/messages')}
+                  className="lg:hidden text-gray-600 dark:text-gray-400 min-h-[44px] min-w-[44px] h-11 w-11 shrink-0 touch-target"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </Button>
@@ -835,8 +835,8 @@ export default function Messages() {
                 </div>
               </div>
 
-            {/* Message Input - Fixed at bottom in flex layout */}
-            <div ref={inputContainerRef} className="px-4 py-2 pb-20 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0">
+            {/* Message Input - Fixed at bottom, pb for mobile bottom nav (safe area) */}
+            <div ref={inputContainerRef} className="px-4 py-2 pb-[max(5rem,env(safe-area-inset-bottom)+4rem)] lg:pb-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0">
                 {/* Reply Bar */}
                 {replyingTo && (
                   <div className="flex items-center gap-2 px-3 py-2 mb-2 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded max-w-4xl mx-auto">
@@ -878,7 +878,7 @@ export default function Messages() {
                     onClick={handleSendMessage}
                     disabled={!newMessage.trim() || sendMessageMutation.isPending}
                     size="icon"
-                    className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+                    className="bg-blue-600 hover:bg-blue-700 text-white shrink-0 min-h-[44px] min-w-[44px] touch-target"
                     data-testid="button-send-message"
                   >
                     <Send className="w-4 h-4" />
@@ -887,9 +887,9 @@ export default function Messages() {
               </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center text-gray-600 dark:text-gray-500 px-4">
-              <MessageCircle className="w-12 h-12 mx-auto mb-4 opacity-30" />
+          <div className="flex-1 flex items-center justify-center p-4">
+            <div className="text-center text-gray-600 dark:text-gray-500 w-full max-w-sm flex flex-col items-center">
+              <MessageCircle className="w-12 h-12 mx-auto mb-4 opacity-30 flex-shrink-0" />
               <h3 className="text-base font-medium mb-1.5 text-gray-800 dark:text-gray-300">Welcome to Messages</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">Select a conversation to start messaging</p>
             </div>
@@ -897,8 +897,8 @@ export default function Messages() {
         )}
       </div>
 
-      {/* Right Sidebar - Contacts List (Hidden on mobile and tablet) */}
-      <div className="hidden xl:flex w-72 h-full bg-gray-50 dark:bg-gray-900 flex-col border-l-2 border-gray-300 dark:border-gray-500">
+      {/* Right Sidebar - Contacts List (Hidden on mobile/tablet, show only on xl+ desktop) */}
+      <div className="hidden xl:flex w-72 h-full flex-shrink-0 bg-gray-50 dark:bg-gray-900 flex-col border-l-2 border-gray-300 dark:border-gray-500 min-w-0">
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
             <Users className="w-4 h-4" />
