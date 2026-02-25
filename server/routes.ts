@@ -5075,12 +5075,14 @@ Questions? Just reply to this message!
               });
 
               await db.update(users)
-                .set({ 
+                .set({
                   referralCount: (referrer.referralCount || 0) + 1,
                   aura: (referrer.aura || 0) + 10, // Award 10 aura points per referral signup
-                  ambassadorPoints: (referrer.ambassadorPoints || 0) + 10 // Award 10 ambassador points per referral
                 })
                 .where(eq(users.id, referrer.id));
+
+              const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+              await addAmbassadorPoints(referrer.id, 10);
 
               console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username} (+10 aura, +10 ambassador points)`);
             }
@@ -21948,6 +21950,30 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error('Error fetching referrals:', error);
       res.status(500).json({ message: "Failed to fetch referrals" });
+    }
+  });
+
+  // PATCH /api/admin/ambassadors/:userId/status - Admin override: reactivate or revoke ambassador (ignores activity)
+  app.patch("/api/admin/ambassadors/:userId/status", async (req: any, res) => {
+    try {
+      const adminId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const [adminUser] = await db.select({ isAdmin: users.isAdmin }).from(users).where(eq(users.id, adminId));
+      if (!adminUser?.isAdmin) return res.status(403).json({ error: "Admin access required" });
+
+      const targetUserId = parseInt(req.params.userId);
+      if (isNaN(targetUserId)) return res.status(400).json({ error: "Invalid user ID" });
+
+      const { status, setByAdmin = true } = req.body;
+      const validStatus = status === "active" || status === "inactive" || status === "revoked" || status === null;
+      if (!validStatus) return res.status(400).json({ error: "status must be 'active', 'inactive', 'revoked', or null" });
+
+      const { setAmbassadorStatusByAdmin } = await import("./services/ambassadorStatus");
+      await setAmbassadorStatusByAdmin(targetUserId, status, setByAdmin);
+
+      res.json({ success: true, userId: targetUserId, status, setByAdmin });
+    } catch (error: any) {
+      console.error("Admin ambassador status update error:", error);
+      res.status(500).json({ error: "Failed to update ambassador status" });
     }
   });
 

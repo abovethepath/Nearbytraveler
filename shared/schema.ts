@@ -154,6 +154,12 @@ export const users = pgTable("users", {
   isAIGenerated: boolean("is_ai_generated").default(false),
   aura: integer("aura").default(1), // Travel karma points from signup
   ambassadorPoints: integer("ambassador_points").default(0), // Ambassador program points
+  ambassadorStatus: text("ambassador_status"), // 'active' | 'inactive' | 'revoked'; null = not enrolled
+  ambassadorEnrolledAt: timestamp("ambassador_enrolled_at"), // When they became an ambassador
+  ambassadorLastEarnedAt: timestamp("ambassador_last_earned_at"), // Last time they earned any point
+  ambassadorPeriodStartAt: timestamp("ambassador_period_start_at"), // Start of current 6-month activity window
+  ambassadorPointsInPeriod: integer("ambassador_points_in_period").default(0), // Points earned in current 6-month window
+  ambassadorStatusSetByAdmin: boolean("ambassador_status_set_by_admin").default(false), // When true, auto-activity logic does not override status
   
   // Enhanced Status & Presence System
   onlineStatus: text("online_status").default("offline"), // 'online', 'away', 'busy', 'invisible', 'offline'

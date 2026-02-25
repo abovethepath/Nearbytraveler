@@ -925,16 +925,16 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           <ArrowLeft className="w-4 h-4" />
         </Button>
         
-        {/* DM: recipient avatar on mobile/iOS only - tap to go to profile */}
+        {/* DM: recipient avatar on mobile/iOS only - tap to go to profile by username */}
         {chatType === 'dm' && (
           <div
             className="md:hidden flex-shrink-0 cursor-pointer"
-            onClick={() => navigate(`/profile/${chatId}`)}
+            onClick={() => navigate(otherUserUsername ? `/profile/${otherUserUsername}` : `/profile/${chatId}`)}
             role="link"
             aria-label={`View ${title}'s profile`}
           >
             <Avatar className="w-10 h-10 border-2 border-gray-700">
-              <AvatarImage src={otherUserProfileImage || undefined} />
+              <AvatarImage src={getProfileImageUrl(otherUserProfileImage ? { profileImage: otherUserProfileImage } : null) || undefined} />
               <AvatarFallback className="bg-gray-600 text-white text-sm">
                 {(title && title[0]) || otherUserUsername?.[0] || '?'}
               </AvatarFallback>

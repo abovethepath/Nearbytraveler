@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Star, Building2, Calendar, Trophy, Shield, AlertTriangle, Gift, TrendingUp, Award, UserPlus, Mail } from "lucide-react";
+import { Users, Star, Building2, Calendar, Trophy, Shield, AlertTriangle, Gift, TrendingUp, Award, UserPlus, Mail, MapPin } from "lucide-react";
 import { Link } from "wouter";
 import Footer from "@/components/footer";
 import { AuthContext } from "@/App";
@@ -13,14 +13,14 @@ export default function AmbassadorProgram() {
   };
 
   const pointActions = [
-    { action: "Refer a friend who signs up", icon: <UserPlus className="w-5 h-5" />, description: "Invite friends to join the community" },
-    { action: "Refer a friend who becomes active", icon: <Users className="w-5 h-5" />, description: "Friend joins an event or messages" },
-    { action: "Refer a business lead", icon: <Building2 className="w-5 h-5" />, description: "Connect local businesses to the platform" },
-    { action: "Business becomes a paying partner", icon: <TrendingUp className="w-5 h-5" />, description: "Successfully onboard a business partner" },
-    { action: "Create an event", icon: <Calendar className="w-5 h-5" />, description: "Host community gatherings" },
-    { action: "Host/run a verified event", icon: <Star className="w-5 h-5" />, description: "Successfully run community events" },
-    { action: "Event hits attendance goal", icon: <Trophy className="w-5 h-5" />, description: "Grow event participation" },
-    { action: "Community quality bonus", icon: <Award className="w-5 h-5" />, description: "Great feedback, low cancellations" },
+    { action: "Refer a friend who signs up", points: "+50 pts", icon: <UserPlus className="w-5 h-5" />, description: "Invite friends to join the community" },
+    { action: "Refer a friend who becomes active", points: "+100 pts", icon: <Users className="w-5 h-5" />, description: "Friend joins an event or messages" },
+    { action: "Refer a business lead", points: "+75 pts", icon: <Building2 className="w-5 h-5" />, description: "Connect local businesses to the platform" },
+    { action: "Business becomes a paying partner", points: "+200 pts", icon: <TrendingUp className="w-5 h-5" />, description: "Successfully onboard a business partner" },
+    { action: "Create an event", points: "+20 pts", icon: <Calendar className="w-5 h-5" />, description: "Host community gatherings" },
+    { action: "Host verified event", points: "+50 pts", icon: <Star className="w-5 h-5" />, description: "Successfully run community events" },
+    { action: "Event hits attendance goal", points: "+30 pts", icon: <Trophy className="w-5 h-5" />, description: "Grow event participation" },
+    { action: "Community quality bonus", points: "+25 pts", icon: <Award className="w-5 h-5" />, description: "Great feedback, low cancellations" },
   ];
 
   return (
@@ -105,8 +105,33 @@ export default function AmbassadorProgram() {
                   you earned 1% of the points → you receive 1% of the 4% pool (i.e., 0.04% equity), subject to the program terms.
                 </p>
               </div>
+              <div className="mt-4 p-4 rounded-lg bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800">
+                <p className="text-sm font-semibold text-blue-900 dark:text-blue-100 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  LA Ambassadors: Extra 1% Local Pool
+                </p>
+                <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
+                  Los Angeles city ambassadors share an additional 1% ownership pool on top of the global 4%. 
+                  LA ambassadors can earn from both pools—the global 4% and the LA-specific 1%.
+                </p>
+              </div>
             </CardContent>
           </Card>
+        </div>
+      </section>
+
+      <section className="py-10 px-4 sm:px-6 lg:px-8 bg-blue-50/50 dark:bg-blue-950/20">
+        <div className="max-w-4xl mx-auto">
+          <div className="rounded-xl border-2 border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-800 p-6 shadow-sm">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-3">
+              <MapPin className="w-5 h-5 text-blue-600" />
+              LA Ambassadors: Extra 1% Local Pool
+            </h2>
+            <p className="text-gray-700 dark:text-gray-300">
+              Los Angeles city ambassadors share an <strong>additional 1% ownership pool</strong> on top of the global 4%. 
+              LA ambassadors can earn from both pools—the global 4% and the LA-specific 1%.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -120,17 +145,17 @@ export default function AmbassadorProgram() {
                   <div className="bg-gradient-to-r from-blue-500 to-orange-500 p-2 rounded-lg text-white">
                     {item.icon}
                   </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900 dark:text-white">{item.action}</h3>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-medium text-gray-900 dark:text-white flex items-center gap-2 flex-wrap">
+                      <span>{item.action}</span>
+                      <span className="text-orange-600 dark:text-orange-400 font-semibold whitespace-nowrap">{item.points}</span>
+                    </h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{item.description}</p>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
-          <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
-            Points vary by impact. Specific point values are determined by the program.
-          </p>
         </div>
       </section>
 
@@ -160,7 +185,21 @@ export default function AmbassadorProgram() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-amber-600">•</span>
-                  Ambassadors must stay in good standing to qualify
+                  Ambassadors must maintain minimum activity to remain in the program and keep accumulating points toward equity
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-600 font-semibold">•</span>
+                  <span><strong>Activity requirement to stay active:</strong></span>
+                </li>
+                <ul className="list-disc list-inside ml-4 space-y-1 text-gray-700 dark:text-gray-300">
+                  <li>Must earn at least 50 points every 6 months to stay active</li>
+                  <li>If inactive for 6 months, status changes to &quot;Inactive&quot;—points are frozen but not deleted</li>
+                  <li>If inactive for 12 months, ambassador status is revoked and points stop counting toward equity</li>
+                  <li>Ambassador can reapply after 12 months and start fresh</li>
+                </ul>
+                <li className="flex items-start gap-2 mt-2">
+                  <span className="text-amber-600">•</span>
+                  <span><strong>Admin override:</strong> Admins can manually reactivate or revoke any ambassador regardless of activity score</span>
                 </li>
               </ul>
             </CardContent>
@@ -174,20 +213,26 @@ export default function AmbassadorProgram() {
           <div className="space-y-6">
             <Card className="bg-gray-50 dark:bg-gray-900">
               <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Is this paid work?</h3>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Is this paid work?</h3>
                 <p className="text-gray-600 dark:text-gray-400">No. This is not a job and points are not income.</p>
               </CardContent>
             </Card>
             <Card className="bg-gray-50 dark:bg-gray-900">
               <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Can points be converted to cash?</h3>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Can points be converted to cash?</h3>
                 <p className="text-gray-600 dark:text-gray-400">No. Points are for tracking contribution. They may never be worth anything.</p>
               </CardContent>
             </Card>
             <Card className="bg-gray-50 dark:bg-gray-900">
               <CardContent className="p-6">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">When could points matter?</h3>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">When could points matter?</h3>
                 <p className="text-gray-600 dark:text-gray-400">Only if there's a future exit (like an acquisition or IPO), and only under the official terms.</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gray-50 dark:bg-gray-900">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">How do I stay active as an Ambassador?</h3>
+                <p className="text-gray-600 dark:text-gray-400">You must earn at least <strong>50 points every 6 months</strong> to stay active. If you don’t meet that minimum, your status changes to Inactive—your points are frozen but not deleted. If you’re inactive for 12 months (no points earned), your ambassador status is revoked and your points no longer count toward equity. You can reapply after 12 months and start fresh.</p>
               </CardContent>
             </Card>
           </div>
@@ -247,14 +292,14 @@ export default function AmbassadorProgram() {
           <div className="flex justify-center">
             {user ? (
               <a href={`mailto:ambassadors@nearbytraveler.org?subject=Ambassador Program Application - ${user.username}&body=Hi Aaron,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Ambassador.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${user.name || 'N/A'}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be an Ambassador:%0D%0A%0D%0A%0D%0AHow I plan to help grow the community:%0D%0A%0D%0A`}>
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold inline-flex items-center gap-2">
+                <Button size="lg" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0 font-semibold inline-flex items-center gap-2 shadow-lg hover:shadow-xl transition-all">
                   <Mail className="w-5 h-5" />
                   Apply to Become an Ambassador
                 </Button>
               </a>
             ) : (
               <Link href="/signup">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold">
+                <Button size="lg" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0 font-semibold shadow-lg hover:shadow-xl transition-all">
                   Join Nearby Traveler
                 </Button>
               </Link>

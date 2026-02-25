@@ -56,6 +56,7 @@ import {
   isNull,
   gt,
 } from "drizzle-orm";
+import cron from "node-cron";
 import passwordResetRouter from "./routes/passwordReset";
 import { registerRoutes } from "./routes";
 
@@ -718,6 +719,13 @@ app.use((req, res, next) => {
     await db.execute(
       sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS contact_role TEXT`,
     );
+    // Ambassador program: status, activity window, admin override
+    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_status TEXT`);
+    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_enrolled_at TIMESTAMP`);
+    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_last_earned_at TIMESTAMP`);
+    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_period_start_at TIMESTAMP`);
+    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_points_in_period INTEGER DEFAULT 0`);
+    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_status_set_by_admin BOOLEAN DEFAULT false`);
     // Stealth mode: hidden_from_users table for "hide from this person" feature
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS hidden_from_users (
@@ -890,7 +898,21 @@ app.use((req, res, next) => {
           }
         }, TRAVEL_STATUS_CHECK_INTERVAL);
 
-        console.log("✅ Server started (travel status runs hourly)");
+        // Ambassador status: run on the 1st of every month at midnight (server local time).
+        // Skips users with ambassadorStatusSetByAdmin = true.
+        cron.schedule("0 0 1 * *", async () => {
+          console.log("🔄 [cron] Running monthly ambassador status check...");
+          try {
+            const { recomputeAllAmbassadorStatuses } = await import("./services/ambassadorStatus");
+            const result = await recomputeAllAmbassadorStatuses();
+            console.log(
+              `✅ [cron] Ambassador status check complete: ${result.checked} ambassadors checked, ${result.statusChanges} status change(s) made.`
+            );
+          } catch (error) {
+            console.error("⚠️ [cron] Ambassador status check failed:", error);
+          }
+        });
+        console.log("✅ Server started (travel status hourly, ambassador status monthly on 1st at midnight)");
       } catch (error) {
         console.error("❌ Failed to initialize server services:", error);
         console.error(
