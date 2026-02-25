@@ -1,7 +1,9 @@
 // AI Meetup Draft Service
-// Extracts structured meetup data from natural language descriptions using OpenAI
+// Extracts structured meetup data from natural language descriptions using Anthropic Claude
 
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
+
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 
 export interface AiMeetupDraft {
   title: string;
@@ -34,17 +36,10 @@ const RESPONSE_TIME_OPTIONS = [
 ];
 
 export class AiMeetupDraftService {
-  private openai: OpenAI | null = null;
-
-  constructor() {
-    const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
-    const baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
-    if (apiKey && apiKey.length > 20 && !apiKey.toLowerCase().startsWith("dum-") && !apiKey.includes("your_")) {
-      this.openai = new OpenAI({
-        apiKey,
-        ...(baseURL && { baseURL }),
-      });
-    }
+  private getAnthropic(): Anthropic {
+    const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+    if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
+    return new Anthropic({ apiKey });
   }
 
   async extractMeetupFromText(
@@ -60,8 +55,10 @@ export class AiMeetupDraftService {
       };
     }
 
-    if (!this.openai) {
-      // Not Expo Go–specific: server needs OPENAI_API_KEY or AI_INTEGRATIONS_OPENAI_API_KEY set
+    let anthropic: Anthropic;
+    try {
+      anthropic = this.getAnthropic();
+    } catch {
       return {
         draft: null,
         success: false,
@@ -111,17 +108,15 @@ User's meetup description:
 
 Extract the meetup details and return ONLY valid JSON.`;
 
-      const response = await this.openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        temperature: 0.3,
-        max_tokens: 800
+      const response = await anthropic.messages.create({
+        model: ANTHROPIC_MODEL,
+        max_tokens: 800,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userPrompt }],
       });
 
-      const content = response.choices[0]?.message?.content;
+      const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+      const content = textBlock?.text?.trim();
       if (!content) {
         return {
           draft: null,

@@ -114,7 +114,7 @@ export default function AIChatBot() {
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-6 right-4" style={{ zIndex: 10000 }}>
+      <div className="fixed bottom-6 right-4 hidden md:flex" style={{ zIndex: 10000 }}>
         <Button
           onClick={() => setIsOpen(true)}
           className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 shadow-lg"

@@ -1,7 +1,9 @@
 // AI Event Draft Service
-// Extracts structured event data from natural language descriptions using OpenAI
+// Extracts structured event data from natural language descriptions using Anthropic Claude
 
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
+
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 
 export interface AiEventDraft {
   title: string;
@@ -50,18 +52,10 @@ const EVENT_CATEGORIES = [
 ];
 
 export class AiEventDraftService {
-  private openai: OpenAI | null = null;
-
-  constructor() {
-    // Prefer Replit/custom AI integrations; fallback to standard OpenAI
-    const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
-    const baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
-    if (apiKey && apiKey.length > 20 && !apiKey.toLowerCase().startsWith("dum-") && !apiKey.includes("your_")) {
-      this.openai = new OpenAI({
-        apiKey,
-        ...(baseURL && { baseURL }),
-      });
-    }
+  private getAnthropic(): Anthropic {
+    const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+    if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
+    return new Anthropic({ apiKey });
   }
 
   async extractEventFromText(
@@ -77,7 +71,10 @@ export class AiEventDraftService {
       };
     }
 
-    if (!this.openai) {
+    let anthropic: Anthropic;
+    try {
+      anthropic = this.getAnthropic();
+    } catch {
       return {
         draft: null,
         success: false,
@@ -149,18 +146,15 @@ User's event description:
 
 Extract the event details and return ONLY valid JSON. Use today's date to calculate any relative dates like "next Tuesday" or "this weekend".`;
 
-      const response = await this.openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        temperature: 0.2,
-        response_format: { type: "json_object" },
-        max_tokens: 1000
+      const response = await anthropic.messages.create({
+        model: ANTHROPIC_MODEL,
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userPrompt }],
       });
 
-      const content = response.choices[0]?.message?.content;
+      const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+      const content = textBlock?.text?.trim();
       if (!content) {
         return {
           draft: null,

@@ -12,6 +12,7 @@ import { useIsDesktop } from "@/hooks/useDeviceType";
 import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
 import { VouchButton } from "@/components/VouchButton";
 import { ProfileTabBar } from "./ProfileTabBar";
+import { WhatYouHaveInCommon } from "@/components/what-you-have-in-common";
 import type { ProfilePageProps } from "./profile-complete-types";
 
 export function ProfileHeaderUser(props: ProfilePageProps) {
@@ -281,82 +282,89 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     </div>
 
                     {!isOwnProfile && (
-                      <div className={`flex mt-2 ${isDesktopOtherUser ? 'flex flex-col flex-nowrap items-stretch gap-2 w-full max-w-[200px]' : `flex-row flex-wrap items-center gap-2 ${!isNativeIOSApp() ? 'justify-start' : 'justify-center'}`}`}>
-                        <button
-                          type="button"
-                          className={`inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 rounded-lg shadow-md transition-all text-black font-medium cursor-pointer ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-4 py-1.5 text-sm'}`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleMessage?.();
-                          }}
-                          onPointerDown={(e) => e.stopPropagation()}
-                          data-testid="button-message"
-                          data-radix-dismissable-layer-ignore=""
-                        >
-                          <span className="text-black">Message</span>
-                        </button>
-                        <ConnectButton
-                          currentUserId={currentUser?.id || 0}
-                          targetUserId={user?.id || 0}
-                          targetUsername={user?.username}
-                          targetName={user?.name}
-                          className={`rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm text-black hover:text-black`}
-                        />
-                        {!isNativeIOSApp() && (
-                          <VouchButton
-                            currentUserId={currentUser?.id || 0}
-                            targetUserId={user?.id || 0}
-                            targetUsername={user?.username}
-                          />
-                        )}
-                        {currentUser ? (
-                          <Button
+                      <div className={`flex mt-2 ${isDesktopOtherUser ? 'flex-row flex-wrap items-start gap-4 w-full' : `flex-row flex-wrap items-center gap-2 ${!isNativeIOSApp() ? 'justify-start' : 'justify-center'}`}`}>
+                        <div className={isDesktopOtherUser ? 'flex flex-col flex-nowrap items-stretch gap-2 shrink-0' : 'flex flex-row flex-wrap items-center gap-2'}>
+                          <button
                             type="button"
+                            className={`inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 rounded-lg shadow-md transition-all text-black font-medium cursor-pointer ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-4 py-1.5 text-sm'}`}
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              setShowWriteReferenceModal?.(true);
+                              handleMessage?.();
                             }}
-                            className="bg-blue-600 hover:bg-blue-700 text-black shrink-0 px-4 py-1.5 text-sm"
-                            data-testid="button-write-reference"
+                            onPointerDown={(e) => e.stopPropagation()}
+                            data-testid="button-message"
+                            data-radix-dismissable-layer-ignore=""
                           >
-                            Write Reference
-                          </Button>
-                        ) : (
-                          <Button
-                            type="button"
-                            onClick={() => setLocation('/auth')}
-                            className="bg-blue-600 hover:bg-blue-700 text-black shrink-0 px-4 py-1.5 text-sm"
-                            data-testid="button-write-reference"
-                          >
-                            Write Reference
-                          </Button>
-                        )}
-                        {user && (
-                          currentUser ? (
-                            <ReportUserButton
-                              userId={currentUser.id}
-                              targetUserId={user.id}
-                              targetUsername={user.username}
-                              variant="ghost"
-                              size="sm"
+                            <span className="text-black">Message</span>
+                          </button>
+                          <ConnectButton
+                            currentUserId={currentUser?.id || 0}
+                            targetUserId={user?.id || 0}
+                            targetUsername={user?.username}
+                            targetName={user?.name}
+                            className={`rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm text-black hover:text-black`}
+                          />
+                          {!isNativeIOSApp() && (
+                            <VouchButton
+                              currentUserId={currentUser?.id || 0}
+                              targetUserId={user?.id || 0}
+                              targetUsername={user?.username}
                             />
-                          ) : (
-                            <button
+                          )}
+                          {currentUser ? (
+                            <Button
                               type="button"
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                setLocation('/auth');
+                                setShowWriteReferenceModal?.(true);
                               }}
-                              onPointerDown={(e) => e.stopPropagation()}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 text-sm rounded font-medium cursor-pointer shrink-0"
-                              data-radix-dismissable-layer-ignore=""
+                              className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white shrink-0 px-4 py-1.5 text-sm border-0"
+                              data-testid="button-write-reference"
                             >
-                              Report
-                            </button>
-                          )
+                              Write Reference
+                            </Button>
+                          ) : (
+                            <Button
+                              type="button"
+                              onClick={() => setLocation('/auth')}
+                              className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white shrink-0 px-4 py-1.5 text-sm border-0"
+                              data-testid="button-write-reference"
+                            >
+                              Write Reference
+                            </Button>
+                          )}
+                          {user && (
+                            currentUser ? (
+                              <ReportUserButton
+                                userId={currentUser.id}
+                                targetUserId={user.id}
+                                targetUsername={user.username}
+                                variant="ghost"
+                                size="sm"
+                              />
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setLocation('/auth');
+                                }}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 text-sm rounded font-medium cursor-pointer shrink-0"
+                                data-radix-dismissable-layer-ignore=""
+                              >
+                                Report
+                              </button>
+                            )
+                          )}
+                        </div>
+                        {isDesktopOtherUser && currentUser?.id && user?.id && user?.userType !== 'business' && (
+                          <div className="flex-1 min-w-[280px] max-w-[380px]">
+                            <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
+                          </div>
                         )}
                       </div>
                     )}
@@ -408,31 +416,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               )}
             </div>
           </div>
-          {isDesktopOtherUser && compatibilityData && (() => {
-            const interests = compatibilityData.sharedInterests ?? [];
-            const activities = compatibilityData.sharedActivities ?? [];
-            const events = (compatibilityData.sharedEvents ?? []).map((e: any) => typeof e === 'string' ? e : e?.title).filter(Boolean);
-            const total = interests.length + activities.length + events.length;
-            if (total === 0) return null;
-            return (
-              <div className="flex-shrink-0 flex-1 min-w-[220px] max-w-[320px] flex flex-col self-stretch">
-                <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-600 p-4 h-full flex flex-col gap-3">
-                  <h3 className="text-sm font-semibold !text-black">What You Have in Common</h3>
-                  <div className="flex flex-wrap gap-2 content-start">
-                    {interests.map((item: string, i: number) => (
-                      <span key={`si-${i}`} className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border !text-black ${getInterestStyle(item)}`}>{item}</span>
-                    ))}
-                    {activities.map((item: string, i: number) => (
-                      <span key={`sa-${i}`} className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border !text-black ${getActivityStyle()}`}>{item}</span>
-                    ))}
-                    {events.map((item: string, i: number) => (
-                      <span key={`se-${i}`} className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border !text-black ${getEventStyle()}`}>{item}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
         </div>
             {/* Desktop other-user: tab bar integrated at bottom of hero */}
             {!isNativeIOSApp() && (

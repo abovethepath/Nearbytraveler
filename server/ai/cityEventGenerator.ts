@@ -1,6 +1,12 @@
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
+
+function getAnthropic() {
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
+  return new Anthropic({ apiKey });
+}
 
 interface CityEvent {
   title: string;
@@ -35,23 +41,16 @@ Make events feel authentic to ${locationString} with real venue names and locati
 
 Respond with valid JSON array:`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages: [
-        {
-          role: "system", 
-          content: "You are a local events expert who creates realistic, authentic events for specific cities. Always respond with valid JSON."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      response_format: { type: "json_object" },
+    const anthropic = getAnthropic();
+    const response = await anthropic.messages.create({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 2048,
+      system: "You are a local events expert who creates realistic, authentic events for specific cities. Always respond with valid JSON only, no markdown.",
+      messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
     });
-
-    const result = JSON.parse(response.choices[0].message.content || '{"events": []}');
+    const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+    const result = JSON.parse(textBlock?.text?.trim() || '{"events": []}');
     const events = result.events || [];
     
     console.log(`🤖 AI EVENT GENERATION: Generated ${events.length} events for ${cityName}`);

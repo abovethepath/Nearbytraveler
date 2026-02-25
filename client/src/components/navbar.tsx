@@ -524,6 +524,7 @@ function Navbar() {
                       user={directUser}
                       size={isNativeIOSApp() ? "lg" : "md"}
                       className="border-2 border-white shadow-sm pointer-events-none"
+                      clickable={false}
                     />
                   </button>
                 </DropdownMenuTrigger>

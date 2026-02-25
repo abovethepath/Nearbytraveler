@@ -71,6 +71,7 @@ import {
   blockedUsers,
   hiddenFromUsers,
   userReports,
+  chatroomReports,
   insertWaitlistLeadSchema,
   userPhotos,
   passportStamps,
@@ -662,54 +663,35 @@ import { TravelStatusService } from "./services/travel-status-service";
 import { aiEventGenerator } from "./aiEventGenerator";
 import { aiBusinessGenerator } from "./aiBusinessGenerator";
 import { z } from "zod";
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 import { normalizeLocation } from "./locationNormalizer";
+
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email or username is required"),
   password: z.string().min(1, "Password is required"),
 });
 
-// AI content generation function using OpenAI API
+// AI content generation using Anthropic Claude
 async function generateCityContent(location: string, topic: string): Promise<string> {
-  if (!process.env.OPENAI_API_KEY) {
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) {
     return `Information about ${topic} in ${location} will be added by community members.`;
   }
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a travel guide expert. Provide accurate, helpful, and current information about destinations. Write in a friendly but informative tone suitable for travelers. Include specific names, locations, and practical details.'
-          },
-          {
-            role: 'user',
-            content: `Write a comprehensive guide about ${topic} in ${location}. Include specific recommendations with names and locations. Keep it informative but engaging, around 200-300 words. Focus on current, accurate information.`
-          }
-        ],
-        max_tokens: 400,
-        temperature: 0.3,
-        stream: false
-      })
+    const anthropic = new Anthropic({ apiKey });
+    const response = await anthropic.messages.create({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 400,
+      system: "You are a travel guide expert. Provide accurate, helpful, and current information about destinations. Write in a friendly but informative tone suitable for travelers. Include specific names, locations, and practical details.",
+      messages: [{ role: "user", content: `Write a comprehensive guide about ${topic} in ${location}. Include specific recommendations with names and locations. Keep it informative but engaging, around 200-300 words. Focus on current, accurate information.` }],
     });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      throw new Error(`OpenAI API error: ${response.status} - ${errorData}`);
-    }
-
-    const data = await response.json();
-    return data.choices[0]?.message?.content || `Information about ${topic} in ${location} will be added by community members.`;
+    const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+    return textBlock?.text?.trim() || `Information about ${topic} in ${location} will be added by community members.`;
   } catch (error: any) {
-    if (process.env.NODE_ENV === 'development') console.error('Error generating AI content:', error);
+    if (process.env.NODE_ENV === "development") console.error("Error generating AI content:", error);
     return `Information about ${topic} in ${location} will be added by community members.`;
   }
 }
@@ -7005,7 +6987,7 @@ Questions? Just reply to this message. Welcome aboard!
         userId, 
         interestsCount: user.interests?.length || 0,
         activitiesCount: user.activities?.length || 0,
-        hasReplitAI: !!(process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL)
+        hasAnthropic: !!(process.env.ANTHROPIC_API_KEY?.trim())
       });
 
       // Import the bio generator service
@@ -11160,10 +11142,10 @@ Questions? Just reply to this message. Welcome aboard!
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Found ${eventsQuery.length} events in next 6 weeks for ${cityName}`);
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Event details:`, eventsQuery.map(e => `${e.title} in ${e.city}`));
         
-        // 🤖 AI EVENT GENERATION: If city has very few events, generate more with OpenAI
+        // 🤖 AI EVENT GENERATION: If city has very few events, generate more with Anthropic
         // DISABLED: Don't generate Austin/Vegas events for LA metro areas
         if (eventsQuery.length <= 3 && !cityName.toLowerCase().includes('austin') && !cityName.toLowerCase().includes('vegas')) {
-          console.log(`🤖 AI TRIGGER: ${cityName} has only ${eventsQuery.length} events - generating AI events with OpenAI`);
+          console.log(`🤖 AI TRIGGER: ${cityName} has only ${eventsQuery.length} events - generating AI events with Anthropic`);
           try {
             // Generate AI events for this city in the background (don't wait for completion)
             setImmediate(async () => {
@@ -19095,7 +19077,26 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-
+  // Report a chatroom/group
+  app.post("/api/chatrooms/:roomId/report", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || (req.body && req.body.userId);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const roomId = parseInt(req.params.roomId || '0');
+      const { reason, details } = req.body || {};
+      if (!reason || typeof reason !== 'string' || !reason.trim()) return res.status(400).json({ error: "Reason is required" });
+      await db.insert(chatroomReports).values({
+        chatroomId: roomId,
+        reporterId: userId,
+        reason: reason.trim(),
+        details: details ? String(details).trim() : null,
+      });
+      res.json({ success: true, message: "Report submitted. Our team will review it." });
+    } catch (error: any) {
+      console.error("Chatroom report error:", error);
+      res.status(500).json({ error: "Failed to submit report" });
+    }
+  });
 
   // CRITICAL: Create new chatroom with automatic membership for creator
   app.post("/api/chatrooms", async (req, res) => {
@@ -19494,6 +19495,7 @@ Questions? Just reply to this message. Welcome aboard!
   }
 
   const connectedUsers = new Map<number, AuthenticatedWebSocket>();
+  app.set('wsConnectedUsers', connectedUsers);
 
   // WebSocket heartbeat to prevent dead connections
   const wsHeartbeat = setInterval(() => {
@@ -22204,12 +22206,47 @@ Questions? Just reply to this message. Welcome aboard!
       const { toUserId, message } = req.body;
       if (!toUserId) return res.status(400).json({ error: "Target user is required" });
 
+      const fromUid = Number(fromUserId);
+      const toUid = Number(toUserId);
+
       const [request] = await db.insert(availableNowRequests).values({
-        fromUserId: Number(fromUserId),
-        toUserId: Number(toUserId),
+        fromUserId: fromUid,
+        toUserId: toUid,
         message: message || null,
         status: "pending",
       }).returning();
+
+      const [fromUser] = await db.select({ username: users.username }).from(users).where(eq(users.id, fromUid));
+      const username = fromUser?.username || "Someone";
+
+      const newNotification = await storage.createNotification({
+        userId: toUid,
+        fromUserId: fromUid,
+        type: "available_now_meet_request",
+        title: "Meet request",
+        message: `@${username} wants to meet up with you!`,
+        data: JSON.stringify({ requestId: request.id, fromUserId: fromUid, toUserId: toUid }),
+      });
+
+      const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+      if (wsMap) {
+        const recipientWs = wsMap.get(toUid);
+        if (recipientWs && recipientWs.readyState === 1) {
+          try {
+            recipientWs.send(JSON.stringify({
+              type: "notification",
+              payload: {
+                id: newNotification.id,
+                type: "available_now_meet_request",
+                title: "Meet request",
+                message: `@${username} wants to meet up with you!`,
+              },
+            }));
+          } catch (e) {
+            if (process.env.NODE_ENV === "development") console.warn("WebSocket push failed:", e);
+          }
+        }
+      }
 
       res.json(request);
     } catch (error: any) {
@@ -22270,6 +22307,8 @@ Questions? Just reply to this message. Welcome aboard!
 
       let groupChatroomId: number | null = null;
 
+      // On accept: create/update group chat and send one DM. Do NOT clear the acceptor's Available Now
+      // status (we never update availableNow here); it stays visible until they manually turn it off.
       if (status === "accepted" && updated) {
         const [acceptor] = await db.select({ username: users.username })
           .from(users).where(eq(users.id, Number(userId)));
@@ -22342,17 +22381,30 @@ Questions? Just reply to this message. Welcome aboard!
           }
         }
 
-        // Still send a DM notification so they see it in messages
-        await db.insert(messages).values({
-          senderId: Number(userId),
-          receiverId: updated.fromUserId,
-          content: groupChatroomId 
-            ? `Hey! I accepted your meet request — check the group chat to coordinate! 🤝`
-            : `Hey! I accepted your meet request — let's figure out where to meet up! 🤝`,
-          messageType: 'text',
-          isRead: false,
-          createdAt: new Date(),
-        });
+        // Send a single DM so the requester sees the acceptance (guard against duplicate PATCH calls)
+        const acceptanceContent = groupChatroomId
+          ? `Hey! I accepted your meet request — check the group chat to coordinate! 🤝`
+          : `Hey! I accepted your meet request — let's figure out where to meet up! 🤝`;
+        const recentCutoff = new Date(Date.now() - 5 * 60 * 1000);
+        const existingAcceptance = await db.select({ id: messages.id })
+          .from(messages)
+          .where(and(
+            eq(messages.senderId, Number(userId)),
+            eq(messages.receiverId, updated.fromUserId),
+            like(messages.content, "%accepted your meet request%"),
+            gte(messages.createdAt, recentCutoff)
+          ))
+          .limit(1);
+        if (existingAcceptance.length === 0) {
+          await db.insert(messages).values({
+            senderId: Number(userId),
+            receiverId: updated.fromUserId,
+            content: acceptanceContent,
+            messageType: 'text',
+            isRead: false,
+            createdAt: new Date(),
+          });
+        }
 
         try {
           const { sendPushNotification } = await import('./services/pushNotificationService');
@@ -22730,29 +22782,25 @@ Questions? Just reply to this message. Welcome aboard!
       const now = new Date();
       const currentUserId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
 
-      // Build city filter with metro area support
-      let cityFilter: any = undefined;
-      if (city) {
-        const metroCities = getMetroCities(city);
+      // Build city filter with metro area support (only add when city is provided so we never pass undefined to and())
+      const conditions: any[] = [
+        eq(liveLocationShares.isActive, true),
+        gte(liveLocationShares.expiresAt, now),
+      ];
+      if (city && String(city).trim()) {
+        const metroCities = getMetroCities(city.trim());
         if (metroCities.length > 0) {
-          // Metro area - match any city in the metro
-          const allCitiesToMatch = [...metroCities, city];
-          cityFilter = or(...allCitiesToMatch.map(c => ilike(liveLocationShares.city, c)));
+          const allCitiesToMatch = [...metroCities, city.trim()];
+          conditions.push(or(...allCitiesToMatch.map(c => ilike(liveLocationShares.city, c))));
         } else {
-          cityFilter = ilike(liveLocationShares.city, city);
+          conditions.push(ilike(liveLocationShares.city, city.trim()));
         }
       }
 
-      let query = db.select()
+      const shares = await db.select()
         .from(liveLocationShares)
-        .where(and(
-          eq(liveLocationShares.isActive, true),
-          gte(liveLocationShares.expiresAt, now),
-          cityFilter
-        ))
+        .where(and(...conditions))
         .orderBy(desc(liveLocationShares.createdAt));
-
-      const shares = await query;
 
       // Filter blocked/hidden users
       if (currentUserId > 0) {

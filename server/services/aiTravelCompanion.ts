@@ -1,5 +1,8 @@
-// Using OpenAI API for consistent AI functionality across the platform
+// Using Anthropic Claude (claude-sonnet-4-6) consistently with rest of codebase
+import Anthropic from "@anthropic-ai/sdk";
 import type { InsertAiRecommendation, InsertAiConversation } from '@shared/schema';
+
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 
 interface TravelPreferences {
   budgetPreference?: string;
@@ -28,25 +31,12 @@ export class AITravelCompanion {
     const { location, userId, preferences, specificRequest } = request;
     
     const prompt = this.buildRecommendationPrompt(location, preferences, specificRequest);
-    
-    if (!process.env.OPENAI_API_KEY) {
-      throw new Error('AI service not available');
-    }
+    const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+    if (!apiKey) throw new Error('AI service not available (ANTHROPIC_API_KEY not set)');
 
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-          max_tokens: 2048,
-          messages: [
-            {
-              role: 'system',
-              content: `You are a local travel expert AI companion that specializes in discovering authentic hidden gems and local favorites. Your goal is to provide personalized recommendations that go beyond typical tourist attractions.
+      const anthropic = new Anthropic({ apiKey });
+      const system = `You are a local travel expert AI companion that specializes in discovering authentic hidden gems and local favorites. Your goal is to provide personalized recommendations that go beyond typical tourist attractions.
 
 Guidelines:
 - Focus on authentic, lesser-known places that locals love
@@ -55,28 +45,17 @@ Guidelines:
 - Include accessibility information when relevant
 - Suggest the best times to visit to avoid crowds
 - Always include a compelling reason why this place is special
-- Format response as a JSON object with "recommendations" as the root key`
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          response_format: { type: "json_object" }
-        })
+- Return only valid JSON with "recommendations" as the root key. No markdown or extra text.`;
+
+      const response = await anthropic.messages.create({
+        model: ANTHROPIC_MODEL,
+        max_tokens: 2048,
+        system,
+        messages: [{ role: "user", content: prompt }],
       });
-
-      if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const responseText = data.choices[0]?.message?.content;
-      
-      if (!responseText) {
-        throw new Error('Empty response from AI service');
-      }
-
+      const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+      const responseText = textBlock?.text?.trim();
+      if (!responseText) throw new Error('Empty response from AI service');
       const recommendations = this.parseRecommendations(responseText, userId, location);
       return recommendations;
     } catch (error) {
@@ -233,7 +212,8 @@ Focus on authentic, unique experiences that showcase the real character of ${loc
     If the user is asking for recommendations, you can suggest using the recommendation feature.
     Keep responses friendly, informative, and focused on enhancing their travel experience.`;
 
-    if (!process.env.OPENAI_API_KEY) {
+    const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+    if (!apiKey) {
       return {
         response: "AI travel companion is currently unavailable. Please check back later.",
         recommendationIds: []
@@ -241,42 +221,19 @@ Focus on authentic, unique experiences that showcase the real character of ${loc
     }
 
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-          max_tokens: 1024,
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a knowledgeable, friendly AI travel companion. You help travelers discover amazing experiences and provide practical travel advice. Keep responses conversational and helpful.'
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ]
-        })
+      const anthropic = new Anthropic({ apiKey });
+      const response = await anthropic.messages.create({
+        model: ANTHROPIC_MODEL,
+        max_tokens: 1024,
+        system: 'You are a knowledgeable, friendly AI travel companion. You help travelers discover amazing experiences and provide practical travel advice. Keep responses conversational and helpful.',
+        messages: [{ role: "user", content: prompt }],
       });
-
-      if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const responseText = data.choices[0]?.message?.content;
-      
-      if (!responseText) {
-        throw new Error('Empty response from AI service');
-      }
-
+      const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+      const responseText = textBlock?.text?.trim();
+      if (!responseText) throw new Error('Empty response from AI service');
       return {
         response: responseText,
-        recommendationIds: [], // For future enhancement
+        recommendationIds: [],
       };
     } catch (error) {
       console.error('Error generating conversation response:', error);

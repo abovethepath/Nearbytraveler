@@ -126,7 +126,7 @@ export function HelpChatbot() {
   };
 
   return (
-    <>
+    <div className="hidden md:block">
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -262,6 +262,6 @@ export function HelpChatbot() {
         </div>
         </>
       )}
-    </>
+    </div>
   );
 }

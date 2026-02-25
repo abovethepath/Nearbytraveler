@@ -1,4 +1,8 @@
-// Using OpenAI API for consistent AI functionality across the platform
+// AI recommendations using Anthropic Claude (claude-sonnet-4-6)
+
+import Anthropic from "@anthropic-ai/sdk";
+
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 
 interface GenerateRecommendationsRequest {
   location: string;
@@ -28,59 +32,32 @@ export class AiRecommendationService {
     
     console.log(`Generating AI recommendations for ${location}, category: ${category}`);
     
-    // Use Replit AI Integration
-    if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
+    if (process.env.ANTHROPIC_API_KEY?.trim()) {
       try {
-        return await this.generateWithReplitAI(location, category, preferences);
+        return await this.generateWithAnthropic(location, category, preferences);
       } catch (error) {
-        console.error('Replit AI failed:', error);
+        console.error('Anthropic recommendations failed:', error);
       }
     }
     
-    // Use fallback only if AI service fails
     console.log('AI service unavailable, using fallback recommendations');
     return this.getFallbackRecommendations(location, category);
   }
 
-  private async generateWithReplitAI(location: string, category: string, preferences: string): Promise<RecommendationData[]> {
+  private async generateWithAnthropic(location: string, category: string, preferences: string): Promise<RecommendationData[]> {
     const prompt = this.buildPrompt(location, category, preferences);
-
-    const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a knowledgeable travel expert. Provide detailed, authentic recommendations for real places that exist. Always respond with valid JSON containing an array of recommendations.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        max_tokens: 2000,
-        temperature: 0.3,
-        response_format: { type: "json_object" }
-      })
+    const apiKey = process.env.ANTHROPIC_API_KEY!.trim();
+    const anthropic = new Anthropic({ apiKey });
+    const response = await anthropic.messages.create({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 2000,
+      system: 'You are a knowledgeable travel expert. Provide detailed, authentic recommendations for real places that exist. Always respond with valid JSON containing an array of recommendations.',
+      messages: [{ role: 'user', content: prompt }],
     });
-
-    if (!response.ok) {
-      throw new Error(`Replit AI API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const content = data.choices[0]?.message?.content;
-    
-    if (content) {
-      return this.parseAiResponse(content, location, category);
-    } else {
-      throw new Error('No content received from Replit AI');
-    }
+    const textBlock = response.content.find((b): b is { type: 'text'; text: string } => b.type === 'text');
+    const content = textBlock?.text?.trim();
+    if (content) return this.parseAiResponse(content, location, category);
+    throw new Error('No content received from Anthropic');
   }
 
   private buildPrompt(location: string, category: string, preferences: string): string {

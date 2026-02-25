@@ -191,7 +191,7 @@ export default function ResponsiveUserGrid({
           <h3 className="font-bold text-lg text-gray-900 dark:text-white truncate">
             @{user.username}
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 min-h-[2.75rem] mt-0.5" title={user.bio || undefined}>
+          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 md:line-clamp-3 min-h-[2.75rem] mt-0.5" title={user.bio || undefined}>
             {getBioSnippet(user) || '\u00A0'}
           </p>
           {!isCurrentUser && (
@@ -284,7 +284,7 @@ export default function ResponsiveUserGrid({
           <h3 className="font-bold text-sm text-gray-900 dark:text-white truncate">
             @{user.username}
           </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 min-h-[2.25rem] mt-0.5" title={user.bio || undefined}>
+          <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 md:line-clamp-3 min-h-[2.25rem] mt-0.5" title={user.bio || undefined}>
             {getBioSnippet(user) || '\u00A0'}
           </p>
           {!isCurrentUser && (

@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -73,6 +75,7 @@ interface AvailableNowWidgetProps {
 }
 
 export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: AvailableNowWidgetProps) {
+  const [, setLocation] = useLocation();
   const [showSetup, setShowSetup] = useState(false);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [customNote, setCustomNote] = useState("");
@@ -187,19 +190,23 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     onSuccess: (data: any, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
+      if (currentUser?.id) {
+        queryClient.invalidateQueries({ queryKey: ["/api/messages", currentUser.id] });
+      }
       if (variables.status === "accepted") {
-        if (data?.groupChatroomId) {
+        // otherUserId is the requester — open DM so the thread is saved and always in Messages inbox
+        const otherUserId = data?.otherUserId ?? variables.fromUserId;
+        if (otherUserId) {
+          setLocation(`/messages/${otherUserId}`);
+          if (data?.groupChatroomId) {
+            toast({ title: "It's a meet!", description: "Chat opened. You can always get back to it from Messages." });
+          } else {
+            toast({ title: "It's a meet!", description: "Chat is in Messages — you can reopen it anytime from there." });
+          }
+        } else if (data?.groupChatroomId) {
           toast({ title: "It's a meet!", description: "Opening the group chat..." });
           setTimeout(() => setShowGroupChat(true), 500);
-        } else {
-          const otherUserId = data?.otherUserId || variables.fromUserId;
-          toast({ title: "It's a meet!", description: "Opening your chat now..." });
-          if (otherUserId) {
-            setTimeout(() => {
-              window.history.pushState({}, '', `/messages/${otherUserId}`);
-              window.dispatchEvent(new PopStateEvent('popstate'));
-            }, 500);
-          }
         }
       } else {
         toast({ title: "Request declined" });
@@ -480,14 +487,16 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                       size="sm"
                       className="h-7 bg-orange-500 hover:bg-orange-600 text-white text-xs"
                       onClick={() => respondRequestMutation.mutate({ requestId: req.id, status: "accepted", fromUserId: req.fromUser?.id })}
+                      disabled={respondRequestMutation.isPending}
                     >
-                      Accept
+                      {respondRequestMutation.isPending ? "..." : "Accept"}
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       className="h-7 text-xs"
                       onClick={() => respondRequestMutation.mutate({ requestId: req.id, status: "declined" })}
+                      disabled={respondRequestMutation.isPending}
                     >
                       Pass
                     </Button>
@@ -540,75 +549,92 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
 
             <div className={`space-y-2 ${showAllUsers ? 'max-h-80 overflow-y-auto pr-1' : ''}`}>
               {visibleUsers.map((entry: any) => (
-                <div key={entry.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-700/50 transition-colors">
-                  <button onClick={() => handleCardClick(entry.user.id)} className="flex-shrink-0 relative">
-                    <SimpleAvatar
-                      user={{ id: entry.user?.id || 0, username: entry.user?.username || "?", profileImage: entry.user?.profilePhoto }}
-                      size="md"
-                    />
-                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900" />
-                  </button>
-                  <div className="flex-1 min-w-0">
-                    <button
-                      onClick={() => handleCardClick(entry.user.id)}
-                      className="text-sm font-medium text-white hover:text-orange-500 truncate block text-left"
-                    >
-                      @{entry.user?.username}
-                    </button>
-                    <div className="flex items-center gap-2">
-                      {entry.activities?.length > 0 && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                          {entry.activities.join(", ")}
-                        </span>
-                      )}
-                      <span className="text-xs text-green-600 dark:text-green-400 flex-shrink-0">
-                        {getTimeRemaining(entry.expiresAt)}
-                      </span>
-                    </div>
-                    {entry.customNote && (
-                      <div className="mt-1 px-2 py-1 bg-purple-50 dark:bg-purple-900/30 rounded border border-purple-200 dark:border-purple-700">
-                        <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 truncate">{entry.customNote}</p>
-                      </div>
-                    )}
-                  </div>
-                  {showMeetRequest === entry.userId ? (
-                    <div className="flex items-center gap-1">
-                      <Input
-                        placeholder="Say hi..."
-                        value={meetMessage}
-                        onChange={(e) => setMeetMessage(e.target.value)}
-                        className="h-7 text-xs w-24 bg-white dark:bg-gray-800"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage });
-                          }
-                        }}
+                <div key={entry.id} className="p-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-700/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => handleCardClick(entry.user.id)} className="flex-shrink-0 relative">
+                      <SimpleAvatar
+                        user={{ id: entry.user?.id || 0, username: entry.user?.username || "?", profileImage: entry.user?.profilePhoto }}
+                        size="md"
                       />
-                      <Button
-                        size="sm"
-                        className="h-7 w-7 p-0 bg-orange-500 hover:bg-orange-600"
-                        onClick={() => sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage })}
-                        disabled={sendRequestMutation.isPending}
+                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900" />
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <button
+                        onClick={() => handleCardClick(entry.user.id)}
+                        className="text-sm font-medium text-white hover:text-orange-500 truncate block text-left"
                       >
-                        <Send className="w-3 h-3 text-white" />
-                      </Button>
+                        @{entry.user?.username}
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {entry.activities?.length > 0 && (
+                          <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            {entry.activities.join(", ")}
+                          </span>
+                        )}
+                        <span className="text-xs text-green-600 dark:text-green-400 flex-shrink-0">
+                          {getTimeRemaining(entry.expiresAt)}
+                        </span>
+                      </div>
+                      {entry.customNote && (
+                        <div className="mt-1 px-2 py-1 bg-purple-50 dark:bg-purple-900/30 rounded border border-purple-200 dark:border-purple-700">
+                          <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 truncate">{entry.customNote}</p>
+                        </div>
+                      )}
+                    </div>
+                    {showMeetRequest === entry.userId ? (
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-7 w-7 p-0"
+                        className="h-7 w-7 p-0 flex-shrink-0"
                         onClick={() => { setShowMeetRequest(null); setMeetMessage(""); }}
                       >
                         <X className="w-3 h-3" />
                       </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        className="h-7 text-xs bg-orange-500 hover:bg-orange-600 text-white border-0 flex-shrink-0"
+                        onClick={() => setShowMeetRequest(entry.userId)}
+                      >
+                        Meet
+                      </Button>
+                    )}
+                  </div>
+                  {showMeetRequest === entry.userId && (
+                    <div className="mt-3 w-full min-w-0 space-y-2">
+                      <Textarea
+                        placeholder="Say hi or suggest a place..."
+                        value={meetMessage}
+                        onChange={(e) => setMeetMessage(e.target.value)}
+                        className="w-full min-w-0 max-w-full min-h-[4.5rem] text-sm sm:text-base resize-y bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 box-border"
+                        rows={3}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage });
+                          }
+                        }}
+                      />
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          className="bg-orange-500 hover:bg-orange-600 text-white"
+                          onClick={() => sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage })}
+                          disabled={sendRequestMutation.isPending}
+                        >
+                          <Send className="w-3.5 h-3.5 mr-1.5" />
+                          Send
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-gray-400 hover:text-white"
+                          onClick={() => { setShowMeetRequest(null); setMeetMessage(""); }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
                     </div>
-                  ) : (
-                    <Button
-                      size="sm"
-                      className="h-7 text-xs bg-orange-500 hover:bg-orange-600 text-white border-0"
-                      onClick={() => setShowMeetRequest(entry.userId)}
-                    >
-                      Meet
-                    </Button>
                   )}
                 </div>
               ))}
@@ -881,13 +907,13 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               sendGroupMessageMutation.mutate(groupChatMessage.trim());
             }
           }}
-          className="flex-shrink-0 px-3 py-2 border-t border-gray-200 dark:border-gray-700 flex items-center gap-2"
+          className="flex-shrink-0 w-full px-3 py-2 border-t border-gray-200 dark:border-gray-700 flex items-center gap-2"
         >
           <Input
             value={groupChatMessage}
             onChange={(e) => setGroupChatMessage(e.target.value)}
             placeholder={replyingTo ? "Reply..." : "Type a message..."}
-            className="flex-1 min-w-0 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-10 text-sm"
+            className="w-full min-w-0 flex-1 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-10 text-sm"
             disabled={sendGroupMessageMutation.isPending}
             autoFocus
           />

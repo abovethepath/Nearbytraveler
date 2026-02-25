@@ -1,4 +1,8 @@
-// Using OpenAI API for consistent AI functionality across the platform
+// Hidden gems discovery using Anthropic Claude (claude-sonnet-4-6)
+
+import Anthropic from "@anthropic-ai/sdk";
+
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 
 export interface HiddenGem {
   id: string;
@@ -36,7 +40,22 @@ export interface UserProfile {
 }
 
 export class HiddenGemsDiscovery {
-  
+  private async callAnthropic(system: string, userPrompt: string): Promise<string> {
+    const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+    if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
+    const anthropic = new Anthropic({ apiKey });
+    const response = await anthropic.messages.create({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 4000,
+      system,
+      messages: [{ role: "user", content: userPrompt }],
+    });
+    const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+    const content = textBlock?.text?.trim();
+    if (!content) throw new Error("No content in Anthropic response");
+    return content;
+  }
+
   async discoverHiddenGems(
     userProfile: UserProfile,
     destination: string,
@@ -77,33 +96,7 @@ Guidelines:
 
 Return response as valid JSON with array of hidden gems.`;
 
-      const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: prompt }
-          ],
-          max_tokens: 4000,
-          response_format: { type: "json_object" }
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Replit AI error: ${response.status}`);
-      }
-
-      const aiResponse = await response.json();
-      const content = aiResponse.choices[0]?.message?.content;
-      if (!content) {
-        throw new Error('No content in Replit AI response');
-      }
-
+      const content = await this.callAnthropic(systemPrompt, prompt);
       const data = JSON.parse(content);
       
       // Transform and enrich the response
@@ -241,33 +234,7 @@ Generate 5 new hidden gem recommendations that:
 Use same JSON format as before.`;
 
     try {
-      const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: 'You are a personalized travel curator that learns from user feedback to improve recommendations. Analyze patterns in their preferences and adapt accordingly.' },
-            { role: 'user', content: prompt }
-          ],
-          max_tokens: 3000,
-          response_format: { type: "json_object" }
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Replit AI error: ${response.status}`);
-      }
-
-      const aiResponse = await response.json();
-      const content = aiResponse.choices[0]?.message?.content;
-      if (!content) {
-        throw new Error('No content in response');
-      }
-
+      const content = await this.callAnthropic('You are a personalized travel curator that learns from user feedback to improve recommendations. Analyze patterns in their preferences and adapt accordingly.', prompt);
       const data = JSON.parse(content);
       return this.enrichHiddenGems(data.hiddenGems || [], userProfile);
       
@@ -301,36 +268,9 @@ Provide authentic local experiences that showcase the destination's character du
 Use same JSON format as before.`;
 
     try {
-      const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: 'You are a seasonal travel expert who knows the best times to experience different places. Focus on unique seasonal aspects that make each recommendation special.' },
-            { role: 'user', content: prompt }
-          ],
-          max_tokens: 3000,
-          response_format: { type: "json_object" }
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Replit AI error: ${response.status}`);
-      }
-
-      const aiResponse = await response.json();
-      const content = aiResponse.choices[0]?.message?.content;
-      if (!content) {
-        throw new Error('No content in response');
-      }
-
+      const content = await this.callAnthropic('You are a seasonal travel expert who knows the best times to experience different places. Focus on unique seasonal aspects that make each recommendation special.', prompt);
       const data = JSON.parse(content);
       return this.enrichHiddenGems(data.hiddenGems || [], userProfile);
-      
     } catch (error) {
       console.error('Error getting seasonal recommendations:', error);
       throw new Error('Failed to generate seasonal recommendations.');

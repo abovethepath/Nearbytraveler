@@ -1,14 +1,10 @@
 export { registerAudioRoutes } from "./routes";
 export {
-  openai,
   detectAudioFormat,
   convertToWav,
   ensureCompatibleFormat,
-  type AudioFormat,
-  voiceChat,
-  voiceChatStream,
+  speechToText,
   textToSpeech,
   textToSpeechStream,
-  speechToText,
-  speechToTextStream,
+  type AudioFormat,
 } from "./client";

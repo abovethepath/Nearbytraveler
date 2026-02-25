@@ -1,5 +1,7 @@
+import { useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Bell, MessageCircle, UserPlus, Zap, Users } from "lucide-react";
+import { Bell, MessageCircle, UserPlus, Zap, Users, Handshake } from "lucide-react";
+import websocketService from "@/services/websocketService";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -92,7 +94,26 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     (n) => !n.isRead && (n.type === 'quick_meetup_nearby' || n.type === 'quick_meetup_joined')
   );
 
-  const totalNotifications = connectionRequests.length + unreadMessages.length + meetupNotifications.length;
+  // Filter unread Available Now meet request notifications
+  const meetRequestNotifications = notifications.filter(
+    (n) => !n.isRead && n.type === 'available_now_meet_request'
+  );
+
+  const totalNotifications = connectionRequests.length + unreadMessages.length + meetupNotifications.length + meetRequestNotifications.length;
+
+  // Real-time: when server pushes a notification via WebSocket, refetch so bell updates immediately
+  const queryClientRef = useRef(queryClient);
+  queryClientRef.current = queryClient;
+  useEffect(() => {
+    const onNotification = () => {
+      queryClientRef.current.invalidateQueries({ queryKey: [`/api/notifications/${userId}`] });
+      queryClientRef.current.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
+    };
+    websocketService.on("notification", onNotification);
+    return () => {
+      websocketService.off("notification", onNotification);
+    };
+  }, [userId]);
 
   const handleMeetupNotificationClick = (notification: Notification) => {
     markAsReadMutation.mutate(notification.id);
@@ -106,6 +127,11 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     } catch {
       setLocation('/quick-meetups');
     }
+  };
+
+  const handleMeetRequestNotificationClick = (notification: Notification) => {
+    markAsReadMutation.mutate(notification.id);
+    setLocation('/home');
   };
 
   return (
@@ -134,7 +160,34 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
           </div>
         ) : (
           <>
-            {/* Quick Meetup Notifications - Show first for urgency */}
+            {/* Available Now meet request notifications - Show first for urgency */}
+            {meetRequestNotifications.map((notification) => (
+              <DropdownMenuItem
+                key={notification.id}
+                className="cursor-pointer p-3 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                onClick={() => handleMeetRequestNotificationClick(notification)}
+              >
+                <div className="flex items-center gap-3 w-full">
+                  <Handshake className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      {notification.title}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300 truncate">
+                      {notification.message}
+                    </p>
+                  </div>
+                  <Badge variant="secondary" className="ml-auto bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                    New
+                  </Badge>
+                </div>
+              </DropdownMenuItem>
+            ))}
+            {(meetRequestNotifications.length > 0) && (meetupNotifications.length > 0 || connectionRequests.length > 0 || unreadMessages.length > 0) && (
+              <DropdownMenuSeparator />
+            )}
+
+            {/* Quick Meetup Notifications */}
             {meetupNotifications.map((notification) => (
               <DropdownMenuItem
                 key={notification.id}

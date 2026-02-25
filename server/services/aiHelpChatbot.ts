@@ -1,9 +1,6 @@
-import OpenAI from 'openai';
+import Anthropic from "@anthropic-ai/sdk";
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL || undefined,
-});
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 
 const PLATFORM_KNOWLEDGE = `
 You are a friendly and helpful assistant for Nearby Traveler, a social networking platform that connects travelers, locals, and businesses through location-based meetups and cross-cultural interactions.
@@ -122,28 +119,29 @@ export async function getHelpResponse(
   conversationHistory: ChatMessage[] = []
 ): Promise<{ success: boolean; response?: string; error?: string }> {
   try {
-    const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-      { role: 'system', content: PLATFORM_KNOWLEDGE },
-      ...conversationHistory.map(msg => ({
-        role: msg.role as 'user' | 'assistant',
-        content: msg.content
-      })),
+    const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+    if (!apiKey) {
+      return { success: false, error: 'AI service temporarily unavailable.' };
+    }
+    const anthropic = new Anthropic({ apiKey });
+
+    const messages: { role: 'user' | 'assistant'; content: string }[] = [
+      ...conversationHistory.map(msg => ({ role: msg.role, content: msg.content })),
       { role: 'user', content: userMessage }
     ];
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages,
+    const response = await anthropic.messages.create({
+      model: ANTHROPIC_MODEL,
       max_tokens: 500,
-      temperature: 0.7,
+      system: PLATFORM_KNOWLEDGE,
+      messages,
     });
 
-    const assistantMessage = response.choices[0]?.message?.content;
-    
+    const textBlock = response.content.find((b): b is { type: 'text'; text: string } => b.type === 'text');
+    const assistantMessage = textBlock?.text?.trim();
     if (!assistantMessage) {
       return { success: false, error: 'No response generated' };
     }
-
     return { success: true, response: assistantMessage };
   } catch (error: any) {
     console.error('Help chatbot error:', error);

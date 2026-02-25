@@ -13,6 +13,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "
 import { MapPin, Camera, Globe, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2 } from "lucide-react";
 import { calculateAge } from "@/lib/ageUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { useIsDesktop } from "@/hooks/useDeviceType";
 import { VideoIntroPlayer } from "@/components/VideoIntro";
 import TravelPlansWidget from "@/components/TravelPlansWidget";
 import { SimpleAvatar } from "@/components/simple-avatar";
@@ -40,6 +41,9 @@ export function ProfileTabs(props: ProfilePageProps) {
 
   /* Desktop user profiles: tabs are integrated into hero (ProfileTabBar); hide duplicate card. iOS + business: show tabs card. */
   const showTabsCard = isNativeIOSApp() || user?.userType === 'business';
+  const isDesktop = useIsDesktop();
+  /* On desktop other-user profile, What You Have in Common is in the hero beside action buttons; hide duplicate in tabs. */
+  const showWhatYouHaveInCommonInTabs = !(isDesktop && !isOwnProfile && user?.userType !== 'business');
 
   return (
     <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900">
@@ -329,11 +333,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                           e.stopPropagation();
                           setIsEditMode(true);
                         }}
-                        className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-transparent dark:border-gray-400 ${isProfileIncomplete() ? 'bg-red-500 hover:bg-red-600 text-white dark:ring-2 dark:ring-red-400 animate-pulse' : 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white dark:ring-2 dark:ring-gray-400'}`}
+                        className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-transparent dark:border-gray-400 ${isProfileIncomplete() ? 'bg-red-500 hover:bg-red-600 text-white dark:ring-2 dark:ring-red-400 animate-pulse' : 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 dark:ring-2 dark:ring-gray-400'}`}
                         style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer', touchAction: 'manipulation' }}
                         data-testid="button-edit-profile"
                       >
-                        <span className="text-white font-medium">Edit</span>
+                        <span className={isProfileIncomplete() ? 'text-white font-medium' : 'text-black font-medium'}>Edit</span>
                       </button>
                     </div>
                   )}
@@ -791,8 +795,8 @@ export function ProfileTabs(props: ProfilePageProps) {
               </>
             )}
 
-            {/* What You Have in Common Section - Separate Card for clean mobile layout */}
-            {!isOwnProfile && currentUser && user?.id && user?.userType !== 'business' && (
+            {/* What You Have in Common Section - On desktop other-user it lives in hero beside action buttons; show here only on mobile/non-desktop */}
+            {showWhatYouHaveInCommonInTabs && !isOwnProfile && currentUser && user?.id && user?.userType !== 'business' && (
               <Card>
                 <CardContent className="p-0">
                   <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />

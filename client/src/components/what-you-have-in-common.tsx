@@ -624,7 +624,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </h5>
             <div className="flex flex-wrap gap-1.5">
               {commonalities.sharedInterests.map((interest, index) => (
-                <div key={`shared-interest-${interest}-${index}`} className="inline-flex items-center justify-center h-8 sm:h-9 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none">
+                <div key={`shared-interest-${interest}-${index}`} className="inline-flex items-center justify-center h-8 sm:h-9 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-none whitespace-nowrap bg-blue-100 text-gray-900 border border-blue-200 dark:bg-blue-900/50 dark:text-gray-100 dark:border-blue-700">
                   {interest}
                 </div>
               ))}
@@ -751,19 +751,19 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
           commonalities.sharedCountries.length > 0 || 
           commonalities.sharedLanguages.length > 0 || 
           commonalities.otherCommonalities.length > 0) && (
-          <div className="bg-gradient-to-r from-gray-100 to-slate-100 dark:bg-gradient-to-r dark:from-gray-200 dark:to-slate-200 rounded-lg p-3 border border-gray-300 dark:border-gray-500">
-            <h5 className="font-bold text-gray-900 dark:text-slate-800 mb-3 flex items-center gap-1 text-base">
-              <User className="w-5 h-5 text-gray-600 dark:text-slate-600" />
+          <div className="bg-slate-800 rounded-lg p-3 border border-slate-600">
+            <h5 className="font-bold text-slate-100 mb-3 flex items-center gap-1 text-base">
+              <User className="w-5 h-5 text-slate-300" />
               Other Things in Common ({commonalities.sharedSexualPreferences.length + commonalities.sharedCountries.length + commonalities.sharedLanguages.length + commonalities.otherCommonalities.length})
             </h5>
             <div className="space-y-3">
               {/* Sexual Preferences */}
               {commonalities.sharedSexualPreferences.length > 0 && (
                 <div>
-                  <h6 className="text-sm font-medium text-gray-900 dark:text-slate-800 mb-2">Sexual Preferences</h6>
+                  <h6 className="text-sm font-medium text-slate-200 mb-2">Sexual Preferences</h6>
                   <div className="flex flex-wrap gap-2">
                     {commonalities.sharedSexualPreferences.map((preference, index) => (
-                      <Badge key={`shared-preference-${preference}-${index}`} className="bg-white text-black border-gray-300 dark:bg-gray-800 dark:text-white dark:border-gray-700 font-medium">
+                      <Badge key={`shared-preference-${preference}-${index}`} className="bg-slate-700 text-slate-100 border-slate-600 font-medium">
                         {preference}
                       </Badge>
                     ))}
@@ -774,10 +774,10 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
               {/* Countries Visited */}
               {commonalities.sharedCountries.length > 0 && (
                 <div>
-                  <h6 className="text-sm font-medium text-gray-900 dark:text-slate-800 mb-2">Countries You've Both Visited</h6>
+                  <h6 className="text-sm font-medium text-slate-200 mb-2">Countries You've Both Visited</h6>
                   <div className="flex flex-wrap gap-2">
                     {commonalities.sharedCountries.map((country, index) => (
-                      <Badge key={`shared-country-${country}-${index}`} className="bg-white text-black border-gray-300 dark:bg-gray-800 dark:text-white dark:border-gray-700 font-medium">
+                      <Badge key={`shared-country-${country}-${index}`} className="bg-slate-700 text-slate-100 border-slate-600 font-medium">
                         🌍 {country}
                       </Badge>
                     ))}
@@ -788,10 +788,10 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
               {/* Languages */}
               {commonalities.sharedLanguages.length > 0 && (
                 <div>
-                  <h6 className="text-sm font-medium text-gray-900 dark:text-slate-800 mb-2">Shared Languages</h6>
+                  <h6 className="text-sm font-medium text-slate-200 mb-2">Shared Languages</h6>
                   <div className="flex flex-wrap gap-2">
                     {commonalities.sharedLanguages.map((language, index) => (
-                      <Badge key={`shared-language-${language}-${index}`} className="bg-white text-black border-gray-300 dark:bg-gray-800 dark:text-white dark:border-gray-700 font-medium">
+                      <Badge key={`shared-language-${language}-${index}`} className="bg-slate-700 text-slate-100 border-slate-600 font-medium">
                         💬 {language}
                       </Badge>
                     ))}
@@ -802,10 +802,10 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
               {/* Military/Other Status */}
               {commonalities.otherCommonalities.length > 0 && (
                 <div>
-                  <h6 className="text-sm font-medium text-gray-900 dark:text-slate-800 mb-2">Other Things In Common</h6>
+                  <h6 className="text-sm font-medium text-slate-200 mb-2">Other Things In Common</h6>
                   <div className="flex flex-wrap gap-2">
                     {commonalities.otherCommonalities.map((commonality, index) => (
-                      <Badge key={`other-commonality-${commonality}-${index}`} className="bg-white text-black border-gray-300 dark:bg-gray-800 dark:text-white dark:border-gray-700 font-medium">
+                      <Badge key={`other-commonality-${commonality}-${index}`} className="bg-slate-700 text-slate-100 border-slate-600 font-medium">
                         🎖️ {commonality}
                       </Badge>
                     ))}

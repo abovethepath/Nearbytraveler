@@ -1,4 +1,7 @@
+import Anthropic from "@anthropic-ai/sdk";
 import { GENERIC_CITY_ACTIVITIES } from './generic-city-activities.js';
+
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 
 export interface GeneratedActivity {
   name: string;
@@ -283,29 +286,18 @@ BANNED - Never generate these generic activities:
 
 Return valid JSON only.`;
 
-    const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: prompt }
-        ],
-        max_tokens: 2000,
-        response_format: { type: "json_object" }
-      })
+    const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+    if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
+
+    const anthropic = new Anthropic({ apiKey });
+    const response = await anthropic.messages.create({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 2000,
+      system: systemPrompt,
+      messages: [{ role: "user", content: prompt }],
     });
-
-    if (!response.ok) {
-      throw new Error(`Replit AI error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    let responseText = data.choices[0]?.message?.content || '{"activities": []}';
+    const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+    let responseText = textBlock?.text?.trim() || '{"activities": []}';
     
     // Remove markdown code blocks if they exist
     if (responseText.includes('```json')) {

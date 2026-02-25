@@ -1,3 +1,4 @@
+import Anthropic from "@anthropic-ai/sdk";
 import { db } from '../db';
 import { 
   recommendations, 
@@ -11,6 +12,8 @@ import {
   type User
 } from '@shared/schema';
 import { eq, and, desc, asc, sql, inArray } from 'drizzle-orm';
+
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 
 interface RecommendationContext {
   user: User;
@@ -81,34 +84,21 @@ Return your response as valid JSON with this structure:
   "summary": "Brief overview of the recommendations"
 }`;
 
-      const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: prompt }
-          ],
-          max_tokens: 2000,
-          response_format: { type: "json_object" }
-        })
+      const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+      if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
+      const anthropic = new Anthropic({ apiKey });
+      const response = await anthropic.messages.create({
+        model: ANTHROPIC_MODEL,
+        max_tokens: 2000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: prompt }],
       });
-
-      if (!response.ok) {
-        throw new Error(`Replit AI error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const content = data.choices[0]?.message?.content;
+      const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+      const content = textBlock?.text?.trim();
       if (content) {
         const aiResponse = JSON.parse(content) as AIRecommendationResponse;
         return aiResponse;
       }
-      
       throw new Error('Invalid response format from AI');
     } catch (error) {
       console.error('Error generating AI recommendations:', error);

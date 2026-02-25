@@ -923,30 +923,28 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                           }}
                           disabled={joinMutation.isPending}
                           className="w-full sm:w-auto max-w-full inline-flex items-center justify-center gap-2 rounded-full
-                                     text-xs py-2 h-9 bg-gradient-to-r from-blue-500 to-orange-500
-                                     hover:from-blue-600 hover:to-orange-600 text-white border-0 overflow-hidden"
+                                     text-xs py-2 h-9 px-3 bg-gradient-to-r from-blue-500 to-orange-500
+                                     hover:from-blue-600 hover:to-orange-600 text-white border-0 whitespace-nowrap"
                           data-testid={`button-join-meetup-${meetup.id}`}
                         >
-                          <span className="truncate">
-                            {joinMutation.isPending ? 'Joining...' : '🤝 Join Meetup'}
-                          </span>
+                          {joinMutation.isPending ? 'Joining...' : '🤝 Join Meetup'}
                         </Button>
                       ) : (
-                        <div className={`flex flex-wrap min-w-0 ${!isNativeIOSApp() ? 'gap-0.5' : 'gap-2'}`}>
+                        <div className={`flex flex-wrap items-center ${!isNativeIOSApp() ? 'gap-1' : 'gap-2'}`}>
                           <Button
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
                               window.location.href = `/quick-meetup-chat/${meetup.id}`;
                             }}
-                            className={`flex-1 sm:flex-auto min-w-0 inline-flex items-center justify-center rounded-full
+                            className={`flex-1 sm:flex-initial min-w-0 sm:min-w-[5.5rem] inline-flex items-center justify-center rounded-full
                                        text-xs border-0 bg-gradient-to-r from-blue-500 to-cyan-500
-                                       hover:from-blue-600 hover:to-cyan-600 text-white
-                                       ${!isNativeIOSApp() ? 'py-1.5 h-7 px-1.5 gap-1' : 'py-2 h-9 gap-2'}`}
+                                       hover:from-blue-600 hover:to-cyan-600 text-white whitespace-nowrap
+                                       ${!isNativeIOSApp() ? 'py-1.5 h-7 px-2 gap-1' : 'py-2 h-9 px-2.5 gap-2'}`}
                             data-testid={`button-join-chat-${meetup.id}`}
                           >
                             <MessageSquare className="w-3 h-3 flex-shrink-0" />
-                            <span className="truncate">Join Chat</span>
+                            <span>Join Chat</span>
                           </Button>
                           <Button
                             size="sm"
@@ -955,14 +953,14 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                               setLocation(`/quick-meetups?id=${meetup.id}`);
                             }}
                             variant="outline"
-                            className={`flex-1 sm:flex-auto min-w-0 inline-flex items-center justify-center rounded-full
+                            className={`flex-1 sm:flex-initial min-w-0 sm:min-w-[4.5rem] inline-flex items-center justify-center rounded-full
                                        text-xs border-green-500 text-green-700 dark:text-green-400
-                                       hover:bg-green-50 dark:hover:bg-green-900/20
-                                       ${!isNativeIOSApp() ? 'py-1.5 h-7 px-1.5 gap-1' : 'py-2 h-9 gap-2'}`}
+                                       hover:bg-green-50 dark:hover:bg-green-900/20 whitespace-nowrap
+                                       ${!isNativeIOSApp() ? 'py-1.5 h-7 px-2 gap-1' : 'py-2 h-9 px-2.5 gap-2'}`}
                             data-testid={`button-manage-meetup-${meetup.id}`}
                           >
                             <Edit3 className="w-3 h-3 flex-shrink-0" />
-                            <span className="truncate">Manage</span>
+                            <span>Manage</span>
                           </Button>
                           <Button
                             size="sm"
@@ -973,14 +971,14 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                               }
                             }}
                             variant="outline"
-                            className={`inline-flex items-center justify-center rounded-full
+                            className={`flex-1 sm:flex-initial min-w-0 sm:min-w-[4rem] inline-flex items-center justify-center rounded-full
                                        text-xs border-red-500 text-red-700 dark:text-red-400
-                                       hover:bg-red-50 dark:hover:bg-red-900/20
-                                       ${!isNativeIOSApp() ? 'py-1.5 h-7 px-1.5 gap-1' : 'py-2 h-9 px-3 gap-2'}`}
+                                       hover:bg-red-50 dark:hover:bg-red-900/20 whitespace-nowrap
+                                       ${!isNativeIOSApp() ? 'py-1.5 h-7 px-2 gap-1' : 'py-2 h-9 px-2.5 gap-2'}`}
                             data-testid={`button-cancel-meetup-main-${meetup.id}`}
                           >
                             <Trash2 className="w-3 h-3 flex-shrink-0" />
-                            <span className="truncate">Cancel</span>
+                            <span>Cancel</span>
                           </Button>
                         </div>
                       )}

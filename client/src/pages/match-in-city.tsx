@@ -2015,19 +2015,19 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     <div className="min-h-screen bg-slate-900">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 gap-2 min-w-0">
           <Button 
             variant="ghost" 
             onClick={() => setSelectedCity('')}
-            className="text-gray-300 hover:bg-slate-800 hover:text-white"
+            className="text-gray-300 hover:bg-slate-800 hover:text-white shrink-0"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Cities
           </Button>
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-white">{selectedCity}</h1>
+          <div className="text-center min-w-0 flex-1 px-2">
+            <h1 className="text-sm sm:text-lg md:text-2xl font-bold text-white truncate whitespace-nowrap" title={selectedCity}>{selectedCity}</h1>
           </div>
-          <div className="w-20" />
+          <div className="w-20 shrink-0" />
         </div>
 
         {/* Hero / Instructions — hidden on iOS for cleaner experience */}
@@ -2080,7 +2080,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           <div className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl backdrop-blur-sm">
             <div className="p-8">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-2">⭐ City Plans for {selectedCity}</h2>
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-2 truncate whitespace-nowrap" title={selectedCity}>⭐ City Plans for {selectedCity}</h2>
                 <p className="text-lg text-gray-300 font-medium">Pick to match faster in this city.</p>
                 {/* Save & Find Matches - Top */}
                 <div className="mt-6">
@@ -2100,8 +2100,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               </div>
 
               {/* Mobile Section Switcher - Show only on mobile */}
-              <div className="md:hidden sticky top-0 z-30 bg-slate-900 backdrop-blur-sm py-3 -mx-8 px-4 mb-6 border-b border-slate-700">
-                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              <div className="md:hidden sticky top-0 z-30 bg-slate-900 backdrop-blur-sm py-2 -mx-8 px-3 mb-6 border-b border-slate-700">
+                <div className="flex flex-wrap gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                   {[
                     { id: 'popular', label: '🎯 Things to Do' },
                     { id: 'preferences', label: '✈️ Connect On' },
@@ -2117,7 +2117,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }, 50);
                       }}
-                      className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                      className={`flex-shrink-0 px-2.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
                         activeMobileSection === section.id
                           ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-lg'
                           : 'bg-slate-800 text-gray-300 hover:bg-slate-700 border border-slate-700'
@@ -2134,7 +2134,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                       }, 50);
                     }}
-                    className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                    className={`flex-shrink-0 px-2.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
                       activeMobileSection === 'all'
                         ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-lg'
                         : 'bg-slate-800 text-gray-300 hover:bg-slate-700 border border-slate-700'
@@ -2470,18 +2470,26 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           const isCreatedByMe = activity.createdByUserId === currentUserId2; // only creator can edit (avoids someone changing e.g. "Taylor Swift May 4" to May 5)
                           const userActivity = userActivities.find(ua => ua.activityId === activity.id || (ua.activityName === activity.activityName && ua.cityName === selectedCity));
                           
-                          return (
+                              return (
                             <div key={activity.id} className="group relative">
                               <button
-                                className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border ${
+                                className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border touch-manipulation select-none ${
                                   isSelected 
                                     ? 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-orange-400/50'
                                     : isFeatured
                                       ? 'bg-gray-800 text-gray-100 border-slate-700 hover:border-yellow-400/50'
                                       : 'bg-gray-800 text-gray-100 border-slate-700 hover:border-slate-500'
                                 }`}
-                                onClick={() => toggleActivity(activity)}
                                 type="button"
+                                onPointerDown={(e) => {
+                                  if (e.pointerType === 'touch') {
+                                    e.preventDefault();
+                                    toggleActivity(activity);
+                                  }
+                                }}
+                                onClick={(e) => {
+                                  if (e.pointerType !== 'touch') toggleActivity(activity);
+                                }}
                               >
                                 <span className="flex items-center justify-center gap-1.5">
                                   {isSelected && <span className="text-xs">✓</span>}
@@ -2560,12 +2568,20 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 <div key={activity.id} className="group relative">
                                   <button
                                     type="button"
-                                    className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border ${
+                                    className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border touch-manipulation select-none ${
                                       isSelected 
                                         ? 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-orange-400/50'
                                         : 'bg-gray-800 text-gray-100 border-slate-700 hover:border-slate-500'
                                     }`}
-                                    onClick={() => toggleActivity(activity)}
+                                    onPointerDown={(e) => {
+                                      if (e.pointerType === 'touch') {
+                                        e.preventDefault();
+                                        toggleActivity(activity);
+                                      }
+                                    }}
+                                    onClick={(e) => {
+                                      if (e.pointerType !== 'touch') toggleActivity(activity);
+                                    }}
                                   >
                                     <span className="flex items-center justify-center gap-1.5">
                                       {isSelected && <span className="text-xs">✓</span>}
@@ -2661,12 +2677,20 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 <button
                                   key={activity.id}
                                   type="button"
-                                  className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border ${
+                                  className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border touch-manipulation select-none ${
                                     isSelected 
                                       ? 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-orange-400/50'
                                       : 'bg-gray-800 text-gray-100 border-slate-700 hover:border-slate-500'
                                   }`}
-                                  onClick={() => toggleActivity(activity)}
+                                  onPointerDown={(e) => {
+                                    if (e.pointerType === 'touch') {
+                                      e.preventDefault();
+                                      toggleActivity(activity);
+                                    }
+                                  }}
+                                  onClick={(e) => {
+                                    if (e.pointerType !== 'touch') toggleActivity(activity);
+                                  }}
                                 >
                                   <span className="flex items-center justify-center gap-1.5">
                                     {isSelected && <span className="text-xs">✓</span>}
@@ -3138,7 +3162,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
       {/* Sticky Selected Bar - Always visible when activities are selected for current city */}
       {selectedCity && userActivities.filter(ua => ua.cityName === selectedCity).length > 0 && (
-        <div className="fixed bottom-16 md:bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg z-40">
+        <div className="fixed bottom-24 md:bottom-14 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg z-40">
           <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Badge className="bg-blue-500 text-white px-3 py-1 text-sm font-semibold">
@@ -3183,6 +3207,26 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 Done
               </Button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Save button pinned to very bottom - full width mobile, centered desktop */}
+      {selectedCity && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-slate-900/95 backdrop-blur border-t border-slate-700">
+          <div className="max-w-2xl mx-auto flex justify-center">
+            <Button
+              onClick={() => {
+                fetchMatchingUsers();
+                toast({ title: "Plans saved!", description: `Finding matches in ${selectedCity}...` });
+                const matchSection = document.querySelector('[data-testid="matching-users-section"]');
+                if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="w-full md:w-auto md:min-w-[220px] bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg"
+            >
+              <Check className="w-5 h-5 mr-2" />
+              Save
+            </Button>
           </div>
         </div>
       )}

@@ -146,7 +146,7 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                 </div>
               )}
 
-              <div className="p-4 sm:p-5">
+              <div className="p-4 sm:p-5 flex flex-col flex-1 min-h-0">
                 <h3 className="font-bold text-gray-900 dark:text-white text-lg sm:text-xl leading-tight break-words">
                   {title}
                 </h3>
@@ -177,16 +177,16 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                   )}
                 </div>
 
-                <div className="mt-5 flex flex-wrap gap-2 sm:gap-3">
+                <div className="mt-auto flex flex-row gap-2 pt-4">
                   <Button
-                    className="flex-1 min-w-[120px] h-11 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shrink-0"
+                    className="flex-1 min-w-0 h-11 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shrink-0"
                     onClick={(e) => { e.stopPropagation(); setLocation(`/business/${b.id}`); }}
                   >
                     View Business
                   </Button>
                   <Button
                     variant="outline"
-                    className="flex-1 min-w-[100px] h-11 border-2 border-orange-400 dark:border-orange-500 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-sm font-semibold shrink-0"
+                    className="flex-1 min-w-0 h-11 border-2 border-orange-400 dark:border-orange-500 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-sm font-semibold shrink-0"
                     onClick={(e) => { e.stopPropagation(); setLocation(`/business/${b.id}/offers`); }}
                   >
                     <Tag className="h-4 w-4 mr-1.5 shrink-0" />

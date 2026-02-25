@@ -1,13 +1,17 @@
+import Anthropic from "@anthropic-ai/sdk";
 import { db } from './db';
 import { cityActivities } from '../shared/schema';
 import { eq, count, sql } from 'drizzle-orm';
 import { generateCityActivities } from './ai-city-activities.js';
 
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
+
 // Enhanced prompt for major event activities and city-specific experiences
 export async function generateCityActivitiesEnhanced(cityName: string): Promise<any[]> {
   try {
-    const OpenAI = (await import("openai")).default;
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+    if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
+    const anthropic = new Anthropic({ apiKey });
 
     const prompt = `Generate a comprehensive list of 40-50 HIGHLY SPECIFIC activities for ${cityName}. 
 
@@ -72,12 +76,7 @@ Return as JSON with this exact format:
   ]
 }`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: `You are a LOCAL EXPERT and EVENT COORDINATOR who has lived in ${cityName} for decades. You know:
+    const system = `You are a LOCAL EXPERT and EVENT COORDINATOR who has lived in ${cityName} for decades. You know:
 - EXACT names of every major landmark, museum, park, restaurant, and venue
 - ALL major events, festivals, conventions, and seasonal celebrations that happen in ${cityName}
 - SPECIFIC neighborhoods, districts, and local areas by their real names
@@ -85,19 +84,17 @@ Return as JSON with this exact format:
 - REAL shopping areas, markets, and entertainment districts
 - AUTHENTIC local traditions and cultural experiences unique to ${cityName}
 
-NEVER use generic terms. Always mention specific, real places and events by their actual names. Include major events like conventions, festivals, fashion weeks, auto shows, music festivals, and cultural celebrations that actually happen in ${cityName}.`
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.7,
-      max_tokens: 4000
-    });
+NEVER use generic terms. Always mention specific, real places and events by their actual names. Return only valid JSON, no markdown.`;
 
-    const result = JSON.parse(response.choices[0].message.content || '{"activities": []}');
+    const response = await anthropic.messages.create({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 4000,
+      system,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7,
+    });
+    const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+    const result = JSON.parse(textBlock?.text?.trim() || '{"activities": []}');
     return result.activities || [];
     
   } catch (error) {

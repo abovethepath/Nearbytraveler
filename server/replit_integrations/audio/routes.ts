@@ -1,12 +1,17 @@
 import express, { type Express, type Request, type Response } from "express";
 import { chatStorage } from "../chat/storage";
-import { openai, speechToText, ensureCompatibleFormat } from "./client";
+import { speechToText, ensureCompatibleFormat, textToSpeech } from "./client";
+import OpenAI from "openai";
 
-// Body parser with 50MB limit for audio payloads
 const audioBodyParser = express.json({ limit: "50mb" });
 
+function getOpenAI(): OpenAI {
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
+  return new OpenAI({ apiKey });
+}
+
 export function registerAudioRoutes(app: Express): void {
-  // Get all conversations
   app.get("/api/conversations", async (req: Request, res: Response) => {
     try {
       const conversations = await chatStorage.getAllConversations();
@@ -17,14 +22,11 @@ export function registerAudioRoutes(app: Express): void {
     }
   });
 
-  // Get single conversation with messages
   app.get("/api/conversations/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       const conversation = await chatStorage.getConversation(id);
-      if (!conversation) {
-        return res.status(404).json({ error: "Conversation not found" });
-      }
+      if (!conversation) return res.status(404).json({ error: "Conversation not found" });
       const messages = await chatStorage.getMessagesByConversation(id);
       res.json({ ...conversation, messages });
     } catch (error) {
@@ -33,7 +35,6 @@ export function registerAudioRoutes(app: Express): void {
     }
   });
 
-  // Create new conversation
   app.post("/api/conversations", async (req: Request, res: Response) => {
     try {
       const { title } = req.body;
@@ -45,7 +46,6 @@ export function registerAudioRoutes(app: Express): void {
     }
   });
 
-  // Delete conversation
   app.delete("/api/conversations/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
@@ -57,68 +57,46 @@ export function registerAudioRoutes(app: Express): void {
     }
   });
 
-  // Send voice message and get streaming audio response
-  // Auto-detects audio format and converts WebM/MP4/OGG to WAV
-  // Uses gpt-4o-mini-transcribe for STT, gpt-audio for voice response
+  // Voice message: STT (Whisper) -> chat (OpenAI) -> TTS (OpenAI tts-1). No Replit APIs.
   app.post("/api/conversations/:id/messages", audioBodyParser, async (req: Request, res: Response) => {
     try {
       const conversationId = parseInt(req.params.id);
       const { audio, voice = "alloy" } = req.body;
 
-      if (!audio) {
-        return res.status(400).json({ error: "Audio data (base64) is required" });
-      }
+      if (!audio) return res.status(400).json({ error: "Audio data (base64) is required" });
 
-      // 1. Auto-detect format and convert to OpenAI-compatible format
       const rawBuffer = Buffer.from(audio, "base64");
       const { buffer: audioBuffer, format: inputFormat } = await ensureCompatibleFormat(rawBuffer);
 
-      // 2. Transcribe user audio
       const userTranscript = await speechToText(audioBuffer, inputFormat);
-
-      // 3. Save user message
       await chatStorage.createMessage(conversationId, "user", userTranscript);
 
-      // 4. Get conversation history
       const existingMessages = await chatStorage.getMessagesByConversation(conversationId);
       const chatHistory = existingMessages.map((m) => ({
         role: m.role as "user" | "assistant",
         content: m.content,
       }));
 
-      // 5. Set up SSE
       res.setHeader("Content-Type", "text/event-stream");
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
       res.write(`data: ${JSON.stringify({ type: "user_transcript", data: userTranscript })}\n\n`);
 
-      // 6. Stream audio response from gpt-audio
-      const stream = await openai.chat.completions.create({
-        model: "gpt-audio",
-        modalities: ["text", "audio"],
-        audio: { voice, format: "pcm16" },
+      const openai = getOpenAI();
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
         messages: chatHistory,
-        stream: true,
+        max_tokens: 2048,
       });
 
-      let assistantTranscript = "";
+      const assistantTranscript = completion.choices[0]?.message?.content?.trim() ?? "";
 
-      for await (const chunk of stream) {
-        const delta = chunk.choices?.[0]?.delta as any;
-        if (!delta) continue;
+      res.write(`data: ${JSON.stringify({ type: "transcript", data: assistantTranscript })}\n\n`);
 
-        if (delta?.audio?.transcript) {
-          assistantTranscript += delta.audio.transcript;
-          res.write(`data: ${JSON.stringify({ type: "transcript", data: delta.audio.transcript })}\n\n`);
-        }
+      const ttsBuffer = await textToSpeech(assistantTranscript, voice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer");
+      res.write(`data: ${JSON.stringify({ type: "audio", data: ttsBuffer.toString("base64") })}\n\n`);
 
-        if (delta?.audio?.data) {
-          res.write(`data: ${JSON.stringify({ type: "audio", data: delta.audio.data })}\n\n`);
-        }
-      }
-
-      // 7. Save assistant message
       await chatStorage.createMessage(conversationId, "assistant", assistantTranscript);
 
       res.write(`data: ${JSON.stringify({ type: "done", transcript: assistantTranscript })}\n\n`);

@@ -145,8 +145,19 @@ export default function Explore() {
   const { data: liveShares = [], isLoading: loadingShares, isError: errorShares } = useQuery<any[]>({
     queryKey: ["/api/live-shares", userCity],
     queryFn: async () => {
-      const res = await fetch(`/api/live-shares?city=${encodeURIComponent(userCity)}`);
-      return res.json();
+      const user = typeof window !== "undefined" ? (() => {
+        try {
+          const raw = localStorage.getItem("user") || localStorage.getItem("travelconnect_user");
+          return raw ? JSON.parse(raw) : null;
+        } catch { return null; }
+      })() : null;
+      const url = `${getApiBaseUrl()}/api/live-shares?city=${encodeURIComponent(userCity)}`;
+      const headers: Record<string, string> = {};
+      if (user?.id) headers["x-user-id"] = String(user.id);
+      const res = await fetch(url, { credentials: "include", headers });
+      if (!res.ok) return [];
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
     },
     refetchInterval: 30000,
     enabled: !!userCity,
@@ -154,6 +165,20 @@ export default function Explore() {
 
   const { data: myLiveShare } = useQuery<any>({
     queryKey: ["/api/live-shares/mine"],
+    queryFn: async () => {
+      const user = typeof window !== "undefined" ? (() => {
+        try {
+          const raw = localStorage.getItem("user") || localStorage.getItem("travelconnect_user");
+          return raw ? JSON.parse(raw) : null;
+        } catch { return null; }
+      })() : null;
+      const url = `${getApiBaseUrl()}/api/live-shares/mine`;
+      const headers: Record<string, string> = {};
+      if (user?.id) headers["x-user-id"] = String(user.id);
+      const res = await fetch(url, { credentials: "include", headers });
+      if (!res.ok) return null;
+      return res.json();
+    },
     refetchInterval: 30000,
   });
 
@@ -208,6 +233,10 @@ export default function Explore() {
   const createLiveShareMutation = useMutation({
     mutationFn: async (data: any) => {
       const res = await apiRequest("POST", "/api/live-shares", data);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error || err?.message || `Request failed: ${res.status}`);
+      }
       return res.json();
     },
     onSuccess: () => {
@@ -216,6 +245,13 @@ export default function Explore() {
       setShowCreateLiveShare(false);
       setLsPlace(""); setLsAddress(""); setLsActivity(""); setLsNote(""); setLsDuration("60");
       toast({ title: "You're live!", description: "People nearby can see where you are" });
+    },
+    onError: (err: Error) => {
+      toast({
+        title: "Couldn't go live",
+        description: err?.message || "Place name, city, and country are required. Set your hometown or travel city in profile.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -352,14 +388,22 @@ export default function Explore() {
 
   const handleCreateLiveShare = () => {
     if (!lsPlace) { toast({ title: "Enter a place name", variant: "destructive" }); return; }
+    if (!userCity?.trim()) {
+      toast({ title: "City required", description: "Set your hometown or travel destination in your profile so we know which city to show you in.", variant: "destructive" });
+      return;
+    }
+    if (!userCountry?.trim()) {
+      toast({ title: "Country required", description: "Set your country in your profile.", variant: "destructive" });
+      return;
+    }
     createLiveShareMutation.mutate({
-      placeName: lsPlace,
-      placeAddress: lsAddress,
-      activity: lsActivity,
-      note: lsNote,
-      city: userCity,
-      country: userCountry,
-      durationMinutes: parseInt(lsDuration),
+      placeName: lsPlace.trim(),
+      placeAddress: (lsAddress || "").trim() || undefined,
+      activity: (lsActivity || "").trim() || undefined,
+      note: (lsNote || "").trim() || undefined,
+      city: userCity.trim(),
+      country: userCountry.trim(),
+      durationMinutes: parseInt(lsDuration, 10) || 60,
     });
   };
 
@@ -497,6 +541,12 @@ export default function Explore() {
               <div className="text-center py-12">
                 <p className="text-red-500 font-medium">Failed to load live shares</p>
                 <p className="text-gray-400 text-sm">Please try again later</p>
+              </div>
+            ) : !userCity ? (
+              <div className="text-center py-12">
+                <MapPin className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-500 dark:text-gray-400 font-medium">Set your city to see live shares</p>
+                <p className="text-gray-400 dark:text-gray-500 text-sm">Add your hometown or travel destination in your profile, then you’ll see who’s sharing their location here.</p>
               </div>
             ) : liveShares.length === 0 ? (
               <div className="text-center py-12">

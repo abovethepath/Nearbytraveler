@@ -1,10 +1,12 @@
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error("OPENAI_API_KEY environment variable must be set");
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
+
+function getAnthropic(): Anthropic {
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
+  return new Anthropic({ apiKey });
 }
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 interface HashtagRecommendation {
   hashtags: string[];
@@ -29,24 +31,15 @@ export class AIHashtagRecommender {
         : `${city}, ${country}`;
 
       const prompt = this.createHashtagPrompt(experience, locationString, category);
-      
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        messages: [
-          {
-            role: "system",
-            content: "You are a social media expert specializing in travel and local experiences. Generate relevant, trending hashtags that would help users discover authentic local content."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        response_format: { type: "json_object" },
+      const anthropic = getAnthropic();
+      const response = await anthropic.messages.create({
+        model: ANTHROPIC_MODEL,
         max_tokens: 500,
+        system: "You are a social media expert specializing in travel and local experiences. Generate relevant, trending hashtags. Return only valid JSON, no markdown.",
+        messages: [{ role: "user", content: prompt }],
       });
-
-      const result = JSON.parse(response.choices[0].message.content || '{}');
+      const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+      const result = JSON.parse(textBlock?.text?.trim() || '{}');
       
       return {
         hashtags: result.hashtags || [],
@@ -80,24 +73,15 @@ export class AIHashtagRecommender {
         : `${city}, ${country}`;
 
       const prompt = this.createEventHashtagPrompt(title, description, locationString, eventCategory);
-      
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        messages: [
-          {
-            role: "system",
-            content: "You are a social media expert specializing in event promotion and local community engagement. Generate hashtags that would maximize event visibility and attendance."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        response_format: { type: "json_object" },
+      const anthropic = getAnthropic();
+      const response = await anthropic.messages.create({
+        model: ANTHROPIC_MODEL,
         max_tokens: 500,
+        system: "You are a social media expert specializing in event promotion and local community engagement. Return only valid JSON, no markdown.",
+        messages: [{ role: "user", content: prompt }],
       });
-
-      const result = JSON.parse(response.choices[0].message.content || '{}');
+      const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+      const result = JSON.parse(textBlock?.text?.trim() || '{}');
       
       return {
         hashtags: result.hashtags || [],
@@ -126,24 +110,15 @@ export class AIHashtagRecommender {
   ): Promise<HashtagRecommendation> {
     try {
       const prompt = this.createMemoryHashtagPrompt(description, destination, tags, city, country);
-      
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        messages: [
-          {
-            role: "system",
-            content: "You are a travel content creator expert. Generate hashtags that would help travelers share their memories and inspire others to visit similar places."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        response_format: { type: "json_object" },
+      const anthropic = getAnthropic();
+      const response = await anthropic.messages.create({
+        model: ANTHROPIC_MODEL,
         max_tokens: 500,
+        system: "You are a travel content creator expert. Return only valid JSON, no markdown.",
+        messages: [{ role: "user", content: prompt }],
       });
-
-      const result = JSON.parse(response.choices[0].message.content || '{}');
+      const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+      const result = JSON.parse(textBlock?.text?.trim() || '{}');
       
       return {
         hashtags: result.hashtags || [],

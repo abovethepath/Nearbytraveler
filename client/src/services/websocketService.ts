@@ -170,6 +170,10 @@ class WebSocketService {
         this.emit('instant_message', data.message);
         break;
 
+      case 'notification':
+        this.emit('notification', data.payload || data);
+        break;
+
       case 'im_alert':
         this.handleIMAlert(data);
         break;

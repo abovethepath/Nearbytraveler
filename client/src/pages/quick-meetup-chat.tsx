@@ -37,7 +37,7 @@ export default function QuickMeetupChat() {
   const { data: meetup, isLoading: meetupLoading, isError: meetupError, error, failureCount } = useQuery<QuickMeetup>({
     queryKey: ['/api/quick-meets', meetupId],
     queryFn: async () => {
-      const res = await fetch(`${getApiBaseUrl()}/api/quick-meets/${meetupId}`);
+      const res = await fetch(`${getApiBaseUrl()}/api/quick-meets/${meetupId}`, { credentials: 'include' });
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },
@@ -49,7 +49,7 @@ export default function QuickMeetupChat() {
   const { data: chatroom, isLoading: chatroomLoading } = useQuery<MeetupChatroom>({
     queryKey: ['/api/quick-meetup-chatrooms', meetupId],
     queryFn: async () => {
-      const res = await fetch(`${getApiBaseUrl()}/api/quick-meetup-chatrooms/${meetupId}`);
+      const res = await fetch(`${getApiBaseUrl()}/api/quick-meetup-chatrooms/${meetupId}`, { credentials: 'include' });
       if (!res.ok) throw new Error(`${res.status}`);
       return res.json();
     },

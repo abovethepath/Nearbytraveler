@@ -1064,6 +1064,12 @@ function Router() {
     if (location.startsWith('/messages/') && location.split('/')[2]) {
       return <DMChat />;
     }
+    if (location.startsWith('/dm-chat/') && location.split('/')[2]) {
+      return <DMChat />;
+    }
+    if (location.startsWith('/chat/') && location.split('/')[2]) {
+      return <DMChat />;
+    }
 
     if (location.startsWith('/city-chatrooms/')) {
       const pathParts = location.split('/');

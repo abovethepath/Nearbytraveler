@@ -1,7 +1,7 @@
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 import { storage } from './storage';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 
 interface CityEvent {
   title: string;

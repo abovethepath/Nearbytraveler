@@ -1,4 +1,7 @@
-// Using OpenAI API for consistent AI functionality across the platform
+// Using Anthropic Claude (claude-sonnet-4-6) consistently with rest of codebase
+import Anthropic from "@anthropic-ai/sdk";
+
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 
 export interface PhotoAnalysisResult {
   tags: string[];
@@ -9,7 +12,8 @@ export interface PhotoAnalysisResult {
 }
 
 export async function analyzePhoto(base64Image: string): Promise<PhotoAnalysisResult> {
-  if (!process.env.OPENAI_API_KEY) {
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) {
     return {
       tags: ['travel', 'photo'],
       category: 'other',
@@ -19,61 +23,48 @@ export async function analyzePhoto(base64Image: string): Promise<PhotoAnalysisRe
   }
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        max_tokens: 1000,
-        messages: [
+    // Strip data URL prefix if present (e.g. data:image/jpeg;base64,)
+    let mediaType = "image/jpeg";
+    let data = base64Image;
+    if (base64Image.includes("base64,")) {
+      const match = base64Image.match(/^data:([^;]+);base64,(.+)$/);
+      if (match) {
+        mediaType = match[1];
+        data = match[2];
+      }
+    }
+
+    const anthropic = new Anthropic({ apiKey });
+    const response = await anthropic.messages.create({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 1000,
+      messages: [{
+        role: "user",
+        content: [
           {
-            role: 'system',
-            content: 'You are a travel photo analysis expert. Analyze images and provide detailed tagging information in JSON format.'
+            type: "image" as const,
+            source: { type: "base64" as const, media_type: mediaType as "image/jpeg" | "image/png" | "image/gif" | "image/webp", data },
           },
           {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: `Analyze this travel photo and provide detailed tagging information. Return your response as a JSON object with the following structure:
+            type: "text" as const,
+            text: `Analyze this travel photo and provide detailed tagging information. Return your response as a JSON object with the following structure only (no markdown):
 
 {
-  "tags": ["tag1", "tag2", "tag3", ...], // 5-10 specific descriptive tags
-  "category": "category", // Primary category: "nature", "urban", "food", "people", "activity", "architecture", "transport", "culture", "nightlife", "shopping"
-  "description": "description", // 1-2 sentence description of what's in the photo
-  "location": "location or landmark name if recognizable", // Optional, only if clearly identifiable
-  "confidence": 0.85 // Your confidence level (0-1) in the analysis
+  "tags": ["tag1", "tag2", ...],
+  "category": "nature|urban|food|people|activity|architecture|transport|culture|nightlife|shopping",
+  "description": "1-2 sentence description",
+  "location": "landmark or place name if recognizable",
+  "confidence": 0.85
 }
 
-Focus on travel-relevant tags like specific activities, architectural styles, food types, natural features, cultural elements, and any recognizable landmarks. Be specific but accurate.`
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: base64Image
-                }
-              }
-            ]
-          }
+Focus on travel-relevant tags. Be specific but accurate.`,
+          },
         ],
-        response_format: { type: "json_object" }
-      })
+      }],
     });
-
-    if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const analysisText = data.choices[0]?.message?.content;
-    
-    if (!analysisText) {
-      throw new Error('No analysis received from OpenAI');
-    }
-
+    const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+    const analysisText = textBlock?.text?.trim();
+    if (!analysisText) throw new Error('No analysis received from AI');
     const analysis = JSON.parse(analysisText);
 
     const result: PhotoAnalysisResult = {

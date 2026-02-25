@@ -790,6 +790,17 @@ export const userReports = pgTable("user_reports", {
   reviewedAt: timestamp("reviewed_at"),
 });
 
+// Chatroom/group reports for moderation
+export const chatroomReports = pgTable("chatroom_reports", {
+  id: serial("id").primaryKey(),
+  chatroomId: integer("chatroom_id").notNull(),
+  reporterId: integer("reporter_id").notNull(),
+  reason: text("reason").notNull(),
+  details: text("details"),
+  status: text("status").default("pending"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Waitlist for launch leads
 export const waitlistLeads = pgTable("waitlist_leads", {
   id: serial("id").primaryKey(),

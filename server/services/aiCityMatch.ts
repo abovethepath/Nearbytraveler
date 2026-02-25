@@ -4,6 +4,10 @@
 // 2. Matching Insights - explain compatibility with other users
 // 3. City Guide - travel tips and local insights for the city
 
+import Anthropic from "@anthropic-ai/sdk";
+
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
+
 interface UserData {
   id: number;
   username: string;
@@ -200,45 +204,23 @@ Example format:
     }
   }
 
-  // Main AI call method - uses Replit AI Integration
+  // Use Anthropic Claude (claude-sonnet-4-6) consistently with rest of codebase
   private async callAI(prompt: string): Promise<string> {
-    // Use Replit AI Integration (uses Replit credits)
-    if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
-      try {
-        console.log('Calling Replit AI Integration for city match feature...');
-        return await this.callReplitAI(prompt);
-      } catch (error) {
-        console.error('Replit AI failed:', error);
-      }
-    }
-
-    throw new Error('No AI service available');
+    const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+    if (!apiKey) throw new Error('ANTHROPIC_API_KEY is not set');
+    return this.callAnthropic(prompt);
   }
 
-  private async callReplitAI(prompt: string): Promise<string> {
-    const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: 'You are a helpful assistant that returns only valid JSON. Never include markdown code blocks or extra text.' },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 1500
-      })
+  private async callAnthropic(prompt: string): Promise<string> {
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY!.trim() });
+    const response = await anthropic.messages.create({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 1500,
+      system: "You are a helpful assistant that returns only valid JSON. Never include markdown code blocks or extra text.",
+      messages: [{ role: "user", content: prompt }],
     });
-
-    if (!response.ok) {
-      throw new Error(`Replit AI error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.choices[0]?.message?.content || '';
+    const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
+    return textBlock?.text?.trim() ?? "";
   }
 
   // Parse JSON array from AI response (handles markdown code blocks)

@@ -318,7 +318,9 @@ export default function Messages() {
             unreadCount: unreadCount,
           });
         } else {
-          const otherUser = (allUsers as any[]).find((u: any) => u.id === otherUserId);
+          // Use embedded user from message (e.g. from meet-request DMs) so thread appears in inbox even if not in allUsers
+          const fromMessage = message.senderId === user?.id ? message.receiverUser : message.senderUser;
+          const otherUser = fromMessage || (allUsers as any[]).find((u: any) => u.id === otherUserId);
           conversationMap.set(otherUserId, {
             userId: otherUserId,
             username: otherUser?.username || otherUser?.name || `User ${otherUserId}`,
