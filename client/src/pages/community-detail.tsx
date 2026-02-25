@@ -8,7 +8,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Users, MessageSquare, Send, Lock, Trash2, Clock, Heart, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Users, MessageSquare, Send, Lock, Trash2, Clock, Heart, MessageCircle, ChevronDown, ChevronUp, MessageCircleMore, ImageIcon } from "lucide-react";
+import WhatsAppChat from "@/components/WhatsAppChat";
+import AnimatedPhotoUpload from "@/components/AnimatedPhotoUpload";
 
 function UserAvatar({ user, size = "sm" }: { user: any; size?: string }) {
   const sizeClass = size === "sm" ? "w-8 h-8 text-xs" : size === "md" ? "w-10 h-10 text-sm" : "w-12 h-12 text-base";
@@ -126,8 +128,9 @@ export default function CommunityDetail({ communityId }: { communityId: number }
   const queryClient = useQueryClient();
   const storedUser = localStorage.getItem("user");
   const currentUser = storedUser ? JSON.parse(storedUser) : null;
-  const [activeSection, setActiveSection] = useState<"feed" | "members">("feed");
+  const [activeSection, setActiveSection] = useState<"feed" | "members" | "chat" | "photos">("feed");
   const [newPost, setNewPost] = useState("");
+  const [postPhotoUrl, setPostPhotoUrl] = useState<string | null>(null);
   const [expandedReplies, setExpandedReplies] = useState<Set<number>>(new Set());
 
   const { data: community, isLoading } = useQuery<any>({
@@ -183,8 +186,12 @@ export default function CommunityDetail({ communityId }: { communityId: number }
   });
 
   const createPostMutation = useMutation({
-    mutationFn: async (content: string) => {
-      const res = await apiRequest("POST", `/api/community-tags/${communityId}/posts`, { content, postType: "update" });
+    mutationFn: async ({ content, mediaUrl }: { content: string; mediaUrl?: string | null }) => {
+      const res = await apiRequest("POST", `/api/community-tags/${communityId}/posts`, {
+        content: content || "",
+        postType: "update",
+        ...(mediaUrl && { mediaUrl }),
+      });
       if (!res.ok) {
         const d = await res.json();
         throw new Error(d.error || "Failed to post");
@@ -194,9 +201,33 @@ export default function CommunityDetail({ communityId }: { communityId: number }
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/community-tags", communityId, "posts"] });
       setNewPost("");
+      setPostPhotoUrl(null);
     },
     onError: (err: any) => {
       toast({ title: "Error", description: err?.message || "Failed to post", variant: "destructive" });
+    },
+  });
+
+  const uploadPhotoMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const res = await apiRequest("POST", `/api/users/${currentUser?.id}/photos`, {
+        userId: currentUser?.id,
+        imageData: base64,
+        title: null,
+        isPublic: true,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      return data?.photo?.imageUrl ?? data?.imageUrl ?? base64;
+    },
+    onError: (err: any) => {
+      toast({ title: "Upload failed", description: err?.message, variant: "destructive" });
     },
   });
 
@@ -290,11 +321,23 @@ export default function CommunityDetail({ communityId }: { communityId: number }
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-4">
-        <div className="flex gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-4">
           <Button variant={activeSection === "feed" ? "default" : "outline"} size="sm"
             onClick={() => setActiveSection("feed")}
             className={activeSection === "feed" ? "bg-orange-500 hover:bg-orange-600" : ""}>
             <MessageSquare className="w-4 h-4 mr-1" /> Feed
+          </Button>
+          {community.chatroomId != null && (
+            <Button variant={activeSection === "chat" ? "default" : "outline"} size="sm"
+              onClick={() => setActiveSection("chat")}
+              className={activeSection === "chat" ? "bg-orange-500 hover:bg-orange-600" : ""}>
+              <MessageCircleMore className="w-4 h-4 mr-1" /> Chat
+            </Button>
+          )}
+          <Button variant={activeSection === "photos" ? "default" : "outline"} size="sm"
+            onClick={() => setActiveSection("photos")}
+            className={activeSection === "photos" ? "bg-orange-500 hover:bg-orange-600" : ""}>
+            <ImageIcon className="w-4 h-4 mr-1" /> Photos
           </Button>
           <Button variant={activeSection === "members" ? "default" : "outline"} size="sm"
             onClick={() => setActiveSection("members")}
@@ -313,18 +356,41 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                   onChange={(e) => setNewPost(e.target.value)}
                   className="min-h-[60px] resize-none"
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey && newPost.trim()) {
+                    if (e.key === "Enter" && !e.shiftKey && (newPost.trim() || postPhotoUrl)) {
                       e.preventDefault();
-                      createPostMutation.mutate(newPost.trim());
+                      createPostMutation.mutate({ content: newPost.trim(), mediaUrl: postPhotoUrl || undefined });
                     }
                   }}
                 />
-                <div className="flex justify-end mt-2">
-                  <Button size="sm" className="bg-orange-500 hover:bg-orange-600"
-                    onClick={() => { if (newPost.trim()) createPostMutation.mutate(newPost.trim()); }}
-                    disabled={!newPost.trim() || createPostMutation.isPending}>
-                    <Send className="w-4 h-4 mr-1" /> {createPostMutation.isPending ? "Posting..." : "Post"}
-                  </Button>
+                <div className="mt-2 space-y-2">
+                  <AnimatedPhotoUpload
+                    multiple={false}
+                    maxFiles={1}
+                    onUpload={async (file) => {
+                      const url = await uploadPhotoMutation.mutateAsync(file);
+                      setPostPhotoUrl(url);
+                    }}
+                    className="text-sm"
+                  />
+                  {postPhotoUrl && (
+                    <div className="flex items-center gap-2">
+                      <img src={postPhotoUrl} alt="Attached" className="h-16 w-16 rounded object-cover border border-gray-200 dark:border-gray-600" />
+                      <Button size="sm" variant="ghost" className="text-gray-500 hover:text-red-500" onClick={() => setPostPhotoUrl(null)}>
+                        Remove photo
+                      </Button>
+                    </div>
+                  )}
+                  <div className="flex justify-end">
+                    <Button size="sm" className="bg-orange-500 hover:bg-orange-600"
+                      onClick={() => {
+                        if (newPost.trim() || postPhotoUrl) {
+                          createPostMutation.mutate({ content: newPost.trim(), mediaUrl: postPhotoUrl || undefined });
+                        }
+                      }}
+                      disabled={(!newPost.trim() && !postPhotoUrl) || createPostMutation.isPending}>
+                      <Send className="w-4 h-4 mr-1" /> {createPostMutation.isPending ? "Posting..." : "Post"}
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -371,7 +437,12 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                                 </Button>
                               )}
                             </div>
-                            <p className="text-sm text-gray-700 dark:text-gray-300 mt-1 whitespace-pre-wrap">{post.content}</p>
+                            {post.mediaUrl && (
+                              <div className="mt-2">
+                                <img src={post.mediaUrl} alt="" className="max-w-full max-h-80 rounded-lg object-contain border border-gray-200 dark:border-gray-600" />
+                              </div>
+                            )}
+                            <p className="text-sm text-gray-700 dark:text-gray-300 mt-1 whitespace-pre-wrap">{post.content || ""}</p>
 
                             <div className="flex items-center gap-4 mt-3 pt-2 border-t border-gray-100 dark:border-gray-800">
                               <button
@@ -405,6 +476,60 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                 })}
               </div>
             )}
+          </div>
+        )}
+
+        {activeSection === "chat" && community.chatroomId != null && (
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden bg-gray-900 min-h-[60vh] flex flex-col">
+            <WhatsAppChat
+              chatId={community.chatroomId}
+              chatType="chatroom"
+              title={community.displayName}
+              subtitle={`${members.length} members`}
+              currentUserId={currentUser?.id}
+              onBack={() => setActiveSection("feed")}
+            />
+          </div>
+        )}
+
+        {activeSection === "photos" && (
+          <div className="space-y-4">
+            {loadingPosts ? (
+              <div className="text-center py-12">
+                <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                <p className="text-gray-500 dark:text-gray-400 text-sm">Loading photos...</p>
+              </div>
+            ) : (() => {
+              const photos = posts.filter((p: any) => p.mediaUrl);
+              return photos.length === 0 ? (
+                <div className="text-center py-12">
+                  <ImageIcon className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                  <p className="text-gray-500 dark:text-gray-400 font-medium">No photos yet</p>
+                  <p className="text-gray-400 text-sm">Add a photo when you post in the Feed tab</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {photos.map((post: any) => (
+                    <Card key={post.id} className="overflow-hidden border border-gray-200 dark:border-gray-700">
+                      <div
+                        className="aspect-square cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => setLocation(`/profile/${post.userId}`)}
+                      >
+                        <img
+                          src={post.mediaUrl}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <CardContent className="p-2">
+                        <p className="text-xs font-medium truncate">{post.username}</p>
+                        <p className="text-[10px] text-gray-500">{timeAgo(post.createdAt)}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         )}
 

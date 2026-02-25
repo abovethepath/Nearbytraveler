@@ -1814,7 +1814,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   // Show city selection screen if no city is selected
   if (!selectedCity) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-orange-900">
+      <div className="min-h-screen bg-slate-900">
         <div className="container mx-auto px-4 py-8">
           {/* Hero section and toggle — hidden on iOS for a cleaner city plans experience */}
           {!isNativeIOSApp() && (
@@ -2012,20 +2012,20 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-slate-900">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <Button 
             variant="ghost" 
             onClick={() => setSelectedCity('')}
-            className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="text-gray-300 hover:bg-slate-800 hover:text-white"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Cities
           </Button>
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{selectedCity}</h1>
+            <h1 className="text-2xl font-bold text-white">{selectedCity}</h1>
           </div>
           <div className="w-20" />
         </div>
@@ -2039,7 +2039,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   variant="outline"
                   size="sm"
                   onClick={toggleHeroVisibility}
-                  className="text-sm"
+                  className="text-sm text-gray-300 border-slate-600 hover:bg-slate-800 hover:text-white"
                   data-testid="button-show-match-hero"
                 >
                   <ChevronDown className="w-4 h-4 mr-2" />
@@ -2049,21 +2049,21 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             )}
             {isHeroVisible && (
               <div className="max-w-4xl mx-auto mb-6">
-                <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
                   <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-2 mb-2">
-                    <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200">🎯 How City Plans Works</h3>
+                    <h3 className="text-lg font-semibold text-blue-200">🎯 How City Plans Works</h3>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={toggleHeroVisibility}
-                      className="text-sm w-fit"
+                      className="text-sm w-fit text-gray-300 border-slate-600 hover:bg-slate-700 hover:text-white"
                       data-testid="button-hide-match-hero"
                     >
                       <X className="w-4 h-4 mr-2" />
                       Hide Instructions
                     </Button>
                   </div>
-                  <div className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
+                  <div className="text-sm text-blue-200 space-y-1">
                     <p>• <strong>Choose activities you want to do</strong> → Get matched with others who share your interests</p>
                     <p>• <strong>Add your own activities</strong> → Help others discover new experiences</p>
                     <p>• <strong>Connect with locals & travelers</strong> → Plan meetups and explore together</p>
@@ -2077,11 +2077,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
         {/* Activity Selection Interface - GORGEOUS RESTORED DESIGN */}
         <div className="max-w-6xl mx-auto">
-          <div className="bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-800 dark:via-blue-900/30 dark:to-orange-900/30 border border-blue-200/50 dark:border-blue-700/50 rounded-2xl shadow-2xl backdrop-blur-sm">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl backdrop-blur-sm">
             <div className="p-8">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-2">⭐ City Plans for {selectedCity}</h2>
-                <p className="text-lg text-gray-600 dark:text-gray-300 font-medium">Pick to match faster in this city.</p>
+                <p className="text-lg text-gray-300 font-medium">Pick to match faster in this city.</p>
                 {/* Save & Find Matches - Top */}
                 <div className="mt-6">
                   <Button
@@ -2091,7 +2091,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       const matchSection = document.querySelector('[data-testid="matching-users-section"]');
                       if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
-                    className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
+                    className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
                   >
                     <Check className="w-5 h-5 mr-2" />
                     Save & Find Matches
@@ -2100,7 +2100,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               </div>
 
               {/* Mobile Section Switcher - Show only on mobile */}
-              <div className="md:hidden sticky top-0 z-30 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm py-3 -mx-8 px-4 mb-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="md:hidden sticky top-0 z-30 bg-slate-900 backdrop-blur-sm py-3 -mx-8 px-4 mb-6 border-b border-slate-700">
                 <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                   {[
                     { id: 'popular', label: '🎯 Things to Do' },
@@ -2120,7 +2120,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
                         activeMobileSection === section.id
                           ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-lg'
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                          : 'bg-slate-800 text-gray-300 hover:bg-slate-700 border border-slate-700'
                       }`}
                     >
                       {section.label}
@@ -2136,8 +2136,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     }}
                     className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
                       activeMobileSection === 'all'
-                        ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                        ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-lg'
+                        : 'bg-slate-800 text-gray-300 hover:bg-slate-700 border border-slate-700'
                     }`}
                   >
                     Show All
@@ -2151,7 +2151,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       placeholder="Search city plans..."
                       value={activitySearchFilter}
                       onChange={(e) => setActivitySearchFilter(e.target.value)}
-                      className="pl-9 py-2 text-sm bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-full"
+                      className="pl-9 py-2 text-sm bg-slate-800 border-slate-700 text-gray-100 placeholder-gray-400 rounded-full"
                     />
                     {activitySearchFilter && (
                       <button
@@ -2167,7 +2167,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
               {/* Clear All Plans Confirmation Dialog */}
               <AlertDialog open={showClearAllDialog} onOpenChange={setShowClearAllDialog}>
-                <AlertDialogContent className="bg-white dark:bg-gray-900">
+                <AlertDialogContent className="bg-white dark:bg-slate-900">
                   <AlertDialogHeader>
                     <AlertDialogTitle>Clear all plans?</AlertDialogTitle>
                     <AlertDialogDescription>
@@ -2331,7 +2331,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     <Button
                       onClick={handleAddCityPick}
                       disabled={!newPickName.trim()}
-                      className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+                      className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
                     >
                       Add Plan
                     </Button>
@@ -2392,7 +2392,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       {/* GROUP 1: Featured (curated top activities) */}
                       <div className="text-center mb-6">
                         <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-2">🎯 Group 1: Things to Do in {selectedCity}</h3>
-                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Curated top spots and experiences — tap to add to your plans</p>
+                        <p className="text-gray-400 text-xs sm:text-sm">Curated top spots and experiences — tap to add to your plans</p>
                         <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-yellow-500 to-orange-500 mx-auto rounded-full mt-2"></div>
                         {/* Inline text box: add custom "thing I want to do" — editable/deletable by all */}
                         <div className="flex flex-col sm:flex-row gap-2 mt-4 max-w-xl mx-auto">
@@ -2407,7 +2407,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 (document.querySelector('[data-add-custom-activity]') as HTMLButtonElement)?.click();
                               }
                             }}
-                            className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm placeholder-gray-500"
+                            className="flex-1 px-3 py-2 rounded-lg border border-slate-700 bg-slate-800 text-gray-100 text-sm placeholder-gray-400"
                           />
                           <Button
                             data-add-custom-activity
@@ -2473,12 +2473,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           return (
                             <div key={activity.id} className="group relative">
                               <button
-                                className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
+                                className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border ${
                                   isSelected 
-                                    ? 'bg-gradient-to-r from-green-500 to-teal-500 text-white border-green-400 shadow-green-200'
+                                    ? 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-orange-400/50'
                                     : isFeatured
-                                      ? 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 text-gray-700 dark:text-gray-100 border-yellow-200 dark:border-yellow-600 hover:border-yellow-300'
-                                      : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300'
+                                      ? 'bg-gray-800 text-gray-100 border-slate-700 hover:border-yellow-400/50'
+                                      : 'bg-gray-800 text-gray-100 border-slate-700 hover:border-slate-500'
                                 }`}
                                 onClick={() => toggleActivity(activity)}
                                 type="button"
@@ -2545,7 +2545,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         <div className="mt-8">
                           <div className="text-center mb-4">
                             <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent mb-1">📍 Group 2: More Things to Do</h3>
-                            <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Additional spots, local favorites, and unique ideas</p>
+                            <p className="text-gray-400 text-xs sm:text-sm">Additional spots, local favorites, and unique ideas</p>
                           </div>
                           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                             {displayedGroup2.map((activity) => {
@@ -2560,10 +2560,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 <div key={activity.id} className="group relative">
                                   <button
                                     type="button"
-                                    className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
+                                    className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border ${
                                       isSelected 
-                                        ? 'bg-gradient-to-r from-green-500 to-teal-500 text-white border-green-400'
-                                        : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300'
+                                        ? 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-orange-400/50'
+                                        : 'bg-gray-800 text-gray-100 border-slate-700 hover:border-slate-500'
                                     }`}
                                     onClick={() => toggleActivity(activity)}
                                   >
@@ -2619,6 +2619,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setDisplayedActivitiesLimit(prev => prev + 30)}
+                                className="border-slate-700 bg-slate-800 text-gray-100 hover:bg-slate-700 hover:border-slate-600"
                               >
                                 Show {Math.min(30, group2Static.length - displayedActivitiesLimit)} more
                               </Button>
@@ -2636,7 +2637,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             const matchSection = document.querySelector('[data-testid="matching-users-section"]');
                             if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                           }}
-                          className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
+                          className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
                         >
                           <Check className="w-5 h-5 mr-2" />
                           Save & Find Matches
@@ -2648,7 +2649,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         <div className="mt-8">
                           <div className="text-center mb-4">
                             <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-1">✈️ Group 3: Connect On</h3>
-                            <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Popular ways to connect with travelers & locals in any city</p>
+                            <p className="text-gray-400 text-xs sm:text-sm">Popular ways to connect with travelers & locals in any city</p>
                           </div>
                           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                             {displayedGroup3.map((activity) => {
@@ -2660,10 +2661,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 <button
                                   key={activity.id}
                                   type="button"
-                                  className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
+                                  className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border ${
                                     isSelected 
-                                      ? 'bg-gradient-to-r from-blue-600 to-orange-600 text-white border-blue-400 shadow-blue-200'
-                                      : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300'
+                                      ? 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-orange-400/50'
+                                      : 'bg-gray-800 text-gray-100 border-slate-700 hover:border-slate-500'
                                   }`}
                                   onClick={() => toggleActivity(activity)}
                                 >
@@ -2722,7 +2723,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       const matchSection = document.querySelector('[data-testid="matching-users-section"]');
                       if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
-                    className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
+                    className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
                   >
                     <Check className="w-5 h-5 mr-2" />
                     Save & Find Matches
@@ -2743,7 +2744,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     <div id="mobile-section-selected" className={`md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                         <div>
-                          <h3 className="text-xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+                          <h3 className="text-xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent">
                             Your Plans
                           </h3>
                           <p className="text-sm text-gray-500 dark:text-gray-400">Things you want to do in {selectedCity}</p>
@@ -2752,7 +2753,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           <Button
                             onClick={() => setShowAddPickModal(true)}
                             size="sm"
-                            className="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white"
+                            className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
                           >
                             <Plus className="w-4 h-4 mr-1" />
                             Add a City Plan
@@ -2790,7 +2791,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       </div>
                       
                       {userPicksForCity.length > 0 ? (
-                        <div className="p-4 bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-xl border border-green-200 dark:border-green-700">
+                        <div className="p-4 bg-gradient-to-r from-orange-50/50 to-blue-50/50 dark:from-orange-900/20 dark:to-blue-900/20 rounded-xl border border-orange-200/50 dark:border-orange-700/50">
                           <div className="flex flex-wrap gap-2">
                             {userPicksForCity.map((ua) => {
                               const activity = cityActivities.find(ca => ca.id === ua.activityId);
@@ -2801,7 +2802,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               
                               return (
                                 <div key={ua.id} className="group relative">
-                                  <div className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg text-sm font-medium shadow-md">
+                                  <div className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-orange-500 text-white rounded-lg text-sm font-medium shadow-md">
                                     {categoryInfo && <span className="text-xs">{categoryInfo.emoji}</span>}
                                     <span>{activityName}</span>
                                     <button
@@ -2872,7 +2873,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   onClick={() => toggleEventInterest(event)}
                                   className={`cursor-pointer rounded-xl p-4 transition-all border-2 ${
                                     isSelected 
-                                      ? 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-green-400 dark:border-green-600 ring-2 ring-green-300 dark:ring-green-700' 
+                                      ? 'bg-gradient-to-br from-orange-50 to-blue-50 dark:from-orange-900/30 dark:to-blue-900/30 border-orange-400 dark:border-orange-600 ring-2 ring-orange-300 dark:ring-orange-700' 
                                       : 'bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border-purple-200 dark:border-purple-700 hover:shadow-lg hover:border-purple-400'
                                   }`}
                                 >
@@ -2888,7 +2889,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                       <div className="flex items-start justify-between gap-2">
                                         <h4 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2">{event.title}</h4>
                                         {isSelected && (
-                                          <span className="flex-shrink-0 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                          <span className="flex-shrink-0 w-5 h-5 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center">
                                             <Check className="w-3 h-3 text-white" />
                                           </span>
                                         )}
@@ -2945,14 +2946,15 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
                 {/* SECTION 5: Deeper Interests - Sub-interests for more specific matching */}
                 <div className="mt-8">
-                  <div className="border border-orange-200 dark:border-orange-700 rounded-lg p-4 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20">
+                  <div className="border border-slate-600 rounded-lg p-4 bg-slate-800/50">
                     <SubInterestSelector
                       selectedSubInterests={userSubInterests}
                       onSubInterestsChange={handleSubInterestsChange}
                       showOptionalLabel={false}
+                      variant="dark"
                     />
                     {subInterestsLoading && (
-                      <div className="flex items-center gap-2 mt-2 text-sm text-orange-600">
+                      <div className="flex items-center gap-2 mt-2 text-sm text-orange-400">
                         <Loader2 className="w-4 h-4 animate-spin" />
                         Saving...
                       </div>

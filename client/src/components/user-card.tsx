@@ -226,7 +226,7 @@ export default function UserCard({
           <div className={`font-semibold text-gray-900 dark:text-white truncate ${compact ? 'text-sm' : 'text-sm'}`}>
             {displayName}
           </div>
-          <div className="text-xs text-gray-600 dark:text-gray-500 line-clamp-3 mt-0.5 min-h-[2.75rem]" title={user.bio || undefined}>
+          <div className="text-xs text-gray-600 dark:text-gray-500 line-clamp-2 mt-0.5 min-h-[2.75rem]" title={user.bio || undefined}>
             {bioSnippet || '\u00A0'}
           </div>
           {!isCurrentUser && (
@@ -256,7 +256,7 @@ export default function UserCard({
           <div className={`font-semibold text-gray-900 dark:text-white truncate ${isNativeIOSApp() ? 'text-sm' : 'text-xs'}`}>
             {displayName}
           </div>
-          <div className={`text-gray-600 dark:text-gray-500 line-clamp-3 mt-0.5 min-h-[2.75rem] truncate ${isNativeIOSApp() ? 'text-xs' : 'text-[11px]'}`} title={user.bio || undefined}>
+          <div className={`text-gray-600 dark:text-gray-500 line-clamp-2 mt-0.5 min-h-[2.75rem] truncate ${isNativeIOSApp() ? 'text-xs' : 'text-[11px]'}`} title={user.bio || undefined}>
             {bioSnippet || '\u00A0'}
           </div>
           {!isCurrentUser && (

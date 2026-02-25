@@ -2884,6 +2884,7 @@ export const communityTags = pgTable("community_tags", {
   flagReason: text("flag_reason"),
   flaggedBy: integer("flagged_by").references(() => users.id),
   flaggedAt: timestamp("flagged_at"),
+  chatroomId: integer("chatroom_id").references(() => citychatrooms.id),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -2914,6 +2915,7 @@ export const communityPosts = pgTable("community_posts", {
   userId: integer("user_id").notNull().references(() => users.id),
   content: text("content").notNull(),
   postType: text("post_type").notNull().default("update"),
+  mediaUrl: text("media_url"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

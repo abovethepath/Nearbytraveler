@@ -6,12 +6,14 @@ interface SubInterestSelectorProps {
   selectedSubInterests: string[];
   onSubInterestsChange: (subInterests: string[]) => void;
   showOptionalLabel?: boolean;
+  variant?: "default" | "dark";
 }
 
 export default function SubInterestSelector({
   selectedSubInterests,
   onSubInterestsChange,
-  showOptionalLabel = true
+  showOptionalLabel = true,
+  variant = "default"
 }: SubInterestSelectorProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   
@@ -49,15 +51,15 @@ export default function SubInterestSelector({
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <Sparkles className="w-4 h-4 text-orange-500" />
-        <h3 className="font-medium text-sm text-gray-900 dark:text-white">
+        <h3 className={`font-medium text-sm ${variant === "dark" ? "text-gray-100" : "text-gray-900 dark:text-white"}`}>
           Get More Specific
         </h3>
         {showOptionalLabel && (
-          <span className="text-xs text-gray-500 dark:text-gray-400">(Optional)</span>
+          <span className={`text-xs ${variant === "dark" ? "text-gray-400" : "text-gray-500 dark:text-gray-400"}`}>(Optional)</span>
         )}
       </div>
       
-      <p className="text-xs text-gray-500 dark:text-gray-400">
+      <p className={`text-xs ${variant === "dark" ? "text-gray-400" : "text-gray-500 dark:text-gray-400"}`}>
         Tap a category to see specific options. Better matches + personalized local deals.
       </p>
       
@@ -67,14 +69,14 @@ export default function SubInterestSelector({
           const selectedCount = getSelectedCountForCategory(category);
           
           return (
-            <div key={category.id} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+            <div key={category.id} className={`rounded-lg overflow-hidden ${variant === "dark" ? "border border-slate-600" : "border border-gray-200 dark:border-gray-700"}`}>
               <button
                 type="button"
                 onClick={() => toggleCategory(category.id)}
                 className={`w-full flex items-center justify-between p-3 transition-colors ${
-                  isExpanded 
-                    ? "bg-orange-50 dark:bg-orange-900/20" 
-                    : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750"
+                  variant === "dark"
+                    ? isExpanded ? "bg-slate-700" : "bg-slate-800 hover:bg-slate-700"
+                    : isExpanded ? "bg-orange-50 dark:bg-orange-900/20" : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750"
                 }`}
               >
                 <div className="flex items-center gap-2">
@@ -106,7 +108,7 @@ export default function SubInterestSelector({
               </button>
               
               {isExpanded && (
-                <div className="p-3 bg-gray-50 dark:bg-gray-850 border-t border-gray-200 dark:border-gray-700">
+                <div className={`p-3 border-t ${variant === "dark" ? "bg-slate-800/80 border-slate-600" : "bg-gray-50 dark:bg-gray-850 border-gray-200 dark:border-gray-700"}`}>
                   <div className="flex flex-wrap gap-2">
                     {category.subInterests.map(subInterest => {
                       const isSelected = selectedSubInterests.includes(subInterest);
@@ -119,9 +121,13 @@ export default function SubInterestSelector({
                           style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                           className={`
                             px-3 py-2 rounded-full text-xs font-medium transition-colors min-h-[36px]
-                            ${isSelected 
-                              ? "bg-orange-500 text-white shadow-sm" 
-                              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:border-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                            ${variant === "dark"
+                              ? isSelected 
+                                ? "bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-sm border border-orange-400/50" 
+                                : "bg-slate-800 text-gray-100 border border-slate-600 hover:border-slate-500"
+                              : isSelected 
+                                ? "bg-orange-500 text-white shadow-sm" 
+                                : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:border-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
                             }
                           `}
                         >

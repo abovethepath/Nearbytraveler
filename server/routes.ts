@@ -17409,10 +17409,11 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log('📸 ROUTES: Photo object received from storage:', JSON.stringify(photo, null, 2));
       if (process.env.NODE_ENV === 'development') console.log('📸 ROUTES: Photo keys:', Object.keys(photo || {}));
 
-      // Create a clean photo object without potentially problematic fields
+      // Create a clean photo object (include imageUrl for community post mediaUrl reuse)
       const cleanPhoto = {
         id: photo.id,
         userId: photo.userId,
+        imageUrl: photo.imageUrl,
         caption: photo.caption,
         isPrivate: photo.isPrivate,
         isProfilePhoto: photo.isProfilePhoto,
@@ -23318,6 +23319,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Get all community tags (site-wide; same list for every city)
   app.get("/api/community-tags", async (req: any, res) => {
     try {
+      const systemUserId = 1; // for community chatrooms created by system
       // Ensure default communities exist (idempotent)
       for (const c of DEFAULT_COMMUNITIES) {
         const [existing] = await db.select().from(communityTags).where(eq(communityTags.name, c.name));
@@ -23331,6 +23333,35 @@ Questions? Just reply to this message. Welcome aboard!
             description: c.description,
             isUserCreated: false,
           });
+        }
+      }
+
+      // Backfill chatroom for any community that has no chatroom (preset or existing)
+      const withoutChatroom = await db.select().from(communityTags).where(isNull(communityTags.chatroomId));
+      for (const tag of withoutChatroom) {
+        const [newRoom] = await db.insert(citychatrooms).values({
+          name: tag.displayName,
+          description: tag.description || `Chat for ${tag.displayName}`,
+          city: "Community",
+          state: "",
+          country: "Global",
+          createdById: tag.createdBy ?? systemUserId,
+          isPublic: true,
+          maxMembers: 500,
+          tags: ["community"],
+        }).returning();
+        if (newRoom) {
+          await db.update(communityTags).set({ chatroomId: newRoom.id }).where(eq(communityTags.id, tag.id));
+          const [existingMember] = await db.select().from(chatroomMembers)
+            .where(and(eq(chatroomMembers.chatroomId, newRoom.id), eq(chatroomMembers.userId, tag.createdBy ?? systemUserId)));
+          if (!existingMember) {
+            await db.insert(chatroomMembers).values({
+              chatroomId: newRoom.id,
+              userId: tag.createdBy ?? systemUserId,
+              role: "admin",
+              isActive: true,
+            });
+          }
         }
       }
 
@@ -23354,6 +23385,7 @@ Questions? Just reply to this message. Welcome aboard!
         isUserCreated: communityTags.isUserCreated,
         isPrivate: communityTags.isPrivate,
         isFlagged: communityTags.isFlagged,
+        chatroomId: communityTags.chatroomId,
         createdAt: communityTags.createdAt,
       }).from(communityTags)
         .where(and(...conditions))
@@ -23382,6 +23414,20 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (isPrivate && !password) return res.status(400).json({ error: "Private communities require a password" });
 
+      // Create a chatroom for this community
+      const [newRoom] = await db.insert(citychatrooms).values({
+        name: displayName,
+        description: description || `Chat for ${displayName}`,
+        city: "Community",
+        state: "",
+        country: "Global",
+        createdById: userId,
+        isPublic: !isPrivate,
+        maxMembers: 500,
+        tags: ["community"],
+      }).returning();
+      const chatroomId = newRoom?.id ?? null;
+
       const [newTag] = await db.insert(communityTags).values({
         name,
         displayName,
@@ -23394,9 +23440,18 @@ Questions? Just reply to this message. Welcome aboard!
         isPrivate: isPrivate || false,
         password: isPrivate ? password : null,
         memberCount: 1,
+        chatroomId,
       }).returning();
 
       await db.insert(userCommunityTags).values({ userId, tagId: newTag.id });
+      if (chatroomId) {
+        await db.insert(chatroomMembers).values({
+          chatroomId,
+          userId,
+          role: "admin",
+          isActive: true,
+        });
+      }
 
       res.json(newTag);
     } catch (error: any) {
@@ -23543,6 +23598,20 @@ Questions? Just reply to this message. Welcome aboard!
         .set({ memberCount: sql`${communityTags.memberCount} + 1` })
         .where(eq(communityTags.id, tagId));
 
+      // Add user to community chatroom if one exists
+      if (tag.chatroomId) {
+        const [alreadyMember] = await db.select().from(chatroomMembers)
+          .where(and(eq(chatroomMembers.chatroomId, tag.chatroomId), eq(chatroomMembers.userId, userId)));
+        if (!alreadyMember) {
+          await db.insert(chatroomMembers).values({
+            chatroomId: tag.chatroomId,
+            userId,
+            role: "member",
+            isActive: true,
+          });
+        }
+      }
+
       res.json({ ok: true });
     } catch (error: any) {
       res.status(500).json({ error: "Failed to join community" });
@@ -23634,6 +23703,7 @@ Questions? Just reply to this message. Welcome aboard!
         userId: communityPosts.userId,
         content: communityPosts.content,
         postType: communityPosts.postType,
+        mediaUrl: communityPosts.mediaUrl,
         createdAt: communityPosts.createdAt,
         username: users.username,
         name: users.name,
@@ -23660,8 +23730,10 @@ Questions? Just reply to this message. Welcome aboard!
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const tagId = parseInt(req.params.id);
-      const { content, postType } = req.body;
-      if (!content || content.trim().length === 0) return res.status(400).json({ error: "Post content is required" });
+      const { content, postType, mediaUrl } = req.body;
+      const hasContent = content != null && String(content).trim().length > 0;
+      const hasMedia = mediaUrl != null && String(mediaUrl).trim().length > 0;
+      if (!hasContent && !hasMedia) return res.status(400).json({ error: "Post content or a photo is required" });
 
       // Check user is a member
       const [membership] = await db.select().from(userCommunityTags)
@@ -23671,8 +23743,9 @@ Questions? Just reply to this message. Welcome aboard!
       const [post] = await db.insert(communityPosts).values({
         communityId: tagId,
         userId,
-        content: content.trim(),
+        content: hasContent ? String(content).trim() : (hasMedia ? "" : ""),
         postType: postType || "update",
+        mediaUrl: hasMedia ? String(mediaUrl).trim() : null,
       }).returning();
 
       res.json(post);

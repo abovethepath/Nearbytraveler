@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
+import { getCurrentTravelDestination } from "@/lib/dateUtils";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,7 +77,29 @@ export default function Explore() {
   const queryClient = useQueryClient();
   const storedUser = localStorage.getItem("user");
   const currentUser = storedUser ? JSON.parse(storedUser) : null;
-  const resolved = resolveCurrentCity(currentUser);
+
+  // Fetch travel plans to determine if user is currently traveling (active destination)
+  const { data: travelPlans = [] } = useQuery({
+    queryKey: [`/api/travel-plans/${currentUser?.id}`],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/travel-plans/${currentUser?.id}`, { credentials: "include" });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!currentUser?.id,
+  });
+
+  // Prefer active travel destination when set; otherwise use hometown (resolveCurrentCity)
+  const activeTravelDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
+  const resolved = (() => {
+    if (activeTravelDestination) {
+      const parts = String(activeTravelDestination).split(/,\s*/);
+      const city = parts[0]?.trim() || "";
+      const country = parts.length > 1 ? parts[parts.length - 1].trim() : (currentUser?.hometownCountry || "United States");
+      return { city, country };
+    }
+    return resolveCurrentCity(currentUser);
+  })();
   const rawCity = resolved.city;
   const userCity = rawCity ? getMetroAreaName(rawCity) : "";
   const userCountry = resolved.country;
@@ -371,7 +394,7 @@ export default function Explore() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-orange-600 via-pink-500 to-purple-600 text-white py-6 px-4">
+      <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 text-white py-6 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-2 mb-2">
             <Zap className="w-6 h-6" />
@@ -431,7 +454,7 @@ export default function Explore() {
             {!myLiveShare && (
               <Dialog open={showCreateLiveShare} onOpenChange={setShowCreateLiveShare}>
                 <DialogTrigger asChild>
-                  <Button className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white h-14 text-lg">
+                  <Button className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white h-14 text-lg">
                     <MapPin className="w-5 h-5 mr-2" /> I'm here in {userCity || "my city"} right now
                   </Button>
                 </DialogTrigger>

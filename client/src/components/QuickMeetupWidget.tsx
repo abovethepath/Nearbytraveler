@@ -499,7 +499,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                   onClick={() => {
                     setShowCreateForm(true);
                   }}
-                  className="w-full text-lg font-bold py-5 h-14 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 border-0 rounded-xl shadow-lg text-white"
+                  className="w-full text-lg font-bold py-5 h-14 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 border-0 rounded-xl shadow-lg text-gray-900"
                 >
                   <Plus className="h-5 w-5 mr-2" />
                   Create Quick Meetup

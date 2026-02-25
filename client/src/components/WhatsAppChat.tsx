@@ -8,6 +8,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getProfileImageUrl } from "@/components/simple-avatar";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp } from "lucide-react";
@@ -748,7 +749,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   };
 
   return (
-    <div className="flex bg-gray-900 text-white overflow-hidden h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5.5rem)] min-h-0" data-chat-page="true">
+    <div className="flex bg-gray-900 text-white overflow-hidden h-[calc(100dvh-10rem)] md:h-[calc(100dvh-15rem)] md:max-h-[calc(100dvh-10rem)] min-h-0 w-full md:max-w-4xl md:mx-auto md:mt-4 md:mb-4 md:rounded-lg md:shadow-xl" data-chat-page="true">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-r border-gray-700">
@@ -1206,8 +1207,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </div>
         )}
 
-        {/* Input box - fixed at bottom; native app: no bottom nav; mobile web: pb for bottom nav + safe area; desktop: pb-4 mb-4 for lift from edge */}
-        <div className={`px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-4' : 'pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))] md:pb-4 md:mb-4 lg:pb-6 lg:mb-4'}`}>
+        {/* Input box - fixed at bottom; native app: no bottom nav; mobile web: pb for bottom nav + safe area; desktop: pb-20 mb-20 for clearance above bottom navbar */}
+        <div className={`px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-4' : 'pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))] md:pb-20 md:mb-20 lg:pb-20 lg:mb-20'}`}>
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
           {!messagesLoaded && !isWsConnected && (
             <div className="text-center text-yellow-400 text-xs mb-2 animate-pulse">
