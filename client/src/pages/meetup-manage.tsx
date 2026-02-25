@@ -152,7 +152,7 @@ function MeetupManagePage() {
       <div className="container mx-auto p-6 max-w-4xl">
         <div className="mb-6">
           <UniversalBackButton />
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-800 bg-clip-text text-transparent mb-2">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-red-800 bg-clip-text text-transparent mb-2">
             Manage Meetup
           </h1>
           <p className="text-gray-600 dark:text-gray-400">

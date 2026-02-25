@@ -914,7 +914,7 @@ function QuickMeetupsPage() {
       <div className="container mx-auto p-6 max-w-4xl">
         <div className="mb-6">
           <UniversalBackButton />
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-800 bg-clip-text text-transparent mb-2">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-red-800 bg-clip-text text-transparent mb-2">
             All Quick Meets
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
@@ -968,7 +968,7 @@ function QuickMeetupsPage() {
             {/* Active Meetups */}
             {activeMeetups.length > 0 && (
               <div>
-                <h2 className="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-4">
+                <h2 className="text-lg font-bold text-orange-600 dark:text-orange-400 mb-4">
                   Active Now ({activeMeetups.length})
                 </h2>
                 <div className="grid gap-4 md:grid-cols-2">
@@ -982,7 +982,7 @@ function QuickMeetupsPage() {
             {/* Expired Meetups */}
             {expiredMeetups.length > 0 && (
               <div>
-                <h2 className="text-2xl font-bold text-gray-600 dark:text-gray-400 mb-2">
+                <h2 className="text-lg font-bold text-gray-600 dark:text-gray-400 mb-2">
                   Expired Meetups ({expiredMeetups.length})
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">

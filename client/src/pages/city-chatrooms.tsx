@@ -268,7 +268,7 @@ export default function CityChatroomsPage() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             💬 City Chatrooms
           </h1>
           <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto mb-6">

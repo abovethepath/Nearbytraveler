@@ -196,7 +196,7 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
         <div className="flex items-center gap-2">
           <SimpleAvatar user={targetUser} size="sm" />
           <div>
-            <h3 className="font-semibold text-sm">{targetUser.username}</h3>
+            <h3 className="font-semibold text-sm truncate max-w-[180px]">{targetUser.username}</h3>
             {isTyping && <p className="text-xs text-blue-200">typing...</p>}
           </div>
         </div>
@@ -248,7 +248,7 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
       </div>
 
       {/* Input */}
-      <div className="p-3 border-t border-gray-200 dark:border-gray-600">
+      <div className="p-3 pb-4 border-t border-gray-200 dark:border-gray-600">
         <div className="flex gap-2">
           <Input
             value={newMessage}

@@ -137,7 +137,7 @@ export default function WhatsAppChatroom() {
           >
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-200" />
           </button>
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{chatroom.name}</h1>
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-white truncate max-w-xs">{chatroom.name}</h1>
         </div>
       </div>
 
@@ -146,7 +146,7 @@ export default function WhatsAppChatroom() {
           <MessageCircle className="w-10 h-10 text-white" />
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 text-center">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 text-center truncate max-w-xs mx-auto">
           {chatroom.name}
         </h2>
 

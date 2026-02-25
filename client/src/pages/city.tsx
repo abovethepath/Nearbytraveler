@@ -435,6 +435,8 @@ export default function CityPage({ cityName }: CityPageProps) {
                             secretActivities: user.secretActivities || ""
                           }} 
                           searchLocation={decodedCityName}
+                          currentUserId={isActuallyAuthenticated ? JSON.parse(authStorageUser || '{}').id : undefined}
+                          isCurrentUser={isActuallyAuthenticated && user.id === JSON.parse(authStorageUser || '{}').id}
                           isAvailableNow={availableNowIds.includes(user.id)}
                         />
                       ))}
@@ -504,6 +506,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                           user={business}
                           compact
                           currentUserId={isActuallyAuthenticated ? JSON.parse(authStorageUser || '{}').id : undefined}
+                          isCurrentUser={isActuallyAuthenticated && business.id === JSON.parse(authStorageUser || '{}').id}
                           isAvailableNow={availableNowIds.includes(business.id)}
                         />
                       ))}

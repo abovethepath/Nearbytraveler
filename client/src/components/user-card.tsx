@@ -161,7 +161,7 @@ export default function UserCard({
   const thingsInCommon = compatibilityData
     ? (compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)
     : 0;
-  const bioSnippet = user.bio ? (user.bio.length > 60 ? user.bio.slice(0, 60) + '…' : user.bio) : '';
+  const bioSnippet = user.bio ? (user.bio.length > 100 ? user.bio.slice(0, 100) + '…' : user.bio) : '';
 
   return (
     <button 
@@ -219,16 +219,21 @@ export default function UserCard({
         )}
       </div>
       
-      {/* Info box - fixed order: 1) @username 2) X things in common 3) Nearby Local 4) Nearby Traveler 5) bio - fixed height for consistency */}
+      {/* Info box - order: 1) @username 2) bio (higher for more space) 3) X things in common (hidden for own card) 4) Nearby Local 5) Nearby Traveler */}
       <div className={`bg-white dark:bg-gray-800 ${compact ? 'p-1 min-h-[6.5rem]' : 'p-1 lg:p-1.5 min-h-[7.5rem]'} flex flex-col justify-start`}>
         {/* Mobile / compact: exact order, fixed height */}
         <div className={compact ? '' : 'lg:hidden'}>
           <div className={`font-semibold text-gray-900 dark:text-white truncate ${compact ? 'text-sm' : 'text-sm'}`}>
             {displayName}
           </div>
-          <div className="text-xs font-medium text-orange-500 truncate mt-0.5">
-            {thingsInCommon} things in common
+          <div className="text-xs text-gray-600 dark:text-gray-500 line-clamp-3 mt-0.5 min-h-[2.75rem]" title={user.bio || undefined}>
+            {bioSnippet || '\u00A0'}
           </div>
+          {!isCurrentUser && (
+            <div className="text-xs font-medium text-orange-500 truncate mt-0.5">
+              {thingsInCommon} things in common
+            </div>
+          )}
           <div className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
             {user.userType === 'business' && user.streetAddress 
               ? `📍 ${user.streetAddress}` 
@@ -244,9 +249,6 @@ export default function UserCard({
               <span className="invisible text-xs">&#8203;</span>
             )}
           </div>
-          <div className="text-xs text-gray-600 dark:text-gray-500 line-clamp-2 mt-0.5 min-h-[2rem]" title={user.bio || undefined}>
-            {bioSnippet || '\u00A0'}
-          </div>
         </div>
         
         {/* Desktop (non-compact only): same order, fixed height */}
@@ -254,9 +256,14 @@ export default function UserCard({
           <div className={`font-semibold text-gray-900 dark:text-white truncate ${isNativeIOSApp() ? 'text-sm' : 'text-xs'}`}>
             {displayName}
           </div>
-          <div className={`font-medium text-orange-500 truncate ${isNativeIOSApp() ? 'text-sm mt-0.5' : 'text-xs mt-0.5'}`}>
-            {thingsInCommon} things in common
+          <div className={`text-gray-600 dark:text-gray-500 line-clamp-3 mt-0.5 min-h-[2.75rem] truncate ${isNativeIOSApp() ? 'text-xs' : 'text-[11px]'}`} title={user.bio || undefined}>
+            {bioSnippet || '\u00A0'}
           </div>
+          {!isCurrentUser && (
+            <div className={`font-medium text-orange-500 truncate ${isNativeIOSApp() ? 'text-sm mt-0.5' : 'text-xs mt-0.5'}`}>
+              {thingsInCommon} things in common
+            </div>
+          )}
           <div className={`text-gray-500 dark:text-gray-400 truncate ${isNativeIOSApp() ? 'text-xs mt-0.5' : 'text-[11px] mt-0.5'}`}>
             {user.userType === 'business' && user.streetAddress 
               ? `📍 ${user.streetAddress}` 
@@ -271,9 +278,6 @@ export default function UserCard({
             ) : (
               <span className="invisible text-xs">&#8203;</span>
             )}
-          </div>
-          <div className={`text-gray-600 dark:text-gray-500 line-clamp-2 mt-0.5 min-h-[2rem] truncate ${isNativeIOSApp() ? 'text-xs' : 'text-[11px]'}`} title={user.bio || undefined}>
-            {bioSnippet || '\u00A0'}
           </div>
         </div>
       </div>

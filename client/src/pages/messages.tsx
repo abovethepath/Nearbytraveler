@@ -573,7 +573,7 @@ export default function Messages() {
               label=""
               className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent border-none shadow-none hover:bg-gray-200 dark:hover:bg-gray-700/50 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center touch-target"
             />
-            <h1 className={`font-semibold text-gray-900 dark:text-white ${isNativeIOSApp() ? 'text-base md:text-lg' : 'text-sm'}`}>Messages</h1>
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Messages</h1>
           </div>
           <input
             type="text"
@@ -630,7 +630,7 @@ export default function Messages() {
                         window.location.href = `/profile/${conv.userId}`;
                       }}
                     >
-                      <Avatar className="w-12 h-12">
+                      <Avatar className={`${isNativeIOSApp() ? 'w-12 h-12' : 'w-10 h-10'}`}>
                         <AvatarImage 
                           src={getProfileImageUrl(conv) || undefined} 
                           alt={`${conv.username} avatar`}

@@ -53,13 +53,17 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       type="button"
       onClick={async () => {
         const profileUrl = `https://nearbytraveler.org/profile/${user?.username}`;
-        const shareText = `Check out @${user?.username} on Nearby Traveler`;
+        const fullMessage = `Check out this profile on NearbyTraveler: @${user?.username} - ${profileUrl}`;
         if (navigator.share) {
           try {
-            await navigator.share({ title: shareText, url: profileUrl });
+            await navigator.share({
+              title: `@${user?.username} on NearbyTraveler`,
+              text: fullMessage,
+              url: profileUrl,
+            });
           } catch (e) {}
         } else {
-          await navigator.clipboard.writeText(profileUrl);
+          await navigator.clipboard.writeText(fullMessage);
           toast?.({ title: "Profile link copied!", description: "You can now paste it anywhere." });
         }
       }}
@@ -106,12 +110,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               </div>
               <div className="mt-2.5 text-left">
                 <span className="block text-sm font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
-                <span className="block text-base font-medium text-black">{hometown}</span>
+                <span className="block text-base font-medium !text-black">{hometown}</span>
               </div>
               {hasValidTravelDestination && (
                 <div className="mt-1.5 text-left">
                   <span className="block text-sm font-semibold text-blue-600 dark:text-blue-400">Nearby Traveler</span>
-                  <span className="block text-base font-medium text-black" title={currentTravelPlan}>
+                  <span className="block text-base font-medium !text-black" title={currentTravelPlan}>
                     {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan) ? formatTravelDestinationShort(currentTravelPlan) : currentTravelPlan}
                   </span>
                 </div>
@@ -122,9 +126,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </span>
               )}
             </div>
-            {/* RIGHT: @username, buttons - bio has its own dedicated section below hero */}
+            {/* RIGHT: @username + Share Profile, buttons - bio has its own dedicated section below hero */}
             <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0.5">
-              <h1 className="text-lg sm:text-xl font-bold text-black break-all leading-tight">@{user?.username}</h1>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <h1 className="text-lg sm:text-xl font-bold !text-black break-all leading-tight">@{user?.username}</h1>
+                {isDesktopOwnProfile && shareButton(true)}
+              </div>
               <div className="flex flex-wrap gap-2 mt-2">
                 <button
                   type="button"
@@ -217,11 +224,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             )}
             <div className={`flex flex-col gap-1 min-w-0 w-full max-w-[280px] sm:max-w-none ${!isNativeIOSApp() ? 'mt-5' : 'mt-3'}`}>
               <span className="text-base sm:text-lg font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
-              <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
+              <span className={`text-base sm:text-lg font-medium break-words ${isDesktopOtherUser ? '!text-black' : !isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
               {hasValidTravelDestination && (
                 <>
                   <span className="text-base sm:text-lg font-semibold text-blue-600 dark:text-blue-400 mt-1">Nearby Traveler</span>
-                  <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={currentTravelPlan!} style={isNativeIOSApp() ? { color: '#000' } : undefined}>
+                  <span className={`text-base sm:text-lg font-medium break-words ${isDesktopOtherUser ? '!text-black' : !isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={currentTravelPlan!} style={isNativeIOSApp() ? { color: '#000' } : undefined}>
                     {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
                   </span>
                 </>
@@ -254,7 +261,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <>
                     <div className="flex items-center gap-2 flex-wrap">
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user?.username}</h1>
+                        <h1 className={`text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all ${isDesktopOtherUser ? '!text-black' : 'text-black'}`}>@{user?.username}</h1>
                         {isDesktopOtherUser && shareButton(true)}
                       </div>
                       {!isOwnProfile && connectionDegreeData?.degree && connectionDegreeData.degree > 0 && (
@@ -408,17 +415,20 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             const total = interests.length + activities.length + events.length;
             if (total === 0) return null;
             return (
-              <div className="flex-shrink-0 flex-1 min-w-[180px] flex flex-col gap-2 self-stretch">
-                <div className="flex flex-wrap gap-1.5 content-start items-start justify-end">
-                  {interests.map((item: string, i: number) => (
-                    <span key={`si-${i}`} className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border !text-black ${getInterestStyle(item)}`}>{item}</span>
-                  ))}
-                  {activities.map((item: string, i: number) => (
-                    <span key={`sa-${i}`} className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border !text-black ${getActivityStyle()}`}>{item}</span>
-                  ))}
-                  {events.map((item: string, i: number) => (
-                    <span key={`se-${i}`} className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border !text-black ${getEventStyle()}`}>{item}</span>
-                  ))}
+              <div className="flex-shrink-0 flex-1 min-w-[220px] max-w-[320px] flex flex-col self-stretch">
+                <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-600 p-4 h-full flex flex-col gap-3">
+                  <h3 className="text-sm font-semibold !text-black">What You Have in Common</h3>
+                  <div className="flex flex-wrap gap-2 content-start">
+                    {interests.map((item: string, i: number) => (
+                      <span key={`si-${i}`} className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border !text-black ${getInterestStyle(item)}`}>{item}</span>
+                    ))}
+                    {activities.map((item: string, i: number) => (
+                      <span key={`sa-${i}`} className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border !text-black ${getActivityStyle()}`}>{item}</span>
+                    ))}
+                    {events.map((item: string, i: number) => (
+                      <span key={`se-${i}`} className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border !text-black ${getEventStyle()}`}>{item}</span>
+                    ))}
+                  </div>
                 </div>
               </div>
             );

@@ -316,7 +316,7 @@ export function EmbeddedChatWidget({ type, itemId, title, className = '', userSt
         )}
 
         {/* Message Input - Always Visible */}
-        <form onSubmit={handleSendMessage} className="flex gap-2">
+        <form onSubmit={handleSendMessage} className="flex gap-2 mb-4">
           <Input
             value={message}
             onChange={(e) => setMessage(e.target.value)}

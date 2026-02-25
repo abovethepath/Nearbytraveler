@@ -141,7 +141,7 @@ export function MeetupChatroom({ meetupId, meetupTitle, isOpen, onClose, current
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5 text-blue-500" />
-              <DialogTitle className="text-lg font-semibold">
+              <DialogTitle className="text-xl font-semibold truncate max-w-xs">
                 {chatroom?.chatroomName || `💬 ${meetupTitle} Chat`}
               </DialogTitle>
             </div>
@@ -226,7 +226,7 @@ export function MeetupChatroom({ meetupId, meetupTitle, isOpen, onClose, current
             </ScrollArea>
 
             {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="flex gap-2 mt-4">
+            <form onSubmit={handleSendMessage} className="flex gap-2 mt-4 mb-4">
               <Input
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}

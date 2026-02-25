@@ -75,7 +75,7 @@ export function TravelCrewChat({ travelPlanId, userId, onClose }: TravelCrewChat
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-orange-500" />
-            <h3 className="font-semibold text-gray-900 dark:text-white">Crew Chat</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white truncate max-w-xs">Crew Chat</h3>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="w-5 h-5" />
@@ -134,7 +134,7 @@ export function TravelCrewChat({ travelPlanId, userId, onClose }: TravelCrewChat
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="p-4 pb-6 mb-4 border-t border-gray-200 dark:border-gray-700">
           <div className="flex gap-2">
             <Input
               value={newMessage}

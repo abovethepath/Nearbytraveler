@@ -342,6 +342,7 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
                         showCompatibilityScore={sortBy === 'compatibility'}
                         compatibilityScore={calculateCompatibilityScore(discoveredUser, effectiveUser)}
                         currentUserId={effectiveUser?.id}
+                        isCurrentUser={discoveredUser.id === effectiveUser?.id}
                         isAvailableNow={effectiveAvailableNowIds.has(Number(discoveredUser.id))}
                       />
                     ))}

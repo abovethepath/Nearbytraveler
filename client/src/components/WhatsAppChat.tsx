@@ -748,12 +748,12 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   };
 
   return (
-    <div className="flex bg-gray-900 text-white overflow-hidden h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5.5rem)] min-h-0">
+    <div className="flex bg-gray-900 text-white overflow-hidden h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5.5rem)] min-h-0" data-chat-page="true">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-r border-gray-700">
           <div className="px-4 py-3 border-b border-gray-700">
-            <h2 className="font-semibold text-xs text-white mb-2">Members ({members.length})</h2>
+            <div className="text-lg font-semibold text-white mb-2">Members ({members.length})</div>
             <input
               type="text"
               placeholder="Search members..."
@@ -888,14 +888,16 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </div>
         )}
         
-        <div className="flex-1 min-w-0 overflow-hidden max-w-[140px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[260px]">
+        <div className="flex-1 min-w-0 overflow-hidden max-w-[140px] xs:max-w-[180px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[280px]">
           <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
-            <h1
-              className="font-semibold flex-1 min-w-0 truncate text-sm"
+            <div
+              className="text-xl font-semibold flex-1 min-w-0 truncate max-w-xs"
               title={title || 'Chat'}
+              role="heading"
+              aria-level={1}
             >
               {title || 'Chat'}
-            </h1>
+            </div>
             {/* Show green once messages are loaded (chat is usable), not just WebSocket */}
             <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
               messagesLoaded || isWsConnected 
@@ -905,7 +907,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                   title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
           </div>
           {subtitle && (
-            <p className="text-gray-400 truncate leading-tight text-xs min-w-0">
+            <p className="text-gray-400 truncate leading-tight text-xs min-w-0 max-w-full">
               {subtitle}
             </p>
           )}
@@ -919,7 +921,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             </SheetTrigger>
             <SheetContent side="right" className="bg-gray-900 border-l border-gray-700 text-white w-80">
               <SheetHeader>
-                <SheetTitle className="text-white">Members ({members.length})</SheetTitle>
+                <SheetTitle className="!text-lg font-semibold text-white">Members ({members.length})</SheetTitle>
               </SheetHeader>
               <div className="mt-4">
                 <input
@@ -958,9 +960,9 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                         }}
                         className="flex items-center gap-3 flex-1 cursor-pointer"
                       >
-                        <Avatar className="w-12 h-12">
+                        <Avatar className="w-10 h-10">
                           <AvatarImage src={getProfileImageUrl(member) || undefined} />
-                          <AvatarFallback className="bg-green-600 text-white">
+                          <AvatarFallback className="bg-green-600 text-white text-sm">
                             {getFirstName(member.name, member.username)[0]}
                           </AvatarFallback>
                         </Avatar>
@@ -1204,8 +1206,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </div>
         )}
 
-        {/* Input box - fixed at bottom; native app: no bottom nav; mobile web: pb for bottom nav + safe area */}
-        <div className={`px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-4' : 'pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))] md:pb-4 lg:pb-4'}`}>
+        {/* Input box - fixed at bottom; native app: no bottom nav; mobile web: pb for bottom nav + safe area; desktop: pb-4 mb-4 for lift from edge */}
+        <div className={`px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-4' : 'pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))] md:pb-4 md:mb-4 lg:pb-6 lg:mb-4'}`}>
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
           {!messagesLoaded && !isWsConnected && (
             <div className="text-center text-yellow-400 text-xs mb-2 animate-pulse">

@@ -374,12 +374,12 @@ body {
     white-space: normal !important;
   }
   
-  /* Fix text sizing for readability on tablets - exclude chat headers */
-  h1:not(.text-sm):not(.text-base):not(.text-xs) {
+  /* Fix text sizing for readability on tablets - exclude chat headers (text-lg, text-xl, text-2xl) */
+  h1:not(.text-sm):not(.text-base):not(.text-xs):not(.text-lg):not(.text-xl):not(.text-2xl) {
     font-size: clamp(1.75rem, 4vw, 2.5rem);
   }
   
-  h2:not(.text-sm):not(.text-base):not(.text-xs) {
+  h2:not(.text-sm):not(.text-base):not(.text-xs):not(.text-lg):not(.text-xl):not(.text-2xl) {
     font-size: clamp(1.5rem, 3.5vw, 2rem);
   }
   
@@ -1835,15 +1835,16 @@ button[type="submit"],
     line-height: 1.7;
   }
   
-  h1 {
+  /* Exclude chat headers (text-base, text-lg, text-xl, text-2xl) from large desktop sizing */
+  h1:not(.text-sm):not(.text-base):not(.text-xs):not(.text-lg):not(.text-xl):not(.text-2xl) {
     font-size: 3rem !important;
   }
   
-  h2 {
+  h2:not(.text-sm):not(.text-base):not(.text-xs):not(.text-lg):not(.text-xl):not(.text-2xl) {
     font-size: 2.5rem !important;
   }
   
-  h3 {
+  h3:not(.text-sm):not(.text-base):not(.text-xs):not(.text-lg):not(.text-xl):not(.text-2xl) {
     font-size: 2rem !important;
   }
   
