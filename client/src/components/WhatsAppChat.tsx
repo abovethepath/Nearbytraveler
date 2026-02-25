@@ -753,7 +753,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-r border-gray-700">
           <div className="px-4 py-3 border-b border-gray-700">
-            <h2 className="font-semibold text-sm text-white mb-2">Members ({members.length})</h2>
+            <h2 className="font-semibold text-xs text-white mb-2">Members ({members.length})</h2>
             <input
               type="text"
               placeholder="Search members..."
@@ -847,9 +847,9 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           <ArrowLeft className="w-4 h-4" />
         </Button>
         
-        {/* WhatsApp-style member avatars for chatrooms, meetups, and events */}
+        {/* WhatsApp-style member avatars for chatrooms, meetups, and events - hidden on desktop (lg+) since full member list is in left sidebar */}
         {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 && (
-          <div className="flex -space-x-2">
+          <div className="flex -space-x-2 lg:hidden">
             {members.slice(0, 4).map((member, index) => (
               <div
                 key={member.id}

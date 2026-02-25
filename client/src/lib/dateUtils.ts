@@ -401,3 +401,24 @@ export function formatLocationCompact(
   
   return parts.join(', ') || 'Unknown';
 }
+
+/**
+ * Format travel destination for compact display: "City, State" for USA or "City, Country" for international.
+ * Used in profile hero (desktop web only) to shorten destination strings.
+ */
+export function formatTravelDestinationShort(destination: string | null | undefined): string | null {
+  if (!destination || typeof destination !== 'string') return null;
+  const trimmed = destination.trim();
+  if (!trimmed) return null;
+  const parts = trimmed.split(',').map((p) => p.trim()).filter(Boolean);
+  if (parts.length === 0) return null;
+  const last = parts[parts.length - 1];
+  const isUSA = last === 'United States' || last === 'USA' || last === 'United States of America';
+  if (isUSA && parts.length >= 2) {
+    return `${parts[0]}, ${parts[1]}`;
+  }
+  if (parts.length >= 2) {
+    return `${parts[0]}, ${last}`;
+  }
+  return parts[0];
+}

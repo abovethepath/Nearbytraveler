@@ -196,7 +196,7 @@ app.use(
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Client"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Client", "x-user-id", "x-user-data", "x-user-type"],
   }),
 );
 
@@ -710,7 +710,7 @@ app.use((req, res, next) => {
 
   console.log("Minimal routes registered successfully");
 
-  // Safe schema migrations - ensure production DB has all needed columns
+  // Safe schema migrations - ensure production DB has all needed columns/tables
   try {
     await db.execute(
       sql`ALTER TABLE meetup_chatrooms ADD COLUMN IF NOT EXISTS available_now_id INTEGER REFERENCES available_now(id)`,
@@ -718,6 +718,16 @@ app.use((req, res, next) => {
     await db.execute(
       sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS contact_role TEXT`,
     );
+    // Stealth mode: hidden_from_users table for "hide from this person" feature
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS hidden_from_users (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        hidden_from_id INTEGER NOT NULL,
+        created_at TIMESTAMP DEFAULT now(),
+        UNIQUE(user_id, hidden_from_id)
+      )
+    `);
     console.log("✅ Schema migration check complete");
   } catch (migrationError) {
     console.log(

@@ -30,6 +30,18 @@ export function resolveCurrentTravel(planList: Maybe<TravelPlan[]>, today = new 
   }) ?? null;
 }
 
+/** Format hometown for Discover People cards: "Nearby Local · City, State" (US) or "Nearby Local · City, Country" (international) */
+export function formatHometownForDisplay(user: { hometownCity?: string; hometownState?: string; hometownCountry?: string }): string {
+  if (!user.hometownCity) return 'Unknown';
+  const isUS = user.hometownCountry === 'United States' || user.hometownCountry === 'USA';
+  const locationPart = isUS && user.hometownState
+    ? `${user.hometownCity}, ${user.hometownState}`
+    : user.hometownCountry
+      ? `${user.hometownCity}, ${user.hometownCountry}`
+      : user.hometownCity;
+  return `Nearby Local · ${locationPart}`;
+}
+
 export function locationBadges(u: UserLike) {
   const home = join([u.hometownCity, u.hometownState, u.hometownCountry]) || "Hometown not set";
   const active = resolveCurrentTravel(u.travelPlans);

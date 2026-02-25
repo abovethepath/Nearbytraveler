@@ -6,8 +6,10 @@ import { Camera, MapPin, MessageSquare, MessageCircle, Share2, Users, Building2,
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { ReportUserButton } from "@/components/report-user-button";
-import { formatLocationCompact, getCurrentTravelDestination } from "@/lib/dateUtils";
+import { formatLocationCompact, formatTravelDestinationShort, getCurrentTravelDestination } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { useIsDesktop } from "@/hooks/useDeviceType";
+import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
 import { VouchButton } from "@/components/VouchButton";
 import { ProfileTabBar } from "./ProfileTabBar";
 import type { ProfilePageProps } from "./profile-complete-types";
@@ -33,7 +35,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     handleMessage,
     setShowWriteReferenceModal,
     userChatrooms = [],
+    compatibilityData,
   } = props as Record<string, any>;
+
+  const isDesktop = useIsDesktop();
+  const isDesktopOtherUser = !isNativeIOSApp() && isDesktop && !isOwnProfile;
 
   const hometown = formatLocationCompact(user?.hometownCity, user?.hometownState, user?.hometownCountry);
   const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
@@ -42,7 +48,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const connectionsCount = (userConnections as any[])?.length ?? 0;
   const vouchesCount = (userVouches as any[])?.length ?? 0;
 
-  const shareButton = (
+  const shareButton = (inline = false) => (
     <button
       type="button"
       onClick={async () => {
@@ -57,9 +63,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
           toast?.({ title: "Profile link copied!", description: "You can now paste it anywhere." });
         }
       }}
-      className="absolute top-4 right-4 z-20 p-1.5 rounded-full bg-white/80 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+      className={inline ? "p-1.5 rounded-full bg-white/90 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors inline-flex items-center justify-center shrink-0 ring-1 ring-gray-300/60 dark:ring-gray-500/60 shadow-sm" : "absolute top-4 right-4 z-20 p-1.5 rounded-full bg-white/80 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"}
       style={{ touchAction: 'manipulation' }}
       title="Share profile"
+      data-testid="button-share-profile"
     >
       <Share2 className="w-4 h-4 text-gray-600 dark:text-gray-300" />
     </button>
@@ -72,7 +79,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 relative isolate ${isNativeIOSApp() ? 'py-6 sm:py-8 lg:py-12' : isDesktopOwnProfile ? 'py-4 sm:py-5 lg:py-6' : 'pt-12 sm:pt-14 lg:pt-20 pb-6 sm:pb-8 lg:pb-12'}`}
       style={{ width: '100vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
     >
-      {!isOwnProfile && shareButton}
+      {!isOwnProfile && !isDesktopOtherUser && shareButton(false)}
       <div className={`max-w-7xl mx-auto relative z-10 ${isDesktopOwnProfile ? 'pl-4 sm:pl-6 lg:pl-8' : ''}`}>
         {isDesktopOwnProfile ? (
           /* Desktop own profile: balanced layout - larger avatar, readable city text, proportional @username, tabs at bottom */
@@ -104,7 +111,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               {hasValidTravelDestination && (
                 <div className="mt-1.5 text-left">
                   <span className="block text-sm font-semibold text-blue-600 dark:text-blue-400">Nearby Traveler</span>
-                  <span className="block text-base font-medium text-black">{currentTravelPlan}</span>
+                  <span className="block text-base font-medium text-black" title={currentTravelPlan}>
+                    {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan) ? formatTravelDestinationShort(currentTravelPlan) : currentTravelPlan}
+                  </span>
                 </div>
               )}
               {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
@@ -148,7 +157,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
           </div>
         ) : (
         <div className="flex flex-col">
-        <div className={`flex flex-row flex-wrap items-start relative z-20 ${!isNativeIOSApp() ? 'gap-6 sm:gap-8' : 'gap-4 sm:gap-6'}`}>
+        <div className={`flex flex-row items-start relative z-20 ${!isNativeIOSApp() ? 'gap-6 sm:gap-8' : 'gap-4 sm:gap-6'} ${isDesktopOtherUser ? 'flex-nowrap' : 'flex-wrap'}`}>
           <div className={`relative flex-shrink-0 ${isNativeIOSApp() ? 'flex flex-col items-center' : 'flex flex-col items-start'}`}>
             {/* Avatar + New to Town badge stack (desktop: centered column; iOS: unchanged) */}
             <div className={`relative ${!isNativeIOSApp() ? 'flex flex-col items-center' : ''}`}>
@@ -212,7 +221,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               {hasValidTravelDestination && (
                 <>
                   <span className="text-base sm:text-lg font-semibold text-blue-600 dark:text-blue-400 mt-1">Nearby Traveler</span>
-                  <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={currentTravelPlan!} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{currentTravelPlan}</span>
+                  <span className={`text-base sm:text-lg font-medium break-words ${!isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={currentTravelPlan!} style={isNativeIOSApp() ? { color: '#000' } : undefined}>
+                    {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
+                  </span>
                 </>
               )}
               {(() => {
@@ -242,7 +253,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 return (
                   <>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user?.username}</h1>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user?.username}</h1>
+                        {isDesktopOtherUser && shareButton(true)}
+                      </div>
                       {!isOwnProfile && connectionDegreeData?.degree && connectionDegreeData.degree > 0 && (
                         <Badge
                           className={`text-xs px-2 py-0.5 font-semibold ${
@@ -260,7 +274,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     </div>
 
                     {!isOwnProfile && (
-                      <div className={`flex flex-row items-center gap-2 mt-2 flex-wrap ${!isNativeIOSApp() ? 'justify-start' : 'justify-center'}`}>
+                      <div className={`flex mt-2 ${isDesktopOtherUser ? 'flex flex-col flex-nowrap items-stretch gap-2 w-full max-w-[200px]' : `flex-row flex-wrap items-center gap-2 ${!isNativeIOSApp() ? 'justify-start' : 'justify-center'}`}`}>
                         <button
                           type="button"
                           className={`inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 rounded-lg shadow-md transition-all text-black font-medium cursor-pointer ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-4 py-1.5 text-sm'}`}
@@ -387,6 +401,28 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               )}
             </div>
           </div>
+          {isDesktopOtherUser && compatibilityData && (() => {
+            const interests = compatibilityData.sharedInterests ?? [];
+            const activities = compatibilityData.sharedActivities ?? [];
+            const events = (compatibilityData.sharedEvents ?? []).map((e: any) => typeof e === 'string' ? e : e?.title).filter(Boolean);
+            const total = interests.length + activities.length + events.length;
+            if (total === 0) return null;
+            return (
+              <div className="flex-shrink-0 flex-1 min-w-[180px] flex flex-col gap-2 self-stretch">
+                <div className="flex flex-wrap gap-1.5 content-start items-start justify-end">
+                  {interests.map((item: string, i: number) => (
+                    <span key={`si-${i}`} className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border !text-black ${getInterestStyle(item)}`}>{item}</span>
+                  ))}
+                  {activities.map((item: string, i: number) => (
+                    <span key={`sa-${i}`} className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border !text-black ${getActivityStyle()}`}>{item}</span>
+                  ))}
+                  {events.map((item: string, i: number) => (
+                    <span key={`se-${i}`} className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border !text-black ${getEventStyle()}`}>{item}</span>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </div>
             {/* Desktop other-user: tab bar integrated at bottom of hero */}
             {!isNativeIOSApp() && (

@@ -68,6 +68,8 @@ async function attemptSessionRecovery(): Promise<boolean> {
 }
 
 // Cache user data to avoid localStorage parsing on every request
+// CRITICAL: Check all auth storage keys - iOS/Expo may store in authUser/currentUser
+const USER_STORAGE_KEYS = ['user', 'authUser', 'currentUser', 'travelconnect_user'];
 let cachedUser: any = null;
 let cacheTimestamp = 0;
 const CACHE_DURATION = 30000; // 30 seconds
@@ -75,9 +77,20 @@ const CACHE_DURATION = 30000; // 30 seconds
 function getCachedUser() {
   const now = Date.now();
   if (!cachedUser || now - cacheTimestamp > CACHE_DURATION) {
-    // Check both localStorage keys for consistency - some components use 'user', others use 'travelconnect_user'
-    const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-    try { cachedUser = storedUser ? JSON.parse(storedUser) : null; } catch { cachedUser = null; }
+    for (const key of USER_STORAGE_KEYS) {
+      const stored = localStorage.getItem(key);
+      if (stored && stored !== 'undefined' && stored !== 'null') {
+        try {
+          const user = JSON.parse(stored);
+          if (user && user.id) {
+            cachedUser = user;
+            cacheTimestamp = now;
+            return cachedUser;
+          }
+        } catch { /* skip invalid JSON */ }
+      }
+    }
+    cachedUser = null;
     cacheTimestamp = now;
   }
   return cachedUser;
@@ -133,7 +146,7 @@ export async function apiRequest(
     // Apply API base URL for wrapped app compatibility
     const fullUrl = url.startsWith('/') ? `${getApiBaseUrl()}${url}` : url;
     
-    const res = await fetch(fullUrl, {
+    const doFetch = () => fetch(fullUrl, {
       method,
       headers,
       body: data ? JSON.stringify(data) : null,
@@ -141,7 +154,18 @@ export async function apiRequest(
       signal: controller.signal,
     });
     
+    let res = await doFetch();
+    
     clearTimeout(timeoutId);
+    
+    // If 401 and we have stored user data, try session recovery then retry (desktop session may have expired)
+    if (res.status === 401 && user) {
+      const recovered = await attemptSessionRecovery();
+      if (recovered) {
+        invalidateUserCache(); // Refresh cached user after recovery
+        res = await doFetch();
+      }
+    }
     
     // Only log in development
     if (import.meta.env.DEV) {

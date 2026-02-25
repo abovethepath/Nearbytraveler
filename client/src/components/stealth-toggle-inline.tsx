@@ -2,14 +2,17 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { EyeOff, Eye } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, invalidateUserCache } from "@/lib/queryClient";
+import { authStorage } from "@/lib/auth";
 
 interface StealthToggleInlineProps {
   targetUserId: number;
   targetUsername: string;
+  /** Full current user - ensures auth headers sent on desktop when session may be missing */
+  currentUser?: { id: number; username?: string; email?: string; name?: string } | null;
 }
 
-export function StealthToggleInline({ targetUserId, targetUsername }: StealthToggleInlineProps) {
+export function StealthToggleInline({ targetUserId, targetUsername, currentUser }: StealthToggleInlineProps) {
   const queryClient = useQueryClient();
   const [isUpdating, setIsUpdating] = useState(false);
 

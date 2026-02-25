@@ -7784,17 +7784,87 @@ Questions? Just reply to this message. Welcome aboard!
 
   // ---------- STEALTH MODE - Hide from specific users ----------
 
+  // Get current user ID - same pattern as /api/users/report (session OR x-user-id OR x-user-data OR body.userId)
+  // On desktop, session may be missing; x-user-data header is sent by apiRequest when user is in localStorage
+  // Body fallback (userId) fixes desktop when headers are stripped or cache is stale
+  const getStealthUserId = (req: any): number | null => {
+    // For POST/PUT requests, try body first - most reliable on desktop when session/headers are missing
+    const bodyUserId = req.body?.userId ?? req.body?.currentUserId;
+    if (bodyUserId != null && ['POST', 'PUT', 'PATCH'].includes(req.method)) {
+      const id = typeof bodyUserId === 'number' ? bodyUserId : parseInt(String(bodyUserId), 10);
+      if (!isNaN(id) && id > 0) return id;
+    }
+    const sessionUser = req.session?.user || (req as any).session?.user;
+    if (sessionUser?.id != null) {
+      const id = typeof sessionUser.id === 'number' ? sessionUser.id : parseInt(String(sessionUser.id), 10);
+      if (!isNaN(id) && id > 0) return id;
+    }
+    const rawHeaderId = req.headers['x-user-id'];
+    const headerId = Array.isArray(rawHeaderId) ? rawHeaderId[0] : rawHeaderId;
+    if (headerId != null && String(headerId).trim() !== '') {
+      const parsed = parseInt(String(headerId).trim(), 10);
+      if (!isNaN(parsed) && parsed > 0) return parsed;
+    }
+    try {
+      const rawUserData = req.headers['x-user-data'];
+      const userDataStr = Array.isArray(rawUserData) ? rawUserData[0] : rawUserData;
+      const userData = userDataStr ? JSON.parse(String(userDataStr)) : null;
+      if (userData?.id != null) {
+        const id = typeof userData.id === 'number' ? userData.id : parseInt(String(userData.id), 10);
+        if (!isNaN(id) && id > 0) return id;
+      }
+    } catch {}
+    // Fallback: body.userId (client sends when headers may be missing - fixes desktop)
+    if (bodyUserId != null) {
+      const id = typeof bodyUserId === 'number' ? bodyUserId : parseInt(String(bodyUserId), 10);
+      if (!isNaN(id) && id > 0) return id;
+    }
+    return null;
+  };
+
+  // Refresh session from x-user-data when session is empty (fixes desktop when session cookie not sent)
+  const ensureStealthAuth = (req: any): number | null => {
+    let userId = getStealthUserId(req);
+    if (userId) return userId;
+    if (req.headers['x-user-data']) {
+      try {
+        const raw = req.headers['x-user-data'];
+        const str = Array.isArray(raw) ? raw[0] : raw;
+        const userData = str ? JSON.parse(String(str)) : null;
+        if (userData?.id) {
+          const id = typeof userData.id === 'number' ? userData.id : parseInt(String(userData.id), 10);
+          if (!isNaN(id) && id > 0) {
+            (req as any).session = (req as any).session || {};
+            (req as any).session.user = userData;
+            if (typeof (req as any).session.save === 'function') {
+              (req as any).session.save(() => {});
+            }
+            return id;
+          }
+        }
+      } catch {}
+    }
+    // Fallback: body.userId
+    const bodyUserId = req.body?.userId ?? req.body?.currentUserId;
+    if (bodyUserId != null) {
+      const id = typeof bodyUserId === 'number' ? bodyUserId : parseInt(String(bodyUserId), 10);
+      if (!isNaN(id) && id > 0) return id;
+    }
+    return null;
+  };
+
   // POST /api/users/hide - Hide yourself from a specific user (stealth mode)
   app.post("/api/users/hide", async (req, res) => {
     try {
-      const { hiddenFromId } = req.body;
-      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const rawHiddenFromId = req.body?.hiddenFromId;
+      const hiddenFromId = typeof rawHiddenFromId === 'string' ? parseInt(rawHiddenFromId, 10) : Number(rawHiddenFromId);
+      const userId = ensureStealthAuth(req);
 
-      if (!userId) {
+      if (!userId || isNaN(userId)) {
         return res.status(401).json({ error: "Authentication required" });
       }
 
-      if (!hiddenFromId || hiddenFromId === userId) {
+      if (!hiddenFromId || isNaN(hiddenFromId) || hiddenFromId === userId) {
         return res.status(400).json({ error: "Valid user ID required" });
       }
 
@@ -7828,7 +7898,7 @@ Questions? Just reply to this message. Welcome aboard!
   // GET /api/users/hidden - Get list of users you're hidden from
   app.get("/api/users/hidden", async (req, res) => {
     try {
-      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = ensureStealthAuth(req);
 
       if (!userId) {
         return res.status(401).json({ error: "Authentication required" });
@@ -7857,7 +7927,7 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/users/hidden/:targetUserId", async (req, res) => {
     try {
       const targetUserId = parseInt(req.params.targetUserId);
-      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = getStealthUserId(req);
 
       if (!userId) {
         return res.status(401).json({ error: "Authentication required" });
@@ -7882,7 +7952,7 @@ Questions? Just reply to this message. Welcome aboard!
   app.delete("/api/users/hide/:targetUserId", async (req, res) => {
     try {
       const targetUserId = parseInt(req.params.targetUserId);
-      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = getStealthUserId(req);
 
       if (!userId) {
         return res.status(401).json({ error: "Authentication required" });
@@ -10732,7 +10802,7 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const userId = parseInt(req.params.userId || '0');
 
-      // Get chatrooms where user is a member using pool connection for reliability
+      // Get chatrooms where user is a member, including lastReadAt for unread count
       const result = await db.execute(sql`
         SELECT 
           cc.id,
@@ -10742,7 +10812,8 @@ Questions? Just reply to this message. Welcome aboard!
           cc.state,
           cc.country,
           cc.created_at,
-          cc.is_active
+          cc.is_active,
+          cm.last_read_at
         FROM city_chatrooms cc
         INNER JOIN chatroom_members cm ON cc.id = cm.chatroom_id
         WHERE cm.user_id = ${userId}
@@ -10767,11 +10838,50 @@ Questions? Just reply to this message. Welcome aboard!
       memberCountQuery.forEach(mc => {
         memberCountMap.set(mc.chatroomId, parseInt(mc.count || '0') || 1);
       });
-      
-      // Apply member counts to each chatroom
-      const chatroomsWithMemberCount = userChatrooms.map(chatroom => ({
-        ...chatroom,
-        memberCount: memberCountMap.get(chatroom.id) || 1
+
+      // Get last message and unread count for each chatroom
+      const chatroomsWithMemberCount = await Promise.all(userChatrooms.map(async (chatroom) => {
+        const lastReadAt = chatroom.last_read_at ? new Date(chatroom.last_read_at) : new Date(0);
+        const chatroomId = chatroom.id;
+
+        // Get last message
+        const lastMsgResult = await db.select({
+          content: chatroomMessages.content,
+          createdAt: chatroomMessages.createdAt,
+          messageType: chatroomMessages.messageType
+        })
+          .from(chatroomMessages)
+          .where(eq(chatroomMessages.chatroomId, chatroomId))
+          .orderBy(desc(chatroomMessages.createdAt))
+          .limit(1);
+
+        const lastMessage = lastMsgResult[0];
+        let lastMessagePreview = null;
+        if (lastMessage) {
+          if (lastMessage.messageType === 'image' || lastMessage.messageType === 'photo') lastMessagePreview = '[Photo]';
+          else if (lastMessage.messageType === 'voice') lastMessagePreview = '[Voice message]';
+          else if (lastMessage.messageType === 'location') lastMessagePreview = '[Location]';
+          else if (lastMessage.content) lastMessagePreview = lastMessage.content.length > 100 ? lastMessage.content.slice(0, 100) + '…' : lastMessage.content;
+        }
+
+        // Count unread (messages after lastReadAt, excluding own)
+        const unreadResult = await db.select({ count: sql<number>`count(*)::int` })
+          .from(chatroomMessages)
+          .where(and(
+            eq(chatroomMessages.chatroomId, chatroomId),
+            gt(chatroomMessages.createdAt, lastReadAt),
+            ne(chatroomMessages.senderId, userId)
+          ));
+        const unreadCount = unreadResult[0]?.count || 0;
+
+        const { last_read_at, ...rest } = chatroom;
+        return {
+          ...rest,
+          memberCount: memberCountMap.get(chatroomId) || 1,
+          lastMessagePreview,
+          lastMessageAt: lastMessage?.createdAt || chatroom.created_at,
+          unreadCount
+        };
       }));
 
       return res.json(chatroomsWithMemberCount);

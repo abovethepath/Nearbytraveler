@@ -1,18 +1,34 @@
-import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { EyeOff, Eye } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, invalidateUserCache } from "@/lib/queryClient";
+import { authStorage } from "@/lib/auth";
+
+// Extract API error message from thrown error (apiRequest throws "401: {...}" format)
+function getApiErrorMessage(error: Error | null, fallback: string): string {
+  const msg = error?.message;
+  if (!msg) return fallback;
+  const jsonMatch = msg.match(/^\d+:\s*(\{.*\})$/);
+  if (jsonMatch) {
+    try {
+      const parsed = JSON.parse(jsonMatch[1]);
+      return parsed?.error || parsed?.message || fallback;
+    } catch {}
+  }
+  return msg.length > 80 ? fallback : msg;
+}
 
 interface StealthToggleProps {
   userId: number;
   targetUserId: number;
   targetUsername: string;
+  /** Full current user object - ensures auth headers are sent on desktop when session may be missing */
+  currentUser?: { id: number; username?: string; email?: string; name?: string } | null;
 }
 
-export function StealthToggle({ userId, targetUserId, targetUsername }: StealthToggleProps) {
+export function StealthToggle({ userId, targetUserId, targetUsername, currentUser }: StealthToggleProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -29,8 +45,14 @@ export function StealthToggle({ userId, targetUserId, targetUsername }: StealthT
 
   const hideMutation = useMutation({
     mutationFn: async () => {
+      // Ensure user is in localStorage so apiRequest sends auth headers (fixes desktop when session is missing)
+      if (currentUser?.id) {
+        authStorage.setUser(currentUser as any);
+        invalidateUserCache();
+      }
       const response = await apiRequest("POST", "/api/users/hide", {
-        hiddenFromId: targetUserId
+        hiddenFromId: targetUserId,
+        userId: userId, // Fallback for desktop when headers may be stripped
       });
       return response.json();
     },
@@ -42,10 +64,10 @@ export function StealthToggle({ userId, targetUserId, targetUsername }: StealthT
       queryClient.invalidateQueries({ queryKey: [`/api/users/hidden/${targetUserId}`] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/hidden"] });
     },
-    onError: () => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: "Failed to enable stealth mode",
+        description: getApiErrorMessage(error, "Failed to enable stealth mode"),
         variant: "destructive"
       });
     }
@@ -53,7 +75,13 @@ export function StealthToggle({ userId, targetUserId, targetUsername }: StealthT
 
   const unhideMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest("DELETE", `/api/users/hide/${targetUserId}`);
+      // Ensure user is in localStorage so apiRequest sends auth headers (fixes desktop when session is missing)
+      if (currentUser?.id) {
+        authStorage.setUser(currentUser as any);
+        invalidateUserCache();
+      }
+      const response = await apiRequest("DELETE", `/api/users/hide/${targetUserId}`);
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -63,10 +91,10 @@ export function StealthToggle({ userId, targetUserId, targetUsername }: StealthT
       queryClient.invalidateQueries({ queryKey: [`/api/users/hidden/${targetUserId}`] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/hidden"] });
     },
-    onError: () => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: "Failed to disable stealth mode",
+        description: getApiErrorMessage(error, "Failed to disable stealth mode"),
         variant: "destructive"
       });
     }

@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { Plane } from "lucide-react";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { formatHometownForDisplay } from "@/lib/locationDisplay";
 
 export interface User {
   id: number;
@@ -139,7 +140,7 @@ export default function UserCard({
   };
 
   const travelCityFinal = getTravelCity();
-  const displayCity = user.hometownCity || 'Unknown';
+  const displayCity = formatHometownForDisplay(user);
 
   const displayName = user.userType === 'business' && user.businessName 
     ? user.businessName 
@@ -160,7 +161,7 @@ export default function UserCard({
   const thingsInCommon = compatibilityData
     ? (compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)
     : 0;
-  const mutualFriends = connectionDegree?.mutualCount || 0;
+  const bioSnippet = user.bio ? (user.bio.length > 60 ? user.bio.slice(0, 60) + '…' : user.bio) : '';
 
   return (
     <button 
@@ -218,65 +219,61 @@ export default function UserCard({
         )}
       </div>
       
-      {/* Info box - compact when compact prop; reduced padding so content fills card better */}
-      <div className={`bg-white dark:bg-gray-800 ${compact ? 'p-1' : 'p-1 lg:p-1.5'}`}>
-        {/* Mobile / compact: simple stacked layout */}
+      {/* Info box - fixed order: 1) @username 2) X things in common 3) Nearby Local 4) Nearby Traveler 5) bio - fixed height for consistency */}
+      <div className={`bg-white dark:bg-gray-800 ${compact ? 'p-1 min-h-[6.5rem]' : 'p-1 lg:p-1.5 min-h-[7.5rem]'} flex flex-col justify-start`}>
+        {/* Mobile / compact: exact order, fixed height */}
         <div className={compact ? '' : 'lg:hidden'}>
-          <div className={`font-semibold text-gray-900 dark:text-white ${compact ? 'text-sm leading-tight' : 'text-sm'}`} style={compact ? { display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' } : { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
+          <div className={`font-semibold text-gray-900 dark:text-white truncate ${compact ? 'text-sm' : 'text-sm'}`}>
             {displayName}
           </div>
-          {user.userType === 'business' && user.businessType && (
-            <div className="text-xs text-orange-600 dark:text-orange-400 truncate mt-0.5 font-medium">
-              {user.businessType}
-            </div>
-          )}
+          <div className="text-xs font-medium text-orange-500 truncate mt-0.5">
+            {thingsInCommon} things in common
+          </div>
           <div className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
             {user.userType === 'business' && user.streetAddress 
               ? `📍 ${user.streetAddress}` 
               : displayCity}
           </div>
-          {/* CRITICAL: Travel destination MUST appear under hometown - users must see immediately if traveling */}
-          {travelCityFinal && user.userType !== 'business' && (
-            <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 mt-0.5 flex items-center gap-1 truncate">
-              <Plane className="w-3 h-3 flex-shrink-0 text-blue-600 dark:text-blue-400" />
-              <span>Nearby Traveler → {travelCityFinal}</span>
-            </div>
-          )}
-          {!compact && (
-            <div className="mt-1.5 space-y-0.5">
-              {thingsInCommon > 0 && (
-                <div className="text-xs font-medium text-orange-500 truncate">
-                  {thingsInCommon} things in common
-                </div>
-              )}
-              {mutualFriends > 0 && (
-                <div className="text-xs text-cyan-600 dark:text-cyan-400 truncate">
-                  {mutualFriends} mutual friends
-                </div>
-              )}
-            </div>
-          )}
+          <div className="min-h-[1.25rem] mt-0.5">
+            {travelCityFinal && user.userType !== 'business' ? (
+              <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1 truncate">
+                <Plane className="w-3 h-3 flex-shrink-0" />
+                <span>Nearby Traveler → {travelCityFinal}</span>
+              </div>
+            ) : (
+              <span className="invisible text-xs">&#8203;</span>
+            )}
+          </div>
+          <div className="text-xs text-gray-600 dark:text-gray-500 line-clamp-2 mt-0.5 min-h-[2rem]" title={user.bio || undefined}>
+            {bioSnippet || '\u00A0'}
+          </div>
         </div>
         
-        {/* Desktop (non-compact only): fixed 4-row grid; tighter spacing to reduce card height */}
-        <div className={compact ? 'hidden' : 'hidden lg:grid gap-0 leading-tight lg:grid-rows-4 min-h-0'}>
-          <div className={`font-semibold truncate text-orange-500 ${isNativeIOSApp() ? 'text-sm' : 'text-xs'}`}>
-            {thingsInCommon > 0 ? `${thingsInCommon} things in common` : '\u00A0'}
-          </div>
-          <div className={`font-medium truncate text-cyan-600 dark:text-cyan-400 ${isNativeIOSApp() ? 'text-sm' : 'text-xs'}`}>
-            {mutualFriends > 0 ? `${mutualFriends} mutual friends` : '\u00A0'}
-          </div>
-          <div className={`font-semibold text-gray-900 dark:text-white truncate ${isNativeIOSApp() ? 'text-sm mt-1' : 'text-xs mt-0.5'}`}>
+        {/* Desktop (non-compact only): same order, fixed height */}
+        <div className={compact ? 'hidden' : 'hidden lg:flex lg:flex-col lg:min-h-[7.5rem]'} style={{ minHeight: '7.5rem' }}>
+          <div className={`font-semibold text-gray-900 dark:text-white truncate ${isNativeIOSApp() ? 'text-sm' : 'text-xs'}`}>
             {displayName}
           </div>
-          <div className="min-w-0">
-            <div className={`text-gray-500 dark:text-gray-400 truncate ${isNativeIOSApp() ? 'text-xs' : 'text-[11px]'}`}>{displayCity}</div>
-            {travelCityFinal && user.userType !== 'business' && (
-              <div className={`font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1 break-words min-w-0 ${isNativeIOSApp() ? 'text-xs mt-0.5' : 'text-[11px] mt-0.5'}`}>
+          <div className={`font-medium text-orange-500 truncate ${isNativeIOSApp() ? 'text-sm mt-0.5' : 'text-xs mt-0.5'}`}>
+            {thingsInCommon} things in common
+          </div>
+          <div className={`text-gray-500 dark:text-gray-400 truncate ${isNativeIOSApp() ? 'text-xs mt-0.5' : 'text-[11px] mt-0.5'}`}>
+            {user.userType === 'business' && user.streetAddress 
+              ? `📍 ${user.streetAddress}` 
+              : displayCity}
+          </div>
+          <div className="min-h-[1.25rem] mt-0.5">
+            {travelCityFinal && user.userType !== 'business' ? (
+              <div className={`font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1 truncate ${isNativeIOSApp() ? 'text-xs' : 'text-[11px]'}`}>
                 <Plane className="w-3 h-3 flex-shrink-0" />
-                <span className="break-words">Nearby Traveler → {travelCityFinal}</span>
+                <span>Nearby Traveler → {travelCityFinal}</span>
               </div>
+            ) : (
+              <span className="invisible text-xs">&#8203;</span>
             )}
+          </div>
+          <div className={`text-gray-600 dark:text-gray-500 line-clamp-2 mt-0.5 min-h-[2rem] truncate ${isNativeIOSApp() ? 'text-xs' : 'text-[11px]'}`} title={user.bio || undefined}>
+            {bioSnippet || '\u00A0'}
           </div>
         </div>
       </div>

@@ -2150,28 +2150,67 @@ export function ProfileTabs(props: ProfilePageProps) {
                   <CardContent>
                     {userChatrooms && userChatrooms.length > 0 ? (
                       <div className="space-y-2">
-                        {userChatrooms.map((chatroom: any) => (
-                          <button
-                            key={chatroom.id}
-                            onClick={() => setLocation(`/chatroom/${chatroom.id}`)}
-                            className="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
-                          >
-                            <div className="flex items-center gap-3 min-w-0">
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-orange-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                                {(chatroom.name || chatroom.cityName || '?')[0].toUpperCase()}
-                              </div>
-                              <div className="min-w-0">
-                                <div className="font-semibold text-gray-900 dark:text-white truncate">
-                                  {chatroom.name || chatroom.cityName || 'Chatroom'}
+                        {userChatrooms.map((chatroom: any) => {
+                          const displayName = chatroom.name || chatroom.cityName || 'Chatroom';
+                          const initial = displayName[0]?.toUpperCase() || '?';
+                          const gradientIndex = (displayName.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0) % 7);
+                          const gradients = [
+                            'from-blue-500 to-orange-500',
+                            'from-purple-500 to-pink-500',
+                            'from-green-500 to-teal-500',
+                            'from-amber-500 to-orange-500',
+                            'from-cyan-500 to-blue-500',
+                            'from-rose-500 to-orange-500',
+                            'from-indigo-500 to-purple-500'
+                          ];
+                          const gradient = gradients[gradientIndex];
+                          const lastAt = chatroom.lastMessageAt || chatroom.created_at;
+                          const activityText = lastAt ? (() => {
+                            const diff = Date.now() - new Date(lastAt).getTime();
+                            const mins = Math.floor(diff / 60000);
+                            const hrs = Math.floor(diff / 3600000);
+                            const days = Math.floor(diff / 86400000);
+                            if (mins < 1) return 'Active just now';
+                            if (mins < 60) return `Active ${mins}m ago`;
+                            if (hrs < 24) return `Active ${hrs}h ago`;
+                            return `Active ${days}d ago`;
+                          })() : null;
+                          return (
+                            <button
+                              key={chatroom.id}
+                              onClick={() => setLocation(`/chatroom/${chatroom.id}`)}
+                              className="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 md:hover:bg-gray-50 md:dark:hover:bg-gray-700 md:hover:border-gray-300 md:dark:hover:border-gray-600 md:hover:shadow-sm transition-all duration-200 text-left"
+                            >
+                              <div className="flex items-center gap-3 min-w-0 flex-1">
+                                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-sm flex-shrink-0`}>
+                                  {initial}
                                 </div>
-                                {chatroom.cityName && chatroom.name && (
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{chatroom.cityName}</div>
-                                )}
+                                <div className="min-w-0 flex-1">
+                                  <div className="font-semibold text-gray-900 dark:text-white truncate">
+                                    {displayName}
+                                  </div>
+                                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                      {chatroom.memberCount ?? 0} members
+                                    </span>
+                                    {chatroom.unreadCount > 0 && (
+                                      <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30 px-1.5 py-0.5 rounded">
+                                        {chatroom.unreadCount} unread
+                                      </span>
+                                    )}
+                                    {activityText && (
+                                      <span className="text-xs text-gray-400 dark:text-gray-500">· {activityText}</span>
+                                    )}
+                                  </div>
+                                  {chatroom.lastMessagePreview && (
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{chatroom.lastMessagePreview}</p>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                          </button>
-                        ))}
+                              <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
+                            </button>
+                          );
+                        })}
                       </div>
                     ) : (
                       <p className="text-gray-500 dark:text-gray-400 text-sm">You haven't joined any chatrooms yet. Visit a city page to join its chatroom!</p>
@@ -2772,9 +2811,10 @@ export function ProfileTabs(props: ProfilePageProps) {
                           )}
                           
                           {isOwnProfile && connection.connectedUser?.id && (
-                            <StealthToggleInline 
+                            <StealthToggleInline
                               targetUserId={connection.connectedUser.id}
                               targetUsername={connection.connectedUser.username}
+                              currentUser={currentUser}
                             />
                           )}
                           
@@ -2857,6 +2897,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                     userId={currentUser.id}
                     targetUserId={user.id}
                     targetUsername={user.username}
+                    currentUser={currentUser}
                   />
                 </CardContent>
               </Card>

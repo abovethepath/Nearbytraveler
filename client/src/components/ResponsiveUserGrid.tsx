@@ -5,6 +5,7 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
+import { formatHometownForDisplay } from "@/lib/locationDisplay";
 
 interface User {
   id: number;
@@ -34,6 +35,7 @@ interface ResponsiveUserGridProps {
   onViewAll?: () => void;
   limit?: number;
   currentUserId?: number;
+  compatibilityDataMap?: Record<number, { sharedInterests?: any[]; sharedActivities?: any[]; sharedEvents?: any[] }>;
 }
 
 export default function ResponsiveUserGrid({ 
@@ -42,7 +44,8 @@ export default function ResponsiveUserGrid({
   showViewAll, 
   onViewAll, 
   limit = 6,
-  currentUserId
+  currentUserId,
+  compatibilityDataMap
 }: ResponsiveUserGridProps) {
   const [, setLocation] = useLocation();
   const displayUsers = limit ? users.slice(0, limit) : users;
@@ -116,28 +119,15 @@ export default function ResponsiveUserGrid({
     return null;
   };
 
-  // 4-line block: Line 1 Nearby Local, Line 2 city, Line 3 Nearby Traveler, Line 4 destination (mobile-friendly)
-  const UserLocationLines = ({ user }: { user: User }) => {
-    if (user.userType === 'business') {
-      return <span className="text-gray-600 dark:text-gray-400 whitespace-nowrap">Business User</span>;
-    }
-    const hometown = user.hometownCity || '—';
-    const destination = getTravelDestination(user);
-    const isTraveling = !!destination || !!(user as any).isCurrentlyTraveling;
-    return (
-      <div className="text-center text-gray-600 dark:text-gray-400 font-medium min-w-0">
-        <div className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">Nearby Local</div>
-        <div className="break-words px-0.5" title={hometown}>{hometown}</div>
-        {isTraveling && destination && (
-          <>
-            <div className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap">Nearby Traveler</div>
-            <div className="break-words px-0.5 font-semibold text-blue-600 dark:text-blue-400" title={destination}>
-              {destination}
-            </div>
-          </>
-        )}
-      </div>
-    );
+  const getThingsInCommon = (user: User) => {
+    const data = compatibilityDataMap?.[user.id];
+    if (!data) return 0;
+    return (data.sharedInterests?.length || 0) + (data.sharedActivities?.length || 0) + (data.sharedEvents?.length || 0);
+  };
+
+  const getBioSnippet = (user: User) => {
+    if (!user.bio) return '';
+    return user.bio.length > 60 ? user.bio.slice(0, 60) + '…' : user.bio;
   };
 
   const getInterestsBadge = (user: User) => {
@@ -157,7 +147,7 @@ export default function ResponsiveUserGrid({
     const travelDest = getTravelDestination(user);
     return (
     <Card 
-      className={`group cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
+      className={`group cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden h-full min-h-[320px] flex flex-col ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={() => setLocation(`/profile/${user.id}`)}
     >
       {/* Cover Background */}
@@ -196,18 +186,33 @@ export default function ResponsiveUserGrid({
           </div>
         </div>
         
-        {/* User Info */}
-        <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-0.5 truncate">
-          {user.username}
-        </h3>
-        
-        {/* Subtitle - 4 lines: Nearby Local, city, Nearby Traveler, destination */}
-        <div className="text-sm text-gray-600 dark:text-gray-400 mb-1.5 font-medium">
-          <UserLocationLines user={user} />
+        {/* User Info - order: 1) @username 2) X things in common 3) Nearby Local 4) Nearby Traveler 5) bio - fixed height */}
+        <div className="min-h-[6.5rem] text-left">
+          <h3 className="font-bold text-lg text-gray-900 dark:text-white truncate">
+            @{user.username}
+          </h3>
+          <p className="text-sm font-medium text-orange-500 truncate mt-0.5">
+            {getThingsInCommon(user)} things in common
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 truncate mt-0.5" title={formatHometownForDisplay(user)}>
+            {user.userType === 'business' ? 'Business User' : formatHometownForDisplay(user)}
+          </p>
+          <div className="min-h-[1.25rem] mt-0.5">
+            {travelDest && user.userType !== 'business' ? (
+              <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 truncate">
+                Nearby Traveler → {travelDest}
+              </p>
+            ) : (
+              <span className="invisible text-sm">&#8203;</span>
+            )}
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 min-h-[2rem] mt-0.5" title={user.bio || undefined}>
+            {getBioSnippet(user) || '\u00A0'}
+          </p>
         </div>
         
         {/* Interests Badge */}
-        <div className="flex justify-center mb-2">
+        <div className="flex justify-center mb-2 mt-1">
           {getInterestsBadge(user)}
         </div>
         
@@ -234,7 +239,7 @@ export default function ResponsiveUserGrid({
     const travelDest = getTravelDestination(user);
     return (
     <Card 
-      className={`cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden h-full ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
+      className={`cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden h-full min-h-[280px] flex flex-col ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={() => setLocation(`/profile/${user.id}`)}
     >
       {/* Gradient Cover - smaller for mobile */}
@@ -271,14 +276,29 @@ export default function ResponsiveUserGrid({
           </div>
         </div>
         
-        {/* Username */}
-        <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-1 truncate px-1">
-          {user.username}
-        </h3>
-        
-        {/* Subtitle - 4 lines: Nearby Local, city, Nearby Traveler, destination */}
-        <div className="text-xs text-gray-600 dark:text-gray-400 mb-2 font-medium min-w-0">
-          <UserLocationLines user={user} />
+        {/* User Info - order: 1) @username 2) X things in common 3) Nearby Local 4) Nearby Traveler 5) bio - fixed height */}
+        <div className="min-h-[6rem] text-left px-1">
+          <h3 className="font-bold text-sm text-gray-900 dark:text-white truncate">
+            @{user.username}
+          </h3>
+          <p className="text-xs font-medium text-orange-500 truncate mt-0.5">
+            {getThingsInCommon(user)} things in common
+          </p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 truncate mt-0.5" title={formatHometownForDisplay(user)}>
+            {user.userType === 'business' ? 'Business User' : formatHometownForDisplay(user)}
+          </p>
+          <div className="min-h-[1rem] mt-0.5">
+            {travelDest && user.userType !== 'business' ? (
+              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 truncate">
+                Nearby Traveler → {travelDest}
+              </p>
+            ) : (
+              <span className="invisible text-xs">&#8203;</span>
+            )}
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 min-h-[1.75rem] mt-0.5" title={user.bio || undefined}>
+            {getBioSnippet(user) || '\u00A0'}
+          </p>
         </div>
         
         {/* Interests Badge - smaller */}

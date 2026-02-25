@@ -120,7 +120,9 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
 
   // Debug logging - check authentication (REMOVED - using actualUser now)
 
-  // Join meetup mutation
+  // CRITICAL: Join meetup mutation - MUST call join API before navigating to chat.
+  // All "Join This Hangout" / "Join Meetup" / group chat buttons must use handleJoinMeetup()
+  // when user is not yet a member. Do NOT navigate directly to quick-meetup-chat without joining first.
   const joinMutation = useMutation({
     mutationFn: async (meetupId: number) => {
       if (!actualUser?.id) {
@@ -134,6 +136,10 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
         userId: actualUser.id
       });
 
+      if (!result.ok) {
+        const errBody = await result.json().catch(() => ({}));
+        throw new Error((errBody as { message?: string }).message || `Failed to join (${result.status})`);
+      }
       console.log('✅ JOIN SUCCESS:', result);
       return { meetupId, result };
     },
@@ -390,7 +396,11 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                     <div 
                       key={meetup.id}
                       className={`bg-white dark:bg-gray-800 rounded-xl p-3 cursor-pointer hover:shadow-lg transition-all ${isOwn ? 'border-2 border-orange-400 dark:border-orange-500 ring-2 ring-orange-200 dark:ring-orange-800' : 'border border-green-200 dark:border-green-700'}`}
-                      onClick={() => window.location.href = `/quick-meetup-chat/${meetup.id}`}
+                      onClick={() => {
+                        if (isOwn) setLocation(`/quick-meetups?id=${meetup.id}`);
+                        else if (isJoined) window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                        else handleJoinMeetup(meetup.id);
+                      }}
                     >
                       <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
                         <div className="flex items-center gap-2 min-w-0">
@@ -429,8 +439,10 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                             e.stopPropagation();
                             if (isOwn) {
                               setLocation(`/quick-meetups?id=${meetup.id}`);
-                            } else {
+                            } else if (isJoined) {
                               window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                            } else {
+                              handleJoinMeetup(meetup.id);
                             }
                           }}
                           className={`w-full text-xs h-8 ${isOwn 
@@ -720,6 +732,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
             .slice(0, 3)
             .map((meetup: any) => {
               const isOwn = meetup.organizerId === actualUser?.id;
+              const isJoined = (meetup.participantIds || []).includes(actualUser?.id);
               
               // ALWAYS USE LOCAL TIME for countdown calculations
               const now = new Date();
@@ -737,10 +750,15 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
               });
 
               return (
+                {/* CRITICAL: Card click must join first if not a member - do NOT navigate directly to chat without joining */}
                 <Card 
                   key={meetup.id} 
                   className="backdrop-blur-sm bg-white/70 dark:bg-gray-800/70 border border-orange-300/50 dark:border-orange-700/50 overflow-visible cursor-pointer hover:shadow-xl hover:border-orange-400/60 dark:hover:border-orange-600/60 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300"
-                  onClick={() => window.location.href = `/quick-meetup-chat/${meetup.id}`}
+                  onClick={() => {
+                    if (isOwn) setLocation(`/quick-meetups?id=${meetup.id}`);
+                    else if (isJoined) window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                    else handleJoinMeetup(meetup.id);
+                  }}
                   data-testid={`quick-meetup-card-${meetup.id}`}
                 >
                   <CardContent className="p-3 space-y-3 overflow-visible">
@@ -781,11 +799,12 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                                 </button>
                               )}
                               
-                              {/* Group Chat Button - Available to all participants */}
+                              {/* Group Chat Button - join first if not a member, then navigate */}
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                                  if (isJoined) window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                                  else handleJoinMeetup(meetup.id);
                                 }}
                                 className="p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
                                 title="Join group chat"

@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 import type { ProfilePageProps } from "./profile-complete-types";
 
 type ProfileTabBarVariant = "hero" | "standalone";
@@ -28,10 +29,13 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
   } = props as Record<string, any>;
 
   const isHero = variant === "hero";
+  const isDesktopWeb = !isNativeIOSApp();
 
   const tabBase = "text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all";
   const tabActive = isHero ? "bg-white text-gray-900 border border-white shadow-md" : "bg-blue-600 text-white border border-blue-600 shadow-md";
-  const tabInactive = isHero ? "bg-white/20 border border-white/40 text-white hover:bg-white/30 hover:border-white/50 backdrop-blur-sm" : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400";
+  const tabInactive = isHero
+    ? (isDesktopWeb ? "bg-white/20 border border-white/40 text-black hover:bg-white/30 hover:border-white/50 backdrop-blur-sm" : "bg-white/20 border border-white/40 text-white hover:bg-white/30 hover:border-white/50 backdrop-blur-sm")
+    : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400";
 
   const btn = (active: boolean) =>
     `${tabBase} ${active ? tabActive : tabInactive}`;
@@ -59,7 +63,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
       >
         Contacts
         {!!(userConnections?.length) && (
-          <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "contacts" ? "bg-white/20 text-white" : "bg-blue-500 text-white"}`}>
+          <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "contacts" ? (isDesktopWeb && isHero ? "bg-black/20 text-black" : "bg-white/20 text-white") : "bg-blue-500 text-white"}`}>
             {userConnections.length}
           </span>
         )}
@@ -91,7 +95,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
       >
         References
         {(userReferences?.length || 0) > 0 && (
-          <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "references" ? "bg-white/20 text-white" : "bg-orange-500 text-white"}`}>
+          <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "references" ? (isDesktopWeb && isHero ? "bg-black/20 text-black" : "bg-white/20 text-white") : "bg-orange-500 text-white"}`}>
             {userReferences.length}
           </span>
         )}
@@ -108,7 +112,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         >
           Travel Plans
           {!!(travelPlans?.length) && (
-            <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "travel" ? "bg-white/20 text-white" : "bg-orange-500 text-white"}`}>
+            <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "travel" ? (isDesktopWeb && isHero ? "bg-black/20 text-black" : "bg-white/20 text-white") : "bg-orange-500 text-white"}`}>
               {travelPlans.length}
             </span>
           )}
@@ -126,7 +130,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         >
           Countries
           {!!(countriesVisited?.length) && (
-            <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "countries" ? "bg-white/20 text-white" : "bg-orange-500 text-white"}`}>
+            <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "countries" ? (isDesktopWeb && isHero ? "bg-black/20 text-black" : "bg-white/20 text-white") : "bg-orange-500 text-white"}`}>
               {countriesVisited.length}
             </span>
           )}
@@ -161,7 +165,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           data-testid="tab-vouches"
         >
           Vouches
-          <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "vouches" ? "bg-white/20 text-white" : "bg-purple-500 text-white"}`}>
+          <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "vouches" ? (isDesktopWeb && isHero ? "bg-black/20 text-black" : "bg-white/20 text-white") : "bg-purple-500 text-white"}`}>
             {userVouches?.length || 0}
           </span>
         </button>
