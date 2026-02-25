@@ -8,10 +8,9 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getProfileImageUrl } from "@/components/simple-avatar";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp, Flag, LogOut } from "lucide-react";
+import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
@@ -56,13 +55,9 @@ interface WhatsAppChatProps {
   currentUserId?: number;
   onBack?: () => void;
   eventId?: number; // For event chats, this is the actual event ID (chatId is the chatroom ID)
-  /** For DMs: recipient username for profile link (mobile header avatar) */
-  otherUserUsername?: string;
-  /** For DMs: recipient profile image URL (mobile header avatar) */
-  otherUserProfileImage?: string;
 }
 
-export default function WhatsAppChat({ chatId, chatType, title, subtitle, currentUserId, onBack, eventId, otherUserUsername, otherUserProfileImage }: WhatsAppChatProps) {
+export default function WhatsAppChat({ chatId, chatType, title, subtitle, currentUserId, onBack, eventId }: WhatsAppChatProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   
@@ -83,16 +78,12 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const [messagesLoaded, setMessagesLoaded] = useState(false);
   const [swipingMessageId, setSwipingMessageId] = useState<number | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
-  const [showReportDialog, setShowReportDialog] = useState(false);
-  const [reportReason, setReportReason] = useState("");
-  const [reportDetails, setReportDetails] = useState("");
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const initialLoadFallbackRef = useRef<NodeJS.Timeout | null>(null);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   
@@ -171,8 +162,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       const headers: Record<string, string> = { 'x-user-id': uid };
       if (user?.id) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name });
       const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`, {
-        headers,
-        credentials: 'include',
+        headers
       });
       
       if (response.ok) {
@@ -247,44 +237,6 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     }
   });
 
-  // Leave chatroom/meetup/event
-  const leaveMutation = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest("POST", `/api/chatrooms/${chatId}/leave`, {});
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.message || "Failed to leave");
-      }
-      return res.json();
-    },
-    onSuccess: () => {
-      if (chatType === 'meetup') navigate('/quick-meetups');
-      else if (chatType === 'event') navigate('/events');
-      else navigate('/city-chatrooms');
-    },
-    onError: (err: any) => {
-      toast({ title: err?.message || "Failed to leave chat", variant: "destructive" });
-    }
-  });
-
-  // Report group/chatroom
-  const reportGroupMutation = useMutation({
-    mutationFn: async ({ reason, details }: { reason: string; details?: string }) => {
-      const res = await apiRequest("POST", `/api/chatrooms/${chatId}/report`, { reason: reason.trim(), details: details?.trim() || undefined });
-      if (!res.ok) throw new Error("Failed to submit report");
-      return res.json();
-    },
-    onSuccess: () => {
-      toast({ title: "Report submitted", description: "Our team will review it." });
-      setShowReportDialog(false);
-      setReportReason("");
-      setReportDetails("");
-    },
-    onError: () => {
-      toast({ title: "Failed to submit report", variant: "destructive" });
-    }
-  });
-
   // Show error toast if members fetch fails
   useEffect(() => {
     if (membersError) {
@@ -354,8 +306,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         const headers: Record<string, string> = { 'x-user-id': uid };
         if (user?.id) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name });
         const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`, {
-          headers,
-          credentials: 'include',
+          headers
         });
         
         if (response.ok) {
@@ -365,10 +316,6 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             setMessages(data.messages.reverse());
             setMessagesLoaded(true);
             scrollToBottom();
-            if (initialLoadFallbackRef.current) {
-              clearTimeout(initialLoadFallbackRef.current);
-              initialLoadFallbackRef.current = null;
-            }
           }
         }
       } catch (error) {
@@ -376,13 +323,6 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       }
     };
     loadMessagesImmediately();
-
-    // Independent fallback: if initial HTTP fails or WebSocket never connects (e.g. on mobile),
-    // retry loading messages via HTTP after 2.5s so the chat is not stuck on loading.
-    initialLoadFallbackRef.current = setTimeout(() => {
-      initialLoadFallbackRef.current = null;
-      fetchMessagesViaHttp();
-    }, 2500);
 
     let ws: WebSocket | null = null;
     let reconnectTimeout: NodeJS.Timeout | null = null;
@@ -549,10 +489,6 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       isCleaningUp = true;
       if (reconnectTimeout) clearTimeout(reconnectTimeout);
       if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
-      if (initialLoadFallbackRef.current) {
-        clearTimeout(initialLoadFallbackRef.current);
-        initialLoadFallbackRef.current = null;
-      }
       if (ws) ws.close();
     };
   }, [currentUserId, chatId]);
@@ -560,9 +496,9 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const scrollToBottom = () => {
     setTimeout(() => {
       if (messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
-    }, 100);
+    }, 150);
   };
 
   // Scroll to bottom when messages change
@@ -811,22 +747,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   };
 
-  // Render simple markdown in message content (**bold**, newlines, • bullets) so welcome messages display correctly
-  const renderMessageContent = (content: string) => {
-    if (!content || typeof content !== 'string') return '';
-    const escaped = content
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-    const withBold = escaped.split(/\*\*/).reduce((acc, part, i) => {
-      return acc + (i % 2 === 1 ? `<strong>${part}</strong>` : part);
-    }, '');
-    const withBreaks = withBold.replace(/\n/g, '<br />');
-    return withBreaks;
-  };
-
   return (
-    <div className={`flex flex-col bg-gray-900 text-white overflow-hidden h-[calc(100dvh-10rem)] md:h-[calc(100dvh-9rem)] min-h-0 w-full md:mx-auto md:rounded-lg md:shadow-xl ${(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') ? 'md:max-w-6xl' : 'md:max-w-5xl'}`} data-chat-page="true">
+    <div className="flex bg-gray-900 text-white overflow-hidden h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5.5rem)] min-h-0" data-chat-page="true">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-r border-gray-700">
@@ -925,22 +847,6 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           <ArrowLeft className="w-4 h-4" />
         </Button>
         
-        {/* DM: recipient avatar on mobile/iOS only - tap to go to profile by username */}
-        {chatType === 'dm' && (
-          <div
-            className="md:hidden flex-shrink-0 cursor-pointer"
-            onClick={() => navigate(otherUserUsername ? `/profile/${otherUserUsername}` : `/profile/${chatId}`)}
-            role="link"
-            aria-label={`View ${title}'s profile`}
-          >
-            <Avatar className="w-10 h-10 border-2 border-gray-700">
-              <AvatarImage src={getProfileImageUrl(otherUserProfileImage ? { profileImage: otherUserProfileImage } : null) || undefined} />
-              <AvatarFallback className="bg-gray-600 text-white text-sm">
-                {(title && title[0]) || otherUserUsername?.[0] || '?'}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-        )}
         {/* WhatsApp-style member avatars for chatrooms, meetups, and events - hidden on desktop (lg+) since full member list is in left sidebar */}
         {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 && (
           <div className="flex -space-x-2 lg:hidden">
@@ -1105,77 +1011,25 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             </SheetContent>
           </Sheet>
         )}
-        {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700 h-8 w-8" data-testid="button-chat-menu">
-                <MoreVertical className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-gray-800 border-gray-600 text-white">
-              <DropdownMenuItem onClick={() => setShowMembers(true)} className="flex items-center gap-2 cursor-pointer">
-                <Users className="w-4 h-4" /> View Members
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => leaveMutation.mutate()} disabled={leaveMutation.isPending} className="flex items-center gap-2 cursor-pointer text-red-400 focus:text-red-400">
-                <LogOut className="w-4 h-4" /> Leave Chat
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowReportDialog(true)} className="flex items-center gap-2 cursor-pointer">
-                <Flag className="w-4 h-4" /> Report Group
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : null}
+        <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700 h-8 w-8">
+          <MoreVertical className="w-4 h-4" />
+        </Button>
       </div>
 
-      {/* Report Group Dialog */}
-      <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
-        <DialogContent className="bg-gray-900 border-gray-700 text-white">
-          <DialogHeader>
-            <DialogTitle>Report this group</DialogTitle>
-            <DialogDescription className="text-gray-400">Your report will be reviewed by our team.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <Label className="text-gray-300">Reason</Label>
-              <Input
-                value={reportReason}
-                onChange={(e) => setReportReason(e.target.value)}
-                placeholder="e.g. Spam, harassment, inappropriate content"
-                className="mt-1 bg-gray-800 border-gray-600 text-white"
-              />
-            </div>
-            <div>
-              <Label className="text-gray-300">Details (optional)</Label>
-              <Textarea
-                value={reportDetails}
-                onChange={(e) => setReportDetails(e.target.value)}
-                placeholder="Any additional context..."
-                className="mt-1 bg-gray-800 border-gray-600 text-white min-h-[80px]"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowReportDialog(false)} className="border-gray-600 text-gray-300">Cancel</Button>
-            <Button variant="destructive" onClick={() => reportReason.trim() && reportGroupMutation.mutate({ reason: reportReason, details: reportDetails })} disabled={!reportReason.trim() || reportGroupMutation.isPending}>
-              {reportGroupMutation.isPending ? "Submitting..." : "Submit Report"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Messages - flex-col-reverse so messages sit at bottom; scroll shows latest first */}
+      {/* Messages - Flex wrapper ensures proper spacing; min-h-0 allows flex child to shrink */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+        {/* Scrollable messages area */}
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 py-2 bg-[#e5ddd5] dark:bg-[#0b141a]" style={{
           WebkitOverflowScrolling: 'touch',
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23999999' stroke-width='2' opacity='0.18'%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Ccircle cx='150' cy='300' r='30'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Ccircle cx='100' cy='500' r='40'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Ccircle cx='150' cy='700' r='35'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3C/svg%3E")`
         }}>
-          <div className="flex flex-col-reverse min-h-full">
-            <div ref={messagesEndRef} aria-hidden="true" />
+          <div className="flex flex-col min-h-full">
+            <div className="flex-grow" />
             <div className="space-y-2">
             {messages.map((message, index) => {
-              // Coerce to number so string/number from API or localStorage compare correctly
-              const isOwnMessage = Number(message.senderId) === Number(currentUserId);
-              const showAvatar = index === 0 || Number(messages[index - 1].senderId) !== Number(message.senderId);
+              // Use == for type-coerced comparison since currentUserId from localStorage may be string
+              const isOwnMessage = message.senderId == currentUserId;
+              const showAvatar = index === 0 || messages[index - 1].senderId !== message.senderId;
               
               return (
                 <div key={message.id} className={`flex gap-1.5 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
@@ -1226,11 +1080,11 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                       </div>
                     )}
                     {message.replyToId && message.replyTo && (
-                      <div className={`mb-1 px-3 py-2 rounded-t-lg border-l-4 ${isOwnMessage ? 'bg-green-900/80 border-green-300' : 'bg-slate-600/80 border-slate-400'}`}>
-                        <p className={`text-xs font-bold mb-0.5 ${isOwnMessage ? 'text-green-200' : 'text-slate-200'}`}>
+                      <div className={`mb-1 px-3 py-2 rounded-t-lg border-l-4 ${isOwnMessage ? 'bg-green-900/80 border-green-300' : 'bg-gray-600/80 border-green-500'}`}>
+                        <p className={`text-xs font-bold mb-0.5 ${isOwnMessage ? 'text-green-200' : 'text-green-400'}`}>
                           ↩ Replying to {getFirstName(message.replyTo.sender?.name, message.replyTo.sender?.username)}
                         </p>
-                        <p className={`text-xs ${isOwnMessage ? 'text-green-100/90' : 'text-slate-200'} truncate italic`}>
+                        <p className={`text-xs ${isOwnMessage ? 'text-green-100/90' : 'text-gray-200'} truncate italic`}>
                           "{message.replyTo.content}"
                         </p>
                       </div>
@@ -1239,7 +1093,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                     {editingMessageId === message.id ? (
                       <div 
                         className={`px-3 py-2 rounded-2xl chat-message-bubble ${message.replyToId ? 'rounded-tl-none' : ''}`}
-                        style={{ backgroundColor: isOwnMessage ? '#10b981' : '#334155', border: 'none' }}
+                        style={{ backgroundColor: isOwnMessage ? '#10b981' : '#374151', border: 'none' }}
                       >
                         <Textarea
                           value={editText}
@@ -1285,14 +1139,15 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                       <div 
                         className={`px-3 py-1.5 rounded-2xl chat-message-bubble ${message.replyToId ? 'rounded-tl-none' : ''}`}
                         style={{ 
-                          backgroundColor: isOwnMessage ? '#10b981' : '#334155',
+                          backgroundColor: isOwnMessage ? '#10b981' : '#374151', 
                           color: '#ffffff',
                           border: 'none'
                         }}
                       >
                         {!isOwnMessage && showAvatar && (
                           <p 
-                            className="text-xs font-semibold mb-0.5 cursor-pointer hover:underline text-slate-200"
+                            className="text-xs font-semibold mb-0.5 cursor-pointer hover:underline" 
+                            style={{ color: '#4ade80' }}
                             onClick={(e) => {
                               e.stopPropagation();
                               if (message.sender?.id) {
@@ -1303,7 +1158,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                             {getFirstName(message.sender?.name, message.sender?.username)}
                           </p>
                         )}
-                        <p className="text-sm whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: renderMessageContent(message.content) }} />
+                        <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
                         
                         <div className="flex items-center justify-end gap-1 mt-0.5">
                           <span className="text-[10px] opacity-70">{formatTimestamp(message.createdAt)}</span>
@@ -1327,6 +1182,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                 </div>
               );
             })}
+            <div ref={messagesEndRef} />
             </div>
           </div>
         </div>
@@ -1350,8 +1206,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </div>
         )}
 
-        {/* Input box - fixed at bottom; native app: no bottom nav; mobile web: pb for bottom nav + safe area; desktop: extra pb/mb so input clears bottom navbar (DM often opened from home) */}
-        <div className={`px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-4' : 'pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))] md:pb-24 md:mb-24 lg:pb-24 lg:mb-24'}`}>
+        {/* Input box - fixed at bottom; native app: no bottom nav; mobile web: pb for bottom nav + safe area; desktop: pb-4 mb-4 for lift from edge */}
+        <div className={`px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-4' : 'pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))] md:pb-4 md:mb-4 lg:pb-6 lg:mb-4'}`}>
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
           {!messagesLoaded && !isWsConnected && (
             <div className="text-center text-yellow-400 text-xs mb-2 animate-pulse">

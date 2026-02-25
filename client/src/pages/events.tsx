@@ -53,6 +53,7 @@ export default function Events() {
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [selectedTab, setSelectedTab] = useState('explore');
   const [userEventInterests, setUserEventInterests] = useState<any[]>([]);
+  const [cityPillFilter, setCityPillFilter] = useState<'both' | 'visiting' | 'home'>('both');
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -162,23 +163,33 @@ export default function Events() {
   };
 
   const citiesToQuery = getCitiesToQuery();
-  const cityToQuery = citiesToQuery[0] || ""; // Primary city for single-city queries / display
+  const showCityPills = selectedLocation === "hometown" && citiesToQuery.length > 1;
+  const visitingCity = showCityPills ? citiesToQuery[0] : "";
+  const homeCity = showCityPills ? citiesToQuery[1] : "";
+  const effectiveCitiesToQuery: string[] = showCityPills
+    ? cityPillFilter === "visiting"
+      ? [visitingCity]
+      : cityPillFilter === "home"
+        ? [homeCity]
+        : citiesToQuery
+    : citiesToQuery;
+  const cityToQuery = effectiveCitiesToQuery[0] || citiesToQuery[0] || ""; // Primary city for display / empty state
 
   // Fetch events based on selected city/cities with optimized loading
-  // When traveling and viewing hometown: fetches from BOTH travel destination AND hometown
+  // When traveling and viewing hometown: fetches from BOTH travel destination AND hometown (or filtered by pill)
   const { data: events = [], isLoading, error } = useQuery<Event[]>({
-    queryKey: ["/api/events", citiesToQuery.join(",")],
+    queryKey: ["/api/events", effectiveCitiesToQuery.join(",")],
     queryFn: async () => {
-      if (citiesToQuery.length === 0) return [];
-      if (citiesToQuery.length === 1) {
-        const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(citiesToQuery[0])}`);
+      if (effectiveCitiesToQuery.length === 0) return [];
+      if (effectiveCitiesToQuery.length === 1) {
+        const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(effectiveCitiesToQuery[0])}`);
         if (!response.ok) throw new Error('Failed to fetch events');
         return response.json();
       }
       // Multiple cities: fetch from each and merge (dedupe by id)
       const allEvents: Event[] = [];
       const seenIds = new Set<number>();
-      for (const city of citiesToQuery) {
+      for (const city of effectiveCitiesToQuery) {
         try {
           const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(city)}`);
           if (!response.ok) continue;
@@ -196,7 +207,7 @@ export default function Events() {
       allEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
       return allEvents;
     },
-    enabled: !(selectedLocation === "custom" && showCustomInput) && citiesToQuery.length > 0,
+    enabled: !(selectedLocation === "custom" && showCustomInput) && effectiveCitiesToQuery.length > 0,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
@@ -221,7 +232,7 @@ export default function Events() {
 
   // Optimized participants fetch - only fetch for visible events and cache results
   const { data: participants = [] } = useQuery<EventParticipant[]>({
-    queryKey: ["/api/events/participants", citiesToQuery.join(",")],
+    queryKey: ["/api/events/participants", effectiveCitiesToQuery.join(",")],
     queryFn: async () => {
       // Only fetch participants for the first 6 visible events to speed up initial load
       const visibleEvents = events.slice(0, 6);
@@ -260,14 +271,14 @@ export default function Events() {
     staleTime: 300000, // Cache for 5 minutes
   });
 
-  // Fetch external events (Meetup) - from all cities when traveling
+  // Fetch external events (Meetup) - from all cities when traveling (or filtered by pill)
   const { data: meetupEvents = [], isLoading: meetupLoading } = useQuery({
-    queryKey: ["/api/external-events/meetup", citiesToQuery.join(",")],
+    queryKey: ["/api/external-events/meetup", effectiveCitiesToQuery.join(",")],
     queryFn: async () => {
-      if (citiesToQuery.length === 0) return { events: [] };
+      if (effectiveCitiesToQuery.length === 0) return { events: [] };
       const allEvents: any[] = [];
       const seenIds = new Set<string>();
-      for (const city of citiesToQuery) {
+      for (const city of effectiveCitiesToQuery) {
         try {
           const response = await fetch(`${getApiBaseUrl()}/api/external-events/meetup?city=${encodeURIComponent(city)}`);
           if (!response.ok) continue;
@@ -286,17 +297,17 @@ export default function Events() {
       }
       return { events: allEvents };
     },
-    enabled: selectedTab === 'meetup' && citiesToQuery.length > 0,
+    enabled: selectedTab === 'meetup' && effectiveCitiesToQuery.length > 0,
     staleTime: 300000,
   });
 
   const { data: communityEvents = [], isLoading: communityLoading } = useQuery<CommunityEvent[]>({
-    queryKey: ["/api/community-events", citiesToQuery.join(",")],
+    queryKey: ["/api/community-events", effectiveCitiesToQuery.join(",")],
     queryFn: async () => {
-      if (citiesToQuery.length === 0) return [];
+      if (effectiveCitiesToQuery.length === 0) return [];
       const allEvents: CommunityEvent[] = [];
       const seenIds = new Set<string | number>();
-      for (const city of citiesToQuery) {
+      for (const city of effectiveCitiesToQuery) {
         try {
           const response = await fetch(`${getApiBaseUrl()}/api/community-events?city=${encodeURIComponent(city)}&limit=20`);
           if (!response.ok) continue;
@@ -315,7 +326,7 @@ export default function Events() {
       }
       return allEvents;
     },
-    enabled: citiesToQuery.length > 0,
+    enabled: effectiveCitiesToQuery.length > 0,
     staleTime: 300000,
   });
 
@@ -706,10 +717,56 @@ export default function Events() {
               </SelectContent>
             </Select>
 
-            {selectedLocation === "hometown" && citiesToQuery.length > 1 && (
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                Showing events from {citiesToQuery.join(" + ")}
-              </p>
+            {showCityPills && (
+              <div className="mt-3 space-y-2">
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCityPillFilter((prev) => (prev === "visiting" ? "both" : "visiting"))}
+                    className={`
+                      inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all
+                      ${cityPillFilter === "visiting"
+                        ? "bg-[#7ee8c0]/45 border-2 border-[#7ee8c0] shadow-[0_0_14px_rgba(126,232,192,0.45)]"
+                        : cityPillFilter === "both"
+                          ? "bg-[#7ee8c0]/30 border-2 border-[#7ee8c0] shadow-[0_0_12px_rgba(126,232,192,0.35)]"
+                          : "bg-[#7ee8c0]/15 border border-[#7ee8c0]/60 hover:bg-[#7ee8c0]/20"}
+                    `}
+                    style={{ color: cityPillFilter === "both" || cityPillFilter === "visiting" ? "#2d9d6e" : "#5bb88f" }}
+                  >
+                    <span>✈️</span>
+                    <span>Visiting: {visitingCity}</span>
+                    {cityPillFilter === "visiting" && (
+                      <span className="ml-0.5 text-xs opacity-90" aria-hidden>✕</span>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCityPillFilter((prev) => (prev === "home" ? "both" : "home"))}
+                    className={`
+                      inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all
+                      ${cityPillFilter === "home"
+                        ? "bg-[#c4aaff]/45 border-2 border-[#c4aaff] shadow-[0_0_14px_rgba(196,170,255,0.45)]"
+                        : cityPillFilter === "both"
+                          ? "bg-[#c4aaff]/30 border-2 border-[#c4aaff] shadow-[0_0_12px_rgba(196,170,255,0.35)]"
+                          : "bg-[#c4aaff]/15 border border-[#c4aaff]/60 hover:bg-[#c4aaff]/20"}
+                    `}
+                    style={{ color: cityPillFilter === "both" || cityPillFilter === "home" ? "#7c5cc4" : "#9b7ed9" }}
+                  >
+                    <span>🏠</span>
+                    <span>Home: {homeCity}</span>
+                    {cityPillFilter === "home" && (
+                      <span className="ml-0.5 text-xs opacity-90" aria-hidden>✕</span>
+                    )}
+                  </button>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {cityPillFilter === "both"
+                    ? `Showing events near you in ${visitingCity}, plus your home city ${homeCity}`
+                    : cityPillFilter === "visiting"
+                      ? `Showing ${visitingCity} events only — click again to show both`
+                      : `Showing ${homeCity} events only — click again to show both`}
+                </p>
+              </div>
             )}
             {selectedLocation === "custom" && (
               <div className="flex gap-2 mt-2">

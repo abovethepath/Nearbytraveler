@@ -165,7 +165,12 @@ export default function UserCard({
 
   return (
     <button 
-      className={`w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border shadow-sm hover:shadow-md transition-all text-left ${compact ? 'rounded-lg' : 'lg:rounded-2xl'} ${showAvailableNow ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
+      className={`w-full min-w-0 max-w-none overflow-hidden shadow-sm hover:shadow-md transition-all text-left ${compact ? 'rounded-lg' : 'rounded-[14px] lg:rounded-[14px]'} ${showAvailableNow ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : ''}`}
+      style={{
+        backgroundColor: '#1a1d27',
+        border: '1px solid #2a2d3a',
+        borderRadius: 14,
+      }}
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
@@ -219,29 +224,44 @@ export default function UserCard({
         )}
       </div>
       
-      {/* Info box - order: 1) @username 2) bio (higher for more space) 3) X things in common (hidden for own card) 4) Nearby Local 5) Nearby Traveler */}
-      <div className={`bg-white dark:bg-gray-800 ${compact ? 'p-1 min-h-[6.5rem]' : 'p-1 lg:p-1.5 min-h-[7.5rem]'} flex flex-col justify-start`}>
-        {/* Mobile / compact: exact order, fixed height */}
+      {/* Info box - order: 1) @username 2) bio (3 lines) 3) X things in common 4) location tags */}
+      <div className={`${compact ? 'p-1 min-h-[6.5rem]' : 'p-1 lg:p-1.5 min-h-[7.5rem]'} flex flex-col justify-start`} style={{ backgroundColor: '#1a1d27' }}>
+        {/* Mobile / compact */}
         <div className={compact ? '' : 'lg:hidden'}>
-          <div className={`font-semibold text-gray-900 dark:text-white truncate ${compact ? 'text-sm' : 'text-sm'}`}>
+          <div
+            className="truncate"
+            style={{ color: '#7eb8f7', fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500, marginBottom: 6 }}
+          >
             {displayName}
           </div>
-          <div className="text-xs text-gray-600 dark:text-gray-500 line-clamp-2 md:line-clamp-3 mt-0.5 min-h-[2.75rem]" title={user.bio || undefined}>
+          <div
+            title={user.bio || undefined}
+            style={{
+              color: '#8b8fa8',
+              fontSize: 12.5,
+              lineHeight: 1.5,
+              minHeight: '3.75rem',
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical' as const,
+              overflow: 'hidden',
+            }}
+          >
             {bioSnippet || '\u00A0'}
           </div>
           {!isCurrentUser && (
-            <div className="text-xs font-medium text-orange-500 truncate mt-0.5">
+            <div className="truncate mt-0.5" style={{ color: '#e8834a', fontSize: 12, fontWeight: 600 }}>
               {thingsInCommon} things in common
             </div>
           )}
-          <div className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+          <div className="truncate mt-0.5" style={{ color: '#5a5e75', fontSize: 11.5 }}>
             {user.userType === 'business' && user.streetAddress 
               ? `📍 ${user.streetAddress}` 
               : displayCity}
           </div>
           <div className="min-h-[1.25rem] mt-0.5">
             {travelCityFinal && user.userType !== 'business' ? (
-              <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1 truncate">
+              <div className="flex items-center gap-1 truncate" style={{ color: '#5b9cf6', fontSize: 11.5, fontWeight: 600 }}>
                 <Plane className="w-3 h-3 flex-shrink-0" />
                 <span>Nearby Traveler → {travelCityFinal}</span>
               </div>
@@ -250,28 +270,43 @@ export default function UserCard({
             )}
           </div>
         </div>
-        
-        {/* Desktop (non-compact only): same order, fixed height */}
+
+        {/* Desktop (non-compact only) */}
         <div className={compact ? 'hidden' : 'hidden lg:flex lg:flex-col lg:min-h-[7.5rem]'} style={{ minHeight: '7.5rem' }}>
-          <div className={`font-semibold text-gray-900 dark:text-white truncate ${isNativeIOSApp() ? 'text-sm' : 'text-xs'}`}>
+          <div
+            className="truncate"
+            style={{ color: '#7eb8f7', fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500, marginBottom: 6 }}
+          >
             {displayName}
           </div>
-          <div className={`text-gray-600 dark:text-gray-500 line-clamp-2 md:line-clamp-3 mt-0.5 min-h-[2.75rem] truncate ${isNativeIOSApp() ? 'text-xs' : 'text-[11px]'}`} title={user.bio || undefined}>
+          <div
+            title={user.bio || undefined}
+            style={{
+              color: '#8b8fa8',
+              fontSize: 12.5,
+              lineHeight: 1.5,
+              minHeight: '3.75rem',
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical' as const,
+              overflow: 'hidden',
+            }}
+          >
             {bioSnippet || '\u00A0'}
           </div>
           {!isCurrentUser && (
-            <div className={`font-medium text-orange-500 truncate ${isNativeIOSApp() ? 'text-sm mt-0.5' : 'text-xs mt-0.5'}`}>
+            <div className="truncate mt-0.5" style={{ color: '#e8834a', fontSize: 12, fontWeight: 600 }}>
               {thingsInCommon} things in common
             </div>
           )}
-          <div className={`text-gray-500 dark:text-gray-400 truncate ${isNativeIOSApp() ? 'text-xs mt-0.5' : 'text-[11px] mt-0.5'}`}>
+          <div className="truncate mt-0.5" style={{ color: '#5a5e75', fontSize: 11.5 }}>
             {user.userType === 'business' && user.streetAddress 
               ? `📍 ${user.streetAddress}` 
               : displayCity}
           </div>
           <div className="min-h-[1.25rem] mt-0.5">
             {travelCityFinal && user.userType !== 'business' ? (
-              <div className={`font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1 truncate ${isNativeIOSApp() ? 'text-xs' : 'text-[11px]'}`}>
+              <div className="flex items-center gap-1 truncate" style={{ color: '#5b9cf6', fontSize: 11.5, fontWeight: 600 }}>
                 <Plane className="w-3 h-3 flex-shrink-0" />
                 <span>Nearby Traveler → {travelCityFinal}</span>
               </div>
