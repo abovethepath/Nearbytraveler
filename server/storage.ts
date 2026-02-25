@@ -8974,40 +8974,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-
-  async getInstagramPostsByEvent(eventId: number): Promise<InstagramPost[]> {
-    try {
-      const posts = await db.select()
-        .from(instagramPosts)
-        .where(eq(instagramPosts.eventId, eventId));
-      return posts;
-    } catch (error) {
-      console.error('Error fetching Instagram posts by event:', error);
-      return [];
-    }
-  }
-
-
-
-  async deleteInstagramPostByAdmin(id: number, adminId: number): Promise<boolean> {
-    try {
-      // Mark as deleted by admin rather than hard delete
-      const [post] = await db.update(instagramPosts)
-        .set({
-          deletedAt: new Date(),
-          deletedByAdmin: true,
-          nearbytravelerPostStatus: 'deleted',
-        })
-        .where(eq(instagramPosts.id, id))
-        .returning();
-      
-      return !!post;
-    } catch (error) {
-      console.error('Error deleting Instagram post by admin:', error);
-      return false;
-    }
-  }
-
   async getUserById(userId: number): Promise<User | undefined> {
     try {
       const [user] = await db.select()

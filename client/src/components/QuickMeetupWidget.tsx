@@ -750,6 +750,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
               });
 
               return (
+                <>
                 {/* CRITICAL: Card click must join first if not a member - do NOT navigate directly to chat without joining */}
                 <Card 
                   key={meetup.id} 
@@ -986,6 +987,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                     </div>
                 </CardContent>
               </Card>
+                </>
             );
           })}
         </div>
