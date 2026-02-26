@@ -15,6 +15,7 @@ import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
+import { getMetroContext } from "@shared/metro-areas";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import BackButton from "@/components/back-button";
@@ -162,18 +163,27 @@ export default function Events() {
     return [user?.hometownCity || "Boston"];
   };
 
-  const citiesToQuery = getCitiesToQuery();
-  const showCityPills = selectedLocation === "hometown" && citiesToQuery.length > 1;
-  const visitingCity = showCityPills ? citiesToQuery[0] : "";
-  const homeCity = showCityPills ? citiesToQuery[1] : "";
-  const effectiveCitiesToQuery: string[] = showCityPills
-    ? cityPillFilter === "visiting"
-      ? [visitingCity]
-      : cityPillFilter === "home"
-        ? [homeCity]
-        : citiesToQuery
-    : citiesToQuery;
-  const cityToQuery = effectiveCitiesToQuery[0] || citiesToQuery[0] || ""; // Primary city for display / empty state
+  const citiesToQueryRaw = getCitiesToQuery();
+  const showCityPills = selectedLocation === "hometown" && citiesToQueryRaw.length > 1;
+  // Resolve to metro for display and API: suburbs (e.g. Culver City) → metro (e.g. Los Angeles)
+  const visitingCity = showCityPills && citiesToQueryRaw.length >= 2
+    ? getMetroContext(citiesToQueryRaw[0]).queryCity
+    : "";
+  const homeCity = showCityPills && citiesToQueryRaw.length >= 2
+    ? getMetroContext(citiesToQueryRaw[1]).queryCity
+    : "";
+  const rawForQuery =
+    showCityPills && citiesToQueryRaw.length >= 2
+      ? cityPillFilter === "visiting"
+        ? [citiesToQueryRaw[0]]
+        : cityPillFilter === "home"
+          ? [citiesToQueryRaw[1]]
+          : citiesToQueryRaw
+      : citiesToQueryRaw;
+  const effectiveCitiesToQuery: string[] = [
+    ...new Set(rawForQuery.map((c) => getMetroContext(c).queryCity).filter(Boolean)),
+  ];
+  const cityToQuery = effectiveCitiesToQuery[0] || (citiesToQueryRaw[0] ? getMetroContext(citiesToQueryRaw[0]).queryCity : "") || ""; // Metro for empty state copy
 
   // Fetch events based on selected city/cities with optimized loading
   // When traveling and viewing hometown: fetches from BOTH travel destination AND hometown (or filtered by pill)
@@ -700,16 +710,22 @@ export default function Events() {
               <SelectContent>
                 {currentUser?.hometownCity && (
                   <SelectItem value="hometown">
-                    {currentUser.hometownCity}{currentUser.hometownState ? `, ${currentUser.hometownState}` : ''}{currentUser.hometownCountry ? `, ${currentUser.hometownCountry}` : ''}
+                    {getMetroContext(currentUser.hometownCity).displayName || currentUser.hometownCity}{currentUser.hometownState ? `, ${currentUser.hometownState}` : ''}{currentUser.hometownCountry ? `, ${currentUser.hometownCountry}` : ''}
                   </SelectItem>
                 )}
                 {userTravelPlans.length > 0 && (
                   <>
-                    {userTravelPlans.map((plan: any) => (
-                      <SelectItem key={plan.id} value={`destination-${plan.id}`}>
-                        {plan.destination || plan.destinationCity || `Trip ${plan.id}`}
-                      </SelectItem>
-                    ))}
+                    {userTravelPlans.map((plan: any) => {
+                      const destStr = plan.destination || plan.destinationCity || `Trip ${plan.id}`;
+                      const destCity = typeof destStr === 'string' ? destStr.split(',')[0].trim() : destStr;
+                      const metroDisplay = destCity ? getMetroContext(destCity).displayName : destStr;
+                      const suffix = typeof destStr === 'string' && destStr.includes(',') ? destStr.substring(destStr.indexOf(',')) : '';
+                      return (
+                        <SelectItem key={plan.id} value={`destination-${plan.id}`}>
+                          {metroDisplay}{suffix}
+                        </SelectItem>
+                      );
+                    })}
                   </>
                 )}
                 <SelectItem value="current">Use My Current Location</SelectItem>
@@ -769,25 +785,32 @@ export default function Events() {
               </div>
             )}
             {selectedLocation === "custom" && (
-              <div className="flex gap-2 mt-2">
-                <Input
-                  placeholder="Enter city name..."
-                  value={customCity}
-                  onChange={(e) => {
-                    setCustomCity(e.target.value);
-                    setShowCustomInput(true);
-                  }}
-                  className="w-full md:w-64 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-                <Button 
-                  onClick={() => {
-                    setShowCustomInput(false);
-                    queryClient.invalidateQueries({ queryKey: ["/api/events", customCity] });
-                  }}
-                  disabled={!customCity.trim()}
-                >
-                  Search
-                </Button>
+              <div className="mt-2 space-y-2">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Enter city name..."
+                    value={customCity}
+                    onChange={(e) => {
+                      setCustomCity(e.target.value);
+                      setShowCustomInput(true);
+                    }}
+                    className="w-full md:w-64 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  />
+                  <Button 
+                    onClick={() => {
+                      setShowCustomInput(false);
+                      queryClient.invalidateQueries({ queryKey: ["/api/events", customCity] });
+                    }}
+                    disabled={!customCity.trim()}
+                  >
+                    Search
+                  </Button>
+                </div>
+                {customCity.trim() && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Showing events in {getMetroContext(customCity.trim()).displayName || customCity.trim()}
+                  </p>
+                )}
               </div>
             )}
           </div>

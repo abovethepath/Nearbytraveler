@@ -165,6 +165,25 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
     joinMutation.mutate(meetupId);
   };
 
+  const leaveMutation = useMutation({
+    mutationFn: async (meetupId: number) => {
+      if (!actualUser?.id) throw new Error("Please log in");
+      const result = await apiRequest('DELETE', `/api/quick-meets/${meetupId}/participants/${actualUser.id}`);
+      if (!result.ok) {
+        const err = await result.json().catch(() => ({}));
+        throw new Error((err as { message?: string }).message || "Failed to leave");
+      }
+      return meetupId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
+      toast({ title: "Left meetup", description: "You've left the quick meetup." });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Failed to leave", variant: "destructive" });
+    },
+  });
+
   const createMutation = useMutation({
     mutationFn: async (meetupData: any) => {
       if (!actualUser?.id) {
@@ -914,22 +933,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
 
                     {/* Action - minimal padding on desktop web so all 3 buttons fit without cutoff */}
                     <div className={`border-t border-orange-200 dark:border-orange-700 ${!isNativeIOSApp() ? 'pt-0.5' : 'pt-2'}`}>
-                      {!isOwn ? (
-                        <Button
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleJoinMeetup(meetup.id);
-                          }}
-                          disabled={joinMutation.isPending}
-                          className="w-full sm:w-auto max-w-full inline-flex items-center justify-center gap-2 rounded-full
-                                     text-xs py-2 h-9 px-3 bg-gradient-to-r from-blue-500 to-orange-500
-                                     hover:from-blue-600 hover:to-orange-600 text-white border-0 whitespace-nowrap"
-                          data-testid={`button-join-meetup-${meetup.id}`}
-                        >
-                          {joinMutation.isPending ? 'Joining...' : '🤝 Join Meetup'}
-                        </Button>
-                      ) : (
+                      {isOwn ? (
                         <div className={`flex flex-wrap items-center ${!isNativeIOSApp() ? 'gap-1' : 'gap-2'}`}>
                           <Button
                             size="sm"
@@ -981,6 +985,53 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                             <span>Cancel</span>
                           </Button>
                         </div>
+                      ) : isJoined ? (
+                        <div className="flex flex-col gap-1.5">
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Joined ✓</span>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                              }}
+                              className="text-xs border-blue-500 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                              data-testid={`button-open-chat-${meetup.id}`}
+                            >
+                              <MessageSquare className="w-3 h-3 mr-1" />
+                              Open Chat
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                leaveMutation.mutate(meetup.id);
+                              }}
+                              disabled={leaveMutation.isPending}
+                              className="text-xs border-red-300 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                              data-testid={`button-leave-meetup-${meetup.id}`}
+                            >
+                              {leaveMutation.isPending ? 'Leaving...' : 'Leave Meetup'}
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <Button
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleJoinMeetup(meetup.id);
+                          }}
+                          disabled={joinMutation.isPending}
+                          className="w-full sm:w-auto max-w-full inline-flex items-center justify-center gap-2 rounded-full
+                                     text-xs py-2 h-9 px-3 bg-gradient-to-r from-blue-500 to-orange-500
+                                     hover:from-blue-600 hover:to-orange-600 text-white border-0 whitespace-nowrap"
+                          data-testid={`button-join-meetup-${meetup.id}`}
+                        >
+                          {joinMutation.isPending ? 'Joining...' : '🤝 Join Meetup'}
+                        </Button>
                       )}
                     </div>
                 </CardContent>

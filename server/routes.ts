@@ -436,48 +436,28 @@ const GLOBAL_METROPOLITAN_AREAS: MetropolitanArea[] = [
   }
 ];
 
-// ENABLED: Metro consolidation functions - consolidate ONLY LA Metro cities
-function consolidateToMetropolitanArea(city: string, state?: string, country?: string): string {
-  // LA Metro cities list - consolidate ALL of these to "Los Angeles Metro"
-  const laMetroCities = [
-    'Los Angeles', 'Playa del Rey', 'Santa Monica', 'Venice', 'Culver City',
-    'Marina del Rey', 'Manhattan Beach', 'Hermosa Beach', 'Redondo Beach',
-    'El Segundo', 'Torrance', 'Hawthorne', 'Inglewood', 'West Hollywood',
-    'Beverly Hills', 'Century City', 'Brentwood', 'Westwood', 'Pacific Palisades',
-    'Malibu', 'Pasadena', 'Glendale', 'Burbank', 'North Hollywood', 'Studio City',
-    'Sherman Oaks', 'Encino', 'Tarzana', 'Woodland Hills', 'Calabasas',
-    'Agoura Hills', 'Thousand Oaks', 'Simi Valley', 'Northridge', 'Van Nuys',
-    'Reseda', 'Canoga Park', 'Chatsworth', 'Granada Hills', 'Sylmar',
-    'San Fernando', 'Pacoima', 'Sun Valley', 'La Crescenta', 'La Canada',
-    'Montrose', 'Eagle Rock', 'Highland Park', 'Silver Lake', 'Los Feliz',
-    'Echo Park', 'Downtown Los Angeles', 'Chinatown', 'Little Tokyo', 'Koreatown',
-    'Mid-Wilshire', 'Hancock Park', 'Fairfax', 'West LA', 'Sawtelle',
-    'Mar Vista', 'Del Rey', 'Palms', 'Cheviot Hills', 'Pico-Robertson',
-    'Baldwin Hills', 'Leimert Park', 'Hyde Park', 'Watts', 'Compton',
-    'Lynwood', 'South Gate', 'Downey', 'Norwalk', 'Whittier',
-    'Long Beach', 'Venice Beach'
-  ];
-  
-  // ONLY consolidate actual LA Metro cities to "Los Angeles Metro"
-  if (laMetroCities.includes(city)) {
-    return 'Los Angeles Metro';
-  }
-  
-  // For all other cities, return the original city name unchanged
+// Metro consolidation: use shared/metro-areas as single source of truth (76 LA metro cities + NY, Chicago, SF).
+// Case-insensitive so "culver city" and "Culver City" both resolve to Los Angeles Metro.
+function consolidateToMetropolitanArea(city: string, _state?: string, _country?: string): string {
+  const trimmed = (city || '').trim();
+  if (!trimmed) return city;
+  const metroName = getMetroAreaName(trimmed);
+  // If city is a suburb/neighbourhood of a metro, return metro key (e.g. "Los Angeles Metro")
+  if (metroName !== trimmed) return metroName;
   return city;
 }
 
-// Get all cities in a metropolitan area with LA Metro consolidation
+// Get all cities in a metropolitan area — uses shared/metro-areas (76 LA cities + other metros).
 function getMetropolitanAreaCities(mainCity: string, state?: string, country?: string): string[] {
-  if (mainCity.toLowerCase() === 'los angeles' && state?.toLowerCase() === 'california') {
-    return [
-      'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 'Manhattan Beach', 
-      'Beverly Hills', 'West Hollywood', 'Pasadena', 'Burbank', 'Glendale', 
-      'Long Beach', 'Torrance', 'Inglewood', 'Culver City', 'Marina del Rey',
-      'Hermosa Beach', 'Redondo Beach', 'Hawthorne', 'Hollywood', 'Studio City',
-      'Sherman Oaks', 'Encino', 'Van Nuys', 'Northridge', 'Malibu',
-      'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City', 'Playa del Rey'
-    ];
+  const main = (mainCity || '').trim();
+  if (!main) return [];
+  const cities = getMetroCities(main);
+  if (cities.length > 0) return [...cities];
+  // "Los Angeles" (display name) → resolve to metro key and get cities
+  const metroName = getMetroAreaName(main);
+  if (metroName !== main) {
+    const metroCities = getMetroCities(metroName);
+    if (metroCities.length > 0) return [...metroCities];
   }
   return [mainCity];
 }
@@ -11454,21 +11434,10 @@ Questions? Just reply to this message. Welcome aboard!
       let pastEvents = [];
       
       if (city && typeof city === 'string' && city.trim() !== '') {
-        const cityName = city.toString();
-        
-        // Apply metro consolidation for ALL metro areas
-        const { getMetroArea, METRO_AREAS } = await import('../shared/constants');
-        const metroAreaName = getMetroArea(cityName);
-        
-        let searchCities = [cityName];
-        
-        if (metroAreaName) {
-          const metroConfig = Object.values(METRO_AREAS).find(m => m.metroName === metroAreaName);
-          if (metroConfig) {
-            searchCities = metroConfig.cities;
-            if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENT HISTORY METRO: Searching ${searchCities.length} cities for "${metroAreaName}"`);
-          }
-        }
+        const cityName = city.toString().trim();
+        // Use same metro expansion as GET /api/events (LA, NYC, Chicago, SF)
+        const searchCities = getExpandedCityList(cityName);
+        if (process.env.NODE_ENV === 'development' && searchCities.length > 1) console.log(`🌍 EVENT HISTORY METRO: Searching ${searchCities.length} cities for "${cityName}"`);
         
         // Fetch past events (date < now and date > pastDate)
         if (searchCities.length === 1) {
@@ -16012,36 +15981,38 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // DELETE participant from quick meet (organizer only)
+  // DELETE participant from quick meet (organizer can remove others; participant can leave themselves)
   app.delete("/api/quick-meets/:id/participants/:participantId", async (req, res) => {
     try {
       const meetupId = parseInt(req.params.id || '0');
       const participantId = parseInt(req.params.participantId || '0');
       const userId = req.headers['x-user-id'];
-      
+      const requesterId = parseInt(userId as string || '0');
+
       if (!userId) {
         return res.status(401).json({ message: "User ID required" });
       }
 
       if (process.env.NODE_ENV === 'development') console.log(`🗑️ USER ${userId} REMOVING PARTICIPANT ${participantId} FROM QUICK MEET ${meetupId}`);
 
-      // Get the meetup to verify organizer
       const meetup = await storage.getQuickMeetup(meetupId);
       if (!meetup) {
         return res.status(404).json({ message: "Quick meet not found" });
       }
 
-      // Verify the requester is the organizer
-      if (meetup.organizerId !== parseInt(userId as string || '0')) {
-        return res.status(403).json({ message: "Only the organizer can remove participants" });
+      const isOrganizer = meetup.organizerId === requesterId;
+      const isLeavingSelf = participantId === requesterId;
+
+      // Allow: (1) organizer removing another participant, or (2) participant leaving themselves
+      if (isLeavingSelf) {
+        // Participant leaving themselves
+        if (meetup.organizerId === participantId) {
+          return res.status(400).json({ message: "Organizer cannot remove themselves. Cancel the meetup instead." });
+        }
+      } else if (!isOrganizer) {
+        return res.status(403).json({ message: "Only the organizer can remove other participants" });
       }
 
-      // Prevent organizer from removing themselves
-      if (participantId === parseInt(userId as string || '0')) {
-        return res.status(400).json({ message: "Organizer cannot remove themselves. Cancel the meetup instead." });
-      }
-
-      // Remove participant from meetup
       const result = await storage.leaveQuickMeetup(meetupId, participantId);
       
       if (!result) {

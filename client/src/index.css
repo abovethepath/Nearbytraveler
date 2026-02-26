@@ -245,6 +245,28 @@ body {
   box-sizing: border-box;
 }
 
+/* User card: hero/avatar flush to top on all viewports (web, iOS, Android) - no drop */
+button.user-card {
+  align-items: flex-start !important;
+  line-height: 0 !important;
+  padding: 0 !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+button.user-card > div:first-of-type {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  flex-shrink: 0 !important;
+}
+/* Current user card (first in grid): ensure hero fills to top edge like other cards */
+button.user-card[data-is-current-user="true"] > div:first-of-type,
+button.user-card:first-child > div:first-of-type {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
 /* MOBILE APP WRAPPER - Ensures all pages work for native app wrapping */
 @media (max-width: 480px) {
   /* Extra strict rules for small phones like iPhone */
@@ -280,8 +302,21 @@ body {
   
   .user-card > div:first-child {
     overflow: visible !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
   }
   
+  /* Ensure current user card (and all cards) have hero/avatar flush to top - no drop */
+  button.user-card {
+    align-items: flex-start !important;
+    line-height: 0 !important;
+    padding: 0 !important;
+  }
+  button.user-card > div:first-of-type {
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+  }
   /* Ensure avatar containers don't clip circles */
   .user-card [class*="justify-center"] {
     overflow: visible !important;

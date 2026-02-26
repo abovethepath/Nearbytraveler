@@ -1,5 +1,13 @@
-// Metropolitan Area Consolidation System
-// This ensures users from metro suburbs are captured as both their specific city AND the metro area
+// Metropolitan Area Consolidation System (canonical metro mapping)
+// When a user's detected location is a suburb/neighbourhood of a major city, the app defaults
+// to the parent metro for events and UI:
+// - Event search radius: default the event query to the metro area (Culver City, Santa Monica,
+//   Burbank, Pasadena, Brooklyn, Evanston, etc. → Los Angeles / New York / Chicago metro pool).
+// - Location display: show metro in the location bar, with optional suburb indicator,
+//   e.g. getMetroContext("Culver City").displayName → "Los Angeles (Culver City)".
+// - Empty state copy: "Be the first to host an event in Los Angeles!" not "...in Culver City".
+// - Use getMetroContext(city).queryCity for API params and empty state; .displayName for UI.
+// Raw detected city (e.g. Culver City) remains in .rawCity for distance/sorting.
 
 export const METRO_AREAS = {
   "Los Angeles Metro": [
@@ -135,4 +143,48 @@ export function areInSameMetro(city1: string, city2: string): boolean {
   }
   
   return detection1.metroAreaName === detection2.metroAreaName;
+}
+
+/** Metro area name → main city for display and API (event pool, empty state) */
+const METRO_TO_MAIN_CITY: Record<string, string> = {
+  'Los Angeles Metro': 'Los Angeles',
+  'New York Metro': 'New York',
+  'Chicago Metro': 'Chicago',
+  'San Francisco Bay Area': 'San Francisco',
+};
+
+export interface MetroContext {
+  /** For location bar: "Los Angeles (Culver City)" or just "Los Angeles" when suburb */
+  displayName: string;
+  /** For API and empty state: metro main city e.g. "Los Angeles" */
+  queryCity: string;
+  /** Raw detected city e.g. "Culver City" (for distance/sorting if needed) */
+  rawCity: string;
+  /** Whether the city is a suburb of a metro */
+  isSuburb: boolean;
+}
+
+/**
+ * Resolve a detected city to metro context for display and event query.
+ * When the city is a suburb (e.g. Culver City, Brooklyn, Evanston), returns metro main city
+ * for event pool and UI; raw city is kept for distance/sorting.
+ */
+export function getMetroContext(city: string | null | undefined): MetroContext {
+  const raw = (city || '').trim();
+  if (!raw) {
+    return { displayName: '', queryCity: '', rawCity: '', isSuburb: false };
+  }
+  const detection = detectMetroArea(raw);
+  if (!detection.isMetroCity || !detection.metroAreaName) {
+    return { displayName: raw, queryCity: raw, rawCity: raw, isSuburb: false };
+  }
+  const mainCity = METRO_TO_MAIN_CITY[detection.metroAreaName] ?? detection.metroAreaName.replace(/\s+(Metro|Bay Area)$/i, '');
+  const isSuburb = raw.toLowerCase() !== mainCity.toLowerCase();
+  const displayName = isSuburb ? `${mainCity} (${raw})` : mainCity;
+  return {
+    displayName,
+    queryCity: mainCity,
+    rawCity: raw,
+    isSuburb,
+  };
 }

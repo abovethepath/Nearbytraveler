@@ -165,17 +165,23 @@ export default function UserCard({
 
   return (
     <button 
-      className={`w-full min-w-0 max-w-none overflow-hidden shadow-sm hover:shadow-md transition-all text-left ${compact ? 'rounded-lg' : 'rounded-[14px] lg:rounded-[14px]'} ${showAvailableNow ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : ''}`}
+      type="button"
+      className={`user-card w-full min-w-0 max-w-none !p-0 block overflow-hidden shadow-sm hover:shadow-md transition-all text-left flex flex-col items-stretch gap-0 leading-none ${compact ? 'rounded-lg' : 'rounded-[14px] lg:rounded-[14px]'} ${showAvailableNow ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : ''}`}
       style={{
         backgroundColor: '#1a1d27',
         border: '1px solid #2a2d3a',
         borderRadius: 14,
+        padding: 0,
       }}
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
+      data-is-current-user={isCurrentUser ? 'true' : undefined}
     >
-      {/* Photo section - compact on desktop web to reduce card height; iOS keeps original */}
-      <div className={`relative ${compact ? 'aspect-square' : isNativeIOSApp() ? 'aspect-square lg:aspect-[3/4]' : 'aspect-square lg:aspect-[4/5]'}`}>
+      {/* Photo section - flush to top edge (no padding/margin); identical for current user and others */}
+      <div 
+        className={`relative block flex-shrink-0 w-full !m-0 !p-0 self-stretch overflow-hidden ${compact ? 'aspect-square rounded-t-lg' : isNativeIOSApp() ? 'aspect-square lg:aspect-[3/4] rounded-t-[14px]' : 'aspect-square lg:aspect-[4/5] rounded-t-[14px]'}`}
+        style={{ margin: 0, padding: 0, minHeight: 0, flexShrink: 0 }}
+      >
         {user.profileImage ? (
           <img 
             src={user.profileImage} 

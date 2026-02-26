@@ -1,4 +1,5 @@
 import { db, pool } from "./db";
+import { getMetroAreaName, getMetroCities } from "../shared/metro-areas";
 import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, photoTags, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, chatroomModerationRecords, chatroomBlocks, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, quickDeals, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, waitlistLeads, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type PhotoTag, type InsertPhotoTag, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type WaitlistLead, type InsertWaitlistLead, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchWithUsers } from "@shared/schema";
 import { eq, and, or, ilike, gte, desc, avg, count, sql, isNotNull, ne, lte, lt, gt, asc, like, inArray, getTableColumns, isNull } from "drizzle-orm";
 import { promises as fs } from 'fs';
@@ -3204,28 +3205,21 @@ export class DatabaseStorage implements IStorage {
         return [];
       }
 
-      // CRITICAL FIX: Handle metropolitan area expansions
+      // Metro expansion: use shared/metro-areas so suburbs (Culver City, Santa Monica, etc.) resolve to full metro pool.
       let searchCities = [searchCity];
-      const lowerSearchCity = searchCity.toLowerCase().trim();
-      
+      const metroName = getMetroAreaName(searchCity);
+      if (metroName !== searchCity) {
+        const metroCities = getMetroCities(metroName);
+        if (metroCities.length > 0) {
+          searchCities = metroCities;
+          console.log(`🌍 SEARCH: Metro expansion "${searchCity}" → ${metroName}, searching ${metroCities.length} cities`);
+        }
+      }
       // NYC aliases - search for both Manhattan and New York when someone searches for "New York City"
-      if (lowerSearchCity.includes('new york city') || lowerSearchCity === 'nyc') {
+      const lowerSearchCity = searchCity.toLowerCase().trim();
+      if (searchCities.length === 1 && (lowerSearchCity.includes('new york city') || lowerSearchCity === 'nyc')) {
         searchCities = ['Manhattan', 'New York'];
         console.log(`🔍 SEARCH: NYC alias detected, searching for both Manhattan and New York`);
-      }
-      
-      // Los Angeles Metropolitan Area expansion - CRITICAL FOR USER DISCOVERY
-      // FIX: Handle both "California" and "CA" abbreviation
-      if (lowerSearchCity.includes('los angeles') && (location.includes('California') || location.includes(', CA'))) {
-        const laMetroCities = [
-          'Playa del Rey', 'Santa Monica', 'Beverly Hills', 'Hollywood', 'Venice', 
-          'Culver City', 'Manhattan Beach', 'Redondo Beach', 'El Segundo', 
-          'Inglewood', 'Torrance', 'Long Beach', 'Pasadena', 'Burbank', 
-          'Glendale', 'Marina del Rey', 'Hermosa Beach', 'Malibu', 
-          'West Hollywood', 'Westwood', 'Los Angeles'
-        ];
-        searchCities = laMetroCities;
-        console.log(`🌍 SEARCH: Los Angeles metropolitan area detected, searching for ${laMetroCities.length} metro cities including Playa del Rey`);
       }
 
       console.log(`🔍 SEARCH: Searching for cities: ${searchCities.join(', ')}`);

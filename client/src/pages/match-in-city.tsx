@@ -1814,7 +1814,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   // Show city selection screen if no city is selected
   if (!selectedCity) {
     return (
-      <div className="min-h-screen bg-slate-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
         <div className="container mx-auto px-4 py-8">
           {/* Hero section and toggle — hidden on iOS for a cleaner city plans experience */}
           {!isNativeIOSApp() && (
@@ -1825,7 +1825,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     variant="outline"
                     size="sm"
                     onClick={toggleInitialHeroVisibility}
-                    className="text-sm bg-white/10 text-white border-white/20 hover:bg-white/20"
+                    className="text-sm bg-gray-200 dark:bg-white/10 text-gray-900 dark:text-white border-gray-300 dark:border-white/20 hover:bg-gray-300 dark:hover:bg-white/20"
                     data-testid="button-show-match-initial-hero"
                   >
                     <ChevronDown className="w-4 h-4 mr-2" />
@@ -1840,17 +1840,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       variant="outline"
                       size="sm"
                       onClick={toggleInitialHeroVisibility}
-                      className="text-sm bg-white/10 text-white border-white/20 hover:bg-white/20"
+                      className="text-sm bg-gray-200 dark:bg-white/10 text-gray-900 dark:text-white border-gray-300 dark:border-white/20 hover:bg-gray-300 dark:hover:bg-white/20"
                       data-testid="button-hide-match-initial-hero"
                     >
                       <X className="w-4 h-4 mr-2" />
                       Hide
                     </Button>
                   </div>
-                  <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">🎯 City Plans</h1>
-                  <p className="text-xl text-white/80 mb-4">Pick a city, then choose plans to match with people who want to do the same things.</p>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 max-w-2xl mx-auto">
-                    <p className="text-white/90 text-sm leading-relaxed">
+                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">🎯 City Plans</h1>
+                  <p className="text-xl text-gray-600 dark:text-white/80 mb-4">Pick a city, then choose plans to match with people who want to do the same things.</p>
+                  <div className="bg-gray-100 dark:bg-white/10 backdrop-blur-sm rounded-lg p-4 max-w-2xl mx-auto border border-gray-200 dark:border-white/20">
+                    <p className="text-gray-700 dark:text-white/90 text-sm leading-relaxed">
                       🎯 <strong>Pick your plans</strong> → Select what you'd actually do in that city<br/>
                       👥 <strong>Find your people</strong> → We'll show matches with the most shared plans<br/>
                       ➕ <strong>Add your own</strong> → Create a plan or event and invite others
@@ -1864,12 +1864,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           {/* Search Cities */}
           <div className="max-w-md mx-auto mb-8">
             <div className="relative">
-              <Search className="absolute left-3 top-3 w-5 h-5 text-white/50" />
+              <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400 dark:text-white/50" />
               <Input
                 placeholder="Search cities..."
                 value={citySearchTerm}
                 onChange={(e) => setCitySearchTerm(e.target.value)}
-                className="pl-12 bg-white/10 border-white/20 text-white placeholder-white/50"
+                className="pl-12 bg-white dark:bg-white/10 border-gray-300 dark:border-white/20 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-white/50"
               />
             </div>
           </div>
@@ -1877,16 +1877,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           {/* Cities Grid - RESTORED BEAUTIFUL DESIGN */}
           {isCitiesLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mb-4"></div>
-              <p className="text-white text-lg">Loading cities...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-400 dark:border-white mb-4"></div>
+              <p className="text-gray-700 dark:text-white text-lg">Loading cities...</p>
             </div>
           ) : filteredCities.length === 0 && citySearchTerm ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <MapPin className="w-12 h-12 text-white/50 mb-4" />
-              <p className="text-white text-lg font-medium mb-2">
+              <MapPin className="w-12 h-12 text-gray-400 dark:text-white/50 mb-4" />
+              <p className="text-gray-700 dark:text-white text-lg font-medium mb-2">
                 No cities found matching your search
               </p>
-              <p className="text-white/70 text-center max-w-md">
+              <p className="text-gray-500 dark:text-white/70 text-center max-w-md">
                 Try a different search term to find more cities
               </p>
             </div>
@@ -1933,8 +1933,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             return (
               <div className="mt-12">
                 <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-white mb-2">Explore Cities</h2>
-                  <p className="text-white/70">Browse curated activities in cities we've launched</p>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Explore Cities</h2>
+                  <p className="text-gray-600 dark:text-white/70">Browse curated activities in cities we've launched</p>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                   {launchCities.map((city, index) => (
@@ -2012,7 +2012,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8 gap-2 min-w-0">
@@ -2039,7 +2039,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   variant="outline"
                   size="sm"
                   onClick={toggleHeroVisibility}
-                  className="text-sm text-gray-300 border-slate-600 hover:bg-slate-800 hover:text-white"
+                  className="text-sm text-gray-600 dark:text-gray-300 border-gray-300 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
                   data-testid="button-show-match-hero"
                 >
                   <ChevronDown className="w-4 h-4 mr-2" />
@@ -2049,21 +2049,21 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             )}
             {isHeroVisible && (
               <div className="max-w-4xl mx-auto mb-6">
-                <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
+                <div className="bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg p-4">
                   <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-2 mb-2">
-                    <h3 className="text-lg font-semibold text-blue-200">🎯 How City Plans Works</h3>
+                    <h3 className="text-lg font-semibold text-blue-700 dark:text-blue-200">🎯 How City Plans Works</h3>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={toggleHeroVisibility}
-                      className="text-sm w-fit text-gray-300 border-slate-600 hover:bg-slate-700 hover:text-white"
+                      className="text-sm w-fit text-gray-600 dark:text-gray-300 border-gray-300 dark:border-slate-600 hover:bg-gray-200 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white"
                       data-testid="button-hide-match-hero"
                     >
                       <X className="w-4 h-4 mr-2" />
                       Hide Instructions
                     </Button>
                   </div>
-                  <div className="text-sm text-blue-200 space-y-1">
+                  <div className="text-sm text-blue-700 dark:text-blue-200 space-y-1">
                     <p>• <strong>Choose activities you want to do</strong> → Get matched with others who share your interests</p>
                     <p>• <strong>Add your own activities</strong> → Help others discover new experiences</p>
                     <p>• <strong>Connect with locals & travelers</strong> → Plan meetups and explore together</p>
@@ -2077,11 +2077,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
         {/* Activity Selection Interface - GORGEOUS RESTORED DESIGN */}
         <div className="max-w-6xl mx-auto">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-2xl backdrop-blur-sm">
             <div className="p-8">
               <div className="text-center mb-8">
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-2 truncate whitespace-nowrap" title={selectedCity}>⭐ City Plans for {selectedCity}</h2>
-                <p className="text-lg text-gray-300 font-medium">Pick to match faster in this city.</p>
+                <p className="text-lg text-gray-600 dark:text-gray-300 font-medium">Pick to match faster in this city.</p>
                 {/* Save & Find Matches - Top */}
                 <div className="mt-6">
                   <Button
@@ -2100,7 +2100,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               </div>
 
               {/* Mobile Section Switcher - Show only on mobile */}
-              <div className="md:hidden sticky top-0 z-30 bg-slate-900 backdrop-blur-sm py-2 -mx-8 px-3 mb-6 border-b border-slate-700">
+              <div className="md:hidden sticky top-0 z-30 bg-white dark:bg-slate-900 backdrop-blur-sm py-2 -mx-8 px-3 mb-6 border-b border-gray-200 dark:border-slate-700">
                 <div className="flex flex-wrap gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                   {[
                     { id: 'popular', label: '🎯 Things to Do' },
@@ -2120,7 +2120,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       className={`flex-shrink-0 px-2.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
                         activeMobileSection === section.id
                           ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-lg'
-                          : 'bg-slate-800 text-gray-300 hover:bg-slate-700 border border-slate-700'
+                          : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
                       }`}
                     >
                       {section.label}
@@ -2137,7 +2137,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     className={`flex-shrink-0 px-2.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
                       activeMobileSection === 'all'
                         ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-lg'
-                        : 'bg-slate-800 text-gray-300 hover:bg-slate-700 border border-slate-700'
+                        : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
                     }`}
                   >
                     Show All
@@ -2151,7 +2151,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       placeholder="Search city plans..."
                       value={activitySearchFilter}
                       onChange={(e) => setActivitySearchFilter(e.target.value)}
-                      className="pl-9 py-2 text-sm bg-slate-800 border-slate-700 text-gray-100 placeholder-gray-400 rounded-full"
+                      className="pl-9 py-2 text-sm bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-full"
                     />
                     {activitySearchFilter && (
                       <button
@@ -2407,7 +2407,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 (document.querySelector('[data-add-custom-activity]') as HTMLButtonElement)?.click();
                               }
                             }}
-                            className="flex-1 px-3 py-2 rounded-lg border border-slate-700 bg-slate-800 text-gray-100 text-sm placeholder-gray-400"
+                            className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-gray-100 text-sm placeholder-gray-500 dark:placeholder-gray-400"
                           />
                           <Button
                             data-add-custom-activity
@@ -2635,7 +2635,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setDisplayedActivitiesLimit(prev => prev + 30)}
-                                className="border-slate-700 bg-slate-800 text-gray-100 hover:bg-slate-700 hover:border-slate-600"
+                                className="border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-700 hover:border-gray-300 dark:hover:border-slate-600"
                               >
                                 Show {Math.min(30, group2Static.length - displayedActivitiesLimit)} more
                               </Button>
@@ -2970,7 +2970,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
                 {/* SECTION 5: Deeper Interests - Sub-interests for more specific matching */}
                 <div className="mt-8">
-                  <div className="border border-slate-600 rounded-lg p-4 bg-slate-800/50">
+                  <div className="border border-gray-200 dark:border-slate-600 rounded-lg p-4 bg-gray-50 dark:bg-slate-800/50">
                     <SubInterestSelector
                       selectedSubInterests={userSubInterests}
                       onSubInterestsChange={handleSubInterestsChange}

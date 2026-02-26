@@ -35,6 +35,7 @@ interface QuickMeetup {
   availableAt: string;
   participantCount: number;
   responseTime: string;
+  participantIds?: number[];
   creator?: {
     id: number;
     username: string;
@@ -334,6 +335,7 @@ function QuickMeetupsPage() {
 
   const MeetupCard = ({ meetup, isExpired = false }: { meetup: QuickMeetup, isExpired?: boolean }) => {
     const isOwn = meetup.organizerId === actualUser?.id;
+    const isJoined = (meetup.participantIds || []).includes(actualUser?.id ?? 0);
     const useFlexLayout = !isNativeIOSApp();
     
     return (
@@ -490,6 +492,34 @@ function QuickMeetupsPage() {
                   </DropdownMenu>
                 </div>
               )
+            ) : isJoined ? (
+              <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Joined ✓</span>
+                <div className="flex gap-1 flex-wrap">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-xs h-7 border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 flex-1"
+                    onClick={() => setLocation(`/quick-meetup-chat/${meetup.id}`)}
+                  >
+                    <MessageCircle className="w-3 h-3 mr-1" />
+                    Chat
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-xs h-7 border-red-300 dark:border-red-600 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (actualUser?.id) removeParticipantMutation.mutate({ meetupId: meetup.id, participantId: actualUser.id });
+                    }}
+                    disabled={removeParticipantMutation.isPending}
+                  >
+                    {removeParticipantMutation.isPending ? 'Leaving...' : 'Leave'}
+                  </Button>
+                </div>
+              </div>
             ) : (
               <Button 
                 size="sm" 

@@ -537,10 +537,14 @@ export function ProfileTabs(props: ProfilePageProps) {
                   {user.userType !== 'business' && (user.isVeteran || (user as any).is_veteran || user.isActiveDuty || (user as any).is_active_duty) && (
                     <div className="flex items-start gap-2">
                       <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Military:</span>
-                      <span className="text-gray-900 dark:text-gray-100 break-words min-w-0 flex items-center gap-2">
-                        {(user.isVeteran || (user as any).is_veteran) && (
-                          <span className="inline-flex items-center gap-1 text-sm font-medium text-green-700 dark:text-green-400">
-                            <span className="text-green-600">âœ“</span>
+                      <span className="text-gray-900 dark:text-gray-100 break-words min-w-0 text-sm">
+                        {[
+                          (user.isVeteran || (user as any).is_veteran) && 'Veteran',
+                          (user.isActiveDuty || (user as any).is_active_duty) && 'Active Duty',
+                        ].filter(Boolean).join(' · ')}
+                      </span>
+                    </div>
+                  )}âœ“</span>
                             Veteran
                           </span>
                         )}

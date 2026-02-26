@@ -9,6 +9,7 @@ import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { getApiBaseUrl } from "@/lib/queryClient";
+import { getMetroContext } from "@shared/metro-areas";
 
 export function MobileTopNav() {
   const isNative = isNativeIOSApp();
@@ -304,7 +305,7 @@ export function MobileTopNav() {
                       {currentUser.hometownCity && (
                         <p className="text-[13px] text-gray-400 dark:text-gray-500 flex items-center gap-1 mt-0.5">
                           <MapPin className="w-3 h-3" />
-                          {currentUser.hometownCity}
+                          {getMetroContext(currentUser.hometownCity).displayName || currentUser.hometownCity}
                         </p>
                       )}
                     </div>

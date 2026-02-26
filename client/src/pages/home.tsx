@@ -17,6 +17,7 @@ import { EmbeddedChatWidget } from "@/components/EmbeddedChatWidget";
 
 
 import { datesOverlap, formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
+import { getMetroContext } from "@shared/metro-areas";
 import { format } from "date-fns";
 import { getVersionedCityImage } from "@/lib/imageVersioning";
 import { Button } from "@/components/ui/button";
@@ -377,50 +378,41 @@ export default function Home() {
     enabled: !!(user?.id || currentUserProfile?.id || effectiveUser?.id),
   });
 
-  // ONLY USER-CREATED EVENTS: Get events from both hometown AND travel destination
+  // ONLY USER-CREATED EVENTS: Get events from both hometown AND travel destination (metro-resolved)
   const { data: userPriorityEvents = [] } = useQuery({
     queryKey: ['/api/events', effectiveUser?.hometownCity, effectiveUser?.travelDestination, travelPlans?.map(p => p.id).join(',')],
     queryFn: async () => {
-      const cities = [];
-      
-      // Always include hometown
+      const citySet = new Set<string>();
+
+      const addMetro = (rawCity: string) => {
+        const metro = getMetroContext(rawCity).queryCity || rawCity;
+        if (metro) citySet.add(metro);
+      };
+
       if (effectiveUser?.hometownCity) {
-        cities.push(effectiveUser.hometownCity);
+        addMetro(effectiveUser.hometownCity);
       }
-      
-      // CRITICAL FIX: Also check travel plans directly for active destinations
+
       const currentTravelDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
-      
-      // Include travel destination from active travel plan
       if (currentTravelDestination) {
         const travelCity = currentTravelDestination.split(',')[0].trim();
-        if (!cities.includes(travelCity) && travelCity !== effectiveUser?.hometownCity) {
-          cities.push(travelCity);
-        }
+        if (travelCity) addMetro(travelCity);
       }
-      
-      // Fallback: Include travel destination from effectiveUser if set
       if (effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination) {
         const travelCity = effectiveUser.travelDestination.split(',')[0].trim();
-        if (!cities.includes(travelCity) && travelCity !== effectiveUser?.hometownCity) {
-          cities.push(travelCity);
-        }
+        if (travelCity) addMetro(travelCity);
       }
-      
-      // If no cities, default to Culver City
-      if (cities.length === 0) {
-        cities.push('Culver City');
-      }
-      
-      console.log(`🎪 HOME: Fetching events from cities:`, cities, {
+
+      const cities = citySet.size > 0 ? Array.from(citySet) : [getMetroContext('Culver City').queryCity || 'Los Angeles'];
+
+      console.log(`🎪 HOME: Fetching events from metro cities:`, cities, {
         hometown: effectiveUser?.hometownCity,
         travelDestination: effectiveUser?.travelDestination,
         currentTravelDestination,
         isCurrentlyTraveling: effectiveUser?.isCurrentlyTraveling,
         travelPlansCount: travelPlans?.length
       });
-      
-      // Fetch events from all relevant cities
+
       const allEvents = [];
       for (const city of cities) {
         try {
@@ -840,19 +832,20 @@ export default function Home() {
 
       console.log('Fetching events from ALL locations:', discoveryLocations.allCities);
 
-      // Fetch events from all cities in parallel
+      // Fetch by metro so suburbs (e.g. Culver City) use metro event pool (e.g. Los Angeles)
       const eventPromises = discoveryLocations.allCities.map(async (location) => {
-        const cityName = location.city.split(',')[0].trim();
-        console.log(`Fetching events for ${location.type}:`, cityName);
+        const rawCity = location.city.split(',')[0].trim();
+        const queryCity = getMetroContext(rawCity).queryCity || rawCity;
+        console.log(`Fetching events for ${location.type}:`, rawCity, '→', queryCity);
 
         try {
-          const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(cityName)}`);
-          if (!response.ok) throw new Error(`Failed to fetch events for ${cityName}`);
+          const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(queryCity)}`);
+          if (!response.ok) throw new Error(`Failed to fetch events for ${queryCity}`);
           const data = await response.json();
-          console.log(`${location.type} Events API response:`, data.length, 'events for', cityName);
+          console.log(`${location.type} Events API response:`, data.length, 'events for', queryCity);
           return data.map((event: any) => ({ ...event, sourceLocation: location }));
         } catch (error) {
-          console.error(`Error fetching events for ${cityName}:`, error);
+          console.error(`Error fetching events for ${queryCity}:`, error);
           return [];
         }
       });
@@ -1798,7 +1791,7 @@ export default function Home() {
               
               return (
                 <>
-                  <div className="!grid !grid-cols-2 md:!grid-cols-3 lg:!grid-cols-3 xl:!grid-cols-4 !gap-2 lg:!gap-4">
+                  <div className="!grid !grid-cols-2 md:!grid-cols-3 lg:!grid-cols-3 xl:!grid-cols-4 !gap-2 lg:!gap-4 !items-start !content-start">
                     {sortedAndFilteredUsers.length > 0 ? (
                       sortedAndFilteredUsers.slice(0, showAllUsers ? sortedAndFilteredUsers.length : 12).map((otherUser) => (
                           <UserCard 

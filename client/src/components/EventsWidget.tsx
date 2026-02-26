@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Users, MapPin } from "lucide-react";
 import { formatDateForDisplay } from "@/lib/dateUtils";
 import { getApiBaseUrl } from "@/lib/queryClient";
+import { getMetroContext } from "@shared/metro-areas";
 
 interface EventsWidgetProps {
   userId: number | undefined;
@@ -99,17 +100,18 @@ function EventsWidget({ userId }: EventsWidgetProps) {
     queryFn: async () => {
       if (!discoveryLocations.allCities.length) return [];
       
-      // Fetch events from all cities in parallel
+      // Fetch events from all cities in parallel (resolve suburb → metro so e.g. Culver City uses LA event pool)
       const eventPromises = discoveryLocations.allCities.map(async (location) => {
-        const cityName = location.city.split(',')[0].trim();
+        const rawCity = location.city.split(',')[0].trim();
+        const queryCity = getMetroContext(rawCity).queryCity || rawCity;
         
         try {
-          const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(cityName)}`);
-          if (!response.ok) throw new Error(`Failed to fetch events for ${cityName}`);
+          const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(queryCity)}`);
+          if (!response.ok) throw new Error(`Failed to fetch events for ${queryCity}`);
           const data = await response.json();
           return data.map((event: any) => ({ ...event, sourceLocation: location }));
         } catch (error) {
-          console.error(`Error fetching events for ${cityName}:`, error);
+          console.error(`Error fetching events for ${queryCity}:`, error);
           return [];
         }
       });

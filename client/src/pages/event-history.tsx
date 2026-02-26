@@ -27,6 +27,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { openPrivateChatWithUser } from "@/lib/iosPrivateChat";
+import { getMetroContext } from "@shared/metro-areas";
 
 interface EventParticipant {
   userId: number;
@@ -80,14 +81,12 @@ export default function EventHistory() {
   const [daysBack, setDaysBack] = useState("90");
   const [selectedEvent, setSelectedEvent] = useState<PastEvent | null>(null);
 
-  // Get user's hometown for default city
+  // Default city to metro so suburbs (e.g. Culver City) show metro event pool (e.g. Los Angeles)
   useEffect(() => {
-    if (!selectedCity) {
-      // Try hometownCity first, then hometown, then empty
-      const city = user?.hometownCity || user?.hometown || "";
-      if (city) {
-        setSelectedCity(city);
-      }
+    if (!selectedCity && (user?.hometownCity || user?.hometown)) {
+      const raw = user?.hometownCity || user?.hometown || "";
+      const metro = getMetroContext(raw).queryCity || raw;
+      setSelectedCity(metro);
     }
   }, [user?.hometownCity, user?.hometown, selectedCity]);
 
@@ -99,12 +98,16 @@ export default function EventHistory() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  // Resolve typed city to metro for API; use metro display name in copy (e.g. "Los Angeles (Culver City)")
+  const cityForApi = selectedCity ? (getMetroContext(selectedCity).queryCity || selectedCity) : "";
+  const displayCityLabel = selectedCity ? (getMetroContext(selectedCity).displayName || selectedCity) : "";
+
   // Fetch past events
   const { data: historyData, isLoading, error } = useQuery<EventHistoryResponse>({
-    queryKey: ['/api/events/history', selectedCity, debouncedSearch, daysBack],
+    queryKey: ['/api/events/history', cityForApi, debouncedSearch, daysBack],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (selectedCity) params.append('city', selectedCity);
+      if (cityForApi) params.append('city', cityForApi);
       if (debouncedSearch) params.append('search', debouncedSearch);
       params.append('daysBack', daysBack);
       params.append('limit', '50');
@@ -231,8 +234,8 @@ export default function EventHistory() {
               No Past Events Found
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4">
-              {selectedCity 
-                ? `No events found in ${selectedCity} for the last ${daysBack} days.`
+              {displayCityLabel 
+                ? `No events found in ${displayCityLabel} for the last ${daysBack} days.`
                 : `No past events found for the last ${daysBack} days.`}
             </p>
             <Button onClick={() => navigate('/events')}>
@@ -243,7 +246,7 @@ export default function EventHistory() {
           <>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
               Showing {pastEvents.length} past event{pastEvents.length !== 1 ? 's' : ''} 
-              {selectedCity ? ` in ${selectedCity}` : ''} 
+              {displayCityLabel ? ` in ${displayCityLabel}` : ''} 
               {` from the last ${daysBack} days`}
             </p>
             
