@@ -234,10 +234,7 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
   // Tag user in photo mutation
   const tagUserMutation = useMutation({
     mutationFn: async ({ photoId, taggedUserId }: { photoId: number; taggedUserId: number }) => {
-      return await apiRequest(`/api/photos/${photoId}/tags`, {
-        method: 'POST',
-        body: { taggedUserId },
-      });
+      return await apiRequest('POST', `/api/photos/${photoId}/tags`, { taggedUserId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/photos`] });

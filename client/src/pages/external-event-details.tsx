@@ -27,7 +27,7 @@ interface ExternalEvent {
 }
 
 export default function ExternalEventDetails() {
-  const [match, params] = useRoute('/external-events/:eventId');
+  const [match, params] = useRoute<{ eventId: string }>('/external-events/:eventId');
   const [, setLocation] = useLocation();
   const [event, setEvent] = useState<ExternalEvent | null>(null);
   const [loading, setLoading] = useState(true);

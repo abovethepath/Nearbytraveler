@@ -50,10 +50,7 @@ export function HostingOffers({ isOwnProfile = false, userId }: { isOwnProfile?:
 
   const createOfferMutation = useMutation({
     mutationFn: async (data: typeof newOffer) => {
-      return apiRequest(`/api/hosting-offers`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
+      return apiRequest('POST', `/api/hosting-offers`, JSON.stringify(data));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/hosting-offers/${user?.id}`] });
@@ -85,10 +82,7 @@ export function HostingOffers({ isOwnProfile = false, userId }: { isOwnProfile?:
 
   const toggleOfferMutation = useMutation({
     mutationFn: async ({ offerId, isActive }: { offerId: number; isActive: boolean }) => {
-      return apiRequest(`/api/hosting-offers/${offerId}/toggle`, {
-        method: 'POST',
-        body: JSON.stringify({ isActive }),
-      });
+      return apiRequest('POST', `/api/hosting-offers/${offerId}/toggle`, JSON.stringify({ isActive }));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/hosting-offers/${user?.id}`] });
@@ -285,7 +279,7 @@ export function HostingOffers({ isOwnProfile = false, userId }: { isOwnProfile?:
           </div>
         )}
 
-        {hostingOffers.length === 0 ? (
+        {(hostingOffers as any[]).length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             {isOwnProfile ? (
               <div>
@@ -302,7 +296,7 @@ export function HostingOffers({ isOwnProfile = false, userId }: { isOwnProfile?:
           </div>
         ) : (
           <div className="space-y-4">
-            {hostingOffers.map((offer: HostingOffer) => {
+            {(hostingOffers as any[]).map((offer: HostingOffer) => {
               const IconComponent = offerTypeIcons[offer.offerType];
               return (
                 <div key={offer.id} className="border rounded-lg p-4 space-y-3">

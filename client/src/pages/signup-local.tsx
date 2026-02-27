@@ -320,7 +320,7 @@ export default function SignupLocal() {
       </div>
       
       <div className="max-w-2xl mx-auto pt-16">
-        <Card className="shadow-2xl border-0 bg-white dark:bg-gray-800 overflow-hidden">
+        <Card className="shadow-2xl border border-gray-200 bg-white dark:bg-gray-800 overflow-hidden">
           <CardHeader className="text-center bg-gradient-to-r from-blue-600 to-orange-500 pb-8 pt-6">
             <div className="flex justify-start mb-4">
               <Button

@@ -67,7 +67,7 @@ export function AdvancedNotifications({ isOpen, onClose }: AdvancedNotifications
   // Load user's notification settings
   useEffect(() => {
     if (user?.notificationSettings) {
-      setSettings(prev => ({ ...prev, ...user.notificationSettings }));
+      setSettings(prev => ({ ...prev, ...(user.notificationSettings as object) }));
     }
     setNotificationPermission(Notification.permission);
   }, [user]);
@@ -75,10 +75,7 @@ export function AdvancedNotifications({ isOpen, onClose }: AdvancedNotifications
   // Save notification settings
   const saveSettingsMutation = useMutation({
     mutationFn: async (newSettings: Partial<NotificationSettings>) => {
-      return await apiRequest('/api/users/notification-settings', {
-        method: 'PUT',
-        body: { notificationSettings: newSettings }
-      });
+      return await apiRequest('PUT', '/api/users/notification-settings', { notificationSettings: newSettings });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });

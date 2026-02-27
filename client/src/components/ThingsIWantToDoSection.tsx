@@ -442,7 +442,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     const hasContent = cityData.activities.length > 0 || cityData.events.length > 0 || (cityData.travelPlan && citySubInterests.length > 0);
 
     return (
-      <div key={cityKey} className="flex flex-wrap items-center gap-2 py-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0 last:pb-0 first:pt-0">
+      <div key={cityKey} className="flex flex-wrap items-center gap-2 py-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0 last:pb-0 first:pt-0">
         <span className={`font-semibold shrink-0 basis-full sm:basis-auto ${isDestination ? 'text-orange-600 dark:text-orange-400' : 'text-blue-600 dark:text-blue-400'}`}>
           {displayName}
         </span>

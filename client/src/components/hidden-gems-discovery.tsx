@@ -105,10 +105,10 @@ export default function HiddenGemsDiscovery() {
       return await apiRequest("POST", "/api/hidden-gems/discover", data);
     },
     onSuccess: (data) => {
-      setDiscoveredGems(data.hiddenGems || []);
+      setDiscoveredGems((data as any).hiddenGems || []);
       toast({
         title: "Hidden gems discovered!",
-        description: `Found ${data.hiddenGems?.length || 0} authentic local experiences for you.`,
+        description: `Found ${(data as any).hiddenGems?.length || 0} authentic local experiences for you.`,
       });
       setActiveTab("results");
     },
@@ -127,10 +127,10 @@ export default function HiddenGemsDiscovery() {
       return await apiRequest("POST", "/api/hidden-gems/seasonal", data);
     },
     onSuccess: (data) => {
-      setDiscoveredGems(data.hiddenGems || []);
+      setDiscoveredGems((data as any).hiddenGems || []);
       toast({
         title: "Seasonal gems discovered!",
-        description: `Found ${data.hiddenGems?.length || 0} seasonal experiences for ${selectedSeason}.`,
+        description: `Found ${(data as any).hiddenGems?.length || 0} seasonal experiences for ${selectedSeason}.`,
       });
       setActiveTab("results");
     },

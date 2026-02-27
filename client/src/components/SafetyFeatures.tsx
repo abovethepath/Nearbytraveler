@@ -46,10 +46,7 @@ export function SafetyFeatures({ isOwnProfile = false }: { isOwnProfile?: boolea
 
   const addContactMutation = useMutation({
     mutationFn: async (data: typeof newContact) => {
-      return apiRequest(`/api/emergency-contacts`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
+      return apiRequest('POST', `/api/emergency-contacts`, JSON.stringify(data));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/emergency-contacts/${user?.id}`] });
@@ -250,7 +247,7 @@ export function SafetyFeatures({ isOwnProfile = false }: { isOwnProfile?: boolea
               </div>
             )}
 
-            {emergencyContacts.length === 0 ? (
+            {(emergencyContacts as any[]).length === 0 ? (
               <div className="text-center py-6 text-gray-500">
                 <Phone className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                 <p>No emergency contacts added</p>
@@ -258,7 +255,7 @@ export function SafetyFeatures({ isOwnProfile = false }: { isOwnProfile?: boolea
               </div>
             ) : (
               <div className="space-y-3">
-                {emergencyContacts.map((contact: EmergencyContact) => (
+                {(emergencyContacts as any[]).map((contact: EmergencyContact) => (
                   <div key={contact.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-3">
                       <Phone className="h-5 w-5 text-blue-600" />

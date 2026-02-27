@@ -55,9 +55,12 @@ interface WhatsAppChatProps {
   currentUserId?: number;
   onBack?: () => void;
   eventId?: number; // For event chats, this is the actual event ID (chatId is the chatroom ID)
+  otherUserUsername?: string;
+  otherUserProfileImage?: string | null;
 }
 
-export default function WhatsAppChat({ chatId, chatType, title, subtitle, currentUserId, onBack, eventId }: WhatsAppChatProps) {
+export default function WhatsAppChat(props: WhatsAppChatProps) {
+  const { chatId, chatType, title, subtitle, currentUserId, onBack, eventId } = props;
   const [, navigate] = useLocation();
   const { toast } = useToast();
   

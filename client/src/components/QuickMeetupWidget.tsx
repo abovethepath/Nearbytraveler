@@ -31,7 +31,7 @@ interface NewMeetup {
   organizerNotes: string; // Contact info like "call me if lost"
 }
 
-export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city?: string; profileUserId?: number; triggerCreate?: boolean }) {
+export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentUser }: { city?: string; profileUserId?: number; triggerCreate?: boolean; currentUser?: any }) {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [showCreateForm, setShowCreateForm] = useState(false);

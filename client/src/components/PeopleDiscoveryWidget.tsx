@@ -204,13 +204,13 @@ export function PeopleDiscoveryWidget({
 
     // ALWAYS show both hometown AND current location - NEVER hide travel info
     const getCurrentLocation = () => {
-      const hometown = person.hometownCity || person.location?.split(',')[0] || 'Hometown';
+      const hometown = (person as any).hometownCity || person.location?.split(',')[0] || 'Hometown';
       
       // Use proper travel detection logic like other components
       const currentDestination = getCurrentTravelDestination(travelPlans || []);
-      if (currentDestination && person.hometownCity) {
+      if (currentDestination && (person as any).hometownCity) {
         const travelDestination = currentDestination.toLowerCase();
-        const hometownLower = person.hometownCity.toLowerCase();
+        const hometownLower = (person as any).hometownCity.toLowerCase();
         
         // Only show as traveler if destination is different from hometown
         if (!travelDestination.includes(hometownLower) && !hometownLower.includes(travelDestination)) {

@@ -232,7 +232,7 @@ export default function LandingStreamlined() {
                               placeholder="Your name"
                               value={waitlistName}
                               onChange={(e) => setWaitlistName(e.target.value)}
-                              className="pl-10 bg-white/90 dark:bg-gray-800/90 border-0 text-gray-900 dark:text-white placeholder:text-gray-500 h-12 rounded-lg"
+                              className="pl-10 bg-white/90 dark:bg-gray-800/90 border border-gray-200 text-gray-900 dark:text-white placeholder:text-gray-500 h-12 rounded-lg"
                               data-testid="input-hero-waitlist-name"
                             />
                           </div>
@@ -243,7 +243,7 @@ export default function LandingStreamlined() {
                               type="email"
                               value={waitlistEmail}
                               onChange={(e) => setWaitlistEmail(e.target.value)}
-                              className="pl-10 bg-white/90 dark:bg-gray-800/90 border-0 text-gray-900 dark:text-white placeholder:text-gray-500 h-12 rounded-lg"
+                              className="pl-10 bg-white/90 dark:bg-gray-800/90 border border-gray-200 text-gray-900 dark:text-white placeholder:text-gray-500 h-12 rounded-lg"
                               data-testid="input-hero-waitlist-email"
                             />
                           </div>

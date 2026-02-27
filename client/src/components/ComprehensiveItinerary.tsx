@@ -723,9 +723,9 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
                       <div className="flex items-center gap-2">
                         {getItemIcon(type as ItineraryItem['type'])}
                         <span className="font-medium capitalize">{type}</span>
-                        <span className="text-sm text-gray-600">({data.items.length} items)</span>
+                        <span className="text-sm text-gray-600">({(data as any).items.length} items)</span>
                       </div>
-                      <div className="font-bold">${data.total}</div>
+                      <div className="font-bold">${(data as any).total}</div>
                     </div>
                   ))}
                 </div>

@@ -28,7 +28,7 @@ interface EventChatroom {
 }
 
 export default function EventChat() {
-  const [, params] = useRoute("/event-chat/:eventId");
+  const [, params] = useRoute<{ eventId: string }>("/event-chat/:eventId");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const eventId = params?.eventId ? parseInt(params.eventId) : null;

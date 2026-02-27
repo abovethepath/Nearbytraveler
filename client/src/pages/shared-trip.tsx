@@ -19,7 +19,7 @@ interface TravelPlan {
 
 export default function SharedTripPage() {
   const [, params] = useRoute('/trip/:id');
-  const tripId = params?.id;
+  const tripId = params != null ? (params as { id: string }).id : undefined;
 
   const { data: travelPlan, isLoading, error } = useQuery<TravelPlan>({
     queryKey: [`/api/travel-plans/${tripId}/public`],

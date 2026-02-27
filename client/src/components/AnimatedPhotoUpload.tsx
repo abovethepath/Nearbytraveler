@@ -257,7 +257,7 @@ export default function AnimatedPhotoUpload({
             animate={{ rotate: isDragOver ? 360 : 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-gray-500" />
+            <Upload className="w-12 h-12 mx-auto mb-4 text-gray-500 dark:text-gray-500" />
           </motion.div>
           
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
@@ -268,7 +268,7 @@ export default function AnimatedPhotoUpload({
             Drag and drop your images, or click anywhere in this box to select files
           </p>
           
-          <p className="text-xs text-gray-400 dark:text-gray-500">
+          <p className="text-xs text-gray-600 dark:text-gray-500">
             Supports: {acceptedTypes.map(type => type.split('/')[1]).join(', ')} • 
             Max size: {Math.round(maxSizeBytes / 1024 / 1024)}MB
             {multiple && ` • Max ${maxFiles} files`}
@@ -350,7 +350,7 @@ export default function AnimatedPhotoUpload({
                       </p>
                       <button
                         onClick={() => removeFile(fileWithPreview.id)}
-                        className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+                        className="text-gray-600 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-400"
                         disabled={fileWithPreview.status === 'uploading'}
                       >
                         <X className="w-4 h-4" />

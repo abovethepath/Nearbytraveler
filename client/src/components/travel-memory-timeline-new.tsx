@@ -139,16 +139,6 @@ export function TravelMemoryTimeline({ userId, isOwnProfile = false }: TravelMem
     }
   };
 
-  const handleLike = (memoryId: number) => {
-    likeMutation.mutate(memoryId);
-  };
-
-  const handleComment = (memoryId: number) => {
-    if (commentText.trim()) {
-      commentMutation.mutate({ memoryId, content: commentText });
-    }
-  };
-
   if (isLoading) {
     return <div className="text-center py-8">Loading travel memories...</div>;
   }

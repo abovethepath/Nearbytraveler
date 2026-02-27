@@ -125,7 +125,7 @@ export default function EventIntegrations() {
         </div>
 
         <div className="grid gap-4 mb-8">
-          <Card className="border-0 shadow-sm bg-white dark:bg-gray-900">
+          <Card className="border border-gray-200 shadow-sm bg-white dark:bg-gray-900">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
@@ -154,7 +154,7 @@ export default function EventIntegrations() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-sm bg-white dark:bg-gray-900">
+          <Card className="border border-gray-200 shadow-sm bg-white dark:bg-gray-900">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
@@ -191,7 +191,7 @@ export default function EventIntegrations() {
             </h2>
             <div className="grid gap-3">
               {externalEvents.map((event) => (
-                <Card key={event.id} className="border-0 shadow-sm bg-white dark:bg-gray-900">
+                <Card key={event.id} className="border border-gray-200 shadow-sm bg-white dark:bg-gray-900">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
@@ -215,7 +215,7 @@ export default function EventIntegrations() {
                           })}
                         </div>
                         {event.venueName && (
-                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{event.venueName}</p>
+                          <p className="text-xs text-gray-600 dark:text-gray-500 mt-0.5">{event.venueName}</p>
                         )}
                       </div>
                       {event.url && (
@@ -234,9 +234,9 @@ export default function EventIntegrations() {
 
         {!loadingIntegrations && integrations.length === 0 && externalEvents.length === 0 && (
           <div className="text-center py-12">
-            <Calendar className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+            <Calendar className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-3" />
             <h3 className="text-gray-600 dark:text-gray-400 font-medium mb-1">No integrations yet</h3>
-            <p className="text-sm text-gray-400 dark:text-gray-500">Connect Luma or Partiful above to import your events</p>
+            <p className="text-sm text-gray-600 dark:text-gray-500">Connect Luma or Partiful above to import your events</p>
           </div>
         )}
 
@@ -365,7 +365,7 @@ function IntegrationStatus({
         </span>
       </div>
       {integration.lastSyncAt && (
-        <p className="text-xs text-gray-400 dark:text-gray-500">
+        <p className="text-xs text-gray-600 dark:text-gray-500">
           Last synced: {new Date(integration.lastSyncAt).toLocaleString()}
         </p>
       )}

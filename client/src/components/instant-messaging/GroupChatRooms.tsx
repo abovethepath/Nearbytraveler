@@ -8,7 +8,7 @@ import { Users, MessageCircle, Globe, Calendar, MapPin, Hash, UserPlus } from "l
 import { authStorage } from "@/lib/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import type { Chatroom, User, ChatroomMember } from "@shared/schema";
+import type { User, ChatroomMember } from "@shared/schema";
 
 interface GroupChatRoomsProps {
   onJoinRoom: (roomId: number, roomName: string, roomType: string) => void;
@@ -43,9 +43,7 @@ export function GroupChatRooms({ onJoinRoom }: GroupChatRoomsProps) {
   // Join room mutation
   const joinRoomMutation = useMutation({
     mutationFn: async (roomId: number) => {
-      return await apiRequest(`/api/chatrooms/${roomId}/join`, {
-        method: 'POST'
-      });
+      return await apiRequest('POST', `/api/chatrooms/${roomId}/join`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-rooms'] });
@@ -55,9 +53,7 @@ export function GroupChatRooms({ onJoinRoom }: GroupChatRoomsProps) {
   // Leave room mutation
   const leaveRoomMutation = useMutation({
     mutationFn: async (roomId: number) => {
-      return await apiRequest(`/api/chatrooms/${roomId}/leave`, {
-        method: 'POST'
-      });
+      return await apiRequest('POST', `/api/chatrooms/${roomId}/leave`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-rooms'] });
@@ -196,7 +192,7 @@ export function GroupChatRooms({ onJoinRoom }: GroupChatRoomsProps) {
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
             </div>
-          ) : joinedRooms.length === 0 ? (
+          ) : (joinedRooms as any[]).length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p>You haven't joined any rooms yet</p>
@@ -204,7 +200,7 @@ export function GroupChatRooms({ onJoinRoom }: GroupChatRoomsProps) {
             </div>
           ) : (
             <div className="space-y-3">
-              {filterRooms(joinedRooms).map((room) => (
+              {filterRooms(joinedRooms as any[]).map((room) => (
                 <RoomCard key={room.id} room={room} showLeaveButton={true} />
               ))}
             </div>
@@ -218,7 +214,7 @@ export function GroupChatRooms({ onJoinRoom }: GroupChatRoomsProps) {
             </div>
           ) : (
             <div className="space-y-3">
-              {filterRooms(publicRooms).map((room) => (
+              {filterRooms(publicRooms as any[]).map((room) => (
                 <RoomCard key={room.id} room={room} />
               ))}
             </div>
@@ -227,7 +223,7 @@ export function GroupChatRooms({ onJoinRoom }: GroupChatRoomsProps) {
 
         <TabsContent value="events" className="flex-1 p-4 overflow-y-auto">
           <div className="space-y-3">
-            {filterRooms(eventRooms).map((room) => (
+            {filterRooms(eventRooms as any[]).map((room) => (
               <RoomCard key={room.id} room={room} />
             ))}
           </div>
@@ -235,7 +231,7 @@ export function GroupChatRooms({ onJoinRoom }: GroupChatRoomsProps) {
 
         <TabsContent value="cities" className="flex-1 p-4 overflow-y-auto">
           <div className="space-y-3">
-            {filterRooms(cityRooms).map((room) => (
+            {filterRooms(cityRooms as any[]).map((room) => (
               <RoomCard key={room.id} room={room} />
             ))}
           </div>

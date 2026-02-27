@@ -46,7 +46,7 @@ export default function CurrentCityWidget({
     // Check if user is currently traveling (same logic as profile page pin location)
     const currentDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
     if (currentDestination && currentUser.hometownCity) {
-      const destinationString = `${currentDestination.destinationCity}${currentDestination.destinationState ? `, ${currentDestination.destinationState}` : ''}, ${currentDestination.destinationCountry}`;
+      const destinationString = currentDestination;
       const travelDestination = destinationString.toLowerCase();
       const hometown = currentUser.hometownCity.toLowerCase();
       

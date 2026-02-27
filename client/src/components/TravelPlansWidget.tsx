@@ -351,7 +351,7 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
     {/* Comprehensive Itinerary Dialog */}
     {selectedTravelPlan && (
       <ComprehensiveItinerary
-        travelPlan={selectedTravelPlan}
+        travelPlan={selectedTravelPlan as any}
         onShare={() => {
           // TODO: Implement sharing functionality
           console.log('Share itinerary:', selectedTravelPlan);

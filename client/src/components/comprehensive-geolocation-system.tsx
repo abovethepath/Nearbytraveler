@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Navigation, Users, Eye, EyeOff, AlertCircle, Wifi, WifiOff } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/App";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from "@/lib/queryClient";
@@ -49,7 +49,7 @@ export function ComprehensiveGeolocationSystem() {
         radiusKm: 11.265 // 7 miles
       });
       
-      return response.nearbyUsers || [];
+      return (response as any).nearbyUsers || [];
     },
     enabled: !!currentLocation && !!user?.id && locationSharing,
     refetchInterval: 30000, // Refresh every 30 seconds

@@ -417,7 +417,7 @@ function Navbar() {
     <>
       <header
         ref={headerRef}
-        className={`sticky top-0 z-[1000] bg-white dark:bg-black shadow-sm desktop-navbar ${isNativeIOSApp() ? "pt-3" : ""}`}
+        className={`sticky top-0 z-[1000] bg-white dark:bg-black shadow-sm border-b border-gray-200 desktop-navbar ${isNativeIOSApp() ? "pt-3" : ""}`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-3">
@@ -529,7 +529,7 @@ function Navbar() {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="w-56 z-[9999] bg-white dark:bg-gray-800 border shadow-lg"
+                  className="w-56 z-[9999] bg-white dark:bg-gray-800 border border-gray-200 shadow-lg"
                   align="end"
                   forceMount
                 >

@@ -17,6 +17,17 @@ import Navbar from "@/components/navbar";
 import QuickDealsDiscovery from "@/components/QuickDealsDiscovery";
 // MobileNav removed - using global mobile navigation
 
+interface UserProfile {
+  userType?: string;
+  businessCity?: string;
+  hometownCity?: string;
+  hometownState?: string;
+  hometownCountry?: string;
+  travelStartDate?: string | null;
+  travelEndDate?: string | null;
+  travelDestination?: string | null;
+}
+
 interface BusinessOffer {
   id: number;
   title: string;
@@ -46,6 +57,7 @@ interface BusinessOffer {
     id: number;
     username: string;
     name: string;
+    businessName?: string;
     profileImage?: string;
     location?: string;
     bio?: string;
@@ -97,7 +109,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
   try { user = JSON.parse(localStorage.getItem('travelconnect_user') || '{}'); } catch { }
   
   // Get user's current location context (travel destination or hometown)
-  const { data: userProfile } = useQuery({
+  const { data: userProfile } = useQuery<UserProfile>({
     queryKey: [`/api/users/${user.id}`],
     enabled: !!user.id,
   });

@@ -2487,9 +2487,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                     toggleActivity(activity);
                                   }
                                 }}
-                                onClick={(e) => {
-                                  if (e.pointerType !== 'touch') toggleActivity(activity);
-                                }}
+                                onClick={() => toggleActivity(activity)}
                               >
                                 <span className="flex items-center justify-center gap-1.5">
                                   {isSelected && <span className="text-xs">✓</span>}
@@ -2579,9 +2577,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                         toggleActivity(activity);
                                       }
                                     }}
-                                    onClick={(e) => {
-                                      if (e.pointerType !== 'touch') toggleActivity(activity);
-                                    }}
+                                    onClick={() => toggleActivity(activity)}
                                   >
                                     <span className="flex items-center justify-center gap-1.5">
                                       {isSelected && <span className="text-xs">✓</span>}
@@ -2688,9 +2684,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                       toggleActivity(activity);
                                     }
                                   }}
-                                  onClick={(e) => {
-                                    if (e.pointerType !== 'touch') toggleActivity(activity);
-                                  }}
+                                  onClick={() => toggleActivity(activity)}
                                 >
                                   <span className="flex items-center justify-center gap-1.5">
                                     {isSelected && <span className="text-xs">✓</span>}
@@ -3063,7 +3057,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     
                     {/* AI Insight (expandable) */}
                     {matchingInsight[matchedUser.id] && (
-                      <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                      <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
                         <div className="flex items-center gap-1 mb-1">
                           <div className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                             <div 

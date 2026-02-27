@@ -49,7 +49,7 @@ interface MeetupParticipant {
 function MeetupManagePage() {
   const { user } = useAuth();
   const actualUser = user || authStorage.getUser();
-  const [match, params] = useRoute('/quick-meetups/:id/manage');
+  const [match, params] = useRoute<{ id: string }>('/quick-meetups/:id/manage');
   const meetupId = params?.id ? parseInt(params.id) : null;
 
   const { data: meetup, isLoading: meetupLoading } = useQuery<QuickMeetup>({

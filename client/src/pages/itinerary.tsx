@@ -63,7 +63,7 @@ const categories = [
 const currencies = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF"];
 
 export default function ItineraryPage({ travelPlanId: propTravelPlanId }: ItineraryPageProps = {}) {
-  const [, params] = useRoute("/itinerary/:travelPlanId");
+  const [, params] = useRoute<{ travelPlanId: string }>("/itinerary/:travelPlanId");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -559,7 +559,7 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                         </h3>
                         <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
                           {items.map((item: ItineraryItem, index) => (
-                            <div key={item.id} className="flex items-start gap-4 py-3 border-b border-gray-100 last:border-b-0">
+                            <div key={item.id} className="flex items-start gap-4 py-3 border-b border-gray-200 last:border-b-0">
                               <div className="flex-1">
                                 {/* Calendar format: "Tuesday 11am walking tour [address]" */}
                                 <div className="text-black font-medium text-lg leading-tight">

@@ -22,7 +22,7 @@ interface BusinessOffer {
 
 export default function BusinessProfile() {
   const { toast } = useToast();
-  const { user } = React.useContext(AuthContext);
+  const { user } = React.useContext(AuthContext) as { user: any };
   const [showAllPhotos, setShowAllPhotos] = useState(false);
 
 

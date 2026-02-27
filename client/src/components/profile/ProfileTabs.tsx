@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2 } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2, ChevronsUpDown, Check } from "lucide-react";
 import { calculateAge } from "@/lib/ageUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { useIsDesktop } from "@/hooks/useDeviceType";
@@ -433,31 +433,31 @@ export function ProfileTabs(props: ProfilePageProps) {
                         <div className="flex flex-wrap gap-2">
                           {user.isVeteran && (
                             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 rounded-full text-sm font-medium">
-                              <span className="text-green-600 dark:text-green-400">âœ“</span>
+                              <span className="text-green-600 dark:text-green-400">&#10003;</span>
                               Veteran Owned
                             </div>
                           )}
                           {user.isActiveDuty && (
                             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 rounded-full text-sm font-medium">
-                              <span className="text-blue-600 dark:text-blue-400">âœ“</span>
+                              <span className="text-blue-600 dark:text-blue-400">&#10003;</span>
                               Active Duty Owned
                             </div>
                           )}
                           {user.isMinorityOwned && user.showMinorityOwned && (
                             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-100 rounded-full text-sm font-medium">
-                              <span className="text-purple-600 dark:text-purple-400">âœ“</span>
+                              <span className="text-purple-600 dark:text-purple-400">&#10003;</span>
                               Minority Owned
                             </div>
                           )}
                           {user.isFemaleOwned && user.showFemaleOwned && (
                             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-100 dark:bg-pink-900 text-pink-800 dark:text-pink-100 rounded-full text-sm font-medium">
-                              <span className="text-pink-600 dark:text-pink-400">âœ“</span>
+                              <span className="text-pink-600 dark:text-pink-400">&#10003;</span>
                               Female Owned
                             </div>
                           )}
                           {user.isLGBTQIAOwned && user.showLGBTQIAOwned && (
                             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-red-100 via-yellow-100 to-purple-100 dark:from-red-900 dark:via-yellow-900 dark:to-purple-900 text-purple-800 dark:text-purple-100 rounded-full text-sm font-medium">
-                              <span className="bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">âœ“</span>
+                              <span className="bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">&#10003;</span>
                               LGBTQIA+ Owned
                             </div>
                           )}
@@ -503,67 +503,9 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <span className="capitalize text-gray-900 dark:text-gray-100 break-words min-w-0">{user?.gender?.replace('-', ' ')}</span>
                     </div>
                   )}
-
-                  {/* Children Info for non-business users */}
-                  {user?.userType !== 'business' && user?.childrenAges && user?.childrenAges !== 'None' && user?.childrenAges.trim() !== '' && (
-                    <div className="flex items-start gap-2">
-                      <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Children:</span>
-                      <span className="text-gray-900 dark:text-gray-100 break-words min-w-0">Ages {user.childrenAges}</span>
-                    </div>
-                  )}
-
-                  {user.sexualPreferenceVisible && user.sexualPreference && (
-                    <div className="flex items-start gap-2">
-                      <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Preference:</span>
-                      <span className="text-gray-900 dark:text-gray-100 break-words min-w-0">
-                        {Array.isArray(user.sexualPreference) 
-                          ? user.sexualPreference.join(', ')
-                          : typeof user.sexualPreference === 'string'
-                          ? (user.sexualPreference as string).split(',').join(', ')
-                          : user.sexualPreference
-                        }
-                      </span>
-                    </div>
-                  )}
-
-                  {user.userType !== 'business' && user.ageVisible && user.dateOfBirth && (
-                    <div className="flex items-start gap-2">
-                      <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Age:</span>
-                      <span className="text-gray-900 dark:text-gray-100 break-words min-w-0">{calculateAge(user.dateOfBirth)} years old</span>
-                    </div>
-                  )}
-
-                  {/* Military Status for non-business users */}
-                  {user.userType !== 'business' && (user.isVeteran || (user as any).is_veteran || user.isActiveDuty || (user as any).is_active_duty) && (
-                    <div className="flex items-start gap-2">
-                      <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">Military:</span>
-                      <span className="text-gray-900 dark:text-gray-100 break-words min-w-0 text-sm">
-                        {[
-                          (user.isVeteran || (user as any).is_veteran) && 'Veteran',
-                          (user.isActiveDuty || (user as any).is_active_duty) && 'Active Duty',
-                        ].filter(Boolean).join(' · ')}
-                      </span>
-                    </div>
-                  )}âœ“</span>
-                            Veteran
-                          </span>
-                        )}
-                        {(user.isActiveDuty || (user as any).is_active_duty) && (
-                          <span className="inline-flex items-center gap-1 text-sm font-medium text-blue-700 dark:text-blue-400">
-                            <span className="text-blue-600">âœ“</span>
-                            Active Duty
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                  )}
                 </div>
-              </CardContent>
-            </Card>
-            </div>
-            )}
 
-            {/* Secret Activities Section - Separate Card */}
+                {/* Secret Activities Section - Separate Card */}
             {user?.userType !== 'business' && user?.secretActivities && (
               <Card className="hover:shadow-lg transition-all duration-200 hover:border-purple-300 dark:hover:border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-800/50 dark:to-purple-700/40 border border-purple-200 dark:border-purple-500">
                 <CardContent className="p-4">
@@ -1872,6 +1814,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                 )}
               </CardContent>
             </Card>
+            )}
+
+                </CardContent>
+              </Card>
+            </div>
             )}
 
 
@@ -3661,7 +3608,7 @@ export function ProfileTabs(props: ProfilePageProps) {
 
 
             {/* Comprehensive Geolocation System - Enhanced location sharing for users, businesses, and events */}
-            {console.log('ðŸ”§ Profile: Checking if location sharing should render:', { isOwnProfile, userId: user?.id })}
+            {(() => { console.log('ðŸ”§ Profile: Checking if location sharing should render:', { isOwnProfile, userId: user?.id }); return null; })()}
             {isOwnProfile && user && (
               <LocationSharingSection user={user} queryClient={queryClient} toast={toast} />
             )}

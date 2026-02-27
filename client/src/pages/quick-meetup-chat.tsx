@@ -22,7 +22,7 @@ interface MeetupChatroom {
 }
 
 export default function QuickMeetupChat() {
-  const [, params] = useRoute("/quick-meetup-chat/:meetupId");
+  const [, params] = useRoute<{ meetupId: string }>("/quick-meetup-chat/:meetupId");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const meetupId = params?.meetupId ? parseInt(params.meetupId) : null;

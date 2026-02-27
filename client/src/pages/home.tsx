@@ -251,9 +251,7 @@ export default function Home() {
     const currentTravelPlan = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
     if (currentTravelPlan) {
       // Avoid duplication when state/prefecture contains city name (e.g. "Hiroshima Prefecture")
-      const city = currentTravelPlan.destinationCity;
-      const state = currentTravelPlan.destinationState;
-      const country = currentTravelPlan.destinationCountry;
+      const [city, state, country] = (currentTravelPlan as string).split(', ');
       
       // Skip state if it already contains the city name to avoid duplication
       const shouldShowState = state && !state.toLowerCase().includes(city?.toLowerCase() || '');
@@ -1057,7 +1055,7 @@ export default function Home() {
     
     return rawUsers.map(user => {
       // Use each user's own travelPlans from API; for current user, fallback to home's travelPlans if API missed it
-      const plans = user.travelPlans ?? (user.id === effectiveUser?.id ? travelPlans : []);
+      const plans = (user as any).travelPlans ?? (user.id === effectiveUser?.id ? travelPlans : []);
       const enriched = enrichUserWithTravelData(user, plans);
       
       // For current user - use WEATHER WIDGET location
@@ -1205,13 +1203,11 @@ export default function Home() {
         // For users with new travel plans system, check their current travel destination
         const userTravelPlans = otherUser.id === effectiveUser?.id ? travelPlans : [];
         const userCurrentTravelDestination = getCurrentTravelDestination(userTravelPlans || []);
-        const currentDestinationString = userCurrentTravelDestination && typeof userCurrentTravelDestination === 'object' ? 
-          `${userCurrentTravelDestination.destinationCity || ''}${userCurrentTravelDestination.destinationState ? `, ${userCurrentTravelDestination.destinationState}` : ''}${userCurrentTravelDestination.destinationCountry ? `, ${userCurrentTravelDestination.destinationCountry}` : ''}`.replace(/^,\s*/, '') : 
-          (typeof userCurrentTravelDestination === 'string' ? userCurrentTravelDestination : '');
+        const currentDestinationString = userCurrentTravelDestination ?? '';
         const isCurrentlyTravelingToKeyword = currentDestinationString.toLowerCase().includes(keyword);
 
         // Special debugging for location filtering
-        const isCurrentUserTravelingHere = otherUser.id === effectiveUser?.id && userCurrentTravelDestination?.toLowerCase().includes(keyword);
+        const isCurrentUserTravelingHere = otherUser.id === effectiveUser?.id && (userCurrentTravelDestination?.toLowerCase().includes(keyword) ?? false);
 
         // Debug logging for location matching
         if (activeFilter === "location" && filters.location) {
@@ -1799,7 +1795,7 @@ export default function Home() {
                             user={otherUser} 
                             currentUserId={effectiveUser?.id}
                             isCurrentUser={otherUser.id === effectiveUser?.id}
-                            compatibilityData={compatibilityData?.find((match: any) => match.userId === otherUser.id)}
+                            compatibilityData={(compatibilityData as any[])?.find((match: any) => match.userId === otherUser.id)}
                             compact={isCompactMode}
                             connectionDegree={connectionDegreesData?.degrees?.[otherUser.id]}
                             isAvailableNow={effectiveAvailableNowIds.has(Number(otherUser.id))}
@@ -1877,8 +1873,7 @@ export default function Home() {
                       ?.map((event: any) => (
                         <EventCard 
                           key={event.id}
-                          event={event} 
-                          currentUser={effectiveUser}
+                          event={event}
                         />
                       )) || (
                         <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
@@ -1902,8 +1897,7 @@ export default function Home() {
                       ?.map((event: any) => (
                         <EventCard 
                           key={event.id}
-                          event={event} 
-                          currentUser={effectiveUser}
+                          event={event}
                         />
                       )) || (
                         <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
@@ -1958,7 +1952,7 @@ export default function Home() {
             {/* Weather Widget */}
             {loadedSections.has('weather') && (
               <div className="relative min-w-0 max-w-full overflow-hidden">
-                <CurrentLocationWeatherWidget currentUser={effectiveUser} />
+                <CurrentLocationWeatherWidget />
               </div>
             )}
             
@@ -1984,13 +1978,13 @@ export default function Home() {
       <DestinationModal 
         isOpen={showDestinationModal}
         onClose={() => setShowDestinationModal(false)}
-        onSelect={handleDestinationSelected}
+        onComplete={handleDestinationSelected}
       />
 
       <ConnectModal
         isOpen={showConnectModal}
         onClose={() => setShowConnectModal(false)}
-        userId={connectTargetUser?.id}
+        currentUser={connectTargetUser}
         defaultLocationMode={connectModalMode}
       />
     </div>

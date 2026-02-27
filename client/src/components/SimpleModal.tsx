@@ -58,7 +58,7 @@ export function SimpleModal({
     >
       <div 
         ref={modalRef}
-        className={`relative ${maxWidth} w-full mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6`}
+        className={`relative ${maxWidth} w-full mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-border p-6`}
         onClick={(e) => e.stopPropagation()}
       >
         <button

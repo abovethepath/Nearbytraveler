@@ -54,10 +54,18 @@ const DropdownMenuSubContent = React.forwardRef<
 DropdownMenuSubContent.displayName =
   DropdownMenuPrimitive.SubContent.displayName
 
+type DropdownMenuContentProps = React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
+type PointerDownOutsideEvent = Parameters<NonNullable<DropdownMenuContentProps["onPointerDownOutside"]>>[0]
+type FocusOutsideEvent = Parameters<NonNullable<DropdownMenuContentProps["onFocusOutside"]>>[0]
+type DropdownMenuContentOwnProps = DropdownMenuContentProps & {
+  onOpenAutoFocus?: (event: Event) => void;
+}
+type ContentRestProps = Omit<DropdownMenuContentOwnProps, "className" | "sideOffset" | "onPointerDownOutside" | "onInteractOutside" | "onFocusOutside" | "onOpenAutoFocus">
+
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
->(({ className, sideOffset = 4, onPointerDownOutside, onInteractOutside, onFocusOutside, onOpenAutoFocus, ...props }, ref) => {
+  DropdownMenuContentOwnProps
+>(({ className, sideOffset = 4, onPointerDownOutside, onInteractOutside, onFocusOutside, onOpenAutoFocus, ...props }: DropdownMenuContentOwnProps, ref) => {
   const openedAtRef = React.useRef<number>(0);
 
   const handleOpenAutoFocus = (event: Event) => {
@@ -65,7 +73,7 @@ const DropdownMenuContent = React.forwardRef<
     onOpenAutoFocus?.(event);
   };
 
-  const handlePointerDownOutside = (event: Event) => {
+  const handlePointerDownOutside = (event: PointerDownOutsideEvent) => {
     if (Date.now() - openedAtRef.current < 200) {
       event.preventDefault();
       return;
@@ -73,7 +81,7 @@ const DropdownMenuContent = React.forwardRef<
     onPointerDownOutside?.(event);
   };
 
-  const handleInteractOutside = (event: Event) => {
+  const handleInteractOutside = (event: PointerDownOutsideEvent | FocusOutsideEvent) => {
     if (Date.now() - openedAtRef.current < 200) {
       event.preventDefault();
       return;
@@ -81,7 +89,7 @@ const DropdownMenuContent = React.forwardRef<
     onInteractOutside?.(event);
   };
 
-  const handleFocusOutside = (event: Event) => {
+  const handleFocusOutside = (event: FocusOutsideEvent) => {
     if (Date.now() - openedAtRef.current < 200) {
       event.preventDefault();
       return;
@@ -94,7 +102,6 @@ const DropdownMenuContent = React.forwardRef<
       <DropdownMenuPrimitive.Content
         ref={ref}
         sideOffset={sideOffset}
-        onOpenAutoFocus={handleOpenAutoFocus}
         onPointerDownOutside={handlePointerDownOutside}
         onInteractOutside={handleInteractOutside}
         onFocusOutside={handleFocusOutside}
@@ -102,7 +109,7 @@ const DropdownMenuContent = React.forwardRef<
           "z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin]",
           className
         )}
-        {...props}
+        {...(props as React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>)}
       />
     </DropdownMenuPrimitive.Portal>
   );

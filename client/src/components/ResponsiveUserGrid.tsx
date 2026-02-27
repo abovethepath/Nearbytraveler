@@ -25,7 +25,6 @@ interface User {
   aura?: number;
   isCurrentlyTraveling?: boolean;
   travelPlans?: any[];
-  destinationCity?: string | null;
 }
 
 interface ResponsiveUserGridProps {

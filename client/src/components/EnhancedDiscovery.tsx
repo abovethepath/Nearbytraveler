@@ -77,8 +77,8 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
     }
     
     // Planned destinations
-    if (travelPlans && travelPlans.length > 0) {
-      travelPlans.forEach((plan: any, index: number) => {
+    if (travelPlans && (travelPlans as any[]).length > 0) {
+      (travelPlans as any[]).forEach((plan: any, index: number) => {
         if (plan.destination && plan.destination !== currentTravelDestination) {
           locations.push({
             key: `planned-${index}`,
@@ -104,13 +104,13 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
 
   // Enhanced users with mutual connections data
   const { data: usersWithMutualConnections, isLoading: mutualConnectionsLoading } = useQuery({
-    queryKey: ['/api/users-with-mutual-connections', userId, discoveredUsers?.map((u: any) => u.id)],
+    queryKey: ['/api/users-with-mutual-connections', userId, (discoveredUsers as User[] | undefined)?.map((u: any) => u.id)],
     queryFn: async () => {
       if (!discoveredUsers || !userId) return [];
-      
+      const users = discoveredUsers as User[];
       // Get mutual connections count for each user
       const usersWithMutuals = await Promise.all(
-        discoveredUsers.map(async (user: any) => {
+        users.map(async (user: any) => {
           if (user.id === userId) return { ...user, mutualConnectionsCount: 0 };
           
           try {
@@ -130,7 +130,7 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
       
       return usersWithMutuals;
     },
-    enabled: !!(discoveredUsers && userId && discoveredUsers.length > 0),
+    enabled: !!(discoveredUsers && userId && (discoveredUsers as User[]).length > 0),
   });
 
   // Enhanced sorting algorithm
@@ -147,8 +147,8 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
           
         case 'travel_experience':
           // Sort by travel plans count and experience
-          const aTravelScore = (a.travelPlans?.length || 0) + (a.countries?.length || 0);
-          const bTravelScore = (b.travelPlans?.length || 0) + (b.countries?.length || 0);
+          const aTravelScore = ((a as any).travelPlans?.length || 0) + ((a as any).countries?.length || 0);
+          const bTravelScore = ((b as any).travelPlans?.length || 0) + ((b as any).countries?.length || 0);
           return bTravelScore - aTravelScore;
           
         case 'mutual_connections':
@@ -170,7 +170,7 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
         case 'recent':
         default:
           // Sort by recent activity
-          return new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime();
+          return new Date((b as any).updatedAt || b.createdAt).getTime() - new Date((a as any).updatedAt || a.createdAt).getTime();
       }
     });
   };
@@ -203,7 +203,7 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
     }
     
     // Boost for verified profiles
-    if (otherUser.isVerified) {
+    if ((otherUser as any).isVerified) {
       score += 5;
     }
     
@@ -235,7 +235,7 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
   const sortedUsers = useMemo(() => {
     if (!discoveredUsers) return [];
     // Keep current user in discovery - they should see themselves as newest member
-    return getSortedUsers(discoveredUsers);
+    return getSortedUsers(discoveredUsers as User[]);
   }, [discoveredUsers, sortBy, userId, effectiveUser]);
 
   // Check if user is truly not authenticated (not just loading)
@@ -340,7 +340,7 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
                         key={discoveredUser.id} 
                         user={discoveredUser}
                         showCompatibilityScore={sortBy === 'compatibility'}
-                        compatibilityScore={calculateCompatibilityScore(discoveredUser, effectiveUser)}
+                        compatibilityData={{ score: calculateCompatibilityScore(discoveredUser, effectiveUser) }}
                         currentUserId={effectiveUser?.id}
                         isCurrentUser={discoveredUser.id === effectiveUser?.id}
                         isAvailableNow={effectiveAvailableNowIds.has(Number(discoveredUser.id))}

@@ -137,7 +137,7 @@ export default function Auth() {
       className="min-h-screen flex items-center justify-center p-4 bg-gray-100 dark:bg-gray-950"
     >
       <div className="w-full max-w-2xl">
-        <Card className="bg-white dark:bg-gray-900 shadow-2xl border-0 dark:border dark:border-gray-800">
+        <Card className="bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border dark:border-gray-800">
           <CardHeader className="text-center pb-8 relative overflow-visible">
             {/* Back Button */}
             <button

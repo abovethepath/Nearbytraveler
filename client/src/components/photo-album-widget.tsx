@@ -731,7 +731,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
       </Dialog>
 
       {/* Debug State */}
-      {console.log('🐛 MODAL DEBUG:', {showAlbumModal, selectedAlbum: selectedAlbum?.title, userId})}
+      {(() => { console.log('🐛 MODAL DEBUG:', {showAlbumModal, selectedAlbum: selectedAlbum?.title, userId}); return null; })()}
       
       {/* Album Viewer Modal - EMERGENCY FIX */}
       {showAlbumModal && selectedAlbum && (

@@ -191,7 +191,7 @@ export function MeetupChatroom({ meetupId, meetupTitle, isOpen, onClose, current
               <div className="space-y-4">
                 {messages.length === 0 ? (
                   <div className="text-center text-gray-500 py-8">
-                    <MessageCircle className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                    <MessageCircle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                     <p className="text-lg font-medium">No messages yet</p>
                     <p className="text-sm">Be the first to say hello!</p>
                   </div>

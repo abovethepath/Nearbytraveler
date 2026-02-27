@@ -46,6 +46,7 @@ interface QuickMeetup {
   street?: string;
   state?: string;
   country?: string;
+  participantIds?: number[]; // set by API for join/leave UI
 }
 
 export default function MeetupsPage() {
@@ -73,15 +74,15 @@ export default function MeetupsPage() {
     responseTime: "1hour"
   });
 
-  // Fetch active meetups
-  const { data: quickMeets = [], isLoading } = useQuery({
+  // Fetch active quickMeets
+  const { data: quickMeets = [], isLoading } = useQuery<QuickMeetup[]>({
     queryKey: ["/api/availability"],
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
-  // Fetch user's archived meetups
-  const { data: archivedQuickMeets = [], isLoading: archivedLoading } = useQuery({
-    queryKey: [`/api/users/${user?.id}/archived-meetups`],
+  // Fetch user's archived quickMeets
+  const { data: archivedQuickMeets = [], isLoading: archivedLoading } = useQuery<QuickMeetup[]>({
+    queryKey: [`/api/users/${user?.id}/archived-quickMeets`],
     enabled: !!user?.id,
     staleTime: 60000, // Cache for 1 minute
   });
@@ -124,27 +125,13 @@ export default function MeetupsPage() {
     },
   });
 
-  // Join meetup mutation
-  const joinQuickMeetMutation = useMutation({
-    mutationFn: async (quickMeetId: number) => {
-      // Get user from multiple sources for reliability
-      const localStorageUser = localStorage.getItem('user');
-      let parsedLocalUser = null;
-      try { parsedLocalUser = localStorageUser ? JSON.parse(localStorageUser) : null; } catch { }
-      const currentUser = user || parsedLocalUser;
-      
-      if (!currentUser?.id) {
-        throw new Error("Please log in to join quick meets");
-      }
-      
-      console.log("Joining meetup with user ID:", currentUser.id);
-      
-      return await apiRequest("POST", `/api/availability/${quickMeetId}/join`, {
-        userId: currentUser.id
-      });
+  const joinMeetupMutation = useMutation({
+    mutationFn: async (meetupId: number) => {
+      return await apiRequest("POST", `/api/quick-meets/${meetupId}/join`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/availability"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/archived-quickMeets`] });
       toast({
         title: "Joined!",
         description: "You've successfully joined the quick meet. Click the Chat button to coordinate with other participants!",
@@ -153,19 +140,21 @@ export default function MeetupsPage() {
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to join quick meet",
+        description: error?.message || "Failed to join quick meet",
         variant: "destructive",
       });
     },
   });
 
-  // Leave meetup mutation
-  const leaveQuickMeetMutation = useMutation({
-    mutationFn: async (quickMeetId: number) => {
-      return await apiRequest("POST", `/api/availability/${quickMeetId}/leave`);
+  const leaveMeetupMutation = useMutation({
+    mutationFn: async (meetupId: number) => {
+      const userId = user?.id;
+      if (!userId) throw new Error("Please log in to leave a meetup");
+      return await apiRequest("DELETE", `/api/quick-meets/${meetupId}/participants/${userId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/availability"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/archived-quickMeets`] });
       toast({
         title: "Left quick meet",
         description: "You've left the quick meet successfully.",
@@ -174,33 +163,40 @@ export default function MeetupsPage() {
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to leave quick meet",
+        description: error?.message || "Failed to leave quick meet",
         variant: "destructive",
       });
     },
   });
 
-  // Reinstate archived meetup mutation
-  const reinstateQuickMeetMutation = useMutation({
-    mutationFn: async ({ quickMeetId, duration }: { quickMeetId: number; duration: string }) => {
-      return await apiRequest("POST", `/api/quick-meets/${quickMeetId}/restart`, { duration });
+  const reinstateMeetupMutation = useMutation({
+    mutationFn: async ({ meetupId, duration }: { meetupId: number; duration: string }) => {
+      return await apiRequest("POST", `/api/quick-meets/${meetupId}/restart`, { duration });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/availability"] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/archived-meetups`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/archived-quickMeets`] });
       toast({
-        title: "Meetup Reinstated!",
-        description: "Your meetup is now active again with a new chat room. Others can join now!",
+        title: "Meetup reinstated",
+        description: "Your meetup is now active again. Others can join.",
       });
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to reinstate meetup",
+        description: error?.message || "Failed to reinstate meetup",
         variant: "destructive",
       });
     },
   });
+
+  const isUserInMeetup = (meetup: QuickMeetup) => {
+    const ids = meetup.participantIds ?? meetup.participantsList?.map((p) => p.id) ?? [];
+    return ids.includes(user?.id ?? 0);
+  };
+
+  const handleJoinMeetup = (id: number) => joinMeetupMutation.mutate(id);
+  const handleLeaveMeetup = (id: number) => leaveMeetupMutation.mutate(id);
 
   const handleCreateQuickMeet = () => {
     // Get fresh user data from multiple sources for debugging  
@@ -266,11 +262,11 @@ export default function MeetupsPage() {
   };
 
   const handleJoinQuickMeet = (quickMeetId: number) => {
-    joinQuickMeetMutation.mutate(quickMeetId);
+    joinMeetupMutation.mutate(quickMeetId);
   };
 
   const handleLeaveQuickMeet = (quickMeetId: number) => {
-    leaveQuickMeetMutation.mutate(quickMeetId);
+    leaveMeetupMutation.mutate(quickMeetId);
   };
 
   const isUserInQuickMeet = (quickMeet: QuickMeetup) => {
@@ -349,7 +345,7 @@ export default function MeetupsPage() {
                       value={newQuickMeet.title}
                       onValueChange={(value) => {
                         if (value !== "custom") {
-                          setNewMeetup(prev => ({ ...prev, title: value }));
+                          setNewQuickMeet(prev => ({ ...prev, title: value }));
                         }
                       }}
                     >
@@ -383,8 +379,8 @@ export default function MeetupsPage() {
                   {/* Custom Input Field */}
                   <Input
                     placeholder="Or type your custom activity here..."
-                    value={newMeetup.title}
-                    onChange={(e) => setNewMeetup(prev => ({ ...prev, title: e.target.value }))}
+                    value={newQuickMeet.title}
+                    onChange={(e) => setNewQuickMeet(prev => ({ ...prev, title: e.target.value }))}
                   />
                 </div>
                 
@@ -395,7 +391,7 @@ export default function MeetupsPage() {
                   <Input
                     placeholder="e.g., Starbucks on Main St, Central Park entrance"
                     value={newQuickMeet.meetingPoint}
-                    onChange={(e) => setNewMeetup(prev => ({ ...prev, meetingPoint: e.target.value }))}
+                    onChange={(e) => setNewQuickMeet(prev => ({ ...prev, meetingPoint: e.target.value }))}
                   />
                 </div>
                 
@@ -405,8 +401,8 @@ export default function MeetupsPage() {
                   </label>
                   <Input
                     placeholder="e.g., 123 Main Street"
-                    value={newMeetup.streetAddress}
-                    onChange={(e) => setNewMeetup(prev => ({ ...prev, streetAddress: e.target.value }))}
+                    value={newQuickMeet.streetAddress}
+                    onChange={(e) => setNewQuickMeet(prev => ({ ...prev, streetAddress: e.target.value }))}
                   />
                 </div>
               </div>
@@ -419,11 +415,11 @@ export default function MeetupsPage() {
                     Meetup Location *
                   </label>
                   <SmartLocationInput
-                    city={newMeetup.city}
-                    state={newMeetup.state}
-                    country={newMeetup.country}
+                    city={newQuickMeet.city}
+                    state={newQuickMeet.state}
+                    country={newQuickMeet.country}
                     onLocationChange={(location) => {
-                      setNewMeetup(prev => ({
+                      setNewQuickMeet(prev => ({
                         ...prev,
                         city: location.city,
                         state: location.state,
@@ -445,8 +441,8 @@ export default function MeetupsPage() {
                   </label>
                   <Input
                     placeholder="e.g., 90210"
-                    value={newMeetup.zipcode}
-                    onChange={(e) => setNewMeetup(prev => ({ ...prev, zipcode: e.target.value }))}
+                    value={newQuickMeet.zipcode}
+                    onChange={(e) => setNewQuickMeet(prev => ({ ...prev, zipcode: e.target.value }))}
                   />
                 </div>
               </div>
@@ -460,8 +456,8 @@ export default function MeetupsPage() {
                 </label>
                 <Textarea
                   placeholder="Any additional details..."
-                  value={newMeetup.description}
-                  onChange={(e) => setNewMeetup(prev => ({ ...prev, description: e.target.value }))}
+                  value={newQuickMeet.description}
+                  onChange={(e) => setNewQuickMeet(prev => ({ ...prev, description: e.target.value }))}
                   rows={2}
                 />
               </div>
@@ -473,8 +469,8 @@ export default function MeetupsPage() {
                     Active For
                   </label>
                   <Select 
-                    value={newMeetup.responseTime} 
-                    onValueChange={(value) => setNewMeetup(prev => ({ ...prev, responseTime: value }))}
+                    value={newQuickMeet.responseTime} 
+                    onValueChange={(value) => setNewQuickMeet(prev => ({ ...prev, responseTime: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -497,10 +493,10 @@ export default function MeetupsPage() {
                 </Button>
                 <Button
                   onClick={handleCreateQuickMeet}
-                  disabled={createMeetupMutation.isPending}
+                  disabled={createQuickMeetMutation.isPending}
                   className="px-6 bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600"
                 >
-                  {createMeetupMutation.isPending ? "Creating..." : "Create Meetup"}
+                  {createQuickMeetMutation.isPending ? "Creating..." : "Create Meetup"}
                 </Button>
               </div>
             </div>
@@ -509,12 +505,12 @@ export default function MeetupsPage() {
       </div>
 
       {/* Meetups Grid */}
-      {meetups.length === 0 ? (
+      {quickMeets.length === 0 ? (
         <Card className="text-center py-12">
           <CardContent>
             <Coffee className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              No active meetups right now
+              No active quickMeets right now
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-6">
               Be the first to create a meetup and connect with people nearby!
@@ -530,7 +526,7 @@ export default function MeetupsPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {meetups.map((meetup: QuickMeetup) => (
+          {quickMeets.map((meetup: QuickMeetup) => (
             <Card key={meetup.id} className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
@@ -594,7 +590,7 @@ export default function MeetupsPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      setSelectedMeetup(meetup);
+                      setSelectedQuickMeet(meetup);
                       setIsDetailsDialogOpen(true);
                     }}
                     className="flex-shrink-0"
@@ -644,7 +640,7 @@ export default function MeetupsPage() {
       )}
 
       {/* My Past Meetups Section */}
-      {user && archivedMeetups.length > 0 && (
+      {user && archivedQuickMeets.length > 0 && (
         <div className="mt-12 space-y-6">
           <div className="flex items-center justify-between">
 <h2 className="text-lg font-bold text-gray-900 dark:text-white">
@@ -663,7 +659,7 @@ export default function MeetupsPage() {
               ) : (
                 <>
                   <ChevronDown className="w-4 h-4" />
-                  Show {archivedMeetups.length} archived meetups
+                  Show {archivedQuickMeets.length} archived quickMeets
                 </>
               )}
             </Button>
@@ -671,7 +667,7 @@ export default function MeetupsPage() {
 
           {showArchived && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {archivedMeetups.map((meetup: any) => (
+              {archivedQuickMeets.map((meetup: any) => (
                 <Card key={meetup.id} className="border-gray-300 dark:border-gray-600 opacity-90">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
@@ -759,7 +755,7 @@ export default function MeetupsPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
               <span>Meetup Details</span>
-              {selectedMeetup && selectedMeetup.creatorId === user?.id && (
+              {selectedQuickMeet && selectedQuickMeet.organizerId === user?.id && (
                 <div className="flex gap-2">
                   <Button 
                     variant="outline" 
@@ -796,15 +792,15 @@ export default function MeetupsPage() {
             </DialogTitle>
           </DialogHeader>
 
-          {selectedMeetup && (
+          {selectedQuickMeet && (
             <div className="space-y-6">
               {/* Creator Info */}
               <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 flex items-center justify-center text-white font-semibold">
-                  {selectedMeetup.creator?.profileImage ? (
+                  {selectedQuickMeet.organizerProfileImage ? (
                     <img 
-                      src={selectedMeetup.creator.profileImage} 
-                      alt={selectedMeetup.creator.username}
+                      src={selectedQuickMeet.organizerProfileImage} 
+                      alt={selectedQuickMeet.organizerUsername ?? ''}
                       className="w-12 h-12 rounded-full object-cover"
                     />
                   ) : (
@@ -813,10 +809,10 @@ export default function MeetupsPage() {
                 </div>
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white text-lg">
-                    @{selectedMeetup.creator?.username || "Unknown"}
+                    @{selectedQuickMeet.organizerUsername || "Unknown"}
                   </p>
                   <Badge variant="secondary">
-                    {getTimeRemaining(selectedMeetup.expiresAt)}
+                    {getTimeRemaining(selectedQuickMeet.expiresAt)}
                   </Badge>
                 </div>
               </div>
@@ -824,11 +820,11 @@ export default function MeetupsPage() {
               {/* Title & Description */}
               <div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  {selectedMeetup.title}
+                  {selectedQuickMeet.title}
                 </h3>
-                {selectedMeetup.description && (
+                {selectedQuickMeet.description && (
                   <p className="text-gray-600 dark:text-gray-400">
-                    {selectedMeetup.description}
+                    {selectedQuickMeet.description}
                   </p>
                 )}
               </div>
@@ -840,10 +836,10 @@ export default function MeetupsPage() {
                     <MapPin className="w-5 h-5" />
                     <div>
                       <p className="font-medium">Meeting Point</p>
-                      <p className="text-sm">{selectedMeetup.meetingPoint}</p>
-                      {selectedMeetup.street && (
+                      <p className="text-sm">{selectedQuickMeet.meetingPoint}</p>
+                      {selectedQuickMeet.street && (
                         <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                          📍 {selectedMeetup.street}
+                          📍 {selectedQuickMeet.street}
                         </p>
                       )}
                     </div>
@@ -853,7 +849,7 @@ export default function MeetupsPage() {
                     <Users className="w-5 h-5" />
                     <div>
                       <p className="font-medium">Participants</p>
-                      <p className="text-sm">{selectedMeetup.currentParticipants} people joined</p>
+                      <p className="text-sm">{selectedQuickMeet.currentParticipants} people joined</p>
                     </div>
                   </div>
                 </div>
@@ -863,7 +859,7 @@ export default function MeetupsPage() {
                     <Clock className="w-5 h-5" />
                     <div>
                       <p className="font-medium">Created</p>
-                      <p className="text-sm">{format(new Date(selectedMeetup.createdAt), "h:mm a")}</p>
+                      <p className="text-sm">{format(new Date(selectedQuickMeet.createdAt), "h:mm a")}</p>
                     </div>
                   </div>
                   
@@ -871,20 +867,20 @@ export default function MeetupsPage() {
                     <Map className="w-5 h-5" />
                     <div>
                       <p className="font-medium">Location</p>
-                      <p className="text-sm">{selectedMeetup.city}, {selectedMeetup.state}</p>
+                      <p className="text-sm">{selectedQuickMeet.city}, {selectedQuickMeet.state}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Participants List */}
-              {selectedMeetup.participantsList && selectedMeetup.participantsList.length > 0 && (
+              {selectedQuickMeet.participantsList && selectedQuickMeet.participantsList.length > 0 && (
                 <div>
                   <h4 className="font-medium text-gray-900 dark:text-white mb-3">
-                    Participants ({selectedMeetup.participantsList.length})
+                    Participants ({selectedQuickMeet.participantsList.length})
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {selectedMeetup.participantsList.map((participant) => (
+                    {selectedQuickMeet.participantsList.map((participant) => (
                       <div key={participant.id} className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded">
                         <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 flex items-center justify-center text-white text-sm font-semibold">
                           {participant.profileImage ? (
@@ -906,10 +902,10 @@ export default function MeetupsPage() {
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4 border-t">
-                {selectedMeetup.chatroomId && isUserInMeetup(selectedMeetup) && (
+                {selectedQuickMeet.chatroomId && isUserInMeetup(selectedQuickMeet) && (
                   <Button
                     onClick={() => {
-                      setLocation(`/chat/${selectedMeetup.chatroomId}`);
+                      setLocation(`/chat/${selectedQuickMeet.chatroomId}`);
                       setIsDetailsDialogOpen(false);
                     }}
                     className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600"
@@ -919,10 +915,10 @@ export default function MeetupsPage() {
                   </Button>
                 )}
                 
-                {!isUserInMeetup(selectedMeetup) && (
+                {!isUserInMeetup(selectedQuickMeet) && (
                   <Button
                     onClick={() => {
-                      handleJoinMeetup(selectedMeetup.id);
+                      handleJoinMeetup(selectedQuickMeet.id);
                       setIsDetailsDialogOpen(false);
                     }}
                     disabled={joinMeetupMutation.isPending}
@@ -932,11 +928,11 @@ export default function MeetupsPage() {
                   </Button>
                 )}
                 
-                {isUserInMeetup(selectedMeetup) && (
+                {isUserInMeetup(selectedQuickMeet) && (
                   <Button
                     variant="outline"
                     onClick={() => {
-                      handleLeaveMeetup(selectedMeetup.id);
+                      handleLeaveMeetup(selectedQuickMeet.id);
                       setIsDetailsDialogOpen(false);
                     }}
                     disabled={leaveMeetupMutation.isPending}

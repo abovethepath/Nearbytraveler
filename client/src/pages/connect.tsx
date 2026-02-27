@@ -597,7 +597,7 @@ export default function ConnectPage() {
           console.log('ConnectModal closing');
           setShowConnectModal(false);
         }}
-        userTravelPlans={userTravelPlans || []}
+        userTravelPlans={(userTravelPlans || []) as any}
         defaultLocationMode={connectModalMode}
         currentUser={user}
       />

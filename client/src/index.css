@@ -898,13 +898,13 @@ p, span, div, button, input, textarea, select {
   --secondary: 210 40% 96%;
   --secondary-foreground: 222.2 84% 4.9%;
   --muted: 210 40% 96%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+  --muted-foreground: 215.4 16.3% 40%;
   --accent: 210 40% 96%;
   --accent-foreground: 222.2 84% 4.9%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
+  --border: 214.3 31.8% 78%;
+  --input: 214.3 31.8% 78%;
   --ring: 221.2 83.2% 53.3%;
   --radius: 0.5rem;
   --chart-1: 12 76% 61%;
@@ -930,6 +930,81 @@ p, span, div, button, input, textarea, select {
   --msg-reaction-text: 220 13% 30%;
   --msg-hover-bg: 220 13% 90%;
   --msg-focus-ring: 221.2 83.2% 53.3%;
+}
+
+/* Light mode: cards and bordered panels need visible separation on white */
+:root:not(.dark) .rounded-lg.border {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Light mode: white/light cards and card surfaces get visible border and shadow */
+:root:not(.dark) .bg-white.rounded-lg,
+:root:not(.dark) .bg-white.rounded-xl,
+:root:not(.dark) .bg-gray-50.rounded-lg,
+:root:not(.dark) .bg-gray-50.rounded-xl,
+:root:not(.dark) .bg-card.rounded-lg {
+  border: 1px solid rgb(229 231 235);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Light mode: outline variant buttons need visible border so they don't disappear on white */
+:root:not(.dark) button.border.bg-background {
+  border-color: rgb(209 213 219);
+}
+
+/* Light mode: readable muted text and placeholders */
+:root:not(.dark) .text-muted-foreground {
+  color: rgb(75 85 99);
+}
+:root:not(.dark) input::placeholder,
+:root:not(.dark) textarea::placeholder {
+  color: rgb(107 114 128);
+}
+
+/* Light mode: labels and form text readable on white */
+:root:not(.dark) label.text-sm,
+:root:not(.dark) .text-sm.font-medium.leading-none {
+  color: rgb(31 41 55);
+}
+
+/* Light mode: inputs and selects visible border */
+:root:not(.dark) input:not([class*="border-"]),
+:root:not(.dark) textarea:not([class*="border-"]),
+:root:not(.dark) select:not([class*="border-"]) {
+  border-color: rgb(209 213 219);
+}
+
+/* Light mode: dropdown and popover content visible on white */
+:root:not(.dark) [data-radix-dropdown-menu-content],
+:root:not(.dark) [data-radix-popover-content] {
+  border: 1px solid rgb(229 231 235);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode: ensure default border color is visible on white */
+:root:not(.dark) .border:not([class*="border-"]) {
+  border-color: rgb(229 231 235);
+}
+
+/* Light mode: improve contrast for very light text (icons, captions) */
+:root:not(.dark) .text-gray-400 {
+  color: rgb(107 114 128);
+}
+:root:not(.dark) .text-gray-300 {
+  color: rgb(107 114 128);
+}
+
+/* Light mode: cards with rounded-md also get visible border/shadow */
+:root:not(.dark) .bg-white.rounded-md,
+:root:not(.dark) .bg-gray-50.rounded-md,
+:root:not(.dark) .bg-card.rounded-md {
+  border: 1px solid rgb(229 231 235);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Light mode: primary CTA buttons stand out on light backgrounds */
+:root:not(.dark) .bg-primary {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .dark {

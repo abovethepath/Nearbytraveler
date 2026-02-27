@@ -66,10 +66,7 @@ export function LocalHangouts({ city, isOwnProfile = false }: { city?: string; i
 
   const createHangoutMutation = useMutation({
     mutationFn: async (data: typeof newHangout) => {
-      return apiRequest(`/api/hangouts`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
+      return apiRequest('POST', `/api/hangouts`, JSON.stringify(data));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/hangouts`] });
@@ -103,9 +100,7 @@ export function LocalHangouts({ city, isOwnProfile = false }: { city?: string; i
 
   const joinHangoutMutation = useMutation({
     mutationFn: async (hangoutId: number) => {
-      return apiRequest(`/api/hangouts/${hangoutId}/join`, {
-        method: 'POST',
-      });
+      return apiRequest('POST', `/api/hangouts/${hangoutId}/join`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/hangouts`] });
@@ -118,9 +113,7 @@ export function LocalHangouts({ city, isOwnProfile = false }: { city?: string; i
 
   const leaveHangoutMutation = useMutation({
     mutationFn: async (hangoutId: number) => {
-      return apiRequest(`/api/hangouts/${hangoutId}/leave`, {
-        method: 'POST',
-      });
+      return apiRequest('POST', `/api/hangouts/${hangoutId}/leave`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/hangouts`] });
@@ -176,15 +169,15 @@ export function LocalHangouts({ city, isOwnProfile = false }: { city?: string; i
     return { label: 'Upcoming', color: 'bg-green-100 text-green-600' };
   };
 
-  const filteredHangouts = hangouts.filter((hangout: Hangout) => {
+  const filteredHangouts = (hangouts as any[]).filter((hangout: Hangout) => {
     if (filter === 'all') return true;
     if (filter === 'joined') return hangout.isJoined;
     if (filter === 'hosting') return hangout.hostId === user?.id;
     return hangout.category === filter;
   });
 
-  const upcomingCount = hangouts.filter((h: Hangout) => new Date(h.datetime) > new Date()).length;
-  const joinedCount = hangouts.filter((h: Hangout) => h.isJoined).length;
+  const upcomingCount = (hangouts as any[]).filter((h: Hangout) => new Date(h.datetime) > new Date()).length;
+  const joinedCount = (hangouts as any[]).filter((h: Hangout) => h.isJoined).length;
 
   return (
     <Card>

@@ -80,7 +80,7 @@ export function sendToNativeApp(action: string, data?: Record<string, unknown>):
   if (!isNativeIOSApp()) return;
   
   try {
-    window.webkit?.messageHandlers?.nearbyTraveler?.postMessage?.({
+    (window.webkit as any)?.messageHandlers?.nearbyTraveler?.postMessage?.({
       action,
       ...data,
     } as never);

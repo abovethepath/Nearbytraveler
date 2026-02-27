@@ -97,7 +97,7 @@ export default function WelcomeBusiness() {
 
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 mb-12">
           {/* Business Features Card */}
-          <Card className="border-0 shadow-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl overflow-hidden group hover:shadow-3xl transition-all duration-500 hover:-translate-y-1">
+          <Card className="border border-gray-200 shadow-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl overflow-hidden group hover:shadow-3xl transition-all duration-500 hover:-translate-y-1">
             <div className="h-2 bg-gradient-to-r from-blue-500 via-orange-500 to-blue-600"></div>
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 dark:text-white text-xl">
@@ -130,7 +130,7 @@ export default function WelcomeBusiness() {
           </Card>
 
           {/* Next Steps Card */}
-          <Card className="border-0 shadow-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl overflow-hidden group hover:shadow-3xl transition-all duration-500 hover:-translate-y-1">
+          <Card className="border border-gray-200 shadow-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl overflow-hidden group hover:shadow-3xl transition-all duration-500 hover:-translate-y-1">
             <div className="h-2 bg-gradient-to-r from-orange-500 via-red-500 to-pink-600"></div>
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 dark:text-white text-xl">
@@ -162,7 +162,7 @@ export default function WelcomeBusiness() {
 
         {/* Multiple Business Info */}
         <div className="max-w-4xl mx-auto mt-8">
-          <Card className="border-0 shadow-xl bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 backdrop-blur-sm rounded-2xl overflow-hidden">
+          <Card className="border border-gray-200 shadow-xl bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 backdrop-blur-sm rounded-2xl overflow-hidden">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 dark:text-white text-lg">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-orange-500 rounded-lg flex items-center justify-center">

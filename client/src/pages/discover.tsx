@@ -309,7 +309,7 @@ export default function DiscoverPage() {
               {sortedCities.filter(city => city.city === 'Los Angeles Metro').map((city, index) => (
                 <Card
                   key={`featured-${city.city}-${index}`}
-                  className="group cursor-pointer hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-xl w-full max-w-md rounded-3xl"
+                  className="group cursor-pointer hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 shadow-xl w-full max-w-md rounded-3xl"
                   onClick={() => setLocation(`/city/${encodeURIComponent(city.city)}`)}
                 >
                   <div className="relative h-48 sm:h-56 overflow-hidden rounded-t-3xl">
@@ -357,7 +357,7 @@ export default function DiscoverPage() {
             {sortedCities.filter(city => city.city !== 'Los Angeles Metro').map((city, index) => (
               <Card
                 key={`${city.city}-${city.state}-${index}`}
-                className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-lg rounded-2xl"
+                className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 shadow-lg rounded-2xl"
                 onClick={() => setLocation(`/city/${encodeURIComponent(city.city)}`)}
               >
                 <div className={`relative overflow-hidden rounded-t-2xl ${isNative ? 'h-28' : 'h-36 sm:h-56'}`}>

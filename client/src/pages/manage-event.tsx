@@ -175,6 +175,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
         requirements: event.requirements || "",
         tags: event.tags || [],
         isPublic: event.isPublic ?? true,
+        isSameDay: false,
         imageUrl: event.imageUrl || ""
       });
       

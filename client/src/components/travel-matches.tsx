@@ -17,10 +17,6 @@ import { parseInputDate, formatDateForDisplay } from "@/lib/dateUtils";
 import UserCard from "./user-card";
 import type { User } from "@shared/schema";
 
-interface TravelMatchesProps {
-  userId?: number;
-}
-
 interface MatchScore {
   userId: number;
   score: number;
@@ -61,13 +57,13 @@ export default function TravelMatches({
   const [, setLocation] = useLocation();
 
   // Smart matching query
-  const { data: smartMatches = [], isLoading: smartLoading } = useQuery({
+  const { data: smartMatches = [], isLoading: smartLoading } = useQuery<MatchScore[]>({
     queryKey: ['/api/matching/find-matches', userId, destination, startDate?.toISOString(), endDate?.toISOString(), userTypes.join(',')],
     enabled: !!userId
   });
 
   // Destination-specific matching query
-  const { data: destinationMatches = [], isLoading: destLoading } = useQuery({
+  const { data: destinationMatches = [], isLoading: destLoading } = useQuery<MatchScore[]>({
     queryKey: ['/api/matching/destination-matches', userId, destination, startDate?.toISOString(), endDate?.toISOString()],
     enabled: !!userId && !!destination
   });

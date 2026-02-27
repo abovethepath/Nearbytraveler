@@ -466,8 +466,8 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
           {(() => {
             // Use the already-calculated counts that include organizer
             return (
-              <Card className="border-0 shadow-lg sticky top-4">
-                <CardHeader className="pb-2 border-b border-gray-100 dark:border-gray-700">
+              <Card className="border border-gray-200 shadow-lg sticky top-4">
+                <CardHeader className="pb-2 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between">
                     <span className="text-lg font-bold text-blue-600 dark:text-blue-400" data-testid="badge-going-count">
                       {goingCount} Going
@@ -502,7 +502,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                         : user?.hometownCity || '';
                       
                       return (
-                        <div key={participant.id} className="flex items-start gap-3 pb-3 border-b border-gray-50 dark:border-gray-800 last:border-0 last:pb-0">
+                        <div key={participant.id} className="flex items-start gap-3 pb-3 border-b border-gray-200 dark:border-gray-800 last:border-0 last:pb-0">
                           <Avatar 
                             className="w-10 h-10 cursor-pointer ring-2 ring-blue-100 dark:ring-blue-900"
                             onClick={() => setLocation(`/profile/${user?.id}`)}
@@ -560,7 +560,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
           
           {/* Join This Event Card - Also on left sidebar - only show if logged in and not organizer */}
           {currentUser?.id && !isOrganizer && (
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
+            <Card className="border border-gray-200 shadow-lg bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Join this event</CardTitle>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Connect with other attendees and get event updates</p>
@@ -599,7 +599,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
           
           {/* Login prompt for non-logged in users */}
           {!currentUser?.id && (
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700">
+            <Card className="border border-gray-200 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700">
               <CardContent className="p-4 text-center">
                 <p className="font-medium mb-2">Want to join this event?</p>
                 <Button 

@@ -11,7 +11,7 @@ interface ChatroomDetails {
 }
 
 export default function ChatroomPage() {
-  const params = useParams();
+  const params = useParams<{ id: string }>();
   const chatroomId = parseInt(params.id || '0');
 
   let user: any = {};

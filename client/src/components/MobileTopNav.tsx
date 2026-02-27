@@ -303,7 +303,7 @@ export function MobileTopNav() {
                       <p className="font-semibold text-[17px] text-gray-900 dark:text-white truncate">{currentUser.name || currentUser.username}</p>
                       <p className="text-[13px] text-gray-500 dark:text-gray-400 truncate">@{currentUser.username}</p>
                       {currentUser.hometownCity && (
-                        <p className="text-[13px] text-gray-400 dark:text-gray-500 flex items-center gap-1 mt-0.5">
+                        <p className="text-[13px] text-gray-600 dark:text-gray-500 flex items-center gap-1 mt-0.5">
                           <MapPin className="w-3 h-3" />
                           {getMetroContext(currentUser.hometownCity).displayName || currentUser.hometownCity}
                         </p>
@@ -315,7 +315,7 @@ export function MobileTopNav() {
 
               {menuGroups.map((group, groupIdx) => (
                 <div key={groupIdx} className="py-1">
-                  <p className="px-4 pt-4 pb-1.5 text-[13px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                  <p className="px-4 pt-4 pb-1.5 text-[13px] font-medium text-gray-600 dark:text-gray-500 uppercase tracking-wider">
                     {group.title}
                   </p>
                   <div className="mx-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden">

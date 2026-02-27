@@ -656,9 +656,9 @@ export default function BusinessDashboard() {
     };
 
     if (editingOffer) {
-      updateOfferMutation.mutate({ id: editingOffer.id, data: finalData });
+      updateOfferMutation.mutate({ id: editingOffer.id, data: finalData as unknown as OfferFormData });
     } else {
-      createOfferMutation.mutate(finalData);
+      createOfferMutation.mutate(finalData as unknown as OfferFormData);
     }
   };
 
@@ -2074,7 +2074,7 @@ export default function BusinessDashboard() {
                         <Input 
                           type="date" 
                           {...field} 
-                          disabled={editingOffer || (!editingOffer && startingToday)}
+                          disabled={!!editingOffer || (!editingOffer && startingToday)}
                           min="1000-01-01"
                           max="9999-12-31"
                           className={`dark:[color-scheme:dark] dark:text-white calendar-white-icon ${
@@ -2109,7 +2109,7 @@ export default function BusinessDashboard() {
                         <Input 
                           type="date" 
                           {...field} 
-                          disabled={editingOffer}
+                          disabled={!!editingOffer}
                           min="1000-01-01"
                           max="9999-12-31"
                           className={`dark:[color-scheme:dark] dark:text-white calendar-white-icon ${

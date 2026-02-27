@@ -341,8 +341,8 @@ import { insertUserReferenceSchema } from "@shared/schema";
 import { getAllInterests, getAllActivities, getAllLanguages, validateSelections, getHometownInterests, getTravelInterests, getProfileInterests, migrateLegacyOptions } from "../../../shared/base-options";
 import { getTopChoicesInterests } from "../lib/topChoicesUtils";
 
-// Extended user interface for additional properties
-interface ExtendedUser extends User {
+// Extended user type: User plus optional props (intersection avoids extend conflicts with schema)
+type ExtendedUser = User & {
   isVeteran?: boolean;
   isActiveDuty?: boolean;
   isMinorityOwned?: boolean;
@@ -360,9 +360,9 @@ interface ExtendedUser extends User {
   specialOffers?: string;
   targetCustomers?: string;
   certifications?: string;
-  customInterests: string | null;
+  customInterests?: string | null;
   customActivities?: string;
-}
+};
 
 // Safe wrappers to prevent undefined errors
 const safeGetAllActivities = () => {
@@ -1190,10 +1190,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // Save to database so it appears on user discovery cards
       const gradientCSS = gradientCSSMap[selectedGradient];
       if (gradientCSS) {
-        apiRequest('/api/user/profile', {
-          method: 'PATCH',
-          body: JSON.stringify({ avatarGradient: gradientCSS }),
-        }).then(() => {
+        apiRequest('PATCH', '/api/user/profile', { avatarGradient: gradientCSS }).then(() => {
           // Invalidate all user queries so cards refresh with new gradient
           queryClient.invalidateQueries({ queryKey: ['/api/users'] });
           queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
@@ -1572,7 +1569,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   
   const profileForm = useForm<z.infer<typeof dynamicProfileSchema>>({
     resolver: zodResolver(dynamicProfileSchema),
-    defaultValues: currentUserType === 'business' ? {
+    defaultValues: (currentUserType === 'business' ? {
       bio: "",
       businessName: "",
       businessDescription: "",
@@ -1620,7 +1617,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       childrenAges: "",
       isVeteran: false,
       isActiveDuty: false,
-    },
+    }) as any,
   });
 
   // Update form values when user data changes (fresh from database)
@@ -3387,12 +3384,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         ...data,
         isVeteran: !!data.isVeteran,
         isActiveDuty: !!data.isActiveDuty,
-        isMinorityOwned: !!data.isMinorityOwned,
-        isFemaleOwned: !!data.isFemaleOwned,
-        isLGBTQIAOwned: !!data.isLGBTQIAOwned,
-        showMinorityOwned: data.showMinorityOwned !== false,
-        showFemaleOwned: data.showFemaleOwned !== false,
-        showLGBTQIAOwned: data.showLGBTQIAOwned !== false,
+        isMinorityOwned: !!(data as any).isMinorityOwned,
+        isFemaleOwned: !!(data as any).isFemaleOwned,
+        isLGBTQIAOwned: !!(data as any).isLGBTQIAOwned,
+        showMinorityOwned: (data as any).showMinorityOwned !== false,
+        showFemaleOwned: (data as any).showFemaleOwned !== false,
+        showLGBTQIAOwned: (data as any).showLGBTQIAOwned !== false,
       } : {
         ...data,
         // Only include traveler fields if they exist in the data
@@ -3402,12 +3399,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         // Always include veteran status fields
         isVeteran: !!data.isVeteran,
         isActiveDuty: !!data.isActiveDuty,
-        isMinorityOwned: !!data.isMinorityOwned,
-        isFemaleOwned: !!data.isFemaleOwned,
-        isLGBTQIAOwned: !!data.isLGBTQIAOwned,
-        showMinorityOwned: data.showMinorityOwned !== false,
-        showFemaleOwned: data.showFemaleOwned !== false,
-        showLGBTQIAOwned: data.showLGBTQIAOwned !== false,
+        isMinorityOwned: !!(data as any).isMinorityOwned,
+        isFemaleOwned: !!(data as any).isFemaleOwned,
+        isLGBTQIAOwned: !!(data as any).isLGBTQIAOwned,
+        showMinorityOwned: (data as any).showMinorityOwned !== false,
+        showFemaleOwned: (data as any).showFemaleOwned !== false,
+        showLGBTQIAOwned: (data as any).showLGBTQIAOwned !== false,
       };
       
       console.log('🔥 MUTATION: Profile payload with explicit booleans:', payload);
@@ -3868,7 +3865,7 @@ class ProfileErrorBoundary extends React.Component<
                   Reload Page
                 </Button>
                 <Button 
-                  onClick={() => setLocation(isNativeIOSApp() ? '/home' : '/')}
+                  onClick={() => { window.location.href = isNativeIOSApp() ? '/home' : '/'; }}
                   variant="secondary"
                 >
                   Go Home
@@ -3895,9 +3892,9 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
   });
 
   // Calculate event statistics
-  const totalEvents = userEvents.length;
-  const totalRSVPs = userEvents.reduce((sum: number, event: any) => sum + (Number(event.participantCount) || 0), 0);
-  const upcomingEvents = userEvents.filter((event: any) => new Date(event.date) >= new Date()).length;
+  const totalEvents = (userEvents as any[]).length;
+  const totalRSVPs = (userEvents as any[]).reduce((sum: number, event: any) => sum + (Number(event.participantCount) || 0), 0);
+  const upcomingEvents = (userEvents as any[]).filter((event: any) => new Date(event.date) >= new Date()).length;
   const avgRSVPs = totalEvents > 0 ? Math.round((totalRSVPs / totalEvents) * 10) / 10 : 0;
 
   // Generate Instagram post for an event
@@ -4014,9 +4011,9 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
 
         {/* Events List */}
         <div className="p-4 sm:p-6">
-          {userEvents.length > 0 ? (
+          {(userEvents as any[]).length > 0 ? (
             <div className="space-y-4">
-              {userEvents.map((event: any) => (
+              {(userEvents as any[]).map((event: any) => (
                 <div key={event.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-shadow">
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-3 sm:space-y-0">
                     <div className="flex-1">

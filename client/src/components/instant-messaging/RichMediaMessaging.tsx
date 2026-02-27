@@ -51,10 +51,7 @@ export function RichMediaMessaging({
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (messageData: any) => {
-      return await apiRequest('/api/messages/send', {
-        method: 'POST',
-        body: messageData
-      });
+      return await apiRequest('POST', '/api/messages/send', messageData);
     },
     onSuccess: (data) => {
       onMessageSent(data);
@@ -70,10 +67,7 @@ export function RichMediaMessaging({
       const formData = new FormData();
       formData.append('image', file);
       
-      const response = await apiRequest('/api/upload/image', {
-        method: 'POST',
-        body: formData
-      });
+      const response = await apiRequest('POST', '/api/upload/image', formData);
       
       setAttachments(prev => [...prev, {
         type: 'image',

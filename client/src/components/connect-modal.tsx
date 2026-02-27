@@ -782,12 +782,12 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
 
             {hasSearched && searchResults.length === 0 && !isSearching && (
               <div className="text-center py-12">
-                <Users className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                <Users className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">No travelers found</h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-4">
                   We couldn't find any travelers or locals in "{searchLocation}" for your selected dates.
                 </p>
-                <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
+                <p className="text-sm text-gray-600 dark:text-gray-500 mt-2">
                   Try adjusting your search criteria or dates.
                 </p>
               </div>

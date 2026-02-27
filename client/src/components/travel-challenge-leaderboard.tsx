@@ -105,7 +105,7 @@ export default function TravelChallengeLeaderboard() {
   };
 
   const getUserChallengeStatus = (challengeId: number) => {
-    return userChallenges.find((uc: any) => uc.challengeId === challengeId);
+    return (userChallenges as any[]).find((uc: any) => uc.challengeId === challengeId);
   };
 
   return (
@@ -116,11 +116,11 @@ export default function TravelChallengeLeaderboard() {
           <div className="flex items-center space-x-4">
             <Badge variant="outline" className="text-lg px-3 py-1">
               <Trophy className="w-4 h-4 mr-1" />
-              {userStats.totalPoints || 0} Points
+              {(userStats as any).totalPoints || 0} Points
             </Badge>
             <Badge variant="outline" className="text-lg px-3 py-1">
               <Target className="w-4 h-4 mr-1" />
-              {userStats.challengesCompleted || 0} Completed
+              {(userStats as any).challengesCompleted || 0} Completed
             </Badge>
           </div>
         )}
@@ -136,7 +136,7 @@ export default function TravelChallengeLeaderboard() {
         {/* Available Challenges */}
         <TabsContent value="challenges" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {challenges.map((challenge: any) => {
+            {(challenges as any[]).map((challenge: any) => {
               const userChallenge = getUserChallengeStatus(challenge.id);
               const isJoined = !!userChallenge;
               const isCompleted = userChallenge?.status === 'completed' || userChallenge?.status === 'verified';
@@ -201,8 +201,8 @@ export default function TravelChallengeLeaderboard() {
         {/* My Challenges */}
         <TabsContent value="my-challenges" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {userChallenges.map((userChallenge: any) => {
-              const challenge = challenges.find((c: any) => c.id === userChallenge.challengeId);
+            {(userChallenges as any[]).map((userChallenge: any) => {
+              const challenge = (challenges as any[]).find((c: any) => c.id === userChallenge.challengeId);
               if (!challenge) return null;
 
               const challengeType = challengeTypes.find(t => t.value === challenge.type);
@@ -273,7 +273,7 @@ export default function TravelChallengeLeaderboard() {
         {/* Leaderboard */}
         <TabsContent value="leaderboard" className="space-y-4">
           <div className="space-y-3">
-            {leaderboard.map((entry: any, index: number) => (
+            {(leaderboard as any[]).map((entry: any, index: number) => (
               <Card key={entry.userId} className={`${entry.userId === user?.id ? 'border-blue-500 bg-blue-50' : ''}`}>
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center space-x-4">

@@ -123,7 +123,7 @@ export default function ExternalEventCard({ event }: { event: CommunityEvent }) 
           )}
         </div>
 
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
+        <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
             {event.sharedByAvatar ? (
               <img src={event.sharedByAvatar} alt="" className="w-5 h-5 rounded-full" />

@@ -282,7 +282,7 @@ export default function Events() {
   });
 
   // Fetch external events (Meetup) - from all cities when traveling (or filtered by pill)
-  const { data: meetupEvents = [], isLoading: meetupLoading } = useQuery({
+  const { data: meetupEvents = { events: [] as any[] }, isLoading: meetupLoading } = useQuery<{ events: any[]; message?: string }>({
     queryKey: ["/api/external-events/meetup", effectiveCitiesToQuery.join(",")],
     queryFn: async () => {
       if (effectiveCitiesToQuery.length === 0) return { events: [] };
@@ -1132,7 +1132,7 @@ export default function Events() {
                   {filteredUpcomingEvents.map((event) => (
                     <Card 
                       key={event.id} 
-                      className="cursor-pointer hover:shadow-xl transition-all duration-300 sm:hover:-translate-y-1 w-full min-w-0 overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-md rounded-xl group"
+                      className="cursor-pointer hover:shadow-xl transition-all duration-300 sm:hover:-translate-y-1 w-full min-w-0 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 shadow-md rounded-xl group"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
                       {/* Image with Date Badge */}
@@ -1189,7 +1189,7 @@ export default function Events() {
                         </div>
 
                         {/* Attendees Row */}
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
                           <div className="flex items-center gap-2">
                             {/* Attendee Avatars */}
                             <div className="flex -space-x-2">

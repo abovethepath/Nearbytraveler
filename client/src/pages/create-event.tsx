@@ -172,7 +172,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       if (template.city) setValue("city", template.city);
       if (template.state) setValue("state", template.state);
       if (template.country) setValue("country", template.country);
-      if (template.category) setValue("category", template.category);
+      if (template.category) setValue("category" as any, template.category);
       if (template.tags) setValue("tags", template.tags);
       if (template.requirements) setValue("requirements", template.requirements);
       if (template.maxParticipants) setValue("maxParticipants", template.maxParticipants);
@@ -675,7 +675,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       )}
 
       <div className={isModal ? "" : "max-w-2xl mx-auto p-6"}>
-        <Card className={isModal ? "border-0 shadow-none" : ""}>
+        <Card className={isModal ? "border border-gray-200 shadow-none" : ""}>
           {!isModal && (
           <CardHeader>
           <CardTitle className="flex items-center gap-2 text-2xl">

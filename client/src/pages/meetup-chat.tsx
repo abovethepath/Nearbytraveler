@@ -14,7 +14,7 @@ interface Meetup {
 }
 
 export default function MeetupChat() {
-  const [, params] = useRoute("/meetup-chat/:meetupId");
+  const [, params] = useRoute<{ meetupId: string }>("/meetup-chat/:meetupId");
   const [, setLocation] = useLocation();
   const meetupId = params?.meetupId ? parseInt(params.meetupId) : null;
 

@@ -187,7 +187,7 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
       salePrice: newDeal.salePrice || null,
       validFrom: new Date(newDeal.startDate),
       validUntil: new Date(newDeal.validUntil),
-      maxRedemptions: newDeal.maxRedemptions ? parseInt(newDeal.maxRedemptions) : null, // No limit unless specified
+      maxRedemptions: (newDeal as any).maxRedemptions ? parseInt((newDeal as any).maxRedemptions) : null, // No limit unless specified
       requiresReservation: false, // Default to false
       dealCode: newDeal.dealCode || null,
       terms: newDeal.terms || null,
@@ -405,8 +405,8 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
                   <Input
                     type="number"
                     placeholder="Unlimited (leave blank)"
-                    value={newDeal.maxRedemptions || ''}
-                    onChange={(e) => setNewDeal({ ...newDeal, maxRedemptions: e.target.value })}
+                    value={(newDeal as any).maxRedemptions || ''}
+                    onChange={(e) => setNewDeal({ ...newDeal, maxRedemptions: e.target.value } as NewDeal)}
                     className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
                     data-testid="input-max-redemptions"
                   />

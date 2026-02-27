@@ -62,12 +62,12 @@ function ReferencesWidgetNew({ userId, currentUserId }: ReferencesWidgetProps) {
     isLoading,
     error: error?.message,
     rawData: referencesData,
-    hasReferences: !!referencesData?.references,
-    referencesLength: referencesData?.references?.length
+    hasReferences: !!(referencesData as any)?.references,
+    referencesLength: (referencesData as any)?.references?.length
   });
 
-  const references = referencesData.references || [];
-  const counts = referencesData.counts || { total: 0, positive: 0, negative: 0, neutral: 0 };
+  const references = (referencesData as any).references || [];
+  const counts = (referencesData as any).counts || { total: 0, positive: 0, negative: 0, neutral: 0 };
   const referenceCount = references.length;
   const displayedReferences = showAllReferences ? references : references.slice(0, 3);
 

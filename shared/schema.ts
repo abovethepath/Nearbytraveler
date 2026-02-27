@@ -4,7 +4,7 @@ import { createInsertSchema as _createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 function createInsertSchema<T extends Parameters<typeof _createInsertSchema>[0]>(table: T, refine?: Parameters<typeof _createInsertSchema>[1]): z.ZodObject<any> {
-  return _createInsertSchema(table, refine) as any;
+  return (_createInsertSchema as any)(table, refine);
 }
 
 export const users = pgTable("users", {

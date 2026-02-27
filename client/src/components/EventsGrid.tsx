@@ -192,9 +192,9 @@ const EventsGrid = ({
               className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors overflow-hidden cursor-pointer hover:shadow-lg"
               onClick={() => {
                 // Check if it's an external event (has eventUrl)
-                if (event.eventUrl && event.eventUrl.startsWith('http')) {
+                if ((event as any).eventUrl && (event as any).eventUrl.startsWith('http')) {
                   // Open external event directly
-                  window.open(event.eventUrl, '_blank');
+                  window.open((event as any).eventUrl, '_blank');
                 } else {
                   // Navigate to internal event details
                   setNavigationLocation(`/events/${event.id}`);
@@ -276,16 +276,16 @@ const EventsGrid = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     // Check if it's an external event (has eventUrl)
-                    if (event.eventUrl && event.eventUrl.startsWith('http')) {
+                    if ((event as any).eventUrl && (event as any).eventUrl.startsWith('http')) {
                       // Open external event directly
-                      window.open(event.eventUrl, '_blank');
+                      window.open((event as any).eventUrl, '_blank');
                     } else {
                       // Navigate to internal event details
                       setNavigationLocation(`/events/${event.id}`);
                     }
                   }}
                 >
-                  {event.eventUrl && event.eventUrl.startsWith('http') ? 'View on External Site' : 'View Event'}
+                  {(event as any).eventUrl && (event as any).eventUrl.startsWith('http') ? 'View on External Site' : 'View Event'}
                 </Button>
               </CardContent>
             </Card>

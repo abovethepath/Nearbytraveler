@@ -218,7 +218,7 @@ export function LocationAutocomplete({
             <>
               {recentDestinations.length > 0 && (
                 <>
-                  <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 border-b">
+                  <div className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 border-b border-gray-200">
                     Recent Destinations
                   </div>
                   {recentDestinations.slice(0, 3).map((destination, index) =>
@@ -227,7 +227,7 @@ export function LocationAutocomplete({
                 </>
               )}
               
-              <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 border-b">
+              <div className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 border-b border-gray-200">
                 Popular Destinations
               </div>
               {popularDestinations.slice(0, 4).map((destination, index) =>
@@ -252,7 +252,7 @@ export function LocationAutocomplete({
 
               {!isLoading && suggestions.length > 0 && (
                 <>
-                  <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 border-b">
+                  <div className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 border-b border-gray-200">
                     Search Results
                   </div>
                   {suggestions.map((suggestion, index) =>

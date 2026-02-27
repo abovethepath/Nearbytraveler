@@ -767,7 +767,7 @@ export default function TripItineraryView({
 
               {isExpanded && (
                 <CardContent className="pt-0 pb-4 px-4">
-                  <div className="border-t border-gray-100 dark:border-gray-800 pt-4 space-y-3">
+                  <div className="border-t border-gray-200 dark:border-gray-800 pt-4 space-y-3">
                     {dayData.items.length === 0 && dayData.events.length === 0 && dayData.meetups.length === 0 && (
                       <p className="text-gray-400 dark:text-gray-500 text-center py-4 text-sm">
                         Nothing planned yet

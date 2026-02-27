@@ -223,6 +223,8 @@ function AICompanionPaused() {
     bookmarkMutation.mutate(id);
   };
 
+  const toggleVisited = (_id: number) => { /* TODO: wire to API when available */ };
+
   const filteredRecommendations = useMemo(() => {
     console.log('Filtering recommendations:', { 
       recommendations, 
@@ -422,7 +424,7 @@ function AICompanionPaused() {
                                   <p className={`text-xs mt-1 ${
                                     message.isUser ? 'text-blue-100' : 'text-gray-500 dark:text-gray-300'
                                   }`}>
-                                    {message.created_at ? new Date(message.created_at).toLocaleTimeString() : ''}
+                                    {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
                                   </p>
                                 </div>
                               </div>
@@ -504,7 +506,7 @@ function AICompanionPaused() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => toggleBookmark(rec.id)}
+                                onClick={() => handleBookmark(rec.id)}
                                 className="p-1 hover:bg-red-50"
                               >
                                 {rec.isBookmarked ? (
@@ -597,7 +599,7 @@ function AICompanionPaused() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => toggleBookmark(rec.id)}
+                                onClick={() => handleBookmark(rec.id)}
                                 className="p-1 hover:bg-red-50"
                               >
                                 <Heart className="w-4 h-4 fill-red-500 text-red-500" />

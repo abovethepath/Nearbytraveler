@@ -50,19 +50,19 @@ export default function NetworkingLanding() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
+            <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 shadow-sm">
               <div className="text-2xl mb-2">🎯</div>
               <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Pre-Event Connections</h3>
               <p className="text-xs text-gray-600 dark:text-gray-300">Meet attendees before events start</p>
             </div>
             
-            <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
+            <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 shadow-sm">
               <div className="text-2xl mb-2">💬</div>
               <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Skip Small Talk</h3>
               <p className="text-xs text-gray-600 dark:text-gray-300">Start with meaningful conversations</p>
             </div>
             
-            <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg">
+            <div className="text-center p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 shadow-sm">
               <div className="text-2xl mb-2">🤝</div>
               <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Lasting Relationships</h3>
               <p className="text-xs text-gray-600 dark:text-gray-300">Build connections that continue</p>

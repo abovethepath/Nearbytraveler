@@ -31,11 +31,12 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
     // Check if user is currently traveling
     const currentDestination = getCurrentTravelDestination(travelPlans);
     if (currentDestination) {
+      const [city, state, country] = currentDestination.split(', ');
       // User is traveling - show businesses from travel destination
       return {
-        city: currentDestination.destinationCity,
-        state: currentDestination.destinationState || '',
-        country: currentDestination.destinationCountry,
+        city: city || '',
+        state: state || '',
+        country: country || '',
         type: 'current_travel'
       };
     }

@@ -170,7 +170,7 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId, variant = 'de
         {/* CTA button - always visible but disabled if user can't vouch */}
         {currentUserId && (
           <>
-            {canVouchData?.alreadyVouched ? (
+            {(canVouchData as any)?.alreadyVouched ? (
               <Card className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-600">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 text-green-700 dark:text-green-300">

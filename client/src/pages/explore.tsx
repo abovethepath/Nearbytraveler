@@ -544,15 +544,15 @@ export default function Explore() {
               </div>
             ) : !userCity ? (
               <div className="text-center py-12">
-                <MapPin className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                <MapPin className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-3" />
                 <p className="text-gray-500 dark:text-gray-400 font-medium">Set your city to see live shares</p>
-                <p className="text-gray-400 dark:text-gray-500 text-sm">Add your hometown or travel destination in your profile, then you’ll see who’s sharing their location here.</p>
+                <p className="text-gray-600 dark:text-gray-500 text-sm">Add your hometown or travel destination in your profile, then you’ll see who’s sharing their location here.</p>
               </div>
             ) : liveShares.length === 0 ? (
               <div className="text-center py-12">
-                <MapPin className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                <MapPin className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-3" />
                 <p className="text-gray-500 dark:text-gray-400 font-medium">No live location shares in {userCity} right now</p>
-                <p className="text-gray-400 dark:text-gray-500 text-sm">Be the first to share where you are! Tap the button above.</p>
+                <p className="text-gray-600 dark:text-gray-500 text-sm">Be the first to share where you are! Tap the button above.</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -588,7 +588,7 @@ export default function Explore() {
                         </div>
                       </div>
                       {(share.reactionsCount || 0) > 0 && (
-                        <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                        <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-800">
                           <span className="text-xs text-gray-500">{share.reactionsCount} {share.reactionsCount === 1 ? "person" : "people"} interested</span>
                         </div>
                       )}

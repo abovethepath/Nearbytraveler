@@ -373,7 +373,7 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                             </div>
                             <p className="text-sm text-gray-700 dark:text-gray-300 mt-1 whitespace-pre-wrap">{post.content}</p>
 
-                            <div className="flex items-center gap-4 mt-3 pt-2 border-t border-gray-100 dark:border-gray-800">
+                            <div className="flex items-center gap-4 mt-3 pt-2 border-t border-gray-200 dark:border-gray-800">
                               <button
                                 className={`flex items-center gap-1.5 text-xs transition-colors ${likeInfo.liked ? "text-red-500" : "text-gray-400 hover:text-red-400"}`}
                                 onClick={() => likeMutation.mutate(post.id)}

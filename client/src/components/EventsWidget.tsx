@@ -342,7 +342,7 @@ function EventsWidget({ userId }: EventsWidgetProps) {
           
           {relevantEvents.length === 0 && (
             <div className="text-center py-8 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
-              <Calendar className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <Calendar className="w-12 h-12 text-gray-500 dark:text-gray-600 mx-auto mb-4" />
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">No upcoming events in your area</p>
               <Button 
                 variant="outline" 

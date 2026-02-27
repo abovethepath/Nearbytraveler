@@ -129,7 +129,7 @@ export default function MessageTranslation({ messageText, messageId, isOwnMessag
             size="sm"
             className={`h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity ${
               isOwnMessage 
-                ? "text-blue-100 hover:text-white hover:bg-blue-600" 
+                ? "text-blue-600 hover:text-white hover:bg-blue-600" 
                 : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
             }`}
           >

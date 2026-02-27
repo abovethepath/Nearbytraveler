@@ -69,8 +69,8 @@ export default function Requests() {
         triggerCelebration({
           type: "connect",
           userInfo: {
-            username: requestInfo.requesterUser?.username,
-            profileImage: requestInfo.requesterUser?.profileImage
+            username: requestInfo.requester?.username,
+            profileImage: requestInfo.requester?.profileImage
           }
         });
       } else {
@@ -199,23 +199,23 @@ export default function Requests() {
                   >
                     <div className="flex items-center gap-4 flex-1">
                       <Avatar className="w-12 h-12">
-                        <AvatarImage src={request.requesterUser?.profileImage || undefined} />
+                        <AvatarImage src={request.requester?.profileImage || undefined} />
                         <AvatarFallback>
-                          {request.requesterUser?.username?.slice(0, 2).toUpperCase() || 'U'}
+                          {request.requester?.username?.slice(0, 2).toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
                       
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="font-semibold text-gray-900">
-                            {request.requesterUser?.username || 'Unknown User'}
+                            {request.requester?.username || 'Unknown User'}
                           </h3>
                           <Badge variant="outline" className="text-xs">
-                            {request.requesterUser?.userType || 'user'}
+                            {request.requester?.userType || 'user'}
                           </Badge>
                         </div>
                         <p className="text-sm text-gray-600 mb-1">
-                          {request.requesterUser?.bio || 'No bio available'}
+                          {request.requester?.bio || 'No bio available'}
                         </p>
                         <p className="text-xs text-gray-500">
                           Requested {formatDate(request.createdAt)}

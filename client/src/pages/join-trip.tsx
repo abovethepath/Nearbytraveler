@@ -10,7 +10,7 @@ import { Users, MapPin, Calendar, Check, X, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function JoinTrip() {
-  const [, params] = useRoute('/join-trip/:token');
+  const [, params] = useRoute<{ token: string }>('/join-trip/:token');
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const token = params?.token || '';

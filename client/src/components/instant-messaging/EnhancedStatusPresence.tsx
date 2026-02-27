@@ -49,7 +49,7 @@ export function EnhancedStatusPresence({ isOpen, onClose }: EnhancedStatusPresen
   useEffect(() => {
     if (user) {
       setSettings({
-        onlineStatus: user.onlineStatus || 'online',
+        onlineStatus: (user.onlineStatus || 'online') as StatusPresenceSettings['onlineStatus'],
         customStatus: user.customStatus || '',
         locationBasedStatus: user.locationBasedStatus || '',
         statusEmoji: user.statusEmoji || '🟢',
@@ -61,10 +61,7 @@ export function EnhancedStatusPresence({ isOpen, onClose }: EnhancedStatusPresen
   // Update status mutation
   const updateStatusMutation = useMutation({
     mutationFn: async (statusData: Partial<StatusPresenceSettings>) => {
-      return await apiRequest('/api/users/status', {
-        method: 'PUT',
-        body: statusData
-      });
+      return await apiRequest('PUT', '/api/users/status', statusData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });

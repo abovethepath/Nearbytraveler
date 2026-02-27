@@ -84,8 +84,7 @@ import {
   getMostPopularInterests as baseMostPopular,
   getAdditionalInterests as baseAdditional,
   getAllInterests as baseAllInterests,
-  getAllActivities as baseAllActivities,
-  getAllEvents as baseAllEvents
+  getAllActivities as baseAllActivities
 } from '@shared/base-options';
 
 // Re-export the base functions for backward compatibility
@@ -93,7 +92,7 @@ export const getMostPopularInterests = baseMostPopular;
 export const getAdditionalInterests = baseAdditional;
 export const getAllInterests = baseAllInterests;
 export const getAllActivities = baseAllActivities;
-export const getAllEvents = baseAllEvents;
+export const getAllEvents = (): string[] => getUserAddedOptions(STORAGE_KEYS.USER_EVENTS);
 
 // Add custom options with content filtering
 export function addCustomInterest(interest: string): { success: boolean; message?: string } {

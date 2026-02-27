@@ -273,27 +273,27 @@ export default function TravelersLanding() {
         <div className="max-w-6xl mx-auto mb-12">
           <h3 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">Perfect For</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-border">
               <div className="text-3xl mb-3">🎒</div>
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">Solo Travelers</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Turn exploring alone into shared adventures</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-border">
               <div className="text-3xl mb-3">👨‍👩‍👧</div>
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">Families</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Connect with local families and fellow travelers with kids</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-border">
               <div className="text-3xl mb-3">💼</div>
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">Business Travelers</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Make work trips more than just meetings</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-border">
               <div className="text-3xl mb-3">🆕</div>
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">New in Town</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Moving to a new city? Find your tribe fast</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-border">
               <div className="text-3xl mb-3">🌍</div>
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">Digital Nomads</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Build community wherever you land</p>

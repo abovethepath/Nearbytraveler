@@ -242,12 +242,12 @@ export default function TravelItinerary({ userId, destination, startDate, endDat
           </Button>
           {categories.map((category) => (
             <Button
-              key={category}
+              key={category as string}
               variant={selectedCategory === category ? "default" : "outline"}
               size="sm"
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => setSelectedCategory(category as string)}
             >
-              {category} ({itineraryEvents.filter((e: EventWithParticipants) => e.category === category).length})
+              {category as string} ({itineraryEvents.filter((e: EventWithParticipants) => e.category === category).length})
             </Button>
           ))}
         </div>

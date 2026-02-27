@@ -183,7 +183,7 @@ export default function TravelMoodBoard() {
 
       {/* Mood Board List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {moodBoards.map((board: MoodBoard) => (
+        {(moodBoards as MoodBoard[]).map((board: MoodBoard) => (
           <Card key={board.id} className="cursor-pointer hover:shadow-lg transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
@@ -262,7 +262,7 @@ export default function TravelMoodBoard() {
                         </div>
                       </div>
 
-                      {newItem.type === 'image' && (
+                      {(newItem.type as string) === 'image' && (
                         <Input
                           placeholder="Image URL"
                           value={newItem.imageUrl}

@@ -19,6 +19,8 @@ import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 
+declare const SpeechRecognition: any;
+
 const createPostSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   content: z.string().min(10, "Content must be at least 10 characters"),
@@ -185,7 +187,7 @@ function TravelBlogPaused() {
   const [replyContent, setReplyContent] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [voiceField, setVoiceField] = useState<'title' | 'content' | null>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<InstanceType<typeof SpeechRecognition> | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -813,7 +815,7 @@ function TravelBlogPaused() {
                   />
                 )}
                 
-                <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
+                <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex items-center gap-4">
                     <Button
                       variant="ghost"
@@ -848,7 +850,7 @@ function TravelBlogPaused() {
 
                 {/* Comments Section */}
                 {expandedPost === post.id && (
-                  <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                     {/* Add Comment Form */}
                     {currentUser && (
                       <div className="mb-4">
@@ -880,9 +882,9 @@ function TravelBlogPaused() {
 
                     {/* Comments List with nested structure */}
                     <div className="space-y-3">
-                      {comments && comments.length > 0 ? (
+                      {comments && (comments as any[]).length > 0 ? (
                         <div className="space-y-4">
-                          {comments.map((comment: any) => (
+                          {(comments as any[]).map((comment: any) => (
                             <CommentThread 
                               key={comment.id} 
                               comment={comment} 
