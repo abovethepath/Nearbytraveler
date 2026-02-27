@@ -115,3 +115,37 @@ export function areInSameMetro(city1, city2) {
     }
     return detection1.metroAreaName === detection2.metroAreaName;
 }
+
+// Metro area name → main city for display and API (event pool, empty state)
+const METRO_TO_MAIN_CITY = {
+    'Los Angeles Metro': 'Los Angeles',
+    'New York Metro': 'New York',
+    'Chicago Metro': 'Chicago',
+    'San Francisco Bay Area': 'San Francisco',
+};
+
+/**
+ * Resolve a detected city to metro context for display and event query.
+ * When the city is a suburb (e.g. Culver City, Brooklyn, Evanston), returns metro main city
+ * for event pool and UI; raw city is kept for distance/sorting.
+ */
+export function getMetroContext(city) {
+    const raw = (city || '').trim();
+    if (!raw) {
+        return { displayName: '', queryCity: '', rawCity: '', isSuburb: false };
+    }
+    const detection = detectMetroArea(raw);
+    if (!detection.isMetroCity || !detection.metroAreaName) {
+        return { displayName: raw, queryCity: raw, rawCity: raw, isSuburb: false };
+    }
+    const mainCity = METRO_TO_MAIN_CITY[detection.metroAreaName] ??
+        detection.metroAreaName.replace(/\s+(Metro|Bay Area)$/i, '');
+    const isSuburb = raw.toLowerCase() !== mainCity.toLowerCase();
+    const displayName = isSuburb ? `${mainCity} (${raw})` : mainCity;
+    return {
+        displayName,
+        queryCity: mainCity,
+        rawCity: raw,
+        isSuburb,
+    };
+}
