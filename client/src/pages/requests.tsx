@@ -13,11 +13,20 @@ import { useConnectionCelebration } from "@/hooks/useConnectionCelebration";
 
 interface ConnectionRequest {
   id: number;
-  userId: number;
-  connectedUserId: number;
+  requesterId?: number;
+  receiverId?: number;
   status: string;
   createdAt: string;
-  requester: User;
+  requesterUser: User;
+}
+
+interface OutgoingConnectionRequest {
+  id: number;
+  requesterId?: number;
+  receiverId?: number;
+  status: string;
+  createdAt: string;
+  receiverUser: User;
 }
 
 export default function Requests() {
@@ -27,10 +36,22 @@ export default function Requests() {
   // Get current user ID from localStorage or context
   const getCurrentUserId = () => {
     try {
-      const storedUser = localStorage.getItem('travelconnect_user');
-      if (storedUser) {
-        const user = JSON.parse(storedUser);
-        return user.id;
+      const keysToTry = [
+        'user',
+        'authUser',
+        'currentUser',
+        'travelconnect_user',
+        'travelConnectUser',
+      ];
+      for (const key of keysToTry) {
+        const storedUser = localStorage.getItem(key);
+        if (!storedUser || storedUser === 'undefined' || storedUser === 'null') continue;
+        try {
+          const user = JSON.parse(storedUser);
+          if (user?.id) return user.id;
+        } catch {
+          // ignore malformed storage entries
+        }
       }
     } catch { }
     return null;
@@ -41,6 +62,12 @@ export default function Requests() {
   // Fetch pending connection requests received by the current user
   const { data: connectionRequests = [], isLoading } = useQuery<ConnectionRequest[]>({
     queryKey: [`/api/connections/${currentUserId}/requests`],
+    enabled: !!currentUserId,
+  });
+
+  // Fetch pending connection requests SENT by the current user
+  const { data: outgoingRequests = [] } = useQuery<OutgoingConnectionRequest[]>({
+    queryKey: [`/api/connections/${currentUserId}/requests/outgoing`],
     enabled: !!currentUserId,
   });
 
@@ -64,13 +91,13 @@ export default function Requests() {
       console.log("Request info found:", requestInfo);
       
       if (requestInfo) {
-        console.log("Triggering celebration for:", requestInfo.requester.username);
+        console.log("Triggering celebration for:", requestInfo.requesterUser.username);
         // Show connection celebration animation
         triggerCelebration({
           type: "connect",
           userInfo: {
-            username: requestInfo.requester?.username,
-            profileImage: requestInfo.requester?.profileImage
+            username: requestInfo.requesterUser?.username,
+            profileImage: requestInfo.requesterUser?.profileImage
           }
         });
       } else {
@@ -175,77 +202,137 @@ export default function Requests() {
             <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
               <UserPlus className="w-5 h-5" />
               Pending Requests
-              {connectionRequests.length > 0 && (
-                <Badge className="bg-gradient-to-r from-blue-500 to-orange-600 text-white">{connectionRequests.length}</Badge>
+              {(connectionRequests.length + outgoingRequests.length) > 0 && (
+                <Badge className="bg-gradient-to-r from-blue-500 to-orange-600 text-white">
+                  {connectionRequests.length + outgoingRequests.length}
+                </Badge>
               )}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {connectionRequests.length === 0 ? (
+            {(connectionRequests.length === 0 && outgoingRequests.length === 0) ? (
               <div className="text-center py-12">
                 <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No pending requests</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-6">You don't have any connection requests at the moment.</p>
+                <p className="text-gray-500 dark:text-gray-400 mb-6">
+                  You don't have any connection requests at the moment.
+                </p>
                 <Link href="/connect">
                   <Button>Find People to Connect</Button>
                 </Link>
               </div>
             ) : (
-              <div className="space-y-4">
-                {connectionRequests.map((request) => (
-                  <div
-                    key={request.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-4 flex-1">
-                      <Avatar className="w-12 h-12">
-                        <AvatarImage src={request.requester?.profileImage || undefined} />
-                        <AvatarFallback>
-                          {request.requester?.username?.slice(0, 2).toUpperCase() || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
-                      
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold text-gray-900">
-                            {request.requester?.username || 'Unknown User'}
-                          </h3>
-                          <Badge variant="outline" className="text-xs">
-                            {request.requester?.userType || 'user'}
-                          </Badge>
+              <div className="space-y-6">
+                {/* Incoming (received) requests */}
+                <div className="space-y-4">
+                  {connectionRequests.length > 0 ? (
+                    connectionRequests.map((request) => (
+                      <div
+                        key={request.id}
+                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex items-center gap-4 flex-1">
+                          <Avatar className="w-12 h-12">
+                            <AvatarImage src={request.requesterUser?.profileImage || undefined} />
+                            <AvatarFallback>
+                              {request.requesterUser?.username?.slice(0, 2).toUpperCase() || 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+                          
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-gray-900">
+                                {request.requesterUser?.username || 'Unknown User'}
+                              </h3>
+                              <Badge variant="outline" className="text-xs">
+                                {request.requesterUser?.userType || 'user'}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-1">
+                              {request.requesterUser?.bio || 'No bio available'}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Requested {formatDate(request.createdAt)}
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-sm text-gray-600 mb-1">
-                          {request.requester?.bio || 'No bio available'}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          Requested {formatDate(request.createdAt)}
-                        </p>
-                      </div>
-                    </div>
 
-                    <div className="flex items-center gap-2 ml-4">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleReject(request.id)}
-                        disabled={rejectMutation.isPending}
-                        className="text-red-600 border-red-200 hover:bg-red-50"
-                      >
-                        <X className="w-4 h-4 mr-1" />
-                        Reject
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => handleAccept(request.id)}
-                        disabled={acceptMutation.isPending}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                        <Check className="w-4 h-4 mr-1" />
-                        Accept
-                      </Button>
+                        <div className="flex items-center gap-2 ml-4">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleReject(request.id)}
+                            disabled={rejectMutation.isPending}
+                            className="text-red-600 border-red-200 hover:bg-red-50"
+                          >
+                            <X className="w-4 h-4 mr-1" />
+                            Reject
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => handleAccept(request.id)}
+                            disabled={acceptMutation.isPending}
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                          >
+                            <Check className="w-4 h-4 mr-1" />
+                            Accept
+                          </Button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
+                      No incoming requests
+                    </div>
+                  )}
+                </div>
+
+                {/* Outgoing (sent) requests */}
+                {outgoingRequests.length > 0 && (
+                  <div className="pt-4 border-t">
+                    <div className="flex items-center gap-2 mb-3 text-sm font-medium text-gray-700 dark:text-gray-200">
+                      <Clock className="w-4 h-4" />
+                      Sent Requests
+                      <Badge className="bg-gradient-to-r from-blue-500 to-orange-600 text-white">{outgoingRequests.length}</Badge>
+                    </div>
+                    <div className="space-y-4">
+                      {outgoingRequests.map((request) => (
+                        <div
+                          key={request.id}
+                          className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          <div className="flex items-center gap-4 flex-1">
+                            <Avatar className="w-12 h-12">
+                              <AvatarImage src={request.receiverUser?.profileImage || undefined} />
+                              <AvatarFallback>
+                                {request.receiverUser?.username?.slice(0, 2).toUpperCase() || 'U'}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="font-semibold text-gray-900">
+                                  {request.receiverUser?.username || 'Unknown User'}
+                                </h3>
+                                <Badge variant="outline" className="text-xs">
+                                  {request.receiverUser?.userType || 'user'}
+                                </Badge>
+                                <Badge variant="secondary" className="text-xs">
+                                  Pending
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-gray-600 mb-1">
+                                {request.receiverUser?.bio || 'No bio available'}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Sent {formatDate(request.createdAt)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
+                )}
               </div>
             )}
           </CardContent>

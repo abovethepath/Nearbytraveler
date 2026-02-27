@@ -157,10 +157,8 @@ export default function UserCard({
   };
 
   const matchPercent = getMatchPercent();
-  // Use visible count (interests + activities + events) so the number matches what users see in "Things in common"
-  const thingsInCommon = compatibilityData
-    ? (compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)
-    : 0;
+  // People discovery cards: show shared INTERESTS count (as originally displayed)
+  const thingsInCommon = compatibilityData?.sharedInterests?.length || 0;
   const bioSnippet = user.bio ? (user.bio.length > 100 ? user.bio.slice(0, 100) + '…' : user.bio) : '';
 
   return (
@@ -261,9 +259,14 @@ export default function UserCard({
             </div>
           )}
           <div className="truncate mt-0.5" style={{ color: '#5a5e75', fontSize: 11.5 }}>
-            {user.userType === 'business' && user.streetAddress 
-              ? `📍 ${user.streetAddress}` 
-              : displayCity}
+            {user.userType === 'business' && user.streetAddress ? (
+              `📍 ${user.streetAddress}`
+            ) : (
+              <>
+                <span style={{ color: '#e8834a', fontWeight: 700 }}>Nearby Local</span>
+                <span> → {displayCity}</span>
+              </>
+            )}
           </div>
           <div className="min-h-[1.25rem] mt-0.5">
             {travelCityFinal && user.userType !== 'business' ? (
@@ -306,9 +309,14 @@ export default function UserCard({
             </div>
           )}
           <div className="truncate mt-0.5" style={{ color: '#5a5e75', fontSize: 11.5 }}>
-            {user.userType === 'business' && user.streetAddress 
-              ? `📍 ${user.streetAddress}` 
-              : displayCity}
+            {user.userType === 'business' && user.streetAddress ? (
+              `📍 ${user.streetAddress}`
+            ) : (
+              <>
+                <span style={{ color: '#e8834a', fontWeight: 700 }}>Nearby Local</span>
+                <span> → {displayCity}</span>
+              </>
+            )}
           </div>
           <div className="min-h-[1.25rem] mt-0.5">
             {travelCityFinal && user.userType !== 'business' ? (

@@ -812,7 +812,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
                                     e.stopPropagation();
                                     window.location.href = `/chat/${meetup.organizerId}`;
                                   }}
-                                  className="p-1 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors"
+                                  className="hidden md:inline-flex p-1 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors"
                                   title="Message organizer"
                                 >
                                   <MessageCircle className="w-3 h-3 text-orange-500" />
@@ -826,7 +826,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
                                   if (isJoined) window.location.href = `/quick-meetup-chat/${meetup.id}`;
                                   else handleJoinMeetup(meetup.id);
                                 }}
-                                className="p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                                className="hidden md:inline-flex p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
                                 title="Join group chat"
                               >
                                 <MessageSquare className="w-3 h-3 text-blue-500" />

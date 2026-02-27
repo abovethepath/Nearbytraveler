@@ -41,6 +41,7 @@ import * as cheerio from "cheerio";
 
 import crypto from "crypto";
 import { 
+  secretLocalExperiences,
   secretLocalExperienceLikes, 
   connections, 
   users, 
@@ -6046,6 +6047,7 @@ Questions? Just reply to this message. Welcome aboard!
         travelPlansData,
         connectionsData,
         connectionRequestsData,
+        outgoingConnectionRequestsData,
         referencesData,
         vouchesData,
         photosData,
@@ -6066,10 +6068,10 @@ Questions? Just reply to this message. Welcome aboard!
             eq(connections.status, 'accepted')
           )
         ),
-        // 4. Connection requests (pending)
-        db.select().from(connections).where(
-          and(eq(connections.receiverId, userId), eq(connections.status, 'pending'))
-        ),
+        // 4. Connection requests (pending, incoming) - include requester user payload
+        storage.getConnectionRequests(userId),
+        // 5. Connection requests (pending, outgoing) - include receiver user payload
+        storage.getOutgoingConnectionRequests(userId),
         // 5. User references received by this user
         db.select().from(userReferences).where(eq(userReferences.revieweeId, userId)),
         // 6. User vouches received by this user (from actual vouches table)
@@ -6100,6 +6102,34 @@ Questions? Just reply to this message. Welcome aboard!
       
       // Remove password and format response
       const { password: _, ...userWithoutPassword } = userData;
+
+      // Legacy backfill: some profiles have secret activities stored only in `secret_local_experiences`
+      // (older flows) and not in `users.secret_activities`. Keep UI behavior the same by ensuring the
+      // `secretActivities` field is populated when available.
+      try {
+        const existingSecretActivities = (userWithoutPassword as any)?.secretActivities;
+        if (
+          userData.userType !== 'business' &&
+          (!existingSecretActivities || !String(existingSecretActivities).trim())
+        ) {
+          const [secretExp] = await db
+            .select({ experience: secretLocalExperiences.experience })
+            .from(secretLocalExperiences)
+            .where(
+              and(
+                eq(secretLocalExperiences.contributorId, userId),
+                eq(secretLocalExperiences.isActive, true),
+              )
+            )
+            .limit(1);
+
+          if (secretExp?.experience && secretExp.experience.trim()) {
+            (userWithoutPassword as any).secretActivities = secretExp.experience.trim();
+          }
+        }
+      } catch (e) {
+        // Do not fail profile bundle if this optional backfill query fails
+      }
       
       // Get connection status with viewer if viewing another profile
       let connectionStatus = { status: 'none' as string, connectionId: null as number | null };
@@ -6154,6 +6184,7 @@ Questions? Just reply to this message. Welcome aboard!
         travelPlans: travelPlansData,
         connections: connectionsData,
         connectionRequests: connectionRequestsData,
+        outgoingConnectionRequests: outgoingConnectionRequestsData,
         references: referencesData,
         vouches: vouchesData,
         photos: photosData,
@@ -9916,18 +9947,38 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Outgoing (sent) pending connection requests for a user
+  app.get("/api/connections/:userId/requests/outgoing", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || "0");
+      const requests = await storage.getOutgoingConnectionRequests(userId);
+      return res.json(requests);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === "development") console.error("Error fetching outgoing connection requests:", error);
+      return res.status(500).json({ message: "Failed to fetch outgoing connection requests" });
+    }
+  });
+
   // CRITICAL: Create new connection (send connection request)
   app.post("/api/connections", async (req, res) => {
     try {
       if (process.env.NODE_ENV === 'development') console.log(`CONNECTION REQUEST: Received body:`, req.body);
       const { requesterId, targetUserId, receiverId } = req.body;
 
-      // Handle both old format (requesterId, targetUserId) and new format (receiverId)
-      const finalRequesterId = requesterId || 1; // Default to user 1 for now - this should come from auth
+      // Determine requester from authenticated context first (session/header), then fall back to body for legacy clients.
+      // Never default to a "system user" here; that breaks outgoing-pending lists and notifications and is a spoofing risk.
+      const sessionRequesterId = (req as any)?.session?.user?.id;
+      const headerRequesterIdRaw = req.headers["x-user-id"] as string | undefined;
+      const headerRequesterId = headerRequesterIdRaw ? parseInt(headerRequesterIdRaw, 10) : undefined;
+      const bodyRequesterId = requesterId ? parseInt(String(requesterId), 10) : undefined;
+      const finalRequesterId = sessionRequesterId || headerRequesterId || bodyRequesterId;
+
+      // Handle both old format (targetUserId) and newer format (receiverId)
       const finalTargetUserId = targetUserId || receiverId;
 
       if (!finalRequesterId || !finalTargetUserId) {
         if (process.env.NODE_ENV === 'development') console.log(`CONNECTION: Missing data - requesterId: ${finalRequesterId}, targetUserId: ${finalTargetUserId}`);
+        if (!finalRequesterId) return res.status(401).json({ message: "Authentication required" });
         return res.status(400).json({ message: "receiverId is required" });
       }
 
@@ -9961,16 +10012,75 @@ Questions? Just reply to this message. Welcome aboard!
       });
 
       if (process.env.NODE_ENV === 'development') console.log(`CONNECTION: Successfully created connection request from ${finalRequesterId} to ${finalTargetUserId}:`, newConnection);
-      
-      // Send connection request notifications (background)
+
+      // Create in-app notification + push over WebSocket (real-time) in-band so the recipient sees it immediately.
+      const recipientIdNum = parseInt(finalTargetUserId || '0');
+      const requesterIdNum = parseInt(finalRequesterId || '0');
+      let requesterName = "Someone";
+      let requesterUsername = "someone";
+      try {
+        const requester = await db
+          .select({ name: users.name, username: users.username })
+          .from(users)
+          .where(eq(users.id, requesterIdNum))
+          .then((r) => r[0]);
+        requesterName = requester?.name || requester?.username || requesterName;
+        requesterUsername = requester?.username || requesterUsername;
+      } catch (e) {
+        console.error("❌ CONNECTION NOTIFICATION: Failed to load requester identity:", e);
+      }
+
+      const payload = {
+        type: "connection_request",
+        title: "Connection request",
+        message: `@${requesterUsername} sent you a connection request`,
+      };
+
+      let newNotificationId: number | undefined;
+      try {
+        const newNotification = await storage.createNotification({
+          userId: recipientIdNum,
+          fromUserId: requesterIdNum,
+          type: "connection_request",
+          title: payload.title,
+          message: payload.message,
+          data: JSON.stringify({
+            connectionId: (newConnection as any)?.id,
+            requesterId: requesterIdNum,
+            receiverId: recipientIdNum,
+            requesterName,
+          }),
+        });
+        newNotificationId = newNotification.id;
+      } catch (e) {
+        // Still attempt real-time push so the recipient UI updates immediately.
+        console.error("❌ CONNECTION NOTIFICATION: Failed to create in-app notification:", e);
+      }
+
+      try {
+        const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+        const recipientWs = wsMap?.get(recipientIdNum);
+        if (recipientWs && recipientWs.readyState === 1) {
+          recipientWs.send(
+            JSON.stringify({
+              type: "notification",
+              payload: {
+                id: newNotificationId,
+                ...payload,
+              },
+            })
+          );
+        }
+      } catch (e) {
+        if (process.env.NODE_ENV === "development") console.warn("WebSocket push failed:", e);
+      }
+
+      // Send email/push notifications in the background (non-blocking)
       setImmediate(async () => {
-        const recipientIdNum = parseInt(finalTargetUserId || '0');
-        const requesterIdNum = parseInt(finalRequesterId || '0');
-        
         // Send email notification
         try {
           const { sendConnectionRequestEmail } = await import('./email/notificationEmails');
-          const result = await sendConnectionRequestEmail(recipientIdNum, requesterIdNum);
+          const result = await sendConnectionRequestEmail(recipientIdNum, requesterName, requesterUsername);
           if (result.success && !result.skipped) {
             console.log(`✅ CONNECTION EMAIL: Sent to user ${finalTargetUserId}`);
           } else if (result.skipped) {
@@ -9982,8 +10092,6 @@ Questions? Just reply to this message. Welcome aboard!
         
         // Send push notification
         try {
-          const requester = await db.select({ name: users.name, username: users.username }).from(users).where(eq(users.id, requesterIdNum)).then(r => r[0]);
-          const requesterName = requester?.name || requester?.username || 'Someone';
           const { sendConnectionRequestPush } = await import('./services/pushNotificationService');
           const pushResult = await sendConnectionRequestPush(recipientIdNum, requesterName, requesterIdNum);
           if (pushResult.success) {
@@ -10006,7 +10114,11 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const connectionId = parseInt(req.params.id);
       const { status } = req.body;
-      const userId = parseInt(req.headers['x-user-id'] as string || '0');
+      // Prefer authenticated context (session) but allow header fallback for legacy clients.
+      const sessionUserId = (req as any)?.session?.user?.id as number | undefined;
+      const headerUserIdRaw = req.headers["x-user-id"] as string | undefined;
+      const headerUserId = headerUserIdRaw ? parseInt(headerUserIdRaw, 10) : undefined;
+      const userId = sessionUserId || headerUserId || 0;
 
       if (!status || (status !== 'accepted' && status !== 'rejected')) {
         return res.status(400).json({ message: "Invalid status" });
@@ -10037,6 +10149,61 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') {
         console.log(`✅ Connection ${status}: ${connection.requesterId} ↔ ${connection.receiverId}`);
+      }
+
+      // If accepted, notify the requester (in-app + real-time WS) so BOTH users get feedback.
+      if (status === "accepted") {
+        try {
+          const requesterId = connection.requesterId;
+          const receiverId = connection.receiverId;
+
+          // Load receiver identity for message text
+          const receiver = await db
+            .select({ username: users.username, name: users.name })
+            .from(users)
+            .where(eq(users.id, receiverId))
+            .then((r) => r[0]);
+
+          const receiverUsername = receiver?.username || "someone";
+          const receiverName = receiver?.name || receiverUsername;
+
+          const title = "Connection accepted";
+          const message = `@${receiverUsername} accepted your connection request`;
+
+          const created = await storage.createNotification({
+            userId: requesterId,
+            fromUserId: receiverId,
+            type: "connection_accepted",
+            title,
+            message,
+            data: JSON.stringify({
+              connectionId: (updatedConnection as any)?.id,
+              requesterId,
+              receiverId,
+              receiverName,
+              receiverUsername,
+            }),
+          });
+
+          // Real-time push over WebSocket (if requester is online)
+          const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+          const requesterWs = wsMap?.get(requesterId);
+          if (requesterWs && requesterWs.readyState === 1) {
+            requesterWs.send(
+              JSON.stringify({
+                type: "notification",
+                payload: {
+                  id: created.id,
+                  type: "connection_accepted",
+                  title,
+                  message,
+                },
+              })
+            );
+          }
+        } catch (e) {
+          console.error("❌ CONNECTION ACCEPTED NOTIFICATION: Failed:", e);
+        }
       }
 
       return res.json({ success: true, connection: updatedConnection });
@@ -10205,6 +10372,38 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error marking messages as read:", error);
       return res.status(500).json({ message: "Failed to mark messages as read" });
+    }
+  });
+
+  // Mark ALL received messages as read for a user (used when the user opens the Messages page)
+  app.post("/api/messages/:userId/mark-all-read", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || "0");
+      if (!userId || isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid userId" });
+      }
+
+      const sessionUserId = (req as any)?.session?.user?.id as number | undefined;
+      const headerUserIdRaw = req.headers["x-user-id"] as string | undefined;
+      const headerUserId = headerUserIdRaw ? parseInt(headerUserIdRaw, 10) : undefined;
+      const authUserId = sessionUserId || headerUserId;
+
+      if (!authUserId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      if (authUserId !== userId) {
+        return res.status(403).json({ message: "Cannot mark messages for another user" });
+      }
+
+      const result = await db
+        .update(messages)
+        .set({ isRead: true })
+        .where(and(eq(messages.receiverId, userId), eq(messages.isRead, false)));
+
+      return res.json({ success: true, markedCount: result.rowCount || 0 });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === "development") console.error("Error marking all messages as read:", error);
+      return res.status(500).json({ message: "Failed to mark all messages as read" });
     }
   });
 
@@ -19530,31 +19729,44 @@ Questions? Just reply to this message. Welcome aboard!
             break;
 
           case 'auth':
-            ws.userId = data.userId;
+            // Normalize userId to a number so Map lookups work reliably (client may send string IDs)
+            const normalizedUserId =
+              typeof data.userId === 'string'
+                ? parseInt(data.userId, 10)
+                : typeof data.userId === 'number'
+                  ? data.userId
+                  : NaN;
+
+            if (!normalizedUserId || Number.isNaN(normalizedUserId)) {
+              ws.send(JSON.stringify({ type: 'error', message: 'Invalid userId for WebSocket auth' }));
+              break;
+            }
+
+            ws.userId = normalizedUserId;
             ws.username = data.username;
             ws.isAuthenticated = true;
-            connectedUsers.set(data.userId, ws);
+            connectedUsers.set(normalizedUserId, ws);
             
             // Also authenticate for chat service
             await chatWebSocketService.authenticateConnection(ws, {
-              userId: data.userId,
+              userId: normalizedUserId,
               username: data.username
             });
             
-            if (process.env.NODE_ENV === 'development') console.log(`✅ User ${data.username} (${data.userId}) authenticated via WebSocket`);
+            if (process.env.NODE_ENV === 'development') console.log(`✅ User ${data.username} (${normalizedUserId}) authenticated via WebSocket`);
 
             // Send authentication success response
             ws.send(JSON.stringify({
               type: 'auth:success',
               payload: {
-                userId: data.userId,
+                userId: normalizedUserId,
                 username: data.username
               },
               timestamp: Date.now()
             }));
 
             // Send any pending offline messages when user comes online
-            await deliverOfflineMessages(data.userId);
+            await deliverOfflineMessages(normalizedUserId);
             break;
 
           // WhatsApp-style chat events (chatrooms, events, meetups)

@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Bell, MessageCircle, UserPlus, Zap, Users, Handshake } from "lucide-react";
 import websocketService from "@/services/websocketService";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +28,10 @@ interface ConnectionRequest {
     username: string;
     name: string;
     profileImage?: string;
+    location?: string;
+    hometownCity?: string;
+    hometownState?: string;
+    hometownCountry?: string;
   };
 }
 
@@ -54,11 +59,28 @@ interface Notification {
 export default function NotificationBell({ userId }: NotificationBellProps) {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+
+  const formatTimeAgo = (dateString: string) => {
+    const t = new Date(dateString).getTime();
+    if (!Number.isFinite(t)) return "";
+    const diffMs = Date.now() - t;
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return "just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours}h ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays}d ago`;
+  };
 
   // Fetch pending connection requests
   const { data: connectionRequests = [] } = useQuery<ConnectionRequest[]>({
     queryKey: [`/api/connections/${userId}/requests`],
     enabled: !!userId,
+    // If the user is offline (or WS isn't connected), still surface new requests without a full reload.
+    refetchInterval: 30000,
+    refetchOnWindowFocus: true,
   });
 
   // Fetch messages to count unread ones
@@ -72,6 +94,16 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     queryKey: [`/api/notifications/${userId}`],
     enabled: !!userId,
     refetchInterval: 30000,
+  });
+
+  // Mark all notifications as read (when opening the notifications panel)
+  const markAllAsReadMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("PUT", `/api/notifications/${userId}/read-all`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/notifications/${userId}`] });
+    },
   });
 
   // Mark notification as read
@@ -99,7 +131,22 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     (n) => !n.isRead && n.type === 'available_now_meet_request'
   );
 
-  const totalNotifications = connectionRequests.length + unreadMessages.length + meetupNotifications.length + meetRequestNotifications.length;
+  const respondToConnectionRequestMutation = useMutation({
+    mutationFn: async ({ connectionId, status }: { connectionId: number; status: "accepted" | "rejected" }) => {
+      return await apiRequest("PUT", `/api/connections/${connectionId}`, { status });
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: [`/api/connections/${userId}/requests`] });
+      await queryClient.invalidateQueries({ queryKey: [`/api/connections/${userId}`] });
+      await queryClient.invalidateQueries({ queryKey: [`/api/notifications/${userId}`] });
+    },
+  });
+
+  // Badge count should represent *unread* items, not pending/actionable items.
+  // Pending connection requests remain visible in the dropdown, but shouldn't keep the bell badge stuck > 0 after being viewed.
+  const unreadNotificationCount = notifications.filter((n) => !n.isRead).length;
+  const totalNotifications = unreadMessages.length + unreadNotificationCount;
+  const hasAnyDropdownItems = totalNotifications > 0 || connectionRequests.length > 0;
 
   // Real-time: when server pushes a notification via WebSocket, refetch so bell updates immediately
   const queryClientRef = useRef(queryClient);
@@ -107,6 +154,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
   useEffect(() => {
     const onNotification = () => {
       queryClientRef.current.invalidateQueries({ queryKey: [`/api/notifications/${userId}`] });
+      queryClientRef.current.invalidateQueries({ queryKey: [`/api/connections/${userId}/requests`] });
       queryClientRef.current.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
     };
     websocketService.on("notification", onNotification);
@@ -135,7 +183,15 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (nextOpen && userId) {
+          markAllAsReadMutation.mutate();
+        }
+      }}
+    >
       <DropdownMenuTrigger asChild>
         <button
           type="button"
@@ -154,7 +210,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
         <DropdownMenuLabel className="text-gray-900 dark:text-white">Notifications</DropdownMenuLabel>
         <DropdownMenuSeparator />
         
-        {totalNotifications === 0 ? (
+        {!hasAnyDropdownItems ? (
           <div className="p-4 text-center text-gray-500 dark:text-gray-400 text-sm">
             No new notifications
           </div>
@@ -222,28 +278,125 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
             {/* Connection Requests */}
             {connectionRequests.length > 0 && (
               <>
-                <DropdownMenuItem
-                  className="cursor-pointer p-3 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  onClick={() => setLocation("/requests")}
-                >
-                  <div className="flex items-center gap-3 w-full">
-                    <UserPlus className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {connectionRequests.length} Connection Request{connectionRequests.length > 1 ? 's' : ''}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-300 truncate">
-                        {connectionRequests.length === 1 
-                          ? `From ${connectionRequests[0]?.requesterUser?.username || 'Unknown user'}`
-                          : `From ${connectionRequests[0]?.requesterUser?.username || 'Unknown user'} and ${connectionRequests.length - 1} other${connectionRequests.length > 2 ? 's' : ''}`
-                        }
-                      </p>
+                <div className="px-2 pt-1 pb-2">
+                  <div className="flex items-center justify-between px-1.5 pb-2">
+                    <div className="flex items-center gap-2">
+                      <UserPlus className="w-4 h-4 text-blue-500" />
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">Connection Requests</span>
                     </div>
-                    <Badge variant="secondary" className="ml-auto">
-                      {connectionRequests.length}
-                    </Badge>
+                    <Badge variant="secondary">{connectionRequests.length}</Badge>
                   </div>
-                </DropdownMenuItem>
+
+                  <div className="space-y-2">
+                    {connectionRequests.slice(0, 3).map((req) => {
+                      const username = req.requesterUser?.username || "unknown";
+                      const displayCity =
+                        req.requesterUser?.hometownCity ||
+                        req.requesterUser?.location ||
+                        "—";
+                      const timeAgo = req.createdAt ? formatTimeAgo(req.createdAt) : "";
+
+                      return (
+                        <DropdownMenuItem
+                          key={req.id}
+                          className="cursor-default p-0 focus:bg-transparent"
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <div className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2">
+                            <div className="flex items-start gap-2">
+                              <button
+                                type="button"
+                                className="flex items-center gap-2 flex-1 min-w-0 text-left"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setOpen(false);
+                                  setLocation(`/profile/${req.requesterUser?.id}`);
+                                }}
+                              >
+                                <div className="w-9 h-9 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 flex items-center justify-center overflow-hidden shrink-0">
+                                  {req.requesterUser?.profileImage ? (
+                                    <img
+                                      src={req.requesterUser.profileImage}
+                                      alt={username}
+                                      className="w-9 h-9 object-cover"
+                                    />
+                                  ) : (
+                                    <span className="text-white text-xs font-bold">
+                                      {username.slice(0, 2).toUpperCase()}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <span className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                      @{username}
+                                    </span>
+                                    {timeAgo && (
+                                      <span className="text-xs text-gray-500 dark:text-gray-400 shrink-0">
+                                        {timeAgo}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                    {displayCity}
+                                  </div>
+                                </div>
+                              </button>
+
+                              <div className="flex gap-1 shrink-0">
+                                <Button
+                                  size="sm"
+                                  className="h-8 px-2 bg-green-600 hover:bg-green-700 text-white"
+                                  disabled={respondToConnectionRequestMutation.isPending}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setOpen(false);
+                                    respondToConnectionRequestMutation.mutate({ connectionId: req.id, status: "accepted" });
+                                  }}
+                                >
+                                  Accept
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  className="h-8 px-2"
+                                  disabled={respondToConnectionRequestMutation.isPending}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setOpen(false);
+                                    respondToConnectionRequestMutation.mutate({ connectionId: req.id, status: "rejected" });
+                                  }}
+                                >
+                                  Decline
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </DropdownMenuItem>
+                      );
+                    })}
+
+                    {(connectionRequests.length > 3) && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="w-full h-8 text-xs text-gray-600 dark:text-gray-300"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setOpen(false);
+                          setLocation("/requests");
+                        }}
+                      >
+                        View all requests
+                      </Button>
+                    )}
+                  </div>
+                </div>
                 {unreadMessages.length > 0 && <DropdownMenuSeparator />}
               </>
             )}

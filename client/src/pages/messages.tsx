@@ -165,6 +165,24 @@ export default function Messages() {
     refetchInterval: 10000,
   });
 
+  // When the user opens the Messages page, mark ALL received messages as read on the server
+  // so badges clear to 0 across navbar/bottom-nav/notification bell.
+  useEffect(() => {
+    if (!user?.id) return;
+    apiRequest("POST", `/api/messages/${user.id}/mark-all-read`)
+      .then(() => {
+        // Mobile bottom nav unread badge
+        queryClient.invalidateQueries({ queryKey: ["/api/messages", user.id, "unread-count"] });
+        // Messages page list
+        queryClient.invalidateQueries({ queryKey: ["/api/messages", user.id] });
+        // Other screens use the string-key form
+        queryClient.invalidateQueries({ queryKey: [`/api/messages/${user.id}`] });
+      })
+      .catch(() => {
+        // Non-fatal: badges will still clear once individual threads are marked read
+      });
+  }, [user?.id]);
+
   // CRITICAL: Handle mobile app resume - reconnect WebSocket and refetch messages
   useEffect(() => {
     if (!user?.id) return;

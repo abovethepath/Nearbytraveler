@@ -1,11 +1,27 @@
 import type { Express, Request, Response } from "express";
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 import { chatStorage } from "./storage";
 
-function getOpenAI(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
-  if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
-  return new OpenAI({ apiKey });
+// NOTE: OpenAI chat has been replaced with Anthropic Claude.
+// OpenAI references intentionally kept (commented) for rollback.
+// import OpenAI from "openai";
+// function getOpenAI(): OpenAI {
+//   const apiKey = process.env.OPENAI_API_KEY?.trim();
+//   if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
+//   return new OpenAI({ apiKey });
+// }
+
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
+function getAnthropic(): Anthropic {
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
+  return new Anthropic({ apiKey });
+}
+
+function chunkText(text: string, chunkSize = 64): string[] {
+  const out: string[] = [];
+  for (let i = 0; i < text.length; i += chunkSize) out.push(text.slice(i, i + chunkSize));
+  return out;
 }
 
 export function registerChatRoutes(app: Express): void {
@@ -81,22 +97,16 @@ export function registerChatRoutes(app: Express): void {
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      const openai = getOpenAI();
-      const stream = await openai.chat.completions.create({
-        model: "gpt-4o",
+      const anthropic = getAnthropic();
+      const response = await anthropic.messages.create({
+        model: ANTHROPIC_MODEL,
         messages: chatMessages,
-        stream: true,
         max_tokens: 2048,
       });
 
-      let fullResponse = "";
-
-      for await (const chunk of stream) {
-        const content = chunk.choices[0]?.delta?.content || "";
-        if (content) {
-          fullResponse += content;
-          res.write(`data: ${JSON.stringify({ content })}\n\n`);
-        }
+      const fullResponse = response.content?.[0]?.text ?? "";
+      for (const content of chunkText(fullResponse)) {
+        if (content) res.write(`data: ${JSON.stringify({ content })}\n\n`);
       }
 
       // Save assistant message

@@ -19,7 +19,6 @@ import TravelPlansWidget from "@/components/TravelPlansWidget";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { StealthToggle } from "@/components/stealth-toggle";
 import { StealthToggleInline } from "@/components/stealth-toggle-inline";
-import { LocationSharingSection } from "@/components/LocationSharingSection";
 import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 import FriendReferralWidget from "@/components/friend-referral-widget";
 import { PhotoAlbumWidget } from "@/components/photo-album-widget";
@@ -38,6 +37,8 @@ export function ProfileTabs(props: ProfilePageProps) {
   const {
     activeTab, openTab, user, setLocation, isOwnProfile, userConnections, photos, userTravelMemories, userReferences, travelPlans, userVouches, setTriggerQuickMatch, setTriggerQuickMeetup, triggerQuickMeetup, isProfileIncomplete, setIsEditMode, editFormData, isEditingPublicInterests, setIsEditingPublicInterests, setActiveEditSection, setEditFormData, effectiveUserId, queryClient, toast, tabRefs, loadedTabs, showConnectionFilters, setShowConnectionFilters, connectionFilters, setConnectionFilters, sortedUserConnections, connectionsDisplayCount, setConnectionsDisplayCount, editingConnectionNote, setEditingConnectionNote, connectionNoteText, setConnectionNoteText, currentUser, showWriteReferenceModal, setShowWriteReferenceModal, showReferenceForm, setShowReferenceForm, referenceForm, createReference, connectionRequests, countriesVisited, tempCountries, setTempCountries, customCountryInput, setCustomCountryInput, editingCountries, updateCountries, userChatrooms, setShowChatroomList, vouches, compatibilityData, eventsGoing, eventsInterested, businessDealsLoading, businessDeals, ownerContactForm, setOwnerContactForm, editingOwnerInfo, updateOwnerContact, handleSaveOwnerContact, getMetropolitanArea, apiRequest, handleEditCountries, handleSaveCountries, handleCancelCountries, COUNTRIES_OPTIONS, GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, safeGetAllActivities, getApiBaseUrl, getHometownInterests, getTravelInterests, getProfileInterests, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_INTERESTS, ALL_ACTIVITIES, customInterestInput, setCustomInterestInput, customActivityInput, setCustomActivityInput, editingInterests, editingActivities, showCreateDeal, setShowCreateDeal, quickDeals, setShowFullGallery, setSelectedPhotoIndex, uploadingPhoto, EventOrganizerHubSection, editingLanguages, handleEditLanguages, LANGUAGES_OPTIONS, tempLanguages, setTempLanguages, customLanguageInput, setCustomLanguageInput, handleSaveLanguages, handleCancelLanguages, updateLanguages
   } = props as Record<string, any>;
+
+  const outgoingConnectionRequests = (props as any)?.outgoingConnectionRequests || [];
 
   /* Desktop user profiles: tabs are integrated into hero (ProfileTabBar); hide duplicate card. iOS + business: show tabs card. */
   const showTabsCard = isNativeIOSApp() || user?.userType === 'business';
@@ -299,8 +300,8 @@ export function ProfileTabs(props: ProfilePageProps) {
           {/* Main Content Column */}
           <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
 
-            {/* About Section - Shown only when About tab is active */}
-            {activeTab === 'about' && loadedTabs.has('about') && (
+            {/* About Section - Always visible (tabs switch main content below) */}
+            {loadedTabs.has('about') && (
             <div
               role="tabpanel"
               id="panel-about"
@@ -504,20 +505,6 @@ export function ProfileTabs(props: ProfilePageProps) {
                     </div>
                   )}
                 </div>
-
-                {/* Secret Activities Section - Separate Card */}
-            {user?.userType !== 'business' && user?.secretActivities && (
-              <Card className="hover:shadow-lg transition-all duration-200 hover:border-purple-300 dark:hover:border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-800/50 dark:to-purple-700/40 border border-purple-200 dark:border-purple-500">
-                <CardContent className="p-4">
-                  <h5 className="font-medium text-purple-900 dark:text-purple-100 mb-2">
-                    Secret things I would do if my closest friends came to town
-                  </h5>
-                  <p className="text-gray-700 dark:text-purple-200 text-sm italic whitespace-pre-wrap break-words">
-                    {user?.secretActivities}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
 
             {/* Business Deals Section - Only for business users */}
             {user?.userType === 'business' && (
@@ -1276,6 +1263,21 @@ export function ProfileTabs(props: ProfilePageProps) {
                         );
                       })()}
                     </div>
+
+                    {/* SECRET ACTIVITIES - only if user has them */}
+                    {user?.userType !== 'business' && !!((user as any)?.secretActivities || (user as any)?.secret_activities) && (
+                      <div>
+                        <h4 className="font-medium text-gray-800 dark:text-white mb-2">
+                          Secret things I would do if my closest friends came to town
+                        </h4>
+                        <p
+                          className="text-gray-700 dark:text-gray-300 text-sm italic whitespace-pre-wrap break-words"
+                          data-testid="text-secret-activities"
+                        >
+                          {(user as any)?.secretActivities || (user as any)?.secret_activities}
+                        </p>
+                      </div>
+                    )}
 
                   </div>
                 )}
@@ -2827,7 +2829,7 @@ export function ProfileTabs(props: ProfilePageProps) {
             </Card>
               
               {/* Add Contact-related widgets here if any */}
-              {isOwnProfile && connectionRequests.length === 0 && (
+              {isOwnProfile && connectionRequests.length === 0 && outgoingConnectionRequests.length === 0 && (
                 <Card>
                   <CardContent className="text-center py-8 text-gray-500">
                     <Users className="w-12 h-12 mx-auto mb-3 text-gray-300" />
@@ -3352,12 +3354,12 @@ export function ProfileTabs(props: ProfilePageProps) {
 
 
             {/* Connection Requests Widget - Only visible to profile owner */}
-            {isOwnProfile && connectionRequests.length > 0 && (
+            {isOwnProfile && (connectionRequests.length > 0 || outgoingConnectionRequests.length > 0) && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Users className="w-5 h-5 text-blue-500" />
-                    Connection Requests ({connectionRequests.length})
+                    Connection Requests ({connectionRequests.length + outgoingConnectionRequests.length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -3374,9 +3376,32 @@ export function ProfileTabs(props: ProfilePageProps) {
                             className="flex-shrink-0"
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm truncate text-gray-900 dark:text-white">@{request.requesterUser?.username}</p>
+                            {(() => {
+                              const username = request.requesterUser?.username || request.requesterUser?.name || "unknown";
+                              const timeAgo = (() => {
+                                const t = new Date(request.createdAt).getTime();
+                                if (!Number.isFinite(t)) return "";
+                                const mins = Math.floor((Date.now() - t) / 60000);
+                                if (mins < 1) return "just now";
+                                if (mins < 60) return `${mins}m ago`;
+                                const hours = Math.floor(mins / 60);
+                                if (hours < 24) return `${hours}h ago`;
+                                const days = Math.floor(hours / 24);
+                                return `${days}d ago`;
+                              })();
+                              return (
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <p className="font-medium text-sm truncate text-gray-900 dark:text-white">@{username}</p>
+                                  {timeAgo && (
+                                    <span className="text-xs text-gray-500 dark:text-gray-400 shrink-0">
+                                      {timeAgo}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })()}
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                              {request.requesterUser?.location || `@${request.requesterUser?.username}`}
+                              {request.requesterUser?.hometownCity || request.requesterUser?.location || "—"}
                             </p>
                           </div>
                         </div>
@@ -3391,9 +3416,15 @@ export function ProfileTabs(props: ProfilePageProps) {
                                 .then(() => {
                                   queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}/requests`] });
                                   queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
+                                  queryClient.invalidateQueries({
+                                    predicate: (query) => {
+                                      const key0 = Array.isArray(query.queryKey) ? query.queryKey[0] : undefined;
+                                      return typeof key0 === 'string' && key0.includes(`/api/users/${effectiveUserId}/profile-bundle`);
+                                    },
+                                  });
                                   toast({
                                     title: "Connection accepted",
-                                    description: `You are now connected with @${request.requesterUser?.username}`,
+                                    description: `You are now connected with @${request.requesterUser?.username || request.requesterUser?.name || 'unknown'}`,
                                   });
                                 })
                                 .catch(() => {
@@ -3404,19 +3435,25 @@ export function ProfileTabs(props: ProfilePageProps) {
                                   });
                                 });
                             }}
-                            className="h-8 w-16 px-2 text-xs"
+                            className="h-8 w-16 px-2 text-xs bg-green-600 hover:bg-green-700 text-white"
                           >
                             Accept
                           </Button>
                           <Button
                             size="sm"
-                            variant="outline"
+                            variant="destructive"
                             onClick={(e) => {
                               e.stopPropagation();
                               // Decline connection request
                               apiRequest('PUT', `/api/connections/${request.id}`, { status: 'rejected' })
                                 .then(() => {
                                   queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}/requests`] });
+                                  queryClient.invalidateQueries({
+                                    predicate: (query) => {
+                                      const key0 = Array.isArray(query.queryKey) ? query.queryKey[0] : undefined;
+                                      return typeof key0 === 'string' && key0.includes(`/api/users/${effectiveUserId}/profile-bundle`);
+                                    },
+                                  });
                                   toast({
                                     title: "Connection declined",
                                     description: "Connection request declined",
@@ -3437,14 +3474,41 @@ export function ProfileTabs(props: ProfilePageProps) {
                         </div>
                       </div>
                     ))}
-                    {connectionRequests.length > 5 && (
+
+                    {outgoingConnectionRequests.slice(0, 5).map((request: any) => (
+                      <div
+                        key={`outgoing-${request.id}`}
+                        className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                      >
+                        <div
+                          className="flex items-center gap-2 cursor-pointer flex-1 min-w-0 mr-2"
+                          onClick={() => setLocation(`/profile/${request.receiverUser?.id?.toString() || ''}`)}
+                        >
+                          <SimpleAvatar
+                            user={request.receiverUser}
+                            size="sm"
+                            className="flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm truncate text-gray-900 dark:text-white">
+                              Sent to @{request.receiverUser?.username}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              Pending
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {(connectionRequests.length > 5 || outgoingConnectionRequests.length > 5) && (
                       <Button
                         variant="ghost"
                         size="sm"
                         className="w-full text-xs text-gray-500 hover:text-blue-600 h-8"
                         onClick={() => setLocation('/requests')}
                       >
-                        View all {connectionRequests.length} requests
+                        View all requests
                       </Button>
                     )}
                   </div>
@@ -3603,14 +3667,6 @@ export function ProfileTabs(props: ProfilePageProps) {
                   )}
                 </CardContent>
               </Card>
-            )}
-
-
-
-            {/* Comprehensive Geolocation System - Enhanced location sharing for users, businesses, and events */}
-            {(() => { console.log('ðŸ”§ Profile: Checking if location sharing should render:', { isOwnProfile, userId: user?.id }); return null; })()}
-            {isOwnProfile && user && (
-              <LocationSharingSection user={user} queryClient={queryClient} toast={toast} />
             )}
 
 

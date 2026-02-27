@@ -3207,7 +3207,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
       {/* Save button pinned to very bottom - full width mobile, centered desktop */}
       {selectedCity && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-slate-900/95 backdrop-blur border-t border-slate-700">
+        <div
+          className="fixed left-0 right-0 z-50 p-4 pb-4 bg-slate-900/95 backdrop-blur border-t border-slate-700"
+          style={{ bottom: "calc(60px + var(--sab))" }}
+        >
           <div className="max-w-2xl mx-auto flex justify-center">
             <Button
               onClick={() => {

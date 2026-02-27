@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const ANTHROPIC_MODEL = "claude-sonnet-4-6";
+const ANTHROPIC_MODEL = "claude-haiku-4-5-20251001";
 
 function getAnthropic(): Anthropic {
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim();

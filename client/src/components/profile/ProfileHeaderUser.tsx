@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
 import { Camera, MapPin, MessageSquare, MessageCircle, Share2, Users, Building2, Calendar, Plane } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
@@ -13,6 +14,8 @@ import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoi
 import { VouchButton } from "@/components/VouchButton";
 import { ProfileTabBar } from "./ProfileTabBar";
 import { WhatYouHaveInCommon } from "@/components/what-you-have-in-common";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import type { ProfilePageProps } from "./profile-complete-types";
 
 export function ProfileHeaderUser(props: ProfilePageProps) {
@@ -78,6 +81,86 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   );
 
   const isDesktopOwnProfile = !isNativeIOSApp() && isOwnProfile;
+  const queryClient = useQueryClient();
+  const [localLocationSharingEnabled, setLocalLocationSharingEnabled] = React.useState<boolean>(
+    !!user?.locationSharingEnabled,
+  );
+
+  React.useEffect(() => {
+    if (!isOwnProfile) return;
+    setLocalLocationSharingEnabled(!!user?.locationSharingEnabled);
+  }, [isOwnProfile, user?.locationSharingEnabled]);
+
+  const updateLocationSharingMutation = useMutation({
+    mutationFn: async (enabled: boolean) => {
+      if (!user?.id) throw new Error("User not found");
+      return apiRequest("PUT", `/api/users/${user.id}`, { locationSharingEnabled: enabled });
+    },
+    onSuccess: async () => {
+      if (!user?.id) return;
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] }),
+        queryClient.invalidateQueries({ queryKey: ["/api/users", user.id] }),
+      ]);
+    },
+    onError: () => {
+      setLocalLocationSharingEnabled(!!user?.locationSharingEnabled);
+      toast?.({
+        title: "Error",
+        description: "Failed to update location visibility",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleLocationVisibilityToggle = (enabled: boolean) => {
+    if (!isOwnProfile || !user?.id) return;
+    setLocalLocationSharingEnabled(enabled);
+    updateLocationSharingMutation.mutate(enabled);
+
+    if (enabled && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          apiRequest("POST", `/api/users/${user.id}/location`, {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            locationSharingEnabled: true,
+          })
+            .then(() => {
+              queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
+              queryClient.invalidateQueries({ queryKey: ["/api/users", user.id] });
+            })
+            .catch(() => {
+              // Preference is already saved; best-effort update for coordinates
+            });
+        },
+        () => {
+          // Preference is already saved; best-effort update for coordinates
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
+      );
+    }
+  };
+
+  const locationVisibilityToggleRow = () => {
+    if (!isOwnProfile) return null;
+    const enabled = !!localLocationSharingEnabled;
+    const activeTextClass = enabled ? "text-green-600 dark:text-green-400" : "text-gray-500 dark:text-gray-400";
+
+    return (
+      <div className="mt-2 flex items-center justify-between gap-2 w-full" data-testid="location-visibility-toggle-row">
+        <div className={`flex items-center gap-1.5 ${activeTextClass}`}>
+          <MapPin className="w-3.5 h-3.5" />
+          <span className="text-xs font-medium">Visible on city map</span>
+        </div>
+        <Switch
+          checked={enabled}
+          onCheckedChange={handleLocationVisibilityToggle}
+          disabled={updateLocationSharingMutation.isPending}
+        />
+      </div>
+    );
+  };
 
   return (
     <div
@@ -94,7 +177,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             <div className="flex flex-col items-start flex-shrink-0 min-w-0">
               <div className="relative">
                 <div
-                  className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden cursor-pointer"
+                  className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden cursor-pointer"
                   onClick={() => { if (user?.profileImage) setShowExpandedPhoto(true); }}
                   title={user?.profileImage ? "Click to enlarge photo" : undefined}
                 >
@@ -102,10 +185,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </div>
                 {/* Add Photo - overlay at bottom right of avatar circle */}
                 <label
-                  className={`absolute bottom-0 right-0 w-8 h-8 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-600/90 hover:bg-gray-500'} text-white border-2 border-white overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
+                  className={`absolute bottom-0 right-0 w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-600/90 hover:bg-gray-500'} text-white border-2 border-white overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
                   data-testid="button-upload-avatar"
                 >
-                  <Camera className="h-4 w-4 pointer-events-none" />
+                  <Camera className="h-4 w-4 md:h-5 md:w-5 pointer-events-none" />
                   <input id="avatar-upload-input" type="file" accept="image/*" onChange={(e) => { handleAvatarUpload?.(e); }} className="sr-only" disabled={uploadingPhoto} aria-label="Change avatar" />
                 </label>
               </div>
@@ -121,6 +204,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   </span>
                 </div>
               )}
+              {locationVisibilityToggleRow()}
               {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-2">
                   New to Town
@@ -234,6 +318,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   </span>
                 </>
               )}
+              {locationVisibilityToggleRow()}
               {(() => {
                 if (!hasValidTravelDestination) return null;
                 const now = new Date();
@@ -362,7 +447,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           )}
                         </div>
                         {isDesktopOtherUser && currentUser?.id && user?.id && user?.userType !== 'business' && (
-                          <div className="flex-1 min-w-[280px] max-w-[380px]">
+                          <div className="flex-1 w-full min-w-[520px] max-w-[1040px]">
                             <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
                           </div>
                         )}

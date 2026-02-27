@@ -1,6 +1,44 @@
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// NOTE: OpenAI image generation has been replaced with Anthropic Claude.
+// OpenAI references intentionally kept (commented) for rollback.
+// import OpenAI from "openai";
+// const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+const ANTHROPIC_MODEL = "claude-haiku-4-5-20251001";
+
+function getAnthropic(): Anthropic {
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
+  return new Anthropic({ apiKey });
+}
+
+function svgToDataUrl(svg: string): string {
+  const cleaned = svg.trim();
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(cleaned)}`;
+}
+
+async function generateCityCoverSvg(prompt: string): Promise<string> {
+  const anthropic = getAnthropic();
+  const response = await anthropic.messages.create({
+    model: ANTHROPIC_MODEL,
+    max_tokens: 1200,
+    system:
+      "You generate a single safe inline SVG image (no scripts). Output ONLY the raw <svg>...</svg> markup. " +
+      "Style should feel like a modern travel app hero: clean gradients, simple shapes, subtle skyline/landmark hints. " +
+      "No external images, no foreignObject, no embedded fonts.",
+    messages: [
+      {
+        role: "user",
+        content:
+          "Create an SVG cover image that matches this city image prompt:\n\n" +
+          prompt +
+          "\n\nConstraints:\n- 1200x600 viewBox\n- Include a subtle top-to-bottom gradient background\n- Add 2-4 abstract landmark/silhouette elements\n- Keep text out of the SVG\n- Output only <svg> markup",
+      },
+    ],
+  });
+  return response.content?.[0]?.text ?? "";
+}
 
 export class AICityImageGenerator {
   async generateCityImage(city: string, state: string, country: string): Promise<string | null> {
@@ -8,16 +46,10 @@ export class AICityImageGenerator {
       // Create a descriptive prompt for the city
       const prompt = this.createCityImagePrompt(city, state, country);
       
-      // Generate the image using DALL-E 3
-      const response = await openai.images.generate({
-        model: "dall-e-3",
-        prompt: prompt,
-        n: 1,
-        size: "1024x1024",
-        quality: "standard",
-      });
-
-      return response.data[0].url;
+      // Generate an SVG cover image using Claude (returned as data URL)
+      const svg = await generateCityCoverSvg(prompt);
+      if (!svg || !svg.includes("<svg")) return null;
+      return svgToDataUrl(svg);
     } catch (error) {
       console.error('Error generating city image:', error);
       return null;

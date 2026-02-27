@@ -1,14 +1,24 @@
 import express, { type Express, type Request, type Response } from "express";
 import { chatStorage } from "../chat/storage";
 import { speechToText, ensureCompatibleFormat, textToSpeech } from "./client";
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
 const audioBodyParser = express.json({ limit: "50mb" });
 
-function getOpenAI(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
-  if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
-  return new OpenAI({ apiKey });
+// NOTE: OpenAI chat has been replaced with Anthropic Claude.
+// OpenAI references intentionally kept (commented) for rollback.
+// import OpenAI from "openai";
+// function getOpenAI(): OpenAI {
+//   const apiKey = process.env.OPENAI_API_KEY?.trim();
+//   if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
+//   return new OpenAI({ apiKey });
+// }
+
+const ANTHROPIC_MODEL = "claude-sonnet-4-6";
+function getAnthropic(): Anthropic {
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
+  return new Anthropic({ apiKey });
 }
 
 export function registerAudioRoutes(app: Express): void {
@@ -83,14 +93,14 @@ export function registerAudioRoutes(app: Express): void {
 
       res.write(`data: ${JSON.stringify({ type: "user_transcript", data: userTranscript })}\n\n`);
 
-      const openai = getOpenAI();
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
+      const anthropic = getAnthropic();
+      const completion = await anthropic.messages.create({
+        model: ANTHROPIC_MODEL,
         messages: chatHistory,
         max_tokens: 2048,
       });
 
-      const assistantTranscript = completion.choices[0]?.message?.content?.trim() ?? "";
+      const assistantTranscript = (completion.content?.[0]?.text ?? "").trim();
 
       res.write(`data: ${JSON.stringify({ type: "transcript", data: assistantTranscript })}\n\n`);
 

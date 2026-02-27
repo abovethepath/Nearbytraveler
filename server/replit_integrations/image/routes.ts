@@ -1,10 +1,25 @@
 import type { Express, Request, Response } from "express";
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
-function getOpenAI(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
-  if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
-  return new OpenAI({ apiKey });
+// NOTE: OpenAI image generation has been replaced with Anthropic Claude.
+// OpenAI references intentionally kept (commented) for rollback.
+// import OpenAI from "openai";
+// function getOpenAI(): OpenAI {
+//   const apiKey = process.env.OPENAI_API_KEY?.trim();
+//   if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
+//   return new OpenAI({ apiKey });
+// }
+
+const ANTHROPIC_MODEL = "claude-haiku-4-5-20251001";
+function getAnthropic(): Anthropic {
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
+  return new Anthropic({ apiKey });
+}
+
+function svgToDataUrl(svg: string): string {
+  const cleaned = svg.trim();
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(cleaned)}`;
 }
 
 export function registerImageRoutes(app: Express): void {
@@ -14,20 +29,29 @@ export function registerImageRoutes(app: Express): void {
 
       if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
-      const openai = getOpenAI();
-      const response = await openai.images.generate({
-        model: "dall-e-3",
-        prompt,
-        n: 1,
-        size: size === "1792x1024" || size === "1024x1792" ? size : "1024x1024",
-        quality: "standard",
-        response_format: "b64_json",
+      const anthropic = getAnthropic();
+      const resolvedSize = size === "1792x1024" || size === "1024x1792" ? size : "1024x1024";
+      const response = await anthropic.messages.create({
+        model: ANTHROPIC_MODEL,
+        max_tokens: 1200,
+        system:
+          "You generate a single safe inline SVG image (no scripts). Output ONLY the raw <svg>...</svg> markup. " +
+          "No external images, no foreignObject, no embedded fonts.",
+        messages: [
+          {
+            role: "user",
+            content:
+              "Create an SVG image that matches this prompt:\n\n" +
+              prompt +
+              `\n\nConstraints:\n- Use viewBox sized for ${resolvedSize}\n- No text\n- Output only <svg> markup`,
+          },
+        ],
       });
-
-      const imageData = response.data[0] as { url?: string; b64_json?: string } | undefined;
+      const svg = response.content?.[0]?.text ?? "";
+      const url = svg && svg.includes("<svg") ? svgToDataUrl(svg) : null;
       res.json({
-        url: imageData?.url ?? null,
-        b64_json: imageData?.b64_json ?? null,
+        url,
+        b64_json: url ? Buffer.from(url, "utf8").toString("base64") : null,
       });
     } catch (error) {
       console.error("Error generating image:", error);

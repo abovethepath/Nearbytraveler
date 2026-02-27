@@ -164,8 +164,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       const uid = (currentUserId || user.id || '').toString();
       const headers: Record<string, string> = { 'x-user-id': uid };
       if (user?.id) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name });
+      if (import.meta.env.DEV) {
+        console.log('📡 WhatsApp Chat: HTTP fallback request', {
+          url: `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`,
+          uid,
+          chatId,
+          chatType,
+        });
+      }
       const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`, {
-        headers
+        headers,
+        credentials: 'include',
       });
       
       if (response.ok) {
@@ -175,12 +184,24 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           setMessages(data.messages.reverse());
           setMessagesLoaded(true);
           scrollToBottom();
+        } else if (chatType === 'dm') {
+          // DM-specific resilience: do not get stuck in a perpetual loading state
+          console.warn('⚠️ WhatsApp Chat: HTTP fallback returned unexpected payload for DM; clearing loading state');
+          setMessagesLoaded(true);
         }
       } else {
         console.warn('⚠️ WhatsApp Chat: HTTP fallback failed with status:', response.status);
+        if (chatType === 'dm') {
+          // DM-specific resilience: allow user to type/send even if history fetch fails
+          setMessagesLoaded(true);
+        }
       }
     } catch (error) {
       console.error('❌ WhatsApp Chat: HTTP fallback error:', error);
+      if (chatType === 'dm') {
+        // DM-specific resilience: allow user to type/send even if history fetch fails
+        setMessagesLoaded(true);
+      }
     }
   };
 
@@ -308,8 +329,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         const uid = (currentUserId || user.id || '').toString();
         const headers: Record<string, string> = { 'x-user-id': uid };
         if (user?.id) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name });
+        if (import.meta.env.DEV) {
+          console.log('🚀 WhatsApp Chat: Initial messages request', {
+            url: `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`,
+            uid,
+            chatId,
+            chatType,
+          });
+        }
         const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`, {
-          headers
+          headers,
+          credentials: 'include',
         });
         
         if (response.ok) {
@@ -319,10 +349,21 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             setMessages(data.messages.reverse());
             setMessagesLoaded(true);
             scrollToBottom();
+          } else if (chatType === 'dm') {
+            console.warn('⚠️ WhatsApp Chat: Immediate HTTP load returned unexpected payload for DM; clearing loading state');
+            setMessagesLoaded(true);
           }
+        } else if (chatType === 'dm') {
+          // DM-specific resilience: allow user to type/send even if history fetch fails
+          console.warn('⚠️ WhatsApp Chat: Immediate HTTP load failed for DM with status:', response.status);
+          setMessagesLoaded(true);
         }
       } catch (error) {
         console.warn('⚠️ WhatsApp Chat: Immediate HTTP load failed, will use WebSocket:', error);
+        if (chatType === 'dm') {
+          // DM-specific resilience: allow user to type/send even if history fetch fails
+          setMessagesLoaded(true);
+        }
       }
     };
     loadMessagesImmediately();
@@ -391,6 +432,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               setMessagesLoaded(true);
             } else {
               console.warn('⚠️ WhatsApp Chat: No messages array in sync:response payload');
+              if (chatType === 'dm') {
+                // DM-specific resilience: clear loading even if payload is empty/unexpected
+                setMessagesLoaded(true);
+              }
             }
             scrollToBottom();
             break;
@@ -1226,14 +1271,14 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               placeholder="Message"
               className="flex-1 min-h-[36px] max-h-[100px] bg-gray-700 border-gray-600 text-white resize-none rounded-full px-3 py-2 text-sm"
               rows={1}
-              disabled={!messagesLoaded && !isWsConnected}
+              disabled={chatType !== 'dm' && !messagesLoaded && !isWsConnected}
             />
             <Button 
               onClick={sendMessage} 
-              disabled={!messageText.trim() || !currentUserId || (!messagesLoaded && !isWsConnected)} 
+              disabled={!messageText.trim() || !currentUserId || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))} 
               size="icon" 
               className={`rounded-full min-h-[44px] min-w-[44px] h-11 w-11 md:h-9 md:w-9 shrink-0 touch-target ${
-                !currentUserId || (!messagesLoaded && !isWsConnected)
+                !currentUserId || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))
                   ? 'bg-gray-500 cursor-not-allowed' 
                   : 'bg-green-600 hover:bg-green-700'
               }`}

@@ -78,6 +78,16 @@ export default function ConnectButton({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/connections/${currentUserId}`] });
       queryClient.invalidateQueries({ queryKey: [`/api/connections/status/${currentUserId}/${targetUserId}`] });
+      // Keep "sent pending requests" UI in sync
+      queryClient.invalidateQueries({ queryKey: [`/api/connections/${currentUserId}/requests/outgoing`] });
+      // Keep profile pending requests widget in sync (profile-bundle contains outgoing requests).
+      // NOTE: Some screens key profile-bundle as [`/api/users/:id/profile-bundle`, viewerId], so use a predicate.
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const key0 = Array.isArray(query.queryKey) ? query.queryKey[0] : undefined;
+          return typeof key0 === 'string' && key0.includes(`/api/users/${currentUserId}/profile-bundle`);
+        },
+      });
       toast({
         title: "Connection request sent",
         description: `Your connection request has been sent to ${targetName || targetUsername}.`,

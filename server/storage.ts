@@ -58,6 +58,7 @@ export interface IStorage {
   updateConnectionStatus(id: number, status: string): Promise<Connection | undefined>;
   getUserConnections(userId: number, filters?: any): Promise<any[]>;
   getConnectionRequests(userId: number): Promise<Connection[]>;
+  getOutgoingConnectionRequests(userId: number): Promise<any[]>;
   
   // Message methods
   createMessage(message: InsertMessage): Promise<Message>;
@@ -2002,6 +2003,8 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select({
         id: connections.id,
+        requesterId: connections.requesterId,
+        receiverId: connections.receiverId,
         status: connections.status,
         createdAt: connections.createdAt,
         requesterUser: {
@@ -2027,10 +2030,52 @@ export class DatabaseStorage implements IStorage {
         }
       })
       .from(connections)
-      .leftJoin(users, eq(connections.requesterId, users.id))
+      // Use INNER JOIN so requester identity is always present (prevents "@undefined" UI)
+      .innerJoin(users, eq(connections.requesterId, users.id))
       .where(
         and(
           eq(connections.receiverId, userId),
+          eq(connections.status, "pending")
+        )
+      );
+  }
+
+  async getOutgoingConnectionRequests(userId: number): Promise<any[]> {
+    return await db
+      .select({
+        id: connections.id,
+        requesterId: connections.requesterId,
+        receiverId: connections.receiverId,
+        status: connections.status,
+        createdAt: connections.createdAt,
+        receiverUser: {
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          email: users.email,
+          userType: users.userType,
+          bio: users.bio,
+          location: users.location,
+          hometownCity: users.hometownCity,
+          hometownState: users.hometownState,
+          hometownCountry: users.hometownCountry,
+          profileImage: users.profileImage,
+          dateOfBirth: users.dateOfBirth,
+          gender: users.gender,
+          sexualPreference: users.sexualPreference,
+          interests: users.interests,
+          activities: users.activities,
+          travelStyle: users.travelStyle,
+          languagesSpoken: users.languagesSpoken,
+          countriesVisited: users.countriesVisited,
+        },
+      })
+      .from(connections)
+      // Use INNER JOIN so receiver identity is always present
+      .innerJoin(users, eq(connections.receiverId, users.id))
+      .where(
+        and(
+          eq(connections.requesterId, userId),
           eq(connections.status, "pending")
         )
       );

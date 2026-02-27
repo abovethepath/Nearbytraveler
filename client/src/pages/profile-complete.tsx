@@ -33,7 +33,6 @@ import FriendReferralWidget from "@/components/friend-referral-widget";
 
 import ReferencesWidgetNew from "@/components/references-widget-new";
 import { VouchWidget } from "@/components/vouch-widget";
-import { LocationSharingSection } from "@/components/LocationSharingSection";
 import TravelPlansWidget from "@/components/TravelPlansWidget";
 // Removed framer-motion import for static interface
 import { useToast } from "@/hooks/use-toast";
@@ -1114,6 +1113,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     travelPlans: any[];
     connections: any[];
     connectionRequests: any[];
+    outgoingConnectionRequests: any[];
     references: any[];
     vouches: any[];
     photos: any[];
@@ -1481,6 +1481,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // BUNDLE-DERIVED: Connection requests from profile bundle
   const connectionRequests = profileBundle?.connectionRequests || [];
+
+  // BUNDLE-DERIVED: Outgoing (sent) pending requests for profile owner
+  const outgoingConnectionRequests = profileBundle?.outgoingConnectionRequests || [];
 
   // BUNDLE-DERIVED: Mutual connections from bundle connections data
   const mutualConnections = profileBundle?.connections || [];
@@ -3768,7 +3771,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     queryClient, tabRefs, loadedTabs, showConnectionFilters, setShowConnectionFilters, connectionFilters, setConnectionFilters,
     sortedUserConnections, connectionsDisplayCount, setConnectionsDisplayCount, editingConnectionNote, setEditingConnectionNote,
     connectionNoteText, setConnectionNoteText, showWriteReferenceModal, setShowReferenceForm, showReferenceForm, referenceForm,
-    createReference, connectionRequests, countriesVisited, tempCountries, setTempCountries, customCountryInput, setCustomCountryInput,
+    createReference, connectionRequests, outgoingConnectionRequests, countriesVisited, tempCountries, setTempCountries, customCountryInput, setCustomCountryInput,
     editingCountries, updateCountries, userChatrooms, setShowChatroomList, vouches, compatibilityData, eventsGoing, eventsInterested,
     businessDealsLoading, businessDeals, ownerContactForm, setOwnerContactForm, editingOwnerInfo, updateOwnerContact, handleSaveOwnerContact,
     apiRequest, handleEditCountries, handleSaveCountries, handleCancelCountries, COUNTRIES_OPTIONS, GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS,

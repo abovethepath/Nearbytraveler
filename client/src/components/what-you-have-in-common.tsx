@@ -614,23 +614,99 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
           All your shared interests, activities, and experiences
         </p>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Shared Interests */}
-        {commonalities.sharedInterests.length > 0 && (
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:bg-gradient-to-r dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg p-3 border border-blue-200 dark:border-blue-600">
-            <h5 className="font-bold text-gray-900 dark:text-slate-800 mb-3 flex items-center gap-1 text-base">
-              <Heart className="w-5 h-5 text-red-500" />
-              Shared Interests ({commonalities.sharedInterests.length})
-            </h5>
-            <div className="flex flex-wrap gap-1.5">
-              {commonalities.sharedInterests.map((interest, index) => (
-                <div key={`shared-interest-${interest}-${index}`} className="inline-flex items-center justify-center h-8 sm:h-9 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-none whitespace-nowrap bg-blue-100 text-gray-900 border border-blue-200 dark:bg-blue-900/50 dark:text-gray-100 dark:border-blue-700">
-                  {interest}
-                </div>
-              ))}
+      <CardContent className="space-y-4 lg:space-y-3">
+        {/* Desktop: keep card wide/compact by placing these two sections side-by-side */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Shared Interests */}
+          {commonalities.sharedInterests.length > 0 && (
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:bg-gradient-to-r dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg p-3 border border-blue-200 dark:border-blue-600">
+              <h5 className="font-bold text-gray-900 dark:text-slate-800 mb-3 lg:mb-2 flex items-center gap-1 text-base">
+                <Heart className="w-5 h-5 text-red-500" />
+                Shared Interests ({commonalities.sharedInterests.length})
+              </h5>
+              <div className="flex flex-wrap gap-1.5 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-1.5">
+                {commonalities.sharedInterests.map((interest, index) => (
+                  <div
+                    key={`shared-interest-${interest}-${index}`}
+                    className="inline-flex items-center justify-center h-8 sm:h-9 lg:h-6 rounded-full px-3 sm:px-4 lg:px-2.5 text-xs sm:text-sm lg:text-xs font-medium leading-none whitespace-nowrap bg-blue-100 text-gray-900 border border-blue-200 dark:bg-blue-900/50 dark:text-gray-100 dark:border-blue-700"
+                  >
+                    {interest}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Other Things in Common - Combined Section */}
+          {(commonalities.sharedSexualPreferences.length > 0 || 
+            commonalities.sharedCountries.length > 0 || 
+            commonalities.sharedLanguages.length > 0 || 
+            commonalities.otherCommonalities.length > 0) && (
+            <div className="bg-slate-800 rounded-lg p-3 border border-slate-600">
+              <h5 className="font-bold text-slate-100 mb-3 lg:mb-2 flex items-center gap-1 text-base">
+                <User className="w-5 h-5 text-slate-300" />
+                Other Things in Common ({commonalities.sharedSexualPreferences.length + commonalities.sharedCountries.length + commonalities.sharedLanguages.length + commonalities.otherCommonalities.length})
+              </h5>
+              <div className="space-y-3 lg:space-y-2">
+                {/* Sexual Preferences */}
+                {commonalities.sharedSexualPreferences.length > 0 && (
+                  <div>
+                    <h6 className="text-sm font-medium text-slate-200 mb-2">Sexual Preferences</h6>
+                    <div className="flex flex-wrap gap-2 lg:gap-1.5">
+                      {commonalities.sharedSexualPreferences.map((preference, index) => (
+                        <Badge key={`shared-preference-${preference}-${index}`} className="bg-slate-700 text-slate-100 border-slate-600 font-medium">
+                          {preference}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Countries Visited */}
+                {commonalities.sharedCountries.length > 0 && (
+                  <div>
+                    <h6 className="text-sm font-medium text-slate-200 mb-2">Countries You've Both Visited</h6>
+                    <div className="flex flex-wrap gap-2 lg:gap-1.5">
+                      {commonalities.sharedCountries.map((country, index) => (
+                        <Badge key={`shared-country-${country}-${index}`} className="bg-slate-700 text-slate-100 border-slate-600 font-medium">
+                          🌍 {country}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Languages */}
+                {commonalities.sharedLanguages.length > 0 && (
+                  <div>
+                    <h6 className="text-sm font-medium text-slate-200 mb-2">Shared Languages</h6>
+                    <div className="flex flex-wrap gap-2 lg:gap-1.5">
+                      {commonalities.sharedLanguages.map((language, index) => (
+                        <Badge key={`shared-language-${language}-${index}`} className="bg-slate-700 text-slate-100 border-slate-600 font-medium">
+                          💬 {language}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Military/Other Status */}
+                {commonalities.otherCommonalities.length > 0 && (
+                  <div>
+                    <h6 className="text-sm font-medium text-slate-200 mb-2">Other Things In Common</h6>
+                    <div className="flex flex-wrap gap-2 lg:gap-1.5">
+                      {commonalities.otherCommonalities.map((commonality, index) => (
+                        <Badge key={`other-commonality-${commonality}-${index}`} className="bg-slate-700 text-slate-100 border-slate-600 font-medium">
+                          🎖️ {commonality}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Shared Activities */}
         {commonalities.sharedActivities.length > 0 && (
@@ -745,78 +821,6 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </div>
           </div>
         )}
-
-        {/* Other Things in Common - Combined Section */}
-        {(commonalities.sharedSexualPreferences.length > 0 || 
-          commonalities.sharedCountries.length > 0 || 
-          commonalities.sharedLanguages.length > 0 || 
-          commonalities.otherCommonalities.length > 0) && (
-          <div className="bg-slate-800 rounded-lg p-3 border border-slate-600">
-            <h5 className="font-bold text-slate-100 mb-3 flex items-center gap-1 text-base">
-              <User className="w-5 h-5 text-slate-300" />
-              Other Things in Common ({commonalities.sharedSexualPreferences.length + commonalities.sharedCountries.length + commonalities.sharedLanguages.length + commonalities.otherCommonalities.length})
-            </h5>
-            <div className="space-y-3">
-              {/* Sexual Preferences */}
-              {commonalities.sharedSexualPreferences.length > 0 && (
-                <div>
-                  <h6 className="text-sm font-medium text-slate-200 mb-2">Sexual Preferences</h6>
-                  <div className="flex flex-wrap gap-2">
-                    {commonalities.sharedSexualPreferences.map((preference, index) => (
-                      <Badge key={`shared-preference-${preference}-${index}`} className="bg-slate-700 text-slate-100 border-slate-600 font-medium">
-                        {preference}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {/* Countries Visited */}
-              {commonalities.sharedCountries.length > 0 && (
-                <div>
-                  <h6 className="text-sm font-medium text-slate-200 mb-2">Countries You've Both Visited</h6>
-                  <div className="flex flex-wrap gap-2">
-                    {commonalities.sharedCountries.map((country, index) => (
-                      <Badge key={`shared-country-${country}-${index}`} className="bg-slate-700 text-slate-100 border-slate-600 font-medium">
-                        🌍 {country}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {/* Languages */}
-              {commonalities.sharedLanguages.length > 0 && (
-                <div>
-                  <h6 className="text-sm font-medium text-slate-200 mb-2">Shared Languages</h6>
-                  <div className="flex flex-wrap gap-2">
-                    {commonalities.sharedLanguages.map((language, index) => (
-                      <Badge key={`shared-language-${language}-${index}`} className="bg-slate-700 text-slate-100 border-slate-600 font-medium">
-                        💬 {language}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {/* Military/Other Status */}
-              {commonalities.otherCommonalities.length > 0 && (
-                <div>
-                  <h6 className="text-sm font-medium text-slate-200 mb-2">Other Things In Common</h6>
-                  <div className="flex flex-wrap gap-2">
-                    {commonalities.otherCommonalities.map((commonality, index) => (
-                      <Badge key={`other-commonality-${commonality}-${index}`} className="bg-slate-700 text-slate-100 border-slate-600 font-medium">
-                        🎖️ {commonality}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-
 
         {/* Special Travel Safety Notice for Mutual Friends */}
         {mutualConnections && mutualConnections.length > 0 && (

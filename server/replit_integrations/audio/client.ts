@@ -1,4 +1,6 @@
-import OpenAI, { toFile } from "openai";
+// NOTE: OpenAI audio (Whisper/TTS) has been disabled in favor of Anthropic-only usage.
+// OpenAI references intentionally kept (commented) for rollback.
+// import OpenAI, { toFile } from "openai";
 import { Buffer } from "node:buffer";
 import { spawn } from "child_process";
 import { writeFile, unlink, readFile } from "fs/promises";
@@ -10,11 +12,11 @@ import { join } from "path";
  * Provider-agnostic OpenAI client using OPENAI_API_KEY.
  * Works on Render or any standard hosting (no Replit-specific APIs).
  */
-function getOpenAI(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
-  if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
-  return new OpenAI({ apiKey });
-}
+// function getOpenAI(): OpenAI {
+//   const apiKey = process.env.OPENAI_API_KEY?.trim();
+//   if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
+//   return new OpenAI({ apiKey });
+// }
 
 export type AudioFormat = "wav" | "mp3" | "webm" | "mp4" | "ogg" | "unknown";
 
@@ -84,14 +86,9 @@ export async function speechToText(
   audioBuffer: Buffer,
   format: "wav" | "mp3" | "webm" = "wav"
 ): Promise<string> {
-  const openai = getOpenAI();
-  const ext = format === "webm" ? "webm" : format;
-  const file = await toFile(audioBuffer, `audio.${ext}`);
-  const response = await openai.audio.transcriptions.create({
-    file,
-    model: "whisper-1",
-  });
-  return response.text;
+  void audioBuffer;
+  void format;
+  throw new Error("Speech-to-text is not available (OpenAI Whisper removed; Anthropic is text-only).");
 }
 
 /**
@@ -103,14 +100,10 @@ export async function textToSpeech(
   voice: "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer" = "alloy",
   _format: "wav" | "mp3" | "flac" | "opus" | "pcm16" = "mp3"
 ): Promise<Buffer> {
-  const openai = getOpenAI();
-  const response = await openai.audio.speech.create({
-    model: "tts-1",
-    voice,
-    input: text,
-  });
-  const arrayBuffer = await response.arrayBuffer();
-  return Buffer.from(arrayBuffer);
+  void text;
+  void voice;
+  void _format;
+  throw new Error("Text-to-speech is not available (OpenAI TTS removed; Anthropic is text-only).");
 }
 
 /**
