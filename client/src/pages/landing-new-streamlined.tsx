@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import { Users, MapPin, Globe, Coffee, Heart, Car, RefreshCw, Home, Shield, Moon, Sun, Mail, User, CheckCircle } from "lucide-react";
+import { Mail, User, CheckCircle } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -163,7 +163,7 @@ export default function LandingStreamlined() {
         <div className="bg-gradient-to-r from-orange-600 to-red-600 py-4 sm:py-5 px-4 text-center">
           <div className="max-w-4xl mx-auto">
             <p className="text-xl sm:text-2xl text-white font-bold">
-              🚀 Coming Soon — Join the Waitlist for Early Access
+              Coming Soon — Join the Waitlist for Early Access
             </p>
           </div>
         </div>
@@ -306,9 +306,6 @@ export default function LandingStreamlined() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <RefreshCw className="w-8 h-8 text-blue-600 dark:text-white" />
-                </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Reconnect When Paths Cross Again</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Know when a friend you met in one city shows up in your next destination—the only app that notifies you when travel friends are nearby.
@@ -316,9 +313,6 @@ export default function LandingStreamlined() {
               </div>
 
               <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Coffee className="w-8 h-8 text-orange-600 dark:text-white" />
-                </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Share Meals with Travelers & Locals</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Connect with people before your trip starts and turn dinners into friendships.
@@ -326,9 +320,6 @@ export default function LandingStreamlined() {
               </div>
 
               <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <MapPin className="w-8 h-8 text-blue-600 dark:text-white" />
-                </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Explore Authentic Spots Beyond Guidebooks</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Discover hidden gems shared by locals, not tourist traps.
@@ -336,9 +327,6 @@ export default function LandingStreamlined() {
               </div>
 
               <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Home className="w-8 h-8 text-orange-600 dark:text-white" />
-                </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Build Your Local Community</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Organize events, welcome travelers, and build community without leaving home.
@@ -346,9 +334,6 @@ export default function LandingStreamlined() {
               </div>
 
               <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Shield className="w-8 h-8 text-blue-600 dark:text-white" />
-                </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Vouched Connections & Verified Profiles</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Every member can be vouched for by others they've met, with optional verification for added trust.
@@ -356,9 +341,6 @@ export default function LandingStreamlined() {
               </div>
 
               <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Users className="w-8 h-8 text-orange-600 dark:text-white" />
-                </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Build a Global Network of Friends</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Create a worldwide circle of connections who share your interests and values.
@@ -379,9 +361,6 @@ export default function LandingStreamlined() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-12 sm:mb-16">
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg border-l-4 border-blue-500">
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-6 h-6 text-blue-600 dark:text-white" />
-                  </div>
                   <p className="text-lg sm:text-xl text-gray-900 dark:text-white font-semibold leading-relaxed">
                     Remember that person you met in Barcelona? They just landed in your city.
                   </p>
@@ -390,9 +369,6 @@ export default function LandingStreamlined() {
 
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg border-l-4 border-orange-500">
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-12 h-12 bg-orange-100 dark:bg-orange-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Globe className="w-6 h-6 text-orange-600 dark:text-white" />
-                  </div>
                   <p className="text-lg sm:text-xl text-gray-900 dark:text-white font-semibold leading-relaxed">
                     The traveler you hosted last year? They're in Tokyo—where you're heading next week.
                   </p>
@@ -427,28 +403,28 @@ export default function LandingStreamlined() {
             </h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
-              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
-                <Coffee className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 dark:text-orange-400 mr-2 sm:mr-3 flex-shrink-0" />
+              <div className="flex items-center justify-center gap-3 p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
+                <span className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 flex-shrink-0" />
                 <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Expand your social life</span>
               </div>
-              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
-                <Car className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 mr-2 sm:mr-3 flex-shrink-0" />
+              <div className="flex items-center justify-center gap-3 p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
+                <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 flex-shrink-0" />
                 <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Discover day trip adventures</span>
               </div>
-              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
-                <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 dark:text-orange-400 mr-2 sm:mr-3 flex-shrink-0" />
+              <div className="flex items-center justify-center gap-3 p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
+                <span className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 flex-shrink-0" />
                 <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Practice language exchange</span>
               </div>
-              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
-                <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 mr-2 sm:mr-3 flex-shrink-0" />
+              <div className="flex items-center justify-center gap-3 p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
+                <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 flex-shrink-0" />
                 <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Find meaningful relationships</span>
               </div>
-              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
-                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 dark:text-orange-400 mr-2 sm:mr-3 flex-shrink-0" />
+              <div className="flex items-center justify-center gap-3 p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
+                <span className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 flex-shrink-0" />
                 <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Experience local culture</span>
               </div>
-              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
-                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 mr-2 sm:mr-3 flex-shrink-0" />
+              <div className="flex items-center justify-center gap-3 p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
+                <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 flex-shrink-0" />
                 <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Meet local families</span>
               </div>
             </div>
@@ -554,7 +530,7 @@ export default function LandingStreamlined() {
               </p>
               <p className="text-lg sm:text-xl font-bold mb-6 text-white">— Aaron Lefkowitz, Founder</p>
               <p className="text-base sm:text-lg leading-relaxed text-white/90">
-                🌍 Nearby Traveler grew out of real travel communities—from Couchsurfing bonfires to LA meetups. Our mission is to keep that spirit alive for a new generation.
+                Nearby Traveler grew out of real travel communities—from Couchsurfing bonfires to LA meetups. Our mission is to keep that spirit alive for a new generation.
               </p>
             </div>
           </div>
@@ -564,7 +540,7 @@ export default function LandingStreamlined() {
         <section className="py-4 sm:py-6 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-6xl mx-auto">
             <p className="text-xs sm:text-sm text-center text-gray-600 dark:text-gray-400 leading-relaxed">
-              ✈️ 400+ travelers hosted by our founder | 🌆 5 community ambassadors in Los Angeles | 🌎 Inspired by global travel communities like Couchsurfing & Meetup
+              400+ travelers hosted by our founder | 5 community ambassadors in Los Angeles | Inspired by global travel communities like Couchsurfing & Meetup
             </p>
           </div>
         </section>
@@ -627,19 +603,19 @@ export default function LandingStreamlined() {
         <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 mb-6">
-              🌍 Launching soon in <span className="font-bold">Los Angeles and worldwide</span>
+              Launching soon in <span className="font-bold">Los Angeles and worldwide</span>
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm sm:text-base text-gray-600 dark:text-gray-400">
               <span className="flex items-center gap-2">
-                <span className="text-blue-600 dark:text-blue-400">🔹</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
                 Verified profiles
               </span>
               <span className="flex items-center gap-2">
-                <span className="text-blue-600 dark:text-blue-400">🔹</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
                 Community references
               </span>
               <span className="flex items-center gap-2">
-                <span className="text-blue-600 dark:text-blue-400">🔹</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
                 Vouched connections
               </span>
             </div>

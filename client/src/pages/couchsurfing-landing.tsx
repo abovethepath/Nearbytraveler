@@ -1,9 +1,8 @@
-import { useLocation, Link } from "wouter";
+import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import { Users, MapPin, Globe, RefreshCw, Home, ShieldCheck, Plane, Building2, Handshake, Coffee, Heart, Calendar, Star, CheckCircle, X, Award, MessageCircle, Camera, Compass, Gift } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
 import couchsurfingHeroImage from "@assets/couch_1756775792515.png";
@@ -76,7 +75,6 @@ export default function CouchsurfingLanding() {
             <div className="md:col-span-3 text-center md:text-left">
               {/* Clean Badge */}
               <div className="mb-6 inline-block rounded-full bg-blue-50 dark:bg-blue-900/30 px-4 sm:px-6 py-2 text-sm font-medium text-blue-700 dark:text-blue-400">
-                <span className="inline w-4 h-4 mr-2">❤️</span>
                 Same Spirit, More People
               </div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-zinc-900 dark:text-white mb-3">
@@ -98,7 +96,6 @@ export default function CouchsurfingLanding() {
                   className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
                   data-testid="button-hero-join-now"
                 >
-                  <Heart className="w-5 h-5 mr-2 inline" />
                   JOIN NOW
                 </button>
                 <button 
@@ -289,7 +286,6 @@ export default function CouchsurfingLanding() {
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-lg shadow-lg text-lg mb-4"
               data-testid="button-faq-join-waitlist"
             >
-              <Heart className="w-5 h-5 mr-2 inline" />
               Join the waitlist
             </Button>
             

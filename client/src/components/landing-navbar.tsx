@@ -100,22 +100,21 @@ export default function LandingNavbar() {
         <div className="lg:hidden shadow-lg max-h-screen overflow-y-auto bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700" style={{ WebkitOverflowScrolling: 'touch' }}>
           <div className="pt-2 pb-2 space-y-0.5 px-3">
             {[
-              { href: "/", label: "Home", icon: "🏠" },
-              { href: "/locals-landing", label: "For Locals", icon: "🗺️" },
-              { href: "/travelers-landing", label: "For Travelers", icon: "✈️" },
-              { href: "/events-landing", label: "For Events", icon: "📅" },
-              { href: "/business-landing", label: "For Businesses", icon: "💼" },
-              { href: "/cs", label: "Couchsurfer", icon: "🛋️" },
-              { href: "/ambassador", label: "Ambassador", icon: "🏅" },
+              { href: "/", label: "Home" },
+              { href: "/locals-landing", label: "For Locals" },
+              { href: "/travelers-landing", label: "For Travelers" },
+              { href: "/events-landing", label: "For Events" },
+              { href: "/business-landing", label: "For Businesses" },
+              { href: "/cs", label: "Couchsurfer" },
+              { href: "/ambassador", label: "Ambassador" },
             ].map((item) => (
               <Link 
                 key={item.href}
                 href={item.href} 
-                className="flex items-center gap-3 px-4 py-3 text-[15px] text-gray-900 dark:text-white rounded-xl active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
+                className="flex items-center px-4 py-3 text-[15px] text-gray-900 dark:text-white rounded-xl active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
                 style={{ minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <span>{item.icon}</span>
                 <span className="font-medium">{item.label}</span>
               </Link>
             ))}

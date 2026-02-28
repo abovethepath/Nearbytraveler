@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Star, Building2, Calendar, Trophy, Shield, AlertTriangle, Gift, TrendingUp, Award, UserPlus, Mail, MapPin } from "lucide-react";
 import { Link } from "wouter";
 import Footer from "@/components/footer";
 import { AuthContext } from "@/App";
@@ -13,12 +12,12 @@ export default function AmbassadorProgram() {
   };
 
   const pointActions = [
-    { action: "Refer a friend who signs up", points: "+50 pts", icon: <UserPlus className="w-5 h-5" />, description: "Invite friends to join the community" },
-    { action: "Refer a business lead", points: "+75 pts", icon: <Building2 className="w-5 h-5" />, description: "Connect local businesses to the platform" },
-    { action: "Business becomes a paying partner", points: "+200 pts", icon: <TrendingUp className="w-5 h-5" />, description: "Successfully onboard a business partner" },
-    { action: "Create an event", points: "+20 pts", icon: <Calendar className="w-5 h-5" />, description: "Host community gatherings" },
-    { action: "Host verified event", points: "+50 pts", icon: <Star className="w-5 h-5" />, description: "Successfully run community events" },
-    { action: "Event hits attendance goal", points: "+30 pts", icon: <Trophy className="w-5 h-5" />, description: "Grow event participation" },
+    { action: "Refer a friend who signs up", points: "+50 pts", description: "Invite friends to join the community" },
+    { action: "Refer a business lead", points: "+75 pts", description: "Connect local businesses to the platform" },
+    { action: "Business becomes a paying partner", points: "+200 pts", description: "Successfully onboard a business partner" },
+    { action: "Create an event", points: "+20 pts", description: "Host community gatherings" },
+    { action: "Host verified event", points: "+50 pts", description: "Successfully run community events" },
+    { action: "Event hits attendance goal", points: "+30 pts", description: "Grow event participation" },
   ];
 
   return (
@@ -27,7 +26,6 @@ export default function AmbassadorProgram() {
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-6">
-            <Gift className="w-4 h-4" />
             Ambassador Program
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
@@ -83,10 +81,7 @@ export default function AmbassadorProgram() {
         <div className="max-w-4xl mx-auto">
           <Card className="bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 border-2 border-blue-200 dark:border-blue-800">
             <CardHeader>
-              <CardTitle className="text-xl text-gray-900 dark:text-white flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-blue-600" />
-                How Points Turn Into Equity
-              </CardTitle>
+              <CardTitle className="text-xl text-gray-900 dark:text-white">How Points Turn Into Equity</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-gray-700 dark:text-gray-300">
@@ -115,10 +110,7 @@ export default function AmbassadorProgram() {
       <section className="py-10 px-4 sm:px-6 lg:px-8 bg-blue-50/50 dark:bg-blue-950/20">
         <div className="max-w-4xl mx-auto">
           <div className="rounded-xl border-2 border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-800 p-6 shadow-sm">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-3">
-              <MapPin className="w-5 h-5 text-blue-600" />
-              LA Ambassadors: Extra 1% Local Pool
-            </h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">LA Ambassadors: Extra 1% Local Pool</h2>
             <p className="text-gray-700 dark:text-gray-300">
               Los Angeles city ambassadors share an <strong>additional 1% ownership pool</strong> on top of the global 4%. 
               LA ambassadors can earn from both pools—the global 4% and the LA-specific 1%.
@@ -136,10 +128,7 @@ export default function AmbassadorProgram() {
           <div className="grid sm:grid-cols-2 gap-4">
             {pointActions.map((item, index) => (
               <Card key={index} className="bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-                <CardContent className="flex items-center gap-4 p-4">
-                  <div className="bg-gradient-to-r from-blue-500 to-orange-500 p-2 rounded-lg text-white">
-                    {item.icon}
-                  </div>
+                <CardContent className="p-4">
                   <div className="min-w-0 flex-1">
                     <h3 className="font-medium text-gray-900 dark:text-white flex items-center gap-2 flex-wrap">
                       <span>{item.action}</span>
@@ -158,10 +147,7 @@ export default function AmbassadorProgram() {
         <div className="max-w-4xl mx-auto">
           <Card className="bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
             <CardHeader>
-              <CardTitle className="text-xl text-gray-900 dark:text-white flex items-center gap-2">
-                <Shield className="w-5 h-5 text-amber-600" />
-                Safety & Quality Rules
-              </CardTitle>
+              <CardTitle className="text-xl text-gray-900 dark:text-white">Safety & Quality Rules</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-700 dark:text-gray-300 mb-4">To keep things fair:</p>
@@ -238,10 +224,7 @@ export default function AmbassadorProgram() {
         <div className="max-w-4xl mx-auto">
           <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
             <CardHeader>
-              <CardTitle className="text-xl text-gray-900 dark:text-white flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-red-600" />
-                Important Notice
-              </CardTitle>
+              <CardTitle className="text-xl text-gray-900 dark:text-white">Important Notice</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-gray-700 dark:text-gray-300">
               <ul className="space-y-2">
@@ -287,8 +270,7 @@ export default function AmbassadorProgram() {
           <div className="flex justify-center">
             {user ? (
               <a href={`mailto:ambassadors@nearbytraveler.org?subject=Ambassador Program Application - ${user.username}&body=Hi Aaron,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Ambassador.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${user.name || 'N/A'}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be an Ambassador:%0D%0A%0D%0A%0D%0AHow I plan to help grow the community:%0D%0A%0D%0A`}>
-                <Button size="lg" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0 font-semibold inline-flex items-center gap-2 shadow-lg hover:shadow-xl transition-all">
-                  <Mail className="w-5 h-5" />
+                <Button size="lg" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0 font-semibold shadow-lg hover:shadow-xl transition-all">
                   Apply to Become an Ambassador
                 </Button>
               </a>

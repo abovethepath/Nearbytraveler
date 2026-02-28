@@ -5,16 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Footer from "@/components/footer";
 import LandingNavbar from "@/components/landing-navbar";
-import {
-  ArrowRight,
-  Globe,
-  Mail,
-  MapPin,
-  Sparkles,
-  Star,
-  Trophy,
-  Users,
-} from "lucide-react";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 
 type PointItem = {
@@ -64,13 +54,11 @@ export default function AmbassadorLanding() {
 
   const points: PointItem[] = [
     { title: "Refer a Friend (Signs Up)", description: "Friend creates account via your link", points: "+50 pts" },
-    { title: "Refer a Friend (Active)", description: "Friend joins an event or messages", points: "+100 pts" },
     { title: "Refer a Business Lead", description: "Connect a local business to the platform", points: "+75 pts" },
     { title: "Business Becomes Partner", description: "Business signs up and pays", points: "+200 pts" },
     { title: "Create an Event", description: "Host a community gathering", points: "+20 pts" },
     { title: "Host Verified Event", description: "Event runs with verified attendance", points: "+50 pts" },
     { title: "Event Hits Attendance Goal", description: "Grow participation to target", points: "+30 pts" },
-    { title: "Community Quality Bonus", description: "Great feedback, low cancellations", points: "+25 pts" },
   ];
 
   const faqs = [
@@ -118,7 +106,6 @@ export default function AmbassadorLanding() {
             className="opacity-0 translate-y-4 transition-all duration-700 ease-out"
           >
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <Trophy className="w-4 h-4" />
               Ambassador Program
             </div>
 
@@ -134,7 +121,7 @@ export default function AmbassadorLanding() {
 
             <div className="mt-6 rounded-xl border border-orange-200 dark:border-orange-900 bg-orange-50/70 dark:bg-orange-950/20 p-4">
               <p className="text-sm md:text-base font-semibold text-orange-900 dark:text-orange-200">
-                Reach 250 Aura Points on NearbyTraveler and you're automatically enrolled — no application needed.
+                Reach 250 Aura Points on NearbyTraveler and you're automatically enrolled.
               </p>
             </div>
 
@@ -143,7 +130,7 @@ export default function AmbassadorLanding() {
                 onClick={() => scrollToId("how-to-join")}
                 className="bg-orange-500 hover:bg-orange-600 text-white"
               >
-                How to Get In <ArrowRight className="w-4 h-4 ml-2" />
+                How to Get In
               </Button>
               <Button
                 variant="outline"
@@ -185,8 +172,8 @@ export default function AmbassadorLanding() {
             data-reveal
             className="opacity-0 translate-y-4 transition-all duration-700 ease-out"
           >
-            <div className="flex items-center gap-2 text-sm font-semibold text-orange-600 dark:text-orange-400 mb-2">
-              <Sparkles className="w-4 h-4" /> How It Works
+            <div className="text-sm font-semibold text-orange-600 dark:text-orange-400 mb-2">
+              How It Works
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8">
               Four steps from action to ownership
@@ -221,8 +208,8 @@ export default function AmbassadorLanding() {
             data-reveal
             className="opacity-0 translate-y-4 transition-all duration-700 ease-out"
           >
-            <div className="flex items-center gap-2 text-sm font-semibold text-orange-600 dark:text-orange-400 mb-2">
-              <Star className="w-4 h-4" /> Ownership Pool
+            <div className="text-sm font-semibold text-orange-600 dark:text-orange-400 mb-2">
+              Ownership Pool
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8">
               A real stake in what we're building
@@ -256,7 +243,7 @@ export default function AmbassadorLanding() {
                   </CardHeader>
                   <CardContent className="text-sm text-gray-600 dark:text-gray-300 space-y-3">
                     <p>
-                      At each distribution period we total all ambassador points. Your ownership share comes from your proportion of the total.
+                      There are no periodic distributions. If there is ever a qualifying liquidity event (an exit like an acquisition or IPO) and the official terms are met, your ownership share is based on your proportion of total ambassador points.
                     </p>
                     <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 font-mono text-xs">
                       <div>Your Share = Your Points ÷ Total Points</div>
@@ -298,8 +285,8 @@ export default function AmbassadorLanding() {
             data-reveal
             className="opacity-0 translate-y-4 transition-all duration-700 ease-out"
           >
-            <div className="flex items-center gap-2 text-sm font-semibold text-orange-600 dark:text-orange-400 mb-2">
-              <Trophy className="w-4 h-4" /> Earn Points
+            <div className="text-sm font-semibold text-orange-600 dark:text-orange-400 mb-2">
+              Earn Points
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
               Every action adds up
@@ -363,8 +350,8 @@ export default function AmbassadorLanding() {
             data-reveal
             className="opacity-0 translate-y-4 transition-all duration-700 ease-out"
           >
-            <div className="flex items-center gap-2 text-sm font-semibold text-orange-600 dark:text-orange-400 mb-2">
-              <Users className="w-4 h-4" /> How to Join
+            <div className="text-sm font-semibold text-orange-600 dark:text-orange-400 mb-2">
+              How to Join
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
               Open to anyone who shows up
@@ -378,24 +365,19 @@ export default function AmbassadorLanding() {
                 {
                   title: "Step 1 — Use the App",
                   body: "Be active on NearbyTraveler. Join events, connect with travelers, message locals, explore your city. Aura points accumulate automatically as you engage.",
-                  icon: <MapPin className="w-4 h-4" />,
                 },
                 {
                   title: "Step 2 — Hit 250 Aura Points",
                   body: "Once your Aura score reaches 250, you're automatically enrolled in the Ambassador Program. No form to fill out. No email to send. It just happens.",
-                  icon: <Trophy className="w-4 h-4" />,
                 },
                 {
                   title: "Step 3 — Start Earning Ambassador Points",
                   body: "From that moment on, your ambassador actions (referrals, events, business partners) earn you points toward the ownership pool. Aura and ambassador points are tracked separately.",
-                  icon: <Star className="w-4 h-4" />,
                 },
               ].map((s) => (
                 <Card key={s.title} className="border-gray-200 dark:border-gray-700">
                   <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
-                      {s.icon} Step
-                    </div>
+                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">Step</div>
                     <CardTitle className="text-base">{s.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="text-sm text-gray-600 dark:text-gray-300">
@@ -419,7 +401,7 @@ export default function AmbassadorLanding() {
                   <CardTitle className="text-base">Ambassador Points — Your Equity Tracker</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-gray-600 dark:text-gray-300">
-                  Ambassador points are earned through high-impact actions — referring friends who become active, bringing in paying businesses, hosting verified events. These are the points that determine your share of the ownership pool at exit.
+                  Ambassador points are earned through high-impact actions — referrals, bringing in paying businesses, and hosting verified events. These are the points that determine your share of the ownership pool at exit.
                 </CardContent>
               </Card>
             </div>
@@ -542,10 +524,9 @@ export default function AmbassadorLanding() {
                     onClick={() => setLocation("/home")}
                     className="bg-white text-gray-900 hover:bg-gray-100"
                   >
-                    Open the App <ArrowRight className="w-4 h-4 ml-2" />
+                    Open the App
                   </Button>
                   <div className="text-sm text-white/90 flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
                     Questions? ambassadors@nearbytraveler.com
                   </div>
                 </div>

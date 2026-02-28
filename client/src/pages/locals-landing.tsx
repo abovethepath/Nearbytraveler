@@ -150,22 +150,18 @@ export default function LocalsLanding() {
         <div className="max-w-6xl mx-auto px-4 text-center">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-              <div className="text-3xl mb-3">🗺️</div>
               <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2">Share Your Secret Spots</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Show off those hidden gems only locals know — from secret viewpoints to hole-in-the-wall restaurants.</p>
             </div>
             <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-              <div className="text-3xl mb-3">🤝</div>
               <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2">Meet Amazing People</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Connect with curious travelers and like-minded neighbors who share your interests.</p>
             </div>
             <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-              <div className="text-3xl mb-3">⚡</div>
               <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2">Instant Social Life</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Create "meet now" events anytime you want to hang out or explore your own city.</p>
             </div>
             <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-              <div className="text-3xl mb-3">📅</div>
               <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2">Stay Connected Globally</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Keep friendships alive as your traveler friends move to new cities around the world.</p>
             </div>
@@ -236,36 +232,31 @@ export default function LocalsLanding() {
               Why Locals Choose Nearby Traveler
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-              <div className="bg-white dark:bg-teal-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-                <div className="text-4xl mb-4">🤝</div>
+              <div className="bg-white dark:bg-teal-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full !bg-white">
                 <h3 className="text-lg sm:text-xl font-bold mb-4 text-black leading-tight">Real Friendships & Connections</h3>
                 <p className="text-black text-sm leading-relaxed flex-grow">
                   Meet people who share your interests and travel style — friendships that last beyond the trip.
                 </p>
               </div>
-              <div className="bg-white dark:bg-orange-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-                <div className="text-4xl mb-4">🎉</div>
+              <div className="bg-white dark:bg-orange-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full !bg-white">
                 <h3 className="text-lg sm:text-xl font-bold mb-4 text-black leading-tight">Host or Join Events</h3>
                 <p className="text-black text-sm leading-relaxed flex-grow">
                   Create or join activities you love — from rooftop parties and food tours to hikes and art walks.
                 </p>
               </div>
-              <div className="bg-white dark:bg-purple-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-                <div className="text-4xl mb-4">🎯</div>
+              <div className="bg-white dark:bg-purple-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full !bg-white">
                 <h3 className="text-lg sm:text-xl font-bold mb-4 text-black leading-tight">Interest-Based Matching</h3>
                 <p className="text-black text-sm leading-relaxed flex-grow">
                   Connect with travelers who share your hobbies and interests. Find hiking buddies, food lovers, art enthusiasts, and adventure seekers in your city.
                 </p>
               </div>
-              <div className="bg-white dark:bg-blue-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-                <div className="text-4xl mb-4">📅</div>
+              <div className="bg-white dark:bg-blue-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full !bg-white">
                 <h3 className="text-lg sm:text-xl font-bold mb-4 text-black leading-tight">Stay Connected Globally</h3>
                 <p className="text-black text-sm leading-relaxed flex-grow">
                   Keep friendships alive as your traveler friends move to new cities around the world.
                 </p>
               </div>
-              <div className="bg-white dark:bg-yellow-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-                <div className="text-4xl mb-4">🎟️</div>
+              <div className="bg-white dark:bg-yellow-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full !bg-white">
                 <h3 className="text-lg sm:text-xl font-bold mb-4 text-black leading-tight">Weekly Sponsored Events</h3>
                 <p className="text-black text-sm leading-relaxed flex-grow">
                   Every week, Nearby Traveler sponsors authentic local experiences. Host sponsored events or join curated activities that bring our community together.
@@ -291,19 +282,16 @@ export default function LocalsLanding() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-white dark:bg-gray-700 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-              <div className="text-5xl mb-4">🗺️</div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Share Your Secret Spots</h3>
               <p className="text-gray-700 dark:text-gray-300 text-lg">Show off those hidden gems only locals know. From secret viewpoints to hole-in-the-wall restaurants - share what makes your city special.</p>
             </div>
             
             <div className="bg-white dark:bg-gray-700 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-              <div className="text-5xl mb-4">🌍</div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Meet Amazing People</h3>
               <p className="text-gray-700 dark:text-gray-300 text-lg">Connect with curious travelers AND like-minded locals. Build friendships that span the globe while discovering your own city.</p>
             </div>
             
             <div className="bg-white dark:bg-gray-700 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-              <div className="text-5xl mb-4">⚡</div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Instant Social Life</h3>
               <p className="text-gray-700 dark:text-gray-300 text-lg">Create "meet now" events when you want to hang out. Always have someone interesting to explore your city with.</p>
             </div>
@@ -357,27 +345,22 @@ export default function LocalsLanding() {
             <h3 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">Perfect For</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-                <div className="text-3xl mb-3">🏙️</div>
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">City Enthusiasts</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">Show off your knowledge and meet people who appreciate the real local scene</p>
               </div>
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-                <div className="text-3xl mb-3">🌎</div>
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">Social Locals</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">Expand your friend circle with interesting people from around the world</p>
               </div>
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-                <div className="text-3xl mb-3">🆕</div>
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">New Residents</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">Share what you're discovering while meeting established locals and fellow newcomers</p>
               </div>
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-                <div className="text-3xl mb-3">💼</div>
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">Business Hosts</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">Welcome colleagues and clients with authentic local experiences</p>
               </div>
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-                <div className="text-3xl mb-3">🎒</div>
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">Adventure Seekers</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">Find people to try new restaurants, events, and activities in your own city</p>
               </div>
@@ -426,7 +409,7 @@ BECOME A NEARBY LOCAL NOW
           </div>
           
           <p className="text-xl text-gray-600 dark:text-white/90">
-            🏠 Free to join • 🌍 Global community
+            Free to join • Global community
           </p>
         </div>
       </div>

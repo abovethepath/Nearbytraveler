@@ -168,7 +168,7 @@ export default function EventsLanding() {
       <div className="py-3 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-            🎯 Create events and connect with nearby travelers and locals • Build real relationships through shared experiences
+            Create events and connect with nearby travelers and locals • Build real relationships through shared experiences
           </p>
         </div>
       </div>
@@ -183,19 +183,16 @@ export default function EventsLanding() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center p-4">
-              <div className="text-3xl mb-3">⚡</div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Last-Minute Magic</h3>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Create "meet now" events when you're free. Perfect for spontaneous coffee meetups, quick walks, or impromptu adventures.</p>
             </div>
             
             <div className="text-center p-4">
-              <div className="text-3xl mb-3">🔄</div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Recurring Experiences</h3>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Join weekly hiking groups, monthly food tours, or regular photography walks. Build lasting friendships through consistent connections.</p>
             </div>
             
             <div className="text-center p-4">
-              <div className="text-3xl mb-3">🎯</div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Pre-Event Connections</h3>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Connect with fellow travelers before local events and festivals. Turn events into reunions, not rooms full of strangers.</p>
             </div>
@@ -407,17 +404,14 @@ export default function EventsLanding() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             <div className="bg-white dark:bg-orange-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <div className="text-3xl mb-4">🎉</div>
               <h3 className="text-xl font-bold mb-3 text-black">From $1 Taco Tours to Free Beach Parties</h3>
               <p className="text-black text-sm leading-relaxed">Join unforgettable events created by passionate locals who know the best spots. Every experience is authentic and affordable.</p>
             </div>
             <div className="bg-white dark:bg-blue-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <div className="text-3xl mb-4">🤝</div>
               <h3 className="text-xl font-bold mb-3 text-black">Meet 5-20 People Per Event</h3>
               <p className="text-black text-sm leading-relaxed">Every event is a chance to make lifelong friendships. Small groups mean real connections, not anonymous crowds.</p>
             </div>
             <div className="bg-white dark:bg-teal-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <div className="text-3xl mb-4">🗺️</div>
               <h3 className="text-xl font-bold mb-3 text-black">Hidden Spots Locals Actually Go To</h3>
               <p className="text-black text-sm leading-relaxed">Discover experiences that tourists never find. Access the real side of every city through insider knowledge.</p>
             </div>
