@@ -511,7 +511,7 @@ export default function LandingStreamlined() {
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-              <div className="bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8">
+              <div className="bg-white dark:bg-gradient-to-br dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8 border border-gray-200 dark:border-gray-700 shadow-sm">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Beach Bonfire & BBQ</h3>
                   <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
@@ -521,7 +521,7 @@ export default function LandingStreamlined() {
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8">
+              <div className="bg-white dark:bg-gradient-to-br dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8 border border-gray-200 dark:border-gray-700 shadow-sm">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Taco Tuesday</h3>
                   <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">$1.50</span>
@@ -531,7 +531,7 @@ export default function LandingStreamlined() {
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8">
+              <div className="bg-white dark:bg-gradient-to-br dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8 border border-gray-200 dark:border-gray-700 shadow-sm">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Hollywood Sign Hike</h3>
                   <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
@@ -627,7 +627,7 @@ export default function LandingStreamlined() {
         <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 mb-6">
-              🌍 Launching soon in <span className="font-bold">Los Angeles, New York, London, and Lisbon</span>
+              🌍 Launching soon in <span className="font-bold">Los Angeles and worldwide</span>
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm sm:text-base text-gray-600 dark:text-gray-400">
               <span className="flex items-center gap-2">

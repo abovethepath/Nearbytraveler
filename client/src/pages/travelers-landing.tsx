@@ -126,7 +126,7 @@ export default function TravelersLanding() {
             What Makes Us Different
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 p-6 rounded-xl shadow-lg">
+            <div className="bg-white dark:bg-gradient-to-br dark:from-purple-900/30 dark:to-purple-800/30 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
               <div className="text-4xl mb-4">⚡</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Instant Meetups</h3>
               <p className="text-black dark:text-gray-200 mb-3">Create "meet now" events for instant connections.</p>
@@ -136,7 +136,7 @@ export default function TravelersLanding() {
                 <li>• Connect in real-time</li>
               </ul>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/30 p-6 rounded-xl shadow-lg">
+            <div className="bg-white dark:bg-gradient-to-br dark:from-pink-900/30 dark:to-pink-800/30 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
               <div className="text-4xl mb-4">🌍</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Local Connections</h3>
               <p className="text-black dark:text-gray-200 mb-3">Connect with locals for authentic experiences.</p>
@@ -146,7 +146,7 @@ export default function TravelersLanding() {
                 <li>• Authentic cultural exchange</li>
               </ul>
             </div>
-            <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/30 dark:to-teal-800/30 p-6 rounded-xl shadow-lg">
+            <div className="bg-white dark:bg-gradient-to-br dark:from-teal-900/30 dark:to-teal-800/30 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
               <div className="text-4xl mb-4">💬</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Real-Time Chat</h3>
               <p className="text-black dark:text-gray-200 mb-3">Instant messaging with full features.</p>
@@ -204,37 +204,37 @@ export default function TravelersLanding() {
             Why Choose Nearby Traveler?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-emerald-100/60 dark:bg-emerald-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-white dark:bg-emerald-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
               <div className="text-3xl mb-4">🎯</div>
               <h3 className="text-xl font-bold mb-3 text-black">Quality Over Quantity</h3>
               <p className="text-black flex-grow">We focus on meaningful connections, not endless swiping. Every match is based on genuine compatibility and shared interests.</p>
             </div>
-            <div className="bg-teal-100/60 dark:bg-teal-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-white dark:bg-teal-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
               <div className="text-3xl mb-4">🛡️</div>
               <h3 className="text-xl font-bold mb-3 text-black">Safe & Verified</h3>
               <p className="text-black flex-grow">All users are verified for safety. Meet in public places and trust your instincts - we provide the tools for safe connections.</p>
             </div>
-            <div className="bg-indigo-100/60 dark:bg-blue-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-white dark:bg-blue-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
               <div className="text-3xl mb-4">🌍</div>
               <h3 className="text-xl font-bold mb-3 text-black">Connect Before You Arrive</h3>
               <p className="text-black flex-grow">Meet locals and travelers before your trip starts. Plan meetups, get insider tips, and hit the ground running.</p>
             </div>
-            <div className="bg-purple-100/60 dark:bg-purple-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-white dark:bg-purple-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
               <div className="text-3xl mb-4">📅</div>
               <h3 className="text-xl font-bold mb-3 text-black">Know When Friends Are Nearby</h3>
               <p className="text-black flex-grow">Reconnect when paths cross again. See when someone you met in Barcelona shows up in Tokyo.</p>
             </div>
-            <div className="bg-orange-100/60 dark:bg-orange-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-white dark:bg-orange-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
               <div className="text-3xl mb-4">🎉</div>
               <h3 className="text-xl font-bold mb-3 text-black">Join Weekly Sponsored Events</h3>
               <p className="text-black flex-grow">Free and low-cost events every week. From beach bonfires to taco tours—authentic experiences hosted by passionate locals.</p>
             </div>
-            <div className="bg-pink-100/60 dark:bg-pink-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-white dark:bg-pink-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
               <div className="text-3xl mb-4">💬</div>
               <h3 className="text-xl font-bold mb-3 text-black">Real-Time Coordination</h3>
               <p className="text-black flex-grow">Full-featured chat with photos, location sharing, and group conversations. No more juggling apps.</p>
             </div>
-            <div className="bg-rose-100/60 dark:bg-rose-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-white dark:bg-rose-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
               <div className="text-3xl mb-4">❤️</div>
               <h3 className="text-xl font-bold mb-3 text-black">Friendships That Last</h3>
               <p className="text-black flex-grow">Build a global network of real connections. These aren't just travel buddies—they're lifelong friends.</p>
@@ -251,20 +251,20 @@ export default function TravelersLanding() {
             Every week, Nearby Traveler sponsors authentic local experiences. From cultural adventures to food tours, these events bring our community together.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl shadow-lg">
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Beach Bonfire & BBQ</h3>
-              <p className="text-sm font-semibold text-orange-600 mb-3">Free</p>
-              <p className="text-gray-700">Sunset gathering with locals—authentic LA beach culture, music, and new friends.</p>
+            <div className="bg-white dark:bg-orange-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+              <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Beach Bonfire & BBQ</h3>
+              <p className="text-sm font-semibold text-orange-700 dark:text-orange-100 mb-3">Free</p>
+              <p className="text-gray-800 dark:text-gray-100">Sunset gathering with locals—authentic LA beach culture, music, and new friends.</p>
             </div>
-            <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl shadow-lg">
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Taco Tuesday</h3>
-              <p className="text-sm font-semibold text-orange-600 mb-3">$1.50</p>
-              <p className="text-gray-700">Weekly street taco adventure with fellow food lovers at the city's best Mexican spots.</p>
+            <div className="bg-white dark:bg-yellow-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+              <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Taco Tuesday</h3>
+              <p className="text-sm font-semibold text-orange-700 dark:text-orange-100 mb-3">$1.50</p>
+              <p className="text-gray-800 dark:text-gray-100">Weekly street taco adventure with fellow food lovers at the city's best Mexican spots.</p>
             </div>
-            <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl shadow-lg">
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Hollywood Sign Hike</h3>
-              <p className="text-sm font-semibold text-orange-600 mb-3">Free</p>
-              <p className="text-gray-700">Saturday morning hikes with locals and travelers—amazing views, great photos, real LA.</p>
+            <div className="bg-white dark:bg-green-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+              <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Hollywood Sign Hike</h3>
+              <p className="text-sm font-semibold text-orange-700 dark:text-orange-100 mb-3">Free</p>
+              <p className="text-gray-800 dark:text-gray-100">Saturday morning hikes with locals and travelers—amazing views, great photos, real LA.</p>
             </div>
           </div>
         </div>
@@ -273,27 +273,27 @@ export default function TravelersLanding() {
         <div className="max-w-6xl mx-auto mb-12">
           <h3 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">Perfect For</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-border">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="text-3xl mb-3">🎒</div>
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">Solo Travelers</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Turn exploring alone into shared adventures</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-border">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="text-3xl mb-3">👨‍👩‍👧</div>
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">Families</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Connect with local families and fellow travelers with kids</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-border">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="text-3xl mb-3">💼</div>
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">Business Travelers</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Make work trips more than just meetings</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-border">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="text-3xl mb-3">🆕</div>
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">New in Town</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Moving to a new city? Find your tribe fast</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-border">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="text-3xl mb-3">🌍</div>
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">Digital Nomads</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Build community wherever you land</p>

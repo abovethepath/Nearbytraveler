@@ -44,6 +44,7 @@ export default function Privacy() {
               <h3 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-3">Personal Information</h3>
               <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300">
                 <li>Name, email address, username, and date of birth</li>
+                <li>Phone number</li>
                 <li>Profile information including bio (which may contain any personal details you choose to share), interests, activities, and travel preferences</li>
                 <li>Location data (hometown, current city, travel destinations)</li>
                 <li>Photos and other content you upload</li>

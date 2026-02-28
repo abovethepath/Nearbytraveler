@@ -12765,6 +12765,17 @@ Questions? Just reply to this message. Welcome aboard!
       
       // Award 1 aura point for creating an event
       await awardAuraPoints(newEvent.organizerId, 1, 'creating an event');
+
+      // Ambassador program: award points for creating an event (ambassadors only)
+      try {
+        const organizerStatus = organizer?.[0]?.ambassadorStatus as string | null | undefined;
+        if (organizerStatus === "active" || organizerStatus === "inactive") {
+          const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+          await addAmbassadorPoints(newEvent.organizerId, 20);
+        }
+      } catch (ambassadorPointsError: any) {
+        console.error(`⚠️ AMBASSADOR POINTS: Failed to award create-event points for event ${newEvent.id}:`, ambassadorPointsError);
+      }
       
       // AUTO-CREATE CHATROOM for the event (like Quick Meets)
       try {
@@ -22178,6 +22189,86 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error("Admin ambassador status update error:", error);
       res.status(500).json({ error: "Failed to update ambassador status" });
+    }
+  });
+
+  // POST /api/admin/events/:eventId/ambassador-award - Award event-based ambassador points and split evenly among organizers
+  app.post("/api/admin/events/:eventId/ambassador-award", async (req: any, res) => {
+    try {
+      const adminId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const [adminUser] = await db.select({ isAdmin: users.isAdmin }).from(users).where(eq(users.id, adminId));
+      if (!adminUser?.isAdmin) return res.status(403).json({ error: "Admin access required" });
+
+      const eventId = parseInt(req.params.eventId);
+      if (isNaN(eventId)) return res.status(400).json({ error: "Invalid event ID" });
+
+      const { awardType } = req.body as { awardType?: string };
+      const validAwardType = awardType === "host_verified" || awardType === "attendance_goal";
+      if (!validAwardType) {
+        return res.status(400).json({ error: "awardType must be 'host_verified' or 'attendance_goal'" });
+      }
+
+      const points = awardType === "host_verified" ? 50 : 30;
+
+      // Find all event organizers/co-organizers (can be multiple)
+      const roles = ["organizer", "co-organizer"];
+      const organizerRows = await db
+        .select({ userId: eventParticipants.userId })
+        .from(eventParticipants)
+        .where(and(eq(eventParticipants.eventId, eventId), inArray(eventParticipants.role, roles)));
+
+      const uniqueUserIds = Array.from(new Set(organizerRows.map(r => r.userId)));
+      if (uniqueUserIds.length === 0) {
+        return res.status(404).json({ error: "No organizers found for this event" });
+      }
+
+      // Only award points to enrolled ambassadors
+      const enrolled = await db
+        .select({ id: users.id, ambassadorStatus: users.ambassadorStatus })
+        .from(users)
+        .where(inArray(users.id, uniqueUserIds));
+
+      const eligibleIds = enrolled
+        .filter(u => u.ambassadorStatus === "active" || u.ambassadorStatus === "inactive")
+        .map(u => u.id);
+
+      if (eligibleIds.length === 0) {
+        return res.json({
+          success: true,
+          awardType,
+          pointsConfigured: points,
+          eligibleAmbassadors: [],
+          pointsEach: 0,
+          totalAwarded: 0,
+          message: "No enrolled ambassadors among event organizers/co-organizers."
+        });
+      }
+
+      const pointsEach = Math.floor(points / eligibleIds.length);
+      if (pointsEach <= 0) {
+        return res.status(400).json({
+          error: "Too many eligible ambassadors to split points evenly with integer points.",
+          pointsConfigured: points,
+          eligibleAmbassadors: eligibleIds.length
+        });
+      }
+
+      const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+      for (const userId of eligibleIds) {
+        await addAmbassadorPoints(userId, pointsEach);
+      }
+
+      return res.json({
+        success: true,
+        awardType,
+        pointsConfigured: points,
+        eligibleAmbassadors: eligibleIds,
+        pointsEach,
+        totalAwarded: pointsEach * eligibleIds.length
+      });
+    } catch (error: any) {
+      console.error("Admin event ambassador award error:", error);
+      return res.status(500).json({ error: "Failed to award ambassador points for event" });
     }
   });
 

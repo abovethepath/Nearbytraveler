@@ -35,7 +35,6 @@ import LocalsLanding from "@/pages/locals-landing";
 import TravelersLanding from "@/pages/travelers-landing";
 // import NetworkingLanding from "@/pages/networking-landing"; // HIDDEN: Networking functionality temporarily disabled
 import CouchsurfingLanding from "@/pages/couchsurfing-landing";
-import BusinessCustomLanding from "@/pages/business-custom-landing";
 import Connect from "@/pages/connect";
 import Requests from "@/pages/requests";
 import Explore from "@/pages/explore";
@@ -103,7 +102,6 @@ import SignupAccount from "@/pages/signup-account";
 // OLD BROKEN UNIFIED SIGNUP DELETED FOREVER
 import BusinessRegistration from "@/pages/business-registration";
 import EventIntegrations from "@/pages/event-integrations";
-import LandingNew from "@/pages/landing-new";
 import LaunchingSoon from "@/pages/launching-soon";
 import Photos from "@/pages/photos";
 import UploadPhotos from "@/pages/upload-photos";
@@ -162,8 +160,6 @@ import BusinessCardPage from "@/pages/business-card";
 import QRCodePage from "@/pages/qr-code";
 import QRSimplePage from "@/pages/qr-simple";
 import LandingStreamlined from "@/pages/landing-new-streamlined";
-import LandingMinimal from "@/pages/landing-minimal";
-import LandingSimple from "@/pages/landing-simple";
 import ComingSoon from "@/pages/coming-soon";
 
 
@@ -451,7 +447,28 @@ function Router() {
   // Native iOS: redirect / and /landing to /home in effect (not during render) to avoid Wouter render loop
   useEffect(() => {
     console.log('NATIVE ROOT REDIRECT EFFECT CHECK', { location });
-    if (isNativeIOSApp() && (location === '/' || location === '' || location.startsWith('/landing'))) {
+    // Native iOS should never show marketing/landing pages (even if deep-linked)
+    const nativeBlockedMarketingRoutes = new Set([
+      '/',
+      '',
+      '/landing',
+      '/landing-new',
+      '/landing-simple',
+      '/landing-minimal',
+      '/landing-streamlined',
+      '/landing-1',
+      '/landing-2',
+      '/locals-landing',
+      '/travelers-landing',
+      '/events-landing',
+      '/business-landing',
+      '/cs',
+      '/couchsurfing',
+      '/ambassador',
+      '/ambassador-program',
+    ]);
+
+    if (isNativeIOSApp() && (nativeBlockedMarketingRoutes.has(location) || location.startsWith('/landing'))) {
       setLocation('/home');
     }
   }, [location, setLocation]);
@@ -580,8 +597,8 @@ function Router() {
     console.log('🔍 ROUTING DEBUG - isAuthenticated:', authValue.isAuthenticated, 'location:', location, 'user:', effectiveUser);
     console.log('🔍 Current window.location.pathname:', window.location.pathname);
 
-    // NATIVE APP: Never show landing; redirect to /home is done in Router useEffect (avoids setLocation during render / loop)
-    if (isNativeIOSApp() && (location === '/' || location === '' || location.startsWith('/landing'))) {
+    // NATIVE APP: Never show marketing/landing; redirect is done in Router useEffect (avoids setLocation during render / loop)
+    if (isNativeIOSApp()) {
       return null;
     }
 
@@ -719,9 +736,9 @@ function Router() {
       return <ProfileComplete userId={parseInt(businessId)} />;
     }
 
-    // Show simple A/B test landing page regardless of auth state
-    if (location === '/landing-simple') {
-      return <LandingSimple />;
+    // Legacy landing variants: keep routes but render the canonical landing
+    if (location === '/landing-simple' || location === '/landing-minimal' || location === '/landing-streamlined' || location === '/landing-1' || location === '/landing-2') {
+      return <LandingStreamlined />;
     }
 
     // Welcome pages - show before auth check to prevent landing page flash after signup
@@ -790,15 +807,8 @@ function Router() {
 
       // JOIN PAGE NOW HANDLED AT TOP OF FUNCTION - removed duplicate check
 
-      // Show landing page
-      // Landing page variants for investor comparison
-      if (location === '/landing-1') {
-        console.log('📄 Showing Landing 1 (Long Version) for investor comparison');
-        return <LandingNew />;
-      }
-      
-      if (location === '/landing-2') {
-        console.log('📄 Showing Landing 2 (Optimized Version) for investor comparison');
+      // Landing page variants (legacy): keep routes but render the canonical landing
+      if (location === '/landing-1' || location === '/landing-2') {
         return <LandingStreamlined />;
       }
 
@@ -837,9 +847,7 @@ function Router() {
       //   return <NetworkingLanding />;
       // }
 
-      // Allow access to couchsurfing landing page without authentication
       if (location === '/couchsurfing' || location === '/cs') {
-        console.log('Showing CouchsurfingLanding for unauthenticated user');
         return <CouchsurfingLanding />;
       }
 
@@ -854,14 +862,9 @@ function Router() {
         return <LandingStreamlined />;
       }
 
-      // Show minimal landing page for comparison
-      if (location === '/landing-minimal') {
-        return <LandingMinimal />;
-      }
-
-      // Show simple A/B test landing page
-      if (location === '/landing-simple') {
-        return <LandingSimple />;
+      // Minimal/simple landing pages were experimental — keep routes but render canonical landing
+      if (location === '/landing-minimal' || location === '/landing-simple') {
+        return <LandingStreamlined />;
       }
 
       // Show appropriate page for root path based on authentication
@@ -1169,7 +1172,7 @@ function Router() {
       case '/cs':
         return <CouchsurfingLanding />;
       case '/b':
-        return <BusinessCustomLanding />;
+        return <BusinessLanding />;
       case '/signup':
         return <ComingSoon />;
       case '/business-registration':

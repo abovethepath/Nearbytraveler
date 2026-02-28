@@ -215,7 +215,7 @@ export default function EventsLanding() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-6 sm:mb-8">
             
             {/* Venice Beach Dance Party */}
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-400 to-purple-500">
                 <img 
                   src="/venice-beach-dance-party.png" 
@@ -246,7 +246,7 @@ export default function EventsLanding() {
             </div>
 
             {/* Food Adventure */}
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
                 <img 
                   src="/authentic-food-adventure.png" 
@@ -277,7 +277,7 @@ export default function EventsLanding() {
             </div>
 
             {/* Marina Movie Nights */}
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-purple-600">
                 <img 
                   src={movieImage} 
@@ -308,7 +308,7 @@ export default function EventsLanding() {
             </div>
 
             {/* Art Gallery Walk */}
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-400 to-pink-500">
                 <img 
                   src={artWalkImage} 
@@ -338,7 +338,7 @@ export default function EventsLanding() {
             </div>
 
             {/* Karaoke Night */}
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-red-500 to-pink-600">
                 <img 
                   src={karaokeImage} 
@@ -368,7 +368,7 @@ export default function EventsLanding() {
             </div>
 
             {/* Bike Tour */}
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
               <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-teal-500 to-green-600">
                 <img 
                   src={bikeImage} 
@@ -406,17 +406,17 @@ export default function EventsLanding() {
             What Makes Our Events Special
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            <div className="feature-card feature-card--orange dark:bg-orange-600 p-6 rounded-xl shadow-lg">
+            <div className="bg-white dark:bg-orange-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
               <div className="text-3xl mb-4">🎉</div>
               <h3 className="text-xl font-bold mb-3 text-black">From $1 Taco Tours to Free Beach Parties</h3>
               <p className="text-black text-sm leading-relaxed">Join unforgettable events created by passionate locals who know the best spots. Every experience is authentic and affordable.</p>
             </div>
-            <div className="feature-card feature-card--blue dark:bg-blue-600 p-6 rounded-xl shadow-lg">
+            <div className="bg-white dark:bg-blue-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
               <div className="text-3xl mb-4">🤝</div>
               <h3 className="text-xl font-bold mb-3 text-black">Meet 5-20 People Per Event</h3>
               <p className="text-black text-sm leading-relaxed">Every event is a chance to make lifelong friendships. Small groups mean real connections, not anonymous crowds.</p>
             </div>
-            <div className="feature-card feature-card--teal dark:bg-teal-600 p-6 rounded-xl shadow-lg">
+            <div className="bg-white dark:bg-teal-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
               <div className="text-3xl mb-4">🗺️</div>
               <h3 className="text-xl font-bold mb-3 text-black">Hidden Spots Locals Actually Go To</h3>
               <p className="text-black text-sm leading-relaxed">Discover experiences that tourists never find. Access the real side of every city through insider knowledge.</p>

@@ -38,6 +38,9 @@ export default function LandingNavbar() {
               <Link href="/cs" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Couchsurfer
               </Link>
+              <Link href="/ambassador" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+                Ambassador
+              </Link>
             </div>
           </div>
 
@@ -103,6 +106,7 @@ export default function LandingNavbar() {
               { href: "/events-landing", label: "For Events", icon: "📅" },
               { href: "/business-landing", label: "For Businesses", icon: "💼" },
               { href: "/cs", label: "Couchsurfer", icon: "🛋️" },
+              { href: "/ambassador", label: "Ambassador", icon: "🏅" },
             ].map((item) => (
               <Link 
                 key={item.href}

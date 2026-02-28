@@ -14,13 +14,11 @@ export default function AmbassadorProgram() {
 
   const pointActions = [
     { action: "Refer a friend who signs up", points: "+50 pts", icon: <UserPlus className="w-5 h-5" />, description: "Invite friends to join the community" },
-    { action: "Refer a friend who becomes active", points: "+100 pts", icon: <Users className="w-5 h-5" />, description: "Friend joins an event or messages" },
     { action: "Refer a business lead", points: "+75 pts", icon: <Building2 className="w-5 h-5" />, description: "Connect local businesses to the platform" },
     { action: "Business becomes a paying partner", points: "+200 pts", icon: <TrendingUp className="w-5 h-5" />, description: "Successfully onboard a business partner" },
     { action: "Create an event", points: "+20 pts", icon: <Calendar className="w-5 h-5" />, description: "Host community gatherings" },
     { action: "Host verified event", points: "+50 pts", icon: <Star className="w-5 h-5" />, description: "Successfully run community events" },
     { action: "Event hits attendance goal", points: "+30 pts", icon: <Trophy className="w-5 h-5" />, description: "Grow event participation" },
-    { action: "Community quality bonus", points: "+25 pts", icon: <Award className="w-5 h-5" />, description: "Great feedback, low cancellations" },
   ];
 
   return (
@@ -92,27 +90,21 @@ export default function AmbassadorProgram() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-gray-700 dark:text-gray-300">
-                At each distribution period:
+                Points track your contribution over time. There are <span className="font-semibold">no periodic cash distributions</span> from this program.
               </p>
-              <ol className="list-decimal list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                <li>We total all Ambassador points earned in that period</li>
-                <li>Your share = <span className="font-semibold">your points ÷ total points</span></li>
-                <li>Your equity share comes from the 4% Ambassador Ownership Pool, based on that ratio</li>
-              </ol>
+              <div className="space-y-2 text-gray-700 dark:text-gray-300">
+                <p>
+                  If there is ever a future <span className="font-semibold">liquidity event</span> (an “exit” like an acquisition or IPO) and the program terms are met,
+                  we calculate your share of the <span className="font-semibold">4% Ambassador Ownership Pool</span> based on your portion of total points.
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  In simple terms: <span className="font-semibold">your points ÷ total points</span> = your share of the Ambassador pool (as defined by the official terms).
+                </p>
+              </div>
               <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 shadow-sm p-4 mt-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   <span className="font-semibold">Example:</span> If you earn 1,000 points and the community earns 100,000 points total, 
                   you earned 1% of the points → you receive 1% of the 4% pool (i.e., 0.04% equity), subject to the program terms.
-                </p>
-              </div>
-              <div className="mt-4 p-4 rounded-lg bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800">
-                <p className="text-sm font-semibold text-blue-900 dark:text-blue-100 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  LA Ambassadors: Extra 1% Local Pool
-                </p>
-                <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
-                  Los Angeles city ambassadors share an additional 1% ownership pool on top of the global 4%. 
-                  LA ambassadors can earn from both pools—the global 4% and the LA-specific 1%.
                 </p>
               </div>
             </CardContent>
@@ -138,6 +130,9 @@ export default function AmbassadorProgram() {
       <section className="py-12 bg-white dark:bg-gray-800 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">Ways to Earn Points</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300 text-center -mt-6 mb-8">
+            If an event has multiple Ambassadors (organizer + co-organizers), event-based points are split evenly among them.
+          </p>
           <div className="grid sm:grid-cols-2 gap-4">
             {pointActions.map((item, index) => (
               <Card key={index} className="bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700">
