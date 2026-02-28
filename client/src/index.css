@@ -783,19 +783,54 @@ img {
   }
 }
 
-/* LIGHT MODE PILL CONSISTENCY FIX - Only target elements with explicit pill classes */
-/* IMPORTANT: Only target .pill class elements. Do NOT catch colored buttons, badges, or status indicators */
-.pill:not(input):not(.chat-message-bubble):not(.status-badge), 
-[class*="pill-"]:not(input):not(.chat-message-bubble):not(.status-badge),
-div[class*="pill-activities"]:not(.chat-message-bubble):not(.status-badge),
-div[class*="pill-interests"]:not(.chat-message-bubble):not(.status-badge),
-div[class*="pill-events"]:not(.chat-message-bubble):not(.status-badge) {
-  background-color: white !important;
-  background: white !important;
-  color: black !important;
-  border: 1px solid black !important;
-  border-color: black !important;
+/* LIGHT MODE: Pills/tags use outlined style (no solid fills) */
+:root:not(.dark) .pill:not(input):not(.chat-message-bubble):not(.status-badge),
+:root:not(.dark) [class*="pill-"]:not(input):not(.chat-message-bubble):not(.status-badge) {
+  background: transparent !important;
   text-transform: none !important;
+}
+
+/* Light mode outlined defaults for common pill types */
+:root:not(.dark) .pill-interests,
+:root:not(.dark) div[class*="pill-interests"] {
+  border-color: rgb(59 130 246) !important; /* blue-500 */
+  color: rgb(29 78 216) !important;        /* blue-700 */
+}
+:root:not(.dark) .pill-activities,
+:root:not(.dark) div[class*="pill-activities"] {
+  border-color: rgb(249 115 22) !important; /* orange-500 */
+  color: rgb(194 65 12) !important;         /* orange-700 */
+}
+:root:not(.dark) .pill-events,
+:root:not(.dark) div[class*="pill-events"] {
+  border-color: rgb(168 85 247) !important; /* purple-500 */
+  color: rgb(107 33 168) !important;        /* purple-800 */
+}
+
+/* Light mode: convert filled pill colors to outlines (preserve dark mode) */
+:root:not(.dark) .pill.bg-blue-500,
+:root:not(.dark) [class*="pill-"].bg-blue-500,
+:root:not(.dark) .pill.bg-blue-100,
+:root:not(.dark) [class*="pill-"].bg-blue-100 {
+  background: transparent !important;
+  border-color: rgb(59 130 246) !important;
+  color: rgb(29 78 216) !important;
+}
+:root:not(.dark) .pill.bg-orange-500,
+:root:not(.dark) [class*="pill-"].bg-orange-500,
+:root:not(.dark) .pill.bg-orange-100,
+:root:not(.dark) [class*="pill-"].bg-orange-100 {
+  background: transparent !important;
+  border-color: rgb(249 115 22) !important;
+  color: rgb(194 65 12) !important;
+}
+:root:not(.dark) .pill.bg-purple-500,
+:root:not(.dark) [class*="pill-"].bg-purple-500,
+:root:not(.dark) .pill.bg-purple-100,
+:root:not(.dark) [class*="pill-"].bg-purple-100 {
+  background: transparent !important;
+  border-color: rgb(168 85 247) !important;
+  color: rgb(107 33 168) !important;
 }
 
 /* Dark mode - Let pills use their natural dark mode styling */
@@ -1375,17 +1410,22 @@ p, span, div, button, input, textarea, select {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  height: 1.5rem !important;
+  /* Never clip/truncate pill text */
+  overflow: visible !important;
+  text-overflow: clip !important;
+  max-width: none !important;
+  width: auto !important;
+  flex: 0 0 auto !important;
+  flex-shrink: 0 !important;
+  /* Balanced, consistent padding (px-3 py-1) */
+  padding: 0.25rem 0.75rem !important;
+  min-height: 1.5rem !important;
   border-radius: 9999px !important;
-  padding-left: 0.75rem !important;
-  padding-right: 0.75rem !important;
   font-size: 0.75rem !important;
   font-weight: 500 !important;
   white-space: nowrap !important;
   line-height: 1 !important;
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  border: 1px solid #000000 !important;
+  /* Colors are controlled by the component classes; light-mode outlines are handled above. */
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
   appearance: none !important;

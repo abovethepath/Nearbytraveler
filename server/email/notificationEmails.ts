@@ -588,3 +588,90 @@ export async function sendAdminReportNotification(
     return { success: false, reason: error.message };
   }
 }
+
+export async function sendReportConfirmationEmail(
+  reporterId: number,
+  reporterUsername: string,
+  reportedUsername: string,
+  reason: string,
+  details: string | null
+): Promise<EmailResult> {
+  try {
+    const reporter = await db.select().from(users).where(eq(users.id, reporterId)).then(rows => rows[0]);
+    if (!reporter || !reporter.email) {
+      return { success: false, reason: "Reporter not found or no email" };
+    }
+
+    const displayName = reporter.name?.split(" ")[0] || reporter.username;
+    const reasonLabels: Record<string, string> = {
+      harassment: "Harassment",
+      spam: "Spam",
+      inappropriate: "Inappropriate Content",
+      fake_profile: "Fake Profile",
+      scam: "Scam/Fraud",
+      other: "Other",
+    };
+
+    const reasonLabel = reasonLabels[reason] || reason;
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); padding: 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Report Received</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px;">
+              <p style="font-size: 18px; color: #333333; margin: 0 0 16px;">Hi ${displayName},</p>
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
+                Thanks for helping keep Nearby Traveler safe — we received your report and our team will review it.
+              </p>
+              <div style="background-color: #f3f4f6; padding: 18px; border-radius: 10px; margin: 18px 0; border-left: 4px solid #3b82f6;">
+                <p style="font-size: 15px; color: #333333; margin: 0 0 8px;"><strong>Reporter:</strong> @${reporterUsername}</p>
+                <p style="font-size: 15px; color: #333333; margin: 0 0 8px;"><strong>Reported user:</strong> @${reportedUsername}</p>
+                <p style="font-size: 15px; color: #333333; margin: 0 0 8px;"><strong>Reason:</strong> ${reasonLabel}</p>
+                ${details ? `<p style="font-size: 15px; color: #333333; margin: 0;"><strong>Details:</strong> ${details}</p>` : ''}
+              </div>
+              <p style="font-size: 14px; color: #666666; line-height: 1.6; margin: 0;">
+                If you’re in immediate danger, contact local emergency services.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8f9fa; padding: 20px; text-align: center;">
+              <p style="font-size: 12px; color: #888888; margin: 0;">
+                Nearby Traveler<br>
+                <a href="${APP_URL}/settings" style="color: #3b82f6;">Manage email preferences</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+    const result = await sendBrevoEmail({
+      toEmail: reporter.email,
+      subject: `We received your report about @${reportedUsername}`,
+      textContent: `Hi ${displayName}, we received your report about @${reportedUsername} (Reason: ${reasonLabel}). ${details ? `Details: ${details}` : ""} Thanks for helping keep Nearby Traveler safe.`,
+      htmlContent,
+    });
+
+    return { success: true, messageId: result.messageId };
+  } catch (error: any) {
+    console.error("❌ Failed to send report confirmation email:", error);
+    return { success: false, reason: error.message };
+  }
+}

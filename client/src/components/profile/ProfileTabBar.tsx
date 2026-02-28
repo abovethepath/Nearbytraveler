@@ -95,7 +95,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
       >
         References
         {(userReferences?.length || 0) > 0 && (
-          <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "references" ? (isDesktopWeb && isHero ? "bg-black/20 text-black" : "bg-white/20 text-white") : "bg-orange-500 text-white"}`}>
+          <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "references" ? (isDesktopWeb && isHero ? "bg-black/20 text-black" : "bg-white/20 text-white") : "bg-orange-500 lg:bg-[#e8834a] text-white"}`}>
             {userReferences.length}
           </span>
         )}
@@ -112,7 +112,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         >
           Travel Plans
           {!!(travelPlans?.length) && (
-            <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "travel" ? (isDesktopWeb && isHero ? "bg-black/20 text-black" : "bg-white/20 text-white") : "bg-orange-500 text-white"}`}>
+            <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "travel" ? (isDesktopWeb && isHero ? "bg-black/20 text-black" : "bg-white/20 text-white") : "bg-orange-500 lg:bg-[#e8834a] text-white"}`}>
               {travelPlans.length}
             </span>
           )}
@@ -130,7 +130,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         >
           Countries
           {!!(countriesVisited?.length) && (
-            <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "countries" ? (isDesktopWeb && isHero ? "bg-black/20 text-black" : "bg-white/20 text-white") : "bg-orange-500 text-white"}`}>
+            <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${activeTab === "countries" ? (isDesktopWeb && isHero ? "bg-black/20 text-black" : "bg-white/20 text-white") : "bg-orange-500 lg:bg-[#e8834a] text-white"}`}>
               {countriesVisited.length}
             </span>
           )}

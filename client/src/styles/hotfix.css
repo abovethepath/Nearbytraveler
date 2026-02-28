@@ -39,3 +39,131 @@
 
 /* 5) Kill phantom horizontal scrollbars from 100vw usage */
 html, body { overflow-x: hidden; }
+
+/* 6) LIGHT MODE: feature/benefit cards use consistent pastels */
+:root:not(.dark) .feature-card {
+  background-color: var(--feature-card-bg, rgb(241 245 249 / 0.7)) !important; /* slate-100-ish */
+  color: rgb(17 24 39) !important; /* gray-900 */
+}
+:root:not(.dark) .feature-card--blue   { --feature-card-bg: rgb(224 231 255 / 0.75) !important; } /* periwinkle */
+:root:not(.dark) .feature-card--green  { --feature-card-bg: rgb(220 252 231 / 0.7) !important; } /* mint/sage */
+:root:not(.dark) .feature-card--orange { --feature-card-bg: rgb(255 237 213 / 0.75) !important; } /* peach */
+:root:not(.dark) .feature-card--purple { --feature-card-bg: rgb(243 232 255 / 0.75) !important; } /* lavender */
+:root:not(.dark) .feature-card--pink   { --feature-card-bg: rgb(255 228 230 / 0.72) !important; } /* blush */
+:root:not(.dark) .feature-card--teal   { --feature-card-bg: rgb(204 251 241 / 0.7) !important; } /* aqua tint */
+:root:not(.dark) .feature-card--yellow { --feature-card-bg: rgb(254 249 195 / 0.72) !important; } /* cream */
+
+/* If any card content is forced white, keep light-mode readable. */
+:root:not(.dark) .feature-card .text-white,
+:root:not(.dark) .feature-card [class*="text-white"] {
+  color: rgb(17 24 39) !important;
+}
+
+/* 6b) DESKTOP HERO TEXT: prevent fuzzy rendering on gradients/backdrops */
+@media (min-width: 1024px) {
+  .crisp-hero-text {
+    /* Force crisp glyph rasterization on desktop composited layers */
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    filter: none !important;
+  }
+}
+
+/* 7) LIGHT MODE (universal): soften any remaining saturated "feature cards"
+   that still use bg-*-500/600/700 directly (without touching buttons/badges). */
+:root:not(.dark) [class*="rounded-xl"][class*="p-6"][class*="shadow"]:is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-indigo-5"], [class*="bg-indigo-6"], [class*="bg-indigo-7"], [class*="bg-sky-5"], [class*="bg-sky-6"], [class*="bg-sky-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-5"][class*="shadow"]:is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-indigo-5"], [class*="bg-indigo-6"], [class*="bg-indigo-7"], [class*="bg-sky-5"], [class*="bg-sky-6"], [class*="bg-sky-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-4"][class*="shadow"]:is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-indigo-5"], [class*="bg-indigo-6"], [class*="bg-indigo-7"], [class*="bg-sky-5"], [class*="bg-sky-6"], [class*="bg-sky-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-8"][class*="shadow"]:is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-indigo-5"], [class*="bg-indigo-6"], [class*="bg-indigo-7"], [class*="bg-sky-5"], [class*="bg-sky-6"], [class*="bg-sky-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-6"][class*="shadow"]:is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-indigo-5"], [class*="bg-indigo-6"], [class*="bg-indigo-7"], [class*="bg-sky-5"], [class*="bg-sky-6"], [class*="bg-sky-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-5"][class*="shadow"]:is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-indigo-5"], [class*="bg-indigo-6"], [class*="bg-indigo-7"], [class*="bg-sky-5"], [class*="bg-sky-6"], [class*="bg-sky-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-4"][class*="shadow"]:is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-indigo-5"], [class*="bg-indigo-6"], [class*="bg-indigo-7"], [class*="bg-sky-5"], [class*="bg-sky-6"], [class*="bg-sky-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-8"][class*="shadow"]:is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-indigo-5"], [class*="bg-indigo-6"], [class*="bg-indigo-7"], [class*="bg-sky-5"], [class*="bg-sky-6"], [class*="bg-sky-7"]) {
+  background-color: rgb(224 231 255 / 0.75) !important; /* periwinkle */
+  color: rgb(17 24 39) !important;
+}
+:root:not(.dark) [class*="rounded-xl"][class*="p-6"][class*="shadow"]:is([class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-emerald-5"], [class*="bg-emerald-6"], [class*="bg-emerald-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-5"][class*="shadow"]:is([class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-emerald-5"], [class*="bg-emerald-6"], [class*="bg-emerald-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-4"][class*="shadow"]:is([class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-emerald-5"], [class*="bg-emerald-6"], [class*="bg-emerald-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-8"][class*="shadow"]:is([class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-emerald-5"], [class*="bg-emerald-6"], [class*="bg-emerald-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-6"][class*="shadow"]:is([class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-emerald-5"], [class*="bg-emerald-6"], [class*="bg-emerald-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-5"][class*="shadow"]:is([class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-emerald-5"], [class*="bg-emerald-6"], [class*="bg-emerald-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-4"][class*="shadow"]:is([class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-emerald-5"], [class*="bg-emerald-6"], [class*="bg-emerald-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-8"][class*="shadow"]:is([class*="bg-green-5"], [class*="bg-green-6"], [class*="bg-green-7"], [class*="bg-emerald-5"], [class*="bg-emerald-6"], [class*="bg-emerald-7"]) {
+  background-color: rgb(220 252 231 / 0.7) !important; /* mint/sage */
+  color: rgb(17 24 39) !important;
+}
+:root:not(.dark) [class*="rounded-xl"][class*="p-6"][class*="shadow"]:is([class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-5"][class*="shadow"]:is([class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-4"][class*="shadow"]:is([class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-8"][class*="shadow"]:is([class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-6"][class*="shadow"]:is([class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-5"][class*="shadow"]:is([class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-4"][class*="shadow"]:is([class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-8"][class*="shadow"]:is([class*="bg-orange-5"], [class*="bg-orange-6"], [class*="bg-orange-7"], [class*="bg-amber-5"], [class*="bg-amber-6"], [class*="bg-amber-7"]) {
+  background-color: rgb(255 237 213 / 0.75) !important; /* peach */
+  color: rgb(17 24 39) !important;
+}
+:root:not(.dark) [class*="rounded-xl"][class*="p-6"][class*="shadow"]:is([class*="bg-purple-5"], [class*="bg-purple-6"], [class*="bg-purple-7"], [class*="bg-violet-5"], [class*="bg-violet-6"], [class*="bg-violet-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-5"][class*="shadow"]:is([class*="bg-purple-5"], [class*="bg-purple-6"], [class*="bg-purple-7"], [class*="bg-violet-5"], [class*="bg-violet-6"], [class*="bg-violet-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-4"][class*="shadow"]:is([class*="bg-purple-5"], [class*="bg-purple-6"], [class*="bg-purple-7"], [class*="bg-violet-5"], [class*="bg-violet-6"], [class*="bg-violet-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-8"][class*="shadow"]:is([class*="bg-purple-5"], [class*="bg-purple-6"], [class*="bg-purple-7"], [class*="bg-violet-5"], [class*="bg-violet-6"], [class*="bg-violet-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-6"][class*="shadow"]:is([class*="bg-purple-5"], [class*="bg-purple-6"], [class*="bg-purple-7"], [class*="bg-violet-5"], [class*="bg-violet-6"], [class*="bg-violet-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-5"][class*="shadow"]:is([class*="bg-purple-5"], [class*="bg-purple-6"], [class*="bg-purple-7"], [class*="bg-violet-5"], [class*="bg-violet-6"], [class*="bg-violet-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-4"][class*="shadow"]:is([class*="bg-purple-5"], [class*="bg-purple-6"], [class*="bg-purple-7"], [class*="bg-violet-5"], [class*="bg-violet-6"], [class*="bg-violet-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-8"][class*="shadow"]:is([class*="bg-purple-5"], [class*="bg-purple-6"], [class*="bg-purple-7"], [class*="bg-violet-5"], [class*="bg-violet-6"], [class*="bg-violet-7"]) {
+  background-color: rgb(243 232 255 / 0.75) !important; /* lavender */
+  color: rgb(17 24 39) !important;
+}
+:root:not(.dark) [class*="rounded-xl"][class*="p-6"][class*="shadow"]:is([class*="bg-pink-5"], [class*="bg-pink-6"], [class*="bg-pink-7"], [class*="bg-rose-5"], [class*="bg-rose-6"], [class*="bg-rose-7"], [class*="bg-fuchsia-5"], [class*="bg-fuchsia-6"], [class*="bg-fuchsia-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-5"][class*="shadow"]:is([class*="bg-pink-5"], [class*="bg-pink-6"], [class*="bg-pink-7"], [class*="bg-rose-5"], [class*="bg-rose-6"], [class*="bg-rose-7"], [class*="bg-fuchsia-5"], [class*="bg-fuchsia-6"], [class*="bg-fuchsia-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-4"][class*="shadow"]:is([class*="bg-pink-5"], [class*="bg-pink-6"], [class*="bg-pink-7"], [class*="bg-rose-5"], [class*="bg-rose-6"], [class*="bg-rose-7"], [class*="bg-fuchsia-5"], [class*="bg-fuchsia-6"], [class*="bg-fuchsia-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-8"][class*="shadow"]:is([class*="bg-pink-5"], [class*="bg-pink-6"], [class*="bg-pink-7"], [class*="bg-rose-5"], [class*="bg-rose-6"], [class*="bg-rose-7"], [class*="bg-fuchsia-5"], [class*="bg-fuchsia-6"], [class*="bg-fuchsia-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-6"][class*="shadow"]:is([class*="bg-pink-5"], [class*="bg-pink-6"], [class*="bg-pink-7"], [class*="bg-rose-5"], [class*="bg-rose-6"], [class*="bg-rose-7"], [class*="bg-fuchsia-5"], [class*="bg-fuchsia-6"], [class*="bg-fuchsia-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-5"][class*="shadow"]:is([class*="bg-pink-5"], [class*="bg-pink-6"], [class*="bg-pink-7"], [class*="bg-rose-5"], [class*="bg-rose-6"], [class*="bg-rose-7"], [class*="bg-fuchsia-5"], [class*="bg-fuchsia-6"], [class*="bg-fuchsia-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-4"][class*="shadow"]:is([class*="bg-pink-5"], [class*="bg-pink-6"], [class*="bg-pink-7"], [class*="bg-rose-5"], [class*="bg-rose-6"], [class*="bg-rose-7"], [class*="bg-fuchsia-5"], [class*="bg-fuchsia-6"], [class*="bg-fuchsia-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-8"][class*="shadow"]:is([class*="bg-pink-5"], [class*="bg-pink-6"], [class*="bg-pink-7"], [class*="bg-rose-5"], [class*="bg-rose-6"], [class*="bg-rose-7"], [class*="bg-fuchsia-5"], [class*="bg-fuchsia-6"], [class*="bg-fuchsia-7"]) {
+  background-color: rgb(255 228 230 / 0.72) !important; /* blush */
+  color: rgb(17 24 39) !important;
+}
+:root:not(.dark) [class*="rounded-xl"][class*="p-6"][class*="shadow"]:is([class*="bg-teal-5"], [class*="bg-teal-6"], [class*="bg-teal-7"], [class*="bg-cyan-5"], [class*="bg-cyan-6"], [class*="bg-cyan-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-5"][class*="shadow"]:is([class*="bg-teal-5"], [class*="bg-teal-6"], [class*="bg-teal-7"], [class*="bg-cyan-5"], [class*="bg-cyan-6"], [class*="bg-cyan-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-4"][class*="shadow"]:is([class*="bg-teal-5"], [class*="bg-teal-6"], [class*="bg-teal-7"], [class*="bg-cyan-5"], [class*="bg-cyan-6"], [class*="bg-cyan-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-8"][class*="shadow"]:is([class*="bg-teal-5"], [class*="bg-teal-6"], [class*="bg-teal-7"], [class*="bg-cyan-5"], [class*="bg-cyan-6"], [class*="bg-cyan-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-6"][class*="shadow"]:is([class*="bg-teal-5"], [class*="bg-teal-6"], [class*="bg-teal-7"], [class*="bg-cyan-5"], [class*="bg-cyan-6"], [class*="bg-cyan-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-5"][class*="shadow"]:is([class*="bg-teal-5"], [class*="bg-teal-6"], [class*="bg-teal-7"], [class*="bg-cyan-5"], [class*="bg-cyan-6"], [class*="bg-cyan-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-4"][class*="shadow"]:is([class*="bg-teal-5"], [class*="bg-teal-6"], [class*="bg-teal-7"], [class*="bg-cyan-5"], [class*="bg-cyan-6"], [class*="bg-cyan-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-8"][class*="shadow"]:is([class*="bg-teal-5"], [class*="bg-teal-6"], [class*="bg-teal-7"], [class*="bg-cyan-5"], [class*="bg-cyan-6"], [class*="bg-cyan-7"]) {
+  background-color: rgb(204 251 241 / 0.7) !important; /* aqua tint */
+  color: rgb(17 24 39) !important;
+}
+:root:not(.dark) [class*="rounded-xl"][class*="p-6"][class*="shadow"]:is([class*="bg-yellow-5"], [class*="bg-yellow-6"], [class*="bg-yellow-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-5"][class*="shadow"]:is([class*="bg-yellow-5"], [class*="bg-yellow-6"], [class*="bg-yellow-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-4"][class*="shadow"]:is([class*="bg-yellow-5"], [class*="bg-yellow-6"], [class*="bg-yellow-7"]),
+:root:not(.dark) [class*="rounded-xl"][class*="p-8"][class*="shadow"]:is([class*="bg-yellow-5"], [class*="bg-yellow-6"], [class*="bg-yellow-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-6"][class*="shadow"]:is([class*="bg-yellow-5"], [class*="bg-yellow-6"], [class*="bg-yellow-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-5"][class*="shadow"]:is([class*="bg-yellow-5"], [class*="bg-yellow-6"], [class*="bg-yellow-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-4"][class*="shadow"]:is([class*="bg-yellow-5"], [class*="bg-yellow-6"], [class*="bg-yellow-7"]),
+:root:not(.dark) [class*="rounded-2xl"][class*="p-8"][class*="shadow"]:is([class*="bg-yellow-5"], [class*="bg-yellow-6"], [class*="bg-yellow-7"]) {
+  background-color: rgb(254 249 195 / 0.72) !important; /* cream */
+  color: rgb(17 24 39) !important;
+}
+
+:root:not(.dark) [class*="rounded-xl"][class*="p-6"][class*="shadow"] .text-white,
+:root:not(.dark) [class*="rounded-xl"][class*="p-8"][class*="shadow"] .text-white,
+:root:not(.dark) [class*="rounded-2xl"][class*="p-6"][class*="shadow"] .text-white,
+:root:not(.dark) [class*="rounded-2xl"][class*="p-8"][class*="shadow"] .text-white,
+:root:not(.dark) [class*="rounded-xl"][class*="p-4"][class*="shadow"] [class*="text-white"],
+:root:not(.dark) [class*="rounded-xl"][class*="p-5"][class*="shadow"] [class*="text-white"],
+:root:not(.dark) [class*="rounded-xl"][class*="p-6"][class*="shadow"] [class*="text-white"],
+:root:not(.dark) [class*="rounded-xl"][class*="p-8"][class*="shadow"] [class*="text-white"],
+:root:not(.dark) [class*="rounded-2xl"][class*="p-4"][class*="shadow"] [class*="text-white"],
+:root:not(.dark) [class*="rounded-2xl"][class*="p-5"][class*="shadow"] [class*="text-white"],
+:root:not(.dark) [class*="rounded-2xl"][class*="p-6"][class*="shadow"] [class*="text-white"],
+:root:not(.dark) [class*="rounded-2xl"][class*="p-8"][class*="shadow"] [class*="text-white"] {
+  color: rgb(17 24 39) !important;
+}

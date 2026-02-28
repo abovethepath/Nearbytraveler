@@ -856,7 +856,10 @@ export default function Messages() {
               </div>
 
             {/* Message Input - Fixed at bottom, pb for mobile bottom nav (safe area) */}
-            <div ref={inputContainerRef} className="px-4 py-2 pb-[max(5rem,env(safe-area-inset-bottom)+4rem)] lg:pb-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0">
+            <div
+              ref={inputContainerRef}
+              className="px-4 py-2 pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))] md:pb-4 md:mb-4 lg:pb-6 lg:mb-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0"
+            >
                 {/* Reply Bar */}
                 {replyingTo && (
                   <div className="flex items-center gap-2 px-3 py-2 mb-2 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded max-w-4xl mx-auto">

@@ -309,6 +309,28 @@ export default function Explore() {
 
   const myTagIds = new Set(myCommunityTags.map((t: any) => t.id));
 
+  // Featured preset communities (shown first as a quick grid like the old Groups view)
+  const toSlug = (value: unknown) =>
+    String(value || "")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+  const FEATURED_COMMUNITY_SLUGS = [
+    "solo-female-travelers",
+    "lgbtq-plus",
+    "solo-travelers",
+    "digital-nomads",
+    "foodies",
+    "veterans",
+  ] as const;
+  const featuredCommunities = FEATURED_COMMUNITY_SLUGS
+    .map((slug) =>
+      communityTagsList.find((t: any) => t?.name === slug || toSlug(t?.displayName) === slug || toSlug(t?.name) === slug)
+    )
+    .filter(Boolean);
+
   const handleCreateLiveShare = () => {
     if (!lsPlace) { toast({ title: "Enter a place name", variant: "destructive" }); return; }
     if (!userCity?.trim()) {
@@ -562,6 +584,87 @@ export default function Explore() {
                       <ChevronRight className="w-3 h-3 ml-1" />
                     </Badge>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Featured preset groups (rows/columns) */}
+            {featuredCommunities.length > 0 && (
+              <div className="mb-2">
+                <h4 className="font-bold text-sm text-gray-700 dark:text-gray-300 mb-2">Featured Groups</h4>
+                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+                  {featuredCommunities.map((tag: any) => {
+                    const isJoined = myTagIds.has(tag.id);
+                    return (
+                      <Card
+                        key={`featured-${tag.id}`}
+                        className={`border transition-all cursor-pointer ${
+                          isJoined
+                            ? "border-orange-400 dark:border-orange-600 bg-orange-50/50 dark:bg-orange-950/20"
+                            : "border-gray-200 dark:border-gray-700 hover:border-orange-300"
+                        }`}
+                        onClick={() => {
+                          if (isJoined) setLocation(`/community/${tag.id}`);
+                        }}
+                      >
+                        <CardContent className="p-3">
+                          <div className="flex items-center gap-2">
+                            <div className="text-xl shrink-0">{tag.icon}</div>
+                            <div className="min-w-0">
+                              <div className="text-sm font-bold truncate flex items-center gap-1">
+                                {tag.displayName}
+                                {tag.isPrivate && <Lock className="w-3 h-3 text-gray-400 shrink-0" />}
+                              </div>
+                              <div className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                                {tag.memberCount || 0} members
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="mt-2">
+                            {isJoined ? (
+                              <Button
+                                size="sm"
+                                className="w-full h-7 text-xs bg-orange-500 hover:bg-orange-600 text-white"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setLocation(`/community/${tag.id}`);
+                                }}
+                              >
+                                Open
+                              </Button>
+                            ) : tag.isPrivate ? (
+                              <Button
+                                size="sm"
+                                className="w-full h-7 text-xs bg-orange-500 hover:bg-orange-600 text-white"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setPrivateCommunityId(tag.id);
+                                }}
+                              >
+                                <Lock className="w-3 h-3 mr-1" /> Join
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                className="w-full h-7 text-xs bg-orange-500 hover:bg-orange-600 text-white"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  joinCommunityMutation.mutate({ tagId: tag.id });
+                                }}
+                              >
+                                Join
+                              </Button>
+                            )}
+                          </div>
+
+                          {tag.color && (
+                            <div className="mt-2 h-1 rounded-full" style={{ backgroundColor: tag.color }} />
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               </div>
             )}

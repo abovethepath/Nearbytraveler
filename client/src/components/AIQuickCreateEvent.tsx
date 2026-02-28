@@ -445,7 +445,7 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
           <Button
             onClick={handleGenerate}
             disabled={generateDraftMutation.isPending || inputText.length < 10}
-            className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+            className="w-full bg-[#e8834a] hover:bg-[#d4703a] text-white"
           >
             {generateDraftMutation.isPending ? (
               <>
@@ -477,7 +477,7 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
           </div>
         </>
       ) : (
-        <Card className="border-2 border-orange-200 dark:border-orange-800 bg-orange-50/50 dark:bg-orange-950/20">
+        <Card className="border border-gray-200 dark:border-orange-800 bg-white dark:bg-orange-950/20">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">

@@ -559,7 +559,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
                             <div className="flex items-center gap-2">
-                              <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-bold whitespace-nowrap leading-none bg-gradient-to-r from-blue-500 to-orange-500 text-white">
+                              <div className="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap overflow-visible leading-none bg-gradient-to-r from-blue-500 to-orange-500 text-white">
                                 {(() => {
                                   // Format discount display based on deal type
                                   const value = deal.discountValue?.trim() || '';
@@ -687,7 +687,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Interests (for matching)</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allInterests.map((interest, index) => (
-                                  <span key={`bi-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-700">
+                                  <span key={`bi-${index}`} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap overflow-visible bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-700">
                                     {interest}
                                   </span>
                                 ))}
@@ -699,7 +699,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Activities (for matching)</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allActivities.map((activity, index) => (
-                                  <span key={`ba-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-700">
+                                  <span key={`ba-${index}`} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap overflow-visible bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-700">
                                     {activity}
                                   </span>
                                 ))}
@@ -773,7 +773,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 break-words overflow-hidden">
+              <CardContent className="space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 break-words">
 
                 {/* EDIT MODE - Single scrolling form with all sections */}
                 {isOwnProfile && isEditingPublicInterests ? (
@@ -949,7 +949,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                   onClick={() => {
                                     setEditFormData(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
                                   }}
-                                  className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-blue-400 to-orange-400 text-white shadow-md gap-1.5 hover:opacity-80 transition-opacity"
+                                  className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium leading-none whitespace-nowrap overflow-visible bg-gradient-to-r from-blue-400 to-orange-400 text-white shadow-md gap-1.5 hover:opacity-80 transition-opacity"
                                   title="Click to remove"
                                 >
                                   {interest}
@@ -1077,7 +1077,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                       onClick={() => {
                                         setEditFormData(prev => ({ ...prev, activities: prev.activities.filter(a => a !== activity) }));
                                       }}
-                                      className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-md gap-1.5 hover:opacity-80 transition-opacity"
+                                      className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium leading-none whitespace-nowrap overflow-visible bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-md gap-1.5 hover:opacity-80 transition-opacity"
                                       title="Click to remove"
                                     >
                                       {activity}
@@ -1363,7 +1363,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="space-y-6 break-words overflow-hidden">
+              <CardContent className="space-y-6 break-words">
 
                 {/* Display current business interests/activities when not editing */}
                 {(!editingInterests || !editingActivities) && (
@@ -1400,7 +1400,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Interests</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allInterests.map((interest, index) => (
-                                  <div key={`interest-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5">
+                                  <div key={`interest-${index}`} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium leading-none whitespace-nowrap overflow-visible bg-white text-black border border-black appearance-none select-none gap-1.5">
                                     {interest}
                                   </div>
                                 ))}
@@ -1412,7 +1412,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Activities</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allActivities.map((activity, index) => (
-                                  <div key={`activity-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5">
+                                  <div key={`activity-${index}`} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium leading-none whitespace-nowrap overflow-visible bg-white text-black border border-black appearance-none select-none gap-1.5">
                                     {activity}
                                   </div>
                                 ))}

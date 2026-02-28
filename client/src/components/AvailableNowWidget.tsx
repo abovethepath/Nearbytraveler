@@ -344,7 +344,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
 
   return (
     <>
-    <Card className="overflow-hidden border-0 shadow-lg rounded-2xl bg-gray-900 dark:bg-gray-800 relative z-20">
+    <Card className="overflow-hidden shadow-lg rounded-2xl bg-white border border-gray-200 dark:border-0 dark:bg-gray-800 relative z-20">
       <div className="p-4">
         {myStatus ? (
           <div className="mb-4 rounded-xl border-2 border-green-400 dark:border-green-500 overflow-hidden">
@@ -418,26 +418,28 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             </div>
           </div>
         ) : (
-          <button
-            type="button"
-            onClick={() => setShowSetup(true)}
-            className="w-full mb-4 py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 hover:from-purple-700 hover:via-orange-600 hover:to-green-600 text-white font-bold text-base text-center shadow-lg shadow-orange-500/30 cursor-pointer active:scale-[0.98] transition-all relative z-30"
-          >
-            <span className="flex items-center justify-center gap-2 pointer-events-none">
-              <Zap className="w-5 h-5 text-yellow-300" />
-              I'm Available to Hang Out
-            </span>
-          </button>
-        )}
+          <div className="mb-4 rounded-xl bg-white border border-gray-200 p-3 dark:bg-gray-900/40 dark:border-gray-800">
+            <button
+              type="button"
+              onClick={() => setShowSetup(true)}
+              className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 hover:from-purple-700 hover:via-orange-600 hover:to-green-600 text-white font-bold text-base text-center shadow-lg shadow-orange-500/30 cursor-pointer active:scale-[0.98] transition-all relative z-30"
+            >
+              <span className="flex items-center justify-center gap-2 pointer-events-none">
+                <Zap className="w-5 h-5 text-yellow-300" />
+                I'm Available to Hang Out
+              </span>
+            </button>
 
-        {onSortByAvailableNow && (
-          <Button
-            size="sm"
-            className="w-full mb-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2 rounded-full"
-            onClick={onSortByAvailableNow}
-          >
-            🟢 See Who Else is Available Now
-          </Button>
+            {onSortByAvailableNow && (
+              <Button
+                size="sm"
+                className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2 rounded-full"
+                onClick={onSortByAvailableNow}
+              >
+                🟢 See Who Else is Available Now
+              </Button>
+            )}
+          </div>
         )}
 
         {/* Show all group chats when not currently available (both host and requester chats) */}

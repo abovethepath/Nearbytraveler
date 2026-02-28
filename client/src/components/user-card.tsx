@@ -159,7 +159,7 @@ export default function UserCard({
   const matchPercent = getMatchPercent();
   // People discovery cards: show shared INTERESTS count (as originally displayed)
   const thingsInCommon = compatibilityData?.sharedInterests?.length || 0;
-  const bioSnippet = user.bio ? (user.bio.length > 100 ? user.bio.slice(0, 100) + '…' : user.bio) : '';
+  const bioText = (user.bio || "").trim();
 
   return (
     <button 
@@ -238,6 +238,19 @@ export default function UserCard({
           >
             {displayName}
           </div>
+          <div className="truncate mt-0.5" style={{ color: '#5a5e75', fontSize: 11.5 }}>
+            {user.userType === 'business' && user.streetAddress ? (
+              `📍 ${user.streetAddress}`
+            ) : (
+              <>
+                <span style={{ color: '#5a5e75', fontWeight: 600 }}>Hometown</span>
+                <span> </span>
+                <span style={{ color: '#e8834a', fontWeight: 700 }}>Nearby Local</span>
+                <span> </span>
+                <span>{displayCity}</span>
+              </>
+            )}
+          </div>
           <div
             title={user.bio || undefined}
             style={{
@@ -251,23 +264,13 @@ export default function UserCard({
               overflow: 'hidden',
             }}
           >
-            {bioSnippet || '\u00A0'}
+            {bioText || '\u00A0'}
           </div>
           {!isCurrentUser && (
             <div className="truncate mt-0.5" style={{ color: '#e8834a', fontSize: 12, fontWeight: 600 }}>
               {thingsInCommon} things in common
             </div>
           )}
-          <div className="truncate mt-0.5" style={{ color: '#5a5e75', fontSize: 11.5 }}>
-            {user.userType === 'business' && user.streetAddress ? (
-              `📍 ${user.streetAddress}`
-            ) : (
-              <>
-                <span style={{ color: '#e8834a', fontWeight: 700 }}>Nearby Local</span>
-                <span> → {displayCity}</span>
-              </>
-            )}
-          </div>
           <div className="min-h-[1.25rem] mt-0.5">
             {travelCityFinal && user.userType !== 'business' ? (
               <div className="flex items-center gap-1 truncate" style={{ color: '#5b9cf6', fontSize: 11.5, fontWeight: 600 }}>
@@ -288,6 +291,19 @@ export default function UserCard({
           >
             {displayName}
           </div>
+          <div className="truncate mt-0.5" style={{ color: '#5a5e75', fontSize: 11.5 }}>
+            {user.userType === 'business' && user.streetAddress ? (
+              `📍 ${user.streetAddress}`
+            ) : (
+              <>
+                <span style={{ color: '#5a5e75', fontWeight: 600 }}>Hometown</span>
+                <span> </span>
+                <span style={{ color: '#e8834a', fontWeight: 700 }}>Nearby Local</span>
+                <span> </span>
+                <span>{displayCity}</span>
+              </>
+            )}
+          </div>
           <div
             title={user.bio || undefined}
             style={{
@@ -301,23 +317,13 @@ export default function UserCard({
               overflow: 'hidden',
             }}
           >
-            {bioSnippet || '\u00A0'}
+            {bioText || '\u00A0'}
           </div>
           {!isCurrentUser && (
             <div className="truncate mt-0.5" style={{ color: '#e8834a', fontSize: 12, fontWeight: 600 }}>
               {thingsInCommon} things in common
             </div>
           )}
-          <div className="truncate mt-0.5" style={{ color: '#5a5e75', fontSize: 11.5 }}>
-            {user.userType === 'business' && user.streetAddress ? (
-              `📍 ${user.streetAddress}`
-            ) : (
-              <>
-                <span style={{ color: '#e8834a', fontWeight: 700 }}>Nearby Local</span>
-                <span> → {displayCity}</span>
-              </>
-            )}
-          </div>
           <div className="min-h-[1.25rem] mt-0.5">
             {travelCityFinal && user.userType !== 'business' ? (
               <div className="flex items-center gap-1 truncate" style={{ color: '#5b9cf6', fontSize: 11.5, fontWeight: 600 }}>

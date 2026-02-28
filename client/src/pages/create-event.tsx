@@ -700,7 +700,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
           >
             {/* AI Quick Create - Describe your event in natural language */}
             <Card 
-              className="border-2 border-orange-200 dark:border-orange-800 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 cursor-pointer hover:border-orange-400 dark:hover:border-orange-600 transition-colors"
+              className="border border-gray-200 dark:border-orange-800 bg-white dark:bg-gradient-to-r dark:from-orange-950/30 dark:to-amber-950/30 cursor-pointer hover:border-gray-300 dark:hover:border-orange-600 transition-colors"
               onClick={() => setShowAiQuickCreate(!showAiQuickCreate)}
             >
               <CardHeader className="pb-3">

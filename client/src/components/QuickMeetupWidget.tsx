@@ -452,25 +452,35 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
                         </span>
                       </div>
                       <div className="mt-2">
-                        <Button
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (isOwn) {
+                        {isOwn ? (
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setLocation(`/quick-meetups?id=${meetup.id}`);
-                            } else if (isJoined) {
-                              window.location.href = `/quick-meetup-chat/${meetup.id}`;
-                            } else {
+                            }}
+                            className="w-full text-xs h-8 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
+                          >
+                            <Edit3 className="w-3 h-3 mr-1" />
+                            Manage Your Meetup
+                          </Button>
+                        ) : isJoined ? (
+                          <div className="w-full text-center text-xs font-semibold text-green-700 dark:text-green-300">
+                            Joined ✓
+                          </div>
+                        ) : (
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
                               handleJoinMeetup(meetup.id);
-                            }
-                          }}
-                          className={`w-full text-xs h-8 ${isOwn 
-                            ? 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600' 
-                            : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600'} text-white`}
-                        >
-                          {isOwn ? <Edit3 className="w-3 h-3 mr-1" /> : <MessageSquare className="w-3 h-3 mr-1" />}
-                          {isOwn ? 'Manage Your Meetup' : isJoined ? 'Open Hangout' : 'Join This Hangout!'}
-                        </Button>
+                            }}
+                            className="w-full text-xs h-8 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white"
+                          >
+                            <Users className="w-3 h-3 mr-1" />
+                            Join This Hangout!
+                          </Button>
+                        )}
                       </div>
                     </div>
                   );
@@ -797,41 +807,15 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1">
                             <p 
                               className={`text-xs font-medium text-gray-700 dark:text-gray-300 truncate ${!isOwn ? 'cursor-pointer hover:text-orange-600 dark:hover:text-orange-400' : ''}`}
                               onClick={() => !isOwn && meetup.organizerId && (window.location.href = `/profile/${meetup.organizerId}`)}
                             >
                               @{meetup.organizerUsername || 'Unknown'} {isOwn && '(you)'}
                             </p>
-                            {/* Action buttons */}
+                            {/* Action buttons (desktop-only) */}
                             <div className="flex items-center gap-1">
-                              {!isOwn && meetup.organizerId && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    window.location.href = `/chat/${meetup.organizerId}`;
-                                  }}
-                                  className="hidden md:inline-flex p-1 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors"
-                                  title="Message organizer"
-                                >
-                                  <MessageCircle className="w-3 h-3 text-orange-500" />
-                                </button>
-                              )}
-                              
-                              {/* Group Chat Button - join first if not a member, then navigate */}
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (isJoined) window.location.href = `/quick-meetup-chat/${meetup.id}`;
-                                  else handleJoinMeetup(meetup.id);
-                                }}
-                                className="hidden md:inline-flex p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-                                title="Join group chat"
-                              >
-                                <MessageSquare className="w-3 h-3 text-blue-500" />
-                              </button>
-
                               {/* Edit/Delete buttons for owner */}
                               {isOwn && (
                                 <>
@@ -927,7 +911,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
                       </Badge>
                       
                       <div className="text-[10px] text-blue-600 dark:text-blue-400 font-medium">
-                        Click to view details & chat →
+                        {isOwn || isJoined ? "Click to view details & chat →" : "Click to view details & join →"}
                       </div>
                     </div>
 

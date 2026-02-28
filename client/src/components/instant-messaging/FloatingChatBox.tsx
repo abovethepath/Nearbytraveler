@@ -21,11 +21,16 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const user = authStorage.getUser();
+  const bottomNavSafeOffset = 'max(5rem, calc(60px + 1rem + var(--sab)))';
+  const bottomNavSafeOffsetMinimized = 'max(1rem, calc(60px + 1rem + var(--sab)))';
 
   // Prevent self-messaging
   if (user?.id === targetUser.id) {
     return (
-      <div className="fixed bottom-4 right-4 w-80 h-32 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl z-50 flex flex-col">
+      <div
+        className="fixed right-4 w-80 h-32 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl z-50 flex flex-col"
+        style={{ bottom: bottomNavSafeOffsetMinimized }}
+      >
         <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600 bg-orange-600 text-white rounded-t-lg">
           <h3 className="font-semibold text-sm">Cannot Message Yourself</h3>
           <Button
@@ -174,7 +179,7 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
 
   if (isMinimized) {
     return (
-      <div className="fixed bottom-4 right-4 z-50">
+      <div className="fixed right-4 z-50" style={{ bottom: bottomNavSafeOffsetMinimized }}>
         <Button
           onClick={onMinimize}
           className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg"
@@ -190,7 +195,10 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
   }
 
   return (
-    <div className="fixed bottom-20 right-4 w-80 h-96 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl z-50 flex flex-col">
+    <div
+      className="fixed right-4 w-80 h-96 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl z-50 flex flex-col"
+      style={{ bottom: bottomNavSafeOffset }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600 bg-blue-600 text-white rounded-t-lg">
         <div className="flex items-center gap-2">

@@ -316,9 +316,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     const profile: any = userProfile || user;
     
     const gradientOptions = [
-      "from-orange-400/20 to-blue-600/20",
-      "from-blue-400/20 to-orange-600/20",
-      "from-blue-300/20 to-orange-500/20",
+      // Light mode: deeper, saturated blue→orange for contrast over photos.
+      // Dark mode: keep previous softer overlays unchanged.
+      "from-blue-900/90 to-orange-600/80 dark:from-orange-400/20 dark:to-blue-600/20",
+      "from-blue-800/90 to-orange-500/80 dark:from-blue-400/20 dark:to-orange-600/20",
+      "from-blue-900/90 to-amber-500/80 dark:from-blue-300/20 dark:to-orange-500/20",
     ];
     
     // Add hometown (use metro area name if applicable)
@@ -619,14 +621,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         const citiesData = await response.json();
         
         const gradientOptions = [
-          "from-orange-400/20 to-blue-600/20",
-          "from-blue-400/20 to-orange-600/20",
-          "from-blue-300/20 to-orange-500/20", 
-          "from-orange-300/20 to-blue-500/20",
-          "from-blue-500/20 to-orange-400/20",
-          "from-orange-500/20 to-blue-400/20",
-          "from-blue-600/20 to-orange-300/20",
-          "from-orange-600/20 to-blue-300/20"
+          // Light mode: vibrant blue→orange travel gradients (high contrast for white text).
+          // Dark mode: preserve previous washed overlays (unchanged look in dark).
+          "from-blue-900/90 to-orange-600/80 dark:from-orange-400/20 dark:to-blue-600/20",
+          "from-blue-800/90 to-orange-500/80 dark:from-blue-400/20 dark:to-orange-600/20",
+          "from-blue-900/90 to-amber-500/80 dark:from-blue-300/20 dark:to-orange-500/20",
+          "from-blue-950/90 to-orange-700/80 dark:from-orange-300/20 dark:to-blue-500/20",
+          "from-blue-950/90 to-orange-600/80 dark:from-blue-500/20 dark:to-orange-400/20",
+          "from-blue-900/90 to-amber-600/80 dark:from-orange-500/20 dark:to-blue-400/20",
+          "from-blue-950/90 to-orange-600/80 dark:from-blue-600/20 dark:to-orange-300/20",
+          "from-blue-900/90 to-orange-700/80 dark:from-orange-600/20 dark:to-blue-300/20"
         ];
         
         const citiesWithPhotos = citiesData.map((city: any, index: number) => ({

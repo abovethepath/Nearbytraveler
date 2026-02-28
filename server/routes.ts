@@ -8042,6 +8042,27 @@ Questions? Just reply to this message. Welcome aboard!
         // Don't fail the report submission if email fails
       }
 
+      // Send reporter confirmation email (to the reporting user's own email)
+      try {
+        const [reporter, reportedUser] = await Promise.all([
+          db.select({ username: users.username }).from(users).where(eq(users.id, reporterId)).then(r => r[0]),
+          db.select({ username: users.username }).from(users).where(eq(users.id, reportedUserId)).then(r => r[0]),
+        ]);
+        if (reporter && reportedUser) {
+          const { sendReportConfirmationEmail } = await import('./email/notificationEmails');
+          await sendReportConfirmationEmail(
+            reporterId,
+            reporter.username,
+            reportedUser.username,
+            reason,
+            details || null
+          );
+        }
+      } catch (emailError) {
+        console.error("⚠️ Failed to send reporter confirmation email:", emailError);
+        // Don't fail the report submission if email fails
+      }
+
       res.json({ 
         success: true, 
         message: "Report submitted successfully. Our team will review it." 

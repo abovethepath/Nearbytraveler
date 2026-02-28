@@ -683,16 +683,16 @@ export default function Events() {
           
           <div 
             onClick={() => setLocation('/create-event?import=true')}
-            className="bg-gradient-to-r from-gray-700 to-gray-800 rounded-xl p-6 shadow-lg cursor-pointer hover:from-gray-800 hover:to-gray-900 transition-all border border-gray-600"
+            className="bg-white rounded-xl p-6 shadow-lg cursor-pointer hover:bg-gray-50 transition-all border border-gray-200 dark:bg-gradient-to-r dark:from-gray-700 dark:to-gray-800 dark:hover:from-gray-800 dark:hover:to-gray-900 dark:border-gray-600"
             data-testid="import-event-cta"
           >
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
-                <Link2 className="w-7 h-7 text-gray-300" />
+              <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center dark:bg-white/10">
+                <Link2 className="w-7 h-7 text-gray-700 dark:text-gray-300" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white">Link External Event</h2>
-                <p className="text-gray-400 text-sm">Add a Meetup or Couchsurfing URL</p>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Link External Event</h2>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Add a Meetup or Couchsurfing URL</p>
               </div>
             </div>
           </div>
