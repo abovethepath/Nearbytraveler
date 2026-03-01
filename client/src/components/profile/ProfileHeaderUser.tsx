@@ -4,12 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail } from "lucide-react";
+import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { ReportUserButton } from "@/components/report-user-button";
 import { formatLocationCompact, formatTravelDestinationShort, getCurrentTravelDestination } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { useTheme } from "@/components/theme-provider";
 import { useIsDesktop } from "@/hooks/useDeviceType";
 import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
 import { VouchButton } from "@/components/VouchButton";
@@ -23,6 +24,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     isOwnProfile,
     gradientOptions,
     selectedGradient,
+    setSelectedGradient,
     setShowExpandedPhoto,
     uploadingPhoto,
     handleAvatarUpload,
@@ -36,6 +38,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     currentUser,
     handleMessage,
     setShowWriteReferenceModal,
+    setTriggerQuickMeetup,
     userChatrooms = [],
     compatibilityData,
   } = props as Record<string, any>;
@@ -52,10 +55,20 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const mutedOrange = "#e8834a";
   const mutedOrangeHover = "#d4703a";
 
+  const { resolvedTheme, setTheme } = useTheme();
+
   const [shareWithFriendsOpen, setShareWithFriendsOpen] = React.useState(false);
+  const [seeAllCommonOpen, setSeeAllCommonOpen] = React.useState(false);
   const origin = typeof window !== "undefined" ? window.location.origin : "https://nearbytraveler.org";
   const profileUrl = user?.username ? `${origin}/profile/${user.username}` : `${origin}/profile`;
   const shareText = `Check out this profile on NearbyTraveler: @${user?.username || "nearbytraveler"}\n\n${profileUrl}`;
+
+  const cycleHeroPalette = () => {
+    if (typeof setSelectedGradient !== "function") return;
+    const total = Array.isArray(gradientOptions) ? gradientOptions.length : 0;
+    if (total <= 0) return;
+    setSelectedGradient((prev: number) => (Number.isFinite(prev) ? (prev + 1) % total : 0));
+  };
 
   const copyProfileLink = async () => {
     try {
@@ -123,6 +136,30 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <Share2 className="w-4 h-4 mr-2" />
                   Share with Friends
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLocation('/share-qr')} data-testid="menu-item-invite-friends">
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Invite Friends
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={cycleHeroPalette} data-testid="menu-item-change-hero-palette">
+                  <Palette className="w-4 h-4 mr-2" />
+                  Change Hero Color Palette
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setTheme("dark")}
+                  disabled={resolvedTheme === "dark"}
+                  data-testid="menu-item-switch-dark-mode"
+                >
+                  <Moon className="w-4 h-4 mr-2" />
+                  Switch to Dark Mode
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setTheme("light")}
+                  disabled={resolvedTheme === "light"}
+                  data-testid="menu-item-switch-light-mode"
+                >
+                  <Sun className="w-4 h-4 mr-2" />
+                  Switch to Light Mode
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -157,26 +194,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   New to Town
                 </span>
               )}
-
-              <div className="mt-3 text-left">
-                <span
-                  className="block text-base font-semibold text-orange-600 dark:text-orange-400 lg:text-lg crisp-hero-text"
-                  style={{ color: mutedOrange }}
-                >
-                  Nearby Local
-                </span>
-                <span className="block text-lg font-semibold !text-black crisp-hero-text">{hometown}</span>
-              </div>
-              {hasValidTravelDestination && (
-                <div className="mt-1.5 text-left">
-                  <span className="block text-base font-semibold text-blue-600 dark:text-blue-400 lg:text-lg crisp-hero-text">
-                    Nearby Traveler
-                  </span>
-                  <span className="block text-lg font-semibold !text-black crisp-hero-text" title={currentTravelPlan}>
-                    {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan) ? formatTravelDestinationShort(currentTravelPlan) : currentTravelPlan}
-                  </span>
-                </div>
-              )}
             </div>
 
             <div className="flex flex-row items-start gap-6 lg:gap-8">
@@ -205,37 +222,47 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   New to Town
                 </span>
               )}
-              <div className="mt-2.5 text-left">
-                <span className="block text-base font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
-                <span className="block text-lg font-semibold !text-black">{hometown}</span>
-              </div>
-              {hasValidTravelDestination && (
-                <div className="mt-1.5 text-left">
-                  <span className="block text-base font-semibold text-blue-600 dark:text-blue-400">Nearby Traveler</span>
-                  <span className="block text-lg font-semibold !text-black" title={currentTravelPlan}>
-                    {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan) ? formatTravelDestinationShort(currentTravelPlan) : currentTravelPlan}
-                  </span>
-                </div>
-              )}
             </div>
             {/* RIGHT: @username + Share Profile, buttons - bio has its own dedicated section below hero */}
             <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0.5 lg:pl-[23rem]">
               <div className="flex items-center gap-2.5 shrink-0 w-fit max-w-full">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold !text-black lg:!text-white break-all leading-tight lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)] crisp-hero-text">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900 break-all leading-tight">
                   @{user?.username}
                 </h1>
               </div>
-              <div className="flex flex-wrap gap-2 mt-3">
-                <button
+
+              {/* Nearby Local/Traveler moved under username (inside hero content area) */}
+              <div className="mt-1 space-y-0.5">
+                <div className="text-sm sm:text-base font-semibold text-gray-900">
+                  Nearby Local <span className="text-gray-600">·</span> <span className="text-gray-900">{hometown}</span>
+                </div>
+                {hasValidTravelDestination && (
+                  <div className="text-sm sm:text-base font-semibold text-gray-900" title={currentTravelPlan}>
+                    Nearby Traveler <span className="text-gray-600">→</span>{" "}
+                    <span className="text-gray-900">
+                      {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan) ? formatTravelDestinationShort(currentTravelPlan) : currentTravelPlan}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 mt-3">
+                <Button
                   type="button"
-                  onClick={() => setLocation('/share-qr')}
-                  className="inline-flex items-center justify-center h-9 w-9 rounded-md bg-white/85 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 ring-1 ring-gray-300/60 dark:ring-gray-500/60 shadow-sm transition-colors"
-                  title="Invite friends"
-                  aria-label="Invite friends"
-                  data-testid="button-invite-friends-icon"
+                  size="sm"
+                  variant="outline"
+                  className="h-9 px-3 text-sm font-semibold bg-white/85 hover:bg-white text-gray-900 border border-gray-200 shadow-sm"
+                  onClick={() => {
+                    const widget = document.querySelector('[data-testid=\"quick-meet-widget\"]');
+                    if (widget) widget.scrollIntoView({ behavior: \"smooth\", block: \"center\" });
+                    setTriggerQuickMeetup?.(true);
+                    setTimeout(() => setTriggerQuickMeetup?.(false), 500);
+                  }}
+                  data-testid="button-lets-meet-now-hero"
                 >
-                  <UserPlus className="w-5 h-5 text-gray-800 dark:text-gray-100" />
-                </button>
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Let's Meet Now
+                </Button>
               </div>
             </div>
             </div>
@@ -250,148 +277,271 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
         <div className="flex flex-col lg:relative">
           {!isOwnProfile && !isNativeIOSApp() ? (
             <>
-              <div className="flex flex-row items-start gap-4 sm:gap-6">
-                {/* LEFT: large avatar */}
-                <div className="flex-shrink-0">
-                  <div
-                    className="w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 lg:w-48 lg:h-48 rounded-full overflow-hidden ring-4 ring-white/90 shadow-2xl cursor-pointer"
-                    onClick={() => { if (user?.profileImage) setShowExpandedPhoto(true); }}
-                    title={user?.profileImage ? "Click to enlarge photo" : undefined}
-                  >
-                    <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
-                  </div>
-                  {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-3">
-                      New to Town
-                    </span>
-                  )}
-                </div>
+              {(() => {
+                const sharedInterests: string[] = Array.isArray((compatibilityData as any)?.sharedInterests)
+                  ? (compatibilityData as any).sharedInterests
+                  : [];
+                const sharedCountries: string[] = Array.isArray((compatibilityData as any)?.sharedCountries)
+                  ? (compatibilityData as any).sharedCountries
+                  : [];
+                const sharedLanguages: string[] = Array.isArray((compatibilityData as any)?.sharedLanguages)
+                  ? (compatibilityData as any).sharedLanguages
+                  : [];
+                const otherCommonalities: string[] = Array.isArray((compatibilityData as any)?.otherCommonalities)
+                  ? (compatibilityData as any).otherCommonalities
+                  : [];
 
-                {/* RIGHT: content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold break-all text-black lg:!text-white lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)] crisp-hero-text">
-                      @{user?.username}
-                    </h1>
-                    {!!(connectionDegreeData?.degree && connectionDegreeData.degree > 0) && (
-                      <Badge
-                        className={`text-xs px-2 py-0.5 font-semibold ${
-                          connectionDegreeData.degree === 1
-                            ? 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-200 dark:border-green-600'
-                            : connectionDegreeData.degree === 2
-                              ? 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/50 dark:text-blue-200 dark:border-blue-600'
-                              : 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/50 dark:text-purple-200 dark:border-purple-600'
-                        }`}
-                        data-testid="badge-connection-degree"
-                      >
-                        {connectionDegreeData.degree === 1 ? '1st' : connectionDegreeData.degree === 2 ? '2nd' : '3rd'}
-                      </Badge>
-                    )}
-                  </div>
+                const sharedContactsCount = connectionDegreeData?.mutualCount ?? 0;
+                const totalCommon =
+                  (typeof (compatibilityData as any)?.matchCount === "number" ? (compatibilityData as any).matchCount : null) ??
+                  (sharedInterests.length + sharedCountries.length + sharedLanguages.length + otherCommonalities.length + sharedContactsCount);
 
-                  <div className="mt-2 space-y-1">
-                    <div className="text-base sm:text-lg font-semibold crisp-hero-text">
-                      <span className="text-orange-600 dark:text-orange-400" style={{ color: mutedOrange }}>Nearby Local</span>
-                      <span className="text-gray-700 dark:text-gray-200"> · </span>
-                      <span className="text-black dark:text-gray-100">{hometown}</span>
-                    </div>
+                const visibleInterestPills = sharedInterests.slice(0, 6);
+                const hasOverflow = sharedInterests.length > visibleInterestPills.length;
 
-                    {hasValidTravelDestination && (
-                      <div className="text-base sm:text-lg font-semibold crisp-hero-text">
-                        <span className="text-white/95">Nearby Traveler</span>
-                        <span className="text-white/80"> → </span>
-                        <span className="text-black dark:text-gray-100" title={currentTravelPlan!}>
-                          {formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-4 max-w-[460px]">
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        className="w-full inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-4 py-2 text-sm bg-[#fff0e6] hover:bg-[#ffe6d6] text-orange-700 border border-orange-200 dark:text-white dark:bg-orange-500 dark:hover:bg-orange-600 dark:border-0"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleMessage?.();
-                        }}
-                        onPointerDown={(e) => e.stopPropagation()}
-                        data-testid="button-message"
-                        data-radix-dismissable-layer-ignore=""
-                      >
-                        <span>Message</span>
-                      </button>
-                      <ConnectButton
-                        currentUserId={currentUser?.id || 0}
-                        targetUserId={user?.id || 0}
-                        targetUsername={user?.username}
-                        targetName={user?.name}
-                        appearance="ghost"
-                        className="w-full rounded-lg transition-all px-4 py-2 text-sm font-semibold"
-                      />
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2 mt-2">
-                      <VouchButton
-                        currentUserId={currentUser?.id || 0}
-                        targetUserId={user?.id || 0}
-                        targetUsername={user?.username}
-                        appearance="ghost"
-                        className="h-9 px-3 text-sm"
-                      />
-                      <Button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          if (currentUser) setShowWriteReferenceModal?.(true);
-                          else setLocation('/auth');
-                        }}
-                        variant="outline"
-                        className="bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-800 border border-blue-200 dark:bg-white/15 dark:hover:bg-white/25 dark:text-white dark:border-white/40 shrink-0 px-3 py-2 text-sm h-9"
-                        data-testid="button-write-reference"
-                      >
-                        Write Reference
-                      </Button>
-                      {shareButton(true)}
-                    </div>
-
-                    <div className="mt-2">
-                      {currentUser ? (
-                        <ReportUserButton
-                          userId={currentUser.id}
-                          targetUserId={user.id}
-                          targetUsername={user.username}
-                          variant="ghost"
-                          size="sm"
-                          showIcon={false}
-                          appearance="link"
-                        />
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setLocation('/auth');
-                          }}
-                          onPointerDown={(e) => e.stopPropagation()}
-                          className="text-sm text-gray-600 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400 underline underline-offset-2 font-medium"
-                          data-radix-dismissable-layer-ignore=""
+                return (
+                  <>
+                    <div className="flex flex-col lg:flex-row lg:items-start gap-4 lg:gap-6">
+                      {/* LEFT: avatar + status */}
+                      <div className="flex-shrink-0">
+                        <div
+                          className="w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-full overflow-hidden ring-4 ring-white/90 shadow-2xl cursor-pointer"
+                          onClick={() => { if (user?.profileImage) setShowExpandedPhoto(true); }}
+                          title={user?.profileImage ? "Click to enlarge photo" : undefined}
                         >
-                          Report
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
+                          <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
+                        </div>
 
-              <div className="w-full mt-5">
-                <ProfileTabBar {...props} variant="hero" />
-              </div>
+                        {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                          <div className="mt-3 flex justify-center lg:justify-start">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-900">
+                              New to Town
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* MIDDLE: content (keep readable: dark text on translucent white panel) */}
+                      <div className="flex-1 min-w-0">
+                        <div className="bg-white/75 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-4 sm:p-5">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 break-all leading-tight">
+                                  @{user?.username}
+                                </h1>
+                                {!!(connectionDegreeData?.degree && connectionDegreeData.degree > 0) && (
+                                  <Badge
+                                    className={`text-xs px-2 py-0.5 font-semibold ${
+                                      connectionDegreeData.degree === 1
+                                        ? "bg-green-100 text-green-800 border-green-300"
+                                        : connectionDegreeData.degree === 2
+                                          ? "bg-blue-100 text-blue-800 border-blue-300"
+                                          : "bg-purple-100 text-purple-800 border-purple-300"
+                                    }`}
+                                    data-testid="badge-connection-degree"
+                                  >
+                                    {connectionDegreeData.degree === 1 ? "1st" : connectionDegreeData.degree === 2 ? "2nd" : "3rd"}
+                                  </Badge>
+                                )}
+                              </div>
+
+                              <div className="mt-2 space-y-1">
+                                <div className="text-sm sm:text-base font-semibold">
+                                  <span className="text-orange-700" style={{ color: mutedOrange }}>
+                                    Nearby Local
+                                  </span>
+                                  <span className="text-gray-600"> · </span>
+                                  <span className="text-gray-900">{hometown}</span>
+                                </div>
+
+                                {hasValidTravelDestination && (
+                                  <div className="text-sm sm:text-base font-semibold text-gray-900" title={currentTravelPlan!}>
+                                    <span className="text-gray-900">Nearby Traveler</span>
+                                    <span className="text-gray-600"> → </span>
+                                    <span className="text-gray-900">
+                                      {formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="mt-4">
+                            <div className="grid grid-cols-2 gap-2">
+                              <button
+                                type="button"
+                                className="w-full inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-4 py-2 text-sm bg-white/85 hover:bg-white text-gray-900 border border-gray-200 shadow-sm"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleMessage?.();
+                                }}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                data-testid="button-message"
+                                data-radix-dismissable-layer-ignore=""
+                              >
+                                <span>Message</span>
+                              </button>
+
+                              <ConnectButton
+                                currentUserId={currentUser?.id || 0}
+                                targetUserId={user?.id || 0}
+                                targetUsername={user?.username}
+                                targetName={user?.name}
+                                appearance="ghost"
+                                className="w-full rounded-lg shadow-sm transition-all px-4 py-2 text-sm font-semibold"
+                              />
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-2 mt-2">
+                              <VouchButton
+                                currentUserId={currentUser?.id || 0}
+                                targetUserId={user?.id || 0}
+                                targetUsername={user?.username}
+                                appearance="ghost"
+                                className="h-9 px-3 text-sm"
+                              />
+                              <Button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  if (currentUser) setShowWriteReferenceModal?.(true);
+                                  else setLocation("/auth");
+                                }}
+                                variant="outline"
+                                className="bg-white/85 hover:bg-white text-gray-900 border border-gray-200 shadow-sm shrink-0 px-3 py-2 text-sm h-9"
+                                data-testid="button-write-reference"
+                              >
+                                Write Reference
+                              </Button>
+
+                              {/* Subtle share icon near actions */}
+                              {shareButton(true)}
+                            </div>
+
+                            <div className="mt-2">
+                              {currentUser ? (
+                                <ReportUserButton
+                                  userId={currentUser.id}
+                                  targetUserId={user.id}
+                                  targetUsername={user.username}
+                                  variant="ghost"
+                                  size="sm"
+                                  showIcon={false}
+                                  appearance="link"
+                                />
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setLocation("/auth");
+                                  }}
+                                  onPointerDown={(e) => e.stopPropagation()}
+                                  className="text-sm text-gray-700 hover:text-red-700 underline underline-offset-2 font-medium"
+                                  data-radix-dismissable-layer-ignore=""
+                                >
+                                  Report
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* RIGHT: What You Have in Common (compact, must not grow hero) */}
+                      <div className="lg:w-[340px] lg:flex-shrink-0">
+                        <div className="bg-white/55 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-4 max-h-[260px] overflow-hidden">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="text-sm font-bold text-gray-900">What You Have in Common</div>
+                            <div className="text-xs font-semibold text-gray-700">{totalCommon} total</div>
+                          </div>
+
+                          <div className="mt-2 text-xs text-gray-700 flex flex-wrap gap-x-3 gap-y-1">
+                            <span><span className="font-semibold text-gray-900">{sharedContactsCount}</span> contacts</span>
+                            <span><span className="font-semibold text-gray-900">{sharedCountries.length}</span> countries</span>
+                            <span><span className="font-semibold text-gray-900">{sharedLanguages.length}</span> languages</span>
+                          </div>
+
+                          <div className="mt-3">
+                            <div className="text-xs font-semibold text-gray-900 mb-1">Shared interests</div>
+                            <div className="flex flex-wrap gap-1.5 max-h-[92px] overflow-hidden">
+                              {visibleInterestPills.length > 0 ? (
+                                visibleInterestPills.map((interest) => (
+                                  <span key={interest} className="pill-interests">
+                                    {interest}
+                                  </span>
+                                ))
+                              ) : (
+                                <span className="text-xs text-gray-600">No shared interests yet</span>
+                              )}
+                            </div>
+
+                            {hasOverflow && (
+                              <div className="mt-2">
+                                <button
+                                  type="button"
+                                  className="text-xs font-semibold text-gray-700 hover:text-gray-900 underline underline-offset-2"
+                                  onClick={() => setSeeAllCommonOpen(true)}
+                                  data-testid="button-see-all-common"
+                                >
+                                  See all
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Tab bar (already text-only on web) */}
+                    <div className="w-full mt-5">
+                      <ProfileTabBar {...props} variant="hero" />
+                    </div>
+
+                    {/* See all modal */}
+                    <Dialog open={seeAllCommonOpen} onOpenChange={setSeeAllCommonOpen}>
+                      <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-900">
+                        <DialogHeader>
+                          <DialogTitle className="text-gray-900 dark:text-white">What You Have in Common</DialogTitle>
+                        </DialogHeader>
+
+                        <div className="space-y-4">
+                          <div className="text-sm text-gray-700 dark:text-gray-200">
+                            <span className="font-semibold">{totalCommon}</span> total commonalities
+                          </div>
+
+                          <div>
+                            <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Shared interests</div>
+                            <div className="flex flex-wrap gap-2">
+                              {sharedInterests.length > 0 ? sharedInterests.map((interest) => (
+                                <span key={interest} className="pill-interests">
+                                  {interest}
+                                </span>
+                              )) : (
+                                <span className="text-sm text-gray-600 dark:text-gray-300">None yet</span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="text-sm text-gray-700 dark:text-gray-200">
+                            <div className="font-semibold text-gray-900 dark:text-white mb-1">Counts</div>
+                            <div className="flex flex-wrap gap-x-4 gap-y-1">
+                              <span><span className="font-semibold">{sharedContactsCount}</span> shared contacts</span>
+                              <span><span className="font-semibold">{sharedCountries.length}</span> shared countries</span>
+                              <span><span className="font-semibold">{sharedLanguages.length}</span> shared languages</span>
+                            </div>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </>
+                );
+              })()}
             </>
           ) : (
             <>

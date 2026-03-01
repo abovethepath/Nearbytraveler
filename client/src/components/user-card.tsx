@@ -249,13 +249,14 @@ export default function UserCard({
             <span className="truncate">{hometownLine}</span>
           </div>
           <div
+            className="user-card-bio"
             title={user.bio || undefined}
             style={{
               color: '#9ca3af',
               fontSize: 12.5,
               lineHeight: 1.5,
-              minHeight: '3.75rem',
-              maxHeight: '3.75rem',
+              minHeight: '2.5rem',
+              maxHeight: '2.5rem',
               marginTop: 6,
               overflow: 'hidden',
             }}
@@ -293,6 +294,7 @@ export default function UserCard({
             <span className="truncate">{hometownLine}</span>
           </div>
           <div
+            className="user-card-bio"
             title={user.bio || undefined}
             style={{
               color: '#9ca3af',

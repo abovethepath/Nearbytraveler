@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import GlobalHotfixes from "@/GlobalHotfixes";
+import { DarkModeSuggestionBanner } from "@/components/DarkModeSuggestionBanner";
 import { METRO_AREAS } from "@shared/constants";
 import Home from "@/pages/home";
 import Welcome from "@/pages/welcome";
@@ -1480,6 +1481,7 @@ function App() {
       <ThemeProvider defaultTheme="dark" storageKey="nearby-traveler-theme">
         <TooltipProvider>
           <Toaster />
+          <DarkModeSuggestionBanner />
           <Router />
           {!isNativeIOSApp() && <HelpChatbot />}
         </TooltipProvider>

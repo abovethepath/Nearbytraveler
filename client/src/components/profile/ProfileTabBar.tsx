@@ -30,7 +30,9 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
 
   const isHero = variant === "hero";
   const isDesktopWeb = !isNativeIOSApp();
-  const showAboutTab = !(isHero && isDesktopWeb && isOwnProfile);
+  // Web: About section is already visible below the hero, so don't show an About hero tab.
+  // iOS: keep About in the hero/tab navigation as requested previously.
+  const showAboutTab = !(isHero && isDesktopWeb);
 
   const badgeClass = isDesktopWeb
     ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-600 text-white"
@@ -192,7 +194,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         </button>
       )}
 
-      {isOwnProfile && user?.userType !== "business" && (
+      {!isDesktopWeb && isOwnProfile && user?.userType !== "business" && (
         <Button
           onClick={() => {
             const widget = document.querySelector('[data-testid="quick-meet-widget"]');
