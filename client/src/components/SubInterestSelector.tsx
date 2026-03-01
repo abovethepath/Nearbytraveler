@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Check, X, Sparkles } from "lucide-react";
 import { SUB_INTEREST_CATEGORIES, type SubInterestCategory } from "@shared/base-options";
+import { HOME_PILL_SIZE_CLASSES } from "@/components/InterestPills";
 
 interface SubInterestSelectorProps {
   selectedSubInterests: string[];
@@ -120,7 +121,7 @@ export default function SubInterestSelector({
                           onClick={() => toggleSubInterest(subInterest, category.id)}
                           style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                           className={`
-                            px-3 py-2 rounded-full text-xs font-medium transition-colors min-h-[36px]
+                            ${HOME_PILL_SIZE_CLASSES} rounded-full font-medium transition-colors
                             ${variant === "dark"
                               ? isSelected 
                                 ? "bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-sm border border-orange-400/50" 

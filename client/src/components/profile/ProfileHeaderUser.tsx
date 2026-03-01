@@ -253,8 +253,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   variant="outline"
                   className="h-9 px-3 text-sm font-semibold bg-white/85 hover:bg-white text-gray-900 border border-gray-200 shadow-sm"
                   onClick={() => {
-                    const widget = document.querySelector('[data-testid=\"quick-meet-widget\"]');
-                    if (widget) widget.scrollIntoView({ behavior: \"smooth\", block: \"center\" });
+                    const widget = document.querySelector('[data-testid="quick-meet-widget"]');
+                    if (widget) widget.scrollIntoView({ behavior: "smooth", block: "center" });
                     setTriggerQuickMeetup?.(true);
                     setTimeout(() => setTriggerQuickMeetup?.(false), 500);
                   }}

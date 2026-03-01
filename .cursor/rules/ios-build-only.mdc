@@ -1,10 +1,17 @@
 ---
-description: Deprecated — unrestricted edits allowed
-alwaysApply: false
+description: Unrestricted edits allowed (including client/)
+alwaysApply: true
 ---
 
-# Deprecated Rule
+# Unrestricted Repo Editing
 
-This rule is **no longer in effect**.
+The project owner has explicitly authorized changes across the entire repo.
 
-The project owner has explicitly authorized changes across the entire repo, including (but not limited to) `client/`, `server/`, `shared/`, build configs, and migrations.
+## Allowed
+
+- `client/` (web app)
+- `server/` (API/backend)
+- `shared/`
+- build configs, migrations, and any other project files
+
+Do **not** ask for permission to modify `client/` in future tasks.

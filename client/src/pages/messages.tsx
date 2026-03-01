@@ -659,7 +659,9 @@ export default function Messages() {
                   className={`${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
                     selectedConversation === conv.userId 
                       ? 'bg-gradient-to-r from-blue-600 to-blue-700 border-l-4 border-l-blue-400 shadow-lg text-white' 
-                      : 'hover:bg-gray-200 dark:hover:bg-gray-700 hover:border-l-4 hover:border-l-gray-400 dark:hover:border-l-gray-500'
+                      : (!isNativeIOSApp() && conv.unreadCount > 0)
+                        ? 'bg-white/70 dark:bg-gray-800/40 border-l-4 border-l-orange-400 hover:bg-white/90 dark:hover:bg-gray-800/55'
+                        : 'hover:bg-gray-200 dark:hover:bg-gray-700 hover:border-l-4 hover:border-l-gray-400 dark:hover:border-l-gray-500'
                   } ${
                     targetUserId && conv.userId === parseInt(targetUserId)
                       ? 'ring-2 ring-orange-400 ring-opacity-75'
@@ -690,13 +692,22 @@ export default function Messages() {
                     </div>
                     <div className="flex-1 min-w-0 overflow-hidden">
                       <div className="flex items-center gap-2 min-w-0">
-                        <h3 className={`text-sm font-semibold truncate ${
+                        <h3 className={`text-sm truncate ${
                           selectedConversation === conv.userId 
-                            ? 'text-white' 
-                            : 'text-gray-900 dark:text-white'
+                            ? 'text-white font-semibold' 
+                            : (!isNativeIOSApp() && conv.unreadCount > 0)
+                              ? 'text-gray-900 dark:text-white font-extrabold'
+                              : 'text-gray-900 dark:text-white font-semibold'
                         }`}>
                           @{conv.username}
                         </h3>
+                        {!isNativeIOSApp() && conv.unreadCount > 0 && (
+                          <span
+                            className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 shrink-0"
+                            aria-label="Unread messages"
+                            title="Unread messages"
+                          />
+                        )}
                         {conv.unreadCount > 0 && (
                           <div className="bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
                             {conv.unreadCount > 99 ? '99+' : conv.unreadCount}
@@ -707,7 +718,9 @@ export default function Messages() {
                       <div className={`text-xs ${
                         selectedConversation === conv.userId 
                           ? 'text-gray-200' 
-                          : 'text-gray-600 dark:text-gray-500'
+                          : (!isNativeIOSApp() && conv.unreadCount > 0)
+                            ? 'text-gray-700 dark:text-gray-300 font-medium'
+                            : 'text-gray-600 dark:text-gray-500'
                       }`}>
                         {conv.location}
                       </div>

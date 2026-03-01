@@ -22,6 +22,9 @@ interface InterestPillsProps {
   className?: string;
 }
 
+// Shared pill sizing used on Home user cards and other compact lists.
+export const HOME_PILL_SIZE_CLASSES = 'text-xs px-2 py-1 h-6';
+
 export function InterestPills({ 
   interests, 
   maxVisibleMobile = 8, 
@@ -65,9 +68,9 @@ export function InterestPills({
       case 'profile':
         return 'text-sm px-3 py-1 h-7';
       case 'inline':
-        return 'text-xs px-2 py-1 h-6';
+        return HOME_PILL_SIZE_CLASSES;
       default: // card
-        return 'text-xs px-2 py-1 h-6';
+        return HOME_PILL_SIZE_CLASSES;
     }
   };
   

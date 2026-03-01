@@ -17,6 +17,7 @@ import { METRO_AREAS } from "@shared/constants";
 import { getMetroAreaName, getMetroCities } from "@shared/metro-areas";
 import { SUB_INTEREST_CATEGORIES } from "@shared/base-options";
 import SubInterestSelector from "@/components/SubInterestSelector";
+import { HOME_PILL_SIZE_CLASSES } from "@/components/InterestPills";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 
 function useIsDarkModeClass() {
@@ -2513,7 +2514,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           </Button>
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                      <div className="flex flex-wrap gap-2">
                         {displayedGroup1.length > 0 && displayedGroup1.map((activity) => {
                           const isSelected = userActivities.some(ua => 
                             ua.activityId === activity.id || 
@@ -2528,13 +2529,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               return (
                             <div key={activity.id} className="group relative">
                               <button
-                                className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border touch-manipulation select-none ${
-                                  isSelected 
-                                    ? 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-orange-400/50'
+                                className={`inline-flex max-w-full items-center justify-center ${HOME_PILL_SIZE_CLASSES} h-auto min-h-6 rounded-full font-medium transition-colors border touch-manipulation select-none ${
+                                  isSelected
+                                    ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm'
                                     : isFeatured
-                                      ? 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-yellow-400/50 dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800'
-                                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800 dark:hover:border-slate-500'
-                                }`}
+                                      ? 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-yellow-400/50 shadow-none dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800'
+                                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-none dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800 dark:hover:border-slate-500'
+                                } ${isUserCreated && isCreatedByMe ? 'pr-9' : ''}`}
                                 type="button"
                                 onPointerDown={(e) => {
                                   if (e.pointerType === 'touch') {
@@ -2544,7 +2545,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 }}
                                 onClick={() => toggleActivity(activity)}
                               >
-                                <span className="flex items-center justify-center gap-1.5">
+                                <span className="flex items-center justify-center gap-1.5 whitespace-normal break-words text-center leading-snug">
                                   {isSelected && <span className="text-xs">✓</span>}
                                   {/* icon markers removed per design */}
                                   {formatActivityLabel(activity.activityName)}
@@ -2589,7 +2590,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                       e.stopPropagation();
                                       handleDeleteCityActivity(activity.id);
                                     }}
-                                    title="Remove from city (visible to everyone)"
+                                    title="Remove"
                                   >
                                     <X className="w-2.5 h-2.5" />
                                   </button>
@@ -2607,7 +2608,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent mb-1">📍 Group 2: More Things to Do</h3>
                             <p className="text-gray-400 text-xs sm:text-sm">Additional spots, local favorites, and unique ideas</p>
                           </div>
-                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                          <div className="flex flex-wrap gap-2">
                             {displayedGroup2.map((activity) => {
                               const isAICreated = activity.createdByUserId === 1;
                               const isUserCreated = activity.createdByUserId != null && activity.createdByUserId !== 1;
@@ -2620,11 +2621,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 <div key={activity.id} className="group relative">
                                   <button
                                     type="button"
-                                    className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border touch-manipulation select-none ${
-                                      isSelected 
-                                        ? 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-orange-400/50'
-                                        : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800 dark:hover:border-slate-500'
-                                    }`}
+                                    className={`inline-flex max-w-full items-center justify-center ${HOME_PILL_SIZE_CLASSES} h-auto min-h-6 rounded-full font-medium transition-colors border touch-manipulation select-none ${
+                                      isSelected
+                                        ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm'
+                                        : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-none dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800 dark:hover:border-slate-500'
+                                    } ${isUserCreated && isCreatedByMe ? 'pr-9' : ''}`}
                                     onPointerDown={(e) => {
                                       if (e.pointerType === 'touch') {
                                         e.preventDefault();
@@ -2633,7 +2634,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                     }}
                                     onClick={() => toggleActivity(activity)}
                                   >
-                                    <span className="flex items-center justify-center gap-1.5">
+                                    <span className="flex items-center justify-center gap-1.5 whitespace-normal break-words text-center leading-snug">
                                       {isSelected && <span className="text-xs">✓</span>}
                                       {formatActivityLabel(activity.activityName)}
                                     </span>
@@ -2717,7 +2718,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-1">✈️ Group 3: Connect On</h3>
                             <p className="text-gray-400 text-xs sm:text-sm">Popular ways to connect with travelers & locals in any city</p>
                           </div>
-                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+                          <div className="flex flex-wrap gap-2">
                             {displayedGroup3.map((activity) => {
                               const isSelected = userActivities.some(ua => 
                                 ua.activityId === activity.id || 
@@ -2727,10 +2728,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 <button
                                   key={activity.id}
                                   type="button"
-                                  className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border touch-manipulation select-none ${
-                                    isSelected 
-                                      ? 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-orange-400/50'
-                                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800 dark:hover:border-slate-500'
+                                  className={`inline-flex max-w-full items-center justify-center ${HOME_PILL_SIZE_CLASSES} h-auto min-h-6 rounded-full font-medium transition-colors border touch-manipulation select-none ${
+                                    isSelected
+                                      ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm'
+                                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-none dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800 dark:hover:border-slate-500'
                                   }`}
                                   onPointerDown={(e) => {
                                     if (e.pointerType === 'touch') {
@@ -2740,7 +2741,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   }}
                                   onClick={() => toggleActivity(activity)}
                                 >
-                                  <span className="flex items-center justify-center gap-1.5">
+                                  <span className="flex items-center justify-center gap-1.5 whitespace-normal break-words text-center leading-snug">
                                     {isSelected && <span className="text-xs">✓</span>}
                                     {formatActivityLabel(activity.activityName)}
                                   </span>
@@ -2875,7 +2876,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               
                               return (
                                 <div key={ua.id} className="group relative">
-                                  <div className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium shadow-md text-white bg-gradient-to-r from-orange-500 to-orange-300 dark:from-blue-500 dark:to-orange-500">
+                                  <div className={`flex items-center gap-1 rounded-full shadow-md text-white bg-gradient-to-r from-orange-500 to-orange-300 dark:from-blue-500 dark:to-orange-500 ${HOME_PILL_SIZE_CLASSES} h-auto min-h-6`}>
                                     {categoryInfo && <span className="text-xs">{categoryInfo.emoji}</span>}
                                     <span>{activityName}</span>
                                     <button
