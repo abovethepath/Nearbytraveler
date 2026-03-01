@@ -30,6 +30,7 @@ import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import FriendReferralWidget from "@/components/friend-referral-widget";
+import { EventShareModal } from "@/components/EventShareModal";
 
 import ReferencesWidgetNew from "@/components/references-widget-new";
 import { VouchWidget } from "@/components/vouch-widget";
@@ -3900,23 +3901,7 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
   const upcomingEvents = (userEvents as any[]).filter((event: any) => new Date(event.date) >= new Date()).length;
   const avgRSVPs = totalEvents > 0 ? Math.round((totalRSVPs / totalEvents) * 10) / 10 : 0;
 
-  // Generate Instagram post for an event
-  const generateInstagramPost = (event: any) => {
-    const eventDate = new Date(event.date).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-    
-    const instagramText = `🎉 ${event.title}\n\n📅 ${eventDate}\n📍 ${event.venue || 'Location TBD'}\n\n${event.description}\n\n#${event.city?.replace(/\s+/g, '')}Events #Community #${event.category?.replace(/\s+/g, '')} #Meetup\n\nRSVP: ${window.location.origin}/events/${event.id}`;
-    
-    navigator.clipboard.writeText(instagramText);
-    toast({
-      title: "Instagram post copied!",
-      description: "The Instagram-optimized post has been copied to your clipboard.",
-    });
-  };
+  // Social sharing is handled via EventShareModal (copy/share/download options)
 
   // Duplicate event function
   const duplicateEvent = (event: any) => {
@@ -4039,17 +4024,33 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
                     </div>
                     
                     <div className="flex flex-wrap gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => generateInstagramPost(event)}
-                        className="text-xs h-8 px-3 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 border-0"
-                        style={{ color: 'black' }}
-                        title="Copy Instagram post"
-                      >
-                        <Share2 className="w-3 h-3 mr-1" style={{ color: 'black' }} />
-                        <span style={{ color: 'black' }}>Instagram</span>
-                      </Button>
+                      <EventShareModal
+                        event={{
+                          id: event.id,
+                          title: event.title,
+                          description: event.description,
+                          date: event.date,
+                          startTime: (event as any).startTime,
+                          endTime: (event as any).endTime,
+                          venueName: (event as any).venueName,
+                          venue: (event as any).venue,
+                          city: event.city,
+                          state: event.state,
+                          country: event.country,
+                          category: event.category,
+                        }}
+                        trigger={
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs h-8 px-3"
+                            title="Share event"
+                          >
+                            <Share2 className="w-3 h-3 mr-1" />
+                            Share
+                          </Button>
+                        }
+                      />
                       <Button
                         size="sm"
                         variant="outline"

@@ -26,6 +26,7 @@ import type { Event } from "@shared/schema";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import { Search } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { EventShareModal } from "@/components/EventShareModal";
 
 // Custom hook to update page meta tags for better sharing
 const useEventMeta = (event: any) => {
@@ -1360,46 +1361,27 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                     <Eye className="w-4 h-4 mr-2" />
                     View Event Page
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => {
-                    const shareData = {
-                      title: `${formData.title} - Nearby Traveler Event`,
-                      text: `Join me at "${formData.title}" in ${formData.city}! 🎉\n\n${formData.description || 'Exciting event coming up!'}\n\nRSVP now:`,
-                      url: `${window.location.origin}/events/${eventId}`
-                    };
-                    if (navigator.share) {
-                      navigator.share(shareData);
-                    } else {
-                      navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
-                      toast({ title: "Link copied to clipboard!" });
+                  <EventShareModal
+                    event={{
+                      id: Number(eventId),
+                      title: formData.title,
+                      description: formData.description,
+                      date: formData.startDate || new Date().toISOString(),
+                      startTime: null,
+                      endTime: null,
+                      venueName: formData.venueName,
+                      city: formData.city,
+                      state: formData.state,
+                      country: formData.country,
+                      category: formData.category,
+                    }}
+                    trigger={
+                      <DropdownMenuItem>
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Share…
+                      </DropdownMenuItem>
                     }
-                  }}>
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Share Event
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => {
-                    // Create Instagram-optimized share text
-                    const instagramText = `🎉 ${formData.title}\n\n📍 ${formData.venueName ? formData.venueName + ', ' : ''}${formData.city}\n📅 ${new Date(formData.startDate).toLocaleDateString('en-US', { 
-                      weekday: 'long', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}\n\n${formData.description ? formData.description.substring(0, 100) + (formData.description.length > 100 ? '...' : '') : 'Join us for an amazing event!'}\n\n#NearbyTraveler #${formData.city.replace(/\s+/g, '')}Events #Community ${formData.tags.map(tag => '#' + tag.replace(/\s+/g, '')).join(' ')}\n\nRSVP: ${window.location.origin}/events/${eventId}`;
-                    
-                    if (navigator.share) {
-                      navigator.share({
-                        title: `${formData.title} - Event`,
-                        text: instagramText
-                      });
-                    } else {
-                      navigator.clipboard.writeText(instagramText);
-                      toast({ 
-                        title: "Instagram post copied!", 
-                        description: "Perfect formatted text copied to clipboard - paste directly to Instagram!"
-                      });
-                    }
-                  }}>
-                    <Camera className="w-4 h-4 mr-2" />
-                    Share to Instagram
-                  </DropdownMenuItem>
+                  />
                   <DropdownMenuItem onClick={() => {
                     // Navigate to create new event with current event as template
                     const templateData = {
