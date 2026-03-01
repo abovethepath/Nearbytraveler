@@ -571,11 +571,42 @@ button.user-card:first-child > div:first-of-type {
 
 /* Checkbox sizing: prevent global button rules from stretching checkboxes */
 button[role="checkbox"] {
-  min-width: unset !important;
-  min-height: unset !important;
-  aspect-ratio: 1 / 1;
+  /* Force small square checkbox everywhere (desktop + mobile web) */
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  max-width: 16px !important;
+  max-height: 16px !important;
   padding: 0 !important;
-  flex: 0 0 auto;
+  flex: 0 0 16px !important;
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* If any checkbox accidentally gets touch-target sizing, override it */
+button[role="checkbox"].touch-target,
+.touch-target[role="checkbox"] {
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+}
+
+/* Native checkboxes (fallback / non-Radix) */
+input[type="checkbox"] {
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  max-width: 16px !important;
+  max-height: 16px !important;
+  padding: 0 !important;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 /* Available Now - green pulsating badge */

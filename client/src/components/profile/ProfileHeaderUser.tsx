@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Camera, MessageSquare, MessageCircle, Share2, Users, Building2, Calendar, Plane, MoreVertical, Copy, Mail } from "lucide-react";
+import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { ReportUserButton } from "@/components/report-user-button";
@@ -103,8 +103,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       <div
         className={`mx-auto relative z-10 max-w-7xl ${isDesktopOwnProfile ? 'pl-4 sm:pl-6 lg:pl-8' : ''}`}
       >
-        {/* iOS: keep username full-width; share lives in menu */}
-        {isOwnProfile && isNativeIOSApp() && (
+        {/* Own profile: share lives in ⋮ menu (not beside username) */}
+        {isOwnProfile && (
           <div className="absolute top-3 right-3 z-30">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -113,15 +113,15 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   className="inline-flex items-center justify-center h-9 w-9 rounded-md bg-white/85 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 ring-1 ring-gray-300/60 dark:ring-gray-500/60 shadow-sm transition-colors"
                   title="More"
                   aria-label="More"
-                  data-testid="button-profile-more-menu-ios"
+                  data-testid="button-profile-more-menu"
                 >
                   <MoreVertical className="w-5 h-5 text-gray-800 dark:text-gray-100" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => setShareWithFriendsOpen(true)} data-testid="menu-item-share-profile-ios">
+                <DropdownMenuItem onClick={() => setShareWithFriendsOpen(true)} data-testid="menu-item-share-profile">
                   <Share2 className="w-4 h-4 mr-2" />
-                  Share profile
+                  Share with Friends
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -133,17 +133,17 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
           <div className="flex flex-col lg:relative">
             {/* Desktop (lg+): overlapping avatar block anchored to hero bottom-left */}
             {/* Avoid transforms on the text block (crisper desktop text). Avatar overlap is achieved via bottom offset instead of translate. */}
-            <div className="hidden lg:flex flex-col items-start absolute left-8 bottom-[-80px] z-30">
+            <div className="hidden lg:flex flex-col items-start absolute left-8 bottom-[-104px] z-30">
               <div className="relative">
                 <div
-                  className="w-40 h-40 rounded-full overflow-hidden cursor-pointer ring-4 ring-white/90 shadow-2xl"
+                  className="w-52 h-52 rounded-full overflow-hidden cursor-pointer ring-4 ring-white/90 shadow-2xl"
                   onClick={() => { if (user?.profileImage) setShowExpandedPhoto(true); }}
                   title={user?.profileImage ? "Click to enlarge photo" : undefined}
                 >
                   <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
                 </div>
                 <label
-                  className={`absolute bottom-1 right-1 w-10 h-10 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-600/90 hover:bg-gray-500'} text-white border-2 border-white overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
+                  className={`absolute bottom-2 right-2 w-11 h-11 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-600/90 hover:bg-gray-500'} text-white border-2 border-white overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
                   style={!user?.profileImage ? { backgroundColor: mutedOrange } : undefined}
                   data-testid="button-upload-avatar"
                 >
@@ -160,19 +160,19 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
               <div className="mt-3 text-left">
                 <span
-                  className="block text-sm font-semibold text-orange-600 dark:text-orange-400 lg:text-base crisp-hero-text"
+                  className="block text-base font-semibold text-orange-600 dark:text-orange-400 lg:text-lg crisp-hero-text"
                   style={{ color: mutedOrange }}
                 >
                   Nearby Local
                 </span>
-                <span className="block text-base font-medium !text-black crisp-hero-text">{hometown}</span>
+                <span className="block text-lg font-semibold !text-black crisp-hero-text">{hometown}</span>
               </div>
               {hasValidTravelDestination && (
                 <div className="mt-1.5 text-left">
-                  <span className="block text-xs font-semibold text-blue-600 dark:text-blue-400 lg:text-sm crisp-hero-text">
+                  <span className="block text-base font-semibold text-blue-600 dark:text-blue-400 lg:text-lg crisp-hero-text">
                     Nearby Traveler
                   </span>
-                  <span className="block text-sm font-medium !text-black lg:text-base crisp-hero-text" title={currentTravelPlan}>
+                  <span className="block text-lg font-semibold !text-black crisp-hero-text" title={currentTravelPlan}>
                     {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan) ? formatTravelDestinationShort(currentTravelPlan) : currentTravelPlan}
                   </span>
                 </div>
@@ -184,7 +184,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             <div className="flex flex-col items-start flex-shrink-0 min-w-0 lg:hidden">
               <div className="relative">
                 <div
-                  className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden cursor-pointer"
+                  className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden cursor-pointer"
                   onClick={() => { if (user?.profileImage) setShowExpandedPhoto(true); }}
                   title={user?.profileImage ? "Click to enlarge photo" : undefined}
                 >
@@ -192,7 +192,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </div>
                 {/* Add Photo - overlay at bottom right of avatar circle */}
                 <label
-                  className={`absolute bottom-0 right-0 w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-600/90 hover:bg-gray-500'} text-white border-2 border-white overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
+                  className={`absolute bottom-0 right-0 w-9 h-9 md:w-10 md:h-10 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-600/90 hover:bg-gray-500'} text-white border-2 border-white overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
                   style={!user?.profileImage ? { backgroundColor: mutedOrange } : undefined}
                   data-testid="button-upload-avatar"
                 >
@@ -206,81 +206,195 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </span>
               )}
               <div className="mt-2.5 text-left">
-                <span className="block text-sm font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
-                <span className="block text-base font-medium !text-black">{hometown}</span>
+                <span className="block text-base font-semibold text-orange-600 dark:text-orange-400">Nearby Local</span>
+                <span className="block text-lg font-semibold !text-black">{hometown}</span>
               </div>
               {hasValidTravelDestination && (
                 <div className="mt-1.5 text-left">
-                  <span className="block text-sm font-semibold text-blue-600 dark:text-blue-400">Nearby Traveler</span>
-                  <span className="block text-base font-medium !text-black" title={currentTravelPlan}>
+                  <span className="block text-base font-semibold text-blue-600 dark:text-blue-400">Nearby Traveler</span>
+                  <span className="block text-lg font-semibold !text-black" title={currentTravelPlan}>
                     {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan) ? formatTravelDestinationShort(currentTravelPlan) : currentTravelPlan}
                   </span>
                 </div>
               )}
             </div>
             {/* RIGHT: @username + Share Profile, buttons - bio has its own dedicated section below hero */}
-            <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0.5 lg:pl-[18rem]">
+            <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0.5 lg:pl-[23rem]">
               <div className="flex items-center gap-2.5 shrink-0 w-fit max-w-full">
-                <div className="lg:inline-flex lg:items-center lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm">
-                  <h1 className="text-lg sm:text-xl font-bold !text-black lg:!text-white break-all leading-tight lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)] crisp-hero-text">
-                    @{user?.username}
-                  </h1>
-                </div>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold !text-black lg:!text-white break-all leading-tight lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)] crisp-hero-text">
+                  @{user?.username}
+                </h1>
               </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const chatCity = user?.hometownCity || user?.location?.split(',')[0] || 'General';
-                    setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
-                  }}
-                  className="inline-flex items-center h-7 rounded-md px-3 text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500 dark:from-orange-500 dark:to-orange-500 dark:hover:from-orange-600 dark:hover:to-orange-600 text-white border-0 shadow-sm transition-colors"
-                  style={{ ["--mutedOrange" as any]: mutedOrange, ["--mutedOrangeHover" as any]: mutedOrangeHover }}
-                >
-                  <MessageCircle className="w-3.5 h-3.5 mr-1.5 shrink-0" />
-                  Chatrooms{(userChatrooms?.length || 0) > 0 ? ` (${userChatrooms.length})` : ''}
-                </button>
+              <div className="flex flex-wrap gap-2 mt-3">
                 <button
                   type="button"
                   onClick={() => setLocation('/share-qr')}
-                  className="inline-flex items-center h-7 rounded-md px-3 text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-600 dark:to-blue-600 dark:hover:from-blue-700 dark:hover:to-blue-700 text-white border-0 shadow-sm transition-colors"
+                  className="inline-flex items-center justify-center h-9 w-9 rounded-md bg-white/85 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 ring-1 ring-gray-300/60 dark:ring-gray-500/60 shadow-sm transition-colors"
+                  title="Invite friends"
+                  aria-label="Invite friends"
+                  data-testid="button-invite-friends-icon"
                 >
-                  <Share2 className="w-3.5 h-3.5 mr-1.5 shrink-0" />
-                  Invite Friends
+                  <UserPlus className="w-5 h-5 text-gray-800 dark:text-gray-100" />
                 </button>
-                {isOwnProfile && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        type="button"
-                        className="inline-flex items-center justify-center h-7 w-7 rounded-md bg-white/80 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 ring-1 ring-gray-300/60 dark:ring-gray-500/60 shadow-sm transition-colors"
-                        title="More"
-                        aria-label="More"
-                        data-testid="button-profile-more-menu"
-                      >
-                        <MoreVertical className="w-4 h-4 text-gray-700 dark:text-gray-200" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuItem onClick={() => setShareWithFriendsOpen(true)} data-testid="menu-item-share-profile">
-                        <Share2 className="w-4 h-4 mr-2" />
-                        Share profile
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
               </div>
             </div>
             </div>
             {/* Desktop: tab bar integrated at bottom of hero */}
             {!isNativeIOSApp() && (
-              <div className="w-full mt-4 lg:pl-[18rem]">
+              <div className="w-full mt-4 lg:pl-[23rem]">
                 <ProfileTabBar {...props} variant="hero" />
               </div>
             )}
           </div>
         ) : (
         <div className="flex flex-col lg:relative">
+          {!isOwnProfile && !isNativeIOSApp() ? (
+            <>
+              <div className="flex flex-row items-start gap-4 sm:gap-6">
+                {/* LEFT: large avatar */}
+                <div className="flex-shrink-0">
+                  <div
+                    className="w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 lg:w-48 lg:h-48 rounded-full overflow-hidden ring-4 ring-white/90 shadow-2xl cursor-pointer"
+                    onClick={() => { if (user?.profileImage) setShowExpandedPhoto(true); }}
+                    title={user?.profileImage ? "Click to enlarge photo" : undefined}
+                  >
+                    <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
+                  </div>
+                  {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-3">
+                      New to Town
+                    </span>
+                  )}
+                </div>
+
+                {/* RIGHT: content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold break-all text-black lg:!text-white lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)] crisp-hero-text">
+                      @{user?.username}
+                    </h1>
+                    {!!(connectionDegreeData?.degree && connectionDegreeData.degree > 0) && (
+                      <Badge
+                        className={`text-xs px-2 py-0.5 font-semibold ${
+                          connectionDegreeData.degree === 1
+                            ? 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-200 dark:border-green-600'
+                            : connectionDegreeData.degree === 2
+                              ? 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/50 dark:text-blue-200 dark:border-blue-600'
+                              : 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/50 dark:text-purple-200 dark:border-purple-600'
+                        }`}
+                        data-testid="badge-connection-degree"
+                      >
+                        {connectionDegreeData.degree === 1 ? '1st' : connectionDegreeData.degree === 2 ? '2nd' : '3rd'}
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="mt-2 space-y-1">
+                    <div className="text-base sm:text-lg font-semibold crisp-hero-text">
+                      <span className="text-orange-600 dark:text-orange-400" style={{ color: mutedOrange }}>Nearby Local</span>
+                      <span className="text-gray-700 dark:text-gray-200"> · </span>
+                      <span className="text-black dark:text-gray-100">{hometown}</span>
+                    </div>
+
+                    {hasValidTravelDestination && (
+                      <div className="text-base sm:text-lg font-semibold crisp-hero-text">
+                        <span className="text-white/95">Nearby Traveler</span>
+                        <span className="text-white/80"> → </span>
+                        <span className="text-black dark:text-gray-100" title={currentTravelPlan!}>
+                          {formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-4 max-w-[460px]">
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        className="w-full inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-4 py-2 text-sm bg-[#fff0e6] hover:bg-[#ffe6d6] text-orange-700 border border-orange-200 dark:text-white dark:bg-orange-500 dark:hover:bg-orange-600 dark:border-0"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleMessage?.();
+                        }}
+                        onPointerDown={(e) => e.stopPropagation()}
+                        data-testid="button-message"
+                        data-radix-dismissable-layer-ignore=""
+                      >
+                        <span>Message</span>
+                      </button>
+                      <ConnectButton
+                        currentUserId={currentUser?.id || 0}
+                        targetUserId={user?.id || 0}
+                        targetUsername={user?.username}
+                        targetName={user?.name}
+                        appearance="ghost"
+                        className="w-full rounded-lg transition-all px-4 py-2 text-sm font-semibold"
+                      />
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                      <VouchButton
+                        currentUserId={currentUser?.id || 0}
+                        targetUserId={user?.id || 0}
+                        targetUsername={user?.username}
+                        appearance="ghost"
+                        className="h-9 px-3 text-sm"
+                      />
+                      <Button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (currentUser) setShowWriteReferenceModal?.(true);
+                          else setLocation('/auth');
+                        }}
+                        variant="outline"
+                        className="bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-800 border border-blue-200 dark:bg-white/15 dark:hover:bg-white/25 dark:text-white dark:border-white/40 shrink-0 px-3 py-2 text-sm h-9"
+                        data-testid="button-write-reference"
+                      >
+                        Write Reference
+                      </Button>
+                      {shareButton(true)}
+                    </div>
+
+                    <div className="mt-2">
+                      {currentUser ? (
+                        <ReportUserButton
+                          userId={currentUser.id}
+                          targetUserId={user.id}
+                          targetUsername={user.username}
+                          variant="ghost"
+                          size="sm"
+                          showIcon={false}
+                          appearance="link"
+                        />
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setLocation('/auth');
+                          }}
+                          onPointerDown={(e) => e.stopPropagation()}
+                          className="text-sm text-gray-600 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400 underline underline-offset-2 font-medium"
+                          data-radix-dismissable-layer-ignore=""
+                        >
+                          Report
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full mt-5">
+                <ProfileTabBar {...props} variant="hero" />
+              </div>
+            </>
+          ) : (
+            <>
         {/* Desktop (lg+ other-user): overlapping avatar block anchored to hero bottom-left */}
         {isDesktopOtherUser && (
           <div className="hidden lg:flex flex-col items-start absolute left-8 bottom-[-80px] z-30">
@@ -506,6 +620,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     Write Reference
                                   </Button>
                                 )}
+                                {/* Other user's profile: share button near action buttons (not beside username) */}
+                                {shareButton(true)}
                               </div>
 
                               {user && (
@@ -593,6 +709,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   Write Reference
                                 </Button>
                               )}
+                              {/* Other user's profile: share button near action buttons (not beside username) */}
+                              {shareButton(true)}
                               {user && (
                                 currentUser ? (
                                   <ReportUserButton
@@ -680,6 +798,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 <ProfileTabBar {...props} variant="hero" />
               </div>
             )}
+            </>
+          )}
         </div>
         )}
       </div>

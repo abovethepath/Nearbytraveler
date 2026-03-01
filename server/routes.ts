@@ -20153,6 +20153,34 @@ Questions? Just reply to this message. Welcome aboard!
       res.json(newActivity);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error('Error creating city activity:', error);
+
+      // Most common: unique constraint (cityName, activityName) — treat as idempotent.
+      const isUniqueViolation =
+        error?.code === "23505" ||
+        String(error?.message || "").toLowerCase().includes("duplicate key") ||
+        String(error?.message || "").toLowerCase().includes("unique constraint");
+
+      if (isUniqueViolation && req.body?.cityName && req.body?.activityName) {
+        try {
+          const [existing] = await db
+            .select()
+            .from(cityActivities)
+            .where(
+              and(
+                eq(cityActivities.cityName, req.body.cityName),
+                eq(cityActivities.activityName, req.body.activityName),
+              ),
+            )
+            .limit(1);
+
+          if (existing) {
+            return res.json(existing);
+          }
+        } catch (lookupErr) {
+          if (process.env.NODE_ENV === "development") console.error("Error looking up existing city activity:", lookupErr);
+        }
+      }
+
       res.status(500).json({ error: 'Failed to create city activity' });
     }
   });

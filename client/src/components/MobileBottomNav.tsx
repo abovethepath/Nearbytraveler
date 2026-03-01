@@ -100,6 +100,10 @@ export function MobileBottomNav() {
     setShowActionMenu(true);
   };
 
+  // Light mode: use black/dark for nav (keep Create orange)
+  const lightNavInactive = "#111827";
+  const lightNavActive = "#000000";
+
   return (
     <>
       {showActionMenu && (
@@ -280,15 +284,15 @@ export function MobileBottomNav() {
                     width: '26px', 
                     height: '26px', 
                     marginBottom: '3px',
-                    color: isActive ? '#f97316' : (isDark ? '#8e8e93' : '#9ca3af'),
+                    color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
                     strokeWidth: isActive ? 2.5 : 1.8,
                   }}
                 />
                 <span style={{ 
                   fontSize: '12px', 
                   lineHeight: '14px', 
-                  fontWeight: 500,
-                  color: isActive ? '#f97316' : (isDark ? '#8e8e93' : '#9ca3af'),
+                  fontWeight: isActive ? 600 : 500,
+                  color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
                 }}>
                   {item.label}
                 </span>
@@ -382,7 +386,7 @@ export function MobileBottomNav() {
                       height: '26px', 
                       minWidth: '26px',
                       marginBottom: '3px',
-                      color: isActive ? '#f97316' : (isDark ? '#8e8e93' : '#9ca3af'),
+                      color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
                       strokeWidth: isActive ? 2.5 : 1.8,
                       flexShrink: 0,
                     }}
@@ -412,8 +416,8 @@ export function MobileBottomNav() {
                 <span style={{ 
                   fontSize: '12px', 
                   lineHeight: '14px', 
-                  fontWeight: 500,
-                  color: isActive ? '#f97316' : (isDark ? '#8e8e93' : '#9ca3af'),
+                  fontWeight: isActive ? 600 : 500,
+                  color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
                 }}>
                   {item.label}
                 </span>

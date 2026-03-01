@@ -62,6 +62,36 @@ const looksLikeEvent = (text: string): boolean => {
 
 // Normalize string for comparison
 const normalizeName = (name: string) => name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+
+const toTitleCase = (value: string) => {
+  if (!value) return value;
+
+  const originalTokens = value.split(/\s+/);
+  if (originalTokens.length === 0) return value;
+
+  return originalTokens
+    .map((original) => {
+      if (!original) return original;
+
+      // If it's a short all-caps token like "AI" / "USA", preserve it as-is.
+      const isShortAllCaps = original.length <= 3 && /[A-Z]/.test(original) && original === original.toUpperCase();
+      if (isShortAllCaps) return original;
+
+      const lower = original.toLowerCase();
+      const first = lower.charAt(0);
+      const rest = lower.slice(1);
+      return `${first.toUpperCase()}${rest}`;
+    })
+    .join(" ");
+};
+
+const formatActivityLabel = (name: string) => {
+  if (!name) return name;
+  const hasLetters = /[A-Za-z]/.test(name);
+  if (!hasLetters) return name;
+  const isAllCaps = name === name.toUpperCase() && name !== name.toLowerCase();
+  return isAllCaps ? toTitleCase(name) : name;
+};
 import { 
   MapPin, 
   Plus, 
@@ -2112,7 +2142,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       const matchSection = document.querySelector('[data-testid="matching-users-section"]');
                       if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
-                    className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
+                    className="text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg bg-gradient-to-r from-blue-500 to-blue-300 hover:from-blue-600 hover:to-blue-400 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600"
                   >
                     <Check className="w-5 h-5 mr-2" />
                     Save & Find Matches
@@ -2462,9 +2492,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 if (res.ok) {
                                   const newActivity = await res.json();
                                   const addedName = customActivityText.trim();
-                                  setCityActivities(prev => [...prev, newActivity]);
+                                  setCityActivities(prev => {
+                                    if (prev.some((a: any) => a?.id === newActivity?.id)) return prev;
+                                    return [...prev, newActivity];
+                                  });
                                   setCustomActivityText('');
                                   toast({ title: "Added", description: `"${addedName}" added to ${selectedCity}` });
+                                  fetchCityActivities();
                                   fetchMatchingUsers();
                                 } else {
                                   const err = await res.json();
@@ -2512,9 +2546,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               >
                                 <span className="flex items-center justify-center gap-1.5">
                                   {isSelected && <span className="text-xs">✓</span>}
-                                  {!isSelected && isFeatured && <span className="text-xs">⭐</span>}
-                                  {!isSelected && isAICreated && <span className="text-xs">✨</span>}
-                                  {activity.activityName}
+                                  {/* icon markers removed per design */}
+                                  {formatActivityLabel(activity.activityName)}
                                   {(activity as any).activityDate && (
                                     <span className="text-xs opacity-80">
                                       • {new Date((activity as any).activityDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -2602,7 +2635,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   >
                                     <span className="flex items-center justify-center gap-1.5">
                                       {isSelected && <span className="text-xs">✓</span>}
-                                      {activity.activityName}
+                                      {formatActivityLabel(activity.activityName)}
                                     </span>
                                   </button>
                                   {isAICreated && !isSelected && (
@@ -2670,7 +2703,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             const matchSection = document.querySelector('[data-testid="matching-users-section"]');
                             if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                           }}
-                          className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
+                          className="text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg bg-gradient-to-r from-blue-500 to-blue-300 hover:from-blue-600 hover:to-blue-400 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600"
                         >
                           <Check className="w-5 h-5 mr-2" />
                           Save & Find Matches
@@ -2709,7 +2742,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 >
                                   <span className="flex items-center justify-center gap-1.5">
                                     {isSelected && <span className="text-xs">✓</span>}
-                                    {activity.activityName}
+                                    {formatActivityLabel(activity.activityName)}
                                   </span>
                                 </button>
                               );
@@ -2742,7 +2775,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             }
                           }}
                           size="sm"
-                          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                          className="text-white bg-gradient-to-r from-purple-500 to-pink-300 hover:from-purple-600 hover:to-pink-400 dark:from-purple-500 dark:to-pink-500 dark:hover:from-purple-600 dark:hover:to-pink-600"
                           disabled={isLoading}
                         >
                           {isLoading ? 'Finding ideas...' : '✨ Suggest more ideas'}
@@ -2762,7 +2795,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       const matchSection = document.querySelector('[data-testid="matching-users-section"]');
                       if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
-                    className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg"
+                    className="text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg bg-gradient-to-r from-blue-500 to-blue-300 hover:from-blue-600 hover:to-blue-400 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600"
                   >
                     <Check className="w-5 h-5 mr-2" />
                     Save & Find Matches
@@ -2834,14 +2867,15 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           <div className="flex flex-wrap gap-2">
                             {userPicksForCity.map((ua) => {
                               const activity = cityActivities.find(ca => ca.id === ua.activityId);
-                              const activityName = ua.activityName || activity?.activityName || 'Unknown';
+                              const activityNameRaw = ua.activityName || activity?.activityName || 'Unknown';
+                              const activityName = formatActivityLabel(activityNameRaw);
                               const isUserCreated = (activity?.createdByUserId != null && activity?.createdByUserId !== 1) ||
                                                     (ua.source === 'user' && ua.createdByUserId != null && ua.createdByUserId !== 1);
                               const categoryInfo = CITY_PICK_CATEGORIES.find(c => c.id === activity?.category);
                               
                               return (
                                 <div key={ua.id} className="group relative">
-                                  <div className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-orange-500 text-white rounded-lg text-sm font-medium shadow-md">
+                                  <div className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium shadow-md text-white bg-gradient-to-r from-orange-500 to-orange-300 dark:from-blue-500 dark:to-orange-500">
                                     {categoryInfo && <span className="text-xs">{categoryInfo.emoji}</span>}
                                     <span>{activityName}</span>
                                     <button
@@ -2852,7 +2886,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                             handleDeleteCityActivity(activity.id);
                                           }
                                         } else {
-                                          handleUnselectPick(ua.id, activityName);
+                                          handleUnselectPick(ua.id, activityNameRaw);
                                         }
                                       }}
                                       className="ml-1 p-0.5 rounded-full hover:bg-white/20 transition-colors"

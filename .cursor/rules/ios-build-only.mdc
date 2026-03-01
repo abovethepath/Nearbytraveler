@@ -1,28 +1,10 @@
 ---
-description: iOS-first guidance (website changes allowed when requested)
+description: Deprecated — unrestricted edits allowed
 alwaysApply: false
 ---
 
-# iOS Build Scope — Prefer iOS changes first
+# Deprecated Rule
 
-When making changes to this codebase, **prefer** modifying files that affect the iOS build first (native wrapper / mobile integration). Website changes are allowed when explicitly requested.
+This rule is **no longer in effect**.
 
-## Allowed (iOS build only)
-
-- `ios-app/` — iOS native wrapper
-- `capacitor-app/` — Capacitor mobile wrapper
-- `expo-app/` — React Native / Expo mobile app
-- `capacitor.config.ts` — Capacitor configuration
-- Root `package.json` — only scripts/deps related to iOS/Capacitor/Expo builds
-
-## Website paths (allowed when requested)
-
-- `client/` — React web app (pages, components, routing, etc.)
-- `server/` — Express backend, API routes, services
-- `shared/` — Database schema, shared constants
-- `vite.config.ts`, `tailwind.config.ts` — web build config
-- `migrations/` — database migrations
-
-## If a change can be fixed iOS-side
-
-Prefer iOS-side fixes when they solve the problem cleanly (e.g., WebView/session/bridge issues). If not, proceed with the website change that was requested.
+The project owner has explicitly authorized changes across the entire repo, including (but not limited to) `client/`, `server/`, `shared/`, build configs, and migrations.

@@ -316,8 +316,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                 <div className="flex items-center justify-between w-full">
                   <CardTitle className="text-base sm:text-lg lg:text-xl font-bold break-words text-left leading-tight flex-1 pr-2 text-gray-900 dark:text-white">
                     {user?.userType === 'business'
-                      ? `ABOUT OUR BUSINESS`
-                      : `ABOUT ${user?.username || 'User'}`}
+                      ? `About our business`
+                      : `About ${user?.username || 'User'}`}
                   </CardTitle>
 
                   {isOwnProfile && (

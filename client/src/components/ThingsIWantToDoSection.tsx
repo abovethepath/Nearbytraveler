@@ -8,7 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useEffect, useState, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Link, useLocation } from "wouter";
-import { getMetroCities } from "@shared/metro-areas";
+import { getMetroAreaName, getMetroCities } from "@shared/metro-areas";
 
 interface ThingsIWantToDoSectionProps {
   userId: number;
@@ -306,30 +306,31 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   // Metro consolidation helper
   const consolidateCity = (cityName: string): string => {
-    const laMetroCities = [
-      'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo',
-      'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena',
-      'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood',
-      'Compton', 'Downey', 'Pomona', 'Playa del Rey', 'Redondo Beach',
-      'Culver City', 'Marina del Rey', 'Hermosa Beach', 'Hawthorne',
-      'Gardena', 'Carson', 'Lakewood', 'Norwalk', 'Whittier', 'Montebello',
-      'East Los Angeles', 'Monterey Park', 'Alhambra', 'South Pasadena',
-      'San Fernando', 'North Hollywood', 'Hollywood', 'Studio City',
-      'Sherman Oaks', 'Encino', 'Reseda', 'Van Nuys', 'Northridge',
-      'Malibu', 'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City',
-      'West LA', 'Koreatown', 'Mid-City', 'Miracle Mile', 'Los Feliz',
-      'Silver Lake', 'Echo Park', 'Downtown LA', 'Arts District',
-      'Little Tokyo', 'Chinatown', 'Boyle Heights', 'East LA',
-      'Highland Park', 'Eagle Rock', 'Atwater Village', 'Glassell Park',
-      'Mount Washington', 'Cypress Park', 'Sun Valley', 'Pacoima',
-      'Sylmar', 'Granada Hills', 'Porter Ranch', 'Chatsworth',
-      'Canoga Park', 'Woodland Hills', 'Tarzana', 'Panorama City',
-      'Mission Hills', 'Sepulveda', 'Arleta', 'San Pedro', 'Wilmington',
-      'Harbor City', 'Harbor Gateway', 'Watts', 'South LA', 'Crenshaw',
-      'Leimert Park', 'View Park', 'Baldwin Hills', 'Ladera Heights'
-    ];
-    
-    return laMetroCities.includes(cityName) ? 'Los Angeles Metro' : cityName;
+    const metro = getMetroAreaName(cityName);
+    if (metro && metro !== cityName) return metro;
+
+    const userMetro = (userProfile as any)?.metropolitanArea as string | undefined;
+    if (!userMetro) return metro;
+
+    const hometown = (userProfile as any)?.hometownCity as string | undefined;
+    const profileLocationCity = typeof (userProfile as any)?.location === "string"
+      ? String((userProfile as any).location).split(",")[0]?.trim()
+      : undefined;
+
+    const normalized = String(cityName || "").trim().toLowerCase();
+    const normalizedHometown = String(hometown || "").trim().toLowerCase();
+    const normalizedProfileCity = String(profileLocationCity || "").trim().toLowerCase();
+
+    // If the city is the user's signup/home city (even if it's a neighborhood), display metro area name.
+    if (normalized && (normalized === normalizedHometown || normalized === normalizedProfileCity)) {
+      return userMetro;
+    }
+
+    // If this city is one of the metro's member cities, use the metro area name.
+    const metroCities = getMetroCities(userMetro).map((c) => c.trim().toLowerCase());
+    if (metroCities.includes(normalized)) return userMetro;
+
+    return metro;
   };
 
   // Group by city with metro consolidation - memoized to prevent infinite re-renders
@@ -451,7 +452,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   }, [userProfile?.hometownCity, cities, citiesByName]);
 
   // Display: city name only, no labels like "Hometown" or "My Hometown"
-  const hometownDisplayName = userProfile?.hometownCity || hometownCityKey || (isOwnProfile ? 'Add your city' : '');
+  const hometownDisplayName = consolidateCity(userProfile?.hometownCity || hometownCityKey || (isOwnProfile ? 'Add your city' : ''));
 
   // Current destination - only when user is actively traveling (startDate <= now <= endDate)
   const { isCurrentlyTraveling, currentDestination } = useMemo(() => {
@@ -487,29 +488,63 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
     return (
       <div key={cityKey} className="py-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0 last:pb-0 first:pt-0">
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
-          <span
-            className={`font-semibold shrink-0 basis-full sm:basis-auto ${
-              isDestination ? "text-orange-600 dark:text-orange-400" : "text-blue-600 dark:text-blue-400"
-            }`}
-          >
-            {displayName}
-          </span>
+        {/* Header row: city label + actions */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate" title={displayName}>
+              {displayName}
+            </div>
+          </div>
 
-          <div className="flex flex-wrap items-center gap-2 w-full sm:flex-1 sm:min-w-0">
+          <div className="flex items-center gap-2 shrink-0">
+            {isOwnProfile && (
+              <Link href={cityKey ? `/match-in-city?city=${encodeURIComponent(getMetroCities(cityKey).length > 0 ? getMetroCities(cityKey)[0] : cityKey)}` : '/match-in-city'}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs text-orange-600 border-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                  title={`Add activities in ${displayName}`}
+                >
+                  <Plus className="w-3.5 h-3.5 mr-1" />
+                  Add Plans
+                </Button>
+              </Link>
+            )}
+
+            {isOwnProfile && cityKey && (hasContent || cityData.travelPlan?.isPast) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setConfirmDialog({ open: true, cityName: cityKey })}
+                className={`h-8 text-xs ${cityData.travelPlan?.isPast
+                  ? "text-gray-500 hover:text-red-400 hover:bg-red-900/20 border border-gray-400 dark:border-gray-600"
+                  : "text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                }`}
+                title={cityData.travelPlan?.isPast ? `Clear past trip to ${displayName}` : `Remove all from ${displayName}`}
+              >
+                <Trash2 className="w-3.5 h-3.5 mr-1" />
+                {cityData.travelPlan?.isPast ? 'Clear' : 'Remove'}
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Pills row: activities/events below header */}
+        <div className="mt-2 flex flex-wrap gap-2">
           {/* Sub-Interest Pills - for travel destinations */}
           {cityData.travelPlan && citySubInterests.map((subInterest, idx) => (
             <div key={`sub-${idx}-${subInterest}`} className="relative group">
-              <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gray-100 border border-gray-200 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm dark:bg-gradient-to-r dark:from-orange-500 dark:to-yellow-500 dark:border-0">
-                <span className="text-gray-900 dark:text-black">✨ {subInterest}</span>
+              <div className="pill-interests dark:bg-gradient-to-r dark:from-orange-500 dark:to-yellow-500 dark:border-0">
+                ✨ {subInterest}
               </div>
             </div>
           ))}
+
           {/* Activity Pills */}
           {cityData.activities.map((activity) => (
             <div key={`act-${activity.id}`} className="relative group">
-              <div className="inline-flex items-center justify-center rounded-full pl-4 pr-7 py-1.5 text-xs font-medium bg-gray-100 border border-gray-200 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm dark:bg-gradient-to-r dark:from-blue-600 dark:to-blue-500 dark:border-0">
-                <span className="text-gray-900 dark:text-black">{activity.activityName}</span>
+              <div className={`pill-activities dark:bg-gradient-to-r dark:from-blue-600 dark:to-blue-500 dark:border-0 ${isOwnProfile ? "!pr-7" : ""}`}>
+                {activity.activityName}
               </div>
               {isOwnProfile && (
                 <button
@@ -522,6 +557,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
               )}
             </div>
           ))}
+
           {/* Event Pills */}
           {cityData.events.map((event) => {
             const eventId = (event as any).eventId || event.id;
@@ -531,8 +567,12 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
             return (
               <div key={`evt-${event.id}`} className={`relative group ${isEventPast ? 'opacity-60' : ''}`}>
                 <Link href={eventUrl}>
-                  <div className={`inline-flex items-center justify-center rounded-full pl-4 pr-7 py-1.5 text-xs font-medium h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm cursor-pointer transition-all hover:scale-105 bg-gray-100 border border-gray-200 dark:border-0 ${isEventPast ? 'dark:bg-gradient-to-r dark:from-gray-500 dark:to-gray-400' : 'dark:bg-gradient-to-r dark:from-blue-600 dark:to-cyan-500 dark:hover:from-blue-700 dark:hover:to-cyan-600'}`}>
-                    <span className="text-gray-900 dark:text-black">{isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}</span>
+                  <div className={`pill-events cursor-pointer transition-all md:hover:scale-105 dark:border-0 ${isOwnProfile ? "!pr-7" : ""} ${
+                    isEventPast
+                      ? "dark:bg-gradient-to-r dark:from-gray-500 dark:to-gray-400"
+                      : "dark:bg-gradient-to-r dark:from-blue-600 dark:to-cyan-500 dark:hover:from-blue-700 dark:hover:to-cyan-600"
+                  }`}>
+                    {isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}
                   </div>
                 </Link>
                 {isOwnProfile && (
@@ -551,39 +591,6 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
               </div>
             );
           })}
-
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto sm:shrink-0">
-          {isOwnProfile && (
-            <Link href={cityKey ? `/match-in-city?city=${encodeURIComponent(getMetroCities(cityKey).length > 0 ? getMetroCities(cityKey)[0] : cityKey)}` : '/match-in-city'}>
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-orange-600 border-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 h-8 text-xs"
-                title={`Add activities in ${displayName}`}
-              >
-                <Plus className="w-3.5 h-3.5 mr-1" />
-                Add Plans
-              </Button>
-            </Link>
-          )}
-          {isOwnProfile && cityKey && (hasContent || cityData.travelPlan?.isPast) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setConfirmDialog({ open: true, cityName: cityKey })}
-              className={`h-8 text-xs ${cityData.travelPlan?.isPast 
-                ? "text-gray-500 hover:text-red-400 hover:bg-red-900/20 border border-gray-400 dark:border-gray-600" 
-                : "text-red-400 hover:text-red-300 hover:bg-red-900/20"
-              }`}
-              title={cityData.travelPlan?.isPast ? `Clear past trip to ${displayName}` : `Remove all from ${displayName}`}
-            >
-              <Trash2 className="w-3.5 h-3.5 mr-1" />
-              {cityData.travelPlan?.isPast ? 'Clear' : 'Remove'}
-            </Button>
-          )}
-          </div>
         </div>
       </div>
     );
@@ -600,7 +607,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   } else if (cities.length > 0) {
     const firstHometown = cities.find(c => !citiesByName[c].travelPlan);
     if (firstHometown) {
-      rowsToShow.push({ key: firstHometown, displayName: firstHometown, isDestination: false });
+      rowsToShow.push({ key: firstHometown, displayName: consolidateCity(firstHometown), isDestination: false });
       addedKeys.add(firstHometown);
     } else {
       rowsToShow.push({ key: '', displayName: hometownDisplayName, isDestination: false });
@@ -610,7 +617,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   }
   // Row 2: Current destination - only if currently traveling (and not same as hometown)
   if (isCurrentlyTraveling && currentDestCityKey && !addedKeys.has(currentDestCityKey)) {
-    rowsToShow.push({ key: currentDestCityKey, displayName: currentDestination!.cityName, isDestination: true });
+    rowsToShow.push({ key: currentDestCityKey, displayName: consolidateCity(currentDestination!.cityName), isDestination: true });
     addedKeys.add(currentDestCityKey);
   }
   // Rows 3+: All other cities with activities or events (future trips, past trips, etc.)
@@ -619,7 +626,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     const cityData = citiesByName[cityKey];
     const hasContent = cityData.activities.length > 0 || cityData.events.length > 0 || (cityData.travelPlan && (getSubInterestsForCity(cityKey).length > 0));
     if (hasContent) {
-      const displayName = cityData.travelPlan?.cityName || cityKey;
+      const displayName = consolidateCity(cityData.travelPlan?.cityName || cityKey);
       rowsToShow.push({ key: cityKey, displayName, isDestination: !!cityData.travelPlan });
       addedKeys.add(cityKey);
     }
@@ -649,18 +656,18 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
         <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Things I Want to Do in:</h2>
           {isOwnProfile && (
-            <div className="mb-4 flex items-center justify-between gap-3" data-testid="location-visibility-toggle-row">
+            <div className="mb-4 flex items-center gap-2" data-testid="location-visibility-toggle-row">
               <div className="flex items-center gap-2 min-w-0">
                 <MapPin className={localLocationSharingEnabled ? "w-4 h-4 text-green-600 dark:text-green-400" : "w-4 h-4 text-gray-500 dark:text-gray-400"} />
                 <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
-                  Visible on city map
+                  Make myself visible
                 </span>
               </div>
               <Switch
                 checked={!!localLocationSharingEnabled}
                 onCheckedChange={handleLocationVisibilityToggle}
                 disabled={updateLocationSharingMutation.isPending}
-                className="scale-[0.7] origin-right"
+                className="scale-[0.7] origin-left shrink-0"
               />
             </div>
           )}
@@ -686,18 +693,18 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
             Things I Want to Do in{isOwnProfile ? ":" : ` ${headerCity}:`}
           </h2>
           {isOwnProfile && (
-            <div className="mb-4 flex items-center justify-between gap-3" data-testid="location-visibility-toggle-row">
+            <div className="mb-4 flex items-center gap-2" data-testid="location-visibility-toggle-row">
               <div className="flex items-center gap-2 min-w-0">
                 <MapPin className={localLocationSharingEnabled ? "w-4 h-4 text-green-600 dark:text-green-400" : "w-4 h-4 text-gray-500 dark:text-gray-400"} />
                 <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
-                  Visible on city map
+                  Make myself visible
                 </span>
               </div>
               <Switch
                 checked={!!localLocationSharingEnabled}
                 onCheckedChange={handleLocationVisibilityToggle}
                 disabled={updateLocationSharingMutation.isPending}
-                className="scale-[0.7] origin-right"
+                className="scale-[0.7] origin-left shrink-0"
               />
             </div>
           )}
