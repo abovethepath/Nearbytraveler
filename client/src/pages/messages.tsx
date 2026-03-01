@@ -613,7 +613,7 @@ export default function Messages() {
   return (
     <div className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5rem)] lg:h-[calc(100dvh-5rem)]'} min-h-0`}>
       {/* Left Sidebar - Conversations. Mobile: full screen when no selection; hidden when chat open. Desktop (lg+): always visible. Single column on mobile. */}
-      <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-gray-100 dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500 min-w-0 flex-shrink-0`}>
+      <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-[#f0f2f5] dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500 min-w-0 flex-shrink-0`}>
         <div className={`border-b border-gray-200 dark:border-gray-700 ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'}`}>
           <div className={`flex items-center gap-3 ${isNativeIOSApp() ? 'mb-2' : 'mb-3'}`}>
             <UniversalBackButton 
@@ -949,8 +949,8 @@ export default function Messages() {
       </div>
 
       {/* Right Sidebar - Contacts List (Hidden on mobile/tablet, show only on xl+ desktop) */}
-      <div className="hidden xl:flex w-72 h-full flex-shrink-0 bg-gray-50 dark:bg-gray-900 flex-col border-l-2 border-gray-300 dark:border-gray-500 min-w-0">
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
+      <div className="hidden xl:flex w-72 h-full flex-shrink-0 bg-[#f0f2f5] dark:bg-gray-900 flex-col border-l-2 border-gray-300 dark:border-gray-500 min-w-0">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-[#f0f2f5] dark:bg-gray-800">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
             <Users className="w-4 h-4" />
             Contacts
