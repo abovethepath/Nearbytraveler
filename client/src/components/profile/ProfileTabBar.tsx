@@ -34,15 +34,22 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
   // iOS: keep About in the hero/tab navigation as requested previously.
   const showAboutTab = !(isHero && isDesktopWeb);
 
+  // Hero background never changes by theme; keep badge text black on web hero.
   const badgeClass = isDesktopWeb
-    ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-600 text-white"
+    ? (isHero
+      ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-200 text-black border border-teal-300"
+      : "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-600 text-white")
     : "ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-white/20 text-white";
 
   const tabWebBase =
     "relative px-0 py-2 text-sm sm:text-base font-semibold transition-colors select-none";
-  const tabWebInactive = "text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white";
-  const tabWebActive =
-    "text-orange-600 dark:text-orange-400 after:absolute after:left-0 after:right-0 after:-bottom-[1px] after:h-[2px] after:bg-orange-500 after:rounded-full";
+  // Hero background is a gradient that does not change by theme, so keep tab text dark/crisp even in dark mode.
+  const tabWebInactive = isHero
+    ? "text-black hover:text-black"
+    : "text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white";
+  const tabWebActive = isHero
+    ? "text-black after:absolute after:left-0 after:right-0 after:-bottom-[1px] after:h-[2px] after:bg-orange-500 after:rounded-full"
+    : "text-orange-600 dark:text-orange-400 after:absolute after:left-0 after:right-0 after:-bottom-[1px] after:h-[2px] after:bg-orange-500 after:rounded-full";
 
   const tabLegacyBase = "text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all";
   const tabLegacyActive = isHero
@@ -61,7 +68,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
     <div
       className={`flex flex-wrap items-end gap-4 sm:gap-5 ${
         isHero ? "pt-4 mt-4" : ""
-      } ${isDesktopWeb ? "border-b border-gray-200 dark:border-white/15 pb-1" : ""}`}
+      } ${isDesktopWeb ? (isHero ? "border-b border-gray-200/70 pb-1" : "border-b border-gray-200 dark:border-white/15 pb-1") : ""}`}
     >
       {showAboutTab && (
         <button

@@ -16,6 +16,7 @@ import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoi
 import { VouchButton } from "@/components/VouchButton";
 import { ProfileTabBar } from "./ProfileTabBar";
 import type { ProfilePageProps } from "./profile-complete-types";
+import { resolveAndJoinHostelChatroom } from "@/lib/hostelChatrooms";
 
 export function ProfileHeaderUser(props: ProfilePageProps) {
   const {
@@ -102,7 +103,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       title="Share profile"
       data-testid="button-share-profile"
     >
-      <Share2 className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+      <Share2 className="w-4 h-4 text-black/70" />
     </button>
   );
 
@@ -123,30 +124,63 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center h-9 w-9 rounded-md bg-white/85 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 ring-1 ring-gray-300/60 dark:ring-gray-500/60 shadow-sm transition-colors"
+                  className="inline-flex items-center justify-center h-9 w-9 rounded-md bg-white hover:bg-white ring-1 ring-gray-300/60 shadow-sm transition-colors"
                   title="More"
                   aria-label="More"
                   data-testid="button-profile-more-menu"
                 >
-                  <MoreVertical className="w-5 h-5 text-gray-800 dark:text-gray-100" />
+                  <MoreVertical className="w-5 h-5 text-black" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => setShareWithFriendsOpen(true)} data-testid="menu-item-share-profile">
+              <DropdownMenuContent
+                align="end"
+                className="w-64 bg-white text-black border border-gray-200 shadow-xl opacity-100"
+              >
+                <DropdownMenuItem
+                  onClick={() => setShareWithFriendsOpen(true)}
+                  className="text-black focus:text-black"
+                  data-testid="menu-item-share-profile"
+                >
                   <Share2 className="w-4 h-4 mr-2" />
                   Share with Friends
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLocation('/share-qr')} data-testid="menu-item-invite-friends">
+                <DropdownMenuItem
+                  onClick={() => setLocation('/share-qr')}
+                  className="text-black focus:text-black"
+                  data-testid="menu-item-invite-friends"
+                >
                   <UserPlus className="w-4 h-4 mr-2" />
                   Invite Friends
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={cycleHeroPalette} data-testid="menu-item-change-hero-palette">
-                  <Palette className="w-4 h-4 mr-2" />
-                  Change Hero Color Palette
-                </DropdownMenuItem>
+                <div className="px-2 pt-2 pb-1">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-black">
+                    <Palette className="w-4 h-4" />
+                    <span>Change Hero Color Palette</span>
+                  </div>
+                  <div className="mt-2 grid grid-cols-6 gap-2">
+                    {(gradientOptions || []).map((g: string, idx: number) => (
+                      <button
+                        key={`palette-${idx}`}
+                        type="button"
+                        className={`h-7 w-7 rounded-md bg-gradient-to-r ${g} ring-1 ring-black/10 hover:ring-black/30 transition-all ${
+                          idx === selectedGradient ? "outline outline-2 outline-orange-500 outline-offset-1" : ""
+                        }`}
+                        onClick={(e) => {
+                          // Keep menu open while selecting palettes.
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (typeof setSelectedGradient === "function") setSelectedGradient(idx);
+                        }}
+                        aria-label={`Select palette ${idx + 1}`}
+                        data-testid={`palette-swatch-${idx}`}
+                      />
+                    ))}
+                  </div>
+                </div>
                 <DropdownMenuItem
                   onClick={() => setTheme("dark")}
                   disabled={resolvedTheme === "dark"}
+                  className="text-black focus:text-black disabled:opacity-40"
                   data-testid="menu-item-switch-dark-mode"
                 >
                   <Moon className="w-4 h-4 mr-2" />
@@ -155,6 +189,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 <DropdownMenuItem
                   onClick={() => setTheme("light")}
                   disabled={resolvedTheme === "light"}
+                  className="text-black focus:text-black disabled:opacity-40"
                   data-testid="menu-item-switch-light-mode"
                 >
                   <Sun className="w-4 h-4 mr-2" />
@@ -170,10 +205,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
           <div className="flex flex-col lg:relative">
             {/* Desktop (lg+): overlapping avatar block anchored to hero bottom-left */}
             {/* Avoid transforms on the text block (crisper desktop text). Avatar overlap is achieved via bottom offset instead of translate. */}
-            <div className="hidden lg:flex flex-col items-start absolute left-8 bottom-[-104px] z-30">
+            <div className="hidden lg:flex flex-col items-start absolute left-8 bottom-[-80px] z-30">
               <div className="relative">
                 <div
-                  className="w-52 h-52 rounded-full overflow-hidden cursor-pointer ring-4 ring-white/90 shadow-2xl"
+                  className="w-48 h-48 rounded-full overflow-hidden cursor-pointer ring-4 ring-white/90 shadow-2xl"
                   onClick={() => { if (user?.profileImage) setShowExpandedPhoto(true); }}
                   title={user?.profileImage ? "Click to enlarge photo" : undefined}
                 >
@@ -190,7 +225,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               </div>
 
               {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-2">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 text-black mt-2">
                   New to Town
                 </span>
               )}
@@ -201,7 +236,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             <div className="flex flex-col items-start flex-shrink-0 min-w-0 lg:hidden">
               <div className="relative">
                 <div
-                  className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden cursor-pointer"
+                  className="w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full overflow-hidden cursor-pointer"
                   onClick={() => { if (user?.profileImage) setShowExpandedPhoto(true); }}
                   title={user?.profileImage ? "Click to enlarge photo" : undefined}
                 >
@@ -218,7 +253,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </label>
               </div>
               {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-2">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 text-black mt-2">
                   New to Town
                 </span>
               )}
@@ -226,20 +261,20 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             {/* RIGHT: @username + Share Profile, buttons - bio has its own dedicated section below hero */}
             <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0.5 lg:pl-[23rem]">
               <div className="flex items-center gap-2.5 shrink-0 w-fit max-w-full">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900 break-all leading-tight">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-black break-all leading-tight crisp-hero-text">
                   @{user?.username}
                 </h1>
               </div>
 
               {/* Nearby Local/Traveler moved under username (inside hero content area) */}
               <div className="mt-1 space-y-0.5">
-                <div className="text-sm sm:text-base font-semibold text-gray-900">
-                  Nearby Local <span className="text-gray-600">·</span> <span className="text-gray-900">{hometown}</span>
+                <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text">
+                  Nearby Local <span className="text-black/70">·</span> <span className="text-black">{hometown}</span>
                 </div>
                 {hasValidTravelDestination && (
-                  <div className="text-sm sm:text-base font-semibold text-gray-900" title={currentTravelPlan}>
-                    Nearby Traveler <span className="text-gray-600">→</span>{" "}
-                    <span className="text-gray-900">
+                  <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text" title={currentTravelPlan}>
+                    Nearby Traveler <span className="text-black/70">→</span>{" "}
+                    <span className="text-black">
                       {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan) ? formatTravelDestinationShort(currentTravelPlan) : currentTravelPlan}
                     </span>
                   </div>
@@ -251,7 +286,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   type="button"
                   size="sm"
                   variant="outline"
-                  className="h-9 px-3 text-sm font-semibold bg-white/85 hover:bg-white text-gray-900 border border-gray-200 shadow-sm"
+                  className="h-9 px-3 text-sm font-semibold bg-white/85 hover:bg-white text-black border border-gray-200 shadow-sm"
                   onClick={() => {
                     const widget = document.querySelector('[data-testid="quick-meet-widget"]');
                     if (widget) widget.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -292,9 +327,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   : [];
 
                 const sharedContactsCount = connectionDegreeData?.mutualCount ?? 0;
+                const nonEnglishSharedLanguages = sharedLanguages.filter((l) => {
+                  const n = String(l || "").trim().toLowerCase();
+                  return !!n && n !== "english";
+                });
+                const sharedLanguagesCountForDisplay = nonEnglishSharedLanguages.length;
                 const totalCommon =
                   (typeof (compatibilityData as any)?.matchCount === "number" ? (compatibilityData as any).matchCount : null) ??
-                  (sharedInterests.length + sharedCountries.length + sharedLanguages.length + otherCommonalities.length + sharedContactsCount);
+                  (sharedInterests.length + sharedCountries.length + sharedLanguagesCountForDisplay + otherCommonalities.length + sharedContactsCount);
 
                 const visibleInterestPills = sharedInterests.slice(0, 6);
                 const hasOverflow = sharedInterests.length > visibleInterestPills.length;
@@ -321,134 +361,129 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         )}
                       </div>
 
-                      {/* MIDDLE: content (keep readable: dark text on translucent white panel) */}
+                      {/* MIDDLE: content (no extra card; sit directly on gradient) */}
                       <div className="flex-1 min-w-0">
-                        <div className="bg-white/75 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-4 sm:p-5">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 break-all leading-tight">
-                                  @{user?.username}
-                                </h1>
-                                {!!(connectionDegreeData?.degree && connectionDegreeData.degree > 0) && (
-                                  <Badge
-                                    className={`text-xs px-2 py-0.5 font-semibold ${
-                                      connectionDegreeData.degree === 1
-                                        ? "bg-green-100 text-green-800 border-green-300"
-                                        : connectionDegreeData.degree === 2
-                                          ? "bg-blue-100 text-blue-800 border-blue-300"
-                                          : "bg-purple-100 text-purple-800 border-purple-300"
-                                    }`}
-                                    data-testid="badge-connection-degree"
-                                  >
-                                    {connectionDegreeData.degree === 1 ? "1st" : connectionDegreeData.degree === 2 ? "2nd" : "3rd"}
-                                  </Badge>
-                                )}
-                              </div>
-
-                              <div className="mt-2 space-y-1">
-                                <div className="text-sm sm:text-base font-semibold">
-                                  <span className="text-orange-700" style={{ color: mutedOrange }}>
-                                    Nearby Local
-                                  </span>
-                                  <span className="text-gray-600"> · </span>
-                                  <span className="text-gray-900">{hometown}</span>
-                                </div>
-
-                                {hasValidTravelDestination && (
-                                  <div className="text-sm sm:text-base font-semibold text-gray-900" title={currentTravelPlan!}>
-                                    <span className="text-gray-900">Nearby Traveler</span>
-                                    <span className="text-gray-600"> → </span>
-                                    <span className="text-gray-900">
-                                      {formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="mt-4">
-                            <div className="grid grid-cols-2 gap-2">
-                              <button
-                                type="button"
-                                className="w-full inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-4 py-2 text-sm bg-white/85 hover:bg-white text-gray-900 border border-gray-200 shadow-sm"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleMessage?.();
-                                }}
-                                onPointerDown={(e) => e.stopPropagation()}
-                                data-testid="button-message"
-                                data-radix-dismissable-layer-ignore=""
-                              >
-                                <span>Message</span>
-                              </button>
-
-                              <ConnectButton
-                                currentUserId={currentUser?.id || 0}
-                                targetUserId={user?.id || 0}
-                                targetUsername={user?.username}
-                                targetName={user?.name}
-                                appearance="ghost"
-                                className="w-full rounded-lg shadow-sm transition-all px-4 py-2 text-sm font-semibold"
-                              />
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-2 mt-2">
-                              <VouchButton
-                                currentUserId={currentUser?.id || 0}
-                                targetUserId={user?.id || 0}
-                                targetUsername={user?.username}
-                                appearance="ghost"
-                                className="h-9 px-3 text-sm"
-                              />
-                              <Button
-                                type="button"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  if (currentUser) setShowWriteReferenceModal?.(true);
-                                  else setLocation("/auth");
-                                }}
-                                variant="outline"
-                                className="bg-white/85 hover:bg-white text-gray-900 border border-gray-200 shadow-sm shrink-0 px-3 py-2 text-sm h-9"
-                                data-testid="button-write-reference"
-                              >
-                                Write Reference
-                              </Button>
-
-                              {/* Subtle share icon near actions */}
-                              {shareButton(true)}
-                            </div>
-
-                            <div className="mt-2">
-                              {currentUser ? (
-                                <ReportUserButton
-                                  userId={currentUser.id}
-                                  targetUserId={user.id}
-                                  targetUsername={user.username}
-                                  variant="ghost"
-                                  size="sm"
-                                  showIcon={false}
-                                  appearance="link"
-                                />
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setLocation("/auth");
-                                  }}
-                                  onPointerDown={(e) => e.stopPropagation()}
-                                  className="text-sm text-gray-700 hover:text-red-700 underline underline-offset-2 font-medium"
-                                  data-radix-dismissable-layer-ignore=""
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h1 className="text-2xl sm:text-3xl font-extrabold text-black break-all leading-tight crisp-hero-text">
+                                @{user?.username}
+                              </h1>
+                              {!!(connectionDegreeData?.degree && connectionDegreeData.degree > 0) && (
+                                <Badge
+                                  className={`text-xs px-2 py-0.5 font-semibold ${
+                                    connectionDegreeData.degree === 1
+                                      ? "bg-green-100 text-green-800 border-green-300"
+                                      : connectionDegreeData.degree === 2
+                                        ? "bg-blue-100 text-blue-800 border-blue-300"
+                                        : "bg-purple-100 text-purple-800 border-purple-300"
+                                  }`}
+                                  data-testid="badge-connection-degree"
                                 >
-                                  Report
-                                </button>
+                                  {connectionDegreeData.degree === 1 ? "1st" : connectionDegreeData.degree === 2 ? "2nd" : "3rd"}
+                                </Badge>
                               )}
                             </div>
+
+                            <div className="mt-2 space-y-1">
+                              <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text">
+                                Nearby Local <span className="text-black/70">·</span> <span className="text-black">{hometown}</span>
+                              </div>
+
+                              {hasValidTravelDestination && (
+                                <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text" title={currentTravelPlan!}>
+                                  <span className="text-black">Nearby Traveler</span>
+                                  <span className="text-black/70"> → </span>
+                                  <span className="text-black">
+                                    {formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4">
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              type="button"
+                              className="w-full inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-4 py-2 text-sm bg-white/85 hover:bg-white text-black border border-gray-200 shadow-sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleMessage?.();
+                              }}
+                              onPointerDown={(e) => e.stopPropagation()}
+                              data-testid="button-message"
+                              data-radix-dismissable-layer-ignore=""
+                            >
+                              <span>Message</span>
+                            </button>
+
+                            <ConnectButton
+                              currentUserId={currentUser?.id || 0}
+                              targetUserId={user?.id || 0}
+                              targetUsername={user?.username}
+                              targetName={user?.name}
+                              appearance="ghost"
+                              className="w-full rounded-lg shadow-sm transition-all px-4 py-2 text-sm font-semibold !text-black"
+                            />
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-2 mt-2">
+                            <VouchButton
+                              currentUserId={currentUser?.id || 0}
+                              targetUserId={user?.id || 0}
+                              targetUsername={user?.username}
+                              appearance="ghost"
+                              className="h-9 px-3 text-sm !text-black"
+                            />
+                            <Button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (currentUser) setShowWriteReferenceModal?.(true);
+                                else setLocation("/auth");
+                              }}
+                              variant="outline"
+                              className="bg-white/85 hover:bg-white text-black border border-gray-200 shadow-sm shrink-0 px-3 py-2 text-sm h-9"
+                              data-testid="button-write-reference"
+                            >
+                              Write Reference
+                            </Button>
+
+                            {/* Subtle share icon near actions */}
+                            {shareButton(true)}
+                          </div>
+
+                          <div className="mt-2">
+                            {currentUser ? (
+                              <ReportUserButton
+                                userId={currentUser.id}
+                                targetUserId={user.id}
+                                targetUsername={user.username}
+                                variant="ghost"
+                                size="sm"
+                                showIcon={false}
+                                appearance="link"
+                                  className="!text-black hover:!text-black/80"
+                              />
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setLocation("/auth");
+                                }}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                className="text-sm text-black/80 hover:text-red-700 underline underline-offset-2 font-medium"
+                                data-radix-dismissable-layer-ignore=""
+                              >
+                                Report
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -457,18 +492,20 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       <div className="lg:w-[340px] lg:flex-shrink-0">
                         <div className="bg-white/55 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-4 max-h-[260px] overflow-hidden">
                           <div className="flex items-center justify-between gap-2">
-                            <div className="text-sm font-bold text-gray-900">What You Have in Common</div>
-                            <div className="text-xs font-semibold text-gray-700">{totalCommon} total</div>
+                            <div className="text-sm font-bold text-black">What You Have in Common</div>
+                            <div className="text-xs font-semibold text-black">{totalCommon} total</div>
                           </div>
 
-                          <div className="mt-2 text-xs text-gray-700 flex flex-wrap gap-x-3 gap-y-1">
-                            <span><span className="font-semibold text-gray-900">{sharedContactsCount}</span> contacts</span>
-                            <span><span className="font-semibold text-gray-900">{sharedCountries.length}</span> countries</span>
-                            <span><span className="font-semibold text-gray-900">{sharedLanguages.length}</span> languages</span>
+                          <div className="mt-2 text-xs text-black flex flex-wrap gap-x-3 gap-y-1">
+                            <span><span className="font-semibold text-black">{sharedContactsCount}</span> contacts</span>
+                            <span><span className="font-semibold text-black">{sharedCountries.length}</span> countries</span>
+                            {sharedLanguagesCountForDisplay > 0 && (
+                              <span><span className="font-semibold text-black">{sharedLanguagesCountForDisplay}</span> languages</span>
+                            )}
                           </div>
 
                           <div className="mt-3">
-                            <div className="text-xs font-semibold text-gray-900 mb-1">Shared interests</div>
+                            <div className="text-xs font-semibold text-black mb-1">Shared interests</div>
                             <div className="flex flex-wrap gap-1.5 max-h-[92px] overflow-hidden">
                               {visibleInterestPills.length > 0 ? (
                                 visibleInterestPills.map((interest) => (
@@ -477,7 +514,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   </span>
                                 ))
                               ) : (
-                                <span className="text-xs text-gray-600">No shared interests yet</span>
+                                <span className="text-xs text-black">No shared interests yet</span>
                               )}
                             </div>
 
@@ -485,7 +522,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               <div className="mt-2">
                                 <button
                                   type="button"
-                                  className="text-xs font-semibold text-gray-700 hover:text-gray-900 underline underline-offset-2"
+                                  className="text-xs font-semibold text-black hover:text-black underline underline-offset-2"
                                   onClick={() => setSeeAllCommonOpen(true)}
                                   data-testid="button-see-all-common"
                                 >
@@ -533,7 +570,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             <div className="flex flex-wrap gap-x-4 gap-y-1">
                               <span><span className="font-semibold">{sharedContactsCount}</span> shared contacts</span>
                               <span><span className="font-semibold">{sharedCountries.length}</span> shared countries</span>
-                              <span><span className="font-semibold">{sharedLanguages.length}</span> shared languages</span>
+                              {sharedLanguagesCountForDisplay > 0 && (
+                                <span><span className="font-semibold">{sharedLanguagesCountForDisplay}</span> shared languages</span>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -663,14 +702,50 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   const end = new Date(plan.endDate);
                   const isActive = now >= start && now <= end;
                   const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
-                  const matchesDestination = plan.destination && currentTravelPlan!.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
-                  return isActive && hasPublicHostel && matchesDestination;
+                  if (!isActive || !hasPublicHostel) return false;
+
+                  // Best-effort destination match (avoid hiding due to formatting differences)
+                  const currentCity = String(currentTravelPlan || "").split(",")[0]?.trim().toLowerCase();
+                  const planCity = String(plan.destinationCity || plan.destination || "").split(",")[0]?.trim().toLowerCase();
+                  if (!currentCity || !planCity) return true; // If we can't compare, still show.
+                  return currentCity === planCity;
                 });
                 return activePlanWithHostel ? (
-                  <div className="flex items-center gap-1.5 text-sm font-medium text-black dark:text-gray-100 mt-1 crisp-hero-text">
+                  <button
+                    type="button"
+                    className="flex items-center gap-1.5 text-sm font-medium text-black dark:text-gray-100 mt-1 crisp-hero-text hover:underline underline-offset-2 text-left"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      try {
+                        const city =
+                          String(activePlanWithHostel.destinationCity || activePlanWithHostel.destination || "")
+                            .split(",")[0]
+                            ?.trim() ||
+                          String(currentTravelPlan || "").split(",")[0]?.trim();
+                        const country =
+                          (activePlanWithHostel as any).destinationCountry ||
+                          (activePlanWithHostel as any).destination_country ||
+                          "United States";
+                        const result = await resolveAndJoinHostelChatroom({
+                          hostelName: activePlanWithHostel.hostelName,
+                          city,
+                          country,
+                        });
+                        setLocation?.(`/chatroom/${result.chatroomId}`);
+                      } catch (err: any) {
+                        toast?.({
+                          title: "Can't open hostel chatroom",
+                          description: err?.message || "Please try again.",
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                    data-testid="button-open-hostel-chatroom"
+                  >
                     <Building2 className="w-4 h-4 text-orange-600 flex-shrink-0" />
                     <span className="break-words">Staying at {activePlanWithHostel.hostelName}</span>
-                  </div>
+                  </button>
                 ) : null;
               })()}
             </div>

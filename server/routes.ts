@@ -19461,6 +19461,148 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Hostel chatrooms: resolve/create + join (deduped by hostel + city)
+  app.post("/api/hostel-chatrooms/resolve-join", async (req, res) => {
+    try {
+      let userId: number | null = null;
+
+      if (req.headers["x-user-id"]) {
+        const n = parseInt(String(req.headers["x-user-id"]), 10);
+        if (!isNaN(n) && n > 0) userId = n;
+      }
+      if (!userId && req.headers["x-user-data"]) {
+        try {
+          const parsed = JSON.parse(String(req.headers["x-user-data"]));
+          const n = parseInt(String(parsed?.id || 0), 10);
+          if (!isNaN(n) && n > 0) userId = n;
+        } catch {}
+      }
+      if (!userId && (req as any).session?.user?.id) {
+        userId = (req as any).session.user.id;
+      }
+
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const hostelName = String(req.body?.hostelName || "").trim();
+      const city = String(req.body?.city || "").trim();
+      const state = req.body?.state != null ? String(req.body.state).trim() : "";
+      const country = req.body?.country != null ? String(req.body.country).trim() : "United States";
+
+      if (!hostelName || !city) {
+        return res.status(400).json({ error: "hostelName and city are required" });
+      }
+
+      // Only guests of the hostel (public on their travel plan) can join
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const eligiblePlan = await db
+        .select()
+        .from(travelPlans)
+        .where(
+          and(
+            eq(travelPlans.userId, userId),
+            eq(travelPlans.hostelVisibility, "public"),
+            sql`LOWER(${travelPlans.hostelName}) = LOWER(${hostelName})`,
+            or(
+              sql`LOWER(COALESCE(${travelPlans.destinationCity}, '')) = LOWER(${city})`,
+              sql`LOWER(${travelPlans.destination}) LIKE LOWER(${city} || '%')`,
+            ),
+            // Only current/upcoming trips
+            or(isNull(travelPlans.endDate), gte(travelPlans.endDate, today)),
+          ),
+        )
+        .limit(1);
+
+      if (!eligiblePlan.length) {
+        return res.status(403).json({
+          error: "To join this hostel chatroom, set the same hostel as Public on your trip for this city.",
+        });
+      }
+
+      const slugify = (value: string) =>
+        value
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .slice(0, 80);
+
+      // Dedupe key MUST include both hotel name + city (chain names like "Hyatt" exist in many cities)
+      const hostelKey = slugify(`${hostelName} ${city}`);
+      const hostelTag = `hostel:${hostelKey}`;
+
+      // Back-compat: previously included country in the slug; check both to avoid duplicates.
+      const legacyHostelKey = slugify(`${hostelName} ${city} ${country}`);
+      const legacyHostelTag = `hostel:${legacyHostelKey}`;
+
+      // Resolve existing room by tag (prevents duplicates even if name changes slightly)
+      const existing = await db.execute(sql`
+        SELECT c.id, c.name
+        FROM city_chatrooms c
+        WHERE (c.tags @> ARRAY[${hostelTag}]::text[]
+          OR c.tags @> ARRAY[${legacyHostelTag}]::text[])
+        LIMIT 1
+      `);
+      const rows = (existing.rows || []) as { id: number; name: string }[];
+
+      let roomId = rows[0]?.id;
+      let created = false;
+      let roomName = rows[0]?.name;
+
+      if (!roomId) {
+        const [newRoom] = await db
+          .insert(citychatrooms)
+          .values({
+            name: `${hostelName} - ${city}`,
+            description: `Connect with guests staying at ${hostelName} in ${city}.`,
+            city,
+            state,
+            country,
+            createdById: userId,
+            isPublic: true,
+            maxMembers: 500,
+            tags: ["hostel", hostelTag, legacyHostelTag],
+            rules: null,
+          })
+          .returning();
+        roomId = newRoom.id;
+        roomName = newRoom.name;
+        created = true;
+      }
+
+      // Ensure membership
+      let alreadyMember = false;
+      const membership = await db
+        .select()
+        .from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, roomId), eq(chatroomMembers.userId, userId), eq(chatroomMembers.isActive, true)))
+        .limit(1);
+      alreadyMember = membership.length > 0;
+
+      if (!alreadyMember) {
+        try {
+          await db.insert(chatroomMembers).values({
+            chatroomId: roomId,
+            userId,
+            role: "member",
+            joinedAt: new Date(),
+            isActive: true,
+            isMuted: false,
+          });
+        } catch (e: any) {
+          // Unique constraint (already member) is fine.
+        }
+      }
+
+      return res.json({ chatroomId: roomId, created, name: roomName, alreadyMember });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === "development") console.error("Hostel chatroom resolve/join error:", error);
+      res.status(500).json({ error: "Failed to open hostel chatroom" });
+    }
+  });
+
   // User notification settings endpoints - GET and PUT by user ID
   app.get("/api/users/:id/notification-settings", async (req, res) => {
     try {

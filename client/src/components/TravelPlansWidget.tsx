@@ -4,10 +4,12 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Globe, Calendar, MapPin, Plane, Clock, ArrowRight, Sparkles } from "lucide-react";
+import { Globe, Calendar, MapPin, Plane, Clock, ArrowRight, Sparkles, Building2, Eye, EyeOff } from "lucide-react";
 import { format } from "date-fns";
 import type { TripPlan } from "@shared/schema";
 import ComprehensiveItinerary from "@/components/ComprehensiveItinerary";
+import { resolveAndJoinHostelChatroom } from "@/lib/hostelChatrooms";
+import { useToast } from "@/hooks/use-toast";
 
 interface TravelPlansWidgetProps {
   userId: number | undefined;
@@ -44,6 +46,7 @@ function formatDateForDisplay(dateString: string | Date | null | undefined, time
 export default function TravelPlansWidget({ userId, isOwnProfile = false }: TravelPlansWidgetProps) {
   const [, setLocation] = useLocation();
   const [selectedTravelPlan, setSelectedTravelPlan] = useState<TripPlan | null>(null);
+  const { toast } = useToast();
 
   const { data: travelPlans = [] } = useQuery<TripPlan[]>({
     queryKey: [`/api/travel-plans/${userId}`],
@@ -156,6 +159,47 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                     <p className="text-gray-600 dark:text-gray-300 mt-1">
                       {formatDateForDisplay(plan.startDate, "PLAYA DEL REY")} - {formatDateForDisplay(plan.endDate, "PLAYA DEL REY")}
                     </p>
+                    {!!plan.hostelName && (isOwnProfile || plan.hostelVisibility === "public") && (
+                      <button
+                        type="button"
+                        className="mt-2 flex items-center gap-2 text-sm text-gray-800 dark:text-gray-200 hover:underline underline-offset-2 text-left"
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          try {
+                            const city = String(plan.destinationCity || plan.destination || "").split(",")[0]?.trim();
+                            const country = (plan as any).destinationCountry || "United States";
+                            const result = await resolveAndJoinHostelChatroom({ hostelName: plan.hostelName, city, country });
+                            setLocation(`/chatroom/${result.chatroomId}`);
+                          } catch (err: any) {
+                            toast({
+                              title: "Can't open hostel chatroom",
+                              description: err?.message || "Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                        data-testid={`button-open-hostel-chatroom-${plan.id}`}
+                      >
+                        <Building2 className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                        <span className="break-words">
+                          Staying at <span className="font-semibold">{plan.hostelName}</span>
+                        </span>
+                        {isOwnProfile && (
+                          <span className="inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
+                            {plan.hostelVisibility === "public" ? (
+                              <>
+                                <Eye className="w-3 h-3" /> Public
+                              </>
+                            ) : (
+                              <>
+                                <EyeOff className="w-3 h-3" /> Private
+                              </>
+                            )}
+                          </span>
+                        )}
+                      </button>
+                    )}
                     <Badge variant="secondary" className="mt-2 bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
                       Active Trip
                     </Badge>
@@ -206,6 +250,47 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                     <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                       {formatDateForDisplay(plan.startDate, "PLAYA DEL REY")} - {formatDateForDisplay(plan.endDate, "PLAYA DEL REY")}
                     </p>
+                    {!!plan.hostelName && (isOwnProfile || plan.hostelVisibility === "public") && (
+                      <button
+                        type="button"
+                        className="mt-1.5 flex items-center gap-2 text-sm text-gray-800 dark:text-gray-200 hover:underline underline-offset-2 text-left"
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          try {
+                            const city = String(plan.destinationCity || plan.destination || "").split(",")[0]?.trim();
+                            const country = (plan as any).destinationCountry || "United States";
+                            const result = await resolveAndJoinHostelChatroom({ hostelName: plan.hostelName, city, country });
+                            setLocation(`/chatroom/${result.chatroomId}`);
+                          } catch (err: any) {
+                            toast({
+                              title: "Can't open hostel chatroom",
+                              description: err?.message || "Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                        data-testid={`button-open-hostel-chatroom-${plan.id}`}
+                      >
+                        <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                        <span className="break-words">
+                          Staying at <span className="font-semibold">{plan.hostelName}</span>
+                        </span>
+                        {isOwnProfile && (
+                          <span className="inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
+                            {plan.hostelVisibility === "public" ? (
+                              <>
+                                <Eye className="w-3 h-3" /> Public
+                              </>
+                            ) : (
+                              <>
+                                <EyeOff className="w-3 h-3" /> Private
+                              </>
+                            )}
+                          </span>
+                        )}
+                      </button>
+                    )}
                   </div>
                   <div className="flex gap-2">
                     {isOwnProfile && (

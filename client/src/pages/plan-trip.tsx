@@ -1016,7 +1016,7 @@ export default function PlanTrip() {
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                       {(!tripPlan.hostelVisibility || tripPlan.hostelVisibility === 'private') 
                         ? "We'll only use this to match you with others at the same or nearby hostels"
-                        : "Your hostel name will be visible on your profile to help others connect"}
+                        : "Your hostel name will be visible on your profile, and you'll be added to a chatroom with other guests staying there."}
                     </p>
                   )}
                 </div>

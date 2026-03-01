@@ -9,6 +9,8 @@ import { useEffect, useState, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Link, useLocation } from "wouter";
 import { getMetroAreaName, getMetroCities } from "@shared/metro-areas";
+import { Building2 } from "lucide-react";
+import { resolveAndJoinHostelChatroom } from "@/lib/hostelChatrooms";
 
 interface ThingsIWantToDoSectionProps {
   userId: number;
@@ -47,6 +49,8 @@ interface TravelPlan {
   destinationCity?: string;
   destinationState?: string;
   destinationCountry?: string;
+  hostelName?: string | null;
+  hostelVisibility?: string | null; // 'private' | 'public'
   startDate: string;
   endDate: string;
   status: string;
@@ -172,6 +176,10 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           startDate: plan.startDate,
           endDate: plan.endDate,
           fullDestination: plan.destination,
+          hostelName: (plan as any).hostelName,
+          hostelVisibility: (plan as any).hostelVisibility,
+          destinationState: (plan as any).destinationState,
+          destinationCountry: (plan as any).destinationCountry,
           isPast
         };
       })
@@ -335,7 +343,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   // Group by city with metro consolidation - memoized to prevent infinite re-renders
   const citiesByName = useMemo(() => {
-    const cities: Record<string, { activities: UserActivity[], events: UserEvent[], travelPlan?: { cityName: string; tripId: number; startDate: string; endDate: string; fullDestination: string; isPast: boolean } }> = {};
+    const cities: Record<string, { activities: UserActivity[], events: UserEvent[], travelPlan?: { cityName: string; tripId: number; startDate: string; endDate: string; fullDestination: string; hostelName?: string | null; hostelVisibility?: string | null; isPast: boolean } }> = {};
 
     allActivities.forEach(activity => {
       const consolidatedCity = consolidateCity(activity.cityName);
@@ -485,6 +493,9 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     const cityData = (cityKey && citiesByName[cityKey]) || { activities: [], events: [], travelPlan: null };
     const citySubInterests = getSubInterestsForCity(cityKey);
     const hasContent = cityData.activities.length > 0 || cityData.events.length > 0 || (cityData.travelPlan && citySubInterests.length > 0);
+    const showHostel =
+      !!cityData.travelPlan?.hostelName &&
+      (isOwnProfile || cityData.travelPlan?.hostelVisibility === "public");
 
     return (
       <div key={cityKey} className="py-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0 last:pb-0 first:pt-0">
@@ -531,6 +542,40 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
         {/* Pills row: activities/events below header */}
         <div className="mt-2 flex flex-wrap gap-2">
+          {/* Public hostel (trip) */}
+          {showHostel && (
+            <button
+              type="button"
+              className="pill-interests dark:border-0 dark:bg-gradient-to-r dark:from-slate-700 dark:to-slate-700 dark:text-gray-100 hover:underline underline-offset-2 text-left"
+              onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                try {
+                  // IMPORTANT: Use the trip's underlying destination city (not a metro display label)
+                  const city = String(cityData.travelPlan?.cityName || cityData.travelPlan?.fullDestination || "").split(",")[0]?.trim();
+                  const country = (cityData.travelPlan as any)?.destinationCountry || "United States";
+                  const result = await resolveAndJoinHostelChatroom({
+                    hostelName: String(cityData.travelPlan?.hostelName || ""),
+                    city,
+                    country,
+                  });
+                  setLocation(`/chatroom/${result.chatroomId}`);
+                } catch (err: any) {
+                  toast?.({
+                    title: "Can't open hostel chatroom",
+                    description: err?.message || "Please try again.",
+                    variant: "destructive",
+                  });
+                }
+              }}
+              data-testid="button-open-hostel-chatroom"
+            >
+              <span className="inline-flex items-center gap-1.5">
+                <Building2 className="w-3.5 h-3.5" />
+                <span className="break-words">Staying at {cityData.travelPlan?.hostelName}</span>
+              </span>
+            </button>
+          )}
           {/* Sub-Interest Pills - for travel destinations */}
           {cityData.travelPlan && citySubInterests.map((subInterest, idx) => (
             <div key={`sub-${idx}-${subInterest}`} className="relative group">
