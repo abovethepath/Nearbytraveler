@@ -1429,7 +1429,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
             <Button
               type="submit"
               disabled={updateEventMutation.isPending}
-              className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 w-full sm:w-auto"
+              className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 text-white w-full sm:w-auto"
             >
               <Save className="w-4 h-4 mr-2" />
               {updateEventMutation.isPending ? "Updating..." : "Update Event"}

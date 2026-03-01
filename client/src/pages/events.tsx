@@ -1120,7 +1120,7 @@ export default function Events() {
                   {upcomingEvents.length === 0 && (
                     <Button 
                       onClick={() => setShowCreateEvent(true)}
-                      className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 rounded-xl shadow-lg text-base font-semibold"
+                      className="bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700 text-white px-8 py-3 rounded-xl shadow-lg text-base font-semibold"
                     >
                       <Plus className="w-5 h-5 mr-2" />
                       Host Your Own Event

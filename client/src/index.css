@@ -789,11 +789,20 @@ img {
 :root:not(.dark) .pill-events,
 :root:not(.dark) div[class*="pill-interests"],
 :root:not(.dark) div[class*="pill-activities"],
-:root:not(.dark) div[class*="pill-events"] {
-  background-color: rgb(243 244 246) !important; /* gray-100 */
+:root:not(.dark) div[class*="pill-events"],
+:root:not(.dark) button[class*="pill-interests"],
+:root:not(.dark) button[class*="pill-activities"],
+:root:not(.dark) button[class*="pill-events"],
+:root:not(.dark) span[class*="pill-interests"],
+:root:not(.dark) span[class*="pill-activities"],
+:root:not(.dark) span[class*="pill-events"],
+:root:not(.dark) a[class*="pill-interests"],
+:root:not(.dark) a[class*="pill-activities"],
+:root:not(.dark) a[class*="pill-events"] {
+  background-color: rgb(255 255 255) !important; /* white */
   background-image: none !important;
   border: 1px solid rgb(229 231 235) !important; /* gray-200 */
-  color: rgb(55 65 81) !important; /* gray-700 */
+  color: rgb(17 24 39) !important; /* gray-900 */
   text-transform: none !important;
 }
 

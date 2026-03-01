@@ -279,7 +279,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   // Reset after scrolling completes
                   setTimeout(() => setTriggerQuickMeetup(false), 500);
                 }}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 border-0 hover:from-blue-600 hover:to-orange-600 
+                className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0
                            px-4 sm:px-6 py-2 sm:py-2 text-sm font-medium rounded-lg
                            w-full sm:w-auto flex items-center justify-center transition-all duration-200"
                 style={{ color: 'black' }}
@@ -334,7 +334,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                           e.stopPropagation();
                           setIsEditMode(true);
                         }}
-                        className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-transparent dark:border-gray-400 ${isProfileIncomplete() ? 'bg-red-500 hover:bg-red-600 text-white dark:ring-2 dark:ring-red-400 animate-pulse' : 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 dark:ring-2 dark:ring-gray-400'}`}
+                        className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-transparent dark:border-gray-400 ${
+                          isProfileIncomplete()
+                            ? 'bg-gradient-to-r from-red-500 to-red-400 hover:from-red-600 hover:to-red-500 dark:from-red-500 dark:to-red-500 dark:hover:from-red-600 dark:hover:to-red-600 text-white dark:ring-2 dark:ring-red-400 animate-pulse'
+                            : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 dark:ring-2 dark:ring-gray-400'
+                        }`}
                         style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer', touchAction: 'manipulation' }}
                         data-testid="button-edit-profile"
                       >
@@ -656,7 +660,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                               if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                             }, 100);
                           }}
-                          className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 text-black px-4 py-2 text-sm shrink-0"
+                          className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 text-black px-4 py-2 text-sm shrink-0"
                           size="sm"
                           data-testid="button-edit-interests-activities"
                         >
@@ -763,7 +767,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                           activities: allActivities
                         });
                       }}
-                      className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 text-black px-4 py-2 text-sm shrink-0"
+                      className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 text-black px-4 py-2 text-sm shrink-0"
                       size="sm"
                       data-testid="button-edit-interests"
                     >
@@ -1970,7 +1974,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                         Countries I've Visited ({countriesVisited.length})
                       </CardTitle>
                       {isOwnProfile && !editingCountries && (
-                        <Button size="sm" onClick={handleEditCountries} className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 text-black">
+                        <Button size="sm" onClick={handleEditCountries} className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 text-black">
                           <Edit className="w-4 h-4 mr-2 text-black" />
                           <span className="text-black">Edit</span>
                         </Button>
@@ -2987,7 +2991,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                     Languages I Speak
                   </CardTitle>
                   {isOwnProfile && !editingLanguages && (
-                    <Button size="sm" onClick={handleEditLanguages} className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 [&]:text-black [&>*]:text-black">
+                    <Button size="sm" onClick={handleEditLanguages} className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 [&]:text-black [&>*]:text-black">
                       <Edit className="w-3 h-3 text-black" />
                     </Button>
                   )}
@@ -3526,7 +3530,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <span className="text-black dark:text-white">Countries I've Visited ({countriesVisited.length})</span>
                     </CardTitle>
                     {isOwnProfile && !editingCountries && (
-                      <Button size="sm" onClick={handleEditCountries} className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 text-black">
+                      <Button size="sm" onClick={handleEditCountries} className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 text-black">
                         <Edit className="w-3 h-3 text-black" />
                       </Button>
                     )}
@@ -3862,7 +3866,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 <CardContent className="pt-0">
                   <Button 
                     onClick={() => setLocation('/getting-started')}
-                    className="w-full bg-gradient-to-r from-blue-500 via-orange-500 to-violet-500 hover:from-blue-600 hover:via-orange-600 hover:to-violet-600 border-0"
+                    className="w-full bg-gradient-to-r from-violet-500 to-violet-400 hover:from-violet-600 hover:to-violet-500 dark:from-blue-500 dark:via-orange-500 dark:to-violet-500 dark:hover:from-blue-600 dark:hover:via-orange-600 dark:hover:to-violet-600 border-0"
                     style={{ color: 'black' }}
                   >
                     <Star className="w-4 h-4 mr-2" style={{ color: 'black' }} />

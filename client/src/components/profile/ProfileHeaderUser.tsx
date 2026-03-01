@@ -271,8 +271,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             </div>
             {/* RIGHT: @username + Share Profile, buttons - bio has its own dedicated section below hero */}
             <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0.5 lg:pl-[18rem]">
-              <div className="flex items-center gap-1.5 shrink-0 lg:inline-flex lg:items-center lg:gap-2 lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm w-fit max-w-full">
-                <h1 className="text-lg sm:text-xl font-bold !text-black lg:!text-white break-all leading-tight lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)] crisp-hero-text">@{user?.username}</h1>
+              <div className="flex items-center gap-2.5 shrink-0 w-fit max-w-full">
+                <div className="lg:inline-flex lg:items-center lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm">
+                  <h1 className="text-lg sm:text-xl font-bold !text-black lg:!text-white break-all leading-tight lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)] crisp-hero-text">
+                    @{user?.username}
+                  </h1>
+                </div>
                 {isDesktopOwnProfile && shareButton(true)}
               </div>
               <div className="flex flex-wrap gap-2 mt-2">
@@ -282,7 +286,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     const chatCity = user?.hometownCity || user?.location?.split(',')[0] || 'General';
                     setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
                   }}
-                  className="inline-flex items-center h-7 rounded-md px-3 text-sm font-semibold bg-orange-500 hover:bg-orange-600 lg:bg-[color:var(--mutedOrange)] lg:hover:bg-[color:var(--mutedOrangeHover)] text-white border-0 shadow-sm transition-colors"
+                  className="inline-flex items-center h-7 rounded-md px-3 text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500 dark:from-orange-500 dark:to-orange-500 dark:hover:from-orange-600 dark:hover:to-orange-600 text-white border-0 shadow-sm transition-colors"
                   style={{ ["--mutedOrange" as any]: mutedOrange, ["--mutedOrangeHover" as any]: mutedOrangeHover }}
                 >
                   <MessageCircle className="w-3.5 h-3.5 mr-1.5 shrink-0" />
@@ -291,7 +295,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 <button
                   type="button"
                   onClick={() => setLocation('/share-qr')}
-                  className="inline-flex items-center h-7 rounded-md px-3 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-sm transition-colors"
+                  className="inline-flex items-center h-7 rounded-md px-3 text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-600 dark:to-blue-600 dark:hover:from-blue-700 dark:hover:to-blue-700 text-white border-0 shadow-sm transition-colors"
                 >
                   <Share2 className="w-3.5 h-3.5 mr-1.5 shrink-0" />
                   Invite Friends
@@ -447,8 +451,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 return (
                   <>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <div className={`flex items-center gap-1.5 shrink-0 w-fit max-w-full ${isDesktopOtherUser ? '' : 'lg:inline-flex lg:items-center lg:gap-2 lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm'}`}>
-                        <h1 className={`text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all ${isDesktopOtherUser ? '!text-black' : 'text-black'} lg:!text-white lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)] crisp-hero-text`}>@{user?.username}</h1>
+                      <div className="flex items-center gap-2.5 shrink-0 w-fit max-w-full">
+                        <div className={`${isDesktopOtherUser ? '' : 'lg:inline-flex lg:items-center lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm'}`}>
+                          <h1 className={`text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all ${isDesktopOtherUser ? '!text-black' : 'text-black'} lg:!text-white lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)] crisp-hero-text`}>
+                            @{user?.username}
+                          </h1>
+                        </div>
                         {isDesktopOtherUser && shareButton(true)}
                       </div>
                       {!isOwnProfile && connectionDegreeData?.degree && connectionDegreeData.degree > 0 && (

@@ -19,6 +19,22 @@ import { SUB_INTEREST_CATEGORIES } from "@shared/base-options";
 import SubInterestSelector from "@/components/SubInterestSelector";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 
+function useIsDarkModeClass() {
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
+
+  useEffect(() => {
+    const el = document.documentElement;
+    const update = () => setIsDark(el.classList.contains("dark"));
+    update();
+
+    const observer = new MutationObserver(update);
+    observer.observe(el, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  return isDark;
+}
+
 // City Plan categories for user-created plans
 const CITY_PICK_CATEGORIES = [
   { id: 'food', label: 'Food & Dining', emoji: '🍽️' },
@@ -84,6 +100,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [location, setLocation] = useLocation();
   const { user: authUser } = useAuth();
   const { toast } = useToast();
+  const isDarkModeClass = useIsDarkModeClass();
   
   // iOS app fix: Fall back to localStorage if auth context is empty
   const user = authUser || (() => {
@@ -2973,7 +2990,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       selectedSubInterests={userSubInterests}
                       onSubInterestsChange={handleSubInterestsChange}
                       showOptionalLabel={false}
-                      variant="dark"
+                      variant={isDarkModeClass ? "dark" : "default"}
                     />
                     {subInterestsLoading && (
                       <div className="flex items-center gap-2 mt-2 text-sm text-orange-400">

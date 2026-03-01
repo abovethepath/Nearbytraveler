@@ -63,7 +63,7 @@ function MessagesWidget({ userId: propUserId }: MessagesWidgetProps) {
           <Button 
             variant="outline" 
             size="sm" 
-            className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 border-0 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold rounded-full px-4"
+            className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-600 dark:to-orange-500 dark:hover:from-blue-700 dark:hover:to-orange-600 border-0 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold rounded-full px-4"
             style={{ color: 'black' }}
             onClick={(e) => {
               e.stopPropagation();
