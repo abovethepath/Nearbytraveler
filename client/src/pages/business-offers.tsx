@@ -23,6 +23,8 @@ interface UserProfile {
   hometownCity?: string;
   hometownState?: string;
   hometownCountry?: string;
+  metropolitanArea?: string;
+  metropolitan_area?: string;
   travelStartDate?: string | null;
   travelEndDate?: string | null;
   travelDestination?: string | null;
@@ -117,10 +119,16 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
   // BUSINESS-AWARE LOCATION LOGIC: Business users should see business location deals, not travel destination
   const getNearbyCity = () => {
     if (!userProfile) return null; // Wait for profile to load
+
+    // Prefer metro area for broader offer coverage (intended behavior)
+    const metroArea =
+      userProfile.metropolitanArea ||
+      (userProfile as any).metropolitan_area ||
+      null;
     
     // BUSINESS USER FIX: If this is a business user, always use business location
     if (userProfile.userType === 'business') {
-      return userProfile.businessCity || userProfile.hometownCity || null;
+      return userProfile.businessCity || metroArea || userProfile.hometownCity || null;
     }
     
     // For regular users: Are they traveling with active dates? Show travel destination deals
@@ -134,11 +142,16 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
       return currentLocation;
     }
     
-    // Otherwise they're home - show hometown deals
-    return userProfile.hometownCity || null;
+    // Otherwise they're home - show metro-area deals (fallback to hometown)
+    return metroArea || userProfile.hometownCity || null;
   };
 
   const nearbyCity = getNearbyCity();
+  const metroAreaLabel =
+    userProfile?.metropolitanArea ||
+    (userProfile as any)?.metropolitan_area ||
+    '';
+  const hometownCityLabel = userProfile?.hometownCity || '';
 
   const { data: offers = [], isLoading } = useQuery({
     queryKey: ['/api/business-deals', filters, nearbyCity, businessId, dealId],
@@ -305,7 +318,13 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
                 const travelEnd = userProfile?.travelEndDate ? new Date(userProfile.travelEndDate) : null;
                 const isActivelyTraveling = travelStart && travelEnd && now >= travelStart && now <= travelEnd;
                 
-                return `Showing offers in ${nearbyCity} ${isActivelyTraveling ? '(where you\'re visiting)' : '(your home area)'}`;
+                if (isActivelyTraveling) {
+                  return `Showing offers in ${nearbyCity} (where you're visiting)`;
+                }
+                if (metroAreaLabel && hometownCityLabel) {
+                  return `Showing offers in ${metroAreaLabel} (home: ${hometownCityLabel})`;
+                }
+                return `Showing offers in ${nearbyCity} (your home area)`;
               })()
             ) : filters.city ? `Showing offers in ${filters.city}` : 'Discover local business offers and deals'}
           </p>
@@ -367,7 +386,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
                     country: location.country
                   }))}
                   placeholder={{
-                    country: nearbyCity ? `Currently showing: ${nearbyCity}` : "Country",
+                    country: nearbyCity ? `Currently showing: ${metroAreaLabel || nearbyCity}${hometownCityLabel ? ` (home: ${hometownCityLabel})` : ''}` : "Country",
                     state: "State",
                     city: "City"
                   }}

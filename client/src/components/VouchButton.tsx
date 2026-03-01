@@ -83,7 +83,7 @@ export function VouchButton({ currentUserId, targetUserId, targetUsername, hideW
     return (
       <Button
         disabled
-        className="bg-purple-400 text-white border-0 px-6 py-2 rounded-lg shadow-md opacity-60 cursor-not-allowed"
+        className="bg-blue-500 dark:bg-purple-400 text-white border-0 px-6 py-2 rounded-lg shadow-md opacity-60 cursor-not-allowed"
         data-testid="button-vouch-loading"
       >
         <Shield className="w-4 h-4 mr-2" />
@@ -110,7 +110,7 @@ export function VouchButton({ currentUserId, targetUserId, targetUsername, hideW
       <>
         <Button
           onClick={() => setShowVouchDialog(true)}
-          className="bg-purple-600 hover:bg-purple-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
+          className="bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
           data-testid="button-vouch"
         >
           <ThumbsUp className="w-4 h-4 mr-2" />
@@ -142,7 +142,7 @@ export function VouchButton({ currentUserId, targetUserId, targetUsername, hideW
                 <Button
                   onClick={() => vouchMutation.mutate()}
                   disabled={vouchMutation.isPending}
-                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700 text-white"
                   data-testid="button-confirm-vouch"
                 >
                   <ThumbsUp className="w-4 h-4 mr-2" />

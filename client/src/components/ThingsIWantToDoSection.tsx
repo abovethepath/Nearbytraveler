@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useEffect, useState, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { getMetroCities } from "@shared/metro-areas";
 
 interface ThingsIWantToDoSectionProps {
@@ -55,6 +55,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+  const [, setLocation] = useLocation();
   const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; cityName: string } | null>(null);
 
   // Fetch user's travel plans to get trip destinations
@@ -430,11 +431,6 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     );
   }
 
-  // If viewing another user's profile and they have no activities/events/trips, hide the entire widget
-  if (!isOwnProfile && cities.length === 0) {
-    return null;
-  }
-
   // Render a single city row: city name (no label) | activity pills | + Add Plans
   const renderCityRow = (cityKey: string, displayName: string, isDestination: boolean) => {
     const cityData = (cityKey && citiesByName[cityKey]) || { activities: [], events: [], travelPlan: null };
@@ -456,16 +452,16 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           {/* Sub-Interest Pills - for travel destinations */}
           {cityData.travelPlan && citySubInterests.map((subInterest, idx) => (
             <div key={`sub-${idx}-${subInterest}`} className="relative group">
-              <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-orange-500 to-yellow-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
-                <span style={{ color: 'white' }}>✨ {subInterest}</span>
+              <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gray-100 border border-gray-200 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm dark:bg-gradient-to-r dark:from-orange-500 dark:to-yellow-500 dark:border-0">
+                <span className="text-gray-700 dark:text-white">✨ {subInterest}</span>
               </div>
             </div>
           ))}
           {/* Activity Pills */}
           {cityData.activities.map((activity) => (
             <div key={`act-${activity.id}`} className="relative group">
-              <div className="inline-flex items-center justify-center rounded-full pl-4 pr-7 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-600 to-blue-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
-                <span style={{ color: 'black' }}>{activity.activityName}</span>
+              <div className="inline-flex items-center justify-center rounded-full pl-4 pr-7 py-1.5 text-xs font-medium bg-gray-100 border border-gray-200 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm dark:bg-gradient-to-r dark:from-blue-600 dark:to-blue-500 dark:border-0">
+                <span className="text-gray-700 dark:text-black">{activity.activityName}</span>
               </div>
               {isOwnProfile && (
                 <button
@@ -487,8 +483,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
             return (
               <div key={`evt-${event.id}`} className={`relative group ${isEventPast ? 'opacity-60' : ''}`}>
                 <Link href={eventUrl}>
-                  <div className={`inline-flex items-center justify-center rounded-full pl-4 pr-7 py-1.5 text-xs font-medium border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm cursor-pointer transition-all hover:scale-105 ${isEventPast ? 'bg-gradient-to-r from-gray-500 to-gray-400' : 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600'}`}>
-                    <span style={{ color: 'black' }}>{isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}</span>
+                  <div className={`inline-flex items-center justify-center rounded-full pl-4 pr-7 py-1.5 text-xs font-medium h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm cursor-pointer transition-all hover:scale-105 bg-gray-100 border border-gray-200 dark:border-0 ${isEventPast ? 'dark:bg-gradient-to-r dark:from-gray-500 dark:to-gray-400' : 'dark:bg-gradient-to-r dark:from-blue-600 dark:to-cyan-500 dark:hover:from-blue-700 dark:hover:to-cyan-600'}`}>
+                    <span className="text-gray-700 dark:text-black">{isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}</span>
                   </div>
                 </Link>
                 {isOwnProfile && (
@@ -583,6 +579,19 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   const uniqueRows = rowsToShow.filter((r, i, arr) => arr.findIndex(x => x.key === r.key) === i);
   const showContent = isOwnProfile ? uniqueRows.length > 0 : cities.length > 0;
 
+  const otherUsername = (userProfile as any)?.username ? `@${(userProfile as any).username}` : "@username";
+  const headerCity = (uniqueRows[0]?.displayName || userProfile?.hometownCity || "").split(",")[0]?.trim() || "this city";
+  const hasAnyPlanItems = uniqueRows.some(({ key }) => {
+    const cityData = (key && citiesByName[key]) || { activities: [], events: [], travelPlan: null };
+    const citySubInterests = getSubInterestsForCity(key);
+    return (cityData.activities?.length || 0) > 0 || (cityData.events?.length || 0) > 0 || (citySubInterests?.length || 0) > 0;
+  });
+  const shouldShowAskPrompt = !isOwnProfile && !hasAnyPlanItems;
+  const prefilledMessage = `Hey! I noticed you haven't filled out your plans for ${headerCity} yet — what are you hoping to do there?`;
+  const openPrefilledDm = () => {
+    setLocation(`/messages?userId=${encodeURIComponent(String(userId))}&prefill=${encodeURIComponent(prefilledMessage)}`);
+  };
+
   return (
     <div 
       data-testid="things-i-want-to-do-section"
@@ -594,22 +603,50 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           <div className="space-y-0">
             {uniqueRows.map(({ key, displayName, isDestination }) => renderCityRow(key, displayName, isDestination))}
           </div>
+          {shouldShowAskPrompt && (
+            <div className="pt-3 mt-3 border-t border-gray-200 dark:border-gray-700">
+              <button
+                type="button"
+                onClick={openPrefilledDm}
+                className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 underline underline-offset-2"
+                data-testid="button-ask-plans-prefill-dm"
+              >
+                Ask {otherUsername} what they&apos;re planning to do here →
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
           <h2 className={`font-semibold text-gray-900 dark:text-white mb-4 ${isMobile ? 'text-base' : 'text-lg'}`}>
-            Things I Want to Do in:
+            Things I Want to Do in{isOwnProfile ? ":" : ` ${headerCity}:`}
           </h2>
-          <Link href="/match-in-city">
-            <div className="text-center py-12 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors">
-              <p className={`text-orange-600 dark:text-orange-500 font-semibold mb-3 ${isMobile ? 'text-base' : 'text-xl'}`}>
-                No activities or events selected yet.
+          {isOwnProfile ? (
+            <Link href="/match-in-city">
+              <div className="text-center py-12 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors">
+                <p className={`text-orange-600 dark:text-orange-500 font-semibold mb-3 ${isMobile ? 'text-base' : 'text-xl'}`}>
+                  No activities or events selected yet.
+                </p>
+                <p className={`text-orange-500 dark:text-orange-400 underline hover:text-orange-600 dark:hover:text-orange-300 ${isMobile ? 'text-sm' : 'text-lg'}`}>
+                  Go to City Plans to select activities and events!
+                </p>
+              </div>
+            </Link>
+          ) : (
+            <div className="py-8">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                No plans added yet.
               </p>
-              <p className={`text-orange-500 dark:text-orange-400 underline hover:text-orange-600 dark:hover:text-orange-300 ${isMobile ? 'text-sm' : 'text-lg'}`}>
-                Go to City Plans to select activities and events!
-              </p>
+              <button
+                type="button"
+                onClick={openPrefilledDm}
+                className="mt-2 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 underline underline-offset-2"
+                data-testid="button-ask-plans-prefill-dm-empty"
+              >
+                Ask {otherUsername} what they&apos;re planning to do here →
+              </button>
             </div>
-          </Link>
+          )}
         </div>
       )}
       <AlertDialog open={!!confirmDialog?.open} onOpenChange={(open) => !open && setConfirmDialog(null)}>

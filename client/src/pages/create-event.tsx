@@ -1913,7 +1913,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
               <Button
                 type="button"
                 disabled={isSubmitting || createEventMutation.isPending}
-                className="w-full bg-gradient-to-r from-blue-500 to-gray-600 hover:from-blue-600 hover:to-gray-700 active:scale-95 font-semibold py-4 px-6 min-h-[52px] touch-manipulation text-lg"
+                className="cta-gradient w-full bg-gradient-to-r from-blue-500 to-gray-600 hover:from-blue-600 hover:to-gray-700 active:scale-95 font-semibold py-4 px-6 min-h-[52px] touch-manipulation text-lg"
                 style={{
                   color: 'black',
                   WebkitTapHighlightColor: 'rgba(59, 130, 246, 0.1)',

@@ -256,7 +256,7 @@ export default function ProfilePageResponsive() {
                     <h3 className="font-medium text-sm mb-1.5 text-gray-900 dark:text-gray-100">{city}</h3>
                     <div className="flex flex-wrap gap-1.5">
                       {activities.slice(0, 8).map((activity, index) => (
-                        <span key={index} className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 px-2.5 py-1 rounded-full">
+                        <span key={index} className="text-xs bg-gray-100 text-gray-700 border border-gray-200 dark:bg-orange-900 dark:text-orange-200 dark:border-transparent px-2.5 py-1 rounded-full">
                           {activity}
                         </span>
                       ))}
@@ -287,7 +287,7 @@ export default function ProfilePageResponsive() {
                   <h3 className="font-medium text-sm mb-2 text-gray-900 dark:text-gray-100">Interested Events:</h3>
                   <div className="flex flex-wrap gap-2">
                     {user.events.slice(0, 4).map((event, index) => (
-                      <span key={index} className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                      <span key={index} className="text-xs bg-gray-100 text-gray-700 border border-gray-200 dark:bg-blue-900 dark:text-blue-200 dark:border-transparent px-2 py-1 rounded-full">
                         {event}
                       </span>
                     ))}

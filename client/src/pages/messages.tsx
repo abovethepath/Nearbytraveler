@@ -77,6 +77,7 @@ export default function Messages() {
   const { toast } = useToast();
   const [selectedConversation, setSelectedConversation] = useState<number | null>(getInitialTargetUserId);
   const [newMessage, setNewMessage] = useState('');
+  const prefillAppliedRef = useRef(false);
   const [connectionSearch, setConnectionSearch] = useState('');
   const [instantMessages, setInstantMessages] = useState<any[]>([]);
   const [typingUsers, setTypingUsers] = useState<{ [userId: number]: boolean }>({});
@@ -137,6 +138,23 @@ export default function Messages() {
   
   // Use path format first, fall back to query parameter
   const targetUserId = pathUserId || queryUserId;
+
+  // Prefill draft message from URL (?prefill=...)
+  useEffect(() => {
+    if (prefillAppliedRef.current) return;
+    const params = new URLSearchParams(window.location.search);
+    const prefill = params.get('prefill');
+    if (!prefill) return;
+    if (prefill.trim().length > 0) {
+      setNewMessage(prefill);
+      prefillAppliedRef.current = true;
+    }
+    // Remove prefill from URL so refresh doesn't re-apply
+    params.delete('prefill');
+    const qs = params.toString();
+    const nextUrl = `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash || ''}`;
+    window.history.replaceState({}, '', nextUrl);
+  }, [selectedConversation, targetUserId]);
 
   const { data: connections = [], isLoading: connectionsLoading } = useQuery({
     queryKey: ['/api/connections', userId],

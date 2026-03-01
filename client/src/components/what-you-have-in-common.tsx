@@ -73,6 +73,9 @@ interface TravelPlan {
 }
 
 export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveInCommonProps) {
+  const [showAllSharedInterests, setShowAllSharedInterests] = React.useState(false);
+  const [showAllOtherCommon, setShowAllOtherCommon] = React.useState(false);
+
   // Fetch both users' data to calculate comprehensive commonalities
   const { data: currentUser } = useQuery<User>({
     queryKey: [`/api/users/${currentUserId}`]
@@ -625,7 +628,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                 Shared Interests ({commonalities.sharedInterests.length})
               </h5>
               <div className="flex flex-wrap gap-1.5">
-                {commonalities.sharedInterests.map((interest, index) => (
+                {(showAllSharedInterests ? commonalities.sharedInterests : commonalities.sharedInterests.slice(0, 5)).map((interest, index) => (
                   <div
                     key={`shared-interest-${interest}-${index}`}
                     className="inline-flex items-center justify-center h-8 sm:h-9 lg:h-6 rounded-full px-3 sm:px-4 lg:px-2.5 text-xs sm:text-sm lg:text-xs font-medium leading-none whitespace-nowrap bg-transparent text-blue-700 border border-blue-400 dark:bg-blue-900/50 dark:text-gray-100 dark:border-blue-700"
@@ -634,6 +637,15 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                   </div>
                 ))}
               </div>
+              {commonalities.sharedInterests.length > 5 && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllSharedInterests((v) => !v)}
+                  className="mt-2 text-xs font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white underline underline-offset-2"
+                >
+                  {showAllSharedInterests ? "Show less" : "Show more"}
+                </button>
+              )}
             </div>
           )}
 
@@ -695,12 +707,21 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                   <div>
                     <h6 className="text-sm font-medium text-gray-800 dark:text-slate-200 mb-2">Other Things In Common</h6>
                     <div className="flex flex-wrap gap-2 lg:gap-1.5">
-                      {commonalities.otherCommonalities.map((commonality, index) => (
+                      {(showAllOtherCommon ? commonalities.otherCommonalities : commonalities.otherCommonalities.slice(0, 3)).map((commonality, index) => (
                         <Badge key={`other-commonality-${commonality}-${index}`} className="bg-transparent text-gray-700 border-gray-300 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600 font-medium">
                           🎖️ {commonality}
                         </Badge>
                       ))}
                     </div>
+                    {commonalities.otherCommonalities.length > 3 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllOtherCommon((v) => !v)}
+                        className="mt-2 text-xs font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white underline underline-offset-2"
+                      >
+                        {showAllOtherCommon ? "Show less" : "Show more"}
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

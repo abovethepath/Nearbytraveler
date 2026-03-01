@@ -3,7 +3,6 @@ import { useLocation } from "wouter";
 import { MapPin, Plane } from "lucide-react";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
-import { formatHometownForDisplay } from "@/lib/locationDisplay";
 
 export interface User {
   id: number;
@@ -140,11 +139,17 @@ export default function UserCard({
   };
 
   const travelCityFinal = getTravelCity();
-  const displayCity = formatHometownForDisplay(user);
+  const hometownLine = (() => {
+    const city = (user.hometownCity || "").trim();
+    const state = (user.hometownState || "").trim();
+    const country = (user.hometownCountry || "").trim();
+    if (!city) return "Unknown";
+    if (state) return `${city}, ${state}`;
+    if (country) return `${city}, ${country}`;
+    return city;
+  })();
 
-  const displayName = user.userType === 'business' && user.businessName 
-    ? user.businessName 
-    : `@${user.username}`;
+  const handle = `@${user.username}`;
 
   // Fix percentage - if it's a decimal like 0.234, multiply by 100; if already whole, use as is
   const getMatchPercent = () => {
@@ -221,8 +226,8 @@ export default function UserCard({
         {/* Available Now badge - green, visible to everyone (web and native app) */}
         {showAvailableNow && (
           <div className="absolute bottom-1.5 left-1.5 right-1.5">
-            <span className="status-badge animate-pulsate-green flex items-center justify-center gap-1 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg w-full">
-              <span className="status-badge w-1.5 h-1.5 bg-white rounded-full"></span>
+            <span className="status-badge animate-pulsate-green flex items-center justify-center gap-1 bg-green-500 text-white text-[10px] lg:text-[13px] font-bold px-2 lg:px-3 py-1 lg:py-1.5 rounded-full shadow-lg w-full">
+              <span className="status-badge w-1.5 h-1.5 lg:w-2 lg:h-2 bg-white rounded-full"></span>
               Available Now
             </span>
           </div>
@@ -235,25 +240,22 @@ export default function UserCard({
         <div className={compact ? '' : 'lg:hidden'}>
           <div
             className="truncate"
-            style={{ color: '#7eb8f7', fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500, marginBottom: 6 }}
+            style={{ color: '#3b82f6', fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500 }}
           >
-            {displayName}
+            {handle}
           </div>
-          <div className="truncate mt-0.5 flex items-center gap-1" style={{ color: '#5a5e75', fontSize: 11.5 }}>
-            <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#5a5e75' }} />
-            <span>
-              {user.userType === 'business' && user.streetAddress
-                ? user.streetAddress
-                : displayCity}
-            </span>
+          <div className="truncate mt-1 flex items-center gap-1" style={{ color: '#9ca3af', fontSize: 11.5 }}>
+            <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#9ca3af' }} />
+            <span>{hometownLine}</span>
           </div>
           <div
             title={user.bio || undefined}
             style={{
-              color: '#8b8fa8',
+              color: '#9ca3af',
               fontSize: 12.5,
               lineHeight: 1.5,
               minHeight: '3.75rem',
+              marginTop: 6,
               display: '-webkit-box',
               WebkitLineClamp: 3,
               WebkitBoxOrient: 'vertical' as const,
@@ -265,7 +267,7 @@ export default function UserCard({
           <div className="truncate mt-1" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
             {thingsInCommon} things in common
           </div>
-          <div className="truncate mt-0.5" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
+          <div className="truncate mt-0.5" style={{ color: '#9ca3af', fontSize: 12, fontWeight: 500 }}>
             {contactsInCommon} contacts in common
           </div>
         </div>
@@ -274,25 +276,22 @@ export default function UserCard({
         <div className={compact ? 'hidden' : 'hidden lg:flex lg:flex-col lg:min-h-[7.5rem]'} style={{ minHeight: '7.5rem' }}>
           <div
             className="truncate"
-            style={{ color: '#7eb8f7', fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500, marginBottom: 6 }}
+            style={{ color: '#3b82f6', fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500 }}
           >
-            {displayName}
+            {handle}
           </div>
-          <div className="truncate mt-0.5 flex items-center gap-1" style={{ color: '#5a5e75', fontSize: 11.5 }}>
-            <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#5a5e75' }} />
-            <span>
-              {user.userType === 'business' && user.streetAddress
-                ? user.streetAddress
-                : displayCity}
-            </span>
+          <div className="truncate mt-1 flex items-center gap-1" style={{ color: '#9ca3af', fontSize: 11.5 }}>
+            <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#9ca3af' }} />
+            <span>{hometownLine}</span>
           </div>
           <div
             title={user.bio || undefined}
             style={{
-              color: '#8b8fa8',
+              color: '#9ca3af',
               fontSize: 12.5,
               lineHeight: 1.5,
               minHeight: '3.75rem',
+              marginTop: 6,
               display: '-webkit-box',
               WebkitLineClamp: 3,
               WebkitBoxOrient: 'vertical' as const,
@@ -304,7 +303,7 @@ export default function UserCard({
           <div className="truncate mt-1" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
             {thingsInCommon} things in common
           </div>
-          <div className="truncate mt-0.5" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
+          <div className="truncate mt-0.5" style={{ color: '#9ca3af', fontSize: 12, fontWeight: 500 }}>
             {contactsInCommon} contacts in common
           </div>
         </div>
