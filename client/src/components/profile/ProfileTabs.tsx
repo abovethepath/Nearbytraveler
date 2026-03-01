@@ -44,6 +44,8 @@ export function ProfileTabs(props: ProfilePageProps) {
   const showTabsCard = isNativeIOSApp() || user?.userType === 'business';
   const isDesktop = useIsDesktop();
   const showWhatYouHaveInCommon = !isOwnProfile && !!currentUser?.id && !!user?.id && user?.userType !== 'business';
+  /* Back-compat: avoid rendering the same card twice; only show this fallback when About panel isn't mounted yet. */
+  const showWhatYouHaveInCommonInTabs = showWhatYouHaveInCommon && !(loadedTabs as any)?.has?.('about');
 
   return (
     <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900">

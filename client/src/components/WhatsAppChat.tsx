@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -55,12 +55,13 @@ interface WhatsAppChatProps {
   currentUserId?: number;
   onBack?: () => void;
   eventId?: number; // For event chats, this is the actual event ID (chatId is the chatroom ID)
+  meetupId?: number; // For meetup chats, this is the actual meetup ID (chatId may be a chatroom ID)
   otherUserUsername?: string;
   otherUserProfileImage?: string | null;
 }
 
 export default function WhatsAppChat(props: WhatsAppChatProps) {
-  const { chatId, chatType, title, subtitle, currentUserId, onBack, eventId } = props;
+  const { chatId, chatType, title, subtitle, currentUserId, onBack, eventId, meetupId } = props;
   const [, navigate] = useLocation();
   const { toast } = useToast();
   
@@ -315,15 +316,57 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
   };
 
-  // Fetch chatroom members (for city chatrooms, meetup chatrooms, and event chatrooms)
-  const membersEndpoint = chatType === 'event' 
-    ? `/api/event-chatrooms/${chatId}/members`
-    : `/api/chatrooms/${chatId}/members`;
-  
-  const { data: members = [], error: membersError } = useQuery<ChatMember[]>({
-    queryKey: [membersEndpoint],
-    enabled: (chatType === 'chatroom' || chatType === 'event') && Boolean(chatId)
+  // Fetch members using the same source as the header participant count.
+  // - Event chats: use event participants (not event-chatroom membership).
+  // - Quick meetup chats: use quick meet participants (meetupId required).
+  // - City chatrooms: use chatroom members.
+  const membersEndpoint =
+    chatType === 'event'
+      ? (eventId ? `/api/events/${eventId}/participants` : `/api/event-chatrooms/${chatId}/members`)
+      : chatType === 'meetup'
+        ? (typeof meetupId === 'number' && meetupId > 0 ? `/api/quick-meets/${meetupId}/participants` : null)
+        : chatType === 'chatroom'
+          ? `/api/chatrooms/${chatId}/members`
+          : null;
+
+  const { data: membersRaw = [], error: membersError } = useQuery<any[]>({
+    queryKey: membersEndpoint ? [membersEndpoint] : ['members-disabled'],
+    enabled: Boolean(membersEndpoint)
   });
+
+  const members: ChatMember[] = useMemo(() => {
+    const raw = Array.isArray(membersRaw) ? membersRaw : [];
+    const out: ChatMember[] = [];
+
+    for (const item of raw) {
+      // Already in ChatMember shape (chatrooms)
+      if (item && typeof item === 'object' && 'id' in item && 'username' in item && 'isAdmin' in item) {
+        out.push(item as ChatMember);
+        continue;
+      }
+
+      // Event/meetup participants return nested `user`
+      const user = item?.user;
+      const id = Number(user?.id ?? item?.userId ?? item?.id);
+      const username = String(user?.username ?? item?.username ?? '');
+      if (!Number.isFinite(id) || id <= 0 || !username) continue;
+
+      out.push({
+        id,
+        username,
+        name: String(user?.name ?? item?.name ?? ''),
+        profileImage: (user?.profileImage ?? item?.profileImage) || undefined,
+        userType: String(user?.userType ?? item?.userType ?? ''),
+        hometownCity: String(user?.hometownCity ?? item?.hometownCity ?? ''),
+        // Do not assume admin/moderator privileges from participant lists
+        isAdmin: Boolean(item?.isAdmin) || false,
+        joinedAt: String(item?.joinedAt ?? item?.createdAt ?? new Date().toISOString()),
+        isMuted: Boolean(item?.isMuted) || undefined,
+      });
+    }
+
+    return out;
+  }, [membersRaw]);
   
   // Check if current user is admin (use == for type coercion since currentUserId may be string)
   const currentMember = members.find(m => m.id == currentUserId);

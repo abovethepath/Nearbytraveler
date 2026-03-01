@@ -204,6 +204,16 @@ export default function UserCard({
           </div>
         )}
         
+        {/* Travel destination tag - top-left on photo/avatar area */}
+        {travelCityFinal && user.userType !== 'business' && (
+          <div className="absolute top-1.5 left-1.5 z-10 flex items-center gap-1">
+            <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-md whitespace-nowrap flex items-center gap-1">
+              <Plane className="w-3 h-3 flex-shrink-0" />
+              {travelCityFinal}
+            </span>
+          </div>
+        )}
+        
         {/* Business badge */}
         {user.userType === 'business' && (
           <div className="absolute top-1.5 right-1.5">
@@ -261,11 +271,9 @@ export default function UserCard({
             {contactsInCommon} contacts in common
           </div>
           {travelCityFinal && user.userType !== 'business' && (
-            <div className="mt-2 flex items-center gap-1.5">
-              <span className="bg-blue-600 text-white text-[11px] font-bold px-2 py-1 rounded-md shadow-md whitespace-nowrap inline-flex items-center gap-1">
-                <Plane className="w-3 h-3 flex-shrink-0" />
-                {travelCityFinal}
-              </span>
+            <div className="sr-only">
+              <Plane className="w-3 h-3 flex-shrink-0" />
+              {travelCityFinal}
             </div>
           )}
         </div>
@@ -305,11 +313,9 @@ export default function UserCard({
             {contactsInCommon} contacts in common
           </div>
           {travelCityFinal && user.userType !== 'business' && (
-            <div className="mt-2 flex items-center gap-1.5">
-              <span className="bg-blue-600 text-white text-[11px] font-bold px-2 py-1 rounded-md shadow-md whitespace-nowrap inline-flex items-center gap-1">
-                <Plane className="w-3 h-3 flex-shrink-0" />
-                {travelCityFinal}
-              </span>
+            <div className="sr-only">
+              <Plane className="w-3 h-3 flex-shrink-0" />
+              {travelCityFinal}
             </div>
           )}
         </div>

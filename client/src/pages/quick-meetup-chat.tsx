@@ -130,6 +130,7 @@ export default function QuickMeetupChat() {
     <WhatsAppChat
       chatId={chatroom.id}
       chatType="meetup"
+      meetupId={meetupId}
       title={meetup.title}
       subtitle={`${meetup.participantCount || 1} participants`}
       currentUserId={user.id}

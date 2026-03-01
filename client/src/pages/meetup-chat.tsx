@@ -62,6 +62,7 @@ export default function MeetupChat() {
     <WhatsAppChat
       chatId={meetupId}
       chatType="meetup"
+      meetupId={meetupId}
       title={meetup.title}
       subtitle={`${meetup.participantCount} participants`}
       currentUserId={user.id}
