@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { X, Trash2, Plus } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { MapPin, X, Trash2, Plus } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -78,6 +79,53 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes
   });
+
+  const [localLocationSharingEnabled, setLocalLocationSharingEnabled] = useState<boolean>(false);
+  useEffect(() => {
+    if (!isOwnProfile) return;
+    setLocalLocationSharingEnabled(!!(userProfile as any)?.locationSharingEnabled);
+  }, [isOwnProfile, (userProfile as any)?.locationSharingEnabled]);
+
+  const updateLocationSharingMutation = useMutation({
+    mutationFn: async (enabled: boolean) => {
+      return apiRequest("PUT", `/api/users/${userId}`, { locationSharingEnabled: enabled });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+    },
+    onError: () => {
+      setLocalLocationSharingEnabled(!!(userProfile as any)?.locationSharingEnabled);
+      toast?.({
+        title: "Error",
+        description: "Failed to update location visibility",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleLocationVisibilityToggle = (enabled: boolean) => {
+    if (!isOwnProfile) return;
+    setLocalLocationSharingEnabled(enabled);
+    updateLocationSharingMutation.mutate(enabled);
+
+    if (enabled && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          apiRequest("POST", `/api/users/${userId}/location`, {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            locationSharingEnabled: true,
+          }).catch(() => {
+            // Preference already saved; best-effort coordinate update only
+          });
+        },
+        () => {
+          // Preference already saved; best-effort coordinate update only
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
+      );
+    }
+  };
   
   // Get user's sub-interests (specific interests like Pickleball, Yoga, etc.)
   // Sub-interests are stored as "CityName: SubInterest" format - extract by city
@@ -453,7 +501,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           {cityData.travelPlan && citySubInterests.map((subInterest, idx) => (
             <div key={`sub-${idx}-${subInterest}`} className="relative group">
               <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gray-100 border border-gray-200 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm dark:bg-gradient-to-r dark:from-orange-500 dark:to-yellow-500 dark:border-0">
-                <span className="text-gray-700 dark:text-white">✨ {subInterest}</span>
+                <span className="text-gray-900 dark:text-black">✨ {subInterest}</span>
               </div>
             </div>
           ))}
@@ -461,15 +509,15 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           {cityData.activities.map((activity) => (
             <div key={`act-${activity.id}`} className="relative group">
               <div className="inline-flex items-center justify-center rounded-full pl-4 pr-7 py-1.5 text-xs font-medium bg-gray-100 border border-gray-200 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm dark:bg-gradient-to-r dark:from-blue-600 dark:to-blue-500 dark:border-0">
-                <span className="text-gray-700 dark:text-black">{activity.activityName}</span>
+                <span className="text-gray-900 dark:text-black">{activity.activityName}</span>
               </div>
               {isOwnProfile && (
                 <button
                   onClick={() => deleteActivity.mutate(activity.id)}
-                  className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 sm:opacity-0 sm:group-hover:opacity-100 opacity-80"
+                  className="absolute top-[2px] right-[2px] bg-white/80 hover:bg-white text-gray-700 rounded-full flex items-center justify-center transition-opacity w-4 h-4 sm:opacity-0 sm:group-hover:opacity-100 opacity-90 shadow-sm"
                   title="Remove activity"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-3 h-3 max-w-4 max-h-4" />
                 </button>
               )}
             </div>
@@ -484,7 +532,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
               <div key={`evt-${event.id}`} className={`relative group ${isEventPast ? 'opacity-60' : ''}`}>
                 <Link href={eventUrl}>
                   <div className={`inline-flex items-center justify-center rounded-full pl-4 pr-7 py-1.5 text-xs font-medium h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm cursor-pointer transition-all hover:scale-105 bg-gray-100 border border-gray-200 dark:border-0 ${isEventPast ? 'dark:bg-gradient-to-r dark:from-gray-500 dark:to-gray-400' : 'dark:bg-gradient-to-r dark:from-blue-600 dark:to-cyan-500 dark:hover:from-blue-700 dark:hover:to-cyan-600'}`}>
-                    <span className="text-gray-700 dark:text-black">{isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}</span>
+                    <span className="text-gray-900 dark:text-black">{isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}</span>
                   </div>
                 </Link>
                 {isOwnProfile && (
@@ -494,10 +542,10 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                       e.stopPropagation();
                       deleteEvent.mutate(event);
                     }}
-                    className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 sm:opacity-0 sm:group-hover:opacity-100 opacity-80"
+                    className="absolute top-[2px] right-[2px] bg-white/80 hover:bg-white text-gray-700 rounded-full flex items-center justify-center transition-opacity w-4 h-4 sm:opacity-0 sm:group-hover:opacity-100 opacity-90 shadow-sm"
                     title="Remove event"
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-3 h-3 max-w-4 max-h-4" />
                   </button>
                 )}
               </div>
@@ -600,6 +648,22 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       {showContent ? (
         <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Things I Want to Do in:</h2>
+          {isOwnProfile && (
+            <div className="mb-4 flex items-center justify-between gap-3" data-testid="location-visibility-toggle-row">
+              <div className="flex items-center gap-2 min-w-0">
+                <MapPin className={localLocationSharingEnabled ? "w-4 h-4 text-green-600 dark:text-green-400" : "w-4 h-4 text-gray-500 dark:text-gray-400"} />
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
+                  Visible on city map
+                </span>
+              </div>
+              <Switch
+                checked={!!localLocationSharingEnabled}
+                onCheckedChange={handleLocationVisibilityToggle}
+                disabled={updateLocationSharingMutation.isPending}
+                className="scale-[0.7] origin-right"
+              />
+            </div>
+          )}
           <div className="space-y-0">
             {uniqueRows.map(({ key, displayName, isDestination }) => renderCityRow(key, displayName, isDestination))}
           </div>
@@ -621,6 +685,22 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           <h2 className={`font-semibold text-gray-900 dark:text-white mb-4 ${isMobile ? 'text-base' : 'text-lg'}`}>
             Things I Want to Do in{isOwnProfile ? ":" : ` ${headerCity}:`}
           </h2>
+          {isOwnProfile && (
+            <div className="mb-4 flex items-center justify-between gap-3" data-testid="location-visibility-toggle-row">
+              <div className="flex items-center gap-2 min-w-0">
+                <MapPin className={localLocationSharingEnabled ? "w-4 h-4 text-green-600 dark:text-green-400" : "w-4 h-4 text-gray-500 dark:text-gray-400"} />
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
+                  Visible on city map
+                </span>
+              </div>
+              <Switch
+                checked={!!localLocationSharingEnabled}
+                onCheckedChange={handleLocationVisibilityToggle}
+                disabled={updateLocationSharingMutation.isPending}
+                className="scale-[0.7] origin-right"
+              />
+            </div>
+          )}
           {isOwnProfile ? (
             <Link href="/match-in-city">
               <div className="text-center py-12 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors">

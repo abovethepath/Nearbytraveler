@@ -3968,30 +3968,32 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
           
           {/* Event Organizer Quick Stats */}
           {totalEvents > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">
-              <div className="text-center">
+            <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">
+              <div className="flex gap-4 overflow-x-auto pb-2 sm:pb-0 sm:grid sm:grid-cols-4 sm:gap-4 sm:overflow-visible">
+              <div className="text-center min-w-[110px] flex-shrink-0 sm:min-w-0">
                 <div className="text-lg sm:text-xl font-bold text-blue-600">
                   {totalEvents}
                 </div>
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Total Events</div>
               </div>
-              <div className="text-center">
+              <div className="text-center min-w-[110px] flex-shrink-0 sm:min-w-0">
                 <div className="text-lg sm:text-xl font-bold text-green-600">
                   {totalRSVPs}
                 </div>
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Total RSVPs</div>
               </div>
-              <div className="text-center">
+              <div className="text-center min-w-[110px] flex-shrink-0 sm:min-w-0">
                 <div className="text-lg sm:text-xl font-bold text-orange-600">
                   {upcomingEvents}
                 </div>
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Upcoming</div>
               </div>
-              <div className="text-center">
+              <div className="text-center min-w-[110px] flex-shrink-0 sm:min-w-0">
                 <div className="text-lg sm:text-xl font-bold text-purple-600">
                   {avgRSVPs}
                 </div>
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Avg RSVPs</div>
+              </div>
               </div>
             </div>
           )}

@@ -49,7 +49,7 @@ export interface IStorage {
   getEventChatroom(eventId: number): Promise<any>;
   createEventChatroom(data: any): Promise<any>;
   getEventChatroomMessages(chatroomId: number): Promise<any[]>;
-  createEventChatroomMessage(chatroomId: number, senderId: number, content: string): Promise<any>;
+  createEventChatroomMessage(chatroomId: number, senderId: number, content: string, messageType?: string, mediaUrl?: string | null): Promise<any>;
   joinEventChatroom(chatroomId: number, userId: number): Promise<any>;
   
   // Connection methods
@@ -244,7 +244,7 @@ export interface IStorage {
   getQuickMeetupChatroom(meetupId: number): Promise<any | undefined>;
   createQuickMeetupChatroom(meetupId: number): Promise<any>;
   getQuickMeetupChatroomMessages(chatroomId: number): Promise<any[]>;
-  createQuickMeetupChatroomMessage(chatroomId: number, senderId: number, content: string): Promise<any>;
+  createQuickMeetupChatroomMessage(chatroomId: number, senderId: number, content: string, messageType?: string): Promise<any>;
   joinQuickMeetupChatroom(chatroomId: number, userId: number): Promise<any>;
   
   // Event Chatroom methods
@@ -4735,13 +4735,14 @@ export class DatabaseStorage implements IStorage {
     }
   }
   async updateChatroomMember(): Promise<any> { return undefined; }
-  async createChatroomMessage(chatroomId: number, senderId: number, content: string): Promise<any> {
+  async createChatroomMessage(chatroomId: number, senderId: number, content: string, messageType: string = 'text', mediaUrl?: string | null): Promise<any> {
     try {
       const [message] = await db.insert(chatroomMessages).values({
         chatroomId,
         senderId,
         content,
-        messageType: 'text'
+        messageType: messageType || 'text',
+        mediaUrl: mediaUrl || null,
       }).returning();
 
       return message;
@@ -9807,7 +9808,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createQuickMeetupChatroomMessage(chatroomId: number, senderId: number, content: string): Promise<any> {
+  async createQuickMeetupChatroomMessage(chatroomId: number, senderId: number, content: string, messageType: string = 'text'): Promise<any> {
     try {
       // Get sender info first
       const sender = await db.select().from(users).where(eq(users.id, senderId)).limit(1);
@@ -9820,7 +9821,7 @@ export class DatabaseStorage implements IStorage {
         userId: senderId,
         username: sender[0].username,
         message: content,
-        messageType: 'text'
+        messageType: messageType || 'text'
       }).returning();
 
       // Return message with sender info
@@ -10182,11 +10183,11 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createEventChatroomMessage(chatroomId: number, senderId: number, content: string): Promise<any> {
+  async createEventChatroomMessage(chatroomId: number, senderId: number, content: string, messageType: string = 'text', mediaUrl?: string | null): Promise<any> {
     try {
       // Since event chatrooms use the city chatroom infrastructure,
       // we can use the existing city chatroom message methods
-      return await this.createChatroomMessage(chatroomId, senderId, content);
+      return await this.createChatroomMessage(chatroomId, senderId, content, messageType, mediaUrl);
     } catch (error) {
       console.error('Error creating event chatroom message:', error);
       throw error;

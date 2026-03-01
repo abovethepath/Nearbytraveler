@@ -2,8 +2,9 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Switch } from "@/components/ui/switch";
-import { Camera, MapPin, MessageSquare, MessageCircle, Share2, Users, Building2, Calendar, Plane } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Camera, MessageSquare, MessageCircle, Share2, Users, Building2, Calendar, Plane, MoreVertical, Copy, Mail } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { ReportUserButton } from "@/components/report-user-button";
@@ -13,8 +14,6 @@ import { useIsDesktop } from "@/hooks/useDeviceType";
 import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
 import { VouchButton } from "@/components/VouchButton";
 import { ProfileTabBar } from "./ProfileTabBar";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import type { ProfilePageProps } from "./profile-complete-types";
 
 export function ProfileHeaderUser(props: ProfilePageProps) {
@@ -53,12 +52,25 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const mutedOrange = "#e8834a";
   const mutedOrangeHover = "#d4703a";
 
+  const [shareWithFriendsOpen, setShareWithFriendsOpen] = React.useState(false);
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://nearbytraveler.org";
+  const profileUrl = user?.username ? `${origin}/profile/${user.username}` : `${origin}/profile`;
+  const shareText = `Check out this profile on NearbyTraveler: @${user?.username || "nearbytraveler"}\n\n${profileUrl}`;
+
+  const copyProfileLink = async () => {
+    try {
+      await navigator.clipboard.writeText(profileUrl);
+      toast?.({ title: "Link copied", description: "Paste it anywhere." });
+    } catch {
+      toast?.({ title: "Failed to copy", description: "Please copy the link from the address bar.", variant: "destructive" });
+    }
+  };
+
   const shareButton = (inline = false) => (
     <button
       type="button"
       onClick={async () => {
-        const profileUrl = `https://nearbytraveler.org/profile/${user?.username}`;
-        const fullMessage = `Check out this profile on NearbyTraveler: @${user?.username} - ${profileUrl}`;
+        const fullMessage = shareText.replace(/\n\n/g, " - ");
         if (navigator.share) {
           try {
             await navigator.share({
@@ -82,89 +94,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   );
 
   const isDesktopOwnProfile = !isNativeIOSApp() && isOwnProfile;
-  const queryClient = useQueryClient();
-  const [localLocationSharingEnabled, setLocalLocationSharingEnabled] = React.useState<boolean>(
-    !!user?.locationSharingEnabled,
-  );
-
-  React.useEffect(() => {
-    if (!isOwnProfile) return;
-    setLocalLocationSharingEnabled(!!user?.locationSharingEnabled);
-  }, [isOwnProfile, user?.locationSharingEnabled]);
-
-  const updateLocationSharingMutation = useMutation({
-    mutationFn: async (enabled: boolean) => {
-      if (!user?.id) throw new Error("User not found");
-      return apiRequest("PUT", `/api/users/${user.id}`, { locationSharingEnabled: enabled });
-    },
-    onSuccess: async () => {
-      if (!user?.id) return;
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] }),
-        queryClient.invalidateQueries({ queryKey: ["/api/users", user.id] }),
-      ]);
-    },
-    onError: () => {
-      setLocalLocationSharingEnabled(!!user?.locationSharingEnabled);
-      toast?.({
-        title: "Error",
-        description: "Failed to update location visibility",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleLocationVisibilityToggle = (enabled: boolean) => {
-    if (!isOwnProfile || !user?.id) return;
-    setLocalLocationSharingEnabled(enabled);
-    updateLocationSharingMutation.mutate(enabled);
-
-    if (enabled && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          apiRequest("POST", `/api/users/${user.id}/location`, {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            locationSharingEnabled: true,
-          })
-            .then(() => {
-              queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
-              queryClient.invalidateQueries({ queryKey: ["/api/users", user.id] });
-            })
-            .catch(() => {
-              // Preference is already saved; best-effort update for coordinates
-            });
-        },
-        () => {
-          // Preference is already saved; best-effort update for coordinates
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
-      );
-    }
-  };
-
-  const locationVisibilityToggleRow = () => {
-    if (!isOwnProfile) return null;
-    const enabled = !!localLocationSharingEnabled;
-    const activeIconClass = enabled ? "text-green-600 dark:text-green-400" : "text-black/70 dark:text-gray-400";
-
-    return (
-      <div className="mt-1.5 flex items-center justify-between gap-2 w-full" data-testid="location-visibility-toggle-row">
-        <div className="flex items-center gap-1">
-          <MapPin className={`w-3 h-3 ${activeIconClass}`} />
-          <span className="text-[11px] font-medium leading-none !text-black dark:!text-gray-200 crisp-hero-text">
-            Visible on city map
-          </span>
-        </div>
-        <Switch
-          checked={enabled}
-          onCheckedChange={handleLocationVisibilityToggle}
-          disabled={updateLocationSharingMutation.isPending}
-          className="scale-[0.78] origin-right"
-        />
-      </div>
-    );
-  };
 
   return (
     <div
@@ -174,6 +103,31 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       <div
         className={`mx-auto relative z-10 max-w-7xl ${isDesktopOwnProfile ? 'pl-4 sm:pl-6 lg:pl-8' : ''}`}
       >
+        {/* iOS: keep username full-width; share lives in menu */}
+        {isOwnProfile && isNativeIOSApp() && (
+          <div className="absolute top-3 right-3 z-30">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center h-9 w-9 rounded-md bg-white/85 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 ring-1 ring-gray-300/60 dark:ring-gray-500/60 shadow-sm transition-colors"
+                  title="More"
+                  aria-label="More"
+                  data-testid="button-profile-more-menu-ios"
+                >
+                  <MoreVertical className="w-5 h-5 text-gray-800 dark:text-gray-100" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => setShareWithFriendsOpen(true)} data-testid="menu-item-share-profile-ios">
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share profile
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
+
         {isDesktopOwnProfile ? (
           /* Desktop own profile: balanced layout - larger avatar, readable city text, proportional @username, tabs at bottom */
           <div className="flex flex-col lg:relative">
@@ -223,7 +177,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   </span>
                 </div>
               )}
-              {locationVisibilityToggleRow()}
             </div>
 
             <div className="flex flex-row items-start gap-6 lg:gap-8">
@@ -264,7 +217,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   </span>
                 </div>
               )}
-              {locationVisibilityToggleRow()}
             </div>
             {/* RIGHT: @username + Share Profile, buttons - bio has its own dedicated section below hero */}
             <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0.5 lg:pl-[18rem]">
@@ -274,7 +226,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     @{user?.username}
                   </h1>
                 </div>
-                {isDesktopOwnProfile && shareButton(true)}
               </div>
               <div className="flex flex-wrap gap-2 mt-2">
                 <button
@@ -297,6 +248,27 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <Share2 className="w-3.5 h-3.5 mr-1.5 shrink-0" />
                   Invite Friends
                 </button>
+                {isOwnProfile && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        className="inline-flex items-center justify-center h-7 w-7 rounded-md bg-white/80 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 ring-1 ring-gray-300/60 dark:ring-gray-500/60 shadow-sm transition-colors"
+                        title="More"
+                        aria-label="More"
+                        data-testid="button-profile-more-menu"
+                      >
+                        <MoreVertical className="w-4 h-4 text-gray-700 dark:text-gray-200" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem onClick={() => setShareWithFriendsOpen(true)} data-testid="menu-item-share-profile">
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Share profile
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
             </div>
             </div>
@@ -418,7 +390,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   </span>
                 </>
               )}
-              {locationVisibilityToggleRow()}
               {(() => {
                 if (!hasValidTravelDestination) return null;
                 const now = new Date();
@@ -712,6 +683,53 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
         </div>
         )}
       </div>
+
+      {/* Share with Friends modal (own profile) */}
+      <Dialog open={shareWithFriendsOpen} onOpenChange={setShareWithFriendsOpen}>
+        <DialogContent className="sm:max-w-md bg-white dark:bg-gray-900">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Share2 className="w-5 h-5" />
+              Share with Friends
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-2">
+            <Button onClick={copyProfileLink} variant="secondary" className="w-full justify-start gap-2">
+              <Copy className="w-4 h-4" />
+              Copy link
+            </Button>
+            <Button
+              onClick={() => {
+                const subject = `Check out @${user?.username || "nearbytraveler"} on NearbyTraveler`;
+                const body = shareText;
+                window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+              }}
+              variant="secondary"
+              className="w-full justify-start gap-2"
+            >
+              <Mail className="w-4 h-4" />
+              Send email
+            </Button>
+            <Button
+              onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank", "noopener,noreferrer")}
+              variant="secondary"
+              className="w-full justify-start gap-2"
+            >
+              <MessageCircle className="w-4 h-4" />
+              WhatsApp
+            </Button>
+            <Button
+              onClick={() => window.open(`https://t.me/share/url?url=${encodeURIComponent(profileUrl)}&text=${encodeURIComponent(shareText)}`, "_blank", "noopener,noreferrer")}
+              variant="secondary"
+              className="w-full justify-start gap-2"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Telegram
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {uploadingPhoto && (
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">

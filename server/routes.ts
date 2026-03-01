@@ -10290,6 +10290,7 @@ Questions? Just reply to this message. Welcome aboard!
           receiverId: messageData?.receiverId,
           content: messageData?.content,
           messageType: messageData?.messageType,
+          mediaUrl: messageData?.mediaUrl,
           isRead: messageData?.isRead,
           isEdited: messageData?.isEdited,
           reactions: messageData?.reactions,
@@ -10513,12 +10514,15 @@ Questions? Just reply to this message. Welcome aboard!
   // CRITICAL: Send message for IM system (handles offline message delivery)
   app.post("/api/messages", async (req, res) => {
     try {
-      const { senderId: bodySenderId, receiverId, content, isInstantMessage, replyToId } = req.body;
+      const { senderId: bodySenderId, receiverId, content, isInstantMessage, replyToId, messageType, mediaUrl } = req.body;
       // Accept senderId from body or x-user-id header (for clients that send auth in header)
       const senderId = bodySenderId || (req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null);
 
-      if (!senderId || !receiverId || !content) {
-        return res.status(400).json({ message: "senderId (or x-user-id header), receiverId, and content are required" });
+      const hasContent = content != null && String(content).trim().length > 0;
+      const hasMedia = mediaUrl != null && String(mediaUrl).trim().length > 0;
+
+      if (!senderId || !receiverId || (!hasContent && !hasMedia)) {
+        return res.status(400).json({ message: "senderId (or x-user-id header), receiverId, and (content or mediaUrl) are required" });
       }
 
       if (process.env.NODE_ENV === 'development') console.log(`💬 ${isInstantMessage ? 'IM' : 'REGULAR'} MESSAGE: Storing message from ${senderId} to ${receiverId}${replyToId ? ` (replying to ${replyToId})` : ''} for offline delivery`);
@@ -10529,8 +10533,11 @@ Questions? Just reply to this message. Welcome aboard!
         .values({
           senderId: parseInt(senderId || '0'),
           receiverId: parseInt(receiverId || '0'),
-          content: content.trim(),
-          messageType: isInstantMessage ? 'instant' : 'text',
+          content: hasContent ? String(content).trim() : (hasMedia ? '[Photo]' : ''),
+          messageType: typeof messageType === 'string'
+            ? messageType
+            : (isInstantMessage ? 'instant' : (hasMedia ? 'image' : 'text')),
+          mediaUrl: hasMedia ? String(mediaUrl).trim() : null,
           isRead: false,
           replyToId: replyToId ? parseInt(replyToId) : null,
           createdAt: new Date()
@@ -10546,7 +10553,10 @@ Questions? Just reply to this message. Welcome aboard!
       setImmediate(async () => {
         const recipientIdNum = parseInt(receiverId || '0');
         const senderIdNum = parseInt(senderId || '0');
-        const preview = content.substring(0, 100) + (content.length > 100 ? '...' : '');
+        const msgType = newMessage[0]?.messageType || (hasMedia ? 'image' : 'text');
+        const preview = msgType === 'image' || msgType === 'photo'
+          ? '[Photo]'
+          : (String(newMessage[0]?.content || '').substring(0, 100) + (String(newMessage[0]?.content || '').length > 100 ? '...' : ''));
         
         // Send email notification
         try {
@@ -15579,14 +15589,16 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const chatroomId = parseInt(req.params.chatroomId || '0');
       const userId = req.headers['x-user-id'];
-      const { content } = req.body;
+      const { content, messageType, mediaUrl, replyToId } = req.body;
       
       if (!userId) {
         return res.status(401).json({ message: "User ID required" });
       }
 
-      if (!content?.trim()) {
-        return res.status(400).json({ message: "Message content required" });
+      const hasContent = content != null && String(content).trim().length > 0;
+      const hasMedia = mediaUrl != null && String(mediaUrl).trim().length > 0;
+      if (!hasContent && !hasMedia) {
+        return res.status(400).json({ message: "Message content or mediaUrl required" });
       }
 
       // Check if user is muted in this chatroom
@@ -15598,10 +15610,14 @@ Questions? Just reply to this message. Welcome aboard!
         });
       }
 
+      const safeContent = hasContent ? String(content) : '[Photo]';
+      const safeType = typeof messageType === 'string' ? messageType : (hasMedia ? 'image' : 'text');
       const message = await storage.createEventChatroomMessage(
         chatroomId,
         parseInt(userId as string || '0'),
-        content.trim()
+        safeContent,
+        safeType,
+        hasMedia ? String(mediaUrl) : null
       );
 
       return res.json(message);
@@ -15675,20 +15691,23 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const chatroomId = parseInt(req.params.chatroomId || '0');
       const userId = req.headers['x-user-id'];
-      const { content } = req.body;
+      const { content, messageType, mediaUrl } = req.body;
       
       if (!userId) {
         return res.status(401).json({ message: "User ID required" });
       }
 
-      if (!content?.trim()) {
-        return res.status(400).json({ message: "Message content required" });
+      const hasContent = content != null && String(content).trim().length > 0;
+      const hasMedia = mediaUrl != null && String(mediaUrl).trim().length > 0;
+      if (!hasContent && !hasMedia) {
+        return res.status(400).json({ message: "Message content or mediaUrl required" });
       }
 
       const message = await storage.createQuickMeetupChatroomMessage(
         chatroomId,
         parseInt(userId as string || '0'),
-        content.trim()
+        hasContent ? String(content) : (hasMedia ? String(mediaUrl) : '[Photo]'),
+        typeof messageType === 'string' ? messageType : (hasMedia ? 'image' : 'text')
       );
 
       return res.json(message);
@@ -18992,14 +19011,16 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const roomId = parseInt(req.params.roomId || '0');
       const userId = req.headers['x-user-id'];
-      const { content } = req.body;
+      const { content, messageType, mediaUrl } = req.body;
       
       if (!userId) {
         return res.status(401).json({ message: "User ID required" });
       }
 
-      if (!content?.trim()) {
-        return res.status(400).json({ message: "Message content required" });
+      const hasContent = content != null && String(content).trim().length > 0;
+      const hasMedia = mediaUrl != null && String(mediaUrl).trim().length > 0;
+      if (!hasContent && !hasMedia) {
+        return res.status(400).json({ message: "Message content or mediaUrl required" });
       }
 
       // 🔒 SECURITY CHECK: Verify user is a member of the chatroom before allowing message posting
@@ -19021,7 +19042,9 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM MESSAGE: User ${userId} sending message to chatroom ${roomId}`);
 
-      const message = await storage.createChatroomMessage(roomId, parseInt(userId as string), content.trim());
+      const safeContent = hasContent ? String(content) : '[Photo]';
+      const safeType = typeof messageType === 'string' ? messageType : (hasMedia ? 'image' : 'text');
+      const message = await storage.createChatroomMessage(roomId, parseInt(userId as string), safeContent, safeType, hasMedia ? String(mediaUrl) : null);
       return res.json(message);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error sending chatroom message:", error);

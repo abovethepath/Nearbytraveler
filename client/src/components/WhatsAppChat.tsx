@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp } from "lucide-react";
+import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
@@ -21,6 +21,7 @@ interface Message {
   senderId: number;
   content: string;
   messageType: string;
+  mediaUrl?: string | null;
   replyToId?: number;
   reactions?: { [emoji: string]: number[] };
   createdAt: string;
@@ -82,14 +83,55 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [messagesLoaded, setMessagesLoaded] = useState(false);
   const [swipingMessageId, setSwipingMessageId] = useState<number | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSendingPhoto, setIsSendingPhoto] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+
+  const fileToDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsDataURL(file);
+    });
+
+  const resizeImageToDataUrl = async (file: File, maxDim = 1280, quality = 0.8): Promise<string> => {
+    const original = await fileToDataUrl(file);
+    try {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = original;
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("Image decode failed"));
+      });
+
+      const w = img.naturalWidth || img.width;
+      const h = img.naturalHeight || img.height;
+      if (!w || !h) return original;
+
+      const scale = Math.min(1, maxDim / Math.max(w, h));
+      const targetW = Math.max(1, Math.round(w * scale));
+      const targetH = Math.max(1, Math.round(h * scale));
+
+      const canvas = document.createElement("canvas");
+      canvas.width = targetW;
+      canvas.height = targetH;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return original;
+      ctx.drawImage(img, 0, 0, targetW, targetH);
+      return canvas.toDataURL("image/jpeg", quality);
+    } catch {
+      return original;
+    }
+  };
   
   // WhatsApp-style long press detection (500ms)
   const handleTouchStart = (e: React.TouchEvent, message: Message) => {
@@ -532,6 +574,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 senderId: m?.senderId,
                 content: m?.content,
                 messageType: m?.messageType || "text",
+                mediaUrl: m?.mediaUrl,
                 replyToId: m?.replyToId,
                 createdAt: m?.createdAt || new Date().toISOString(),
                 isEdited: m?.isEdited,
@@ -550,6 +593,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                       senderId: reply.senderId,
                       content: reply.content,
                       messageType: "text",
+                      mediaUrl: reply?.mediaUrl,
                       createdAt: m?.createdAt || "",
                     }
                   : undefined,
@@ -569,6 +613,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 senderId: m?.senderId,
                 content: m?.content,
                 messageType: m?.messageType || "text",
+              mediaUrl: m?.mediaUrl,
                 replyToId: m?.replyToId,
                 createdAt: m?.createdAt || new Date().toISOString(),
                 isEdited: m?.isEdited,
@@ -1003,6 +1048,146 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }, 50);
   };
 
+  const sendPhotoMessage = async (dataUrl: string) => {
+    if (!dataUrl || !currentUserId) return;
+
+    const replyToId = replyingTo?.id;
+    setReplyingTo(null);
+
+    // Non-DM chats: prefer WebSocket (same as text)
+    if (chatType !== 'dm' && wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({
+        type: 'message:new',
+        chatType,
+        chatroomId: chatId,
+        payload: {
+          content: dataUrl,
+          messageType: 'image',
+          mediaUrl: dataUrl,
+          replyToId
+        }
+      }));
+      wsRef.current.send(JSON.stringify({
+        type: 'typing:stop',
+        chatType,
+        chatroomId: chatId
+      }));
+      return;
+    }
+
+    // HTTP fallback (and always for DMs)
+    try {
+      let user: any = {};
+      try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('current_user') || '{}'); } catch { user = {}; }
+
+      let endpoint = '';
+      let body: any = { content: dataUrl, messageType: 'image', mediaUrl: dataUrl, replyToId };
+
+      if (chatType === 'dm') {
+        endpoint = `${getApiBaseUrl()}/api/messages`;
+        body = { senderId: currentUserId || user.id, receiverId: chatId, content: '[Photo]', messageType: 'image', mediaUrl: dataUrl, replyToId };
+      } else if (chatType === 'event') {
+        endpoint = `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`;
+      } else if (chatType === 'meetup') {
+        endpoint = `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`;
+      } else {
+        endpoint = `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages`;
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': (currentUserId || user.id || '').toString()
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (response.ok) {
+        const resp = await response.json();
+        const newMessage = resp.message || resp;
+        const normalized: Message | null = (() => {
+          if (!newMessage) return null;
+          if (chatType === 'event') {
+            const senderUser = newMessage.user || null;
+            return {
+              id: newMessage.id,
+              senderId: newMessage.senderId,
+              content: newMessage.content || '[Photo]',
+              messageType: newMessage.messageType || 'image',
+              mediaUrl: newMessage.mediaUrl || dataUrl,
+              replyToId: newMessage.replyToId,
+              createdAt: newMessage.createdAt || new Date().toISOString(),
+              isEdited: newMessage.isEdited,
+              reactions: newMessage.reactions,
+              sender: senderUser?.id ? {
+                id: senderUser.id,
+                username: senderUser.username,
+                name: senderUser.name,
+                profileImage: senderUser.profileImage
+              } : undefined
+            };
+          }
+          if (chatType === 'meetup') {
+            const senderUser = newMessage.sender || null;
+            return {
+              id: newMessage.id,
+              senderId: newMessage.userId ?? newMessage.senderId ?? currentUserId,
+              content: newMessage.message ?? newMessage.content ?? '[Photo]',
+              messageType: newMessage.messageType || 'image',
+              mediaUrl: newMessage.mediaUrl || dataUrl,
+              createdAt: newMessage.sentAt || newMessage.createdAt || new Date().toISOString(),
+              sender: senderUser?.id ? {
+                id: senderUser.id,
+                username: senderUser.username,
+                name: senderUser.name,
+                profileImage: senderUser.profileImage
+              } : undefined
+            };
+          }
+          return {
+            id: newMessage.id ?? resp.messageId,
+            senderId: currentUserId,
+            content: newMessage.content ?? '[Photo]',
+            messageType: newMessage.messageType || 'image',
+            mediaUrl: newMessage.mediaUrl || dataUrl,
+            replyToId: newMessage.replyToId,
+            createdAt: newMessage.createdAt || new Date().toISOString(),
+            sender: {
+              id: currentUserId,
+              username: user.username || 'You',
+              name: user.name || 'You',
+              profileImage: user.profileImage
+            }
+          };
+        })();
+
+        if (normalized?.id != null) {
+          setMessages(prev => [...prev, normalized]);
+          scrollToBottom();
+        }
+      } else {
+        toast({ title: "Failed to send photo", variant: "destructive" });
+      }
+    } catch (e) {
+      toast({ title: "Failed to send photo", variant: "destructive" });
+    } finally {
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  };
+
+  const onPickPhoto = async (file?: File | null) => {
+    if (!file) return;
+    setIsSendingPhoto(true);
+    try {
+      const dataUrl = await resizeImageToDataUrl(file, 960, 0.72);
+      await sendPhotoMessage(dataUrl);
+    } finally {
+      setIsSendingPhoto(false);
+      if (photoInputRef.current) photoInputRef.current.value = "";
+    }
+  };
+
   const handleTyping = (text: string) => {
     setMessageText(text);
 
@@ -1406,12 +1591,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Messages - Flex wrapper ensures proper spacing; min-h-0 allows flex child to shrink */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {/* Scrollable messages area */}
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 py-2 bg-[#0b141a]" style={{
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pt-1 pb-2 bg-[#0b141a]" style={{
           WebkitOverflowScrolling: 'touch',
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23999999' stroke-width='2' opacity='0.18'%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Ccircle cx='150' cy='300' r='30'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Ccircle cx='100' cy='500' r='40'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Ccircle cx='150' cy='700' r='35'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3C/svg%3E")`
         }}>
           <div className="flex flex-col min-h-full">
-            <div className="flex-grow" />
             <div className="space-y-2">
             {messages.map((message, index) => {
               // Use == for type-coerced comparison since currentUserId from localStorage may be string
@@ -1545,7 +1729,33 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                             {getFirstName(message.sender?.name, message.sender?.username)}
                           </p>
                         )}
-                        <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                        {(() => {
+                          const isImage =
+                            message.messageType === 'image' ||
+                            message.messageType === 'photo' ||
+                            (!!message.mediaUrl && String(message.mediaUrl).length > 0) ||
+                            (typeof message.content === 'string' && message.content.startsWith('data:image'));
+                          const src = (message.mediaUrl && String(message.mediaUrl)) || (isImage ? message.content : '');
+
+                          if (!isImage) {
+                            return <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>;
+                          }
+
+                          return (
+                            <div className="mt-1">
+                              <img
+                                src={src}
+                                alt="Photo"
+                                className="rounded-lg max-w-[240px] sm:max-w-[320px] max-h-[320px] object-cover cursor-pointer border border-white/10"
+                                loading="lazy"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(src, "_blank", "noopener,noreferrer");
+                                }}
+                              />
+                            </div>
+                          );
+                        })()}
                         
                         <div className="flex items-center justify-end gap-1 mt-0.5">
                           <span className="text-[10px] opacity-70">{formatTimestamp(message.createdAt)}</span>
@@ -1602,6 +1812,24 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             </div>
           )}
           <div className="flex items-end gap-2">
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => onPickPhoto(e.target.files?.[0] || null)}
+            />
+            <Button
+              onClick={() => photoInputRef.current?.click()}
+              disabled={!currentUserId || isSendingPhoto || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))}
+              size="icon"
+              variant="ghost"
+              className="rounded-full min-h-[44px] min-w-[44px] h-11 w-11 md:h-9 md:w-9 shrink-0 text-white hover:bg-gray-700 touch-target"
+              title="Send photo"
+              data-testid="button-send-photo"
+            >
+              <Camera className="w-4 h-4" />
+            </Button>
             <Textarea
               ref={inputRef}
               value={messageText}

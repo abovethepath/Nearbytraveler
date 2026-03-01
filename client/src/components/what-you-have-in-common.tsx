@@ -655,7 +655,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             commonalities.sharedCountries.length > 0 || 
             commonalities.sharedLanguages.length > 0 || 
             commonalities.otherCommonalities.length > 0) && (
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:bg-slate-800 rounded-lg p-3 border border-blue-200 dark:border-slate-600">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-800 rounded-lg p-3 border border-blue-200 dark:border-slate-600">
               <h5 className="font-bold text-gray-900 dark:text-slate-100 mb-3 lg:mb-2 flex items-center gap-1 text-base">
                 <User className="w-5 h-5 text-gray-600 dark:text-slate-300" />
                 Other Things in Common ({commonalities.sharedSexualPreferences.length + commonalities.sharedCountries.length + commonalities.sharedLanguages.length + commonalities.otherCommonalities.length})
