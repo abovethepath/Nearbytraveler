@@ -1028,7 +1028,7 @@ export default function Messages() {
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 bg-black/95 z-[99998]"
+            className="fixed inset-0 bg-transparent z-[99998]"
             onClick={() => setSelectedMessage(null)}
             style={{ touchAction: 'auto' }}
           />

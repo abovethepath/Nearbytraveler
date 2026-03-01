@@ -43,8 +43,7 @@ export function ProfileTabs(props: ProfilePageProps) {
   /* Desktop user profiles: tabs are integrated into hero (ProfileTabBar); hide duplicate card. iOS + business: show tabs card. */
   const showTabsCard = isNativeIOSApp() || user?.userType === 'business';
   const isDesktop = useIsDesktop();
-  /* On desktop other-user profile, What You Have in Common is in the hero beside action buttons; hide duplicate in tabs. */
-  const showWhatYouHaveInCommonInTabs = !(isDesktop && !isOwnProfile && user?.userType !== 'business');
+  const showWhatYouHaveInCommon = !isOwnProfile && !!currentUser?.id && !!user?.id && user?.userType !== 'business';
 
   return (
     <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900">
@@ -359,6 +358,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                     }
                   </p>
                 </div>
+
+                {/* What You Have in Common - shown below bio on other-user profiles */}
+                {showWhatYouHaveInCommon && (
+                  <div>
+                    <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
+                  </div>
+                )}
 
                 {user?.userType !== 'business' && (
                   <VideoIntroPlayer
@@ -1180,10 +1186,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                                 {userTopInterests.map((interest, index) => (
                                   <div 
                                     key={`top-interest-${index}`} 
-                                    className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-500 to-orange-500 flex items-center"
-                                    style={{ color: 'black' }}
+                                    className={`h-8 px-4 rounded-full text-sm font-medium flex items-center ${
+                                      isOwnProfile
+                                        ? "bg-gradient-to-r from-blue-500 to-orange-500"
+                                        : "bg-white border border-gray-200 text-gray-900 dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:border-0 dark:text-black"
+                                    }`}
                                   >
-                                    <span style={{ color: 'black' }}>{interest}</span>
+                                    <span>{interest}</span>
                                   </div>
                                 ))}
                               </div>
@@ -1201,19 +1210,25 @@ export function ProfileTabs(props: ProfilePageProps) {
                                 {userOtherInterests.map((interest, index) => (
                                   <div 
                                     key={`other-interest-${index}`} 
-                                    className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-400 to-orange-400 shadow-md flex items-center"
-                                    style={{ color: 'black' }}
+                                    className={`h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
+                                      isOwnProfile
+                                        ? "bg-gradient-to-r from-blue-400 to-orange-400"
+                                        : "bg-white border border-gray-200 text-gray-900 dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
+                                    }`}
                                   >
-                                    <span style={{ color: 'black' }}>{interest}</span>
+                                    <span>{interest}</span>
                                   </div>
                                 ))}
                                 {userCustomInterests.map((interest, index) => (
                                   <div 
                                     key={`custom-interest-${index}`} 
-                                    className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-400 to-orange-400 shadow-md flex items-center"
-                                    style={{ color: 'black' }}
+                                    className={`h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
+                                      isOwnProfile
+                                        ? "bg-gradient-to-r from-blue-400 to-orange-400"
+                                        : "bg-white border border-gray-200 text-gray-900 dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
+                                    }`}
                                   >
-                                    <span style={{ color: 'black' }}>{interest}</span>
+                                    <span>{interest}</span>
                                   </div>
                                 ))}
                               </div>
@@ -1253,10 +1268,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                             {allActivities.map((activity, index) => (
                               <div 
                                 key={`activity-${index}`} 
-                                className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-700 to-blue-400 shadow-md flex items-center"
-                                style={{ color: 'black' }}
+                                className={`h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
+                                  isOwnProfile
+                                    ? "bg-gradient-to-r from-blue-700 to-blue-400"
+                                    : "bg-white border border-gray-200 text-gray-900 dark:bg-gradient-to-r dark:from-blue-700 dark:to-blue-400 dark:border-0 dark:text-black"
+                                }`}
                               >
-                                <span style={{ color: 'black' }}>{activity}</span>
+                                <span>{activity}</span>
                               </div>
                             ))}
                           </div>
@@ -1270,7 +1288,7 @@ export function ProfileTabs(props: ProfilePageProps) {
 
                     {/* SECRET ACTIVITIES - only if user has them */}
                     {user?.userType !== 'business' && !!((user as any)?.secretActivities || (user as any)?.secret_activities) && (
-                      <div>
+                      <div className={!isOwnProfile ? "mt-8 dark:mt-0" : ""}>
                         <h4 className="font-medium text-gray-800 dark:text-white mb-2">
                           Secret things I would do if my closest friends came to town
                         </h4>

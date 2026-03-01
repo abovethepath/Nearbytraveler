@@ -12,6 +12,7 @@ interface ConnectButtonProps {
   targetName?: string;
   className?: string;
   size?: "default" | "sm" | "lg" | "icon";
+  appearance?: "default" | "ghost";
 }
 
 export default function ConnectButton({
@@ -20,7 +21,8 @@ export default function ConnectButton({
   targetUsername,
   targetName,
   className = "",
-  size = "default"
+  size = "default",
+  appearance = "default",
 }: ConnectButtonProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -158,12 +160,15 @@ export default function ConnectButton({
 
   // Get button state based on connection status and THIS button's loading state
   const getButtonState = () => {
+    const isGhost = appearance === "ghost";
     if (connectionStatus?.status === 'accepted') {
       return { 
         text: 'Connected', 
         disabled: false, 
         variant: 'default' as const, 
-        className: 'bg-blue-600 hover:bg-blue-700 text-white border-0' 
+        className: isGhost
+          ? 'bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-700 border border-blue-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white dark:border-0'
+          : 'bg-blue-600 hover:bg-blue-700 text-white border-0'
       };
     }
     if (connectionStatus?.status === 'pending') {
@@ -171,7 +176,9 @@ export default function ConnectButton({
         text: 'Request Sent', 
         disabled: false, 
         variant: 'default' as const, 
-        className: 'bg-yellow-500 hover:bg-yellow-600 text-white border-0' 
+        className: isGhost
+          ? 'bg-[#fff7e6] hover:bg-[#ffefd1] text-amber-800 border border-amber-200 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:text-white dark:border-0'
+          : 'bg-yellow-500 hover:bg-yellow-600 text-white border-0'
       };
     }
     // This is the key fix - only THIS button's isPending state affects THIS button
@@ -179,7 +186,9 @@ export default function ConnectButton({
       text: connectMutation.isPending ? 'Connecting...' : 'Connect', 
       disabled: connectMutation.isPending, 
       variant: 'default' as const, 
-      className: 'bg-blue-600 hover:bg-blue-700 text-white border-0' 
+      className: isGhost
+        ? 'bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-700 border border-blue-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white dark:border-0'
+        : 'bg-blue-600 hover:bg-blue-700 text-white border-0'
     };
   };
 

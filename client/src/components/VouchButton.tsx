@@ -18,12 +18,15 @@ interface VouchButtonProps {
   targetUsername?: string;
   /** When true, render nothing when user cannot vouch and has not already vouched */
   hideWhenDisabled?: boolean;
+  appearance?: "default" | "ghost";
+  className?: string;
 }
 
-export function VouchButton({ currentUserId, targetUserId, targetUsername, hideWhenDisabled }: VouchButtonProps) {
+export function VouchButton({ currentUserId, targetUserId, targetUsername, hideWhenDisabled, appearance = "default", className = "" }: VouchButtonProps) {
   const { toast } = useToast();
   const [showVouchDialog, setShowVouchDialog] = useState(false);
   const [vouchMessage, setVouchMessage] = useState("");
+  const isGhost = appearance === "ghost";
 
   const { data: canVouchData, isLoading } = useQuery<{
     canVouch: boolean;
@@ -83,7 +86,7 @@ export function VouchButton({ currentUserId, targetUserId, targetUsername, hideW
     return (
       <Button
         disabled
-        className="bg-blue-500 dark:bg-purple-400 text-white border-0 px-6 py-2 rounded-lg shadow-md opacity-60 cursor-not-allowed"
+        className={`${isGhost ? "bg-[#e8eeff] dark:bg-purple-400 text-blue-700 dark:text-white border border-blue-200 dark:border-0" : "bg-blue-500 dark:bg-purple-400 text-white border-0"} px-6 py-2 rounded-lg shadow-md opacity-60 cursor-not-allowed ${className}`}
         data-testid="button-vouch-loading"
       >
         <Shield className="w-4 h-4 mr-2" />
@@ -96,7 +99,7 @@ export function VouchButton({ currentUserId, targetUserId, targetUsername, hideW
     return (
       <Button
         disabled
-        className="bg-green-600 text-white border-0 px-6 py-2 rounded-lg shadow-md opacity-70 cursor-not-allowed"
+        className={`${isGhost ? "bg-[#e6f9f0] dark:bg-green-600 text-green-700 dark:text-white border border-green-200 dark:border-0" : "bg-green-600 text-white border-0"} px-6 py-2 rounded-lg shadow-md opacity-70 cursor-not-allowed ${className}`}
         data-testid="button-vouched"
       >
         <Check className="w-4 h-4 mr-2" />
@@ -110,7 +113,7 @@ export function VouchButton({ currentUserId, targetUserId, targetUsername, hideW
       <>
         <Button
           onClick={() => setShowVouchDialog(true)}
-          className="bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
+          className={`${isGhost ? "bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-700 border border-blue-200 dark:bg-purple-600 dark:hover:bg-purple-700 dark:text-white dark:border-0" : "bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700 text-white border-0"} px-6 py-2 rounded-lg shadow-md transition-all ${className}`}
           data-testid="button-vouch"
         >
           <ThumbsUp className="w-4 h-4 mr-2" />
@@ -142,7 +145,7 @@ export function VouchButton({ currentUserId, targetUserId, targetUsername, hideW
                 <Button
                   onClick={() => vouchMutation.mutate()}
                   disabled={vouchMutation.isPending}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700 text-white"
+                  className={`flex-1 ${isGhost ? "bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-700 border border-blue-200 dark:bg-purple-600 dark:hover:bg-purple-700 dark:text-white dark:border-0" : "bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700 text-white"}`}
                   data-testid="button-confirm-vouch"
                 >
                   <ThumbsUp className="w-4 h-4 mr-2" />
@@ -168,7 +171,7 @@ export function VouchButton({ currentUserId, targetUserId, targetUsername, hideW
   return (
     <Button
       disabled
-      className="bg-gray-400 text-white border-0 px-6 py-2 rounded-lg shadow-md opacity-60 cursor-not-allowed"
+      className={`${isGhost ? "bg-white text-gray-600 border border-gray-300 dark:bg-gray-400 dark:text-white dark:border-0" : "bg-gray-400 text-white border-0"} px-6 py-2 rounded-lg shadow-md opacity-60 cursor-not-allowed ${className}`}
       title="You need at least 1 vouch before you can vouch for others"
       data-testid="button-vouch-disabled"
     >

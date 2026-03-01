@@ -13,7 +13,6 @@ import { useIsDesktop } from "@/hooks/useDeviceType";
 import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
 import { VouchButton } from "@/components/VouchButton";
 import { ProfileTabBar } from "./ProfileTabBar";
-import { WhatYouHaveInCommon } from "@/components/what-you-have-in-common";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import type { ProfilePageProps } from "./profile-complete-types";
@@ -169,13 +168,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
   return (
     <div
-      className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 relative isolate ${isNativeIOSApp() ? 'py-6 sm:py-8 lg:py-12' : isDesktopOwnProfile ? 'py-4 sm:py-5 lg:pt-6 lg:pb-16' : 'pt-12 sm:pt-14 lg:pt-20 pb-6 sm:pb-8 lg:pb-16'}`}
+      className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 relative isolate ${isNativeIOSApp() ? 'py-6 sm:py-8 lg:py-12' : (isDesktopOwnProfile || isDesktopOtherUser) ? 'py-4 sm:py-5 lg:pt-6 lg:pb-16' : 'pt-12 sm:pt-14 lg:pt-20 pb-6 sm:pb-8 lg:pb-16'}`}
       style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)' }}
     >
-      {!isOwnProfile && !isDesktopOtherUser && shareButton(false)}
       <div
-        className={`mx-auto relative z-10 ${isDesktopOwnProfile ? 'pl-4 sm:pl-6 lg:pl-8' : ''}`}
-        style={isDesktopOtherUser ? { maxWidth: 1200, marginLeft: 'auto', marginRight: 'auto' } : undefined}
+        className={`mx-auto relative z-10 max-w-7xl ${isDesktopOwnProfile ? 'pl-4 sm:pl-6 lg:pl-8' : ''}`}
       >
         {isDesktopOwnProfile ? (
           /* Desktop own profile: balanced layout - larger avatar, readable city text, proportional @username, tabs at bottom */
@@ -314,16 +311,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
         <div className="flex flex-col lg:relative">
         {/* Desktop (lg+ other-user): overlapping avatar block anchored to hero bottom-left */}
         {isDesktopOtherUser && (
-          <div className="hidden lg:flex flex-col items-start absolute left-8 bottom-[-92px] z-30">
+          <div className="hidden lg:flex flex-col items-start absolute left-8 bottom-[-80px] z-30">
             <div className="relative flex flex-col items-center">
               <div
-                className={`rounded-full border-4 border-white/90 shadow-2xl overflow-hidden ${user?.profileImage ? 'cursor-pointer hover:border-white transition-all' : ''}`}
+                className={`w-40 h-40 rounded-full overflow-hidden cursor-pointer ring-4 ring-white/90 shadow-2xl ${user?.profileImage ? 'hover:ring-white transition-all' : ''}`}
                 onClick={() => { if (user?.profileImage) setShowExpandedPhoto(true); }}
                 title={user?.profileImage ? "Click to enlarge photo" : undefined}
               >
-                <div className="w-56 h-56 rounded-full overflow-hidden no-scrollbar">
-                  <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
-                </div>
+                <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
               </div>
               {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-3">
@@ -452,12 +447,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <>
                     <div className="flex items-center gap-2 flex-wrap">
                       <div className="flex items-center gap-2.5 shrink-0 w-fit max-w-full">
-                        <div className={`${isDesktopOtherUser ? '' : 'lg:inline-flex lg:items-center lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm'}`}>
-                          <h1 className={`text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all ${isDesktopOtherUser ? '!text-black' : 'text-black'} lg:!text-white lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)] crisp-hero-text`}>
+                        <div className="lg:inline-flex lg:items-center lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm">
+                          <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all text-black lg:!text-white lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)] crisp-hero-text">
                             @{user?.username}
                           </h1>
                         </div>
-                        {isDesktopOtherUser && shareButton(true)}
                       </div>
                       {!isOwnProfile && connectionDegreeData?.degree && connectionDegreeData.degree > 0 && (
                         <Badge
@@ -484,7 +478,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               <div className="grid grid-cols-2 gap-2">
                                 <button
                                   type="button"
-                                  className="inline-flex items-center justify-center rounded-lg shadow-md transition-all font-semibold cursor-pointer px-4 py-2 text-sm text-white bg-orange-500 hover:bg-orange-600 lg:bg-[color:var(--mutedOrange)] lg:hover:bg-[color:var(--mutedOrangeHover)]"
+                                  className="inline-flex items-center justify-center rounded-lg shadow-md transition-all font-semibold cursor-pointer px-4 py-2 text-sm bg-[#fff0e6] hover:bg-[#ffe6d6] text-orange-700 border border-orange-200 dark:text-white dark:bg-orange-500 dark:hover:bg-orange-600 dark:border-0 lg:bg-[color:var(--mutedOrange)] lg:hover:bg-[color:var(--mutedOrangeHover)]"
                                   style={{ ["--mutedOrange" as any]: mutedOrange, ["--mutedOrangeHover" as any]: mutedOrangeHover }}
                                   onClick={(e) => {
                                     e.preventDefault();
@@ -502,6 +496,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   targetUserId={user?.id || 0}
                                   targetUsername={user?.username}
                                   targetName={user?.name}
+                                  appearance="ghost"
                                   className="w-full rounded-lg shadow-md transition-all px-4 py-2 text-sm font-semibold"
                                 />
                               </div>
@@ -512,6 +507,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     currentUserId={currentUser?.id || 0}
                                     targetUserId={user?.id || 0}
                                     targetUsername={user?.username}
+                                    appearance="ghost"
                                   />
                                 )}
                                 {currentUser ? (
@@ -523,7 +519,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                       setShowWriteReferenceModal?.(true);
                                     }}
                                     variant="outline"
-                                    className="bg-white/15 hover:bg-white/25 text-white border border-white/40 shrink-0 px-4 py-2 text-sm"
+                                    className="bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-800 border border-blue-200 dark:bg-white/15 dark:hover:bg-white/25 dark:text-white dark:border-white/40 shrink-0 px-4 py-2 text-sm"
                                     data-testid="button-write-reference"
                                   >
                                     Write Reference
@@ -533,7 +529,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     type="button"
                                     onClick={() => setLocation('/auth')}
                                     variant="outline"
-                                    className="bg-white/15 hover:bg-white/25 text-white border border-white/40 shrink-0 px-4 py-2 text-sm"
+                                    className="bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-800 border border-blue-200 dark:bg-white/15 dark:hover:bg-white/25 dark:text-white dark:border-white/40 shrink-0 px-4 py-2 text-sm"
                                     data-testid="button-write-reference"
                                   >
                                     Write Reference
@@ -551,6 +547,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                       variant="ghost"
                                       size="sm"
                                       showIcon={false}
+                                      appearance="ghost"
                                     />
                                   ) : (
                                     <button
@@ -574,7 +571,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             <>
                               <button
                                 type="button"
-                                className={`inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 rounded-lg shadow-md transition-all text-black font-medium cursor-pointer ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-4 py-1.5 text-sm'}`}
+                                className={`inline-flex items-center rounded-lg shadow-md transition-all font-medium cursor-pointer ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-4 py-1.5 text-sm'} bg-[#fff0e6] hover:bg-[#ffe6d6] text-orange-700 border border-orange-200 dark:bg-orange-500 dark:hover:bg-orange-600 dark:text-black dark:border-0`}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -584,20 +581,22 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 data-testid="button-message"
                                 data-radix-dismissable-layer-ignore=""
                               >
-                                <span className="text-black">Message</span>
+                                <span>Message</span>
                               </button>
                               <ConnectButton
                                 currentUserId={currentUser?.id || 0}
                                 targetUserId={user?.id || 0}
                                 targetUsername={user?.username}
                                 targetName={user?.name}
-                                className={`rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm text-black hover:text-black`}
+                                appearance="ghost"
+                                className="rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm"
                               />
                               {!isNativeIOSApp() && (
                                 <VouchButton
                                   currentUserId={currentUser?.id || 0}
                                   targetUserId={user?.id || 0}
                                   targetUsername={user?.username}
+                                  appearance="ghost"
                                 />
                               )}
                               {currentUser ? (
@@ -608,7 +607,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     e.stopPropagation();
                                     setShowWriteReferenceModal?.(true);
                                   }}
-                                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white shrink-0 px-4 py-1.5 text-sm border-0"
+                                  className="bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-800 border border-blue-200 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 dark:hover:from-blue-700 dark:hover:to-orange-600 dark:text-white dark:border-0 shrink-0 px-4 py-1.5 text-sm"
                                   data-testid="button-write-reference"
                                 >
                                   Write Reference
@@ -617,7 +616,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 <Button
                                   type="button"
                                   onClick={() => setLocation('/auth')}
-                                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white shrink-0 px-4 py-1.5 text-sm border-0"
+                                  className="bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-800 border border-blue-200 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 dark:hover:from-blue-700 dark:hover:to-orange-600 dark:text-white dark:border-0 shrink-0 px-4 py-1.5 text-sm"
                                   data-testid="button-write-reference"
                                 >
                                   Write Reference
@@ -632,6 +631,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     variant="ghost"
                                     size="sm"
                                     showIcon={false}
+                                    appearance="ghost"
                                   />
                                 ) : (
                                   <button
@@ -652,11 +652,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             </>
                           )}
                         </div>
-                        {isDesktopOtherUser && currentUser?.id && user?.id && user?.userType !== 'business' && (
-                          <div className="flex-1 w-full min-w-0 min-w-[520px] max-w-full pr-0 lg:pr-2">
-                            <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
-                          </div>
-                        )}
                       </div>
                     )}
                   </>

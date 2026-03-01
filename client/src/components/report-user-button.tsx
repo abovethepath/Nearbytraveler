@@ -16,6 +16,7 @@ interface ReportUserButtonProps {
   size?: "default" | "sm" | "lg" | "icon";
   showIcon?: boolean;
   showText?: boolean;
+  appearance?: "link" | "ghost";
 }
 
 const REPORT_REASONS = [
@@ -34,7 +35,8 @@ export function ReportUserButton({
   variant = "ghost",
   size = "sm",
   showIcon = true,
-  showText = true
+  showText = true,
+  appearance = "link",
 }: ReportUserButtonProps) {
   const [showModal, setShowModal] = useState(false);
   const [reason, setReason] = useState("");
@@ -106,7 +108,11 @@ export function ReportUserButton({
         variant={variant}
         size={size}
         onClick={() => setShowModal(true)}
-        className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+        className={
+          appearance === "ghost"
+            ? "bg-[#ffe8e8] hover:bg-[#ffdcdc] text-red-700 border border-red-200 dark:bg-transparent dark:hover:bg-white/10 dark:text-gray-200 dark:hover:text-white"
+            : "text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+        }
       >
         {showIcon && <Flag className="h-4 w-4 mr-1" />}
         {showText && "Report"}

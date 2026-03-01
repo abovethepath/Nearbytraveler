@@ -30,11 +30,18 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
 
   const isHero = variant === "hero";
   const isDesktopWeb = !isNativeIOSApp();
+  const ghostLight = isHero && isDesktopWeb && !isOwnProfile;
 
   const tabBase = "text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all";
-  const tabActive = isHero ? "bg-white text-gray-900 border border-white shadow-md" : "bg-blue-600 text-white border border-blue-600 shadow-md";
+  const tabActive = isHero
+    ? (ghostLight
+      ? "bg-[#e8eeff] text-blue-800 border border-blue-200 shadow-sm dark:bg-white dark:text-gray-900 dark:border-white dark:shadow-md"
+      : "bg-white text-gray-900 border border-white shadow-md")
+    : "bg-blue-600 text-white border border-blue-600 shadow-md";
   const tabInactive = isHero
-    ? (isDesktopWeb ? "bg-white/20 border border-white/40 !text-gray-900 hover:bg-white/30 hover:border-white/50 backdrop-blur-sm" : "bg-white/20 border border-white/40 text-white hover:bg-white/30 hover:border-white/50 backdrop-blur-sm")
+    ? (ghostLight
+      ? "bg-white/55 border border-blue-100 text-blue-800 hover:bg-white/70 hover:border-blue-200 backdrop-blur-sm dark:bg-white/20 dark:border-white/40 dark:text-white dark:hover:bg-white/30 dark:hover:border-white/50"
+      : (isDesktopWeb ? "bg-white/20 border border-white/40 !text-gray-900 hover:bg-white/30 hover:border-white/50 backdrop-blur-sm" : "bg-white/20 border border-white/40 text-white hover:bg-white/30 hover:border-white/50 backdrop-blur-sm"))
     : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400";
 
   const btn = (active: boolean) =>

@@ -479,7 +479,7 @@ button.user-card:first-child > div:first-of-type {
   }
   
   /* Touch targets: minimum 44x44px for accessibility on mobile */
-  button:not(.no-touch-target),
+  button:not(.no-touch-target):not([role="checkbox"]),
   [role="button"]:not(.no-touch-target),
   .touch-target,
   a[class*="button"] {
@@ -565,6 +565,15 @@ button.user-card:first-child > div:first-of-type {
     max-width: 100% !important;
     box-sizing: border-box !important;
   }
+}
+
+/* Checkbox sizing: prevent global button rules from stretching checkboxes */
+button[role="checkbox"] {
+  min-width: unset !important;
+  min-height: unset !important;
+  aspect-ratio: 1 / 1;
+  padding: 0 !important;
+  flex: 0 0 auto;
 }
 
 /* Available Now - green pulsating badge */

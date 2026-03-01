@@ -2498,8 +2498,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   isSelected 
                                     ? 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-orange-400/50'
                                     : isFeatured
-                                      ? 'bg-gray-800 text-gray-100 border-slate-700 hover:border-yellow-400/50'
-                                      : 'bg-gray-800 text-gray-100 border-slate-700 hover:border-slate-500'
+                                      ? 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-yellow-400/50 dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800'
+                                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800 dark:hover:border-slate-500'
                                 }`}
                                 type="button"
                                 onPointerDown={(e) => {
@@ -2590,7 +2590,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                     className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border touch-manipulation select-none ${
                                       isSelected 
                                         ? 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-orange-400/50'
-                                        : 'bg-gray-800 text-gray-100 border-slate-700 hover:border-slate-500'
+                                        : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800 dark:hover:border-slate-500'
                                     }`}
                                     onPointerDown={(e) => {
                                       if (e.pointerType === 'touch') {
@@ -2697,7 +2697,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border touch-manipulation select-none ${
                                     isSelected 
                                       ? 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-orange-400/50'
-                                      : 'bg-gray-800 text-gray-100 border-slate-700 hover:border-slate-500'
+                                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800 dark:hover:border-slate-500'
                                   }`}
                                   onPointerDown={(e) => {
                                     if (e.pointerType === 'touch') {

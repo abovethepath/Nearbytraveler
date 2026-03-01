@@ -204,16 +204,6 @@ export default function UserCard({
           </div>
         )}
         
-        {/* CRITICAL: Travel badge on photo - MUST show when Nearby Traveler (airplane icon, left corner) */}
-        {travelCityFinal && user.userType !== 'business' && (
-          <div className="absolute top-1.5 left-1.5 z-10 flex items-center gap-1">
-            <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-md whitespace-nowrap flex items-center gap-1">
-              <Plane className="w-3 h-3 flex-shrink-0" />
-              {travelCityFinal}
-            </span>
-          </div>
-        )}
-        
         {/* Business badge */}
         {user.userType === 'business' && (
           <div className="absolute top-1.5 right-1.5">
@@ -270,6 +260,14 @@ export default function UserCard({
           <div className="truncate mt-0.5" style={{ color: '#9ca3af', fontSize: 12, fontWeight: 500 }}>
             {contactsInCommon} contacts in common
           </div>
+          {travelCityFinal && user.userType !== 'business' && (
+            <div className="mt-2 flex items-center gap-1.5">
+              <span className="bg-blue-600 text-white text-[11px] font-bold px-2 py-1 rounded-md shadow-md whitespace-nowrap inline-flex items-center gap-1">
+                <Plane className="w-3 h-3 flex-shrink-0" />
+                {travelCityFinal}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Desktop (non-compact only) */}
@@ -306,6 +304,14 @@ export default function UserCard({
           <div className="truncate mt-0.5" style={{ color: '#9ca3af', fontSize: 12, fontWeight: 500 }}>
             {contactsInCommon} contacts in common
           </div>
+          {travelCityFinal && user.userType !== 'business' && (
+            <div className="mt-2 flex items-center gap-1.5">
+              <span className="bg-blue-600 text-white text-[11px] font-bold px-2 py-1 rounded-md shadow-md whitespace-nowrap inline-flex items-center gap-1">
+                <Plane className="w-3 h-3 flex-shrink-0" />
+                {travelCityFinal}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </button>

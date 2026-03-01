@@ -690,7 +690,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                   ...prev, 
                   minAge: e.target.value ? parseInt(e.target.value) : undefined 
                 }))}
-                className="w-24"
+                className="w-32 min-w-[8rem]"
               />
               <span className="self-center">to</span>
               <Input
@@ -701,7 +701,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                   ...prev, 
                   maxAge: e.target.value ? parseInt(e.target.value) : undefined 
                 }))}
-                className="w-24"
+                className="w-32 min-w-[8rem]"
               />
             </div>
           </div>
