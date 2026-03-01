@@ -160,34 +160,144 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     console.log('📡 WhatsApp Chat: Fetching messages via HTTP fallback for chatId:', chatId, 'chatType:', chatType);
     try {
       let user: any = {};
-      try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}'); } catch { user = {}; }
-      const uid = (currentUserId || user.id || '').toString();
+      try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('current_user') || '{}'); } catch { user = {}; }
+      const uidNum = Number(currentUserId || user.id || 0);
+      const uid = uidNum.toString();
       const headers: Record<string, string> = { 'x-user-id': uid };
       if (user?.id) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name });
       if (import.meta.env.DEV) {
         console.log('📡 WhatsApp Chat: HTTP fallback request', {
-          url: `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`,
+          url: chatType === 'dm'
+            ? `${getApiBaseUrl()}/api/messages/${uidNum}`
+            : chatType === 'event'
+              ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
+              : chatType === 'meetup'
+                ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
+            : `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`,
           uid,
           chatId,
           chatType,
         });
       }
-      const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`, {
+      const response = await fetch(
+        chatType === 'dm'
+          ? `${getApiBaseUrl()}/api/messages/${uidNum}`
+          : chatType === 'event'
+            ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
+            : chatType === 'meetup'
+              ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
+          : `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`,
+        {
         headers,
         credentials: 'include',
-      });
+        }
+      );
       
       if (response.ok) {
         const data = await response.json();
-        if (data.messages && Array.isArray(data.messages)) {
+        if (chatType === 'dm') {
+          const all = Array.isArray(data) ? data : [];
+          const thread = all.filter((m: any) => {
+            const senderId = m?.senderId;
+            const receiverId = m?.receiverId;
+            return (
+              (senderId == uidNum && receiverId == chatId) ||
+              (senderId == chatId && receiverId == uidNum)
+            );
+          });
+
+          const mapped = thread.reverse().map((m: any) => {
+            const senderUser = m?.senderUser || m?.sender || null;
+            const reply = m?.repliedMessage || null;
+            return {
+              id: m?.id,
+              senderId: m?.senderId,
+              content: m?.content,
+              messageType: m?.messageType || "text",
+              replyToId: m?.replyToId,
+              createdAt: m?.createdAt || new Date().toISOString(),
+              isEdited: m?.isEdited,
+              reactions: m?.reactions,
+              sender: senderUser?.id
+                ? {
+                    id: senderUser.id,
+                    username: senderUser.username,
+                    name: senderUser.name,
+                    profileImage: senderUser.profileImage,
+                  }
+                : undefined,
+              replyTo: reply?.id
+                ? {
+                    id: reply.id,
+                    senderId: reply.senderId,
+                    content: reply.content,
+                    messageType: "text",
+                    createdAt: m?.createdAt || "",
+                  }
+                : undefined,
+            } as Message;
+          });
+
+          console.log("📬 WhatsApp Chat: DM HTTP fallback loaded", mapped.length, "messages");
+          setMessages(mapped);
+          setMessagesLoaded(true);
+          scrollToBottom();
+        } else if (chatType === 'event') {
+          const all = Array.isArray(data) ? data : [];
+          const mapped = all.map((m: any) => {
+            const senderUser = m?.user || m?.sender || null;
+            return {
+              id: m?.id,
+              senderId: m?.senderId,
+              content: m?.content,
+              messageType: m?.messageType || "text",
+              replyToId: m?.replyToId,
+              createdAt: m?.createdAt || new Date().toISOString(),
+              isEdited: m?.isEdited,
+              reactions: m?.reactions,
+              sender: senderUser?.id
+                ? {
+                    id: senderUser.id,
+                    username: senderUser.username,
+                    name: senderUser.name,
+                    profileImage: senderUser.profileImage,
+                  }
+                : undefined,
+            } as Message;
+          });
+          console.log("📬 WhatsApp Chat: Event HTTP fallback loaded", mapped.length, "messages");
+          setMessages(mapped);
+          setMessagesLoaded(true);
+          scrollToBottom();
+        } else if (chatType === 'meetup') {
+          const all = Array.isArray(data) ? data : [];
+          const mapped = all.map((m: any) => {
+            const senderUser = m?.sender || null;
+            return {
+              id: m?.id,
+              senderId: m?.userId ?? m?.senderId,
+              content: m?.message ?? m?.content ?? "",
+              messageType: m?.messageType || "text",
+              createdAt: m?.sentAt || m?.createdAt || new Date().toISOString(),
+              sender: senderUser?.id
+                ? {
+                    id: senderUser.id,
+                    username: senderUser.username,
+                    name: senderUser.name,
+                    profileImage: senderUser.profileImage,
+                  }
+                : undefined,
+            } as Message;
+          });
+          console.log("📬 WhatsApp Chat: Quick meetup HTTP fallback loaded", mapped.length, "messages");
+          setMessages(mapped);
+          setMessagesLoaded(true);
+          scrollToBottom();
+        } else if (data.messages && Array.isArray(data.messages)) {
           console.log('📬 WhatsApp Chat: HTTP fallback loaded', data.messages.length, 'messages');
           setMessages(data.messages.reverse());
           setMessagesLoaded(true);
           scrollToBottom();
-        } else if (chatType === 'dm') {
-          // DM-specific resilience: do not get stuck in a perpetual loading state
-          console.warn('⚠️ WhatsApp Chat: HTTP fallback returned unexpected payload for DM; clearing loading state');
-          setMessagesLoaded(true);
         }
       } else {
         console.warn('⚠️ WhatsApp Chat: HTTP fallback failed with status:', response.status);
@@ -212,7 +322,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   
   const { data: members = [], error: membersError } = useQuery<ChatMember[]>({
     queryKey: [membersEndpoint],
-    enabled: (chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && Boolean(chatId)
+    enabled: (chatType === 'chatroom' || chatType === 'event') && Boolean(chatId)
   });
   
   // Check if current user is admin (use == for type coercion since currentUserId may be string)
@@ -325,33 +435,144 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     const loadMessagesImmediately = async () => {
       try {
         let user: any = {};
-        try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}'); } catch { user = {}; }
-        const uid = (currentUserId || user.id || '').toString();
+        try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('current_user') || '{}'); } catch { user = {}; }
+        const uidNum = Number(currentUserId || user.id || 0);
+        const uid = uidNum.toString();
         const headers: Record<string, string> = { 'x-user-id': uid };
         if (user?.id) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name });
         if (import.meta.env.DEV) {
           console.log('🚀 WhatsApp Chat: Initial messages request', {
-            url: `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`,
+            url: chatType === 'dm'
+              ? `${getApiBaseUrl()}/api/messages/${uidNum}`
+              : chatType === 'event'
+                ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
+                : chatType === 'meetup'
+                  ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
+              : `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`,
             uid,
             chatId,
             chatType,
           });
         }
-        const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`, {
+        const response = await fetch(
+          chatType === 'dm'
+            ? `${getApiBaseUrl()}/api/messages/${uidNum}`
+            : chatType === 'event'
+              ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
+              : chatType === 'meetup'
+                ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
+            : `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`,
+          {
           headers,
           credentials: 'include',
-        });
+          }
+        );
         
         if (response.ok) {
           const data = await response.json();
-          if (data.messages && Array.isArray(data.messages)) {
+          if (chatType === 'dm') {
+            const all = Array.isArray(data) ? data : [];
+            const thread = all.filter((m: any) => {
+              const senderId = m?.senderId;
+              const receiverId = m?.receiverId;
+              return (
+                (senderId == uidNum && receiverId == chatId) ||
+                (senderId == chatId && receiverId == uidNum)
+              );
+            });
+
+            const mapped = thread.reverse().map((m: any) => {
+              const senderUser = m?.senderUser || m?.sender || null;
+              const reply = m?.repliedMessage || null;
+              return {
+                id: m?.id,
+                senderId: m?.senderId,
+                content: m?.content,
+                messageType: m?.messageType || "text",
+                replyToId: m?.replyToId,
+                createdAt: m?.createdAt || new Date().toISOString(),
+                isEdited: m?.isEdited,
+                reactions: m?.reactions,
+                sender: senderUser?.id
+                  ? {
+                      id: senderUser.id,
+                      username: senderUser.username,
+                      name: senderUser.name,
+                      profileImage: senderUser.profileImage,
+                    }
+                  : undefined,
+                replyTo: reply?.id
+                  ? {
+                      id: reply.id,
+                      senderId: reply.senderId,
+                      content: reply.content,
+                      messageType: "text",
+                      createdAt: m?.createdAt || "",
+                    }
+                  : undefined,
+              } as Message;
+            });
+
+            console.log("🚀 WhatsApp Chat: Immediate DM HTTP load:", mapped.length, "messages");
+            setMessages(mapped);
+            setMessagesLoaded(true);
+            scrollToBottom();
+          } else if (chatType === 'event') {
+            const all = Array.isArray(data) ? data : [];
+            const mapped = all.map((m: any) => {
+              const senderUser = m?.user || m?.sender || null;
+              return {
+                id: m?.id,
+                senderId: m?.senderId,
+                content: m?.content,
+                messageType: m?.messageType || "text",
+                replyToId: m?.replyToId,
+                createdAt: m?.createdAt || new Date().toISOString(),
+                isEdited: m?.isEdited,
+                reactions: m?.reactions,
+                sender: senderUser?.id
+                  ? {
+                      id: senderUser.id,
+                      username: senderUser.username,
+                      name: senderUser.name,
+                      profileImage: senderUser.profileImage,
+                    }
+                  : undefined,
+              } as Message;
+            });
+            console.log("🚀 WhatsApp Chat: Immediate event HTTP load:", mapped.length, "messages");
+            setMessages(mapped);
+            setMessagesLoaded(true);
+            scrollToBottom();
+          } else if (chatType === 'meetup') {
+            const all = Array.isArray(data) ? data : [];
+            const mapped = all.map((m: any) => {
+              const senderUser = m?.sender || null;
+              return {
+                id: m?.id,
+                senderId: m?.userId ?? m?.senderId,
+                content: m?.message ?? m?.content ?? "",
+                messageType: m?.messageType || "text",
+                createdAt: m?.sentAt || m?.createdAt || new Date().toISOString(),
+                sender: senderUser?.id
+                  ? {
+                      id: senderUser.id,
+                      username: senderUser.username,
+                      name: senderUser.name,
+                      profileImage: senderUser.profileImage,
+                    }
+                  : undefined,
+              } as Message;
+            });
+            console.log("🚀 WhatsApp Chat: Immediate quick meetup HTTP load:", mapped.length, "messages");
+            setMessages(mapped);
+            setMessagesLoaded(true);
+            scrollToBottom();
+          } else if (data.messages && Array.isArray(data.messages)) {
             console.log('🚀 WhatsApp Chat: Immediate HTTP load:', data.messages.length, 'messages');
             setMessages(data.messages.reverse());
             setMessagesLoaded(true);
             scrollToBottom();
-          } else if (chatType === 'dm') {
-            console.warn('⚠️ WhatsApp Chat: Immediate HTTP load returned unexpected payload for DM; clearing loading state');
-            setMessagesLoaded(true);
           }
         } else if (chatType === 'dm') {
           // DM-specific resilience: allow user to type/send even if history fetch fails
@@ -382,7 +603,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       ws.onopen = () => {
         console.log('🟢 WhatsApp Chat: WebSocket connected');
         let user: any = {};
-        try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}'); } catch { user = {}; }
+        try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('current_user') || '{}'); } catch { user = {}; }
         
         // Authenticate
         console.log('🔐 WhatsApp Chat: Authenticating with userId:', currentUserId, 'chatId:', chatId, 'chatType:', chatType);
@@ -444,17 +665,31 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             console.log('💬 WhatsApp Chat: New message received, chatType:', data.chatType, 'chatroomId:', data.chatroomId, 'expected chatType:', chatType, 'expected chatId:', chatId);
             if (data.chatType === chatType) {
               if (chatType === 'dm') {
-                const msgSenderId = data.payload?.senderId || data.senderId;
-                const msgReceiverId = data.payload?.receiverId;
-                const isParticipant = 
-                  (msgSenderId === currentUserId && msgReceiverId === chatId) ||
-                  (msgSenderId === chatId && msgReceiverId === currentUserId);
-                if (isParticipant) {
-                  setMessages(prev => {
-                    if (prev.some(m => m.id === data.payload.id)) return prev;
-                    return [...prev, data.payload];
+                const payload = data.payload || {};
+                const msgSenderId =
+                  payload.senderId ?? payload.sender_id ?? data.senderId ?? data.sender_id;
+                const msgReceiverId =
+                  payload.receiverId ?? payload.receiver_id ?? data.receiverId ?? data.receiver_id;
+                const msgChatroomId =
+                  data.chatroomId ?? payload.chatroomId ?? payload.chatroom_id;
+
+                const isForThisDm =
+                  (msgSenderId == currentUserId && (msgReceiverId == chatId || msgChatroomId == chatId)) ||
+                  (msgSenderId == chatId && (msgReceiverId == currentUserId || msgChatroomId == chatId));
+
+                if (isForThisDm && payload?.id != null) {
+                  setMessages((prev) => {
+                    if (prev.some((m) => m.id == payload.id)) return prev;
+                    return [...prev, payload];
                   });
                   scrollToBottom();
+                } else if (import.meta.env.DEV) {
+                  console.log("💬 WhatsApp Chat: Ignored DM message:new (not for this thread)", {
+                    msgSenderId,
+                    msgReceiverId,
+                    msgChatroomId,
+                    expected: { currentUserId, chatId },
+                  });
                 }
               } else if (data.chatroomId === chatId) {
                 setMessages(prev => {
@@ -576,18 +811,23 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     setMessageText("");
     setReplyingTo(null);
 
-    // Try WebSocket first if available
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+    // For DMs, always send via HTTP so the sender reliably sees the message immediately.
+    // WebSocket is still used for real-time receipt/typing/sync.
+    if (chatType !== 'dm' && wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       console.log('✅ Sending message via WebSocket...');
+      const wsPayload: any = {
+        content,
+        messageType: 'text',
+        replyToId
+      };
+      if (chatType === 'dm') {
+        wsPayload.receiverId = chatId;
+      }
       wsRef.current.send(JSON.stringify({
         type: 'message:new',
         chatType,
         chatroomId: chatId,
-        payload: {
-          content,
-          messageType: 'text',
-          replyToId
-        }
+        payload: wsPayload
       }));
       
       wsRef.current.send(JSON.stringify({
@@ -600,7 +840,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       console.log('📡 Sending message via HTTP fallback...');
       try {
         let user: any = {};
-        try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}'); } catch { user = {}; }
+        try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('current_user') || '{}'); } catch { user = {}; }
         let endpoint = '';
         let body: any = { content, messageType: 'text', replyToId };
         
@@ -608,6 +848,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           // For DMs, use the direct messages endpoint (senderId required by API)
           endpoint = `${getApiBaseUrl()}/api/messages`;
           body = { senderId: currentUserId || user.id, receiverId: chatId, content, messageType: 'text', replyToId };
+        } else if (chatType === 'event') {
+          endpoint = `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`;
+          body = { content };
+        } else if (chatType === 'meetup') {
+          endpoint = `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`;
+          body = { content };
         } else {
           // For chatrooms/events/meetups
           endpoint = `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages`;
@@ -626,12 +872,49 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           const resp = await response.json();
           const newMessage = resp.message || resp;
           console.log('✅ Message sent via HTTP:', newMessage);
-          // Add optimistic update - message will be added to list (API returns { message, messageId } or { id, ... })
-          if (newMessage && (newMessage.id ?? resp.messageId)) {
-            const formattedMessage: Message = {
+          // Add optimistic update - normalize shapes across endpoints
+          const normalized: Message | null = (() => {
+            if (!newMessage) return null;
+            if (chatType === 'event') {
+              const senderUser = newMessage.user || null;
+              return {
+                id: newMessage.id,
+                senderId: newMessage.senderId,
+                content: newMessage.content,
+                messageType: newMessage.messageType || 'text',
+                replyToId: newMessage.replyToId,
+                createdAt: newMessage.createdAt || new Date().toISOString(),
+                isEdited: newMessage.isEdited,
+                reactions: newMessage.reactions,
+                sender: senderUser?.id ? {
+                  id: senderUser.id,
+                  username: senderUser.username,
+                  name: senderUser.name,
+                  profileImage: senderUser.profileImage
+                } : undefined
+              };
+            }
+            if (chatType === 'meetup') {
+              const senderUser = newMessage.sender || null;
+              return {
+                id: newMessage.id,
+                senderId: newMessage.userId ?? newMessage.senderId ?? currentUserId,
+                content: newMessage.message ?? newMessage.content ?? content,
+                messageType: newMessage.messageType || 'text',
+                createdAt: newMessage.sentAt || newMessage.createdAt || new Date().toISOString(),
+                sender: senderUser?.id ? {
+                  id: senderUser.id,
+                  username: senderUser.username,
+                  name: senderUser.name,
+                  profileImage: senderUser.profileImage
+                } : undefined
+              };
+            }
+            // chatroom + dm use existing shape (dm already handled elsewhere)
+            return {
               id: newMessage.id ?? resp.messageId,
               senderId: currentUserId,
-              content: newMessage.content,
+              content: newMessage.content ?? content,
               messageType: newMessage.messageType || 'text',
               replyToId: newMessage.replyToId,
               createdAt: newMessage.createdAt || new Date().toISOString(),
@@ -642,17 +925,30 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 profileImage: user.profileImage
               }
             };
-            setMessages(prev => [...prev, formattedMessage]);
+          })();
+
+          if (normalized?.id != null) {
+            setMessages(prev => [...prev, normalized]);
             scrollToBottom();
           }
         } else {
-          console.error('❌ HTTP message send failed:', response.status);
+          let errText = '';
+          try { errText = JSON.stringify(await response.json()); } catch { try { errText = await response.text(); } catch {} }
+          console.error('❌ HTTP message send failed:', {
+            status: response.status,
+            chatType,
+            chatId,
+            endpoint,
+            body,
+            currentUserId,
+            errText
+          });
           toast({ title: "Failed to send message", variant: "destructive" });
           // Restore the message text so user can try again
           setMessageText(content);
         }
       } catch (error) {
-        console.error('❌ HTTP message send error:', error);
+        console.error('❌ HTTP message send error:', { chatType, chatId, currentUserId, error });
         toast({ title: "Failed to send message", variant: "destructive" });
         setMessageText(content);
       }
@@ -1067,7 +1363,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Messages - Flex wrapper ensures proper spacing; min-h-0 allows flex child to shrink */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {/* Scrollable messages area */}
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 py-2 bg-[#e5ddd5] dark:bg-[#0b141a]" style={{
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 py-2 bg-[#0b141a]" style={{
           WebkitOverflowScrolling: 'touch',
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23999999' stroke-width='2' opacity='0.18'%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Ccircle cx='150' cy='300' r='30'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Ccircle cx='100' cy='500' r='40'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Ccircle cx='150' cy='700' r='35'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3C/svg%3E")`
         }}>

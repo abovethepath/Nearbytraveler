@@ -442,11 +442,17 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     const hasContent = cityData.activities.length > 0 || cityData.events.length > 0 || (cityData.travelPlan && citySubInterests.length > 0);
 
     return (
-      <div key={cityKey} className="flex flex-wrap items-center gap-2 py-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0 last:pb-0 first:pt-0">
-        <span className={`font-semibold shrink-0 basis-full sm:basis-auto ${isDestination ? 'text-orange-600 dark:text-orange-400' : 'text-blue-600 dark:text-blue-400'}`}>
-          {displayName}
-        </span>
-        <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+      <div key={cityKey} className="py-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0 last:pb-0 first:pt-0">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
+          <span
+            className={`font-semibold shrink-0 basis-full sm:basis-auto ${
+              isDestination ? "text-orange-600 dark:text-orange-400" : "text-blue-600 dark:text-blue-400"
+            }`}
+          >
+            {displayName}
+          </span>
+
+          <div className="flex flex-wrap items-center gap-2 w-full sm:flex-1 sm:min-w-0">
           {/* Sub-Interest Pills - for travel destinations */}
           {cityData.travelPlan && citySubInterests.map((subInterest, idx) => (
             <div key={`sub-${idx}-${subInterest}`} className="relative group">
@@ -458,7 +464,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           {/* Activity Pills */}
           {cityData.activities.map((activity) => (
             <div key={`act-${activity.id}`} className="relative group">
-              <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-600 to-blue-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
+              <div className="inline-flex items-center justify-center rounded-full pl-4 pr-7 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-600 to-blue-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
                 <span style={{ color: 'black' }}>{activity.activityName}</span>
               </div>
               {isOwnProfile && (
@@ -481,7 +487,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
             return (
               <div key={`evt-${event.id}`} className={`relative group ${isEventPast ? 'opacity-60' : ''}`}>
                 <Link href={eventUrl}>
-                  <div className={`inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm cursor-pointer transition-all hover:scale-105 ${isEventPast ? 'bg-gradient-to-r from-gray-500 to-gray-400' : 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600'}`}>
+                  <div className={`inline-flex items-center justify-center rounded-full pl-4 pr-7 py-1.5 text-xs font-medium border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm cursor-pointer transition-all hover:scale-105 ${isEventPast ? 'bg-gradient-to-r from-gray-500 to-gray-400' : 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600'}`}>
                     <span style={{ color: 'black' }}>{isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}</span>
                   </div>
                 </Link>
@@ -501,8 +507,10 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
               </div>
             );
           })}
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
+
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto sm:shrink-0">
           {isOwnProfile && (
             <Link href={cityKey ? `/match-in-city?city=${encodeURIComponent(getMetroCities(cityKey).length > 0 ? getMetroCities(cityKey)[0] : cityKey)}` : '/match-in-city'}>
               <Button
@@ -531,6 +539,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
               {cityData.travelPlan?.isPast ? 'Clear' : 'Remove'}
             </Button>
           )}
+          </div>
         </div>
       </div>
     );

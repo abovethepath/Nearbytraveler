@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -131,6 +131,12 @@ export default function Auth() {
     }
   };
 
+  const handleLoginSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (isLoading) return;
+    void handleLogin();
+  };
+
 
   return (
     <div 
@@ -163,7 +169,7 @@ export default function Auth() {
             {isSignupPage && !isLogin ? (
               <JoinNowWidgetNew />
             ) : isLogin ? (
-              <div className="space-y-6">
+              <form className="space-y-6" onSubmit={handleLoginSubmit}>
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="loginEmail" className="text-base font-medium text-gray-900 dark:text-gray-100">Email or Username</Label>
@@ -202,14 +208,14 @@ export default function Auth() {
                 </div>
 
                 <Button
-                  onClick={handleLogin}
                   disabled={isLoading || !formData.email || !formData.password}
+                  type="submit"
                   className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-orange-500 text-white font-semibold rounded-md hover:opacity-90 transition-opacity"
                   data-testid="button-login-submit"
                 >
                   {isLoading ? "Signing In..." : "Sign In"}
                 </Button>
-              </div>
+              </form>
             ) : null}
 
             {isLogin && (

@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "wouter";
-import { Plane } from "lucide-react";
+import { MapPin, Plane } from "lucide-react";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { formatHometownForDisplay } from "@/lib/locationDisplay";
@@ -159,6 +159,7 @@ export default function UserCard({
   const matchPercent = getMatchPercent();
   // People discovery cards: show shared INTERESTS count (as originally displayed)
   const thingsInCommon = compatibilityData?.sharedInterests?.length || 0;
+  const contactsInCommon = connectionDegree?.mutualCount ?? 0;
   const bioText = (user.bio || "").trim();
 
   return (
@@ -228,7 +229,7 @@ export default function UserCard({
         )}
       </div>
       
-      {/* Info box - order: 1) @username 2) bio (3 lines) 3) X things in common 4) location tags */}
+      {/* Info box - structure is intentionally consistent for mobile + desktop */}
       <div className={`${compact ? 'p-1 min-h-[6.5rem]' : 'p-1 lg:p-1.5 min-h-[7.5rem]'} flex flex-col justify-start`} style={{ backgroundColor: '#1a1d27' }}>
         {/* Mobile / compact */}
         <div className={compact ? '' : 'lg:hidden'}>
@@ -238,18 +239,13 @@ export default function UserCard({
           >
             {displayName}
           </div>
-          <div className="truncate mt-0.5" style={{ color: '#5a5e75', fontSize: 11.5 }}>
-            {user.userType === 'business' && user.streetAddress ? (
-              `📍 ${user.streetAddress}`
-            ) : (
-              <>
-                <span style={{ color: '#5a5e75', fontWeight: 600 }}>Hometown</span>
-                <span> </span>
-                <span style={{ color: '#e8834a', fontWeight: 700 }}>Nearby Local</span>
-                <span> </span>
-                <span>{displayCity}</span>
-              </>
-            )}
+          <div className="truncate mt-0.5 flex items-center gap-1" style={{ color: '#5a5e75', fontSize: 11.5 }}>
+            <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#5a5e75' }} />
+            <span>
+              {user.userType === 'business' && user.streetAddress
+                ? user.streetAddress
+                : displayCity}
+            </span>
           </div>
           <div
             title={user.bio || undefined}
@@ -266,20 +262,11 @@ export default function UserCard({
           >
             {bioText || '\u00A0'}
           </div>
-          {!isCurrentUser && (
-            <div className="truncate mt-0.5" style={{ color: '#e8834a', fontSize: 12, fontWeight: 600 }}>
-              {thingsInCommon} things in common
-            </div>
-          )}
-          <div className="min-h-[1.25rem] mt-0.5">
-            {travelCityFinal && user.userType !== 'business' ? (
-              <div className="flex items-center gap-1 truncate" style={{ color: '#5b9cf6', fontSize: 11.5, fontWeight: 600 }}>
-                <Plane className="w-3 h-3 flex-shrink-0" />
-                <span>Nearby Traveler → {travelCityFinal}</span>
-              </div>
-            ) : (
-              <span className="invisible text-xs">&#8203;</span>
-            )}
+          <div className="truncate mt-1" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
+            {thingsInCommon} things in common
+          </div>
+          <div className="truncate mt-0.5" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
+            {contactsInCommon} contacts in common
           </div>
         </div>
 
@@ -291,18 +278,13 @@ export default function UserCard({
           >
             {displayName}
           </div>
-          <div className="truncate mt-0.5" style={{ color: '#5a5e75', fontSize: 11.5 }}>
-            {user.userType === 'business' && user.streetAddress ? (
-              `📍 ${user.streetAddress}`
-            ) : (
-              <>
-                <span style={{ color: '#5a5e75', fontWeight: 600 }}>Hometown</span>
-                <span> </span>
-                <span style={{ color: '#e8834a', fontWeight: 700 }}>Nearby Local</span>
-                <span> </span>
-                <span>{displayCity}</span>
-              </>
-            )}
+          <div className="truncate mt-0.5 flex items-center gap-1" style={{ color: '#5a5e75', fontSize: 11.5 }}>
+            <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#5a5e75' }} />
+            <span>
+              {user.userType === 'business' && user.streetAddress
+                ? user.streetAddress
+                : displayCity}
+            </span>
           </div>
           <div
             title={user.bio || undefined}
@@ -319,20 +301,11 @@ export default function UserCard({
           >
             {bioText || '\u00A0'}
           </div>
-          {!isCurrentUser && (
-            <div className="truncate mt-0.5" style={{ color: '#e8834a', fontSize: 12, fontWeight: 600 }}>
-              {thingsInCommon} things in common
-            </div>
-          )}
-          <div className="min-h-[1.25rem] mt-0.5">
-            {travelCityFinal && user.userType !== 'business' ? (
-              <div className="flex items-center gap-1 truncate" style={{ color: '#5b9cf6', fontSize: 11.5, fontWeight: 600 }}>
-                <Plane className="w-3 h-3 flex-shrink-0" />
-                <span>Nearby Traveler → {travelCityFinal}</span>
-              </div>
-            ) : (
-              <span className="invisible text-xs">&#8203;</span>
-            )}
+          <div className="truncate mt-1" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
+            {thingsInCommon} things in common
+          </div>
+          <div className="truncate mt-0.5" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
+            {contactsInCommon} contacts in common
           </div>
         </div>
       </div>

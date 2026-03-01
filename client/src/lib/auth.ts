@@ -2,7 +2,7 @@ import type { User } from "@shared/schema";
 
 // Foolproof authentication storage - multiple redundant methods
 // CRITICAL: Include 'travelconnect_user' as many components read from it
-const USER_STORAGE_KEYS = ['user', 'authUser', 'currentUser', 'travelconnect_user'];
+const USER_STORAGE_KEYS = ['user', 'authUser', 'currentUser', 'current_user', 'travelconnect_user'];
 
 export const authStorage = {
   getUser(): User | null {

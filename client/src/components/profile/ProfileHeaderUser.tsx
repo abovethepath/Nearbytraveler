@@ -147,13 +147,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const locationVisibilityToggleRow = () => {
     if (!isOwnProfile) return null;
     const enabled = !!localLocationSharingEnabled;
-    const activeIconClass = enabled ? "text-green-600 dark:text-green-400" : "text-black/70 dark:text-gray-400";
+    const activeIconClass = enabled ? "text-green-600" : "text-black/70";
 
     return (
       <div className="mt-1.5 flex items-center justify-between gap-2 w-full" data-testid="location-visibility-toggle-row">
         <div className="flex items-center gap-1">
           <MapPin className={`w-3 h-3 ${activeIconClass}`} />
-          <span className="text-[11px] font-medium leading-none !text-black dark:!text-gray-200 crisp-hero-text">
+          <span className="text-[11px] font-medium leading-none !text-black crisp-hero-text">
             Visible on city map
           </span>
         </div>
@@ -172,8 +172,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 relative isolate ${isNativeIOSApp() ? 'py-6 sm:py-8 lg:py-12' : isDesktopOwnProfile ? 'py-4 sm:py-5 lg:pt-6 lg:pb-16' : 'pt-12 sm:pt-14 lg:pt-20 pb-6 sm:pb-8 lg:pb-16'}`}
       style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)' }}
     >
-      {!isOwnProfile && !isDesktopOtherUser && shareButton(false)}
-      <div className={`max-w-7xl mx-auto relative z-10 ${isDesktopOwnProfile ? 'pl-4 sm:pl-6 lg:pl-8' : ''}`}>
+      <div className={`${isOwnProfile ? 'max-w-7xl' : 'max-w-4xl lg:max-w-6xl'} mx-auto relative z-10 ${isDesktopOwnProfile ? 'pl-4 sm:pl-6 lg:pl-8' : ''}`}>
         {isDesktopOwnProfile ? (
           /* Desktop own profile: balanced layout - larger avatar, readable city text, proportional @username, tabs at bottom */
           <div className="flex flex-col lg:relative">
@@ -307,7 +306,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
         <div className="flex flex-col lg:relative">
         {/* Desktop (lg+ other-user): overlapping avatar block anchored to hero bottom-left */}
         {isDesktopOtherUser && (
-          <div className="hidden lg:flex flex-col items-start absolute left-8 bottom-[-112px] z-30">
+          <div className="hidden lg:flex flex-col items-start absolute left-8 bottom-[-92px] z-30">
             <div className="relative flex flex-col items-center">
               <div
                 className={`rounded-full border-4 border-white/90 shadow-2xl overflow-hidden ${user?.profileImage ? 'cursor-pointer hover:border-white transition-all' : ''}`}
@@ -347,8 +346,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
           </div>
         )}
 
-        <div className={`flex flex-row items-start relative z-20 ${!isNativeIOSApp() ? 'gap-6 sm:gap-8' : 'gap-4 sm:gap-6'} ${isDesktopOtherUser ? 'flex-nowrap' : 'flex-wrap'}`}>
-          <div className={`relative flex-shrink-0 ${isNativeIOSApp() ? 'flex flex-col items-center' : 'flex flex-col items-start'} ${isDesktopOtherUser ? 'lg:hidden' : ''}`}>
+        <div className={`flex relative z-20 ${!isOwnProfile && !isDesktopOtherUser ? 'flex-col items-center w-full max-w-xl mx-auto' : 'flex-row items-start'} ${!isNativeIOSApp() ? 'gap-6 sm:gap-8' : 'gap-4 sm:gap-6'} ${isDesktopOtherUser ? 'flex-nowrap' : 'flex-wrap'}`}>
+          <div className={`relative ${!isOwnProfile && !isDesktopOtherUser ? 'w-full flex flex-col items-center' : `flex-shrink-0 ${isNativeIOSApp() ? 'flex flex-col items-center' : 'flex flex-col items-start'}`} ${isDesktopOtherUser ? 'lg:hidden' : ''}`}>
             {/* Avatar + New to Town badge stack (desktop: centered column; iOS: unchanged) */}
             <div className={`relative ${!isNativeIOSApp() ? 'flex flex-col items-center' : ''}`}>
               {/* Avatar wrapper - relative for camera button positioning */}
@@ -405,7 +404,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </div>
               </>
             )}
-            <div className={`flex flex-col gap-1 min-w-0 w-full max-w-[280px] sm:max-w-none ${!isNativeIOSApp() ? 'mt-5' : 'mt-3'}`}>
+            <div className={`flex flex-col gap-1 min-w-0 w-full max-w-[280px] sm:max-w-none ${!isOwnProfile && !isDesktopOtherUser ? 'mt-3 items-center text-center' : (!isNativeIOSApp() ? 'mt-5' : 'mt-3')}`}>
               <span className="text-base sm:text-lg lg:text-xl font-semibold text-orange-600 dark:text-orange-400 crisp-hero-text">Nearby Local</span>
               <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text ${isDesktopOtherUser ? '!text-black' : !isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
               {hasValidTravelDestination && (
@@ -438,15 +437,15 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               })()}
             </div>
           </div>
-          <div className={`flex-1 min-w-0 overflow-hidden ${!isNativeIOSApp() && isOwnProfile ? 'pt-1' : ''} ${isDesktopOtherUser ? 'lg:pl-[18rem]' : ''}`}>
-            <div className={`space-y-2 w-full overflow-hidden ${!isNativeIOSApp() && isOwnProfile ? 'mt-0 pt-6 sm:pt-8' : 'mt-2'}`}>
+          <div className={`flex-1 min-w-0 overflow-hidden ${!isNativeIOSApp() && isOwnProfile ? 'pt-1' : ''} ${isDesktopOtherUser ? 'lg:pl-[18rem]' : ''} ${!isOwnProfile && !isDesktopOtherUser ? 'w-full flex flex-col items-center text-center' : ''}`}>
+            <div className={`space-y-2 w-full overflow-hidden ${!isNativeIOSApp() && isOwnProfile ? 'mt-0 pt-6 sm:pt-8' : (isOwnProfile ? 'mt-2' : 'mt-0 sm:mt-1')}`}>
               {(() => {
                 return (
                   <>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <div className="flex items-center gap-1.5 shrink-0 lg:inline-flex lg:items-center lg:gap-2 lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm w-fit max-w-full">
-                        <h1 className={`text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all ${isDesktopOtherUser ? '!text-black' : 'text-black'} lg:!text-white lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)] crisp-hero-text`}>@{user?.username}</h1>
-                        {isDesktopOtherUser && shareButton(true)}
+                    <div className={`flex items-center gap-2 flex-wrap ${!isOwnProfile && !isDesktopOtherUser ? 'justify-center w-full' : ''}`}>
+                      <div className={`flex items-center gap-2 shrink-0 w-fit max-w-full ${isOwnProfile ? 'lg:inline-flex lg:items-center lg:gap-2 lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm' : ''}`}>
+                        <h1 className={`text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all crisp-hero-text ${!isOwnProfile ? 'text-blue-700 dark:text-blue-200' : (isDesktopOtherUser ? '!text-black' : 'text-black')} ${isOwnProfile ? 'lg:!text-white lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)]' : ''}`}>@{user?.username}</h1>
+                        {!isOwnProfile && shareButton(true)}
                       </div>
                       {!isOwnProfile && connectionDegreeData?.degree && connectionDegreeData.degree > 0 && (
                         <Badge
@@ -465,7 +464,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     </div>
 
                     {!isOwnProfile && (
-                      <div className={`flex mt-2 ${isDesktopOtherUser ? 'flex-row flex-wrap items-start gap-4 lg:gap-8 w-full lg:pr-2' : `flex-row flex-wrap items-center gap-2 ${!isNativeIOSApp() ? 'justify-start' : 'justify-center'}`}`}>
+                      <div className={`flex mt-2 ${isDesktopOtherUser ? 'flex-row flex-wrap items-start gap-4 lg:gap-8 w-full lg:pr-2' : `flex-row flex-wrap items-center gap-2 ${!isOwnProfile && !isDesktopOtherUser ? 'justify-center w-full' : (!isNativeIOSApp() ? 'justify-start' : 'justify-center')}`}`}>
                         <div className={isDesktopOtherUser ? 'flex flex-col flex-nowrap items-stretch gap-3 shrink-0' : 'flex flex-row flex-wrap items-center gap-2'}>
                           {/* Desktop (lg+): primary actions first, secondary actions below */}
                           {isDesktopOtherUser ? (
@@ -550,7 +549,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                         setLocation('/auth');
                                       }}
                                       onPointerDown={(e) => e.stopPropagation()}
-                                      className="text-xs text-white/80 hover:text-red-200 underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer"
+                                      className="text-xs text-gray-200/90 hover:text-white underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer"
                                       data-radix-dismissable-layer-ignore=""
                                     >
                                       Report
@@ -561,87 +560,98 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             </>
                           ) : (
                             <>
-                              <button
-                                type="button"
-                                className={`inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 rounded-lg shadow-md transition-all text-black font-medium cursor-pointer ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-4 py-1.5 text-sm'}`}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleMessage?.();
-                                }}
-                                onPointerDown={(e) => e.stopPropagation()}
-                                data-testid="button-message"
-                                data-radix-dismissable-layer-ignore=""
-                              >
-                                <span className="text-black">Message</span>
-                              </button>
-                              <ConnectButton
-                                currentUserId={currentUser?.id || 0}
-                                targetUserId={user?.id || 0}
-                                targetUsername={user?.username}
-                                targetName={user?.name}
-                                className={`rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm text-black hover:text-black`}
-                              />
-                              {!isNativeIOSApp() && (
-                                <VouchButton
-                                  currentUserId={currentUser?.id || 0}
-                                  targetUserId={user?.id || 0}
-                                  targetUsername={user?.username}
-                                />
-                              )}
-                              {currentUser ? (
-                                <Button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setShowWriteReferenceModal?.(true);
-                                  }}
-                                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white shrink-0 px-4 py-1.5 text-sm border-0"
-                                  data-testid="button-write-reference"
-                                >
-                                  Write Reference
-                                </Button>
-                              ) : (
-                                <Button
-                                  type="button"
-                                  onClick={() => setLocation('/auth')}
-                                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white shrink-0 px-4 py-1.5 text-sm border-0"
-                                  data-testid="button-write-reference"
-                                >
-                                  Write Reference
-                                </Button>
-                              )}
-                              {user && (
-                                currentUser ? (
-                                  <ReportUserButton
-                                    userId={currentUser.id}
-                                    targetUserId={user.id}
-                                    targetUsername={user.username}
-                                    variant="ghost"
-                                    size="sm"
-                                  />
-                                ) : (
+                              <div className={`w-full mt-1 flex flex-col gap-2 ${isNativeIOSApp() ? 'items-center' : 'items-start'}`}>
+                                <div className="grid grid-cols-2 gap-2 w-full max-w-[520px]">
                                   <button
                                     type="button"
+                                    className="w-full inline-flex items-center justify-center bg-orange-500 hover:bg-orange-600 border-0 rounded-lg shadow-md transition-all text-black font-semibold cursor-pointer px-4 py-2 text-sm"
                                     onClick={(e) => {
                                       e.preventDefault();
                                       e.stopPropagation();
-                                      setLocation('/auth');
+                                      handleMessage?.();
                                     }}
                                     onPointerDown={(e) => e.stopPropagation()}
-                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 text-sm rounded font-medium cursor-pointer shrink-0"
+                                    data-testid="button-message"
                                     data-radix-dismissable-layer-ignore=""
                                   >
-                                    Report
+                                    <span className="text-black">Message</span>
                                   </button>
-                                )
-                              )}
+                                  <ConnectButton
+                                    currentUserId={currentUser?.id || 0}
+                                    targetUserId={user?.id || 0}
+                                    targetUsername={user?.username}
+                                    targetName={user?.name}
+                                    className="w-full rounded-lg shadow-md transition-all px-4 py-2 text-sm font-semibold text-black hover:text-black"
+                                  />
+                                </div>
+
+                                <div className="flex flex-wrap gap-2 w-full max-w-[520px]">
+                                  {!isNativeIOSApp() && (
+                                    <VouchButton
+                                      currentUserId={currentUser?.id || 0}
+                                      targetUserId={user?.id || 0}
+                                      targetUsername={user?.username}
+                                    />
+                                  )}
+                                  {currentUser ? (
+                                    <Button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setShowWriteReferenceModal?.(true);
+                                      }}
+                                      className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white shrink-0 px-4 py-2 text-sm border-0"
+                                      data-testid="button-write-reference"
+                                    >
+                                      Write Reference
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      type="button"
+                                      onClick={() => setLocation('/auth')}
+                                      className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white shrink-0 px-4 py-2 text-sm border-0"
+                                      data-testid="button-write-reference"
+                                    >
+                                      Write Reference
+                                    </Button>
+                                  )}
+                                </div>
+
+                                {user && (
+                                  <div className="pt-0.5">
+                                    {currentUser ? (
+                                      <ReportUserButton
+                                        userId={currentUser.id}
+                                        targetUserId={user.id}
+                                        targetUsername={user.username}
+                                        variant="ghost"
+                                        size="sm"
+                                        showIcon={false}
+                                      />
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          setLocation('/auth');
+                                        }}
+                                        onPointerDown={(e) => e.stopPropagation()}
+                                        className="text-xs text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer"
+                                        data-radix-dismissable-layer-ignore=""
+                                      >
+                                        Report
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             </>
                           )}
                         </div>
                         {isDesktopOtherUser && currentUser?.id && user?.id && user?.userType !== 'business' && (
-                          <div className="flex-1 w-full min-w-0 min-w-[520px] max-w-full pr-0 lg:pr-2">
+                          <div className="flex-1 w-full min-w-0 max-w-[440px] pr-0 lg:pr-2">
                             <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
                           </div>
                         )}

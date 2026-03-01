@@ -17,7 +17,10 @@ interface UserDetails {
 
 function getStoredUser() {
   try {
-    const stored = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+    const stored =
+      localStorage.getItem('user') ||
+      localStorage.getItem('travelconnect_user') ||
+      localStorage.getItem('current_user');
     if (stored) return JSON.parse(stored);
   } catch {}
   return null;
@@ -77,6 +80,19 @@ export default function DMChat() {
   }, [contextUser?.id]);
 
   const user = resolvedUser;
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    // Debug only: helps compare mobile vs desktop auth storage / ids
+    console.log("💬 DMChat debug", {
+      location,
+      otherUserId,
+      resolvedUserId: user?.id,
+      has_user_key: !!localStorage.getItem("user"),
+      has_travelconnect_user_key: !!localStorage.getItem("travelconnect_user"),
+      has_current_user_key: !!localStorage.getItem("current_user"),
+    });
+  }, [location, otherUserId, user?.id]);
 
   const { data: otherUser, isLoading, isError } = useQuery<UserDetails>({
     queryKey: ['/api/users', otherUserId],

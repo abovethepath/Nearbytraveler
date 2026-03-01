@@ -37,7 +37,7 @@ export function ProfileHeader(props: ProfilePageProps) {
     <>
       {/* Back to Chat Button - Show when navigated from a chatroom - OUTSIDE overflow container */}
       {shouldShowBackToChat && (
-        <div className="w-full bg-blue-600 text-white px-4 py-2 shadow-md">
+        <div className={`w-full bg-gradient-to-r ${gradientOptions?.[selectedGradient]} text-white px-4 py-2 shadow-md border-b border-white/15`}>
           <div className="max-w-7xl mx-auto">
             <Button
               onClick={() => {
@@ -49,7 +49,7 @@ export function ProfileHeader(props: ProfilePageProps) {
               }}
               variant="ghost"
               size="sm"
-              className="text-white hover:bg-blue-700 -ml-2"
+              className="text-white/95 hover:text-white hover:bg-white/15 -ml-2"
               data-testid="button-back-to-chat"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />

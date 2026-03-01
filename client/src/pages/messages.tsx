@@ -67,7 +67,13 @@ export default function Messages() {
   }, [contextUser?.id]);
 
   const user = resolvedUser;
-  const hasUser = !!(user && user.id);
+  const userId = Number(user?.id) || null;
+  const hasUser = !!userId;
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    console.log("📨 Messages: resolved user id", { rawId: user?.id, userId, rawType: typeof user?.id });
+  }, [userId]);
   const { toast } = useToast();
   const [selectedConversation, setSelectedConversation] = useState<number | null>(getInitialTargetUserId);
   const [newMessage, setNewMessage] = useState('');
@@ -133,31 +139,31 @@ export default function Messages() {
   const targetUserId = pathUserId || queryUserId;
 
   const { data: connections = [], isLoading: connectionsLoading } = useQuery({
-    queryKey: ['/api/connections', user?.id],
+    queryKey: ['/api/connections', userId],
     queryFn: async () => {
       const res = await fetch(`${getApiBaseUrl()}/api/connections/${user.id}`, {
         credentials: 'include',
-        headers: { 'x-user-id': String(user.id) },
+        headers: { 'x-user-id': String(userId) },
       });
       if (!res.ok) throw new Error('Failed to fetch connections');
       return res.json();
     },
-    enabled: !!user?.id,
+    enabled: !!userId,
     staleTime: 60000,
     gcTime: 300000,
   });
 
   const { data: messages = [], isLoading: messagesLoading, refetch: refetchMessages } = useQuery({
-    queryKey: ['/api/messages', user?.id],
+    queryKey: ['/api/messages', userId],
     queryFn: async () => {
-      const res = await fetch(`${getApiBaseUrl()}/api/messages/${user.id}`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/messages/${userId}`, {
         credentials: 'include',
-        headers: { 'x-user-id': String(user.id) },
+        headers: { 'x-user-id': String(userId) },
       });
       if (!res.ok) throw new Error('Failed to fetch messages');
       return res.json();
     },
-    enabled: !!user?.id,
+    enabled: !!userId,
     staleTime: 30000,
     gcTime: 300000,
     refetchOnMount: true,
@@ -168,24 +174,24 @@ export default function Messages() {
   // When the user opens the Messages page, mark ALL received messages as read on the server
   // so badges clear to 0 across navbar/bottom-nav/notification bell.
   useEffect(() => {
-    if (!user?.id) return;
-    apiRequest("POST", `/api/messages/${user.id}/mark-all-read`)
+    if (!userId) return;
+    apiRequest("POST", `/api/messages/${userId}/mark-all-read`)
       .then(() => {
         // Mobile bottom nav unread badge
-        queryClient.invalidateQueries({ queryKey: ["/api/messages", user.id, "unread-count"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/messages", userId, "unread-count"] });
         // Messages page list
-        queryClient.invalidateQueries({ queryKey: ["/api/messages", user.id] });
+        queryClient.invalidateQueries({ queryKey: ["/api/messages", userId] });
         // Other screens use the string-key form
-        queryClient.invalidateQueries({ queryKey: [`/api/messages/${user.id}`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/messages/${userId}`] });
       })
       .catch(() => {
         // Non-fatal: badges will still clear once individual threads are marked read
       });
-  }, [user?.id]);
+  }, [userId]);
 
   // CRITICAL: Handle mobile app resume - reconnect WebSocket and refetch messages
   useEffect(() => {
-    if (!user?.id) return;
+    if (!userId) return;
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
@@ -213,7 +219,7 @@ export default function Messages() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleFocus);
     };
-  }, [user?.id, refetchMessages]);
+  }, [userId, refetchMessages]);
 
   // Debug: Log messages data
   React.useEffect(() => {
@@ -227,10 +233,10 @@ export default function Messages() {
 
   // Initialize WebSocket connection and instant messaging
   useEffect(() => {
-    if (!user?.id) return;
+    if (!userId) return;
 
     // Connect to WebSocket
-    websocketService.connect(user.id, user.username);
+    websocketService.connect(userId, user.username);
 
     // Set up instant message handlers
     const handleInstantMessage = (data: any) => {
@@ -262,7 +268,7 @@ export default function Messages() {
       websocketService.off('instant_message_received', handleInstantMessage);
       websocketService.off('typing_indicator', handleTypingIndicator);
     };
-  }, [user?.id]);
+  }, [userId]);
 
   // Scroll to BOTTOM to show newest messages and text box
   useEffect(() => {
@@ -289,9 +295,11 @@ export default function Messages() {
     (connections as any[]).forEach((connection: any) => {
       const connectedUser = connection.connectedUser;
       if (connectedUser) {
-        conversationMap.set(connectedUser.id, {
-          userId: connectedUser.id,
-          username: connectedUser?.username || connectedUser?.name || `User ${connectedUser.id}`,
+        const connectedUserId = Number(connectedUser.id);
+        if (!connectedUserId) return;
+        conversationMap.set(connectedUserId, {
+          userId: connectedUserId,
+          username: connectedUser?.username || connectedUser?.name || `User ${connectedUserId}`,
           profileImage: connectedUser?.profileImage,
           location: connectedUser?.hometownCity || connectedUser?.location || 'Unknown',
           lastMessage: '', // Don't show message preview in connections list
@@ -318,13 +326,15 @@ export default function Messages() {
 
     // Update with latest messages and count unread
     (messages as any[]).forEach((message: any) => {
-      const otherUserId = message.senderId === user?.id ? message.receiverId : message.senderId;
-      if (otherUserId !== user?.id) {
+      const senderId = Number(message.senderId);
+      const receiverId = Number(message.receiverId);
+      const otherUserId = senderId === userId ? receiverId : senderId;
+      if (otherUserId !== userId) {
         const existing = conversationMap.get(otherUserId);
         // Count unread messages (messages received by current user that aren't read)
         const unreadCount = (messages as any[]).filter((m: any) => 
-          m.senderId === otherUserId && 
-          m.receiverId === user?.id && 
+          Number(m.senderId) === otherUserId && 
+          Number(m.receiverId) === userId && 
           !m.isRead
         ).length;
         
@@ -337,7 +347,7 @@ export default function Messages() {
           });
         } else {
           // Use embedded user from message (e.g. from meet-request DMs) so thread appears in inbox even if not in allUsers
-          const fromMessage = message.senderId === user?.id ? message.receiverUser : message.senderUser;
+          const fromMessage = senderId === userId ? message.receiverUser : message.senderUser;
           const otherUser = fromMessage || (allUsers as any[]).find((u: any) => u.id === otherUserId);
           conversationMap.set(otherUserId, {
             userId: otherUserId,
@@ -355,7 +365,7 @@ export default function Messages() {
     return Array.from(conversationMap.values()).sort((a: any, b: any) => 
       new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
     );
-  }, [connections, messages, allUsers, targetUserId, user?.id]);
+  }, [connections, messages, allUsers, targetUserId, userId]);
 
   // Auto-select target conversation from URL and scroll it into view
   useEffect(() => {
@@ -387,8 +397,8 @@ export default function Messages() {
   // Get messages for selected conversation (simplified to avoid duplication)
   const conversationMessages = selectedConversation 
     ? (messages as any[]).filter((message: any) => 
-        (message.senderId === user?.id && message.receiverId === selectedConversation) ||
-        (message.receiverId === user?.id && message.senderId === selectedConversation)
+        (Number(message.senderId) === userId && Number(message.receiverId) === selectedConversation) ||
+        (Number(message.receiverId) === userId && Number(message.senderId) === selectedConversation)
       ).sort((a: any, b: any) => 
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       )
@@ -397,11 +407,11 @@ export default function Messages() {
   // Mark messages as read mutation
   const markAsReadMutation = useMutation({
     mutationFn: async (senderId: number) => {
-      return apiRequest('POST', `/api/messages/${user?.id}/mark-read`, { senderId });
+      return apiRequest('POST', `/api/messages/${userId}/mark-read`, { senderId });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id, 'unread-count'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', userId, 'unread-count'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', userId] });
     },
   });
 
@@ -409,7 +419,7 @@ export default function Messages() {
   const sendMessageMutation = useMutation({
     mutationFn: async (messageData: { receiverId: number; content: string; isInstantMessage?: boolean; replyToId?: number }) => {
       const response = await apiRequest('POST', '/api/messages', {
-        senderId: user?.id,
+        senderId: userId,
         ...messageData,
         isInstantMessage: true
       });
@@ -422,8 +432,8 @@ export default function Messages() {
       refetchMessages();
       
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id] });
-        queryClient.invalidateQueries({ queryKey: ['/api/connections', user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['/api/messages', userId] });
+        queryClient.invalidateQueries({ queryKey: ['/api/connections', userId] });
       }, 100);
     },
     onError: (error: any) => {
@@ -456,12 +466,12 @@ export default function Messages() {
 
   // Mark messages as read when conversation is selected
   useEffect(() => {
-    if (selectedConversation && user?.id) {
+    if (selectedConversation && userId) {
       console.log('📬 MARKING MESSAGES AS READ for conversation:', selectedConversation);
       // Always mark as read when opening a conversation (even if already read)
       markAsReadMutation.mutate(selectedConversation);
     }
-  }, [selectedConversation, user?.id]);
+  }, [selectedConversation, userId]);
 
   // Handle typing indicators
   const handleTyping = (value: string) => {
@@ -479,13 +489,13 @@ export default function Messages() {
     try {
       await apiRequest('PATCH', `/api/messages/${messageId}`, {
         content: editText.trim(),
-        userId: user?.id
+        userId
       });
       
       toast({ title: "Message edited successfully" });
       setEditingMessageId(null);
       setEditText("");
-      queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', userId] });
     } catch (error: any) {
       toast({ title: "Failed to edit message", variant: "destructive" });
     }
@@ -499,7 +509,7 @@ export default function Messages() {
         method: 'DELETE',
         headers: { 
           'Content-Type': 'application/json',
-          'x-user-id': user?.id?.toString() || '' 
+          'x-user-id': String(userId || '') 
         },
         credentials: 'include',
       });
@@ -508,7 +518,7 @@ export default function Messages() {
       
       toast({ title: "Message deleted successfully" });
       setSelectedMessage(null);
-      queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', userId] });
     } catch (error: any) {
       toast({ title: "Failed to delete message", variant: "destructive" });
     }
@@ -526,7 +536,7 @@ export default function Messages() {
       
       toast({ title: "Liked!" });
       setSelectedMessage(null);
-      queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', userId] });
     } catch (error: any) {
       console.error('❌ Reaction failed:', error);
       toast({ title: "Failed to react to message", variant: "destructive" });
@@ -733,7 +743,7 @@ export default function Messages() {
             </div>
 
             {/* Messages area with scroll */}
-            <div ref={messagesContainerRef} className="flex-1 min-h-0 overflow-y-auto px-4 py-2 bg-[#efeae2] dark:bg-[#0b141a]" style={{
+            <div ref={messagesContainerRef} className="flex-1 min-h-0 overflow-y-auto px-4 py-2 bg-[#0b141a]" style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23cccccc' stroke-width='2' opacity='0.08'%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Ccircle cx='150' cy='300' r='30'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Ccircle cx='100' cy='500' r='40'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Ccircle cx='150' cy='700' r='35'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3C/svg%3E")`
               }}>
                 <div className="flex flex-col min-h-full">
@@ -746,7 +756,7 @@ export default function Messages() {
                       </div>
                     ) : (
                       conversationMessages.map((msg: any) => {
-                        const isOwnMessage = msg.senderId === user?.id;
+                        const isOwnMessage = Number(msg.senderId) === userId;
                         const hasReactions = msg.reactions && msg.reactions.length > 0;
                         return (
                           <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} ${hasReactions ? 'mb-6 pb-1' : ''}`}>
@@ -802,7 +812,7 @@ export default function Messages() {
                                           ? 'text-white' 
                                           : 'text-gray-600 dark:text-gray-400'
                                       }`}>
-                                        {msg.repliedMessage.senderId === user?.id ? 'You' : `@${selectedUser?.username}`}
+                                        {Number(msg.repliedMessage.senderId) === userId ? 'You' : `@${selectedUser?.username}`}
                                       </p>
                                       <p className={`text-xs opacity-80 truncate ${
                                         isOwnMessage 
@@ -866,7 +876,7 @@ export default function Messages() {
                     <Reply className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                        Replying to @{replyingTo.senderId === user?.id ? 'You' : selectedUser?.username}
+                        Replying to @{Number(replyingTo.senderId) === userId ? 'You' : selectedUser?.username}
                       </p>
                       <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
                         {replyingTo.content}
@@ -1078,7 +1088,7 @@ export default function Messages() {
               </button>
               
               {/* Edit/Delete for own messages */}
-              {selectedMessage.senderId === user?.id && (
+              {Number(selectedMessage.senderId) === userId && (
                 <>
                   <button 
                     type="button" 
