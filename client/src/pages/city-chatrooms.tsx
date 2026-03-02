@@ -232,9 +232,9 @@ export default function CityChatroomsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-600" />
+          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-500" />
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
             Loading Chatrooms...
           </h3>
@@ -278,7 +278,7 @@ export default function CityChatroomsPage() {
           {/* Create Chatroom Button */}
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button className="bg-blue-500/85 hover:bg-blue-500 text-white">
                 <Plus className="w-4 h-4 mr-2" />
                 Create New Chatroom
               </Button>
@@ -368,7 +368,7 @@ export default function CityChatroomsPage() {
                   <Button
                     onClick={() => createChatroomMutation.mutate(newChatroom)}
                     disabled={!newChatroom.name.trim() || !newChatroom.city.trim() || !newChatroom.country.trim() || createChatroomMutation.isPending}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    className="flex-1 bg-blue-500/85 hover:bg-blue-500 text-white"
                   >
                     {createChatroomMutation.isPending ? (
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -400,7 +400,7 @@ export default function CityChatroomsPage() {
                 onClick={() => navigate(`/chatroom/${chatroom.id}`)}
               >
                 {/* Header with gradient background */}
-                <div className="relative h-24 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                <div className="relative h-24 bg-gradient-to-r from-blue-400 to-purple-500 dark:from-blue-500 dark:to-purple-600 flex items-center justify-center">
                   <MessageCircle className="w-8 h-8 text-white/80" />
                   <div className="absolute top-2 right-2">
                     <Badge className="bg-white/20 text-white backdrop-blur-sm">
@@ -453,7 +453,7 @@ export default function CityChatroomsPage() {
                     {chatroom.userIsMember ? (
                       <div className="flex gap-2">
                         <Button 
-                          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                          className="flex-1 bg-blue-500/85 hover:bg-blue-500 text-white"
                           onClick={(e) => {
                             e.stopPropagation();
                             navigate(`/chatroom/${chatroom.id}`);
@@ -481,7 +481,7 @@ export default function CityChatroomsPage() {
                       </div>
                     ) : (
                       <Button 
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        className="w-full bg-blue-500/85 hover:bg-blue-500 text-white"
                         onClick={(e) => {
                           e.stopPropagation();
                           joinMutation.mutate(chatroom.id);

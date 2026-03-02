@@ -73,6 +73,17 @@ html, body { overflow-x: hidden; }
   }
 }
 
+/* 6c) HERO (web): gradient hero is fixed, so force black text in dark mode */
+.dark .profile-hero-fixed,
+.dark .profile-hero-fixed * {
+  color: #000000 !important;
+}
+.dark .profile-hero-fixed svg {
+  color: #000000 !important;
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
 /* 7) LIGHT MODE (universal): soften any remaining saturated "feature cards"
    that still use bg-*-500/600/700 directly (without touching buttons/badges). */
 :root:not(.dark) [class*="rounded-xl"][class*="p-6"][class*="shadow"]:is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-indigo-5"], [class*="bg-indigo-6"], [class*="bg-indigo-7"], [class*="bg-sky-5"], [class*="bg-sky-6"], [class*="bg-sky-7"]),

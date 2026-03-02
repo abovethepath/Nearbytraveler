@@ -1384,6 +1384,10 @@ export default function Home() {
     return true;
   });
 
+  // Discover People is the primary above-the-fold content. While loading, render skeleton cards
+  // and defer secondary sections to avoid layout shift/flash.
+  const shouldDeferSecondarySections = usersLoading && rawUsers.length === 0;
+
   // Get connection degrees for displayed users (LinkedIn-style 1st/2nd/3rd degree)
   const displayedUserIds = React.useMemo(() => {
     return filteredUsers.slice(0, showAllUsers ? filteredUsers.length : 8).map(u => u.id);
@@ -1784,11 +1788,29 @@ export default function Home() {
             {(() => {
               // CRITICAL FIX: Apply sorting BEFORE displaying users
               const sortedAndFilteredUsers = getSortedUsers(filteredUsers);
+              const showDiscoverSkeleton = usersLoading && sortedAndFilteredUsers.length === 0;
               
               return (
                 <>
                   <div className="!grid !grid-cols-2 md:!grid-cols-3 lg:!grid-cols-3 xl:!grid-cols-4 !gap-2 lg:!gap-4 !items-start !content-start">
-                    {sortedAndFilteredUsers.length > 0 ? (
+                    {showDiscoverSkeleton ? (
+                      Array.from({ length: 12 }).map((_, idx) => (
+                        <div
+                          key={`discover-skeleton-${idx}`}
+                          className="w-full overflow-hidden rounded-[14px] border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 animate-pulse"
+                          style={{ minHeight: 260 }}
+                          aria-hidden="true"
+                        >
+                          <div className="w-full aspect-square lg:aspect-[4/5] bg-gray-200 dark:bg-gray-700" />
+                          <div className="p-3 space-y-2">
+                            <div className="h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+                            <div className="h-3 w-36 bg-gray-200 dark:bg-gray-700 rounded" />
+                            <div className="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded" />
+                            <div className="h-3 w-5/6 bg-gray-200 dark:bg-gray-700 rounded" />
+                          </div>
+                        </div>
+                      ))
+                    ) : sortedAndFilteredUsers.length > 0 ? (
                       sortedAndFilteredUsers.slice(0, showAllUsers ? sortedAndFilteredUsers.length : 12).map((otherUser) => (
                           <UserCard 
                             key={otherUser.id}
@@ -1843,6 +1865,8 @@ export default function Home() {
             </div>
             {/* End Glass Morphism Content Panel */}
 
+            {!shouldDeferSecondarySections && (
+            <>
             {/* Local Events Section - UNDER Discover People */}
             <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm" data-testid="local-events-section">
               <div className="p-4 sm:p-6">
@@ -1931,13 +1955,15 @@ export default function Home() {
                 />
               </div>
             </Card>
+            </>
+            )}
           </div>
 
           {/* Right Sidebar - Weather, Messages, Quick Meetups, Events */}
           <div className="col-span-1 space-y-6 sm:space-y-8 md:space-y-10 min-w-0 overflow-x-hidden max-w-full w-full">
             
             {/* Available Now Widget - Hangout Mode (desktop sidebar only, mobile version is at top of main content) */}
-            {effectiveUser?.userType !== 'business' && (
+            {!shouldDeferSecondarySections && effectiveUser?.userType !== 'business' && (
               <div className="hidden lg:block">
                 <AvailableNowWidget currentUser={effectiveUser} onSortByAvailableNow={() => {
                   setSortBy('available_now');
@@ -1950,14 +1976,14 @@ export default function Home() {
             )}
 
             {/* Weather Widget */}
-            {loadedSections.has('weather') && (
+            {!shouldDeferSecondarySections && loadedSections.has('weather') && (
               <div className="relative min-w-0 max-w-full overflow-hidden">
                 <CurrentLocationWeatherWidget />
               </div>
             )}
             
             {/* Messages Widget */}
-            {loadedSections.has('messages') && (
+            {!shouldDeferSecondarySections && loadedSections.has('messages') && (
               <div className="relative pt-2 min-w-0 max-w-full overflow-hidden">
                 <div className="absolute -top-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent"></div>
                 <MessagesWidget userId={currentUserId} />

@@ -4,6 +4,7 @@ import { MapPin, Plane } from "lucide-react";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { truncateBioToSentences } from "@/lib/bioPreview";
+import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
 
 export interface User {
   id: number;
@@ -163,8 +164,7 @@ export default function UserCard({
   };
 
   const matchPercent = getMatchPercent();
-  // People discovery cards: show shared INTERESTS count (as originally displayed)
-  const thingsInCommon = compatibilityData?.sharedInterests?.length || 0;
+  const thingsInCommon = computeCommonStats(compatibilityData, connectionDegree).totalCommon;
   const contactsInCommon = connectionDegree?.mutualCount ?? 0;
   const bioText = truncateBioToSentences(user.bio, 3);
 

@@ -115,7 +115,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
   return (
     <div
-      className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 relative isolate ${isNativeIOSApp() ? 'py-6 sm:py-8 lg:py-12' : (isDesktopOwnProfile || isDesktopOtherUser) ? 'py-4 sm:py-5 lg:pt-6 lg:pb-16' : 'pt-12 sm:pt-14 lg:pt-20 pb-6 sm:pb-8 lg:pb-16'}`}
+      className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 relative isolate profile-hero-fixed ${isNativeIOSApp() ? 'py-6 sm:py-8 lg:py-12' : (isDesktopOwnProfile || isDesktopOtherUser) ? 'py-4 sm:py-5 lg:pt-6 lg:pb-16' : 'pt-12 sm:pt-14 lg:pt-20 pb-6 sm:pb-8 lg:pb-16'}`}
       style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)' }}
     >
       <div
@@ -318,28 +318,53 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
           {!isOwnProfile && !isNativeIOSApp() ? (
             <>
               {(() => {
-                const sharedInterests: string[] = Array.isArray((compatibilityData as any)?.sharedInterests)
-                  ? (compatibilityData as any).sharedInterests
-                  : [];
-                const sharedCountries: string[] = Array.isArray((compatibilityData as any)?.sharedCountries)
-                  ? (compatibilityData as any).sharedCountries
-                  : [];
+                const commonStats = (props as any)?.commonStats as
+                  | {
+                      sharedInterests?: string[];
+                      sharedActivities?: string[];
+                      sharedEvents?: string[];
+                      sharedCountries?: string[];
+                      sharedLanguagesNonEnglish?: string[];
+                      otherCommonalities?: string[];
+                      sharedContactsCount?: number;
+                      totalCommon?: number;
+                    }
+                  | undefined;
+
                 const sharedLanguages: string[] = Array.isArray((compatibilityData as any)?.sharedLanguages)
                   ? (compatibilityData as any).sharedLanguages
                   : [];
-                const otherCommonalities: string[] = Array.isArray((compatibilityData as any)?.otherCommonalities)
-                  ? (compatibilityData as any).otherCommonalities
-                  : [];
 
-                const sharedContactsCount = connectionDegreeData?.mutualCount ?? 0;
-                const nonEnglishSharedLanguages = sharedLanguages.filter((l) => {
-                  const n = String(l || "").trim().toLowerCase();
-                  return !!n && n !== "english";
-                });
+                const sharedInterests: string[] = Array.isArray(commonStats?.sharedInterests)
+                  ? commonStats!.sharedInterests!
+                  : (Array.isArray((compatibilityData as any)?.sharedInterests) ? (compatibilityData as any).sharedInterests : []);
+                const sharedCountries: string[] = Array.isArray(commonStats?.sharedCountries)
+                  ? commonStats!.sharedCountries!
+                  : (Array.isArray((compatibilityData as any)?.sharedCountries) ? (compatibilityData as any).sharedCountries : []);
+                const otherCommonalities: string[] = Array.isArray(commonStats?.otherCommonalities)
+                  ? commonStats!.otherCommonalities!
+                  : (Array.isArray((compatibilityData as any)?.otherCommonalities) ? (compatibilityData as any).otherCommonalities : []);
+
+                const nonEnglishSharedLanguages = Array.isArray(commonStats?.sharedLanguagesNonEnglish)
+                  ? commonStats!.sharedLanguagesNonEnglish!
+                  : sharedLanguages.filter((l) => {
+                      const n = String(l || "").trim().toLowerCase();
+                      return !!n && n !== "english";
+                    });
+
+                const sharedContactsCount = Number.isFinite(commonStats?.sharedContactsCount as number)
+                  ? (commonStats!.sharedContactsCount as number)
+                  : (connectionDegreeData?.mutualCount ?? 0);
                 const sharedLanguagesCountForDisplay = nonEnglishSharedLanguages.length;
                 const totalCommon =
-                  (typeof (compatibilityData as any)?.matchCount === "number" ? (compatibilityData as any).matchCount : null) ??
-                  (sharedInterests.length + sharedCountries.length + sharedLanguagesCountForDisplay + otherCommonalities.length + sharedContactsCount);
+                  (typeof commonStats?.totalCommon === "number" && Number.isFinite(commonStats.totalCommon) ? commonStats.totalCommon : null) ??
+                  (sharedContactsCount +
+                    sharedInterests.length +
+                    (Array.isArray(commonStats?.sharedActivities) ? (commonStats!.sharedActivities!.length) : (Array.isArray((compatibilityData as any)?.sharedActivities) ? (compatibilityData as any).sharedActivities.length : 0)) +
+                    (Array.isArray(commonStats?.sharedEvents) ? (commonStats!.sharedEvents!.length) : (Array.isArray((compatibilityData as any)?.sharedEvents) ? (compatibilityData as any).sharedEvents.length : 0)) +
+                    sharedCountries.length +
+                    sharedLanguagesCountForDisplay +
+                    otherCommonalities.length);
 
                 const visibleInterestPills = sharedInterests.slice(0, 6);
                 const hasOverflow = sharedInterests.length > visibleInterestPills.length;
@@ -412,7 +437,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <div className="flex flex-wrap items-center gap-2">
                             <button
                               type="button"
-                              className="inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-3 h-8 text-[13px] bg-white/85 hover:bg-white text-black border border-gray-200 shadow-sm w-[10.5rem] sm:w-44"
+                              className="inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-3 h-8 text-[13px] !bg-white hover:!bg-white !text-black border border-gray-200 shadow-sm w-[10.5rem] sm:w-44"
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -452,7 +477,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 else setLocation("/auth");
                               }}
                               variant="outline"
-                              className="bg-white/85 hover:bg-white text-black border border-gray-200 shadow-sm shrink-0 px-2.5 h-8 text-xs"
+                              className="!bg-white hover:!bg-white !text-black border border-gray-200 shadow-sm shrink-0 px-2.5 h-8 text-xs"
                               data-testid="button-write-reference"
                             >
                               Write Reference
@@ -498,7 +523,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         <div className="bg-white/55 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-4 max-h-[260px] overflow-hidden">
                           <div className="flex items-center justify-between gap-2">
                             <div className="text-sm font-bold text-black">What You Have in Common</div>
-                            <div className="text-xs font-semibold text-black">{totalCommon} total</div>
+                            <div className="text-xs font-semibold text-black">{totalCommon} things in common</div>
                           </div>
 
                           <div className="mt-2 text-xs text-black flex flex-wrap gap-x-3 gap-y-1">
@@ -510,7 +535,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </div>
 
                           <div className="mt-3">
-                            <div className="text-xs font-semibold text-black mb-1">Shared interests</div>
+                            <div className="text-xs font-semibold text-black mb-1">Shared interests ({sharedInterests.length})</div>
                             <div className="flex flex-wrap gap-1.5 max-h-[92px] overflow-hidden">
                               {visibleInterestPills.length > 0 ? (
                                 visibleInterestPills.map((interest) => (
@@ -530,7 +555,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               <div className="mt-2">
                                 <button
                                   type="button"
-                                  className="text-xs font-semibold text-black hover:text-black underline underline-offset-2"
+                                  className="text-xs font-semibold !text-black hover:!text-black underline underline-offset-2"
                                   onClick={() => setSeeAllCommonOpen(true)}
                                   data-testid="button-see-all-common"
                                 >
@@ -557,11 +582,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                         <div className="space-y-4">
                           <div className="text-sm text-gray-700 dark:text-gray-200">
-                            <span className="font-semibold">{totalCommon}</span> total commonalities
+                            <span className="font-semibold">{totalCommon}</span> things in common
                           </div>
 
                           <div>
-                            <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Shared interests</div>
+                            <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Shared interests ({sharedInterests.length})</div>
                             <div className="flex flex-wrap gap-2">
                               {sharedInterests.length > 0 ? sharedInterests.map((interest) => (
                                 <span key={interest} className="pill-interests">

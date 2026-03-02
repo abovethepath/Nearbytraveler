@@ -26,7 +26,6 @@ import ReferencesWidgetNew from "@/components/references-widget-new";
 import { VouchWidget } from "@/components/vouch-widget";
 import { VouchButton } from "@/components/VouchButton";
 import { ConditionalVouchCard } from "@/components/ConditionalVouchCard";
-import { WhatYouHaveInCommon } from "@/components/what-you-have-in-common";
 import BusinessEventsWidget from "@/components/business-events-widget";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
@@ -46,6 +45,67 @@ export function ProfileTabs(props: ProfilePageProps) {
   const showWhatYouHaveInCommon = !isOwnProfile && !!currentUser?.id && !!user?.id && user?.userType !== 'business';
   /* Back-compat: avoid rendering the same card twice; only show this fallback when About panel isn't mounted yet. */
   const showWhatYouHaveInCommonInTabs = showWhatYouHaveInCommon && !(loadedTabs as any)?.has?.('about');
+
+  const commonStats = (props as any)?.commonStats as
+    | {
+        sharedInterests?: string[];
+        sharedCountries?: string[];
+        sharedLanguagesNonEnglish?: string[];
+        otherCommonalities?: string[];
+        sharedContactsCount?: number;
+        totalCommon?: number;
+      }
+    | undefined;
+
+  const WhatYouHaveInCommonInline = () => {
+    if (!commonStats || !(commonStats.totalCommon && commonStats.totalCommon > 0)) return null;
+
+    const sharedInterests = Array.isArray(commonStats.sharedInterests) ? commonStats.sharedInterests : [];
+    const sharedCountries = Array.isArray(commonStats.sharedCountries) ? commonStats.sharedCountries : [];
+    const sharedLanguagesNonEnglish = Array.isArray(commonStats.sharedLanguagesNonEnglish) ? commonStats.sharedLanguagesNonEnglish : [];
+    const sharedContactsCount = Number.isFinite(commonStats.sharedContactsCount as number) ? (commonStats.sharedContactsCount as number) : 0;
+
+    const visibleInterests = sharedInterests.slice(0, 10);
+
+    return (
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden">
+        <div className="p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="font-semibold text-gray-900 dark:text-gray-100">What You Have in Common</div>
+            <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{commonStats.totalCommon} things in common</div>
+          </div>
+
+          <div className="mt-2 text-xs sm:text-sm text-gray-700 dark:text-gray-200 flex flex-wrap gap-x-4 gap-y-1">
+            <span><span className="font-semibold">{sharedContactsCount}</span> contacts</span>
+            <span><span className="font-semibold">{sharedCountries.length}</span> countries</span>
+            {sharedLanguagesNonEnglish.length > 0 && (
+              <span><span className="font-semibold">{sharedLanguagesNonEnglish.length}</span> languages</span>
+            )}
+          </div>
+
+          <div className="mt-3">
+            <div className="text-xs font-semibold text-gray-900 dark:text-gray-100">
+              Shared Interests ({sharedInterests.length})
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {visibleInterests.length > 0 ? (
+                visibleInterests.map((interest) => (
+                  <span
+                    key={interest}
+                    className="pill-interests bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
+                  >
+                    {interest}
+                  </span>
+                ))
+              ) : (
+                <span className="text-sm text-gray-500 dark:text-gray-300">No shared interests yet</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900">
@@ -364,7 +424,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 {/* What You Have in Common - shown below bio on other-user profiles */}
                 {showWhatYouHaveInCommon && (
                   <div>
-                    <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
+                    <WhatYouHaveInCommonInline />
                   </div>
                 )}
 
@@ -744,7 +804,7 @@ export function ProfileTabs(props: ProfilePageProps) {
             {showWhatYouHaveInCommonInTabs && !isOwnProfile && currentUser && user?.id && user?.userType !== 'business' && (
               <Card>
                 <CardContent className="p-0">
-                  <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
+                  <WhatYouHaveInCommonInline />
                 </CardContent>
               </Card>
             )}

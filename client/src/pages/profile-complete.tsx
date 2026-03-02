@@ -53,6 +53,7 @@ import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInpu
 import { isTopChoiceInterest } from "@/lib/topChoicesUtils";
 import { VideoIntroPlayer } from "@/components/VideoIntro";
 import { BUSINESS_TYPES, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS, BUSINESS_INTERESTS, BUSINESS_ACTIVITIES } from "@shared/base-options";
+import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
 
 // Helper function to check if two cities are in the same metro area
 function areInSameMetroArea(city1: string, city2: string): boolean {
@@ -1294,6 +1295,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     connectingFriends?: Array<{ id: number; username: string; name: string; profileImage?: string }>;
     connectingFriendCount?: number;
   } | undefined;
+
+  const commonStats = useMemo(() => computeCommonStats(compatibilityData as any, connectionDegreeData as any), [
+    compatibilityData,
+    connectionDegreeData,
+  ]);
   
   // Add debug logging
   console.log('Profile component state:', {
@@ -3774,6 +3780,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     connectionNoteText, setConnectionNoteText, showWriteReferenceModal, setShowReferenceForm, showReferenceForm, referenceForm,
     createReference, connectionRequests, outgoingConnectionRequests, countriesVisited, tempCountries, setTempCountries, customCountryInput, setCustomCountryInput,
     editingCountries, updateCountries, userChatrooms, setShowChatroomList, vouches, compatibilityData, eventsGoing, eventsInterested,
+    commonStats,
     businessDealsLoading, businessDeals, ownerContactForm, setOwnerContactForm, editingOwnerInfo, updateOwnerContact, handleSaveOwnerContact,
     apiRequest, handleEditCountries, handleSaveCountries, handleCancelCountries, COUNTRIES_OPTIONS, GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS,
     safeGetAllActivities, getApiBaseUrl, getHometownInterests, getTravelInterests, getProfileInterests,
