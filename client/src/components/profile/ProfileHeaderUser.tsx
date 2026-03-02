@@ -121,7 +121,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   return (
     <div
       className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 relative isolate profile-hero-fixed ${isNativeIOSApp() ? 'py-6 sm:py-8 lg:py-12' : (isDesktopOwnProfile || isDesktopOtherUser) ? 'py-4 sm:py-5 lg:pt-6 lg:pb-16' : 'pt-12 sm:pt-14 lg:pt-20 pb-6 sm:pb-8 lg:pb-16'}`}
-      style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)' }}
+      style={
+        isMobileWeb
+          ? { width: "100vw", position: "relative", left: "50%", transform: "translateX(-50%)" }
+          : { width: "100vw", marginLeft: "calc(50% - 50vw)" }
+      }
     >
       <div
         className={`mx-auto relative z-10 max-w-7xl ${isDesktopOwnProfile ? 'pl-4 sm:pl-6 lg:pl-8' : ''}`}
