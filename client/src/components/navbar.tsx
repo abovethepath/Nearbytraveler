@@ -157,27 +157,41 @@ function Navbar() {
     if (isNativeIOSApp()) return;
     if (directUser?.id) return;
 
+    const isSessionInvalid = (() => {
+      try {
+        return sessionStorage.getItem("nt_session_invalid") === "1";
+      } catch {
+        return false;
+      }
+    })();
+    if (isSessionInvalid) {
+      setDirectUser(null);
+      if (setUser) setUser(null);
+      return;
+    }
+
     const hasStoredUser =
       !!localStorage.getItem("user") || !!localStorage.getItem("travelconnect_user");
-    const hasAuthToken = !!localStorage.getItem("auth_token");
-    if (!hasStoredUser && !hasAuthToken) return;
+    if (!hasStoredUser) return;
 
     let cancelled = false;
     (async () => {
       const refreshed = await authStorage.forceRefreshUser();
       if (cancelled) return;
       if (refreshed?.id) {
+        try {
+          sessionStorage.removeItem("nt_session_invalid");
+          sessionStorage.removeItem("nt_session_invalid_reason");
+        } catch {}
         setDirectUser(refreshed as any);
         if (setUser) setUser(refreshed as any);
         return;
       }
 
-      // If server says not authenticated, clear stale local auth markers so navbar/routes can't disagree.
+      // If server says not authenticated, mark session invalid for this tab.
       try {
-        authStorage.clearUser();
-        localStorage.removeItem("auth_token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("travelconnect_user");
+        sessionStorage.setItem("nt_session_invalid", "1");
+        sessionStorage.setItem("nt_session_invalid_reason", "navbar:forceRefreshUser_failed");
       } catch {}
       setDirectUser(null);
       if (setUser) setUser(null);

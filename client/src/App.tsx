@@ -270,6 +270,34 @@ function Router() {
   const lastAuthSyncAtRef = React.useRef(0);
   const navSyncTimerRef = React.useRef<number | undefined>(undefined);
 
+  // If we determine the server session is invalid, mark it for this tab so we:
+  // - stop treating stale localStorage user JSON as "authenticated"
+  // - avoid destructive localStorage clearing during transient auth issues
+  const sessionInvalidKey = "nt_session_invalid";
+  const isSessionMarkedInvalid = React.useCallback(() => {
+    try {
+      return sessionStorage.getItem(sessionInvalidKey) === "1";
+    } catch {
+      return false;
+    }
+  }, []);
+  const markSessionInvalid = React.useCallback((reason?: string) => {
+    try {
+      sessionStorage.setItem(sessionInvalidKey, "1");
+      if (reason) sessionStorage.setItem(sessionInvalidKey + "_reason", reason);
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+  const clearSessionInvalid = React.useCallback(() => {
+    try {
+      sessionStorage.removeItem(sessionInvalidKey);
+      sessionStorage.removeItem(sessionInvalidKey + "_reason");
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+
   const isAuthRoute =
     location === "/auth" ||
     location === "/signin" ||
@@ -280,6 +308,7 @@ function Router() {
 
   const hasLocalAuthEvidence = React.useCallback(() => {
     try {
+      if (isSessionMarkedInvalid()) return false;
       return (
         !!localStorage.getItem("user") ||
         !!localStorage.getItem("travelconnect_user") ||
@@ -293,23 +322,10 @@ function Router() {
   }, []);
 
   const clearLocalAuthState = React.useCallback(() => {
-    try {
-      authStorage.clearUser();
-      localStorage.removeItem("auth_token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("travelconnect_user");
-      localStorage.removeItem("current_user");
-      localStorage.removeItem("authUser");
-      localStorage.removeItem("currentUser");
-      localStorage.removeItem("current_user");
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("userSession");
-      localStorage.removeItem("userData");
-      localStorage.removeItem("user_logged_out");
-      localStorage.removeItem("just_registered");
-    } catch {
-      // ignore storage errors
-    }
+    // Intentionally NOT destructive: we only clear localStorage on explicit logout.
+    // When a session expires, we mark it invalid and stop treating stale localStorage
+    // as authenticated, but we don't wipe keys automatically.
+    markSessionInvalid("clearLocalAuthState");
   }, []);
 
   const syncAuthFromServer = React.useCallback(
@@ -346,11 +362,11 @@ function Router() {
           const serverUser = await res.json();
           if (serverUser?.id) {
             // Session is valid → ensure UI + storage reflect it.
+            clearSessionInvalid();
             setUser(serverUser);
             authStorage.setUser(serverUser);
             try {
               localStorage.setItem("user", JSON.stringify(serverUser));
-              localStorage.setItem("auth_token", "authenticated");
             } catch {
               // ignore storage errors
             }
@@ -359,8 +375,8 @@ function Router() {
         }
 
         if (res.status === 401) {
-          // Session is invalid/expired → clear local auth state.
-          clearLocalAuthState();
+          // Session is invalid/expired → mark invalid for this tab (do NOT wipe localStorage).
+          markSessionInvalid("syncAuthFromServer:401");
           setUser(null);
 
           // Only force redirect when we *thought* we were authenticated (prevents bouncing public pages).
@@ -450,32 +466,6 @@ function Router() {
     };
   }, [syncAuthFromServer]);
 
-  // Fallback: if navbar/UI appears logged-out but a session token exists, auto-reload ONCE to break limbo.
-  useEffect(() => {
-    if (isNativeIOSApp()) return;
-    if (isSignupRoute) return;
-
-    const hasTokenOnly = !!localStorage.getItem("auth_token") && !localStorage.getItem("user") && !localStorage.getItem("travelconnect_user");
-    const looksLoggedOut = !user?.id;
-    if (!looksLoggedOut || !hasTokenOnly) return;
-
-    const flag = "nt_auth_autoreload_once";
-    try {
-      if (sessionStorage.getItem(flag) === "1") return;
-      sessionStorage.setItem(flag, "1");
-    } catch {
-      return;
-    }
-
-    // Prefer a sync; reload only if we still have no user after giving the sync a chance.
-    (async () => {
-      await syncAuthFromServer({ reason: "token-only", force: true });
-      if (!authStorage.getUser()?.id) {
-        window.location.reload();
-      }
-    })();
-  }, [isSignupRoute, syncAuthFromServer, user?.id]);
-
   useEffect(() => {
     // BULLETPROOF FIX #1: If user was already set from useState initializer (just_registered),
     // skip the server auth check entirely. The server might return 401 due to iOS WebView
@@ -547,6 +537,7 @@ function Router() {
         if (response.ok) {
           const serverUser = await response.json();
           console.log('✅ Server session found:', serverUser.username, 'ID:', serverUser.id);
+          clearSessionInvalid();
           setUser(serverUser);
           authStorage.setUser(serverUser);
           localStorage.setItem('user', JSON.stringify(serverUser));
@@ -588,6 +579,7 @@ function Router() {
             if (recoveryResponse.ok) {
               const recoveredUser = await recoveryResponse.json();
               console.log('✅ Session recovered successfully for:', recoveredUser.username);
+              clearSessionInvalid();
               setUser(recoveredUser);
               authStorage.setUser(recoveredUser);
               localStorage.setItem('user', JSON.stringify(recoveredUser));
@@ -604,16 +596,9 @@ function Router() {
         }
       }
 
-      // Only clear localStorage if recovery also failed
-      console.log('🗑️ Clearing all user storage keys');
-      authStorage.clearUser();
-      localStorage.removeItem('user');
-      localStorage.removeItem('travelconnect_user');
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('authUser');
-      localStorage.removeItem('current_user');
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('just_registered');
+      // If server session is missing AND recovery failed, mark invalid (do NOT wipe localStorage automatically).
+      console.log('🚫 Session invalid after recovery attempt - marking invalid (no storage wipe)');
+      markSessionInvalid("checkServerAuth:recovery-failed");
       setUser(null);
 
       setIsLoading(false);
@@ -627,6 +612,7 @@ function Router() {
   // Only gate when we have *real* local auth evidence (stored user) or a user in state.
   const hasStoredUserForGate = React.useMemo(() => {
     try {
+      if (isSessionMarkedInvalid()) return false;
       return !!localStorage.getItem("user") || !!localStorage.getItem("travelconnect_user");
     } catch {
       return false;
@@ -712,10 +698,9 @@ function Router() {
     const hasUserInState = !!user;
     const hasUserInStorage = !!localStorage.getItem('user');
     const hasTravelConnectUser = !!localStorage.getItem('travelconnect_user');
-    const hasAuthToken = !!localStorage.getItem('auth_token'); // Also check for token
-    const actualAuth = hasUserInState || hasUserInStorage || hasTravelConnectUser || hasAuthToken;
+    const actualAuth = !isSessionMarkedInvalid() && (hasUserInState || hasUserInStorage || hasTravelConnectUser);
 
-    console.log('🔍 AUTH CHECK: user in state:', hasUserInState, 'user in storage:', hasUserInStorage, 'travelconnect user:', hasTravelConnectUser, 'has auth token:', hasAuthToken, 'final auth:', actualAuth);
+    console.log('🔍 AUTH CHECK: user in state:', hasUserInState, 'user in storage:', hasUserInStorage, 'travelconnect user:', hasTravelConnectUser, 'session invalid:', isSessionMarkedInvalid(), 'final auth:', actualAuth);
 
     return {
       user: user,
@@ -1644,10 +1629,8 @@ function Router() {
   // NAVIGATION RELIABILITY FIX: Check ALL authentication sources immediately
   const hasAnyAuthEvidence = 
     authValue.isAuthenticated || 
-    !!user || 
-    !!localStorage.getItem('user') || 
-    !!localStorage.getItem('travelconnect_user') || 
-    !!localStorage.getItem('auth_token');
+    (!!user) || 
+    (!isSessionMarkedInvalid() && (!!localStorage.getItem('user') || !!localStorage.getItem('travelconnect_user')));
 
   return (
     <AuthContext.Provider value={authValue}>
@@ -1717,12 +1700,12 @@ function Router() {
       )}
 
       {/* Bottom Navigation - rendered outside conditional branches so it always shows for authenticated users */}
-      {!isSignupRoute && !isNativeIOSApp() && (user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
+      {!isSignupRoute && !isNativeIOSApp() && (user || (!isSessionMarkedInvalid() && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user')))) && (
         <MobileBottomNav />
       )}
 
       {/* Advanced Search for native iOS - web nav is hidden, so we render the widget here and open it via postMessage from native header */}
-      {isNativeIOSApp() && !isSignupRoute && (user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
+      {isNativeIOSApp() && !isSignupRoute && (user || (!isSessionMarkedInvalid() && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user')))) && (
         <NativeIOSSearchWidget />
       )}
     </AuthContext.Provider>
