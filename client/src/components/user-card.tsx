@@ -245,8 +245,8 @@ export default function UserCard({
           >
             {handle}
           </div>
-          <div className="mt-1 flex items-center gap-1 min-w-0" style={{ color: '#9ca3af', fontSize: 11.5 }}>
-            <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#9ca3af' }} />
+          <div className="mt-1 flex items-center gap-1 min-w-0" style={{ color: '#e8834a', fontSize: 11.5 }}>
+            <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#e8834a' }} />
             <span className="truncate">{hometownLine}</span>
           </div>
           <div
@@ -290,8 +290,8 @@ export default function UserCard({
           >
             {handle}
           </div>
-          <div className="mt-1 flex items-center gap-1 min-w-0" style={{ color: '#9ca3af', fontSize: 11.5 }}>
-            <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#9ca3af' }} />
+          <div className="mt-1 flex items-center gap-1 min-w-0" style={{ color: '#e8834a', fontSize: 11.5 }}>
+            <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#e8834a' }} />
             <span className="truncate">{hometownLine}</span>
           </div>
           <div

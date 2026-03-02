@@ -2169,7 +2169,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                             {countriesVisited.map((country: string, index: number) => (
                               <div 
                                 key={country} 
-                                className="pill-interests"
+                                className={
+                                  isMobileWeb
+                                    ? "pill-interests bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
+                                    : "pill-interests"
+                                }
                               >
                                 {country}
                               </div>
@@ -2235,18 +2239,22 @@ export function ProfileTabs(props: ProfilePageProps) {
                             <button
                               key={chatroom.id}
                               onClick={() => setLocation(`/chatroom/${chatroom.id}`)}
-                              className="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 md:hover:bg-gray-50 md:dark:hover:bg-gray-700 md:hover:border-gray-300 md:dark:hover:border-gray-600 md:hover:shadow-sm transition-all duration-200 text-left"
+                              className={`w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white md:hover:bg-gray-50 md:hover:border-gray-300 md:hover:shadow-sm transition-all duration-200 text-left ${
+                                isMobileWeb
+                                  ? "dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                  : "dark:bg-gray-800 dark:border-gray-700 md:dark:hover:bg-gray-700 md:dark:hover:border-gray-600"
+                              }`}
                             >
                               <div className="flex items-center gap-3 min-w-0 flex-1">
                                 <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-sm flex-shrink-0`}>
                                   {initial}
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                  <div className="font-semibold text-gray-900 dark:text-white truncate">
+                                  <div className="font-semibold text-gray-900 dark:!text-white truncate">
                                     {displayName}
                                   </div>
                                   <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                    <span className="text-xs text-gray-500 dark:!text-gray-200">
                                       {chatroom.memberCount ?? 0} members
                                     </span>
                                     {chatroom.unreadCount > 0 && (
@@ -2255,15 +2263,15 @@ export function ProfileTabs(props: ProfilePageProps) {
                                       </span>
                                     )}
                                     {activityText && (
-                                      <span className="text-xs text-gray-400 dark:text-gray-500">· {activityText}</span>
+                                      <span className="text-xs text-gray-400 dark:!text-gray-200">· {activityText}</span>
                                     )}
                                   </div>
                                   {chatroom.lastMessagePreview && (
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{chatroom.lastMessagePreview}</p>
+                                    <p className="text-xs text-gray-500 dark:!text-gray-200 truncate mt-0.5">{chatroom.lastMessagePreview}</p>
                                   )}
                                 </div>
                               </div>
-                              <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
+                              <ChevronRight className="w-4 h-4 text-gray-400 dark:!text-gray-100 flex-shrink-0 ml-2" />
                             </button>
                           );
                         })}
@@ -3802,7 +3810,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                           {countriesVisited.map((country: string, index: number) => (
                             <div 
                               key={country} 
-                              className="pill-interests"
+                              className={
+                                isMobileWeb
+                                  ? "pill-interests bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
+                                  : "pill-interests"
+                              }
                             >
                               {country}
                             </div>

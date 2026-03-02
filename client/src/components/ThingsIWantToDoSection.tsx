@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Switch } from "@/components/ui/switch";
-import { MapPin, X, Trash2, Plus } from "lucide-react";
+import { MapPin, Trash2, Plus, Pencil, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import { Link, useLocation } from "wouter";
 import { getMetroAreaName, getMetroCities } from "@shared/metro-areas";
 import { Building2 } from "lucide-react";
 import { resolveAndJoinHostelChatroom } from "@/lib/hostelChatrooms";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 interface ThingsIWantToDoSectionProps {
   userId: number;
@@ -62,6 +64,9 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   const isMobile = useIsMobile();
   const [, setLocation] = useLocation();
   const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; cityName: string } | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editCityKey, setEditCityKey] = useState<string>("");
+  const [newActivityName, setNewActivityName] = useState("");
 
   // Fetch user's travel plans to get trip destinations
   const { data: travelPlans = [], isLoading: loadingTravelPlans } = useQuery<TravelPlan[]>({
@@ -247,6 +252,29 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     onError: () => {
       toast({ title: "Error", description: "Failed to remove activity", variant: "destructive" });
     }
+  });
+
+  const addActivity = useMutation({
+    mutationFn: async (payload: { cityName: string; activityName: string }) => {
+      const response = await apiRequest("POST", "/api/user-city-interests", payload);
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({} as any));
+        throw new Error(data?.error || data?.message || "Failed to add activity");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
+      toast({ title: "Added", description: "Added to your list." });
+      setNewActivityName("");
+    },
+    onError: (e: any) => {
+      toast({
+        title: "Error",
+        description: e?.message || "Failed to add activity",
+        variant: "destructive",
+      });
+    },
   });
 
   // Delete event (handles joined events, event interests, and organizer events)
@@ -585,34 +613,25 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
             </div>
           ))}
 
-          {/* Activity Pills */}
+          {/* Activity Pills (display only; editing happens in modal) */}
           {cityData.activities.map((activity) => (
-            <div key={`act-${activity.id}`} className="relative group">
-              <div className={`pill-activities dark:bg-gradient-to-r dark:from-blue-600 dark:to-blue-500 dark:border-0 ${isOwnProfile ? "!pr-7" : ""}`}>
+            <div key={`act-${activity.id}`} className="relative">
+              <div className="pill-activities dark:bg-gradient-to-r dark:from-blue-600 dark:to-blue-500 dark:border-0">
                 {activity.activityName}
               </div>
-              {isOwnProfile && (
-                <button
-                  onClick={() => deleteActivity.mutate(activity.id)}
-                  className="absolute top-[2px] right-[2px] bg-white/80 hover:bg-white text-gray-700 rounded-full flex items-center justify-center transition-opacity w-4 h-4 sm:opacity-0 sm:group-hover:opacity-100 opacity-90 shadow-sm"
-                  title="Remove activity"
-                >
-                  <X className="w-3 h-3 max-w-4 max-h-4" />
-                </button>
-              )}
             </div>
           ))}
 
-          {/* Event Pills */}
+          {/* Event Pills (display only; editing happens in modal) */}
           {cityData.events.map((event) => {
             const eventId = (event as any).eventId || event.id;
             const eventUrl = `/events/${eventId}`;
             const eventDate = (event as any).date || (event as any).eventDate;
             const isEventPast = eventDate ? new Date(eventDate) < new Date() : false;
             return (
-              <div key={`evt-${event.id}`} className={`relative group ${isEventPast ? 'opacity-60' : ''}`}>
+              <div key={`evt-${event.id}`} className={`relative ${isEventPast ? 'opacity-60' : ''}`}>
                 <Link href={eventUrl}>
-                  <div className={`pill-events cursor-pointer transition-all md:hover:scale-105 dark:border-0 ${isOwnProfile ? "!pr-7" : ""} ${
+                  <div className={`pill-events cursor-pointer transition-all md:hover:scale-105 dark:border-0 ${
                     isEventPast
                       ? "dark:bg-gradient-to-r dark:from-gray-500 dark:to-gray-400"
                       : "dark:bg-gradient-to-r dark:from-blue-600 dark:to-cyan-500 dark:hover:from-blue-700 dark:hover:to-cyan-600"
@@ -620,19 +639,6 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                     {isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}
                   </div>
                 </Link>
-                {isOwnProfile && (
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      deleteEvent.mutate(event);
-                    }}
-                    className="absolute top-[2px] right-[2px] bg-white/80 hover:bg-white text-gray-700 rounded-full flex items-center justify-center transition-opacity w-4 h-4 sm:opacity-0 sm:group-hover:opacity-100 opacity-90 shadow-sm"
-                    title="Remove event"
-                  >
-                    <X className="w-3 h-3 max-w-4 max-h-4" />
-                  </button>
-                )}
               </div>
             );
           })}
@@ -699,7 +705,25 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     >
       {showContent ? (
         <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Things I Want to Do in:</h2>
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Things I Want to Do in:</h2>
+            {isOwnProfile && (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setEditCityKey(hometownCityKey || uniqueRows.find((r) => !!r.key)?.key || "");
+                  setEditOpen(true);
+                }}
+                className="h-8 px-3 text-xs font-semibold"
+                data-testid="button-edit-things-to-do"
+              >
+                <Pencil className="w-3.5 h-3.5 mr-2" />
+                Edit
+              </Button>
+            )}
+          </div>
           {isOwnProfile && (
             <div className="mb-4 flex items-center gap-2" data-testid="location-visibility-toggle-row">
               <div className="flex items-center gap-2 min-w-0">
@@ -734,9 +758,27 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
         </div>
       ) : (
         <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
-          <h2 className={`font-semibold text-gray-900 dark:text-white mb-4 ${isMobile ? 'text-base' : 'text-lg'}`}>
-            Things I Want to Do in{isOwnProfile ? ":" : ` ${headerCity}:`}
-          </h2>
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <h2 className={`font-semibold text-gray-900 dark:text-white ${isMobile ? 'text-base' : 'text-lg'}`}>
+              Things I Want to Do in{isOwnProfile ? ":" : ` ${headerCity}:`}
+            </h2>
+            {isOwnProfile && (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setEditCityKey(hometownCityKey || uniqueRows.find((r) => !!r.key)?.key || "");
+                  setEditOpen(true);
+                }}
+                className="h-8 px-3 text-xs font-semibold"
+                data-testid="button-edit-things-to-do"
+              >
+                <Pencil className="w-3.5 h-3.5 mr-2" />
+                Edit
+              </Button>
+            )}
+          </div>
           {isOwnProfile && (
             <div className="mb-4 flex items-center gap-2" data-testid="location-visibility-toggle-row">
               <div className="flex items-center gap-2 min-w-0">
@@ -805,6 +847,135 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Current user only: edit widget/modal to manage items without inline X buttons */}
+      {isOwnProfile && (
+        <Dialog open={editOpen} onOpenChange={setEditOpen}>
+          <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-900">
+            <DialogHeader>
+              <DialogTitle className="text-gray-900 dark:text-white">Edit Things I Want to Do</DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="sm:col-span-1">
+                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-200">City</label>
+                  <select
+                    value={editCityKey}
+                    onChange={(e) => setEditCityKey(e.target.value)}
+                    className="mt-1 w-full h-9 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white px-2"
+                    data-testid="select-things-to-do-city"
+                  >
+                    {(uniqueRows || [])
+                      .filter((r) => !!r.key)
+                      .map((r) => (
+                        <option key={r.key} value={r.key}>
+                          {r.displayName}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-200">Add item</label>
+                  <div className="mt-1 flex gap-2">
+                    <Input
+                      value={newActivityName}
+                      onChange={(e) => setNewActivityName(e.target.value)}
+                      placeholder="Type something you want to do…"
+                      className="h-9"
+                      data-testid="input-add-thing-to-do"
+                    />
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        const name = newActivityName.trim();
+                        const city = String(editCityKey || "").trim();
+                        if (!name || !city) return;
+                        addActivity.mutate({ cityName: city, activityName: name });
+                      }}
+                      disabled={addActivity.isPending || !newActivityName.trim() || !editCityKey}
+                      className="h-9"
+                      data-testid="button-add-thing-to-do"
+                    >
+                      Add
+                    </Button>
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    Items show as clean pills on your profile. Deletes only appear here.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3 max-h-[45vh] overflow-auto pr-1">
+                {uniqueRows
+                  .filter((r) => !!r.key)
+                  .map((r) => {
+                    const cityKey = r.key;
+                    const cityData = (cityKey && citiesByName[cityKey]) || { activities: [], events: [], travelPlan: null };
+                    const cityActs = Array.isArray(cityData.activities) ? cityData.activities : [];
+                    const cityEvts = Array.isArray(cityData.events) ? cityData.events : [];
+                    const citySubInterests = getSubInterestsForCity(cityKey);
+                    const hasAny =
+                      cityActs.length > 0 || cityEvts.length > 0 || (Array.isArray(citySubInterests) && citySubInterests.length > 0);
+
+                    if (!hasAny) return null;
+
+                    return (
+                      <div key={`edit-city-${cityKey}`} className="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 p-3">
+                        <div className="text-sm font-bold text-gray-900 dark:text-white truncate" title={r.displayName}>
+                          {r.displayName}
+                        </div>
+
+                        {cityActs.length > 0 && (
+                          <div className="mt-2 space-y-1">
+                            <div className="text-xs font-semibold text-gray-700 dark:text-gray-200">Activities</div>
+                            <div className="space-y-1">
+                              {cityActs.map((a: any) => (
+                                <div key={`edit-act-${a.id}`} className="flex items-center justify-between gap-2 rounded-md bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-2 py-1">
+                                  <div className="text-sm text-gray-900 dark:text-white truncate">{a.activityName}</div>
+                                  <button
+                                    type="button"
+                                    onClick={() => deleteActivity.mutate(a.id)}
+                                    className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-gray-200 dark:border-gray-700 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    title="Remove"
+                                    data-testid={`button-delete-thing-${a.id}`}
+                                  >
+                                    <X className="w-4 h-4 text-gray-700 dark:text-gray-200" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {cityEvts.length > 0 && (
+                          <div className="mt-3 space-y-1">
+                            <div className="text-xs font-semibold text-gray-700 dark:text-gray-200">Events</div>
+                            <div className="space-y-1">
+                              {cityEvts.map((e: any) => (
+                                <div key={`edit-evt-${e.id}`} className="flex items-center justify-between gap-2 rounded-md bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-2 py-1">
+                                  <div className="text-sm text-gray-900 dark:text-white truncate">{e.eventTitle || e.title}</div>
+                                  <button
+                                    type="button"
+                                    onClick={() => deleteEvent.mutate(e)}
+                                    className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-gray-200 dark:border-gray-700 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    title="Remove"
+                                  >
+                                    <X className="w-4 h-4 text-gray-700 dark:text-gray-200" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

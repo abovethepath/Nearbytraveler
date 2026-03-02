@@ -98,10 +98,10 @@ html, body { overflow-x: hidden; }
   }
 
   body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-lets-meet-now-hero"] {
-    color: #ffffff !important;
+    color: #000000 !important;
   }
   body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-lets-meet-now-hero"] svg {
-    color: #ffffff !important;
+    color: #000000 !important;
     stroke: currentColor !important;
     fill: currentColor !important;
   }
@@ -121,30 +121,30 @@ html, body { overflow-x: hidden; }
 
 .profile-hero-fixed [data-testid^="button-connect-"] {
   background-color: rgb(37 99 235) !important; /* blue-600 */
-  color: #ffffff !important;
+  color: #000000 !important;
   border: 0 !important;
 }
 .profile-hero-fixed [data-testid^="button-connect-"] * {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
 }
 .profile-hero-fixed [data-testid^="button-connect-"] svg {
-  color: #ffffff !important;
+  color: #000000 !important;
   stroke: currentColor !important;
   fill: currentColor !important;
 }
 
 .profile-hero-fixed [data-testid^="button-vouch"] {
   background-color: rgb(22 163 74) !important; /* green-600 */
-  color: #ffffff !important;
+  color: #000000 !important;
   border: 0 !important;
 }
 .profile-hero-fixed [data-testid^="button-vouch"] * {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
 }
 .profile-hero-fixed [data-testid^="button-vouch"] svg {
-  color: #ffffff !important;
+  color: #000000 !important;
   stroke: currentColor !important;
   fill: currentColor !important;
 }
@@ -166,11 +166,11 @@ html, body { overflow-x: hidden; }
 
 .profile-hero-fixed [data-testid="button-share-profile"] {
   background-color: rgb(17 24 39) !important; /* gray-900 */
-  color: #ffffff !important;
+  color: #000000 !important;
   border: 1px solid rgba(0,0,0,0.25) !important;
 }
 .profile-hero-fixed [data-testid="button-share-profile"] svg {
-  color: #ffffff !important;
+  color: #000000 !important;
   stroke: currentColor !important;
   fill: currentColor !important;
 }
@@ -376,15 +376,16 @@ html, body { overflow-x: hidden; }
     border-color: rgb(229 231 235) !important;
     box-shadow: 0 8px 24px rgba(0,0,0,0.10) !important;
   }
+  /* Mobile web requirement: keep this card WHITE with BLACK text even in dark mode */
   body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-inline {
-    background-color: rgb(31 41 55) !important; /* gray-800 */
-    border-color: rgb(55 65 81) !important; /* gray-700 */
-    box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important;
+    background-color: #ffffff !important;
+    border-color: rgb(229 231 235) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18) !important;
   }
   body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-inline,
   body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-inline * {
-    color: rgb(249 250 251) !important; /* gray-50 */
-    -webkit-text-fill-color: rgb(249 250 251) !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
   }
   /* Keep shared-interest pills white with black text even inside dark inline card */
   body:not([data-native-ios="true"]):not(.native-ios-app) .what-you-have-in-common-inline .pill-interests,
@@ -405,6 +406,19 @@ html, body { overflow-x: hidden; }
   body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-inline :is(button, a)[class*="underline"] {
     color: rgb(249 115 22) !important; /* orange-500 */
     -webkit-text-fill-color: rgb(249 115 22) !important;
+  }
+
+  /* MOBILE WEB ONLY: Countries I've Visited should use pill styling consistently (especially in dark mode). */
+  body:not([data-native-ios="true"]):not(.native-ios-app) [data-testid="countries-content"] .pill-interests {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    border: 1px solid rgb(229 231 235) !important; /* gray-200 */
+    color: rgb(17 24 39) !important; /* gray-900 */
+    -webkit-text-fill-color: rgb(17 24 39) !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) [data-testid="countries-content"] .pill-interests * {
+    color: rgb(17 24 39) !important;
+    -webkit-text-fill-color: rgb(17 24 39) !important;
   }
 }
 
@@ -805,6 +819,28 @@ html, body { overflow-x: hidden; }
   color: #000000 !important;
   stroke: currentColor !important;
   fill: currentColor !important;
+}
+
+/* MOBILE RESPONSIVE WEB ONLY: Other-user hero wants brand gradient CTAs that stay readable in both themes. */
+@media (max-width: 767.98px) {
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-message"],
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-write-reference"] {
+    background-image: linear-gradient(to right, #3B82F6, #F97316) !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    color: #000000 !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-message"] *,
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-write-reference"] * {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-message"] svg,
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-write-reference"] svg {
+    color: #000000 !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
+  }
 }
 
 /* 7) LIGHT MODE (universal): soften any remaining saturated "feature cards"

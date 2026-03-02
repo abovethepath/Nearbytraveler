@@ -306,7 +306,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   variant="outline"
                   className={
                     isMobileWeb
-                      ? "h-9 px-3 text-sm font-semibold !bg-orange-500 hover:!bg-orange-600 !text-white !border !border-white/35 shadow-md ring-0"
+                      ? "h-9 px-3 text-sm font-semibold !bg-orange-500 hover:!bg-orange-600 !text-black !border !border-white/35 shadow-md ring-0"
                       : "h-9 px-3 text-sm font-semibold !bg-white hover:!bg-white !text-black !border !border-gray-200 shadow-sm ring-1 ring-black/10"
                   }
                   onClick={() => {
@@ -317,7 +317,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   }}
                   data-testid="button-lets-meet-now-hero"
                 >
-                  <Calendar className={isMobileWeb ? "w-4 h-4 mr-2 text-white" : "w-4 h-4 mr-2 !text-black"} />
+                  <Calendar className={isMobileWeb ? "w-4 h-4 mr-2 text-black" : "w-4 h-4 mr-2 !text-black"} />
                   Let's Meet Now
                 </Button>
               </div>
@@ -388,7 +388,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                 return (
                   <>
-                    <div className="flex flex-col lg:flex-row lg:items-start gap-4 lg:gap-6">
+                    <div className={`flex ${isMobileWeb ? "flex-row items-start" : "flex-col"} lg:flex-row lg:items-start gap-4 lg:gap-6`}>
                       {/* LEFT: avatar + status */}
                       <div className="flex-shrink-0">
                         <div
@@ -400,7 +400,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         </div>
 
                         {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                          <div className="mt-3 flex justify-center lg:justify-start">
+                          <div className={isMobileWeb ? "mt-2 flex justify-start" : "mt-3 flex justify-center lg:justify-start"}>
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-900">
                               New to Town
                             </span>
@@ -454,7 +454,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <div className="flex flex-wrap items-center gap-2">
                             <button
                               type="button"
-                              className="inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-3 h-8 text-[13px] !bg-white hover:!bg-white !text-black border border-gray-200 shadow-sm w-[10.5rem] sm:w-44"
+                              className={
+                                isMobileWeb
+                                  ? "inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-3 h-8 text-[13px] !bg-gradient-to-r !from-[#3B82F6] !to-[#F97316] hover:!from-[#2563EB] hover:!to-[#EA580C] !text-black !border-0 shadow-sm w-[10.5rem] sm:w-44"
+                                  : "inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-3 h-8 text-[13px] !bg-white hover:!bg-white !text-black border border-gray-200 shadow-sm w-[10.5rem] sm:w-44"
+                              }
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -473,7 +477,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               targetUsername={user?.username}
                               targetName={user?.name}
                               appearance="ghost"
-                              className="rounded-lg shadow-sm transition-all px-3 h-8 text-[13px] font-semibold !text-black w-[10.5rem] sm:w-44"
+                              className={
+                                isMobileWeb
+                                  ? "rounded-lg shadow-sm transition-all px-3 h-8 text-[13px] font-semibold !bg-blue-600 hover:!bg-blue-700 !text-black !border-0 w-[10.5rem] sm:w-44"
+                                  : "rounded-lg shadow-sm transition-all px-3 h-8 text-[13px] font-semibold !text-black w-[10.5rem] sm:w-44"
+                              }
                             />
                           </div>
 
@@ -483,7 +491,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               targetUserId={user?.id || 0}
                               targetUsername={user?.username}
                               appearance="ghost"
-                              className="h-8 px-2.5 text-xs !text-black"
+                              className={
+                                isMobileWeb
+                                  ? "h-8 px-2.5 text-xs !bg-green-600 hover:!bg-green-700 !text-black !border-0"
+                                  : "h-8 px-2.5 text-xs !text-black"
+                              }
                             />
                             <Button
                               type="button"
@@ -494,7 +506,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 else setLocation("/auth");
                               }}
                               variant="outline"
-                              className="!bg-white hover:!bg-white !text-black border border-gray-200 shadow-sm shrink-0 px-2.5 h-8 text-xs"
+                              className={
+                                isMobileWeb
+                                  ? "!bg-gradient-to-r !from-[#3B82F6] !to-[#F97316] hover:!from-[#2563EB] hover:!to-[#EA580C] !text-black !border-0 shadow-sm shrink-0 px-2.5 h-8 text-xs"
+                                  : "!bg-white hover:!bg-white !text-black border border-gray-200 shadow-sm shrink-0 px-2.5 h-8 text-xs"
+                              }
                               data-testid="button-write-reference"
                             >
                               Write Reference
@@ -514,7 +530,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 size="sm"
                                 showIcon={false}
                                 appearance="link"
-                                className="!text-black hover:!text-black/80"
+                                className={
+                                  isMobileWeb
+                                    ? "!text-black hover:!text-black/80 inline-flex items-center px-2 py-1 rounded-md border border-gray-400/70 bg-white/25"
+                                    : "!text-black hover:!text-black/80"
+                                }
                               />
                             ) : (
                               <button
@@ -525,7 +545,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   setLocation("/auth");
                                 }}
                                 onPointerDown={(e) => e.stopPropagation()}
-                                className="text-sm text-black/80 hover:text-red-700 underline underline-offset-2 font-medium"
+                                className={
+                                  isMobileWeb
+                                    ? "text-sm text-black hover:text-red-700 underline underline-offset-2 font-medium inline-flex items-center px-2 py-1 rounded-md border border-gray-400/70 bg-white/25"
+                                    : "text-sm text-black/80 hover:text-red-700 underline underline-offset-2 font-medium"
+                                }
                                 data-radix-dismissable-layer-ignore=""
                               >
                                 Report
@@ -535,54 +559,56 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         </div>
                       </div>
 
-                      {/* RIGHT: What You Have in Common (compact, must not grow hero) */}
-                      <div className="lg:w-[340px] lg:flex-shrink-0">
-                        <div className="bg-white/55 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-4 max-h-[260px] overflow-hidden">
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="text-sm font-bold text-black">What You Have in Common</div>
-                            <div className="text-xs font-semibold text-black">{totalCommon} things in common</div>
-                          </div>
+                      {/* RIGHT: What You Have in Common (desktop only; mobile shows it below hero to avoid duplicates) */}
+                      {!isMobileWeb && (
+                        <div className="lg:w-[340px] lg:flex-shrink-0">
+                          <div className="bg-white/55 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-4 max-h-[260px] overflow-hidden">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="text-sm font-bold text-black">What You Have in Common</div>
+                              <div className="text-xs font-semibold text-black">{totalCommon} things in common</div>
+                            </div>
 
-                          <div className="mt-2 text-xs text-black flex flex-wrap gap-x-3 gap-y-1">
-                            <span><span className="font-semibold text-black">{sharedContactsCount}</span> contacts</span>
-                            <span><span className="font-semibold text-black">{sharedCountries.length}</span> countries</span>
-                            {sharedLanguagesCountForDisplay > 0 && (
-                              <span><span className="font-semibold text-black">{sharedLanguagesCountForDisplay}</span> languages</span>
-                            )}
-                          </div>
-
-                          <div className="mt-3">
-                            <div className="text-xs font-semibold text-black mb-1">Shared interests ({sharedInterests.length})</div>
-                            <div className="flex flex-wrap gap-1.5 max-h-[92px] overflow-hidden">
-                              {visibleInterestPills.length > 0 ? (
-                                visibleInterestPills.map((interest) => (
-                                  <span
-                                    key={interest}
-                                    className="pill-interests !bg-white !text-black !border !border-gray-200 !shadow-none dark:!bg-white dark:!text-black dark:!border-gray-200 dark:!shadow-none"
-                                  >
-                                    {interest}
-                                  </span>
-                                ))
-                              ) : (
-                                <span className="text-xs text-black">No shared interests yet</span>
+                            <div className="mt-2 text-xs text-black flex flex-wrap gap-x-3 gap-y-1">
+                              <span><span className="font-semibold text-black">{sharedContactsCount}</span> contacts</span>
+                              <span><span className="font-semibold text-black">{sharedCountries.length}</span> countries</span>
+                              {sharedLanguagesCountForDisplay > 0 && (
+                                <span><span className="font-semibold text-black">{sharedLanguagesCountForDisplay}</span> languages</span>
                               )}
                             </div>
 
-                            {hasOverflow && (
-                              <div className="mt-2">
-                                <button
-                                  type="button"
-                                  className="text-xs font-semibold !text-black hover:!text-black underline underline-offset-2"
-                                  onClick={() => setSeeAllCommonOpen(true)}
-                                  data-testid="button-see-all-common"
-                                >
-                                  See all
-                                </button>
+                            <div className="mt-3">
+                              <div className="text-xs font-semibold text-black mb-1">Shared interests ({sharedInterests.length})</div>
+                              <div className="flex flex-wrap gap-1.5 max-h-[92px] overflow-hidden">
+                                {visibleInterestPills.length > 0 ? (
+                                  visibleInterestPills.map((interest) => (
+                                    <span
+                                      key={interest}
+                                      className="pill-interests !bg-white !text-black !border !border-gray-200 !shadow-none dark:!bg-white dark:!text-black dark:!border-gray-200 dark:!shadow-none"
+                                    >
+                                      {interest}
+                                    </span>
+                                  ))
+                                ) : (
+                                  <span className="text-xs text-black">No shared interests yet</span>
+                                )}
                               </div>
-                            )}
+
+                              {hasOverflow && (
+                                <div className="mt-2">
+                                  <button
+                                    type="button"
+                                    className="text-xs font-semibold !text-black hover:!text-black underline underline-offset-2"
+                                    onClick={() => setSeeAllCommonOpen(true)}
+                                    data-testid="button-see-all-common"
+                                  >
+                                    See all
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
                     </div>
 
                     {/* Tab bar (already text-only on web) */}

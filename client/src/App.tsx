@@ -237,6 +237,9 @@ function Router() {
     return null;
   });
   const [isLoading, setIsLoading] = useState(!user);
+  // Auth init/verification gates to prevent landing/login flashes during nav.
+  const [authInitialized, setAuthInitialized] = useState(false);
+  const [isVerifyingAuth, setIsVerifyingAuth] = useState(false);
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
   
@@ -334,6 +337,7 @@ function Router() {
       const seq = ++authSyncSeqRef.current;
 
       const expectedAuth = !!user?.id || hasLocalAuthEvidence();
+      if (expectedAuth) setIsVerifyingAuth(true);
 
       try {
         const res = await fetch(`${getApiBaseUrl()}/api/auth/user`, {
@@ -382,6 +386,7 @@ function Router() {
         console.warn("Auth sync failed (" + reason + "):", e);
       } finally {
         authSyncInFlightRef.current = false;
+        if (expectedAuth) setIsVerifyingAuth(false);
       }
     },
     [
@@ -481,9 +486,10 @@ function Router() {
     // BULLETPROOF FIX #1: If user was already set from useState initializer (just_registered),
     // skip the server auth check entirely. The server might return 401 due to iOS WebView
     // cookie timing, which would incorrectly clear the user we just set.
-    if (user && user.id) {
+      if (user && user.id) {
       console.log('🎯 User already initialized (likely from just_registered), skipping server auth check:', user.username);
       setIsLoading(false);
+        setAuthInitialized(true);
       return;
     }
 
@@ -499,6 +505,7 @@ function Router() {
           authStorage.setUser(parsedUser);
           localStorage.removeItem('just_registered');
           setIsLoading(false);
+          setAuthInitialized(true);
           return;
         }
       } catch (e) {
@@ -510,6 +517,7 @@ function Router() {
     if (isSignupRoute || (isLandingPage && location !== '/')) {
       console.log('🔥 PUBLIC PAGE - skipping auth check:', location);
       setIsLoading(false);
+      setAuthInitialized(true);
       return;
     }
 
@@ -528,6 +536,7 @@ function Router() {
         } catch {}
       }
       setIsLoading(false);
+      setAuthInitialized(true);
       return;
     }
 
@@ -555,6 +564,7 @@ function Router() {
           }
           
           setIsLoading(false);
+          setAuthInitialized(true);
           return;
         } else {
           console.log('❌ No server session found (401) - attempting recovery...');
@@ -589,6 +599,7 @@ function Router() {
               localStorage.setItem('user', JSON.stringify(recoveredUser));
               localStorage.removeItem('just_registered');
               setIsLoading(false);
+              setAuthInitialized(true);
               return;
             } else {
               console.log('❌ Session recovery failed - credentials mismatch');
@@ -612,10 +623,36 @@ function Router() {
       setUser(null);
 
       setIsLoading(false);
+      setAuthInitialized(true);
     };
 
     checkServerAuth();
   }, []);
+
+  // Prevent landing/login flash for authenticated users while auth is still being verified/resynced.
+  // Only gate when we have *real* local auth evidence (stored user) or a user in state.
+  const hasStoredUserForGate = React.useMemo(() => {
+    try {
+      return !!localStorage.getItem("user") || !!localStorage.getItem("travelconnect_user");
+    } catch {
+      return false;
+    }
+  }, [user?.id]); // user dep forces re-eval after login/logout
+
+  const shouldGateAuthenticatedRendering =
+    !isNativeIOSApp() &&
+    !isSignupRoute &&
+    !isAuthRoute &&
+    (hasStoredUserForGate || !!user?.id) &&
+    (!authInitialized || isVerifyingAuth || isLoading);
+
+  if (shouldGateAuthenticatedRendering) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-300 border-t-orange-500" />
+      </div>
+    );
+  }
 
   // Initialize WebSocket connection for authenticated users
   useEffect(() => {
