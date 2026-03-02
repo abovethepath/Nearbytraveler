@@ -1263,11 +1263,15 @@ export function ProfileTabs(props: ProfilePageProps) {
                                 {userTopInterests.map((interest, index) => (
                                   <div 
                                     key={`top-interest-${index}`} 
-                                    className={`h-8 px-4 rounded-full text-sm font-medium flex items-center ${
-                                      isOwnProfile
-                                        ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:border-0 dark:text-black"
-                                        : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:border-0 dark:text-black"
-                                    }`}
+                                    className={
+                                      isMobileWeb
+                                        ? "pill-interests bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
+                                        : `h-8 px-4 rounded-full text-sm font-medium flex items-center ${
+                                            isOwnProfile
+                                              ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:border-0 dark:text-black"
+                                              : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:border-0 dark:text-black"
+                                          }`
+                                    }
                                   >
                                     <span>{interest}</span>
                                   </div>
@@ -1287,11 +1291,15 @@ export function ProfileTabs(props: ProfilePageProps) {
                                 {userOtherInterests.map((interest, index) => (
                                   <div 
                                     key={`other-interest-${index}`} 
-                                    className={`h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
-                                      isOwnProfile
-                                        ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
-                                        : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
-                                    }`}
+                                    className={
+                                      isMobileWeb
+                                        ? "pill-interests bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
+                                        : `h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
+                                            isOwnProfile
+                                              ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
+                                              : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
+                                          }`
+                                    }
                                   >
                                     <span>{interest}</span>
                                   </div>
@@ -1299,11 +1307,15 @@ export function ProfileTabs(props: ProfilePageProps) {
                                 {userCustomInterests.map((interest, index) => (
                                   <div 
                                     key={`custom-interest-${index}`} 
-                                    className={`h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
-                                      isOwnProfile
-                                        ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
-                                        : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
-                                    }`}
+                                    className={
+                                      isMobileWeb
+                                        ? "pill-interests bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
+                                        : `h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
+                                            isOwnProfile
+                                              ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
+                                              : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
+                                          }`
+                                    }
                                   >
                                     <span>{interest}</span>
                                   </div>
@@ -1345,11 +1357,15 @@ export function ProfileTabs(props: ProfilePageProps) {
                             {allActivities.map((activity, index) => (
                               <div 
                                 key={`activity-${index}`} 
-                                className={`h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
-                                  isOwnProfile
-                                    ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-700 dark:to-blue-400 dark:border-0 dark:text-black"
-                                    : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-700 dark:to-blue-400 dark:border-0 dark:text-black"
-                                }`}
+                                className={
+                                  isMobileWeb
+                                    ? "pill-activities bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
+                                    : `h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
+                                        isOwnProfile
+                                          ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-700 dark:to-blue-400 dark:border-0 dark:text-black"
+                                          : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-700 dark:to-blue-400 dark:border-0 dark:text-black"
+                                      }`
+                                }
                               >
                                 <span>{activity}</span>
                               </div>
