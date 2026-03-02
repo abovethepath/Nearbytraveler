@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { authStorage } from "@/lib/auth";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -12,13 +13,60 @@ interface ErrorBoundaryState {
 
 export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { hasError: false, error: null };
+  private recoveryTimer: number | undefined;
 
   static getDerivedStateFromError(error: any): ErrorBoundaryState {
     return { hasError: true, error };
   }
 
   componentDidCatch(error: any, errorInfo: any) {
-    console.error("ErrorBoundary caught:", error, errorInfo);
+    // ROOT CAUSE: log the actual error + component stack.
+    // This is intentionally verbose so we can debug production "Something went wrong" screens.
+    try {
+      console.groupCollapsed("🚨 Global ErrorBoundary caught an error");
+      console.log("Error:", error);
+      console.log("Error message:", error?.message);
+      console.log("Error name:", error?.name);
+      console.log("Component stack:", errorInfo?.componentStack);
+      console.log("Full errorInfo:", errorInfo);
+      console.groupEnd();
+    } catch {
+      // Fall back if console group isn't available
+      console.error("ErrorBoundary caught:", error, errorInfo);
+    }
+
+    // IMMEDIATE BAND-AID: auto-recover after 2s (web).
+    try {
+      // Prevent infinite loops: only auto-recover once per session.
+      const flag = "nt_error_autorecover_once";
+      if (sessionStorage.getItem(flag) === "1") return;
+      sessionStorage.setItem(flag, "1");
+    } catch {
+      // ignore storage errors
+    }
+
+    if (!isNativeIOSApp()) {
+      this.recoveryTimer = window.setTimeout(() => {
+        const isAuthed = (() => {
+          try {
+            if (authStorage.getUser()?.id) return true;
+            const stored = localStorage.getItem("user") || localStorage.getItem("travelconnect_user");
+            if (stored) {
+              const parsed = JSON.parse(stored);
+              return !!parsed?.id;
+            }
+          } catch {}
+          return false;
+        })();
+
+        // Recover to a stable route (never leave user stuck).
+        window.location.replace(isAuthed ? "/home" : "/login");
+      }, 2000);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.recoveryTimer) window.clearTimeout(this.recoveryTimer);
   }
 
   handleReload = () => {

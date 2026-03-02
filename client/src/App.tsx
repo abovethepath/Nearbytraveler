@@ -1191,6 +1191,11 @@ function Router() {
         console.log('Showing Sign In page');
         return <Auth />;
       }
+      // Alias: /login should behave like /signin (requested by error recovery)
+      if (location === '/login') {
+        console.log('Showing Login page');
+        return <Auth />;
+      }
       if (location === '/launching-soon') {
         console.log('Showing Launching Soon page');
         return <LaunchingSoon />;
