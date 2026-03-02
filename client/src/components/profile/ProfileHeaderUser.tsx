@@ -733,14 +733,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     </div>
                   </>
                 )}
-
-                {/* Mobile web: anchor "New to Town" to avatar (no centered standalone row) */}
-                {!isNativeIOSApp() && isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                  <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-100 border border-green-300 text-black shadow-sm z-20">
-                    New to Town
-                  </span>
-                )}
               </div>
+              {/* Mobile web: keep badge centered under avatar */}
+              {!isNativeIOSApp() && isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                <span className="mt-2 inline-flex items-center self-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-black shadow-sm">
+                  New to Town
+                </span>
+              )}
               {/* New to Town badge - directly below avatar (desktop other-user) */}
               {!isNativeIOSApp() && !isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-3">
