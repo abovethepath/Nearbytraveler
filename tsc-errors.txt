@@ -1,0 +1,77 @@
+﻿client/src/components/BusinessesGrid.tsx(36,34): error TS2339: Property 'destinationCity' does not exist on type 'string'.
+client/src/components/BusinessesGrid.tsx(37,35): error TS2339: Property 'destinationState' does not exist on type 'string'.
+client/src/components/BusinessesGrid.tsx(38,37): error TS2339: Property 'destinationCountry' does not exist on type 'string'.
+client/src/components/CurrentCityWidget.tsx(49,55): error TS2339: Property 'destinationCity' does not exist on type 'string'.
+client/src/components/CurrentCityWidget.tsx(49,92): error TS2339: Property 'destinationState' does not exist on type 'string'.
+client/src/components/CurrentCityWidget.tsx(49,135): error TS2339: Property 'destinationState' does not exist on type 'string'.
+client/src/components/CurrentCityWidget.tsx(49,182): error TS2339: Property 'destinationCountry' does not exist on type 'string'.
+client/src/components/instant-messaging/IMAlert.tsx(76,14): error TS2322: Type '{ children: string; jsx: true; }' is not assignable to type 'DetailedHTMLProps<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>'.
+  Property 'jsx' does not exist on type 'DetailedHTMLProps<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>'.
+client/src/components/ResponsiveUserGrid.tsx(18,3): error TS2300: Duplicate identifier 'destinationCity'.
+client/src/components/ResponsiveUserGrid.tsx(28,3): error TS2300: Duplicate identifier 'destinationCity'.
+client/src/components/travel-memory-timeline-new.tsx(143,5): error TS2304: Cannot find name 'likeMutation'.
+client/src/components/travel-memory-timeline-new.tsx(147,9): error TS2304: Cannot find name 'commentText'.
+client/src/components/travel-memory-timeline-new.tsx(148,7): error TS2304: Cannot find name 'commentMutation'.
+client/src/components/travel-memory-timeline-new.tsx(148,51): error TS2304: Cannot find name 'commentText'.
+client/src/components/ui/dropdown-menu.tsx(60,90): error TS2339: Property 'onOpenAutoFocus' does not exist on type 'Omit<DropdownMenuContentProps & RefAttributes<HTMLDivElement>, "ref">'.
+client/src/components/ui/dropdown-menu.tsx(73,28): error TS2345: Argument of type 'Event' is not assignable to parameter of type 'PointerDownOutsideEvent'.
+  Type 'Event' is missing the following properties from type 'CustomEvent<{ originalEvent: PointerEvent; }>': detail, initCustomEvent
+client/src/components/ui/dropdown-menu.tsx(81,25): error TS2345: Argument of type 'Event' is not assignable to parameter of type 'PointerDownOutsideEvent | FocusOutsideEvent'.
+  Type 'Event' is missing the following properties from type 'CustomEvent<{ originalEvent: FocusEvent; }>': detail, initCustomEvent
+client/src/components/ui/dropdown-menu.tsx(89,22): error TS2345: Argument of type 'Event' is not assignable to parameter of type 'FocusOutsideEvent'.
+  Type 'Event' is missing the following properties from type 'CustomEvent<{ originalEvent: FocusEvent; }>': detail, initCustomEvent
+client/src/components/ui/dropdown-menu.tsx(97,9): error TS2322: Type '{ slot?: string; style?: CSSProperties; title?: string; key?: Key; defaultChecked?: boolean; defaultValue?: string | number | readonly string[]; suppressContentEditableWarning?: boolean; ... 277 more ...; className: string; }' is not assignable to type 'IntrinsicAttributes & DropdownMenuContentProps & RefAttributes<HTMLDivElement>'.
+  Property 'onOpenAutoFocus' does not exist on type 'IntrinsicAttributes & DropdownMenuContentProps & RefAttributes<HTMLDivElement>'. Did you mean 'onCloseAutoFocus'?
+client/src/lib/nativeApp.ts(83,53): error TS2339: Property 'postMessage' does not exist on type 'unknown'.
+client/src/lib/travelOptions.ts(88,3): error TS2305: Module '"@shared/base-options"' has no exported member 'getAllEvents'.
+client/src/pages/ai-companion.tsx(425,46): error TS2339: Property 'created_at' does not exist on type 'ChatMessage'.
+client/src/pages/ai-companion.tsx(425,76): error TS2339: Property 'created_at' does not exist on type 'ChatMessage'.
+client/src/pages/ai-companion.tsx(507,48): error TS2304: Cannot find name 'toggleBookmark'.
+client/src/pages/ai-companion.tsx(519,48): error TS2304: Cannot find name 'toggleVisited'.
+client/src/pages/ai-companion.tsx(600,48): error TS2304: Cannot find name 'toggleBookmark'.
+client/src/pages/ai-companion.tsx(608,48): error TS2304: Cannot find name 'toggleVisited'.
+client/src/pages/business-dashboard.tsx(659,63): error TS2352: Conversion of type '{ category: string; tags: string[]; maxRedemptions: string; maxRedemptionsPerUser: string; title?: string; websiteUrl?: string; streetAddress?: string; zipCode?: string; city?: string; state?: string; ... 11 more ...; termsConditions?: string; }' to type 'OfferFormData' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ category: string; tags: string[]; maxRedemptions: string; maxRedemptionsPerUser: string; title?: string; websiteUrl?: string; streetAddress?: string; zipCode?: string; city?: string; state?: string; ... 11 more ...; termsConditions?: string; }' is not comparable to type '{ title?: string; websiteUrl?: string; streetAddress?: string; zipCode?: string; city?: string; state?: string; country?: string; tags?: string; description?: string; contactInfo?: string; category?: string; ... 10 more ...; termsConditions?: string; }'.
+    Types of property 'tags' are incompatible.
+      Type 'string[]' is not comparable to type 'string'.
+client/src/pages/business-dashboard.tsx(661,34): error TS2352: Conversion of type '{ category: string; tags: string[]; maxRedemptions: string; maxRedemptionsPerUser: string; title?: string; websiteUrl?: string; streetAddress?: string; zipCode?: string; city?: string; state?: string; ... 11 more ...; termsConditions?: string; }' to type 'OfferFormData' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ category: string; tags: string[]; maxRedemptions: string; maxRedemptionsPerUser: string; title?: string; websiteUrl?: string; streetAddress?: string; zipCode?: string; city?: string; state?: string; ... 11 more ...; termsConditions?: string; }' is not comparable to type '{ title?: string; websiteUrl?: string; streetAddress?: string; zipCode?: string; city?: string; state?: string; country?: string; tags?: string; description?: string; contactInfo?: string; category?: string; ... 10 more ...; termsConditions?: string; }'.
+    Types of property 'tags' are incompatible.
+      Type 'string[]' is not comparable to type 'string'.
+client/src/pages/chatroom.tsx(15,38): error TS2339: Property 'id' does not exist on type 'StringRouteParams<undefined>'.
+client/src/pages/connect.tsx(600,9): error TS2322: Type '{ id: number; destinationCity: string; destinationState: string; destinationCountry: string; interests: string[]; activities: string[]; events: string[]; travelStyle: string[]; travelGroup: string; ... 11 more ...; autoTags: string[]; }[]' is not assignable to type 'TravelPlan[]'.
+  Type '{ id: number; destinationCity: string; destinationState: string; destinationCountry: string; interests: string[]; activities: string[]; events: string[]; travelStyle: string[]; travelGroup: string; ... 11 more ...; autoTags: string[]; }' is not assignable to type 'TravelPlan'.
+    Types of property 'startDate' are incompatible.
+      Type 'Date' is not assignable to type 'string'.
+client/src/pages/create-event.tsx(175,39): error TS2345: Argument of type '"category"' is not assignable to parameter of type '"title" | "date" | "location" | "street" | "city" | "state" | "country" | "zipcode" | "tags" | "description" | "isPublic" | "venueName" | "endDate" | "imageUrl" | "maxParticipants" | ... 25 more ... | `additionalCities.${number}`'.
+client/src/pages/dm-chat.tsx(150,7): error TS2322: Type '{ chatId: number; chatType: "dm"; title: string; subtitle: string; currentUserId: any; otherUserUsername: string; otherUserProfileImage: string; }' is not assignable to type 'IntrinsicAttributes & WhatsAppChatProps'.
+  Property 'otherUserUsername' does not exist on type 'IntrinsicAttributes & WhatsAppChatProps'.
+client/src/pages/event-chat.tsx(34,19): error TS18047: 'params' is possibly 'null'.
+client/src/pages/event-chat.tsx(34,53): error TS2339: Property 'eventId' does not exist on type 'never'.
+client/src/pages/events.tsx(1421,31): error TS2339: Property 'events' does not exist on type 'any[] | { events: any[]; }'.
+  Property 'events' does not exist on type 'any[]'.
+client/src/pages/events.tsx(1421,54): error TS2339: Property 'events' does not exist on type 'any[] | { events: any[]; }'.
+  Property 'events' does not exist on type 'any[]'.
+client/src/pages/events.tsx(1423,35): error TS2339: Property 'events' does not exist on type 'any[] | { events: any[]; }'.
+  Property 'events' does not exist on type 'any[]'.
+client/src/pages/events.tsx(1498,37): error TS2339: Property 'message' does not exist on type 'any[] | { events: any[]; }'.
+  Property 'message' does not exist on type 'any[]'.
+client/src/pages/external-event-details.tsx(36,9): error TS18047: 'params' is possibly 'null'.
+client/src/pages/external-event-details.tsx(38,71): error TS2339: Property 'eventId' does not exist on type 'never'.
+client/src/pages/external-event-details.tsx(44,7): error TS18047: 'params' is possibly 'null'.
+client/src/pages/itinerary.tsx(76,28): error TS18047: 'params' is possibly 'null'.
+client/src/pages/itinerary.tsx(92,53): error TS18047: 'params' is possibly 'null'.
+client/src/pages/join-trip.tsx(16,17): error TS18047: 'params' is possibly 'null'.
+client/src/pages/manage-event.tsx(161,19): error TS2345: Argument of type '{ title: string; description: string; venueName: string; street: string; city: string; state: string; country: string; zipcode: string; location: string; startDate: string; endDate: string; category: string; ... 4 more ...; imageUrl: string; }' is not assignable to parameter of type 'SetStateAction<{ title: string; description: string; venueName: string; street: string; city: string; state: string; country: string; zipcode: string; location: string; startDate: string; endDate: string; category: string; ... 5 more ...; isSameDay: boolean; }>'.
+  Property 'isSameDay' is missing in type '{ title: string; description: string; venueName: string; street: string; city: string; state: string; country: string; zipcode: string; location: string; startDate: string; endDate: string; category: string; ... 4 more ...; imageUrl: string; }' but required in type '{ title: string; description: string; venueName: string; street: string; city: string; state: string; country: string; zipcode: string; location: string; startDate: string; endDate: string; category: string; ... 5 more ...; isSameDay: boolean; }'.
+client/src/pages/match-in-city.tsx(2491,41): error TS2339: Property 'pointerType' does not exist on type 'MouseEvent<HTMLButtonElement, MouseEvent>'.
+client/src/pages/match-in-city.tsx(2583,45): error TS2339: Property 'pointerType' does not exist on type 'MouseEvent<HTMLButtonElement, MouseEvent>'.
+client/src/pages/match-in-city.tsx(2692,43): error TS2339: Property 'pointerType' does not exist on type 'MouseEvent<HTMLButtonElement, MouseEvent>'.
+client/src/pages/meetup-chat.tsx(19,20): error TS18047: 'params' is possibly 'null'.
+client/src/pages/meetup-chat.tsx(19,55): error TS2339: Property 'meetupId' does not exist on type 'never'.
+client/src/pages/meetup-manage.tsx(53,20): error TS18047: 'params' is possibly 'null'.
+client/src/pages/meetup-manage.tsx(53,49): error TS2339: Property 'id' does not exist on type 'never'.
+client/src/pages/quick-meetup-chat.tsx(28,20): error TS18047: 'params' is possibly 'null'.
+client/src/pages/quick-meetup-chat.tsx(28,55): error TS2339: Property 'meetupId' does not exist on type 'never'.
+client/src/pages/travel-blog.tsx(190,33): error TS2749: 'SpeechRecognition' refers to a value, but is being used as a type here. Did you mean 'typeof SpeechRecognition'?
+shared/schema.ts(7,37): error TS2345: Argument of type 'NoUnknownKeys<{ [x: string]: ZodTypeAny | ((schema: ZodArray<ZodArray<ZodArray<ZodArray<ZodArray<ZodArray<ZodArray<ZodArray<ZodArray<ZodArray<ZodArray<... | ZodTuple<[any, ...any[]], null>, "many"> | ZodTuple<[any, ...any[]], null>, "many"> | ZodTuple<...>, "many"> | ZodTuple<...>, "many"> | ZodTuple<...>, "many"> |...' is not assignable to parameter of type 'NoUnknownKeys<BuildRefine<Pick<T["_"]["columns"], keyof T["$inferInsert"]>>, T["$inferInsert"]>'.

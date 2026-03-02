@@ -145,28 +145,28 @@ export default function BusinessLanding() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Tour Operators</h3>
-              <p className="text-gray-700 dark:text-gray-200 text-sm">Walking tours, food tours, cultural experiences</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Tour Operators</h3>
+              <p className="text-gray-700 text-sm">Walking tours, food tours, cultural experiences</p>
             </div>
             <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Activity Providers</h3>
-              <p className="text-gray-700 dark:text-gray-200 text-sm">Hiking, biking, water sports, adventure activities</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Activity Providers</h3>
+              <p className="text-gray-700 text-sm">Hiking, biking, water sports, adventure activities</p>
             </div>
             <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Restaurants & Cafes</h3>
-              <p className="text-gray-700 dark:text-gray-200 text-sm">Hidden gems seeking authentic food lovers</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Restaurants & Cafes</h3>
+              <p className="text-gray-700 text-sm">Hidden gems seeking authentic food lovers</p>
             </div>
             <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Cultural Experiences</h3>
-              <p className="text-gray-700 dark:text-gray-200 text-sm">Art classes, cooking lessons, craft workshops</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Cultural Experiences</h3>
+              <p className="text-gray-700 text-sm">Art classes, cooking lessons, craft workshops</p>
             </div>
             <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Transportation Services</h3>
-              <p className="text-gray-700 dark:text-gray-200 text-sm">Local guides, drivers, unique transport</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Transportation Services</h3>
+              <p className="text-gray-700 text-sm">Local guides, drivers, unique transport</p>
             </div>
             <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Local Guides</h3>
-              <p className="text-gray-700 dark:text-gray-200 text-sm">Photography tours, city experts, neighborhood specialists</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Local Guides</h3>
+              <p className="text-gray-700 text-sm">Photography tours, city experts, neighborhood specialists</p>
             </div>
           </div>
         </div>
@@ -184,27 +184,27 @@ export default function BusinessLanding() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white dark:bg-gradient-to-br dark:from-green-900/30 dark:to-green-800/30 rounded-xl p-6 text-center border border-gray-200 dark:border-gray-700 shadow-sm">
-              <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2">Direct Customer Connection</h3>
-              <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">Get customers other businesses can't reach</p>
-              <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1 text-left">
+              <h3 className="font-bold text-gray-900 text-lg mb-2">Direct Customer Connection</h3>
+              <p className="text-sm text-gray-700 mb-3">Get customers other businesses can't reach</p>
+              <ul className="text-xs text-gray-600 space-y-1 text-left">
                 <li>• Direct customer connection</li>
                 <li>• No competitor interference</li>
                 <li>• Exclusive access to travelers</li>
               </ul>
             </div>
             <div className="bg-white dark:bg-gradient-to-br dark:from-orange-900/30 dark:to-orange-800/30 rounded-xl p-6 text-center border border-gray-200 dark:border-gray-700 shadow-sm">
-              <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2">Quality Customers</h3>
-              <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">Experience seekers with spending power</p>
-              <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1 text-left">
+              <h3 className="font-bold text-gray-900 text-lg mb-2">Quality Customers</h3>
+              <p className="text-sm text-gray-700 mb-3">Experience seekers with spending power</p>
+              <ul className="text-xs text-gray-600 space-y-1 text-left">
                 <li>• Higher lifetime value</li>
                 <li>• Authentic experience seekers</li>
                 <li>• Word-of-mouth promoters</li>
               </ul>
             </div>
             <div className="bg-white dark:bg-gradient-to-br dark:from-purple-900/30 dark:to-purple-800/30 rounded-xl p-6 text-center border border-gray-200 dark:border-gray-700 shadow-sm">
-              <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2">Smart Matching</h3>
-              <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">Connect with travelers who want exactly what you offer</p>
-              <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1 text-left">
+              <h3 className="font-bold text-gray-900 text-lg mb-2">Smart Matching</h3>
+              <p className="text-sm text-gray-700 mb-3">Connect with travelers who want exactly what you offer</p>
+              <ul className="text-xs text-gray-600 space-y-1 text-left">
                 <li>• Know travel dates & duration</li>
                 <li>• See interests & preferences</li>
                 <li>• Understand group size & budget</li>
@@ -227,24 +227,24 @@ export default function BusinessLanding() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Keep 100% of Your Revenue</h3>
-              <p className="text-gray-700 dark:text-gray-200 text-sm">No commission fees like TripAdvisor or Viator. What you earn is yours.</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Keep 100% of Your Revenue</h3>
+              <p className="text-gray-700 text-sm">No commission fees like TripAdvisor or Viator. What you earn is yours.</p>
             </div>
             <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Direct Relationships</h3>
-              <p className="text-gray-700 dark:text-gray-200 text-sm">Build lasting customer relationships without middlemen taking a cut.</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Direct Relationships</h3>
+              <p className="text-gray-700 text-sm">Build lasting customer relationships without middlemen taking a cut.</p>
             </div>
             <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Recurring Customers</h3>
-              <p className="text-gray-700 dark:text-gray-200 text-sm">Travelers return and bring friends. Build a loyal following.</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Recurring Customers</h3>
+              <p className="text-gray-700 text-sm">Travelers return and bring friends. Build a loyal following.</p>
             </div>
             <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Real Customer Insights</h3>
-              <p className="text-gray-700 dark:text-gray-200 text-sm">Understand what travelers want before they arrive in your city.</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Real Customer Insights</h3>
+              <p className="text-gray-700 text-sm">Understand what travelers want before they arrive in your city.</p>
             </div>
             <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Instant Notifications</h3>
-              <p className="text-gray-700 dark:text-gray-200 text-sm">Get alerted when travelers matching your services are planning trips.</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Instant Notifications</h3>
+              <p className="text-gray-700 text-sm">Get alerted when travelers matching your services are planning trips.</p>
             </div>
           </div>
         </div>
@@ -337,11 +337,11 @@ export default function BusinessLanding() {
               LIMITED TIME: FREE BETA ACCESS
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-              Join Free Now - $75/month After Beta
+              Join Free During Beta
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 gap-6 mb-8">
             {/* Beta Members */}
             <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-2xl border-4 border-green-500 relative">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-6 py-1 rounded-full font-bold text-sm">
@@ -351,18 +351,6 @@ export default function BusinessLanding() {
                 <div className="text-5xl font-black text-green-600 dark:text-green-400 mb-2">$0</div>
                 <div className="text-lg font-bold text-gray-900 dark:text-white mb-1">/month</div>
                 <div className="text-sm text-green-600 dark:text-green-400 font-semibold mb-6">During beta period</div>
-              </div>
-            </div>
-            
-            {/* Regular Price */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border-2 border-gray-300 dark:border-gray-600 relative opacity-75">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gray-500 text-white px-6 py-1 rounded-full font-bold text-sm">
-                AFTER BETA
-              </div>
-              <div className="text-center mt-4">
-                <div className="text-5xl font-black text-gray-700 dark:text-gray-300 mb-2">$75</div>
-                <div className="text-lg font-bold text-gray-900 dark:text-white mb-1">/month</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold mb-6">Standard pricing for all businesses</div>
               </div>
             </div>
           </div>
@@ -401,7 +389,7 @@ export default function BusinessLanding() {
           {/* Beta Advantage */}
           <div className="text-center mb-6">
             <p className="text-lg font-bold text-gray-900 dark:text-white mb-3">
-              Join during beta for free access. Once beta ends, pricing is $75/month for all businesses.
+              Join during beta for free access.
             </p>
             <p className="text-sm text-orange-600 dark:text-orange-400 font-semibold mb-2">⏰ Limited beta spots available</p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Join 500+ local businesses already connecting with travelers</p>

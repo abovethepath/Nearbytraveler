@@ -310,16 +310,48 @@ function Router() {
     location.startsWith("/signup/") ||
     location.startsWith("/auth/");
 
-  // During initial auth hydration/validation, treat some routes as public so we
-  // don't block password resets / invite links / public event detail pages.
-  const isPublicRouteDuringAuthLoading = React.useMemo(() => {
-    if (isSignupRoute || isAuthRoute || isLandingPage) return true;
-    if (location.startsWith("/reset-password")) return true;
-    if (location.startsWith("/forgot-password")) return true;
-    if (location.startsWith("/join-trip/") || location.startsWith("/invite/")) return true;
-    if (location.startsWith("/events/") && location.split("/")[2]) return true;
+  // Normalize once so route guards don't break on query strings / hashes / trailing slashes.
+  const normalizedPath = React.useMemo(() => {
+    const raw = location || "/";
+    const noHash = raw.split("#")[0];
+    const noQuery = noHash.split("?")[0];
+    const trimmed = (noQuery.replace(/\/+$/, "") || "/");
+    return trimmed === "" ? "/" : trimmed;
+  }, [location]);
+
+  // Permanent client-side redirect: consolidate /signin → /auth (single login URL).
+  useEffect(() => {
+    if (isNativeIOSApp()) return;
+    if (normalizedPath === "/signin") {
+      window.location.replace("/auth");
+    }
+  }, [normalizedPath]);
+
+  // Single source of truth: whether a route is public (no auth required).
+  // Redirect logic must rely exclusively on `!isPublicRoute`.
+  const isPublicRoute = React.useMemo(() => {
+    // Landing page
+    if (normalizedPath === "/") return true;
+
+    // Auth entry
+    if (normalizedPath === "/auth") return true;
+
+    // Signup flows
+    if (normalizedPath === "/signup" || normalizedPath.startsWith("/signup/")) return true;
+
+    // Password recovery
+    if (normalizedPath === "/forgot-password") return true;
+    if (normalizedPath === "/reset-password") return true;
+
+    // Public event detail pages (if intended public)
+    if (normalizedPath.startsWith("/events/") && normalizedPath.split("/")[2]) return true;
+
+    // Invite / join flows
+    if (normalizedPath.startsWith("/invite/")) return true;
+    if (normalizedPath.startsWith("/join-trip/")) return true;
+
     return false;
-  }, [isSignupRoute, isAuthRoute, isLandingPage, location]);
+  }, [normalizedPath]);
 
   const hasLocalAuthEvidence = React.useCallback(() => {
     try {
@@ -396,7 +428,8 @@ function Router() {
 
           // Only force redirect when we *thought* we were authenticated (prevents bouncing public pages).
           // Also never redirect during auth hydration/initial validation to avoid "Welcome Back" flashes.
-          if (expectedAuth && !isAuthRoute && !(authLoading || !authInitialized || isLoading)) {
+          // Only redirect on protected routes.
+          if (expectedAuth && !isPublicRoute && !(authLoading || !authInitialized || isLoading)) {
             try {
               // Preserve intended destination for after login.
               if (!isLandingPage) localStorage.setItem("postAuthRedirect", location);
@@ -418,7 +451,7 @@ function Router() {
     [
       clearLocalAuthState,
       hasLocalAuthEvidence,
-      isAuthRoute,
+      isPublicRoute,
       isLandingPage,
       isSignupRoute,
       location,
@@ -652,7 +685,7 @@ function Router() {
   // Only decide "redirect to /auth" once loading is complete.
   const shouldGateAuthenticatedRendering =
     !isNativeIOSApp() &&
-    !isPublicRouteDuringAuthLoading &&
+    !isPublicRoute &&
     (authLoading || !authInitialized || isVerifyingAuth || isLoading);
 
   // Initialize WebSocket connection for authenticated users
@@ -844,9 +877,8 @@ function Router() {
   useEffect(() => {
     if (isNativeIOSApp()) return;
     if (authValue.authLoading) return;
-    if (isPublicRouteDuringAuthLoading) return;
+    if (isPublicRoute) return;
     if (authValue.isAuthenticated) return;
-    if (isAuthRoute) return;
 
     try {
       localStorage.setItem("postAuthRedirect", location);
@@ -857,8 +889,7 @@ function Router() {
   }, [
     authValue.authLoading,
     authValue.isAuthenticated,
-    isAuthRoute,
-    isPublicRouteDuringAuthLoading,
+    isPublicRoute,
     location,
     setLocation,
   ]);

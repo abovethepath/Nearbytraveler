@@ -127,27 +127,27 @@ export default function TravelersLanding() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white dark:bg-gradient-to-br dark:from-purple-900/30 dark:to-purple-800/30 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Instant Meetups</h3>
-              <p className="text-black dark:text-gray-200 mb-3">Create "meet now" events for instant connections.</p>
-              <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Instant Meetups</h3>
+              <p className="text-gray-700 mb-3">Create "meet now" events for instant connections.</p>
+              <ul className="text-sm text-gray-700 space-y-1">
                 <li>• Spontaneous adventures</li>
                 <li>• Skip the planning stress</li>
                 <li>• Connect in real-time</li>
               </ul>
             </div>
             <div className="bg-white dark:bg-gradient-to-br dark:from-pink-900/30 dark:to-pink-800/30 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Local Connections</h3>
-              <p className="text-black dark:text-gray-200 mb-3">Connect with locals for authentic experiences.</p>
-              <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Local Connections</h3>
+              <p className="text-gray-700 mb-3">Connect with locals for authentic experiences.</p>
+              <ul className="text-sm text-gray-700 space-y-1">
                 <li>• Skip tourist traps</li>
                 <li>• Insider knowledge</li>
                 <li>• Authentic cultural exchange</li>
               </ul>
             </div>
             <div className="bg-white dark:bg-gradient-to-br dark:from-teal-900/30 dark:to-teal-800/30 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Real-Time Chat</h3>
-              <p className="text-black dark:text-gray-200 mb-3">Instant messaging with full features.</p>
-              <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Real-Time Chat</h3>
+              <p className="text-gray-700 mb-3">Instant messaging with full features.</p>
+              <ul className="text-sm text-gray-700 space-y-1">
                 <li>• Group conversations</li>
                 <li>• Photo & location sharing</li>
                 <li>• Coordinated meetups</li>

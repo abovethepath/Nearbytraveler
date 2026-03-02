@@ -1126,41 +1126,34 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // Create session - only mutate if express-session already created req.session
-      const sess = (req as any).session;
-      if (sess && typeof sess.save === 'function') {
-        sess.user = {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          profileImageUrl: (user as any).profileImage
-        };
-        console.log("🔐 Saving session for user:", user.id);
-        try {
-          await new Promise<void>((resolve) => {
-            const timeout = setTimeout(() => {
-              console.log("⚠️ Session save timeout - proceeding anyway");
-              resolve();
-            }, 3000);
-            sess.save((err: any) => {
-              clearTimeout(timeout);
-              if (err) console.error("❌ Session save error:", err?.message || err);
-              else console.log("✅ Session saved successfully");
-              resolve();
-            });
-          });
-        } catch (saveError: any) {
-          console.error("❌ Session save failed:", saveError?.message);
-        }
-      } else {
-        console.log("⚠️ No session or session.save - skipping session persist (login will still succeed)");
-      }
-
-      console.log("✅ Login successful:", { email, userId: user.id });
       const isMobile = req.get('X-Client') === 'ReactNative';
       const body: { ok: boolean; user: { id: number; username: string }; sessionId?: string } = { ok: true, user: { id: user.id, username: user.username } };
       if (isMobile && (req as any).sessionID) body.sessionId = (req as any).sessionID;
-      return res.status(200).json(body);
+
+      // Create session - only mutate if express-session already created req.session
+      const sess = (req as any).session;
+      if (!sess || typeof sess.save !== 'function') {
+        return res.status(500).json({ error: "Session save failed" });
+      }
+
+      sess.user = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        profileImageUrl: (user as any).profileImage
+      };
+      console.log("🔐 Saving session for user:", user.id);
+
+      // IMPORTANT: only respond after session is confirmed saved.
+      return sess.save((err: any) => {
+        if (err) {
+          console.error("❌ Session save error:", err?.message || err);
+          return res.status(500).json({ error: "Session save failed" });
+        }
+        console.log("✅ Session saved successfully");
+        console.log("✅ Login successful:", { email, userId: user.id });
+        return res.status(200).json(body);
+      });
     } catch (error: any) {
       const errMsg = error?.message || String(error);
       console.error("Login error:", errMsg, error?.stack);
@@ -1170,6 +1163,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         ...(isDev && { detail: errMsg })
       });
     }
+  });
+
+  // Permanent redirect: consolidate /signin → /auth (single login URL).
+  app.get(["/signin", "/signin/"], (req, res) => {
+    return res.redirect(308, "/auth");
   });
 
   // Sign in with Apple: verify identity token, then login or return needsOnboarding
