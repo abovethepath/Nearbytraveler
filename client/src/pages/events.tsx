@@ -547,7 +547,7 @@ export default function Events() {
 
       {/* HERO SECTION — Standardized Layout */}
       {!isNativeIOSApp() && isHeroVisible && (
-        <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white dark:from-gray-800 dark:via-gray-800 dark:to-gray-900">
+        <section className="relative py-6 sm:py-8 lg:py-3 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white dark:from-gray-800 dark:via-gray-800 dark:to-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-4 flex items-center justify-between">
               <BackButton fallbackRoute="/events-landing" />
@@ -593,16 +593,16 @@ export default function Events() {
               </div>
             </div>
           ) : (
-            <div className="relative py-8">
-              <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center">
+            <div className="relative py-6 lg:py-0">
+              <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center lg:flex lg:items-center lg:justify-between lg:gap-10">
                 <div className="md:col-span-3">
-                  <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2.5 mb-8">
+                  <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2.5 lg:px-5 lg:py-2 mb-5 lg:mb-3">
                     <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
                     <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Discover • Create • Experience</span>
                   </div>
 
-                  <div className="space-y-6">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+                  <div className="space-y-4 lg:space-y-3">
+                    <h1 className="text-3xl md:text-4xl lg:text-3xl font-bold tracking-tight leading-tight">
                       <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
                         Events &
                       </span>
@@ -612,11 +612,11 @@ export default function Events() {
                       </span>
                     </h1>
                     
-                    <div className="max-w-2xl space-y-4">
-                      <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                    <div className="max-w-2xl space-y-3 lg:space-y-2">
+                      <p className="text-base lg:text-sm text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
                         Every event is a story — waiting to be created.
                       </p>
-                      <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
+                      <p className="text-sm lg:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                         From intimate coffee meetups to grand festivals, discover events that match your interests and travel style. Create unforgettable experiences with locals and fellow travelers.
                       </p>
                     </div>
@@ -626,7 +626,7 @@ export default function Events() {
                 <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
                   <div className="relative group">
                     <div className="relative">
-                      <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl ring-2 ring-white/40 dark:ring-gray-500/50 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_12px_40px_-8px_rgba(0,0,0,0.25)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_12px_40px_-8px_rgba(0,0,0,0.6)]">
+                      <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-sm h-[220px] sm:h-[260px] md:h-[300px] lg:h-[190px] rounded-xl overflow-hidden shadow-xl ring-2 ring-white/40 dark:ring-gray-500/50 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_12px_40px_-8px_rgba(0,0,0,0.25)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_12px_40px_-8px_rgba(0,0,0,0.6)]">
                         <img
                           src={eventsBgImage}
                           alt="Events and experiences"

@@ -306,10 +306,10 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
               <Label className="text-black dark:text-white font-semibold">Hostel Connect</Label>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-              Find travelers staying at the same hostel
+              Staying at a hostel or hotel? Enter the name and set your plans to Public — you'll automatically be added to a chatroom with other travelers staying there.
             </p>
             <Input
-              placeholder="Enter hostel name to find others there"
+              placeholder="Enter hostel or hotel name"
               value={advancedFilters.hostelName}
               onChange={(e) => setAdvancedFilters(prev => ({ ...prev, hostelName: e.target.value }))}
               onKeyDown={(e) => {
@@ -320,6 +320,9 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
               className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
               data-testid="input-hostel-search"
             />
+            <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+              🏨 Public plans = automatic chatroom with fellow guests
+            </p>
           </div>
 
           {/* Search CTA Buttons */}

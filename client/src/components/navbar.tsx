@@ -369,6 +369,7 @@ function Navbar() {
       { path: "/discover", label: "Cities", icon: "🌍" },
       { path: "/events", label: "Events", icon: "📅" },
       { path: "/match-in-city", label: "City Plans", icon: "🎯" },
+      { path: "/plan-trip", label: "Trip Planning", icon: "🧭" },
       { path: "/connect", label: "Connect", icon: "💝" },
     ];
   };

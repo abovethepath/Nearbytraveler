@@ -973,17 +973,21 @@ export default function PlanTrip() {
                   </Label>
                 </div>
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-3 break-words">
-                  Staying at a hostel? Share your hostel name to connect with other travelers staying nearby!
+                  Staying at a hostel or hotel? Enter the name and set your plans to Public — you'll automatically be added to a chatroom with other travelers staying there.
                 </p>
                 
                 <div className="space-y-3">
                   <Input
                     type="text"
-                    placeholder="Hostel name"
+                    placeholder="Hostel or hotel name"
                     value={tripPlan.hostelName || ""}
                     onChange={(e) => setTripPlan(prev => ({ ...prev, hostelName: e.target.value }))}
                     className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base w-full max-w-full"
                   />
+
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    🏨 Public plans = automatic chatroom with fellow guests
+                  </p>
                   
                   {tripPlan.hostelName && (
                     <div className="flex flex-wrap gap-2">
@@ -1042,9 +1046,34 @@ export default function PlanTrip() {
                 ) : (
                   /* Companion selection for new trips */
                   <div className="space-y-4">
-                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                      Add kids or family members traveling with you (e.g. "My Son", "Sarah"). For friends with accounts, you&apos;ll invite them after creating the trip—no username needed.
-                    </p>
+                    <div className="space-y-3">
+                      <div className="rounded-lg border border-purple-200 dark:border-purple-700 bg-white/70 dark:bg-gray-900/10 p-3">
+                        <p className="text-xs font-semibold text-purple-800 dark:text-purple-200">
+                          1) People without a Nearby Traveler account
+                        </p>
+                        <p className="text-[11px] sm:text-xs text-gray-700 dark:text-gray-300 mt-1">
+                          Use <span className="font-semibold">Add Travel Companion</span> to add them by name (e.g. &quot;My Son&quot;, &quot;Sarah&quot;).
+                        </p>
+                      </div>
+
+                      <div className="rounded-lg border border-purple-200 dark:border-purple-700 bg-white/70 dark:bg-gray-900/10 p-3">
+                        <p className="text-xs font-semibold text-purple-800 dark:text-purple-200">
+                          2) Friends already on Nearby Traveler
+                        </p>
+                        <p className="text-[11px] sm:text-xs text-gray-700 dark:text-gray-300 mt-1">
+                          Search for them by username on the <span className="font-semibold">Connect</span> page and add them as a contact — they&apos;ll be able to see your shared travel plans.
+                        </p>
+                      </div>
+
+                      <div className="rounded-lg border border-purple-200 dark:border-purple-700 bg-white/70 dark:bg-gray-900/10 p-3">
+                        <p className="text-xs font-semibold text-purple-800 dark:text-purple-200">
+                          3) People you want to invite to join Nearby Traveler
+                        </p>
+                        <p className="text-[11px] sm:text-xs text-gray-700 dark:text-gray-300 mt-1">
+                          After you create the trip, use the <span className="font-semibold">Invite Link</span> to send them a signup link — once they create an account, they&apos;ll be automatically connected to you and can accept the trip invite.
+                        </p>
+                      </div>
+                    </div>
 
                     {/* Existing companions to select */}
                     {companions.length > 0 && (
@@ -1149,13 +1178,13 @@ export default function PlanTrip() {
                       </p>
                     )}
 
-                    <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-1">
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
                       <p className="text-xs font-medium text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
                         <Link2 className="w-3.5 h-3.5" />
-                        Inviting friends with accounts?
+                        Invite links appear after you create the trip
                       </p>
-                      <p className="text-[11px] text-gray-600 dark:text-gray-400">
-                        After you create the trip, use &quot;Invite&quot; to get a shareable link. Send it via text or email—they join with one tap. No username or search needed.
+                      <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-1">
+                        You&apos;ll be able to generate a shareable invite link from the trip&apos;s Travel Crew panel.
                       </p>
                     </div>
                   </div>

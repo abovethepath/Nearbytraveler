@@ -585,6 +585,20 @@ function Router() {
     );
   }
 
+  // Post-auth redirect (used for invite links, etc.)
+  useEffect(() => {
+    if (!user?.id) return;
+    try {
+      const next = localStorage.getItem("postAuthRedirect");
+      if (next) {
+        localStorage.removeItem("postAuthRedirect");
+        setLocation(next);
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, [user?.id, setLocation]);
+
   const renderPage = (overrideUser?: User | null) => {
     const effectiveUser = overrideUser !== undefined ? overrideUser : user;
     const routeRendered = location === '/home' && effectiveUser ? 'Home' : location === '/profile' ? 'Profile' : location;
@@ -928,6 +942,10 @@ function Router() {
         console.log('Showing Launching Soon page');
         return <LaunchingSoon />;
       }
+      // Public trip invite landing (must work when logged out)
+      if (location.startsWith('/join-trip/') || location.startsWith('/invite/')) {
+        return <JoinTrip />;
+      }
       if (location === '/business-card') {
         console.log('Returning BusinessCard component for /business-card - PUBLIC ACCESS');
         return <BusinessCardPage />;
@@ -1134,7 +1152,7 @@ function Router() {
       return <SharedTrip />;
     }
 
-    if (location.startsWith('/join-trip/')) {
+    if (location.startsWith('/join-trip/') || location.startsWith('/invite/')) {
       return <JoinTrip />;
     }
 

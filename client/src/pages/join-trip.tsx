@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRoute, useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -8,12 +8,28 @@ import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { isNativeIOSApp } from '@/lib/nativeApp';
 import { Users, MapPin, Calendar, Check, X, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { authStorage } from '@/lib/auth';
 
 export default function JoinTrip() {
-  const [, params] = useRoute<{ token: string }>('/join-trip/:token');
+  const [, paramsJoinTrip] = useRoute<{ token: string }>('/join-trip/:token');
+  const [, paramsInvite] = useRoute<{ token: string }>('/invite/:token');
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const token = params?.token || '';
+  const token = paramsInvite?.token || paramsJoinTrip?.token || '';
+
+  const currentUser = useMemo(() => {
+    // Prefer authStorage, then localStorage fallbacks (older builds)
+    const fromAuth = authStorage.getUser();
+    if (fromAuth?.id) return fromAuth as any;
+    try {
+      const raw = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return parsed?.id ? parsed : null;
+    } catch {
+      return null;
+    }
+  }, []);
 
   const { data: inviteData, isLoading, error } = useQuery({
     queryKey: ['/api/invite', token],
@@ -34,6 +50,10 @@ export default function JoinTrip() {
     },
     onSuccess: (data) => {
       toast({ title: "You've joined the travel crew!" });
+      try {
+        localStorage.removeItem('pendingTripInviteToken');
+        localStorage.removeItem('postAuthRedirect');
+      } catch {}
       if (data.travelPlan?.id) {
         setLocation(`/profile`);
       } else {
@@ -57,17 +77,22 @@ export default function JoinTrip() {
     );
   }
 
-  if (error || !inviteData?.valid) {
+  const inviteStatus = inviteData?.status as string | undefined;
+  const inviteIsExpired = !!inviteData?.isExpired;
+
+  if (error || (!inviteData?.valid && inviteStatus !== 'accepted')) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
             <X className="w-12 h-12 mx-auto mb-4 text-red-500" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Invalid or Expired Invite
+              {inviteIsExpired ? 'This invite has expired' : 'Invalid invite link'}
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              This invite link is no longer valid. Please ask for a new invite.
+              {inviteIsExpired
+                ? 'Please ask the organizer to generate a new invite link.'
+                : 'This invite link is not valid. Please check the URL and try again.'}
             </p>
             <Button onClick={() => setLocation(isNativeIOSApp() ? '/home' : '/')} variant="outline">
               Go Home
@@ -79,6 +104,21 @@ export default function JoinTrip() {
   }
 
   const { trip, invitedBy } = inviteData;
+
+  // If the user just completed auth, auto-accept the invite once.
+  useEffect(() => {
+    if (!token) return;
+    if (!currentUser?.id) return;
+    try {
+      const pending = localStorage.getItem('pendingTripInviteToken');
+      if (pending && pending === token) {
+        joinMutation.mutate();
+      }
+    } catch {
+      // ignore
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, currentUser?.id]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
@@ -131,18 +171,62 @@ export default function JoinTrip() {
           </div>
 
           <div className="space-y-3">
-            <Button 
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-              onClick={() => joinMutation.mutate()}
-              disabled={joinMutation.isPending}
-            >
-              {joinMutation.isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              ) : (
-                <Check className="w-4 h-4 mr-2" />
-              )}
-              Join Travel Crew
-            </Button>
+            {inviteStatus === 'accepted' ? (
+              <div className="rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-3 text-center">
+                <p className="text-sm font-semibold text-green-800 dark:text-green-200">
+                  You're already connected!
+                </p>
+                <p className="text-xs text-green-700 dark:text-green-300 mt-1">
+                  This invite was already accepted.
+                </p>
+              </div>
+            ) : currentUser?.id ? (
+              <Button
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                onClick={() => joinMutation.mutate()}
+                disabled={joinMutation.isPending}
+              >
+                {joinMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                  <Check className="w-4 h-4 mr-2" />
+                )}
+                Accept Invite
+              </Button>
+            ) : (
+              <>
+                <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    Join Nearby Traveler to accept this invite
+                  </p>
+                </div>
+                <Button
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                  onClick={() => {
+                    try {
+                      localStorage.setItem('pendingTripInviteToken', token);
+                      localStorage.setItem('postAuthRedirect', `/invite/${token}`);
+                    } catch {}
+                    setLocation('/signup/account');
+                  }}
+                >
+                  Sign up to accept
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    try {
+                      localStorage.setItem('pendingTripInviteToken', token);
+                      localStorage.setItem('postAuthRedirect', `/invite/${token}`);
+                    } catch {}
+                    setLocation('/signin');
+                  }}
+                >
+                  I already have an account
+                </Button>
+              </>
+            )}
             <Button 
               variant="outline" 
               className="w-full"

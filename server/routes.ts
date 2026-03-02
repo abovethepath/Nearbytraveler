@@ -8803,7 +8803,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Generate unique token
       const token = crypto.randomBytes(16).toString('hex');
-      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+      const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
       const [invite] = await db.insert(travelCrewInvites)
         .values({
@@ -8814,9 +8814,14 @@ Questions? Just reply to this message. Welcome aboard!
         })
         .returning();
 
+      const baseUrl =
+        process.env.REPLIT_DEV_DOMAIN
+          ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+          : (process.env.PUBLIC_APP_URL || 'https://nearbytraveler.com');
+
       return res.json({
         inviteToken: token,
-        inviteUrl: `${process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'https://nearbytraveler.org'}/join-trip/${token}`,
+        inviteUrl: `${baseUrl}/invite/${token}`,
         expiresAt: expiresAt,
       });
     } catch (error: any) {
@@ -8838,10 +8843,7 @@ Questions? Just reply to this message. Welcome aboard!
       // Find the invite
       const invite = await db.select()
         .from(travelCrewInvites)
-        .where(and(
-          eq(travelCrewInvites.inviteToken, token),
-          eq(travelCrewInvites.status, 'pending')
-        ))
+        .where(eq(travelCrewInvites.inviteToken, token))
         .limit(1)
         .then(r => r[0]);
 
@@ -8850,13 +8852,18 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       if (invite.expiresAt && new Date(invite.expiresAt) < new Date()) {
-        await db.update(travelCrewInvites)
-          .set({ status: 'expired' })
-          .where(eq(travelCrewInvites.id, invite.id));
+        if (invite.status !== 'expired') {
+          await db.update(travelCrewInvites)
+            .set({ status: 'expired' })
+            .where(eq(travelCrewInvites.id, invite.id));
+        }
         return res.status(400).json({ error: "Invite has expired" });
       }
 
-      // Add user to crew
+      // If the invite was already accepted, treat this as idempotent join.
+      const alreadyAccepted = invite.status === 'accepted';
+
+      // Add user to crew (idempotent)
       await db.insert(travelCrewMembers)
         .values({
           travelPlanId: invite.travelPlanId,
@@ -8865,18 +8872,70 @@ Questions? Just reply to this message. Welcome aboard!
         })
         .onConflictDoNothing();
 
-      // Mark invite as accepted
-      await db.update(travelCrewInvites)
-        .set({ status: 'accepted' })
-        .where(eq(travelCrewInvites.id, invite.id));
+      // Auto-connect inviter + invitee (single source of truth for "contacts")
+      try {
+        const inviterId = invite.invitedByUserId;
+        if (inviterId && inviterId !== userId) {
+          const existing = await storage.getConnection(inviterId, userId);
+          if (!existing) {
+            await storage.createConnection({
+              requesterId: inviterId,
+              receiverId: userId,
+              status: 'accepted',
+              createdAt: new Date(),
+            } as any);
+          } else if (existing.status !== 'accepted') {
+            await storage.updateConnectionStatus(existing.id, 'accepted');
+          }
+        }
+      } catch (e) {
+        console.error("Error auto-connecting users from trip invite:", e);
+      }
+
+      // Mark invite as accepted (only if pending)
+      if (invite.status === 'pending') {
+        await db.update(travelCrewInvites)
+          .set({ status: 'accepted' })
+          .where(eq(travelCrewInvites.id, invite.id));
+      }
 
       // Get trip details
       const plan = await storage.getTravelPlan(invite.travelPlanId);
 
+      // Send notifications to both users (best-effort)
+      try {
+        const inviterId = invite.invitedByUserId;
+        if (inviterId && inviterId !== userId) {
+          await storage.createNotification({
+            userId: inviterId,
+            fromUserId: userId,
+            type: "travel_crew_invite_accepted",
+            title: "Trip invite accepted",
+            message: "Someone accepted your Travel Crew invite and joined your trip.",
+            data: JSON.stringify({ travelPlanId: invite.travelPlanId, inviteToken: token }),
+            isRead: false,
+            createdAt: new Date(),
+          } as any);
+          await storage.createNotification({
+            userId: userId,
+            fromUserId: inviterId,
+            type: "travel_crew_invite_accepted",
+            title: "You joined a trip",
+            message: "You're connected and have joined the Travel Crew.",
+            data: JSON.stringify({ travelPlanId: invite.travelPlanId, inviteToken: token }),
+            isRead: false,
+            createdAt: new Date(),
+          } as any);
+        }
+      } catch (e) {
+        console.error("Error creating invite accept notifications:", e);
+      }
+
       return res.json({
         success: true,
         travelPlan: plan,
-        message: "You've joined the travel crew!",
+        message: alreadyAccepted ? "You're already connected!" : "You've joined the travel crew!",
+        alreadyAccepted,
       });
     } catch (error: any) {
       console.error("Error joining trip:", error);
@@ -8917,7 +8976,7 @@ Questions? Just reply to this message. Welcome aboard!
         profileImage: users.profileImage,
       })
         .from(users)
-        .where(eq(users.id, plan.userId))
+        .where(eq(users.id, invite.invitedByUserId))
         .limit(1)
         .then(r => r[0]);
 
@@ -8925,6 +8984,8 @@ Questions? Just reply to this message. Welcome aboard!
 
       return res.json({
         valid: invite.status === 'pending' && !isExpired,
+        status: invite.status,
+        isExpired: !!isExpired,
         trip: {
           destination: plan.destination,
           destinationCity: plan.destinationCity,

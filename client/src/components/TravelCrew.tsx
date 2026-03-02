@@ -117,6 +117,18 @@ export function TravelCrew({ travelPlanId, userId, isOwner }: TravelCrewProps) {
     },
     onSuccess: (data) => {
       setInviteLink(data.inviteUrl);
+      // Required UX: generating an invite link should copy immediately + confirm.
+      const url = String(data?.inviteUrl || '');
+      const doCopy = async () => {
+        try {
+          if (url) await navigator.clipboard.writeText(url);
+          toast({ title: 'Invite link copied to clipboard!' });
+        } catch {
+          // Clipboard might be blocked (non-secure context). Still show the dialog so user can copy manually.
+          toast({ title: 'Invite link ready', description: 'Copy the link below to share it.' });
+        }
+      };
+      doCopy();
       setShowInvite(true);
     },
     onError: () => toast({ title: 'Failed to create invite link', variant: 'destructive' })
@@ -126,7 +138,7 @@ export function TravelCrew({ travelPlanId, userId, isOwner }: TravelCrewProps) {
     navigator.clipboard.writeText(inviteLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    toast({ title: 'Invite link copied!' });
+    toast({ title: 'Invite link copied to clipboard!' });
   };
 
   const shareViaEmail = () => {
@@ -162,6 +174,7 @@ export function TravelCrew({ travelPlanId, userId, isOwner }: TravelCrewProps) {
         <div className="flex gap-2">
           {(members.length > 0 || isOwner) && (
             <Button
+              type="button"
               variant="outline"
               size="sm"
               onClick={() => setShowChat(true)}
@@ -173,6 +186,7 @@ export function TravelCrew({ travelPlanId, userId, isOwner }: TravelCrewProps) {
           )}
           {isOwner && (
             <Button
+              type="button"
               variant="outline"
               size="sm"
               onClick={() => createInviteMutation.mutate()}
@@ -180,9 +194,36 @@ export function TravelCrew({ travelPlanId, userId, isOwner }: TravelCrewProps) {
               className="border-orange-500 text-orange-600 hover:bg-orange-50"
             >
               <Link className="w-4 h-4 mr-1" />
-              Invite
+              Get Invite Link
             </Button>
           )}
+        </div>
+      </div>
+
+      <div className="mb-4 grid gap-2 sm:grid-cols-3">
+        <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 p-3">
+          <div className="text-xs font-semibold text-gray-900 dark:text-white">
+            People without an account
+          </div>
+          <div className="mt-1 text-[11px] text-gray-600 dark:text-gray-300">
+            Add them as a <span className="font-semibold">Travel Companion</span> by name.
+          </div>
+        </div>
+        <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 p-3">
+          <div className="text-xs font-semibold text-gray-900 dark:text-white">
+            Friends already on Nearby Traveler
+          </div>
+          <div className="mt-1 text-[11px] text-gray-600 dark:text-gray-300">
+            Add them as a <span className="font-semibold">contact</span> on the Connect page to share plans.
+          </div>
+        </div>
+        <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 p-3">
+          <div className="text-xs font-semibold text-gray-900 dark:text-white">
+            Invite new people
+          </div>
+          <div className="mt-1 text-[11px] text-gray-600 dark:text-gray-300">
+            Use <span className="font-semibold">Get Invite Link</span> — after signup they&apos;ll be connected to you and can accept the trip invite.
+          </div>
         </div>
       </div>
 
@@ -268,7 +309,7 @@ export function TravelCrew({ travelPlanId, userId, isOwner }: TravelCrewProps) {
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Dialog open={showAddCompanion} onOpenChange={setShowAddCompanion}>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="w-full">
+              <Button type="button" variant="outline" size="sm" className="w-full">
                 <UserPlus className="w-4 h-4 mr-2" />
                 Add Companion (Kids/Family)
               </Button>
@@ -340,6 +381,7 @@ export function TravelCrew({ travelPlanId, userId, isOwner }: TravelCrewProps) {
                 </div>
 
                 <Button
+                  type="button"
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white"
                   onClick={() => createCompanionMutation.mutate(newCompanion)}
                   disabled={!newCompanion.label.trim() || createCompanionMutation.isPending}
@@ -364,17 +406,17 @@ export function TravelCrew({ travelPlanId, userId, isOwner }: TravelCrewProps) {
 
             <div className="flex gap-2">
               <Input value={inviteLink} readOnly className="flex-1" />
-              <Button onClick={copyInviteLink} variant="outline">
+              <Button type="button" onClick={copyInviteLink} variant="outline">
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </Button>
             </div>
 
             <div className="flex gap-2">
-              <Button variant="outline" className="flex-1" onClick={shareViaEmail}>
+              <Button type="button" variant="outline" className="flex-1" onClick={shareViaEmail}>
                 <Mail className="w-4 h-4 mr-2" />
                 Email
               </Button>
-              <Button variant="outline" className="flex-1" onClick={shareViaSMS}>
+              <Button type="button" variant="outline" className="flex-1" onClick={shareViaSMS}>
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Text
               </Button>
