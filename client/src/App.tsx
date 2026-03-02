@@ -1273,9 +1273,30 @@ function Router() {
       return <MeetupManagePage />;
     }
 
+    // Route alias: some parts of the app link to /quick-meetups/:id (no manage)
+    // Normalize to the canonical query-based route handled by QuickMeetupsPage.
+    if (location.startsWith('/quick-meetups/') && location.split('/')[2] && !location.includes('/manage')) {
+      const rawId = location.split('/')[2] || '';
+      const meetupId = rawId.split('?')[0].split('#')[0];
+      if (meetupId) {
+        setLocation(`/quick-meetups?id=${encodeURIComponent(meetupId)}`);
+        return null;
+      }
+    }
+
     if (location.startsWith('/quick-meetup-chat/')) {
       const quickMeetId = location.split('/')[2];
       return <QuickMeetupChat />;
+    }
+
+    // Route alias: /event/:id → /events/:id
+    if (location.startsWith('/event/') && location.split('/')[2]) {
+      const rawId = location.split('/')[2] || '';
+      const eventId = rawId.split('?')[0].split('#')[0];
+      if (eventId) {
+        setLocation(`/events/${encodeURIComponent(eventId)}`);
+        return null;
+      }
     }
 
     if (location.startsWith('/event-chat/')) {
