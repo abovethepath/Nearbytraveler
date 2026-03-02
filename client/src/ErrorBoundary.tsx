@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { authStorage } from "@/lib/auth";
+import * as Sentry from "@sentry/react";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -33,6 +34,40 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
     } catch {
       // Fall back if console group isn't available
       console.error("ErrorBoundary caught:", error, errorInfo);
+    }
+
+    // Report to Sentry (if configured) and also to server logs for visibility.
+    try {
+      Sentry.captureException(error, {
+        extra: {
+          componentStack: errorInfo?.componentStack,
+          url: typeof window !== "undefined" ? window.location.href : undefined,
+        },
+      });
+    } catch {
+      // ignore sentry errors
+    }
+
+    if (!isNativeIOSApp()) {
+      try {
+        const payload = {
+          name: error?.name,
+          message: error?.message,
+          stack: error?.stack,
+          componentStack: errorInfo?.componentStack,
+          url: window.location.href,
+          userAgent: navigator.userAgent,
+          time: new Date().toISOString(),
+        };
+        // Fire-and-forget; must not block or throw.
+        fetch("/api/client-error", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }).catch(() => {});
+      } catch {
+        // ignore network/reporting errors
+      }
     }
 
     // IMMEDIATE BAND-AID: auto-recover after 2s (web).
@@ -79,6 +114,9 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
 
   render(): React.ReactNode {
     if (this.state.hasError) {
+      const message =
+        (this.state.error && (this.state.error.message || String(this.state.error))) ||
+        "Unknown error";
       return (
         <div style={{
           minHeight: '100vh',
@@ -100,6 +138,27 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
           <p style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '24px', textAlign: 'center' }}>
             The page encountered an error. Please try again.
           </p>
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 760,
+              marginBottom: 18,
+              padding: 12,
+              borderRadius: 10,
+              border: "1px solid #374151",
+              background: "rgba(0,0,0,0.15)",
+              color: "#e5e7eb",
+              fontSize: 12,
+              lineHeight: 1.4,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "-webkit-box",
+              WebkitLineClamp: 4,
+              WebkitBoxOrient: "vertical" as any,
+            }}
+          >
+            <strong style={{ color: "#fff" }}>Error:</strong> {message}
+          </div>
           <div style={{ display: 'flex', gap: '12px' }}>
             <button
               onClick={this.handleReload}
@@ -130,6 +189,31 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
               }}
             >
               Go Home
+            </button>
+            <button
+              onClick={() => {
+                try {
+                  const details = {
+                    name: this.state.error?.name,
+                    message: this.state.error?.message,
+                    stack: this.state.error?.stack,
+                    url: window.location.href,
+                  };
+                  navigator.clipboard?.writeText(JSON.stringify(details, null, 2));
+                } catch {}
+              }}
+              style={{
+                padding: "10px 16px",
+                borderRadius: "8px",
+                border: "1px solid #374151",
+                background: "transparent",
+                color: "white",
+                fontSize: "15px",
+                fontWeight: "600",
+                cursor: "pointer",
+              }}
+            >
+              Copy Error
             </button>
           </div>
         </div>

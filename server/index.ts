@@ -571,6 +571,35 @@ app.use(
   express.urlencoded({ extended: true, limit: "50mb", parameterLimit: 100000 }),
 );
 
+// Capture client-side crashes so we can debug "Something went wrong" production screens.
+// This is intentionally lightweight and safe: it must never throw.
+app.post("/api/client-error", (req, res) => {
+  try {
+    const payload = req.body ?? {};
+    console.error("🧯 CLIENT ERROR REPORT:", {
+      message: payload?.message,
+      name: payload?.name,
+      stack: payload?.stack,
+      componentStack: payload?.componentStack,
+      url: payload?.url,
+      userAgent: payload?.userAgent,
+      time: payload?.time,
+    });
+    try {
+      Sentry.captureMessage("ClientErrorBoundary", {
+        level: "error",
+        extra: payload,
+      });
+    } catch {
+      // ignore sentry errors
+    }
+  } catch (e) {
+    console.error("🧯 CLIENT ERROR REPORT FAILED:", e);
+  }
+  // Always respond successfully so the ErrorBoundary doesn't cascade.
+  res.status(204).end();
+});
+
 // Password reset routes (Brevo email)
 app.use("/api/auth", passwordResetRouter);
 

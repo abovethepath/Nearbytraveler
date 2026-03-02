@@ -255,12 +255,6 @@ function Router() {
     '/signup/traveler'
   ];
   const isSignupRoute = PUBLIC_SIGNUP_PATHS.includes(location) || location.startsWith('/signup/');
-  
-  // CRITICAL FIX: Don't render anything for API routes
-  if (location.startsWith('/api/')) {
-    console.log('🔄 ROUTER: API route detected, not rendering React app:', location);
-    return null;
-  }
 
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/auth/signup', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling',
@@ -645,14 +639,6 @@ function Router() {
     !isAuthRoute &&
     (hasStoredUserForGate || !!user?.id) &&
     (!authInitialized || isVerifyingAuth || isLoading);
-
-  if (shouldGateAuthenticatedRendering) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-300 border-t-orange-500" />
-      </div>
-    );
-  }
 
   // Initialize WebSocket connection for authenticated users
   useEffect(() => {
@@ -1637,6 +1623,16 @@ function Router() {
 
     }
   };
+
+  // IMPORTANT: Never return early before all hooks have run.
+  // Returning early during auth init/resync changes hook count and causes React prod error #310.
+  if (shouldGateAuthenticatedRendering) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-300 border-t-orange-500" />
+      </div>
+    );
+  }
 
   // Don't render React app for API routes - let browser handle them
   if (location.startsWith('/api/')) {
