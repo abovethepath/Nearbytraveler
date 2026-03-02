@@ -306,7 +306,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   variant="outline"
                   className={
                     isMobileWeb
-                      ? "h-9 px-3 text-sm font-semibold !bg-orange-500 hover:!bg-orange-600 !text-black !border !border-white/35 shadow-md ring-0"
+                      ? "h-9 px-3 text-sm font-semibold bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 !text-black !border-0 shadow-md ring-0"
                       : "h-9 px-3 text-sm font-semibold !bg-white hover:!bg-white !text-black !border !border-gray-200 shadow-sm ring-1 ring-black/10"
                   }
                   onClick={() => {
