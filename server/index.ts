@@ -545,10 +545,29 @@ if (isProduction) {
   console.log("🔒 Trust proxy enabled for production/Replit");
 }
 
+// connect-redis expects a node-redis style client where SET supports an options object
+// like { EX: seconds }. ioredis expects "EX", seconds positional args.
+// Without this adapter, the options object can be passed through as "[object Object]"
+// and Redis returns "ERR syntax error" during session saves.
+const redisSessionClient = redis
+  ? ({
+      get: (key: string) => redis.get(key),
+      set: (key: string, value: string, opts?: any) => {
+        if (opts && typeof opts === "object") {
+          if (typeof opts.EX === "number") return (redis as any).set(key, value, "EX", opts.EX);
+          if (typeof opts.PX === "number") return (redis as any).set(key, value, "PX", opts.PX);
+        }
+        return (redis as any).set(key, value);
+      },
+      del: (key: string) => (redis as any).del(key),
+      expire: (key: string, seconds: number) => (redis as any).expire(key, seconds),
+    } as any)
+  : null;
+
 app.use(
   session({
     store: redis
-      ? new RedisStore({ client: redis, ttl: 365 * 24 * 60 * 60 })
+      ? new RedisStore({ client: redisSessionClient, ttl: 365 * 24 * 60 * 60 })
       : undefined,
     secret: process.env.SESSION_SECRET || "nearby-traveler-secret-key-dev",
     resave: false,
