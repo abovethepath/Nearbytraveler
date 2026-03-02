@@ -53,7 +53,7 @@ export const authStorage = {
   async forceRefreshUser(): Promise<User | null> {
     try {
       console.log('🚨 Emergency user refresh attempt');
-      const response = await fetch('/api/auth/user');
+      const response = await fetch('/api/auth/user', { credentials: 'include' });
       if (response.ok) {
         const user = await response.json();
         if (user && user.id) {

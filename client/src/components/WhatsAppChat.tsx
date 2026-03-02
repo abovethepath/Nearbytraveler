@@ -65,6 +65,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const { chatId, chatType, title, subtitle, currentUserId, onBack, eventId, meetupId } = props;
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const isMobileWeb =
+    !isNativeIOSApp() &&
+    typeof window !== "undefined" &&
+    !!window.matchMedia &&
+    window.matchMedia("(max-width: 768px)").matches;
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
@@ -209,37 +214,46 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       const uid = uidNum.toString();
       const headers: Record<string, string> = { 'x-user-id': uid };
       if (user?.id) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name });
+      const chatroomsChatTypeParam = chatType === "chatroom" ? "city" : chatType;
+      const historyUrl =
+        chatType === "event"
+          ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
+          : chatType === "meetup"
+            ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
+            : (chatType === "dm" && isMobileWeb)
+              ? `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=dm&format=whatsapp`
+              : chatType === "dm"
+                ? `${getApiBaseUrl()}/api/messages/${uidNum}`
+                : `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatroomsChatTypeParam}&format=whatsapp`;
+
       if (import.meta.env.DEV) {
-        console.log('📡 WhatsApp Chat: HTTP fallback request', {
-          url: chatType === 'dm'
-            ? `${getApiBaseUrl()}/api/messages/${uidNum}`
-            : chatType === 'event'
-              ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
-              : chatType === 'meetup'
-                ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
-            : `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`,
+        console.log("📡 WhatsApp Chat: HTTP fallback request", {
+          url: historyUrl,
           uid,
           chatId,
           chatType,
+          chatroomsChatTypeParam,
+          isMobileWeb,
         });
       }
-      const response = await fetch(
-        chatType === 'dm'
-          ? `${getApiBaseUrl()}/api/messages/${uidNum}`
-          : chatType === 'event'
-            ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
-            : chatType === 'meetup'
-              ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
-          : `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`,
-        {
+
+      const response = await fetch(historyUrl, {
         headers,
-        credentials: 'include',
-        }
-      );
+        credentials: "include",
+      });
       
       if (response.ok) {
         const data = await response.json();
         if (chatType === 'dm') {
+          // Mobile web uses the scoped thread endpoint, which returns { messages: [...] }.
+          if (data?.messages && Array.isArray(data.messages)) {
+            const mapped = data.messages.reverse();
+            console.log("📬 WhatsApp Chat: DM HTTP fallback loaded (scoped thread)", mapped.length, "messages");
+            setMessages(mapped);
+            setMessagesLoaded(true);
+            scrollToBottom();
+            return;
+          }
           const all = Array.isArray(data) ? data : [];
           const thread = all.filter((m: any) => {
             const senderId = m?.senderId;
@@ -526,37 +540,46 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         const uid = uidNum.toString();
         const headers: Record<string, string> = { 'x-user-id': uid };
         if (user?.id) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name });
+        const chatroomsChatTypeParam = chatType === "chatroom" ? "city" : chatType;
+        const historyUrl =
+          chatType === "event"
+            ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
+            : chatType === "meetup"
+              ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
+              : (chatType === "dm" && isMobileWeb)
+                ? `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=dm&format=whatsapp`
+                : chatType === "dm"
+                  ? `${getApiBaseUrl()}/api/messages/${uidNum}`
+                  : `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatroomsChatTypeParam}&format=whatsapp`;
+
         if (import.meta.env.DEV) {
-          console.log('🚀 WhatsApp Chat: Initial messages request', {
-            url: chatType === 'dm'
-              ? `${getApiBaseUrl()}/api/messages/${uidNum}`
-              : chatType === 'event'
-                ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
-                : chatType === 'meetup'
-                  ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
-              : `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`,
+          console.log("🚀 WhatsApp Chat: Initial messages request", {
+            url: historyUrl,
             uid,
             chatId,
             chatType,
+            chatroomsChatTypeParam,
+            isMobileWeb,
           });
         }
-        const response = await fetch(
-          chatType === 'dm'
-            ? `${getApiBaseUrl()}/api/messages/${uidNum}`
-            : chatType === 'event'
-              ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
-              : chatType === 'meetup'
-                ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
-            : `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`,
-          {
+
+        const response = await fetch(historyUrl, {
           headers,
-          credentials: 'include',
-          }
-        );
+          credentials: "include",
+        });
         
         if (response.ok) {
           const data = await response.json();
           if (chatType === 'dm') {
+            // Mobile web uses the scoped thread endpoint, which returns { messages: [...] }.
+            if (data?.messages && Array.isArray(data.messages)) {
+              const mapped = data.messages.reverse();
+              console.log("🚀 WhatsApp Chat: Immediate DM HTTP load (scoped thread):", mapped.length, "messages");
+              setMessages(mapped);
+              setMessagesLoaded(true);
+              scrollToBottom();
+              return;
+            }
             const all = Array.isArray(data) ? data : [];
             const thread = all.filter((m: any) => {
               const senderId = m?.senderId;
@@ -913,9 +936,6 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         messageType: 'text',
         replyToId
       };
-      if (chatType === 'dm') {
-        wsPayload.receiverId = chatId;
-      }
       wsRef.current.send(JSON.stringify({
         type: 'message:new',
         chatType,
@@ -1414,7 +1434,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Main Chat Area */}
       <div className="flex flex-col flex-1 min-w-0">
       {/* Header - compact padding on desktop; smaller title with truncation; no header avatars on desktop (sidebar shows members) */}
-      <div className={`flex items-center gap-2 px-2 bg-gray-800 border-b border-gray-700 min-w-0 ${isNativeIOSApp() ? 'py-1.5 md:py-2' : 'py-1 lg:py-1.5'}`}>
+      <div className={`flex items-center ${isMobileWeb ? 'gap-1.5' : 'gap-2'} px-2 bg-gray-800 border-b border-gray-700 min-w-0 ${isNativeIOSApp() ? 'py-1.5 md:py-2' : 'py-1 lg:py-1.5'}`}>
         <Button
           variant="ghost"
           size="icon"
@@ -1426,8 +1446,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         
         {/* WhatsApp-style member avatars for chatrooms, meetups, and events - hidden on desktop (lg+) since full member list is in left sidebar */}
         {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 && (
-          <div className="flex -space-x-2 lg:hidden">
-            {members.slice(0, 4).map((member, index) => (
+          <div className={`flex ${isMobileWeb ? '-space-x-1' : '-space-x-2'} lg:hidden shrink-0`}>
+            {members.slice(0, isMobileWeb ? 3 : 4).map((member, index) => (
               <div
                 key={member.id}
                 onClick={() => {
@@ -1445,30 +1465,44 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 className="cursor-pointer hover:scale-110 transition-transform duration-200"
                 data-testid={`avatar-member-${member.id}`}
               >
-                <Avatar className="w-8 h-8 border-2 border-gray-800">
+                <Avatar className={isMobileWeb ? "w-6 h-6 border border-gray-800" : "w-8 h-8 border-2 border-gray-800"}>
                   <AvatarImage src={getProfileImageUrl(member) || undefined} />
-                  <AvatarFallback className="bg-green-600 text-white text-[10px]">
+                  <AvatarFallback className={isMobileWeb ? "bg-green-600 text-white text-[8px]" : "bg-green-600 text-white text-[10px]"}>
                     {getFirstName(member.name, member.username)[0]}
                   </AvatarFallback>
                 </Avatar>
               </div>
             ))}
-            {members.length > 4 && (
+            {members.length > (isMobileWeb ? 3 : 4) && (
               <div 
                 onClick={() => setShowMembers(true)}
-                className="w-8 h-8 rounded-full bg-gray-700 border-2 border-gray-800 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"
+                className={isMobileWeb
+                  ? "w-6 h-6 rounded-full bg-gray-700 border border-gray-800 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"
+                  : "w-8 h-8 rounded-full bg-gray-700 border-2 border-gray-800 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"}
                 data-testid="button-more-members"
               >
-                <span className="text-[10px] text-gray-300">+{members.length - 4}</span>
+                <span className={isMobileWeb ? "text-[8px] text-gray-300" : "text-[10px] text-gray-300"}>
+                  +{members.length - (isMobileWeb ? 3 : 4)}
+                </span>
               </div>
             )}
           </div>
         )}
         
-        <div className="flex-1 min-w-0 overflow-hidden max-w-[140px] xs:max-w-[180px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[280px]">
+        <div
+          className={
+            isMobileWeb
+              ? "flex-1 min-w-0 overflow-hidden"
+              : "flex-1 min-w-0 overflow-hidden max-w-[140px] xs:max-w-[180px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[280px]"
+          }
+        >
           <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
             <div
-              className="text-xl font-semibold flex-1 min-w-0 truncate max-w-xs"
+              className={
+                isMobileWeb
+                  ? "text-[15px] leading-tight font-semibold flex-1 min-w-0 truncate"
+                  : "text-xl font-semibold flex-1 min-w-0 truncate max-w-xs"
+              }
               title={title || 'Chat'}
               role="heading"
               aria-level={1}

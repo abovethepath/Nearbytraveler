@@ -46,7 +46,7 @@ router.post('/send-referral', async (req, res) => {
   try {
     const { email, referrerName, referralCode } = req.body;
     
-    const joinUrl = `https://www.thenearbytraveler.com/auth?ref=${referralCode}`;
+    const joinUrl = `https://nearbytraveler.org/auth?ref=${referralCode}`;
     
     const success = await emailService.sendReferralEmail(email, {
       referrerName,
@@ -75,7 +75,7 @@ router.post('/send-connection-request', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const profileUrl = `https://www.thenearbytraveler.com/profile/${sender.id}`;
+    const profileUrl = `https://nearbytraveler.org/profile/${sender.id}`;
     const senderLocation = `${sender.hometownCity}, ${sender.hometownCountry}`;
 
     const success = await emailService.sendConnectionRequestEmail(recipient.email, {
@@ -106,7 +106,7 @@ router.post('/send-event-invite', async (req, res) => {
       return res.status(404).json({ message: 'Event or inviter not found' });
     }
 
-    const eventUrl = `https://www.thenearbytraveler.com/events/${eventId}`;
+    const eventUrl = `https://nearbytraveler.org/events/${eventId}`;
     const eventDate = new Date(event.date).toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
@@ -146,7 +146,7 @@ router.post('/send-business-offer', async (req, res) => {
       return res.status(404).json({ message: 'Business not found' });
     }
 
-    const businessUrl = `https://www.thenearbytraveler.com/business/${business.id}`;
+    const businessUrl = `https://nearbytraveler.org/business/${business.id}`;
     const validUntil = new Date(offer.validUntil).toLocaleDateString();
 
     const success = await emailService.sendBusinessOfferEmail(recipientEmail, {

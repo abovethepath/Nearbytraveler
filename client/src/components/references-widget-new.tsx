@@ -142,7 +142,20 @@ function ReferencesWidgetNew({ userId, currentUserId }: ReferencesWidgetProps) {
         ) : (
           <>
             {/* Stats Section */}
-            <div className="grid grid-cols-3 gap-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+            {/* Mobile: single horizontal line. Desktop/tablet: 3-column grid. */}
+            <div className="sm:hidden p-2 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+              <div className="text-xs text-gray-700 dark:text-gray-200 font-medium whitespace-nowrap overflow-x-auto">
+                <span className="text-green-700 dark:text-green-300 font-semibold">Positive:</span>{" "}
+                <span className="text-gray-900 dark:text-white">{counts.positive}</span>{" "}
+                <span className="text-gray-400 dark:text-gray-300 px-1.5">|</span>
+                <span className="text-yellow-700 dark:text-yellow-300 font-semibold">Neutral:</span>{" "}
+                <span className="text-gray-900 dark:text-white">{counts.neutral}</span>{" "}
+                <span className="text-gray-400 dark:text-gray-300 px-1.5">|</span>
+                <span className="text-red-700 dark:text-red-300 font-semibold">Negative:</span>{" "}
+                <span className="text-gray-900 dark:text-white">{counts.negative}</span>
+              </div>
+            </div>
+            <div className="hidden sm:grid grid-cols-3 gap-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
               <div className="text-center">
                 <div className="text-sm font-medium text-green-700 dark:text-green-300">
                   {counts.positive}

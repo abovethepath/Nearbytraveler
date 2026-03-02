@@ -370,11 +370,84 @@ export default function Home() {
     return ids;
   }, [availableNowIds, myAvailableStatus?.isAvailable, effectiveUser?.id]);
 
-  // Get compatibility data from API (matches profile page calculation)
-  const { data: compatibilityData } = useQuery({
-    queryKey: [`/api/users/${user?.id || currentUserProfile?.id || effectiveUser?.id}/matches`],
-    enabled: !!(user?.id || currentUserProfile?.id || effectiveUser?.id),
-  });
+  // Build a fast "things in common" payload locally so user cards never render blank.
+  // This avoids an expensive follow-up compatibility API call after cards are already on screen.
+  const buildFastCompatibilityData = (otherUser: any) => {
+    const parseList = (v: any): string[] => {
+      if (Array.isArray(v)) return v.filter(Boolean).map(String);
+      if (typeof v !== "string") return [];
+      const s = v.trim();
+      if (!s) return [];
+      // Try JSON arrays first (some endpoints return stringified JSON columns)
+      if (s.startsWith("[") && s.endsWith("]")) {
+        try {
+          const parsed = JSON.parse(s);
+          if (Array.isArray(parsed)) return parsed.filter(Boolean).map(String);
+        } catch {}
+      }
+      // Fallback: CSV
+      return s.split(",").map((x) => x.trim()).filter(Boolean);
+    };
+    const arr = (v: any): string[] => parseList(v);
+    const csv = (v: any): string[] => parseList(v);
+    const norm = (v: string) => String(v || "").trim().toLowerCase();
+    const intersect = (a: string[], b: string[]) => {
+      const setB = new Set(b.map(norm));
+      const out: string[] = [];
+      const seen = new Set<string>();
+      for (const raw of a) {
+        const key = norm(raw);
+        if (!key || !setB.has(key) || seen.has(key)) continue;
+        seen.add(key);
+        out.push(String(raw).trim());
+      }
+      return out;
+    };
+
+    const me: any = effectiveUser;
+    if (!otherUser) return { sharedInterests: [], sharedActivities: [], sharedEvents: [], sharedCountries: [], sharedLanguages: [], otherCommonalities: [] };
+    if (!me) return { sharedInterests: [], sharedActivities: [], sharedEvents: [], sharedCountries: [], sharedLanguages: [], otherCommonalities: [] };
+
+    const myInterests = [
+      ...arr(me.interests),
+      ...arr(me.travelInterests),
+      ...csv(me.customInterests),
+      ...csv(me.customInterests?.customInterests),
+    ];
+    const theirInterests = [
+      ...arr(otherUser.interests),
+      ...arr(otherUser.travelInterests),
+      ...csv(otherUser.customInterests),
+    ];
+
+    const myActivities = [
+      ...arr(me.activities),
+      ...arr(me.localActivities),
+      ...arr(me.preferredActivities),
+      ...csv(me.customActivities),
+    ];
+    const theirActivities = [
+      ...arr(otherUser.activities),
+      ...arr(otherUser.localActivities),
+      ...arr(otherUser.preferredActivities),
+      ...csv(otherUser.customActivities),
+    ];
+
+    const myCountries = [...arr(me.countriesVisited ?? (me as any).countries_visited)];
+    const theirCountries = [...arr(otherUser.countriesVisited ?? (otherUser as any).countries_visited)];
+
+    const myLanguages = [...arr(me.languagesSpoken ?? (me as any).languages_spoken)];
+    const theirLanguages = [...arr(otherUser.languagesSpoken ?? (otherUser as any).languages_spoken)];
+
+    return {
+      sharedInterests: intersect(myInterests, theirInterests),
+      sharedActivities: intersect(myActivities, theirActivities),
+      sharedEvents: [],
+      sharedCountries: intersect(myCountries, theirCountries),
+      sharedLanguages: intersect(myLanguages, theirLanguages),
+      otherCommonalities: [],
+    };
+  };
 
   // ONLY USER-CREATED EVENTS: Get events from both hometown AND travel destination (metro-resolved)
   const { data: userPriorityEvents = [] } = useQuery({
@@ -443,107 +516,6 @@ export default function Home() {
     },
     enabled: !!effectiveUser,
   });
-
-  // Function to get things in common using API compatibility data (matches profile page)
-  const getThingsInCommon = (otherUser: any) => {
-    if (!compatibilityData || !otherUser) return 0;
-    
-    // Find the compatibility data for this specific user
-    const userCompatibility = Array.isArray(compatibilityData) ? compatibilityData.find((match: any) => match.userId === otherUser.id) : null;
-    
-    if (userCompatibility) {
-      // Use matchCount from API (count of all things in common - no point system)
-      if (typeof userCompatibility.matchCount === 'number') {
-        return userCompatibility.matchCount;
-      }
-      // Fallback: sum shared categories if matchCount not available
-      let total = 0;
-      total += userCompatibility.sharedInterests?.length || 0;
-      total += userCompatibility.sharedActivities?.length || 0;
-      total += userCompatibility.sharedEvents?.length || 0;
-      total += userCompatibility.sharedLanguages?.length || 0;
-      total += userCompatibility.sharedCountries?.length || 0;
-      total += userCompatibility.sharedTravelIntent?.length || 0;
-      total += userCompatibility.sharedSexualPreferences?.length || 0;
-      if (userCompatibility.locationOverlap) total += 1;
-      if (userCompatibility.dateOverlap) total += 1;
-      if (userCompatibility.userTypeCompatibility) total += 1;
-      if (userCompatibility.bothVeterans) total += 1;
-      if (userCompatibility.bothActiveDuty) total += 1;
-      if (userCompatibility.sameFamilyStatus) total += 1;
-      if (userCompatibility.sameAge) total += 1;
-      if (userCompatibility.sameGender) total += 1;
-      if (userCompatibility.travelIntentCompatibility) total += 1;
-      return total;
-    }
-    
-    // Fallback to simple local calculation if API data not available
-    if (!effectiveUser) return 0;
-    
-    let commonCount = 0;
-    
-    // Compare interests (both regular and travel interests)
-    const currentUserInterests = [...(effectiveUser.interests || []), ...(effectiveUser.travelInterests || [])];
-    const otherUserInterests = [...(otherUser.interests || []), ...(otherUser.travelInterests || [])];
-    const commonInterests = currentUserInterests.filter(interest => 
-      otherUserInterests.some(other => other.toLowerCase().trim() === interest.toLowerCase().trim())
-    );
-    commonCount += commonInterests.length;
-    
-    // Compare activities
-    const currentUserActivities = [...(effectiveUser.localActivities || []), ...(effectiveUser.preferredActivities || [])];
-    const otherUserActivities = [...(otherUser.localActivities || []), ...(otherUser.preferredActivities || [])];
-    const commonActivities = currentUserActivities.filter(activity => 
-      otherUserActivities.some(other => other.toLowerCase().trim() === activity.toLowerCase().trim())
-    );
-    commonCount += commonActivities.length;
-    
-    // Compare languages
-    const currentUserLanguages = effectiveUser.languagesSpoken || [];
-    const otherUserLanguages = otherUser.languagesSpoken || [];
-    const commonLanguages = currentUserLanguages.filter((language: string) => 
-      otherUserLanguages.some((other: string) => other.toLowerCase().trim() === language.toLowerCase().trim())
-    );
-    commonCount += commonLanguages.length;
-    
-    // Compare sexual preferences
-    const currentUserSexualPreferences = effectiveUser.sexualPreference || [];
-    const otherUserSexualPreferences = otherUser.sexualPreference || [];
-    const commonSexualPreferences = currentUserSexualPreferences.filter((pref: string) => 
-      otherUserSexualPreferences.some((other: string) => other.toLowerCase().trim() === pref.toLowerCase().trim())
-    );
-    commonCount += commonSexualPreferences.length;
-    
-    // Compare family status
-    if (effectiveUser.familyStatus && otherUser.familyStatus && 
-        effectiveUser.familyStatus.toLowerCase() === otherUser.familyStatus.toLowerCase()) {
-      commonCount += 1;
-    }
-    
-    // Compare veteran status
-    if (effectiveUser.isVeteran && otherUser.isVeteran) {
-      commonCount += 1;
-    }
-    
-    // Compare active duty status
-    if (effectiveUser.isActiveDuty && otherUser.isActiveDuty) {
-      commonCount += 1;
-    }
-    
-    // Compare age range (within 5 years considered a match)
-    if (effectiveUser.age && otherUser.age && 
-        Math.abs(effectiveUser.age - otherUser.age) <= 5) {
-      commonCount += 1;
-    }
-    
-    // Compare gender if both specified
-    if (effectiveUser.gender && otherUser.gender && 
-        effectiveUser.gender.toLowerCase() === otherUser.gender.toLowerCase()) {
-      commonCount += 1;
-    }
-    
-    return commonCount;
-  };
 
   // Function to sort users based on selected sorting option
   const getSortedUsers = (users: any[]) => {
@@ -1817,7 +1789,7 @@ export default function Home() {
                             user={otherUser} 
                             currentUserId={effectiveUser?.id}
                             isCurrentUser={otherUser.id === effectiveUser?.id}
-                            compatibilityData={(compatibilityData as any[])?.find((match: any) => match.userId === otherUser.id)}
+                            compatibilityData={buildFastCompatibilityData(otherUser)}
                             compact={isCompactMode}
                             connectionDegree={connectionDegreesData?.degrees?.[otherUser.id]}
                             isAvailableNow={effectiveAvailableNowIds.has(Number(otherUser.id))}

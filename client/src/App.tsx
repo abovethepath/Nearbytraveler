@@ -267,6 +267,216 @@ function Router() {
   ];
   const isLandingPage = landingPageRoutes.includes(location);
 
+  // --- Auth limbo hardening (web only) ---
+  const authSyncInFlightRef = React.useRef(false);
+  const authSyncSeqRef = React.useRef(0);
+  const lastAuthSyncAtRef = React.useRef(0);
+  const navSyncTimerRef = React.useRef<number | undefined>(undefined);
+
+  const isAuthRoute =
+    location === "/auth" ||
+    location === "/signin" ||
+    location === "/join" ||
+    location === "/signup" ||
+    location.startsWith("/signup/") ||
+    location.startsWith("/auth/");
+
+  const hasLocalAuthEvidence = React.useCallback(() => {
+    try {
+      return (
+        !!localStorage.getItem("user") ||
+        !!localStorage.getItem("travelconnect_user") ||
+        !!localStorage.getItem("current_user") ||
+        !!localStorage.getItem("authUser") ||
+        !!localStorage.getItem("currentUser")
+      );
+    } catch {
+      return false;
+    }
+  }, []);
+
+  const clearLocalAuthState = React.useCallback(() => {
+    try {
+      authStorage.clearUser();
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("travelconnect_user");
+      localStorage.removeItem("current_user");
+      localStorage.removeItem("authUser");
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("current_user");
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("userSession");
+      localStorage.removeItem("userData");
+      localStorage.removeItem("user_logged_out");
+      localStorage.removeItem("just_registered");
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+
+  const syncAuthFromServer = React.useCallback(
+    async (opts?: { reason?: string; force?: boolean }) => {
+      if (isNativeIOSApp()) return;
+      if (isSignupRoute) return;
+      if (location.startsWith("/api/")) return;
+
+      const reason = opts?.reason || "sync";
+      const force = !!opts?.force;
+
+      // Throttle to avoid spamming on rapid navigation.
+      const now = Date.now();
+      if (!force && now - lastAuthSyncAtRef.current < 5000) return;
+      lastAuthSyncAtRef.current = now;
+
+      if (authSyncInFlightRef.current) return;
+      authSyncInFlightRef.current = true;
+      const seq = ++authSyncSeqRef.current;
+
+      const expectedAuth = !!user?.id || hasLocalAuthEvidence();
+
+      try {
+        const res = await fetch(`${getApiBaseUrl()}/api/auth/user`, {
+          credentials: "include",
+          headers: { Accept: "application/json" },
+        });
+
+        // Ignore stale results if a newer sync started.
+        if (seq !== authSyncSeqRef.current) return;
+
+        if (res.ok) {
+          const serverUser = await res.json();
+          if (serverUser?.id) {
+            // Session is valid → ensure UI + storage reflect it.
+            setUser(serverUser);
+            authStorage.setUser(serverUser);
+            try {
+              localStorage.setItem("user", JSON.stringify(serverUser));
+              localStorage.setItem("auth_token", "authenticated");
+            } catch {
+              // ignore storage errors
+            }
+          }
+          return;
+        }
+
+        if (res.status === 401) {
+          // Session is invalid/expired → clear local auth state.
+          clearLocalAuthState();
+          setUser(null);
+
+          // Only force redirect when we *thought* we were authenticated (prevents bouncing public pages).
+          if (expectedAuth && !isAuthRoute) {
+            try {
+              // Preserve intended destination for after login.
+              if (!isLandingPage) localStorage.setItem("postAuthRedirect", location);
+            } catch {
+              // ignore
+            }
+            setLocation("/auth");
+          }
+          return;
+        }
+      } catch (e) {
+        // Network errors shouldn't wipe auth; just leave state as-is.
+        console.warn("Auth sync failed (" + reason + "):", e);
+      } finally {
+        authSyncInFlightRef.current = false;
+      }
+    },
+    [
+      clearLocalAuthState,
+      hasLocalAuthEvidence,
+      isAuthRoute,
+      isLandingPage,
+      isSignupRoute,
+      location,
+      setLocation,
+      user?.id,
+    ],
+  );
+
+  // Session validity check on every navigation (web).
+  useEffect(() => {
+    if (isNativeIOSApp()) return;
+    if (isSignupRoute) return;
+    if (location.startsWith("/api/")) return;
+
+    if (navSyncTimerRef.current) window.clearTimeout(navSyncTimerRef.current);
+    navSyncTimerRef.current = window.setTimeout(() => {
+      syncAuthFromServer({ reason: "navigation" });
+    }, 50);
+
+    return () => {
+      if (navSyncTimerRef.current) window.clearTimeout(navSyncTimerRef.current);
+    };
+  }, [location, isSignupRoute, syncAuthFromServer]);
+
+  // Revalidate on idle return / bfcache restore (web).
+  useEffect(() => {
+    if (isNativeIOSApp()) return;
+
+    const onFocus = () => syncAuthFromServer({ reason: "focus" });
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") syncAuthFromServer({ reason: "visible" });
+    };
+    const onPageShow = (e: PageTransitionEvent) => {
+      if ((e as any).persisted) syncAuthFromServer({ reason: "pageshow", force: true });
+    };
+    const onStorage = (e: StorageEvent) => {
+      // If auth-related keys change in another tab, resync.
+      const k = e.key || "";
+      if (
+        k === "user" ||
+        k === "travelconnect_user" ||
+        k === "auth_token" ||
+        k === "current_user" ||
+        k === "authUser" ||
+        k === "currentUser"
+      ) {
+        syncAuthFromServer({ reason: "storage", force: true });
+      }
+    };
+
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("pageshow", onPageShow);
+    window.addEventListener("storage", onStorage);
+
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("pageshow", onPageShow);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, [syncAuthFromServer]);
+
+  // Fallback: if navbar/UI appears logged-out but a session token exists, auto-reload ONCE to break limbo.
+  useEffect(() => {
+    if (isNativeIOSApp()) return;
+    if (isSignupRoute) return;
+
+    const hasTokenOnly = !!localStorage.getItem("auth_token") && !localStorage.getItem("user") && !localStorage.getItem("travelconnect_user");
+    const looksLoggedOut = !user?.id;
+    if (!looksLoggedOut || !hasTokenOnly) return;
+
+    const flag = "nt_auth_autoreload_once";
+    try {
+      if (sessionStorage.getItem(flag) === "1") return;
+      sessionStorage.setItem(flag, "1");
+    } catch {
+      return;
+    }
+
+    // Prefer a sync; reload only if we still have no user after giving the sync a chance.
+    (async () => {
+      await syncAuthFromServer({ reason: "token-only", force: true });
+      if (!authStorage.getUser()?.id) {
+        window.location.reload();
+      }
+    })();
+  }, [isSignupRoute, syncAuthFromServer, user?.id]);
+
   useEffect(() => {
     // BULLETPROOF FIX #1: If user was already set from useState initializer (just_registered),
     // skip the server auth check entirely. The server might return 401 due to iOS WebView
@@ -684,8 +894,14 @@ function Router() {
     const hasUserInState = !!user;
     const hasTravelConnectUser = !!localStorage.getItem('travelconnect_user');
 
-    // More comprehensive authentication check
-    const isActuallyAuthenticated = authValue.isAuthenticated || hasUserInState || hasUserInLocalStorage || hasAuthToken || hasTravelConnectUser;
+    // More comprehensive authentication check.
+    // IMPORTANT: never treat `auth_token` alone as an authenticated session (it can get out of sync and cause "auth limbo").
+    const isActuallyAuthenticated =
+      authValue.isAuthenticated ||
+      hasUserInState ||
+      hasUserInLocalStorage ||
+      hasTravelConnectUser ||
+      (hasAuthToken && (hasUserInLocalStorage || hasTravelConnectUser));
 
     // Quick user state recovery
     if (!hasUserInState && hasUserInLocalStorage && !user && !isLoading) {
@@ -956,7 +1172,7 @@ function Router() {
       const commonAppRoutes = ['/discover', '/match-in-city', '/quick-meetups', '/messages', '/profile', '/profile-new', '/profile-complete', '/cities', '/plan-trip', '/home', '/events', '/deals', '/city-chatrooms', '/chatroom', '/explore'];
       const isCommonAppRoute = commonAppRoutes.some(route => location.startsWith(route));
 
-      if (isCommonAppRoute && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token'))) {
+      if (isCommonAppRoute && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || (localStorage.getItem('auth_token') && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user'))))) {
         console.log('🔧 MOBILE FIX: User has auth data, but was going to be shown landing, routing to authenticated section');
         // Force re-evaluation as authenticated user by bypassing this unauthenticated section
         let authUser = user;

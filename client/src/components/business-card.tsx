@@ -65,7 +65,7 @@ export default function BusinessCard() {
 
       // Add website
       ctx.font = '20px Arial';
-      ctx.fillText('thenearbytraveler.com', 50, 320);
+      ctx.fillText('nearbytraveler.org', 50, 320);
 
       // Add QR code if available
       if (qrCodeUrl) {
@@ -133,7 +133,7 @@ export default function BusinessCard() {
                 </div>
                 
                 <div className="mt-4">
-                  <p className="text-sm font-medium">thenearbytraveler.com</p>
+                  <p className="text-sm font-medium">nearbytraveler.org</p>
                 </div>
               </div>
               

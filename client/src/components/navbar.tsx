@@ -151,6 +151,43 @@ function Navbar() {
     }
   }, [user?.id, user?.username, user?.profileImage, user]);
 
+  // Auth limbo recovery: if UI looks logged-out but we still have auth evidence,
+  // try one server sync to repopulate user (or clear stale auth_token).
+  useEffect(() => {
+    if (isNativeIOSApp()) return;
+    if (directUser?.id) return;
+
+    const hasStoredUser =
+      !!localStorage.getItem("user") || !!localStorage.getItem("travelconnect_user");
+    const hasAuthToken = !!localStorage.getItem("auth_token");
+    if (!hasStoredUser && !hasAuthToken) return;
+
+    let cancelled = false;
+    (async () => {
+      const refreshed = await authStorage.forceRefreshUser();
+      if (cancelled) return;
+      if (refreshed?.id) {
+        setDirectUser(refreshed as any);
+        if (setUser) setUser(refreshed as any);
+        return;
+      }
+
+      // If server says not authenticated, clear stale local auth markers so navbar/routes can't disagree.
+      try {
+        authStorage.clearUser();
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("travelconnect_user");
+      } catch {}
+      setDirectUser(null);
+      if (setUser) setUser(null);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [directUser?.id, setUser]);
+
   // recalc top on load/resize & when warning banners appear/disappear
   useEffect(() => {
     const measure = () =>

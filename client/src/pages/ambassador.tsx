@@ -527,7 +527,7 @@ export default function AmbassadorLanding() {
                     Open the App
                   </Button>
                   <div className="text-sm text-white/90 flex items-center gap-2">
-                    Questions? ambassadors@nearbytraveler.com
+                    Questions? ambassadors@nearbytraveler.org
                   </div>
                 </div>
               </CardContent>

@@ -144,8 +144,9 @@ Don't forget to bring everything you need and arrive on time. We're excited to s
 Best regards,
 The Nearby Traveler Team
 
-Visit: https://nearbytraveler.com
+Visit: https://nearbytraveler.org
       `.trim();
+
 
       await sendBrevoEmail({
         toEmail: userEmail,
@@ -237,7 +238,7 @@ Visit: https://nearbytraveler.com
 
             <!-- Call to Action -->
             <div style="text-align: center; margin: 30px 0;">
-                <a href="https://nearbytraveler.com/event-details/${data.eventTitle.toLowerCase().replace(/\s+/g, '-')}" 
+                <a href="https://nearbytraveler.org/event-details/${data.eventTitle.toLowerCase().replace(/\s+/g, '-')}" 
                    style="background: linear-gradient(135deg, #3b82f6 0%, #f97316 100%); 
                           color: white; 
                           padding: 15px 30px; 
@@ -268,7 +269,7 @@ Visit: https://nearbytraveler.com
         <!-- Footer -->
         <div style="background-color: #f8fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e2e8f0;">
             <p style="color: #666; margin: 0; font-size: 14px;">
-                <a href="https://nearbytraveler.com" style="color: #3b82f6; text-decoration: none;">Visit The Nearby Traveler</a> |
+                <a href="https://nearbytraveler.org" style="color: #3b82f6; text-decoration: none;">Visit The Nearby Traveler</a> |
                 <a href="mailto:aaron_marc2004@yahoo.com" style="color: #3b82f6; text-decoration: none;">Contact Support</a>
             </p>
             <p style="color: #999; margin: 10px 0 0 0; font-size: 12px;">

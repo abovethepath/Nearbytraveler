@@ -66,7 +66,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
 
   return (
     <div
-      className={`flex flex-wrap items-end gap-4 sm:gap-5 ${
+      className={`profile-tabbar ${isHero ? "profile-tabbar-hero" : "profile-tabbar-standalone"} flex flex-wrap items-end gap-4 sm:gap-5 ${
         isHero ? "pt-4 mt-4" : ""
       } ${isDesktopWeb ? (isHero ? "border-b border-gray-200/70 pb-1" : "border-b border-gray-200 dark:border-white/15 pb-1") : ""}`}
     >

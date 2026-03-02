@@ -84,6 +84,729 @@ html, body { overflow-x: hidden; }
   fill: currentColor !important;
 }
 
+/* 6d) HERO (mobile web only): force black text in BOTH themes.
+   Explicit exceptions for primary CTAs that must remain white-on-solid. */
+@media (max-width: 767.98px) {
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed,
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed * {
+    color: #000000 !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed svg {
+    color: #000000 !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
+  }
+
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-lets-meet-now-hero"] {
+    color: #ffffff !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-lets-meet-now-hero"] svg {
+    color: #ffffff !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
+  }
+}
+
+/* 6e) HERO CTA BUTTONS: lock visible colors in both themes.
+   Keeps buttons from becoming white-on-white due to hero text overrides. */
+.profile-hero-fixed [data-testid="button-message"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid rgb(209 213 219) !important; /* gray-300 */
+}
+.profile-hero-fixed [data-testid="button-message"] * {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+.profile-hero-fixed [data-testid^="button-connect-"] {
+  background-color: rgb(37 99 235) !important; /* blue-600 */
+  color: #ffffff !important;
+  border: 0 !important;
+}
+.profile-hero-fixed [data-testid^="button-connect-"] * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.profile-hero-fixed [data-testid^="button-connect-"] svg {
+  color: #ffffff !important;
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+.profile-hero-fixed [data-testid^="button-vouch"] {
+  background-color: rgb(22 163 74) !important; /* green-600 */
+  color: #ffffff !important;
+  border: 0 !important;
+}
+.profile-hero-fixed [data-testid^="button-vouch"] * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.profile-hero-fixed [data-testid^="button-vouch"] svg {
+  color: #ffffff !important;
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+.profile-hero-fixed [data-testid="button-write-reference"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid rgb(209 213 219) !important; /* gray-300 */
+}
+.profile-hero-fixed [data-testid="button-write-reference"] * {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+.profile-hero-fixed [data-testid="button-write-reference"] svg {
+  color: #000000 !important;
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+.profile-hero-fixed [data-testid="button-share-profile"] {
+  background-color: rgb(17 24 39) !important; /* gray-900 */
+  color: #ffffff !important;
+  border: 1px solid rgba(0,0,0,0.25) !important;
+}
+.profile-hero-fixed [data-testid="button-share-profile"] svg {
+  color: #ffffff !important;
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+/* 6f) HERO TAB BAR (mobile responsive web only): single row, horizontal scroll, no wrapping */
+@media (max-width: 767.98px) {
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed .profile-tabbar.profile-tabbar-hero {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    gap: 14px !important;
+    padding-bottom: 6px;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed .profile-tabbar.profile-tabbar-hero::-webkit-scrollbar {
+    display: none;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed .profile-tabbar.profile-tabbar-hero > button,
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed .profile-tabbar.profile-tabbar-hero > [role="tab"] {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* 11) MOBILE PROFILE PAGE SPACING + CONSISTENCY (mobile responsive web only) */
+@media (max-width: 767.98px) {
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed .profile-tabbar.profile-tabbar-hero {
+    /* Reduce empty vertical gap between username block and tab bar */
+    margin-top: 8px !important;
+    padding-top: 8px !important;
+  }
+
+  /* Tighten spacing between section cards below hero */
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-page .profile-sections-column > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 10px !important; /* tighter than space-y-3 */
+  }
+
+  /* Standardize section card headers + action buttons (Edit/Update) */
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-page .rounded-lg.border.bg-card > div.flex.flex-col.space-y-1\.5 {
+    position: relative;
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+    padding-right: 64px !important; /* reserve room for top-right action button */
+  }
+
+  /* Standardize section headers (CardTitle) */
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-page .rounded-lg.border.bg-card > div.flex.flex-col.space-y-1\.5 [class*="tracking-tight"] {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+  }
+
+  /* Consistent top-right Edit/Update buttons inside card headers */
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-page .rounded-lg.border.bg-card > div.flex.flex-col.space-y-1\.5 :is(
+    [data-testid^="button-edit-"],
+    [data-testid^="button-update-"],
+    [data-testid="button-edit-profile"]
+  ) {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 0 10px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-page .rounded-lg.border.bg-card > div.flex.flex-col.space-y-1\.5 :is(
+    [data-testid^="button-edit-"],
+    [data-testid^="button-update-"],
+    [data-testid="button-edit-profile"]
+  ) svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+}
+
+/* 8) PROFILE: Interests & Activities pills/tags must always be black text.
+   Applies to mobile + desktop, light + dark (requested). */
+.profile-interests-activities-section .pill-interests,
+.profile-interests-activities-section .pill-activities,
+.profile-interests-activities-section .pill-events,
+.profile-interests-activities-section [class*="pill-interests"],
+.profile-interests-activities-section [class*="pill-activities"],
+.profile-interests-activities-section [class*="pill-events"] {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+/* In dark mode, force these pills/tags onto a light surface so black text stays readable. */
+.dark .profile-interests-activities-section .pill-interests,
+.dark .profile-interests-activities-section .pill-activities,
+.dark .profile-interests-activities-section .pill-events,
+.dark .profile-interests-activities-section [class*="pill-interests"],
+.dark .profile-interests-activities-section [class*="pill-activities"],
+.dark .profile-interests-activities-section [class*="pill-events"] {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border-color: rgb(229 231 235) !important;
+}
+
+/* Edit-mode "pill buttons" in this section (rounded-full chips). */
+.profile-interests-activities-section button.rounded-full {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+.dark .profile-interests-activities-section button.rounded-full {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border-color: rgb(229 231 235) !important;
+}
+
+/* 9) What You Have in Common
+   Desktop/tablet: keep as a light card in dark mode (legacy).
+   Mobile web: handled separately below (Prompt 8). */
+@media (min-width: 768px) {
+  .dark .what-you-have-in-common-card,
+  .dark .what-you-have-in-common-inline {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-color: rgb(229 231 235) !important;
+  }
+  .dark .what-you-have-in-common-card *,
+  .dark .what-you-have-in-common-inline * {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+  }
+  .dark .what-you-have-in-common-card svg,
+  .dark .what-you-have-in-common-inline svg {
+    color: #000000 !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
+  }
+
+  /* Keep the count badge readable with black text in dark mode. */
+  .dark .what-you-have-in-common-card [data-testid="common-count-badge"] {
+    background-color: #ffffff !important;
+    border-color: rgb(229 231 235) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08) !important;
+  }
+}
+
+/* 9b) Prompt 8 — MOBILE RESPONSIVE WEB ONLY:
+   - Dark mode card becomes distinct dark surface
+   - All text becomes light/white for readability
+   - Shared interest pills stay white w/ black text (both themes) */
+@media (max-width: 767.98px) {
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-card {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+    background-image: none !important;
+    border-color: rgb(55 65 81) !important; /* gray-700 */
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-card,
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-card * {
+    color: rgb(249 250 251) !important; /* gray-50 */
+    -webkit-text-fill-color: rgb(249 250 251) !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-card svg {
+    color: rgb(249 250 251) !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
+  }
+
+  /* Ensure "Show more/less" / "See all" links are visible (brand orange) */
+  body:not([data-native-ios="true"]):not(.native-ios-app) .what-you-have-in-common-card :is(button, a)[class*="underline"],
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-card :is(button, a)[class*="underline"] {
+    color: rgb(249 115 22) !important; /* orange-500 */
+    -webkit-text-fill-color: rgb(249 115 22) !important;
+  }
+
+  /* Shared interest pills: white surface + black text in BOTH themes (mobile web only) */
+  body:not([data-native-ios="true"]):not(.native-ios-app) .what-you-have-in-common-card .common-shared-interest-pill,
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-card .common-shared-interest-pill {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    border-color: rgb(229 231 235) !important; /* gray-200 */
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .what-you-have-in-common-card .common-shared-interest-pill *,
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-card .common-shared-interest-pill * {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .what-you-have-in-common-card .common-shared-interest-pill svg,
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-card .common-shared-interest-pill svg {
+    color: #000000 !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
+  }
+
+  /* Inline "What You Have in Common" (ProfileTabs) — distinct card + readable text on mobile web */
+  body:not([data-native-ios="true"]):not(.native-ios-app) .what-you-have-in-common-inline {
+    background-color: #ffffff !important;
+    border-color: rgb(229 231 235) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10) !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-inline {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+    border-color: rgb(55 65 81) !important; /* gray-700 */
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-inline,
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-inline * {
+    color: rgb(249 250 251) !important; /* gray-50 */
+    -webkit-text-fill-color: rgb(249 250 251) !important;
+  }
+  /* Keep shared-interest pills white with black text even inside dark inline card */
+  body:not([data-native-ios="true"]):not(.native-ios-app) .what-you-have-in-common-inline .pill-interests,
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-inline .pill-interests {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    border-color: rgb(229 231 235) !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .what-you-have-in-common-inline .pill-interests *,
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-inline .pill-interests * {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+  }
+  /* Inline "See all" / link buttons should be orange, never gray */
+  body:not([data-native-ios="true"]):not(.native-ios-app) .what-you-have-in-common-inline :is(button, a)[class*="underline"],
+  body:not([data-native-ios="true"]):not(.native-ios-app) .dark .what-you-have-in-common-inline :is(button, a)[class*="underline"] {
+    color: rgb(249 115 22) !important; /* orange-500 */
+    -webkit-text-fill-color: rgb(249 115 22) !important;
+  }
+}
+
+/* 10) GLOBAL PILL/TAG TEXT COLOR
+   Requirement: any pill/tag with a COLORED background must use BLACK text.
+   Exception: pills with dark/black backgrounds use WHITE text.
+   Scope: desktop + mobile web (all themes). */
+
+/* Black text on colored pills */
+:root :is([class*="pill"], [class*="rounded-full"]):is(
+  [class*="bg-red-"],
+  [class*="bg-orange-"],
+  [class*="bg-amber-"],
+  [class*="bg-yellow-"],
+  [class*="bg-lime-"],
+  [class*="bg-green-"],
+  [class*="bg-emerald-"],
+  [class*="bg-teal-"],
+  [class*="bg-cyan-"],
+  [class*="bg-sky-"],
+  [class*="bg-blue-"],
+  [class*="bg-indigo-"],
+  [class*="bg-violet-"],
+  [class*="bg-purple-"],
+  [class*="bg-fuchsia-"],
+  [class*="bg-pink-"],
+  [class*="bg-rose-"],
+  [class*="bg-primary"],
+  [class*="bg-secondary"],
+  [class*="bg-accent"],
+  [class*="bg-destructive"]
+) {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+:root :is([class*="pill"], [class*="rounded-full"]):is(
+  [class*="bg-red-"],
+  [class*="bg-orange-"],
+  [class*="bg-amber-"],
+  [class*="bg-yellow-"],
+  [class*="bg-lime-"],
+  [class*="bg-green-"],
+  [class*="bg-emerald-"],
+  [class*="bg-teal-"],
+  [class*="bg-cyan-"],
+  [class*="bg-sky-"],
+  [class*="bg-blue-"],
+  [class*="bg-indigo-"],
+  [class*="bg-violet-"],
+  [class*="bg-purple-"],
+  [class*="bg-fuchsia-"],
+  [class*="bg-pink-"],
+  [class*="bg-rose-"],
+  [class*="bg-primary"],
+  [class*="bg-secondary"],
+  [class*="bg-accent"],
+  [class*="bg-destructive"]
+) * {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+:root :is([class*="pill"], [class*="rounded-full"]):is(
+  [class*="bg-red-"],
+  [class*="bg-orange-"],
+  [class*="bg-amber-"],
+  [class*="bg-yellow-"],
+  [class*="bg-lime-"],
+  [class*="bg-green-"],
+  [class*="bg-emerald-"],
+  [class*="bg-teal-"],
+  [class*="bg-cyan-"],
+  [class*="bg-sky-"],
+  [class*="bg-blue-"],
+  [class*="bg-indigo-"],
+  [class*="bg-violet-"],
+  [class*="bg-purple-"],
+  [class*="bg-fuchsia-"],
+  [class*="bg-pink-"],
+  [class*="bg-rose-"],
+  [class*="bg-primary"],
+  [class*="bg-secondary"],
+  [class*="bg-accent"],
+  [class*="bg-destructive"]
+) svg {
+  color: #000000 !important;
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+/* Also treat gradient pills/tags as "colored backgrounds" */
+:root :is([class*="pill"], [class*="rounded-full"]):is([class*="bg-gradient"], [class*="bg-gradient-to-"]) {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+:root :is([class*="pill"], [class*="rounded-full"]):is([class*="bg-gradient"], [class*="bg-gradient-to-"]) * {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+:root :is([class*="pill"], [class*="rounded-full"]):is([class*="bg-gradient"], [class*="bg-gradient-to-"]) svg {
+  color: #000000 !important;
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+/* Exception: dark/black pills keep white text */
+:root :is([class*="pill"], [class*="rounded-full"]):is(
+  [class*="bg-black"],
+  [class*="bg-gray-800"],
+  [class*="bg-gray-900"],
+  [class*="bg-gray-950"],
+  [class*="bg-slate-800"],
+  [class*="bg-slate-900"],
+  [class*="bg-slate-950"],
+  [class*="bg-neutral-800"],
+  [class*="bg-neutral-900"],
+  [class*="bg-neutral-950"],
+  [class*="bg-zinc-800"],
+  [class*="bg-zinc-900"],
+  [class*="bg-zinc-950"],
+  [class*="bg-stone-800"],
+  [class*="bg-stone-900"],
+  [class*="bg-stone-950"]
+) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+:root :is([class*="pill"], [class*="rounded-full"]):is(
+  [class*="bg-black"],
+  [class*="bg-gray-800"],
+  [class*="bg-gray-900"],
+  [class*="bg-gray-950"],
+  [class*="bg-slate-800"],
+  [class*="bg-slate-900"],
+  [class*="bg-slate-950"],
+  [class*="bg-neutral-800"],
+  [class*="bg-neutral-900"],
+  [class*="bg-neutral-950"],
+  [class*="bg-zinc-800"],
+  [class*="bg-zinc-900"],
+  [class*="bg-zinc-950"],
+  [class*="bg-stone-800"],
+  [class*="bg-stone-900"],
+  [class*="bg-stone-950"]
+) * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+:root :is([class*="pill"], [class*="rounded-full"]):is(
+  [class*="bg-black"],
+  [class*="bg-gray-800"],
+  [class*="bg-gray-900"],
+  [class*="bg-gray-950"],
+  [class*="bg-slate-800"],
+  [class*="bg-slate-900"],
+  [class*="bg-slate-950"],
+  [class*="bg-neutral-800"],
+  [class*="bg-neutral-900"],
+  [class*="bg-neutral-950"],
+  [class*="bg-zinc-800"],
+  [class*="bg-zinc-900"],
+  [class*="bg-zinc-950"],
+  [class*="bg-stone-800"],
+  [class*="bg-stone-900"],
+  [class*="bg-stone-950"]
+) svg {
+  color: #ffffff !important;
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+/* Exception: dark/black gradients keep white text */
+:root :is([class*="pill"], [class*="rounded-full"]):is([class*="bg-gradient"], [class*="bg-gradient-to-"]):is(
+  [class*="from-black"], [class*="to-black"], [class*="via-black"],
+  [class*="from-gray-800"], [class*="to-gray-800"], [class*="via-gray-800"],
+  [class*="from-gray-900"], [class*="to-gray-900"], [class*="via-gray-900"],
+  [class*="from-gray-950"], [class*="to-gray-950"], [class*="via-gray-950"],
+  [class*="from-slate-800"], [class*="to-slate-800"], [class*="via-slate-800"],
+  [class*="from-slate-900"], [class*="to-slate-900"], [class*="via-slate-900"],
+  [class*="from-slate-950"], [class*="to-slate-950"], [class*="via-slate-950"],
+  [class*="from-neutral-800"], [class*="to-neutral-800"], [class*="via-neutral-800"],
+  [class*="from-neutral-900"], [class*="to-neutral-900"], [class*="via-neutral-900"],
+  [class*="from-neutral-950"], [class*="to-neutral-950"], [class*="via-neutral-950"]
+) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+:root :is([class*="pill"], [class*="rounded-full"]):is([class*="bg-gradient"], [class*="bg-gradient-to-"]):is(
+  [class*="from-black"], [class*="to-black"], [class*="via-black"],
+  [class*="from-gray-800"], [class*="to-gray-800"], [class*="via-gray-800"],
+  [class*="from-gray-900"], [class*="to-gray-900"], [class*="via-gray-900"],
+  [class*="from-gray-950"], [class*="to-gray-950"], [class*="via-gray-950"],
+  [class*="from-slate-800"], [class*="to-slate-800"], [class*="via-slate-800"],
+  [class*="from-slate-900"], [class*="to-slate-900"], [class*="via-slate-900"],
+  [class*="from-slate-950"], [class*="to-slate-950"], [class*="via-slate-950"],
+  [class*="from-neutral-800"], [class*="to-neutral-800"], [class*="via-neutral-800"],
+  [class*="from-neutral-900"], [class*="to-neutral-900"], [class*="via-neutral-900"],
+  [class*="from-neutral-950"], [class*="to-neutral-950"], [class*="via-neutral-950"]
+) * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+:root :is([class*="pill"], [class*="rounded-full"]):is([class*="bg-gradient"], [class*="bg-gradient-to-"]):is(
+  [class*="from-black"], [class*="to-black"], [class*="via-black"],
+  [class*="from-gray-800"], [class*="to-gray-800"], [class*="via-gray-800"],
+  [class*="from-gray-900"], [class*="to-gray-900"], [class*="via-gray-900"],
+  [class*="from-gray-950"], [class*="to-gray-950"], [class*="via-gray-950"],
+  [class*="from-slate-800"], [class*="to-slate-800"], [class*="via-slate-800"],
+  [class*="from-slate-900"], [class*="to-slate-900"], [class*="via-slate-900"],
+  [class*="from-slate-950"], [class*="to-slate-950"], [class*="via-slate-950"],
+  [class*="from-neutral-800"], [class*="to-neutral-800"], [class*="via-neutral-800"],
+  [class*="from-neutral-900"], [class*="to-neutral-900"], [class*="via-neutral-900"],
+  [class*="from-neutral-950"], [class*="to-neutral-950"], [class*="via-neutral-950"]
+) svg {
+  color: #ffffff !important;
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+/* 12) DARK MODE TEXT AUDIT (web): prevent dark text on dark surfaces.
+   Goal: eliminate unreadable text in `.dark` without changing intended "colored pill" rules. */
+.dark :where(
+  [class~="text-gray-900"],
+  [class~="text-gray-800"],
+  [class~="text-gray-700"],
+  [class~="text-gray-950"],
+  [class~="text-slate-900"],
+  [class~="text-slate-800"],
+  [class~="text-slate-700"],
+  [class~="text-neutral-900"],
+  [class~="text-neutral-800"],
+  [class~="text-neutral-700"],
+  [class~="text-zinc-900"],
+  [class~="text-zinc-800"],
+  [class~="text-zinc-700"],
+  [class~="text-stone-900"],
+  [class~="text-stone-800"],
+  [class~="text-stone-700"],
+  [class~="text-black"]
+):not([class*="bg-"]) {
+  color: rgb(243 244 246) !important; /* gray-100 */
+  -webkit-text-fill-color: rgb(243 244 246) !important;
+}
+.dark :where(
+  [class~="text-gray-600"],
+  [class~="text-gray-500"],
+  [class~="text-gray-400"]
+):not([class*="bg-"]) {
+  color: rgb(209 213 219) !important; /* gray-300 */
+  -webkit-text-fill-color: rgb(209 213 219) !important;
+}
+
+/* Fix explicitly-bad Tailwind "dark:" text classes that set DARK text in dark mode. */
+.dark :where(
+  [class*="dark:text-black"],
+  [class*="dark:text-gray-900"],
+  [class*="dark:text-gray-800"],
+  [class*="dark:text-gray-700"],
+  [class*="dark:text-gray-950"],
+  [class*="dark:text-slate-900"],
+  [class*="dark:text-slate-800"],
+  [class*="dark:text-slate-700"],
+  [class*="dark:text-neutral-900"],
+  [class*="dark:text-neutral-800"],
+  [class*="dark:text-neutral-700"],
+  [class*="dark:text-zinc-900"],
+  [class*="dark:text-zinc-800"],
+  [class*="dark:text-zinc-700"],
+  [class*="dark:text-stone-900"],
+  [class*="dark:text-stone-800"],
+  [class*="dark:text-stone-700"]
+) {
+  color: rgb(243 244 246) !important; /* gray-100 */
+  -webkit-text-fill-color: rgb(243 244 246) !important;
+}
+
+/* CTA/button contrast safety in dark mode:
+   - If a button is rendered on a light surface, force dark text.
+   - If a button is rendered on a very dark surface, force white text. */
+.dark :is(button, a, [role="button"]):where([class*="bg-white"], [class*="bg-gray-50"], [class*="bg-slate-50"], [class*="bg-neutral-50"]) {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+.dark :is(button, a, [role="button"]):where([class*="bg-white"], [class*="bg-gray-50"], [class*="bg-slate-50"], [class*="bg-neutral-50"]) * {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+.dark :is(button, a, [role="button"]):where([class*="bg-gray-900"], [class*="bg-gray-950"], [class*="bg-slate-900"], [class*="bg-slate-950"], [class*="bg-black"]) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.dark :is(button, a, [role="button"]):where([class*="bg-gray-900"], [class*="bg-gray-950"], [class*="bg-slate-900"], [class*="bg-slate-950"], [class*="bg-black"]) * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Saturated CTA/button backgrounds should stay readable in dark mode.
+   Scope: buttons only (avoid pills/tags). */
+.dark :is(button, a, [role="button"])
+:where(
+  [class*="bg-blue-"],
+  [class*="bg-indigo-"],
+  [class*="bg-violet-"],
+  [class*="bg-purple-"],
+  [class*="bg-fuchsia-"],
+  [class*="bg-pink-"],
+  [class*="bg-rose-"],
+  [class*="bg-red-"],
+  [class*="bg-orange-"],
+  [class*="bg-amber-"],
+  [class*="bg-yellow-"],
+  [class*="bg-lime-"],
+  [class*="bg-green-"],
+  [class*="bg-emerald-"],
+  [class*="bg-teal-"],
+  [class*="bg-cyan-"],
+  [class*="bg-sky-"]
+):not(:where([class*="pill"], [class*="rounded-full"])) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.dark :is(button, a, [role="button"])
+:where(
+  [class*="bg-blue-"],
+  [class*="bg-indigo-"],
+  [class*="bg-violet-"],
+  [class*="bg-purple-"],
+  [class*="bg-fuchsia-"],
+  [class*="bg-pink-"],
+  [class*="bg-rose-"],
+  [class*="bg-red-"],
+  [class*="bg-orange-"],
+  [class*="bg-amber-"],
+  [class*="bg-yellow-"],
+  [class*="bg-lime-"],
+  [class*="bg-green-"],
+  [class*="bg-emerald-"],
+  [class*="bg-teal-"],
+  [class*="bg-cyan-"],
+  [class*="bg-sky-"]
+):not(:where([class*="pill"], [class*="rounded-full"])) * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Gradient CTAs in dark mode:
+   Default to white text for contrast, but allow "light" gradients to stay black. */
+.dark :is(button, a, [role="button"]):where([class*="bg-gradient"], [class*="bg-gradient-to-"]) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.dark :is(button, a, [role="button"]):where([class*="bg-gradient"], [class*="bg-gradient-to-"]) * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.dark :is(button, a, [role="button"]):where([class*="bg-gradient"], [class*="bg-gradient-to-"]) svg {
+  color: #ffffff !important;
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+/* If the gradient is clearly light, force black text instead */
+.dark :is(button, a, [role="button"]):where([class*="bg-gradient"], [class*="bg-gradient-to-"]):is(
+  [class*="from-white"], [class*="to-white"], [class*="via-white"],
+  [class*="from-gray-50"], [class*="to-gray-50"], [class*="via-gray-50"],
+  [class*="from-slate-50"], [class*="to-slate-50"], [class*="via-slate-50"],
+  [class*="from-neutral-50"], [class*="to-neutral-50"], [class*="via-neutral-50"]
+) {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+.dark :is(button, a, [role="button"]):where([class*="bg-gradient"], [class*="bg-gradient-to-"]):is(
+  [class*="from-white"], [class*="to-white"], [class*="via-white"],
+  [class*="from-gray-50"], [class*="to-gray-50"], [class*="via-gray-50"],
+  [class*="from-slate-50"], [class*="to-slate-50"], [class*="via-slate-50"],
+  [class*="from-neutral-50"], [class*="to-neutral-50"], [class*="via-neutral-50"]
+) * {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+.dark :is(button, a, [role="button"]):where([class*="bg-gradient"], [class*="bg-gradient-to-"]):is(
+  [class*="from-white"], [class*="to-white"], [class*="via-white"],
+  [class*="from-gray-50"], [class*="to-gray-50"], [class*="via-gray-50"],
+  [class*="from-slate-50"], [class*="to-slate-50"], [class*="via-slate-50"],
+  [class*="from-neutral-50"], [class*="to-neutral-50"], [class*="via-neutral-50"]
+) svg {
+  color: #000000 !important;
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+/* Re-assert HERO requirement: hero gradient is fixed → always black text in dark mode. */
+.dark .profile-hero-fixed,
+.dark .profile-hero-fixed * {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+.dark .profile-hero-fixed svg {
+  color: #000000 !important;
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
 /* 7) LIGHT MODE (universal): soften any remaining saturated "feature cards"
    that still use bg-*-500/600/700 directly (without touching buttons/badges). */
 :root:not(.dark) [class*="rounded-xl"][class*="p-6"][class*="shadow"]:is([class*="bg-blue-5"], [class*="bg-blue-6"], [class*="bg-blue-7"], [class*="bg-indigo-5"], [class*="bg-indigo-6"], [class*="bg-indigo-7"], [class*="bg-sky-5"], [class*="bg-sky-6"], [class*="bg-sky-7"]),

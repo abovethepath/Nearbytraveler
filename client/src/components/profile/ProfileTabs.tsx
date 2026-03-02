@@ -42,7 +42,15 @@ export function ProfileTabs(props: ProfilePageProps) {
   /* Desktop user profiles: tabs are integrated into hero (ProfileTabBar); hide duplicate card. iOS + business: show tabs card. */
   const showTabsCard = isNativeIOSApp() || user?.userType === 'business';
   const isDesktop = useIsDesktop();
+  const isMobileWeb =
+    !isNativeIOSApp() &&
+    typeof window !== "undefined" &&
+    !!window.matchMedia &&
+    window.matchMedia("(max-width: 767.98px)").matches;
   const showWhatYouHaveInCommon = !isOwnProfile && !!currentUser?.id && !!user?.id && user?.userType !== 'business';
+  // Mobile web: About should always be visible directly below the hero (requested ordering),
+  // even if tab panels are lazily mounted.
+  const forceMobileWebAboutPanel = isMobileWeb && !isOwnProfile;
   /* Back-compat: avoid rendering the same card twice; only show this fallback when About panel isn't mounted yet. */
   const showWhatYouHaveInCommonInTabs = showWhatYouHaveInCommon && !(loadedTabs as any)?.has?.('about');
 
@@ -68,7 +76,7 @@ export function ProfileTabs(props: ProfilePageProps) {
     const visibleInterests = sharedInterests.slice(0, 10);
 
     return (
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden">
+      <div className="what-you-have-in-common-inline bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden">
         <div className="p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="font-semibold text-gray-900 dark:text-gray-100">What You Have in Common</div>
@@ -359,10 +367,17 @@ export function ProfileTabs(props: ProfilePageProps) {
       <div className={`w-full max-w-full mx-auto ${isNativeIOSApp() && activeTab === 'menu' ? 'pb-2' : 'pb-20 sm:pb-4'} px-2 sm:px-4 lg:px-6 mt-2 overflow-x-hidden box-border`}>
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {/* Main Content Column */}
-          <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
+          <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6 profile-sections-column">
+
+            {/* MOBILE WEB (other-user): show What You Have in Common directly below hero (before About) */}
+            {isMobileWeb && showWhatYouHaveInCommon && (
+              <div>
+                <WhatYouHaveInCommonInline />
+              </div>
+            )}
 
             {/* About Section - Always visible (tabs switch main content below) */}
-            {loadedTabs.has('about') && (
+            {(forceMobileWebAboutPanel || loadedTabs.has('about')) && (
             <div
               role="tabpanel"
               id="panel-about"
@@ -422,7 +437,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 </div>
 
                 {/* What You Have in Common - shown below bio on other-user profiles */}
-                {showWhatYouHaveInCommon && (
+                {showWhatYouHaveInCommon && !isMobileWeb && (
                   <div>
                     <WhatYouHaveInCommonInline />
                   </div>
@@ -801,7 +816,7 @@ export function ProfileTabs(props: ProfilePageProps) {
             )}
 
             {/* What You Have in Common Section - On desktop other-user it lives in hero beside action buttons; show here only on mobile/non-desktop */}
-            {showWhatYouHaveInCommonInTabs && !isOwnProfile && currentUser && user?.id && user?.userType !== 'business' && (
+            {showWhatYouHaveInCommonInTabs && !isMobileWeb && !isOwnProfile && currentUser && user?.id && user?.userType !== 'business' && (
               <Card>
                 <CardContent className="p-0">
                   <WhatYouHaveInCommonInline />
@@ -811,7 +826,7 @@ export function ProfileTabs(props: ProfilePageProps) {
 
             {/* Interests, Activities & Events Section */}
             {user?.userType !== 'business' && (
-            <Card id="interests-activities-section">
+            <Card id="interests-activities-section" className="profile-interests-activities-section">
               <CardHeader className="pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
@@ -2755,122 +2770,170 @@ export function ProfileTabs(props: ProfilePageProps) {
               <CardContent>
                 {sortedUserConnections.length > 0 ? (
                   <div className="space-y-3">
-                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    {sortedUserConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
-                      <div
-                        key={connection.id}
-                        className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 flex flex-col items-center text-center gap-2"
-                      >
-                        <SimpleAvatar
-                          user={connection.connectedUser}
-                          size="md"
-                          className="w-14 h-14 rounded-full border-2 object-cover cursor-pointer flex-shrink-0"
-                          onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
-                        />
-                        <div className="w-full min-w-0">
-                          <p className="font-medium text-sm text-gray-900 dark:text-white break-words">
-                            {connection.connectedUser?.username}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 break-words">
-                            {connection.connectedUser?.hometownCity && connection.connectedUser?.hometownCountry
-                              ? `${connection.connectedUser?.hometownCity}, ${connection.connectedUser?.hometownCountry.replace("United States", "USA")}`
-                              : "New member"}
-                          </p>
-                          
-                          {isOwnProfile && (
-                            <div className="mt-2">
-                              {editingConnectionNote === connection.id ? (
-                                <div className="space-y-2">
-                                  <Input
-                                    value={connectionNoteText}
-                                    onChange={(e) => setConnectionNoteText(e.target.value)}
-                                    placeholder="How did we meet? e.g., met at bonfire BBQ"
-                                    className="text-xs h-8 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700"
-                                    onKeyPress={(e) => {
-                                      if (e.key === 'Enter') {
-                                        apiRequest('PATCH', `/api/connections/${connection.id}/note`, {
-                                          connectionNote: connectionNoteText
-                                        }).then(() => {
-                                          queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
-                                          setEditingConnectionNote(null);
-                                          setConnectionNoteText('');
-                                        }).catch(console.error);
-                                      }
-                                    }}
-                                    data-testid={`input-connection-note-${connection.id}`}
-                                  />
-                                  <div className="flex gap-1">
-                                    <Button
-                                      size="sm"
-                                      onClick={() => {
-                                        apiRequest('PATCH', `/api/connections/${connection.id}/note`, {
-                                          connectionNote: connectionNoteText
-                                        }).then(() => {
-                                          queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
-                                          setEditingConnectionNote(null);
-                                          setConnectionNoteText('');
-                                        }).catch(console.error);
-                                      }}
-                                      className="h-6 px-2 text-xs bg-orange-500 hover:bg-orange-600 text-white border-0"
-                                      data-testid={`button-save-note-${connection.id}`}
-                                    >
-                                      Save
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={() => {
-                                        setEditingConnectionNote(null);
-                                        setConnectionNoteText('');
-                                      }}
-                                      className="h-6 px-2 text-xs"
-                                      data-testid={`button-cancel-note-${connection.id}`}
-                                    >
-                                      Cancel
-                                    </Button>
-                                  </div>
-                                </div>
-                              ) : (
-                                <div 
-                                  className="cursor-pointer text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700/50 rounded px-2 py-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors border border-dashed border-gray-300 dark:border-gray-600"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setEditingConnectionNote(connection.id);
-                                    setConnectionNoteText(connection.connectionNote || '');
-                                  }}
-                                  title="Click to add/edit how you met"
-                                  data-testid={`button-edit-note-${connection.id}`}
-                                >
-                                  {connection.connectionNote ? (
-                                    <span className="text-blue-600 dark:text-blue-400 font-medium">ðŸ“ {connection.connectionNote}</span>
-                                  ) : (
-                                    <span className="text-gray-500 dark:text-gray-400">+ How did we meet?</span>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                          
-                          {isOwnProfile && connection.connectedUser?.id && (
-                            <StealthToggleInline
-                              targetUserId={connection.connectedUser.id}
-                              targetUsername={connection.connectedUser.username}
-                              currentUser={currentUser}
-                            />
-                          )}
-                          
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="mt-2 h-7 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
+                  {isMobileWeb ? (
+                    <div className="grid grid-cols-2 gap-3">
+                      {sortedUserConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
+                        <div
+                          key={connection.id}
+                          className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 flex flex-col items-center text-center gap-2"
+                        >
+                          <SimpleAvatar
+                            user={connection.connectedUser}
+                            size="md"
+                            className="w-14 h-14 rounded-full border-2 object-cover cursor-pointer flex-shrink-0"
                             onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
-                          >
-                            View
-                          </Button>
+                          />
+
+                          <div className="w-full min-w-0">
+                            <p className="font-medium text-sm text-gray-900 dark:text-white break-words">
+                              {connection.connectedUser?.username}
+                            </p>
+
+                            {isOwnProfile && (
+                              <div className="mt-2">
+                                {editingConnectionNote === connection.id ? (
+                                  <div className="space-y-2">
+                                    <Input
+                                      value={connectionNoteText}
+                                      onChange={(e) => setConnectionNoteText(e.target.value)}
+                                      placeholder="How did we meet?"
+                                      className="text-xs h-8 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700"
+                                      onKeyPress={(e) => {
+                                        if (e.key === 'Enter') {
+                                          apiRequest('PATCH', `/api/connections/${connection.id}/note`, {
+                                            connectionNote: connectionNoteText
+                                          }).then(() => {
+                                            queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
+                                            setEditingConnectionNote(null);
+                                            setConnectionNoteText('');
+                                          }).catch(console.error);
+                                        }
+                                      }}
+                                      data-testid={`input-connection-note-${connection.id}`}
+                                    />
+                                    <div className="flex gap-1 justify-center">
+                                      <Button
+                                        size="sm"
+                                        onClick={() => {
+                                          apiRequest('PATCH', `/api/connections/${connection.id}/note`, {
+                                            connectionNote: connectionNoteText
+                                          }).then(() => {
+                                            queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
+                                            setEditingConnectionNote(null);
+                                            setConnectionNoteText('');
+                                          }).catch(console.error);
+                                        }}
+                                        className="h-6 px-2 text-xs bg-orange-500 hover:bg-orange-600 text-white border-0"
+                                        data-testid={`button-save-note-${connection.id}`}
+                                      >
+                                        Save
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => {
+                                          setEditingConnectionNote(null);
+                                          setConnectionNoteText('');
+                                        }}
+                                        className="h-6 px-2 text-xs"
+                                        data-testid={`button-cancel-note-${connection.id}`}
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="cursor-pointer text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700/50 rounded px-2 py-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors border border-dashed border-gray-300 dark:border-gray-600"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditingConnectionNote(connection.id);
+                                      setConnectionNoteText(connection.connectionNote || '');
+                                    }}
+                                    title="Click to add/edit how you met"
+                                    data-testid={`button-edit-note-${connection.id}`}
+                                  >
+                                    {connection.connectionNote ? (
+                                      <span className="text-black font-medium">How we met: {connection.connectionNote}</span>
+                                    ) : (
+                                      <span className="text-gray-500 dark:text-gray-400">How we met: —</span>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {isOwnProfile && connection.connectedUser?.id && (
+                              <div className="mt-2 flex justify-center">
+                                <StealthToggleInline
+                                  targetUserId={connection.connectedUser.id}
+                                  targetUsername={connection.connectedUser.username}
+                                  currentUser={currentUser}
+                                />
+                              </div>
+                            )}
+
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="mt-2 h-7 px-3 text-xs bg-transparent text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                              onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
+                            >
+                              View
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {sortedUserConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
+                        <div
+                          key={connection.id}
+                          className="rounded-xl border p-4 hover:shadow-sm bg-white dark:bg-gray-800 flex items-start gap-4"
+                        >
+                          <SimpleAvatar
+                            user={connection.connectedUser}
+                            size="md"
+                            className="w-12 h-12 rounded-full border-2 object-cover cursor-pointer flex-shrink-0"
+                            onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="font-semibold text-sm text-gray-900 dark:text-white truncate">
+                                  {connection.connectedUser?.username}
+                                </p>
+                                {isOwnProfile && (
+                                  <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
+                                    <span className="font-medium">How we met:</span>{" "}
+                                    {connection.connectionNote ? connection.connectionNote : "—"}
+                                  </p>
+                                )}
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 px-3 text-xs bg-transparent text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 shrink-0"
+                                onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
+                              >
+                                View
+                              </Button>
+                            </div>
+                            {isOwnProfile && connection.connectedUser?.id && (
+                              <div className="mt-2">
+                                <StealthToggleInline
+                                  targetUserId={connection.connectedUser.id}
+                                  targetUsername={connection.connectedUser.username}
+                                  currentUser={currentUser}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                     
                     {/* Load More / Load Less buttons */}
                     {sortedUserConnections.length > 3 && (
@@ -3268,6 +3331,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                     userId={user.id} 
                     isOwnProfile={isOwnProfile}
                     currentUserId={currentUser?.id || 0}
+                    variant={isMobileWeb ? "compact" : "default"}
                   />
                 </div>
               )}

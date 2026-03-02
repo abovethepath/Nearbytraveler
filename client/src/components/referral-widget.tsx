@@ -42,7 +42,7 @@ export default function ReferralWidget() {
   // Pre-populate message when opening invite form
   const openInviteForm = () => {
     if (!inviteForm.message) {
-      const defaultMessage = `Hi! I wanted to share Nearby Traveler with you - it's a travel networking platform that connects businesses with travelers and locals. Businesses can create special offers, promote events, target customers based on travel interests, and build relationships with their ideal audience. The platform helps you reach both travelers visiting your area and locals exploring their own city. If you go to their website, sign up as a business, please enter my username when asked. Check it out at thenearbytraveler.com - I think it would be perfect for growing your business! My username is "${username}".`;
+      const defaultMessage = `Hi! I wanted to share Nearby Traveler with you - it's a travel networking platform that connects businesses with travelers and locals. Businesses can create special offers, promote events, target customers based on travel interests, and build relationships with their ideal audience. The platform helps you reach both travelers visiting your area and locals exploring their own city. If you go to their website, sign up as a business, please enter my username when asked. Check it out at nearbytraveler.org - I think it would be perfect for growing your business! My username is "${username}".`;
       setInviteForm(prev => ({ ...prev, message: defaultMessage }));
     }
     setShowInviteForm(true);
@@ -72,7 +72,7 @@ export default function ReferralWidget() {
   const handleSendInvite = () => {
     if (!inviteForm.email) return;
     
-    const defaultMessage = `Hi! I wanted to share Nearby Traveler with you - it's a travel networking platform that connects businesses with travelers and locals. Businesses can create special offers, promote events, target customers based on travel interests, and build relationships with their ideal audience. The platform helps you reach both travelers visiting your area and locals exploring their own city. If you go to their website, sign up as a business, please enter my username when asked. Check it out at thenearbytraveler.com - I think it would be perfect for growing your business! My username is "${username}".`;
+    const defaultMessage = `Hi! I wanted to share Nearby Traveler with you - it's a travel networking platform that connects businesses with travelers and locals. Businesses can create special offers, promote events, target customers based on travel interests, and build relationships with their ideal audience. The platform helps you reach both travelers visiting your area and locals exploring their own city. If you go to their website, sign up as a business, please enter my username when asked. Check it out at nearbytraveler.org - I think it would be perfect for growing your business! My username is "${username}".`;
     
     const inviteData = {
       email: inviteForm.email,
@@ -116,7 +116,7 @@ export default function ReferralWidget() {
     }
   };
 
-  const shareUrl = `https://www.thenearbytraveler.com/signup-business`;
+  const shareUrl = `https://nearbytraveler.org/signup-business`;
 
   const getStatusBadge = (status: string) => {
     const statusColors = {
@@ -257,7 +257,7 @@ export default function ReferralWidget() {
                   id="message"
                   value={inviteForm.message}
                   onChange={(e) => setInviteForm(prev => ({...prev, message: e.target.value}))}
-                  placeholder={`Hi! I wanted to share Nearby Traveler with you - it's a travel networking platform that connects businesses with travelers and locals. Businesses can create special offers, promote events, target customers based on travel interests, and build relationships with their ideal audience. The platform helps you reach both travelers visiting your area and locals exploring their own city. If you go to their website, sign up as a business, please enter my username when asked. Check it out at thenearbytraveler.com - I think it would be perfect for growing your business! My username is "${username}".`}
+                  placeholder={`Hi! I wanted to share Nearby Traveler with you - it's a travel networking platform that connects businesses with travelers and locals. Businesses can create special offers, promote events, target customers based on travel interests, and build relationships with their ideal audience. The platform helps you reach both travelers visiting your area and locals exploring their own city. If you go to their website, sign up as a business, please enter my username when asked. Check it out at nearbytraveler.org - I think it would be perfect for growing your business! My username is "${username}".`}
                   rows={6}
                 />
               </div>

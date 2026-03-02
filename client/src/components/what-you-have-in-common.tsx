@@ -597,7 +597,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
   }
 
   return (
-    <Card className="border-2 border-orange-300 bg-gradient-to-br from-orange-50 via-blue-50 to-orange-100 dark:border-orange-600 dark:from-orange-900/20 dark:via-blue-900/20 dark:to-orange-900/30 shadow-lg hover:shadow-xl transition-all duration-300 ring-2 ring-orange-200 dark:ring-orange-700">
+    <Card className="what-you-have-in-common-card border-2 border-orange-300 bg-gradient-to-br from-orange-50 via-blue-50 to-orange-100 dark:border-orange-600 dark:from-orange-900/20 dark:via-blue-900/20 dark:to-orange-900/30 shadow-lg hover:shadow-xl transition-all duration-300 ring-2 ring-orange-200 dark:ring-orange-700">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-lg font-bold">
@@ -605,7 +605,10 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             What You Have in Common
           </CardTitle>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="inline-flex items-center justify-center rounded-full bg-blue-600 dark:bg-blue-500 text-white shadow-md border border-blue-700 dark:border-blue-600 text-sm font-bold px-4 py-2.5 min-h-[2.5rem]">
+            <span
+              className="inline-flex items-center justify-center rounded-full bg-blue-600 dark:bg-blue-500 text-white shadow-md border border-blue-700 dark:border-blue-600 text-sm font-bold px-4 py-2.5 min-h-[2.5rem]"
+              data-testid="common-count-badge"
+            >
               {(() => {
                 const visibleCount = (compatibilityData?.sharedInterests?.length || 0) + (compatibilityData?.sharedActivities?.length || 0) + (compatibilityData?.sharedEvents?.length || 0);
                 const count = compatibilityData ? visibleCount : commonalities.totalCount;
@@ -632,7 +635,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                 {(showAllSharedInterests ? commonalities.sharedInterests : commonalities.sharedInterests.slice(0, 5)).map((interest, index) => (
                   <div
                     key={`shared-interest-${interest}-${index}`}
-                    className="inline-flex items-center justify-center h-8 sm:h-9 lg:h-6 rounded-full px-3 sm:px-4 lg:px-2.5 text-xs sm:text-sm lg:text-xs font-medium leading-none whitespace-nowrap bg-transparent text-blue-700 border border-blue-400 dark:bg-blue-900/50 dark:text-gray-100 dark:border-blue-700"
+                    className="common-shared-interest-pill inline-flex items-center justify-center h-8 sm:h-9 lg:h-6 rounded-full px-3 sm:px-4 lg:px-2.5 text-xs sm:text-sm lg:text-xs font-medium leading-none whitespace-nowrap bg-transparent text-blue-700 border border-blue-400 dark:bg-blue-900/50 dark:text-gray-100 dark:border-blue-700"
                   >
                     {interest}
                   </div>

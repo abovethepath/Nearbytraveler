@@ -258,7 +258,7 @@ export class EmailService {
         </div>
 
         <div style="text-align: center; margin: 30px 0;">
-          <a href="https://www.thenearbytraveler.com/discover" 
+          <a href="https://nearbytraveler.org/discover" 
              style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
             Discover & Connect
           </a>
@@ -288,7 +288,7 @@ ${data.newUsers.map(user =>
   `• @${user.username} (${user.userType}) - ${user.interests.slice(0, 3).join(', ')} - Joined ${formatDate(user.joinDate)}`
 ).join('\n')}
 
-Discover & Connect: https://www.thenearbytraveler.com/discover
+Discover & Connect: https://nearbytraveler.org/discover
 
 Want to reach out? Send them a message or plan a meetup!
 
@@ -303,7 +303,7 @@ You're receiving this because you're part of the ${data.city} community on Nearb
     referrerUsername: string;
     message?: string;
   }): Promise<boolean> {
-    const defaultMessage = `Hi! I'd like to invite you to join Nearby Traveler, a platform that helps businesses connect with travelers. When you sign up, please mention my username: ${data.referrerUsername}. You can register at: https://www.thenearbytraveler.com/signup-business`;
+    const defaultMessage = `Hi! I'd like to invite you to join Nearby Traveler, a platform that helps businesses connect with travelers. When you sign up, please mention my username: ${data.referrerUsername}. You can register at: https://nearbytraveler.org/signup-business`;
     
     const finalMessage = data.message || defaultMessage;
     
@@ -317,7 +317,7 @@ You're receiving this because you're part of the ${data.city} community on Nearb
         </div>
         <p>Nearby Traveler connects businesses with travelers and locals to help grow your customer base.</p>
         <div style="text-align: center; margin: 30px 0;">
-          <a href="https://www.thenearbytraveler.com/signup-business" 
+          <a href="https://nearbytraveler.org/signup-business" 
              style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
             Join Nearby Traveler Business Network
           </a>
@@ -326,7 +326,7 @@ You're receiving this because you're part of the ${data.city} community on Nearb
       </div>
     `;
     
-    const text = `Business Invitation to Nearby Traveler\n\n${data.referrerName} (${data.referrerUsername}) has invited you to join Nearby Traveler's business network.\n\n${finalMessage}\n\nJoin at: https://www.thenearbytraveler.com/signup-business\n\nRemember to mention ${data.referrerUsername} when you sign up!`;
+    const text = `Business Invitation to Nearby Traveler\n\n${data.referrerName} (${data.referrerUsername}) has invited you to join Nearby Traveler's business network.\n\n${finalMessage}\n\nJoin at: https://nearbytraveler.org/signup-business\n\nRemember to mention ${data.referrerUsername} when you sign up!`;
     
     return this.sendEmail(
       data.to,

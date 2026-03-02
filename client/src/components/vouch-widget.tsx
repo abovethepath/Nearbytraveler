@@ -130,16 +130,15 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId, variant = 'de
   if (isOwnProfile && (vouches.length === 0 && vouchesGiven.length === 0)) {
     if (variant === 'compact') {
       return (
-        <Card className={`border-2 border-dashed border-gray-200 dark:border-gray-700 ${className}`}>
-          <CardHeader className="text-center p-3">
-            <div className="mx-auto w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-1">
-              <Shield className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+        <Card className={`border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-900/20 ${className}`}>
+          <CardContent className="p-3">
+            <div className="text-xs text-gray-900 dark:text-white font-semibold">
+              Vouch Credibility System
             </div>
-            <CardTitle className="text-sm text-gray-900 dark:text-white">VOUCH System</CardTitle>
-            <p className="text-xs text-gray-600 dark:text-gray-300">
-              Get vouched for by members
-            </p>
-          </CardHeader>
+            <div className="mt-1 text-[11px] text-gray-600 dark:text-gray-300">
+              Get vouched by trusted members to unlock vouching for others.
+            </div>
+          </CardContent>
         </Card>
       );
     }
@@ -244,20 +243,14 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId, variant = 'de
   // For own profile, show full widget
   if (variant === 'compact') {
     return (
-      <Card className={`bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-700 ${className}`}>
-        <CardHeader className="p-3">
-          <CardTitle className="flex items-center gap-2 text-blue-900 dark:text-blue-100 text-sm">
-            <Shield className="h-4 w-4" />
-            VOUCH System
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-3 pt-0">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-900 dark:text-blue-100 mb-1">
-              {vouches.length}
+      <Card className={`bg-white/70 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-700 ${className}`}>
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between">
+            <div className="text-xs font-semibold text-gray-900 dark:text-white">
+              Vouches
             </div>
-            <div className="text-xs text-gray-700 dark:text-gray-200">
-              Total Vouches
+            <div className="text-xs font-semibold text-gray-900 dark:text-white">
+              {vouches.length}
             </div>
           </div>
         </CardContent>

@@ -46,6 +46,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
   const isDesktop = useIsDesktop();
   const isDesktopOtherUser = !isNativeIOSApp() && isDesktop && !isOwnProfile;
+  const isMobileWeb =
+    !isNativeIOSApp() &&
+    typeof window !== "undefined" &&
+    !!window.matchMedia &&
+    window.matchMedia("(max-width: 767.98px)").matches;
 
   const hometown = formatLocationCompact(user?.hometownCity, user?.hometownState, user?.hometownCountry);
   const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
@@ -100,14 +105,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       }}
       className={
         inline
-          ? "p-1 rounded-full bg-white/90 hover:bg-white transition-colors inline-flex items-center justify-center shrink-0 ring-1 ring-gray-300/60 shadow-sm"
-          : "absolute top-4 right-4 z-20 p-1.5 rounded-full bg-white/80 hover:bg-white transition-colors"
+          ? "p-1 rounded-full bg-gray-900/90 hover:bg-gray-900 transition-colors inline-flex items-center justify-center shrink-0 ring-1 ring-black/30 shadow-sm"
+          : "absolute top-4 right-4 z-20 p-1.5 rounded-full bg-gray-900/90 hover:bg-gray-900 transition-colors ring-1 ring-black/30 shadow-sm"
       }
       style={{ touchAction: 'manipulation' }}
       title="Share profile"
       data-testid="button-share-profile"
     >
-      <Share2 className="w-3.5 h-3.5 text-black/70" />
+      <Share2 className="w-3.5 h-3.5 text-white" />
     </button>
   );
 
@@ -123,12 +128,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       >
         {/* Own profile: share lives in ⋮ menu (not beside username) */}
         {isOwnProfile && (
-          <div className="absolute top-3 right-3 z-30">
+          <div className={isMobileWeb ? "absolute right-3 bottom-16 z-30" : "absolute top-3 right-3 z-30"}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center h-9 w-9 rounded-md bg-white hover:bg-white ring-1 ring-gray-300/60 shadow-sm transition-colors"
+                  className="inline-flex items-center justify-center h-9 w-9 rounded-md bg-transparent hover:bg-transparent border-0 ring-0 shadow-none transition-colors"
                   title="More"
                   aria-label="More"
                   data-testid="button-profile-more-menu"
@@ -161,13 +166,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     <Palette className="w-4 h-4" />
                     <span>Change Hero Color Palette</span>
                   </div>
-                  <div className="mt-2 grid grid-cols-6 gap-2">
+                  <div className="mt-2 grid grid-cols-4 gap-2">
                     {(gradientOptions || []).map((g: string, idx: number) => (
                       <button
                         key={`palette-${idx}`}
                         type="button"
-                        className={`h-7 w-7 rounded-md bg-gradient-to-r ${g} ring-1 ring-black/10 hover:ring-black/30 transition-all ${
-                          idx === selectedGradient ? "outline outline-2 outline-orange-500 outline-offset-1" : ""
+                        className={`h-8 w-8 rounded-md bg-gradient-to-r ${g} ring-1 ring-black/10 hover:ring-black/30 transition-all ${
+                          idx === selectedGradient ? "ring-2 ring-orange-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900" : ""
                         }`}
                         style={{ boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.08)" }}
                         onClick={(e) => {
@@ -256,8 +261,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <Camera className="h-4 w-4 md:h-5 md:w-5 pointer-events-none" />
                   <input id="avatar-upload-input" type="file" accept="image/*" onChange={(e) => { handleAvatarUpload?.(e); }} className="sr-only" disabled={uploadingPhoto} aria-label="Change avatar" />
                 </label>
+
+                {/* Mobile web: keep "New to Town" compact & anchored to avatar (no centered standalone row) */}
+                {!isNativeIOSApp() && isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                  <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-100 border border-green-300 text-black shadow-sm z-20">
+                    New to Town
+                  </span>
+                )}
               </div>
-              {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+              {/* Non-mobile web: keep badge below avatar */}
+              {!isNativeIOSApp() && !isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 text-black mt-2">
                   New to Town
                 </span>
@@ -291,7 +304,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   type="button"
                   size="sm"
                   variant="outline"
-                  className="h-9 px-3 text-sm font-semibold !bg-white hover:!bg-white !text-black !border !border-gray-200 shadow-sm ring-1 ring-black/10"
+                  className={
+                    isMobileWeb
+                      ? "h-9 px-3 text-sm font-semibold !bg-orange-500 hover:!bg-orange-600 !text-white !border !border-white/35 shadow-md ring-0"
+                      : "h-9 px-3 text-sm font-semibold !bg-white hover:!bg-white !text-black !border !border-gray-200 shadow-sm ring-1 ring-black/10"
+                  }
                   onClick={() => {
                     const widget = document.querySelector('[data-testid="quick-meet-widget"]');
                     if (widget) widget.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -300,7 +317,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   }}
                   data-testid="button-lets-meet-now-hero"
                 >
-                  <Calendar className="w-4 h-4 mr-2 !text-black" />
+                  <Calendar className={isMobileWeb ? "w-4 h-4 mr-2 text-white" : "w-4 h-4 mr-2 !text-black"} />
                   Let's Meet Now
                 </Button>
               </div>
@@ -687,9 +704,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     </div>
                   </>
                 )}
+
+                {/* Mobile web: anchor "New to Town" to avatar (no centered standalone row) */}
+                {!isNativeIOSApp() && isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                  <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-100 border border-green-300 text-black shadow-sm z-20">
+                    New to Town
+                  </span>
+                )}
               </div>
               {/* New to Town badge - directly below avatar (desktop other-user) */}
-              {!isNativeIOSApp() && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+              {!isNativeIOSApp() && !isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-3">
                   New to Town
                 </span>
@@ -821,7 +845,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               <div className="grid grid-cols-2 gap-2">
                                 <button
                                   type="button"
-                                  className="inline-flex items-center justify-center rounded-lg shadow-md transition-all font-semibold cursor-pointer px-4 py-2 text-sm bg-[#fff0e6] hover:bg-[#ffe6d6] text-orange-700 border border-orange-200 dark:text-white dark:bg-orange-500 dark:hover:bg-orange-600 dark:border-0 lg:bg-[color:var(--mutedOrange)] lg:hover:bg-[color:var(--mutedOrangeHover)]"
+                                  className="inline-flex items-center justify-center rounded-lg shadow-md transition-all font-semibold cursor-pointer px-4 py-2 text-sm bg-white hover:bg-gray-50 text-black border border-gray-300"
                                   style={{ ["--mutedOrange" as any]: mutedOrange, ["--mutedOrangeHover" as any]: mutedOrangeHover }}
                                   onClick={(e) => {
                                     e.preventDefault();
@@ -840,7 +864,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   targetUsername={user?.username}
                                   targetName={user?.name}
                                   appearance="ghost"
-                                  className="w-full rounded-lg shadow-md transition-all px-4 py-2 text-sm font-semibold"
+                                  className="w-full rounded-lg shadow-md transition-all px-4 py-2 text-sm font-semibold !bg-blue-600 hover:!bg-blue-700 !text-white !border-0"
                                 />
                               </div>
 
@@ -851,6 +875,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     targetUserId={user?.id || 0}
                                     targetUsername={user?.username}
                                     appearance="ghost"
+                                    className="!bg-green-600 hover:!bg-green-700 !text-white !border-0"
                                   />
                                 )}
                                 {currentUser ? (
@@ -862,7 +887,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                       setShowWriteReferenceModal?.(true);
                                     }}
                                     variant="outline"
-                                    className="bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-800 border border-blue-200 dark:bg-white/15 dark:hover:bg-white/25 dark:text-white dark:border-white/40 shrink-0 px-4 py-2 text-sm"
+                                    className="bg-white hover:bg-gray-50 text-black border border-gray-300 shrink-0 px-4 py-2 text-sm"
                                     data-testid="button-write-reference"
                                   >
                                     Write Reference
@@ -872,7 +897,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     type="button"
                                     onClick={() => setLocation('/auth')}
                                     variant="outline"
-                                    className="bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-800 border border-blue-200 dark:bg-white/15 dark:hover:bg-white/25 dark:text-white dark:border-white/40 shrink-0 px-4 py-2 text-sm"
+                                    className="bg-white hover:bg-gray-50 text-black border border-gray-300 shrink-0 px-4 py-2 text-sm"
                                     data-testid="button-write-reference"
                                   >
                                     Write Reference
@@ -916,7 +941,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             <>
                               <button
                                 type="button"
-                                className={`inline-flex items-center rounded-lg shadow-md transition-all font-medium cursor-pointer ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-4 py-1.5 text-sm'} bg-[#fff0e6] hover:bg-[#ffe6d6] text-orange-700 border border-orange-200 dark:bg-orange-500 dark:hover:bg-orange-600 dark:text-black dark:border-0`}
+                                className={
+                                  isMobileWeb
+                                    ? `inline-flex items-center rounded-lg shadow-md transition-all font-semibold cursor-pointer px-4 py-1.5 text-sm bg-white hover:bg-gray-50 text-black border border-gray-300`
+                                    : `inline-flex items-center rounded-lg shadow-md transition-all font-medium cursor-pointer ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-4 py-1.5 text-sm'} bg-white hover:bg-gray-50 text-black border border-gray-300`
+                                }
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -934,7 +963,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 targetUsername={user?.username}
                                 targetName={user?.name}
                                 appearance="ghost"
-                                className="rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm"
+                                className="rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm !bg-blue-600 hover:!bg-blue-700 !text-white !border-0"
                               />
                               {!isNativeIOSApp() && (
                                 <VouchButton
@@ -942,6 +971,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   targetUserId={user?.id || 0}
                                   targetUsername={user?.username}
                                   appearance="ghost"
+                                  className="!bg-green-600 hover:!bg-green-700 !text-white !border-0"
                                 />
                               )}
                               {currentUser ? (
@@ -952,7 +982,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     e.stopPropagation();
                                     setShowWriteReferenceModal?.(true);
                                   }}
-                                  className="bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-800 border border-blue-200 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 dark:hover:from-blue-700 dark:hover:to-orange-600 dark:text-white dark:border-0 shrink-0 px-4 py-1.5 text-sm"
+                                  className="bg-white hover:bg-gray-50 text-black border border-gray-300 shrink-0 px-4 py-1.5 text-sm"
                                   data-testid="button-write-reference"
                                 >
                                   Write Reference
@@ -961,7 +991,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 <Button
                                   type="button"
                                   onClick={() => setLocation('/auth')}
-                                  className="bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-800 border border-blue-200 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 dark:hover:from-blue-700 dark:hover:to-orange-600 dark:text-white dark:border-0 shrink-0 px-4 py-1.5 text-sm"
+                                  className="bg-white hover:bg-gray-50 text-black border border-gray-300 shrink-0 px-4 py-1.5 text-sm"
                                   data-testid="button-write-reference"
                                 >
                                   Write Reference

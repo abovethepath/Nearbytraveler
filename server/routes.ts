@@ -8817,7 +8817,7 @@ Questions? Just reply to this message. Welcome aboard!
       const baseUrl =
         process.env.REPLIT_DEV_DOMAIN
           ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-          : (process.env.PUBLIC_APP_URL || 'https://nearbytraveler.com');
+          : (process.env.PUBLIC_APP_URL || 'https://nearbytraveler.org');
 
       return res.json({
         inviteToken: token,
