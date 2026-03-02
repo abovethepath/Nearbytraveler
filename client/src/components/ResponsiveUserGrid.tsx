@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
 import { formatHometownForDisplay } from "@/lib/locationDisplay";
+import { truncateBioToSentences } from "@/lib/bioPreview";
 
 interface User {
   id: number;
@@ -125,8 +126,7 @@ export default function ResponsiveUserGrid({
   };
 
   const getBioSnippet = (user: User) => {
-    if (!user.bio) return '';
-    return user.bio.length > 100 ? user.bio.slice(0, 100) + '…' : user.bio;
+    return truncateBioToSentences(user.bio, 3);
   };
 
   const getInterestsBadge = (user: User) => {

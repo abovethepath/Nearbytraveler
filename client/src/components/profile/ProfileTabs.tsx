@@ -859,7 +859,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                               }}
                               className={`h-8 px-3 rounded-full text-sm font-medium transition-all border ${
                                 isSelected
-                                  ? 'bg-white text-gray-900 border-gray-200 ring-1 ring-gray-900/10 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:text-white dark:shadow-md dark:border-0 dark:ring-0'
+                                  ? 'bg-white text-gray-900 border-gray-200 ring-1 ring-gray-900/10 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:text-black dark:shadow-md dark:border-0 dark:ring-0'
                                   : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 shadow-none dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600'
                               }`}
                             >
@@ -889,7 +889,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                               }}
                               className={`h-8 px-3 rounded-full text-sm font-medium transition-all border ${
                                 isSelected
-                                  ? 'bg-white text-gray-900 border-gray-200 ring-1 ring-gray-900/10 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:text-white dark:shadow-md dark:border-0 dark:ring-0'
+                                  ? 'bg-white text-gray-900 border-gray-200 ring-1 ring-gray-900/10 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:text-black dark:shadow-md dark:border-0 dark:ring-0'
                                   : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 shadow-none dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600'
                               }`}
                             >
@@ -961,7 +961,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                   onClick={() => {
                                     setEditFormData(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
                                   }}
-                                  className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium leading-none whitespace-nowrap overflow-visible bg-white text-gray-900 border border-gray-200 shadow-none gap-1.5 hover:bg-gray-50 transition-colors dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:text-white dark:border-0 dark:shadow-md dark:hover:opacity-90"
+                                  className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium leading-none whitespace-nowrap overflow-visible bg-white text-gray-900 border border-gray-200 shadow-none gap-1.5 hover:bg-gray-50 transition-colors dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:text-black dark:border-0 dark:shadow-md dark:hover:opacity-90"
                                   title="Click to remove"
                                 >
                                   {interest}
@@ -993,7 +993,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                               }}
                               className={`h-8 px-3 rounded-full text-sm font-medium transition-all border ${
                                 isSelected
-                                  ? 'bg-white text-gray-900 border-gray-200 ring-1 ring-gray-900/10 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:text-white dark:shadow-md dark:border-0 dark:ring-0'
+                                  ? 'bg-white text-gray-900 border-gray-200 ring-1 ring-gray-900/10 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:text-black dark:shadow-md dark:border-0 dark:ring-0'
                                   : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 shadow-none dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600'
                               }`}
                             >
@@ -1089,7 +1089,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                       onClick={() => {
                                         setEditFormData(prev => ({ ...prev, activities: prev.activities.filter(a => a !== activity) }));
                                       }}
-                                      className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium leading-none whitespace-nowrap overflow-visible bg-white text-gray-900 border border-gray-200 shadow-none gap-1.5 hover:bg-gray-50 transition-colors dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:text-white dark:border-0 dark:shadow-md dark:hover:opacity-90"
+                                      className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium leading-none whitespace-nowrap overflow-visible bg-white text-gray-900 border border-gray-200 shadow-none gap-1.5 hover:bg-gray-50 transition-colors dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:text-black dark:border-0 dark:shadow-md dark:hover:opacity-90"
                                       title="Click to remove"
                                     >
                                       {activity}
@@ -1190,7 +1190,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                     key={`top-interest-${index}`} 
                                     className={`h-8 px-4 rounded-full text-sm font-medium flex items-center ${
                                       isOwnProfile
-                                        ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:border-0 dark:text-white"
+                                        ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:border-0 dark:text-black"
                                         : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:border-0 dark:text-black"
                                     }`}
                                   >
@@ -1214,7 +1214,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                     key={`other-interest-${index}`} 
                                     className={`h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
                                       isOwnProfile
-                                        ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-white"
+                                        ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
                                         : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
                                     }`}
                                   >
@@ -1226,7 +1226,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                     key={`custom-interest-${index}`} 
                                     className={`h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
                                       isOwnProfile
-                                        ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-white"
+                                        ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
                                         : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
                                     }`}
                                   >
@@ -1272,7 +1272,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                 key={`activity-${index}`} 
                                 className={`h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
                                   isOwnProfile
-                                    ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-700 dark:to-blue-400 dark:border-0 dark:text-white"
+                                    ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-700 dark:to-blue-400 dark:border-0 dark:text-black"
                                     : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-700 dark:to-blue-400 dark:border-0 dark:text-black"
                                 }`}
                               >

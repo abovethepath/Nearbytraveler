@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { MapPin, Plane } from "lucide-react";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { truncateBioToSentences } from "@/lib/bioPreview";
 
 export interface User {
   id: number;
@@ -165,7 +166,7 @@ export default function UserCard({
   // People discovery cards: show shared INTERESTS count (as originally displayed)
   const thingsInCommon = compatibilityData?.sharedInterests?.length || 0;
   const contactsInCommon = connectionDegree?.mutualCount ?? 0;
-  const bioText = (user.bio || "").trim();
+  const bioText = truncateBioToSentences(user.bio, 3);
 
   return (
     <button 

@@ -2529,12 +2529,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               return (
                             <div key={activity.id} className="group relative">
                               <button
-                                className={`inline-flex max-w-full items-center justify-center ${HOME_PILL_SIZE_CLASSES} h-auto min-h-6 rounded-full font-medium transition-colors border touch-manipulation select-none ${
+                                className={`inline-flex max-w-full items-center justify-center h-8 px-4 rounded-full text-sm font-medium transition-colors border shadow-none touch-manipulation select-none ${
                                   isSelected
                                     ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm'
                                     : isFeatured
-                                      ? 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-yellow-400/50 shadow-none dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800'
-                                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-none dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800 dark:hover:border-slate-500'
+                                      ? 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-yellow-400/50'
+                                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
                                 } ${isUserCreated && isCreatedByMe ? 'pr-9' : ''}`}
                                 type="button"
                                 onPointerDown={(e) => {
@@ -2621,10 +2621,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 <div key={activity.id} className="group relative">
                                   <button
                                     type="button"
-                                    className={`inline-flex max-w-full items-center justify-center ${HOME_PILL_SIZE_CLASSES} h-auto min-h-6 rounded-full font-medium transition-colors border touch-manipulation select-none ${
+                                    className={`inline-flex max-w-full items-center justify-center h-8 px-4 rounded-full text-sm font-medium transition-colors border shadow-none touch-manipulation select-none ${
                                       isSelected
                                         ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm'
-                                        : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-none dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800 dark:hover:border-slate-500'
+                                        : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
                                     } ${isUserCreated && isCreatedByMe ? 'pr-9' : ''}`}
                                     onPointerDown={(e) => {
                                       if (e.pointerType === 'touch') {
@@ -2728,10 +2728,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 <button
                                   key={activity.id}
                                   type="button"
-                                  className={`inline-flex max-w-full items-center justify-center ${HOME_PILL_SIZE_CLASSES} h-auto min-h-6 rounded-full font-medium transition-colors border touch-manipulation select-none ${
+                                  className={`inline-flex max-w-full items-center justify-center h-8 px-4 rounded-full text-sm font-medium transition-colors border shadow-none touch-manipulation select-none ${
                                     isSelected
                                       ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm'
-                                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-none dark:bg-gray-800 dark:text-gray-100 dark:border-slate-700 dark:hover:bg-gray-800 dark:hover:border-slate-500'
+                                    : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
                                   }`}
                                   onPointerDown={(e) => {
                                     if (e.pointerType === 'touch') {
@@ -2876,7 +2876,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               
                               return (
                                 <div key={ua.id} className="group relative">
-                                  <div className={`flex items-center gap-1 rounded-full shadow-md text-white bg-gradient-to-r from-orange-500 to-orange-300 dark:from-blue-500 dark:to-orange-500 ${HOME_PILL_SIZE_CLASSES} h-auto min-h-6`}>
+                                  <div className="inline-flex max-w-full items-center gap-1 h-8 px-4 rounded-full text-sm font-medium bg-blue-600 text-white border border-blue-600 shadow-sm">
                                     {categoryInfo && <span className="text-xs">{categoryInfo.emoji}</span>}
                                     <span>{activityName}</span>
                                     <button

@@ -98,12 +98,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
           toast?.({ title: "Profile link copied!", description: "You can now paste it anywhere." });
         }
       }}
-      className={inline ? "p-1.5 rounded-full bg-white/90 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors inline-flex items-center justify-center shrink-0 ring-1 ring-gray-300/60 dark:ring-gray-500/60 shadow-sm" : "absolute top-4 right-4 z-20 p-1.5 rounded-full bg-white/80 hover:bg-white dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"}
+      className={
+        inline
+          ? "p-1 rounded-full bg-white/90 hover:bg-white transition-colors inline-flex items-center justify-center shrink-0 ring-1 ring-gray-300/60 shadow-sm"
+          : "absolute top-4 right-4 z-20 p-1.5 rounded-full bg-white/80 hover:bg-white transition-colors"
+      }
       style={{ touchAction: 'manipulation' }}
       title="Share profile"
       data-testid="button-share-profile"
     >
-      <Share2 className="w-4 h-4 text-black/70" />
+      <Share2 className="w-3.5 h-3.5 text-black/70" />
     </button>
   );
 
@@ -134,11 +138,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="w-64 bg-white text-black border border-gray-200 shadow-xl opacity-100"
+                className="w-64 bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-xl opacity-100"
               >
                 <DropdownMenuItem
                   onClick={() => setShareWithFriendsOpen(true)}
-                  className="text-black focus:text-black"
+                  className="text-black focus:text-black dark:text-white dark:focus:text-white"
                   data-testid="menu-item-share-profile"
                 >
                   <Share2 className="w-4 h-4 mr-2" />
@@ -146,14 +150,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setLocation('/share-qr')}
-                  className="text-black focus:text-black"
+                  className="text-black focus:text-black dark:text-white dark:focus:text-white"
                   data-testid="menu-item-invite-friends"
                 >
                   <UserPlus className="w-4 h-4 mr-2" />
                   Invite Friends
                 </DropdownMenuItem>
                 <div className="px-2 pt-2 pb-1">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-black">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-black dark:text-white">
                     <Palette className="w-4 h-4" />
                     <span>Change Hero Color Palette</span>
                   </div>
@@ -165,6 +169,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         className={`h-7 w-7 rounded-md bg-gradient-to-r ${g} ring-1 ring-black/10 hover:ring-black/30 transition-all ${
                           idx === selectedGradient ? "outline outline-2 outline-orange-500 outline-offset-1" : ""
                         }`}
+                        style={{ boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.08)" }}
                         onClick={(e) => {
                           // Keep menu open while selecting palettes.
                           e.preventDefault();
@@ -180,7 +185,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 <DropdownMenuItem
                   onClick={() => setTheme("dark")}
                   disabled={resolvedTheme === "dark"}
-                  className="text-black focus:text-black disabled:opacity-40"
+                  className="text-black focus:text-black dark:text-white dark:focus:text-white disabled:opacity-40"
                   data-testid="menu-item-switch-dark-mode"
                 >
                   <Moon className="w-4 h-4 mr-2" />
@@ -189,7 +194,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 <DropdownMenuItem
                   onClick={() => setTheme("light")}
                   disabled={resolvedTheme === "light"}
-                  className="text-black focus:text-black disabled:opacity-40"
+                  className="text-black focus:text-black dark:text-white dark:focus:text-white disabled:opacity-40"
                   data-testid="menu-item-switch-light-mode"
                 >
                   <Sun className="w-4 h-4 mr-2" />
@@ -205,7 +210,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
           <div className="flex flex-col lg:relative">
             {/* Desktop (lg+): overlapping avatar block anchored to hero bottom-left */}
             {/* Avoid transforms on the text block (crisper desktop text). Avatar overlap is achieved via bottom offset instead of translate. */}
-            <div className="hidden lg:flex flex-col items-start absolute left-8 bottom-[-80px] z-30">
+            <div className="hidden lg:flex flex-col items-start absolute left-8 bottom-[-56px] z-30">
               <div className="relative">
                 <div
                   className="w-48 h-48 rounded-full overflow-hidden cursor-pointer ring-4 ring-white/90 shadow-2xl"
@@ -286,7 +291,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   type="button"
                   size="sm"
                   variant="outline"
-                  className="h-9 px-3 text-sm font-semibold bg-white/85 hover:bg-white text-black border border-gray-200 shadow-sm"
+                  className="h-9 px-3 text-sm font-semibold !bg-white hover:!bg-white !text-black !border !border-gray-200 shadow-sm ring-1 ring-black/10"
                   onClick={() => {
                     const widget = document.querySelector('[data-testid="quick-meet-widget"]');
                     if (widget) widget.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -295,7 +300,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   }}
                   data-testid="button-lets-meet-now-hero"
                 >
-                  <Calendar className="w-4 h-4 mr-2" />
+                  <Calendar className="w-4 h-4 mr-2 !text-black" />
                   Let's Meet Now
                 </Button>
               </div>
@@ -403,11 +408,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </div>
                         </div>
 
-                        <div className="mt-4">
-                          <div className="grid grid-cols-2 gap-2">
+                          <div className="mt-4">
+                          <div className="flex flex-wrap items-center gap-2">
                             <button
                               type="button"
-                              className="w-full inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-4 py-2 text-sm bg-white/85 hover:bg-white text-black border border-gray-200 shadow-sm"
+                              className="inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-3 h-8 text-[13px] bg-white/85 hover:bg-white text-black border border-gray-200 shadow-sm w-[10.5rem] sm:w-44"
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -426,7 +431,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               targetUsername={user?.username}
                               targetName={user?.name}
                               appearance="ghost"
-                              className="w-full rounded-lg shadow-sm transition-all px-4 py-2 text-sm font-semibold !text-black"
+                              className="rounded-lg shadow-sm transition-all px-3 h-8 text-[13px] font-semibold !text-black w-[10.5rem] sm:w-44"
                             />
                           </div>
 
@@ -436,7 +441,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               targetUserId={user?.id || 0}
                               targetUsername={user?.username}
                               appearance="ghost"
-                              className="h-9 px-3 text-sm !text-black"
+                              className="h-8 px-2.5 text-xs !text-black"
                             />
                             <Button
                               type="button"
@@ -447,7 +452,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 else setLocation("/auth");
                               }}
                               variant="outline"
-                              className="bg-white/85 hover:bg-white text-black border border-gray-200 shadow-sm shrink-0 px-3 py-2 text-sm h-9"
+                              className="bg-white/85 hover:bg-white text-black border border-gray-200 shadow-sm shrink-0 px-2.5 h-8 text-xs"
                               data-testid="button-write-reference"
                             >
                               Write Reference
@@ -467,7 +472,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 size="sm"
                                 showIcon={false}
                                 appearance="link"
-                                  className="!text-black hover:!text-black/80"
+                                className="!text-black hover:!text-black/80"
                               />
                             ) : (
                               <button
@@ -509,7 +514,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             <div className="flex flex-wrap gap-1.5 max-h-[92px] overflow-hidden">
                               {visibleInterestPills.length > 0 ? (
                                 visibleInterestPills.map((interest) => (
-                                  <span key={interest} className="pill-interests">
+                                  <span
+                                    key={interest}
+                                    className="pill-interests !bg-white !text-black !border !border-gray-200 !shadow-none dark:!bg-white dark:!text-black dark:!border-gray-200 dark:!shadow-none"
+                                  >
                                     {interest}
                                   </span>
                                 ))
@@ -684,11 +692,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             )}
             <div className={`flex flex-col gap-1 min-w-0 w-full max-w-[280px] sm:max-w-none ${!isNativeIOSApp() ? 'mt-5' : 'mt-3'}`}>
               <span className="text-base sm:text-lg lg:text-xl font-semibold text-orange-600 dark:text-orange-400 crisp-hero-text">Nearby Local</span>
-              <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text ${isDesktopOtherUser ? '!text-black' : !isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
+              <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text ${isDesktopOtherUser ? '!text-black' : !isNativeIOSApp() ? 'text-black md:text-black' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
               {hasValidTravelDestination && (
                 <>
                   <span className="text-base sm:text-lg lg:text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1 crisp-hero-text">Nearby Traveler</span>
-                  <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text ${isDesktopOtherUser ? '!text-black' : !isNativeIOSApp() ? 'text-black dark:text-gray-100 md:text-black md:dark:text-black' : ''}`} title={currentTravelPlan!} style={isNativeIOSApp() ? { color: '#000' } : undefined}>
+                  <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text ${isDesktopOtherUser ? '!text-black' : !isNativeIOSApp() ? 'text-black md:text-black' : ''}`} title={currentTravelPlan!} style={isNativeIOSApp() ? { color: '#000' } : undefined}>
                     {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
                   </span>
                 </>
@@ -713,7 +721,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 return activePlanWithHostel ? (
                   <button
                     type="button"
-                    className="flex items-center gap-1.5 text-sm font-medium text-black dark:text-gray-100 mt-1 crisp-hero-text hover:underline underline-offset-2 text-left"
+                    className="flex items-center gap-1.5 text-sm font-medium text-black mt-1 crisp-hero-text hover:underline underline-offset-2 text-left"
                     onClick={async (e) => {
                       e.preventDefault();
                       e.stopPropagation();
