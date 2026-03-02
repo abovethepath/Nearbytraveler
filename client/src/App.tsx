@@ -186,12 +186,14 @@ export const AuthContext = React.createContext<{
   login: (userData: User, token?: string) => void;
   logout: (redirectTo?: string) => void;
   isAuthenticated: boolean;
+  authLoading: boolean;
 }>({
   user: null,
   setUser: () => {},
   login: () => {},
   logout: () => {},
   isAuthenticated: false,
+  authLoading: true,
 });
 
 export const useAuth = () => {
@@ -237,6 +239,8 @@ function Router() {
     return null;
   });
   const [isLoading, setIsLoading] = useState(!user);
+  // Web: explicit auth hydration/loading gate to prevent redirect/layout flashes.
+  const [authLoading, setAuthLoading] = useState(true);
   // Auth init/verification gates to prevent landing/login flashes during nav.
   const [authInitialized, setAuthInitialized] = useState(false);
   const [isVerifyingAuth, setIsVerifyingAuth] = useState(false);
@@ -305,6 +309,17 @@ function Router() {
     location === "/signup" ||
     location.startsWith("/signup/") ||
     location.startsWith("/auth/");
+
+  // During initial auth hydration/validation, treat some routes as public so we
+  // don't block password resets / invite links / public event detail pages.
+  const isPublicRouteDuringAuthLoading = React.useMemo(() => {
+    if (isSignupRoute || isAuthRoute || isLandingPage) return true;
+    if (location.startsWith("/reset-password")) return true;
+    if (location.startsWith("/forgot-password")) return true;
+    if (location.startsWith("/join-trip/") || location.startsWith("/invite/")) return true;
+    if (location.startsWith("/events/") && location.split("/")[2]) return true;
+    return false;
+  }, [isSignupRoute, isAuthRoute, isLandingPage, location]);
 
   const hasLocalAuthEvidence = React.useCallback(() => {
     try {
@@ -380,7 +395,8 @@ function Router() {
           setUser(null);
 
           // Only force redirect when we *thought* we were authenticated (prevents bouncing public pages).
-          if (expectedAuth && !isAuthRoute) {
+          // Also never redirect during auth hydration/initial validation to avoid "Welcome Back" flashes.
+          if (expectedAuth && !isAuthRoute && !(authLoading || !authInitialized || isLoading)) {
             try {
               // Preserve intended destination for after login.
               if (!isLandingPage) localStorage.setItem("postAuthRedirect", location);
@@ -407,6 +423,9 @@ function Router() {
       isSignupRoute,
       location,
       setLocation,
+      authLoading,
+      authInitialized,
+      isLoading,
       user?.id,
     ],
   );
@@ -467,6 +486,21 @@ function Router() {
   }, [syncAuthFromServer]);
 
   useEffect(() => {
+    // Explicit auth hydration/loading gate (web only):
+    // keep route guards from making redirect/layout decisions until we've restored
+    // any stored user and finished the initial session validation flow.
+    if (!isNativeIOSApp()) setAuthLoading(true);
+
+    // Restore user from storage ASAP (web). We still validate server session below.
+    if (!isNativeIOSApp()) {
+      try {
+        const restored = authStorage.getUser();
+        if (restored?.id && !user?.id) setUser(restored);
+      } catch {
+        // ignore storage errors
+      }
+    }
+
     // BULLETPROOF FIX #1: If user was already set from useState initializer (just_registered),
     // skip the server auth check entirely. The server might return 401 due to iOS WebView
     // cookie timing, which would incorrectly clear the user we just set.
@@ -474,6 +508,7 @@ function Router() {
       console.log('🎯 User already initialized (likely from just_registered), skipping server auth check:', user.username);
       setIsLoading(false);
         setAuthInitialized(true);
+      setAuthLoading(false);
       return;
     }
 
@@ -490,6 +525,7 @@ function Router() {
           localStorage.removeItem('just_registered');
           setIsLoading(false);
           setAuthInitialized(true);
+          setAuthLoading(false);
           return;
         }
       } catch (e) {
@@ -502,6 +538,7 @@ function Router() {
       console.log('🔥 PUBLIC PAGE - skipping auth check:', location);
       setIsLoading(false);
       setAuthInitialized(true);
+      setAuthLoading(false);
       return;
     }
 
@@ -521,6 +558,7 @@ function Router() {
       }
       setIsLoading(false);
       setAuthInitialized(true);
+      setAuthLoading(false);
       return;
     }
 
@@ -605,26 +643,17 @@ function Router() {
       setAuthInitialized(true);
     };
 
-    checkServerAuth();
+    checkServerAuth().finally(() => {
+      setAuthLoading(false);
+    });
   }, []);
 
-  // Prevent landing/login flash for authenticated users while auth is still being verified/resynced.
-  // Only gate when we have *real* local auth evidence (stored user) or a user in state.
-  const hasStoredUserForGate = React.useMemo(() => {
-    try {
-      if (isSessionMarkedInvalid()) return false;
-      return !!localStorage.getItem("user") || !!localStorage.getItem("travelconnect_user");
-    } catch {
-      return false;
-    }
-  }, [user?.id]); // user dep forces re-eval after login/logout
-
+  // Prevent protected-route redirect/layout flashes while auth is hydrating/validating (web).
+  // Only decide "redirect to /auth" once loading is complete.
   const shouldGateAuthenticatedRendering =
     !isNativeIOSApp() &&
-    !isSignupRoute &&
-    !isAuthRoute &&
-    (hasStoredUserForGate || !!user?.id) &&
-    (!authInitialized || isVerifyingAuth || isLoading);
+    !isPublicRouteDuringAuthLoading &&
+    (authLoading || !authInitialized || isVerifyingAuth || isLoading);
 
   // Initialize WebSocket connection for authenticated users
   useEffect(() => {
@@ -792,16 +821,9 @@ function Router() {
         setUser(userData);
       },
       isAuthenticated: actualAuth,
+      authLoading: authLoading || !authInitialized || isVerifyingAuth || isLoading,
     };
-  }, [user, setLocation, queryClient]);
-
-  if (isLoading && !isSignupRoute && !isLandingPage) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-300 border-t-orange-500" />
-      </div>
-    );
-  }
+  }, [user, setLocation, queryClient, authLoading, authInitialized, isVerifyingAuth, isLoading]);
 
   // Post-auth redirect (used for invite links, etc.)
   useEffect(() => {
@@ -816,6 +838,30 @@ function Router() {
       // ignore storage errors
     }
   }, [user?.id, setLocation]);
+
+  // Web route guard: never redirect while auth is hydrating/validating.
+  // Only redirect to /auth when we definitively know there's no authenticated user.
+  useEffect(() => {
+    if (isNativeIOSApp()) return;
+    if (authValue.authLoading) return;
+    if (isPublicRouteDuringAuthLoading) return;
+    if (authValue.isAuthenticated) return;
+    if (isAuthRoute) return;
+
+    try {
+      localStorage.setItem("postAuthRedirect", location);
+    } catch {
+      // ignore storage errors
+    }
+    setLocation("/auth");
+  }, [
+    authValue.authLoading,
+    authValue.isAuthenticated,
+    isAuthRoute,
+    isPublicRouteDuringAuthLoading,
+    location,
+    setLocation,
+  ]);
 
   const renderPage = (overrideUser?: User | null) => {
     const effectiveUser = overrideUser !== undefined ? overrideUser : user;
@@ -1676,9 +1722,13 @@ function Router() {
             {location.startsWith('/signup/qr/') && <QRSignup referralCode={location.split('/signup/qr/')[1] || ''} />}
           </div>
         </>
+      ) : isAuthRoute ? (
+        <>
+          <Auth />
+        </>
       ) : !hasAnyAuthEvidence ? (
         // MOBILE FIX: Check if this is a navigation to home page from mobile nav
-        location === '/home' && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) ? (
+        location === '/home' && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user')) ? (
           // User clicked home button and has auth data - force authenticate
           <>
             {console.log('🏠 MOBILE HOME FIX: User clicked home with auth data, forcing authentication')}
