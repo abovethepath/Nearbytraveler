@@ -130,90 +130,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       <div
         className={`mx-auto relative z-10 max-w-7xl ${isDesktopOwnProfile ? 'pl-4 sm:pl-6 lg:pl-8' : ''}`}
       >
-        {/* Own profile: share lives in ⋮ menu (not beside username) */}
-        {isOwnProfile && (
-          <div className={isMobileWeb ? "absolute right-3 bottom-16 z-30" : "absolute top-3 right-3 z-30"}>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center h-9 w-9 rounded-md bg-transparent hover:bg-transparent border-0 ring-0 shadow-none transition-colors"
-                  title="More"
-                  aria-label="More"
-                  data-testid="button-profile-more-menu"
-                >
-                  <MoreVertical className="w-5 h-5 text-black" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-64 bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-xl opacity-100"
-              >
-                <DropdownMenuItem
-                  onClick={() => setShareWithFriendsOpen(true)}
-                  className="text-black focus:text-black dark:text-white dark:focus:text-white"
-                  data-testid="menu-item-share-profile"
-                >
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Share with Friends
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setLocation('/share-qr')}
-                  className="text-black focus:text-black dark:text-white dark:focus:text-white"
-                  data-testid="menu-item-invite-friends"
-                >
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Invite Friends
-                </DropdownMenuItem>
-                <div className="px-2 pt-2 pb-1">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-black dark:text-white">
-                    <Palette className="w-4 h-4" />
-                    <span>Change Hero Color Palette</span>
-                  </div>
-                  <div className="mt-2 grid grid-cols-4 gap-2">
-                    {(gradientOptions || []).map((g: string, idx: number) => (
-                      <button
-                        key={`palette-${idx}`}
-                        type="button"
-                        className={`h-8 w-8 rounded-md bg-gradient-to-r ${g} ring-1 ring-black/10 hover:ring-black/30 transition-all ${
-                          idx === selectedGradient ? "ring-2 ring-orange-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900" : ""
-                        }`}
-                        style={{ boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.08)" }}
-                        onClick={(e) => {
-                          // Keep menu open while selecting palettes.
-                          e.preventDefault();
-                          e.stopPropagation();
-                          if (typeof setSelectedGradient === "function") setSelectedGradient(idx);
-                        }}
-                        aria-label={`Select palette ${idx + 1}`}
-                        data-testid={`palette-swatch-${idx}`}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <DropdownMenuItem
-                  onClick={() => setTheme("dark")}
-                  disabled={resolvedTheme === "dark"}
-                  className="text-black focus:text-black dark:text-white dark:focus:text-white disabled:opacity-40"
-                  data-testid="menu-item-switch-dark-mode"
-                >
-                  <Moon className="w-4 h-4 mr-2" />
-                  Switch to Dark Mode
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setTheme("light")}
-                  disabled={resolvedTheme === "light"}
-                  className="text-black focus:text-black dark:text-white dark:focus:text-white disabled:opacity-40"
-                  data-testid="menu-item-switch-light-mode"
-                >
-                  <Sun className="w-4 h-4 mr-2" />
-                  Switch to Light Mode
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
-
         {isDesktopOwnProfile ? (
           /* Desktop own profile: balanced layout - larger avatar, readable city text, proportional @username, tabs at bottom */
           <div className="flex flex-col lg:relative">
@@ -266,13 +182,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <input id="avatar-upload-input" type="file" accept="image/*" onChange={(e) => { handleAvatarUpload?.(e); }} className="sr-only" disabled={uploadingPhoto} aria-label="Change avatar" />
                 </label>
 
-                {/* Mobile web: keep "New to Town" compact & anchored to avatar (no centered standalone row) */}
-                {!isNativeIOSApp() && isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                  <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-100 border border-green-300 text-black shadow-sm z-20">
-                    New to Town
-                  </span>
-                )}
               </div>
+              {/* Mobile web: place badge under avatar (avoid camera icon overlap) */}
+              {!isNativeIOSApp() && isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                <span className="mt-2 inline-flex items-center self-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-black shadow-sm">
+                  New to Town
+                </span>
+              )}
               {/* Non-mobile web: keep badge below avatar */}
               {!isNativeIOSApp() && !isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 text-black mt-2">
@@ -282,10 +198,93 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             </div>
             {/* RIGHT: @username + Share Profile, buttons - bio has its own dedicated section below hero */}
             <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0.5 lg:pl-[23rem]">
-              <div className="flex items-center gap-2.5 shrink-0 w-fit max-w-full">
+              <div className="flex items-center gap-2.5 shrink-0 w-full max-w-full">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-black break-all leading-tight crisp-hero-text">
                   @{user?.username}
                 </h1>
+                {/* Own profile: ⋮ menu lives on username row (top-right) */}
+                {isOwnProfile && (
+                  <div className="ml-auto">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          className="inline-flex items-center justify-center h-9 w-9 rounded-md bg-transparent hover:bg-transparent border-0 ring-0 shadow-none transition-colors"
+                          title="More"
+                          aria-label="More"
+                          data-testid="button-profile-more-menu"
+                        >
+                          <MoreVertical className="w-5 h-5 text-black" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-64 bg-white text-black dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 shadow-xl opacity-100"
+                      >
+                        <DropdownMenuItem
+                          onClick={() => setShareWithFriendsOpen(true)}
+                          className="text-black focus:text-black dark:text-white dark:focus:text-white"
+                          data-testid="menu-item-share-profile"
+                        >
+                          <Share2 className="w-4 h-4 mr-2" />
+                          Share with Friends
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setLocation('/share-qr')}
+                          className="text-black focus:text-black dark:text-white dark:focus:text-white"
+                          data-testid="menu-item-invite-friends"
+                        >
+                          <UserPlus className="w-4 h-4 mr-2" />
+                          Invite Friends
+                        </DropdownMenuItem>
+                        <div className="px-2 pt-2 pb-1">
+                          <div className="flex items-center gap-2 text-sm font-semibold text-black dark:text-white">
+                            <Palette className="w-4 h-4" />
+                            <span>Change Hero Color Palette</span>
+                          </div>
+                          <div className="mt-2 grid grid-cols-4 gap-2">
+                            {(gradientOptions || []).map((g: string, idx: number) => (
+                              <button
+                                key={`palette-${idx}`}
+                                type="button"
+                                className={`h-8 w-8 rounded-md bg-gradient-to-r ${g} ring-1 ring-black/10 hover:ring-black/30 transition-all ${
+                                  idx === selectedGradient ? "ring-2 ring-orange-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900" : ""
+                                }`}
+                                style={{ boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.08)" }}
+                                onClick={(e) => {
+                                  // Keep menu open while selecting palettes.
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  if (typeof setSelectedGradient === "function") setSelectedGradient(idx);
+                                }}
+                                aria-label={`Select palette ${idx + 1}`}
+                                data-testid={`palette-swatch-${idx}`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <DropdownMenuItem
+                          onClick={() => setTheme("dark")}
+                          disabled={resolvedTheme === "dark"}
+                          className="text-black focus:text-black dark:text-white dark:focus:text-white disabled:opacity-40"
+                          data-testid="menu-item-switch-dark-mode"
+                        >
+                          <Moon className="w-4 h-4 mr-2" />
+                          Switch to Dark Mode
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setTheme("light")}
+                          disabled={resolvedTheme === "light"}
+                          className="text-black focus:text-black dark:text-white dark:focus:text-white disabled:opacity-40"
+                          data-testid="menu-item-switch-light-mode"
+                        >
+                          <Sun className="w-4 h-4 mr-2" />
+                          Switch to Light Mode
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                )}
               </div>
 
               {/* Nearby Local/Traveler moved under username (inside hero content area) */}

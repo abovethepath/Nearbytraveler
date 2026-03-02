@@ -1402,13 +1402,23 @@ function Router() {
       return <ProfileComplete userId={parseInt(businessId)} />;
     }
 
+    // Normalize for routing:
+    // - Wouter `location` may include query strings and/or a trailing slash.
+    // - Redirecting "unknown routes" to home caused mobile tabs to appear broken (e.g. `/messages?user=123`).
+    const rawLocation = location;
+    const normalizedLocation = (() => {
+      const noHash = rawLocation.split('#')[0];
+      const noQuery = noHash.split('?')[0];
+      if (noQuery === '/') return '/';
+      return (noQuery.replace(/\/+$/, '') || '/');
+    })();
+
     // Home screen message links go to /messages?user=123 — must match so Messages page renders
-    // Support both /messages and /messages/ (trailing slash) so bottom nav never shows blank
-    if (location === '/messages' || location === '/messages/' || location.startsWith('/messages?')) {
+    if (normalizedLocation === '/messages') {
       return <Messages />;
     }
 
-    switch (location) {
+    switch (normalizedLocation) {
       case '/events':
         return <Events />;
       case '/event-history':
@@ -1546,18 +1556,18 @@ function Router() {
       default:
         // Handle dynamic routes first before showing NotFound
         // Profile routes now handled before authentication check to prevent redirect loops
-        if (location.startsWith('/events/')) {
-          const eventId = location.split('/')[2];
+        if (normalizedLocation.startsWith('/events/')) {
+          const eventId = normalizedLocation.split('/')[2];
           return <EventDetails eventId={eventId} />;
         }
-        if (location.startsWith('/community/')) {
-          const communityId = location.split('/')[2];
+        if (normalizedLocation.startsWith('/community/')) {
+          const communityId = normalizedLocation.split('/')[2];
           if (communityId) {
             return <CommunityDetail communityId={parseInt(communityId)} />;
           }
         }
-        if (location.startsWith('/city/')) {
-          const pathParts = location.split('/');
+        if (normalizedLocation.startsWith('/city/')) {
+          const pathParts = normalizedLocation.split('/');
           const cityName = pathParts[2] ? decodeURIComponent(pathParts[2]) : '';
           const subPath = pathParts[3]; // e.g., "match", "chatrooms"
           
@@ -1590,21 +1600,19 @@ function Router() {
         ];
         
         const isBusinessAllowedRoute = businessAllowedRoutes.some(route => 
-          location.startsWith(route)
+          normalizedLocation.startsWith(route)
         );
         
         // Only redirect business users if route is NOT allowed
-        if (effectiveUser?.userType === 'business' && location !== '/' && !isBusinessAllowedRoute) {
+        if (effectiveUser?.userType === 'business' && normalizedLocation !== '/' && !isBusinessAllowedRoute) {
           console.log('🏢 BUSINESS USER: Unknown route detected (not whitelisted), redirecting to home page');
           setLocation(isNativeIOSApp() ? '/home' : '/');
           return null;
         }
         
-        // MOBILE FIX: If unknown route but user is authenticated, redirect to home
-        console.log('🚫 UNKNOWN ROUTE FOR AUTHENTICATED USER:', location);
-        console.log('🔄 MOBILE: Redirecting unknown authenticated route to home');
-        setLocation(isNativeIOSApp() ? '/home' : '/');
-        return null;
+        // If still unknown, do NOT redirect to home (causes "tab jumps to Home" on mobile).
+        console.log('🚫 UNKNOWN ROUTE FOR AUTHENTICATED USER (no redirect):', { rawLocation, normalizedLocation });
+        return <NotFound />;
 
     }
   };
