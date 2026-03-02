@@ -312,7 +312,10 @@ function Router() {
 
   // Normalize once so route guards don't break on query strings / hashes / trailing slashes.
   const normalizedPath = React.useMemo(() => {
-    const raw = location || "/";
+    const raw =
+      typeof window !== "undefined" && window.location?.pathname
+        ? window.location.pathname
+        : (location || "/");
     const noHash = raw.split("#")[0];
     const noQuery = noHash.split("?")[0];
     const trimmed = (noQuery.replace(/\/+$/, "") || "/");
@@ -685,8 +688,10 @@ function Router() {
   // Only decide "redirect to /auth" once loading is complete.
   const shouldGateAuthenticatedRendering =
     !isNativeIOSApp() &&
-    !isPublicRoute &&
-    (authLoading || !authInitialized || isVerifyingAuth || isLoading);
+    (authLoading || !authInitialized || isVerifyingAuth || isLoading) &&
+    // Gate protected routes, and also gate public routes when we have local auth evidence,
+    // to avoid flashing authenticated layouts before the server session is validated.
+    (!isPublicRoute || hasLocalAuthEvidence() || !!user?.id);
 
   // Initialize WebSocket connection for authenticated users
   useEffect(() => {
@@ -861,6 +866,11 @@ function Router() {
   // Post-auth redirect (used for invite links, etc.)
   useEffect(() => {
     if (!user?.id) return;
+    // Only honor stored redirects when we're actually on the auth page.
+    // Otherwise stale `postAuthRedirect` can hijack a fresh visit to `/`.
+    if (normalizedPath !== "/auth") return;
+    if (authValue.authLoading) return;
+    if (!authValue.isAuthenticated) return;
     try {
       const next = localStorage.getItem("postAuthRedirect");
       if (next) {
@@ -870,7 +880,7 @@ function Router() {
     } catch {
       // ignore storage errors
     }
-  }, [user?.id, setLocation]);
+  }, [user?.id, normalizedPath, authValue.authLoading, authValue.isAuthenticated, setLocation]);
 
   // Web route guard: never redirect while auth is hydrating/validating.
   // Only redirect to /auth when we definitively know there's no authenticated user.
