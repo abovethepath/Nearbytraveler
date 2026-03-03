@@ -1284,24 +1284,78 @@ export default function Home() {
     // Search filter - check if search term matches name, username, bio, or location/city
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
-      const matchesSearch = 
-        otherUser.name?.toLowerCase().includes(searchTerm) ||
-        otherUser.username?.toLowerCase().includes(searchTerm) ||
-        otherUser.bio?.toLowerCase().includes(searchTerm) ||
-        otherUser.location?.toLowerCase().includes(searchTerm) ||
-        otherUser.hometownCity?.toLowerCase().includes(searchTerm) ||
-        otherUser.hometownState?.toLowerCase().includes(searchTerm) ||
-        otherUser.hometownCountry?.toLowerCase().includes(searchTerm) ||
-        otherUser.gender?.toLowerCase().includes(searchTerm) ||
-        otherUser.travelDestination?.toLowerCase().includes(searchTerm) ||
-        otherUser.interests?.some((interest: string) => interest.toLowerCase().includes(searchTerm)) ||
-        otherUser.travelInterests?.some((interest: string) => interest.toLowerCase().includes(searchTerm)) ||
-        otherUser.localActivities?.some((activity: string) => activity.toLowerCase().includes(searchTerm)) ||
-        otherUser.preferredActivities?.some((activity: string) => activity.toLowerCase().includes(searchTerm)) ||
-        otherUser.travelStyle?.some((style: string) => style.toLowerCase().includes(searchTerm)) ||
-        otherUser.localExpertise?.some((expertise: string) => expertise.toLowerCase().includes(searchTerm)) ||
-        otherUser.languagesSpoken?.some((language: string) => language.toLowerCase().includes(searchTerm)) ||
-        otherUser.sexualPreference?.some((pref: string) => pref.toLowerCase().includes(searchTerm));
+      const push = (out: string[], v: any) => {
+        if (v == null) return;
+        if (Array.isArray(v)) {
+          v.forEach((x) => {
+            if (x == null) return;
+            const s = String(x).trim();
+            if (s) out.push(s);
+          });
+          return;
+        }
+        const s = String(v).trim();
+        if (s) out.push(s);
+      };
+
+      // "Mostly anything typed into a bio/profile" → build a single searchable text haystack
+      // from common user fields we already have client-side.
+      const parts: string[] = [];
+      push(parts, otherUser.name);
+      push(parts, otherUser.username);
+      push(parts, otherUser.bio);
+      push(parts, otherUser.location);
+      push(parts, otherUser.hometownCity);
+      push(parts, otherUser.hometownState);
+      push(parts, otherUser.hometownCountry);
+      push(parts, (otherUser as any).destinationCity);
+      push(parts, (otherUser as any).destinationState);
+      push(parts, (otherUser as any).destinationCountry);
+      push(parts, (otherUser as any).metroArea);
+      push(parts, (otherUser as any).hometown);
+      push(parts, (otherUser as any).currentCity);
+      push(parts, otherUser.gender);
+      push(parts, otherUser.travelDestination);
+      push(parts, (otherUser as any).hostelName);
+      push(parts, (otherUser as any).childrenAges);
+      push(parts, (otherUser as any).secretActivities);
+
+      // Travel intent fields
+      push(parts, (otherUser as any).travelWhy);
+      push(parts, (otherUser as any).travelHow);
+      push(parts, (otherUser as any).travelBudget);
+      push(parts, (otherUser as any).travelGroup);
+      push(parts, (otherUser as any).travelWhat);
+
+      // Social links/handles (often shown on profile)
+      push(parts, (otherUser as any).instagramHandle);
+      push(parts, (otherUser as any).instagramUrl);
+      push(parts, (otherUser as any).tiktokUrl);
+      push(parts, (otherUser as any).linkedinUrl);
+      push(parts, (otherUser as any).websiteUrl);
+
+      // Array/profile preference fields
+      push(parts, otherUser.interests);
+      push(parts, (otherUser as any).privateInterests);
+      push(parts, otherUser.travelInterests);
+      push(parts, (otherUser as any).defaultTravelInterests);
+      push(parts, (otherUser as any).activities);
+      push(parts, otherUser.localActivities);
+      push(parts, otherUser.preferredActivities);
+      push(parts, (otherUser as any).defaultTravelActivities);
+      push(parts, otherUser.travelStyle);
+      push(parts, otherUser.localExpertise);
+      push(parts, otherUser.languagesSpoken);
+      push(parts, (otherUser as any).countriesVisited);
+      push(parts, (otherUser as any).subInterests);
+      push(parts, otherUser.sexualPreference);
+
+      // CSV-style custom fields
+      push(parts, (otherUser as any).customInterests);
+      push(parts, (otherUser as any).customActivities);
+      push(parts, (otherUser as any).customEvents);
+
+      const matchesSearch = parts.some((p) => p.toLowerCase().includes(searchTerm));
       if (!matchesSearch) return false;
     }
 

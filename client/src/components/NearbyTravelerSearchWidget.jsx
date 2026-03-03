@@ -318,7 +318,7 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
           <input
             value={searchQuery}
             onChange={handleSearch}
-            placeholder="Search by name or username…"
+            placeholder="Search name, username, bio, interests…"
             style={{
               width: "100%",
               background: "rgba(255,255,255,0.06)",
