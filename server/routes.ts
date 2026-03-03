@@ -2553,12 +2553,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       const results = await db.select().from(users).where(and(...conditions));
       
-      // Avoid huge payloads: never return base64 profileImage in user lists.
-      const safeResults = results.map(({ password, profileImage, ...rest }) => ({
-        ...rest,
-        profileImage: typeof profileImage === "string" && /^https?:\/\//i.test(profileImage) ? profileImage : null,
-        hasProfileImage: !!profileImage,
-      }));
+      const safeResults = results.map(({ password, ...rest }) => rest);
       
       // Enrich with travel status + Available Now for user card badges
       const now = new Date();
@@ -2566,24 +2561,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .from(availableNow)
         .where(and(eq(availableNow.isAvailable, true), gte(availableNow.expiresAt, now)));
       const availableNowUserIds = new Set(availableNowResults.map(r => r.userId));
-
-      // Avoid N+1: fetch travel plans for all returned users in one query.
-      const userIds = safeResults.map((u: any) => u?.id).filter((id: any): id is number => typeof id === "number");
-      const travelPlansRows =
-        userIds.length > 0
-          ? await db.select().from(travelPlans).where(inArray(travelPlans.userId, userIds))
-          : [];
-      const travelPlansByUserId = new Map<number, any[]>();
-      for (const plan of travelPlansRows) {
-        const uid = (plan as any)?.userId as number | null | undefined;
-        if (!uid) continue;
-        const arr = travelPlansByUserId.get(uid);
-        if (arr) arr.push(plan);
-        else travelPlansByUserId.set(uid, [plan]);
-      }
-
-      const enrichedResults = safeResults.map((user: any) => {
-        const userTravelPlans = travelPlansByUserId.get(user.id) || [];
+      const enrichedResults = await Promise.all(safeResults.map(async (user: any) => {
+        const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
         const activePlan = userTravelPlans.find((plan: any) => {
           const start = new Date(plan.startDate);
           const end = new Date(plan.endDate);
@@ -2604,7 +2583,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           destinationCity: destCity,
           isAvailableNow: availableNowUserIds.has(user.id)
         };
-      });
+      }));
       
       console.log(`🌍 users-by-location: found ${enrichedResults.length} ${userType} users for "${searchCity}"`);
       res.json(enrichedResults);
@@ -2901,37 +2880,37 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       // Remove passwords, add city-specific role metadata, and enrich with travel status for user card badges
       const now = new Date();
-      const usersToEnrich = combinedUsers.filter(Boolean) as any[];
-
-      // Avoid N+1: fetch travel plans for all returned users in one query.
-      const userIds = usersToEnrich.map((u: any) => u?.id).filter((id: any): id is number => typeof id === "number");
-      const travelPlansRows =
-        userIds.length > 0
-          ? await db.select().from(travelPlans).where(inArray(travelPlans.userId, userIds))
-          : [];
-      const travelPlansByUserId = new Map<number, any[]>();
-      for (const plan of travelPlansRows) {
-        const uid = (plan as any)?.userId as number | null | undefined;
-        if (!uid) continue;
-        const arr = travelPlansByUserId.get(uid);
-        if (arr) arr.push(plan);
-        else travelPlansByUserId.set(uid, [plan]);
+      const userIds = combinedUsers.map((u: any) => u?.id).filter((id: any): id is number => typeof id === "number");
+      
+      // Avoid N+1: fetch travel plans for all returned users in one query
+      const plans = userIds.length > 0
+        ? await db.select().from(travelPlans).where(inArray(travelPlans.userId, userIds))
+        : [];
+      
+      const plansByUserId = new Map<number, any[]>();
+      for (const p of plans) {
+        const key = (p as any)?.userId as number | null | undefined;
+        if (!key) continue;
+        const arr = plansByUserId.get(key);
+        if (arr) arr.push(p);
+        else plansByUserId.set(key, [p]);
       }
-
-      const finalUsers = usersToEnrich.map((user: any) => {
-        const { password: _, profileImage, ...userWithoutPassword } = user;
-        const safeProfileImage =
-          typeof profileImage === "string" && /^https?:\/\//i.test(profileImage) ? profileImage : null;
-
+      
+      const finalUsers = combinedUsers.map((user) => {
+        if (!user) return null;
+        
+        // Avoid huge payloads: never return base64 profileImage in user lists.
+        const { password: _, profileImage: __, ...userWithoutPassword } = user;
+        
         // Determine roles in this specific city
         const isLocalToCity = localUserIds.has(user.id);
         const isTravelerToCity = travelerUserIds.has(user.id);
-        const rolesInCity: ("local" | "traveler")[] = [];
-        if (isLocalToCity) rolesInCity.push("local");
-        if (isTravelerToCity) rolesInCity.push("traveler");
-
+        const rolesInCity: ('local' | 'traveler')[] = [];
+        if (isLocalToCity) rolesInCity.push('local');
+        if (isTravelerToCity) rolesInCity.push('traveler');
+        
         // Enrich with travel status so user cards show destination in top-left
-        const userTravelPlans = travelPlansByUserId.get(user.id) || [];
+        const userTravelPlans = plansByUserId.get(user.id) || [];
         const activePlan = userTravelPlans.find((plan: any) => {
           const start = new Date(plan.startDate);
           const end = new Date(plan.endDate);
@@ -2939,30 +2918,25 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         });
         const formattedPlans = userTravelPlans.map((plan: any) => ({
           ...plan,
-          destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ""}, ${plan.destinationCountry}`,
+          destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
         }));
-
+        
         // CRITICAL: Only set travel fields when user has ACTIVE trip (today within dates), not future travel
-        let travelDestination = activePlan
-          ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ""}, ${activePlan.destinationCountry}`
-          : null;
-        if (travelDestination && (String(travelDestination).toLowerCase() === "null" || String(travelDestination).trim() === "")) {
-          travelDestination = null;
-        }
-        const destinationCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(",")[0].trim()) || null;
+        let travelDestination = activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : null;
+        if (travelDestination && (String(travelDestination).toLowerCase() === 'null' || String(travelDestination).trim() === '')) travelDestination = null;
+        const destinationCity = activePlan?.destinationCity || (travelDestination && travelDestination.split(',')[0].trim()) || null;
         return {
           ...userWithoutPassword,
-          hometownCity: user.hometownCity || "",
+          hometownCity: user.hometownCity || '',
           location: user.location,
-          profileImage: safeProfileImage,
-          hasProfileImage: !!profileImage,
+          profileImage: null,
           isLocalToCity,
           isTravelerToCity,
           rolesInCity,
           travelPlans: formattedPlans,
           isCurrentlyTraveling: !!activePlan,
           travelDestination: travelDestination || null,
-          destinationCity,
+          destinationCity
         };
       });
       
@@ -3086,27 +3060,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const availableNowUserIds = new Set(availableNowResults.map(r => r.userId));
 
       // Enrich users with travel status for airplane badge display + Available Now badge
-      // Avoid N+1: fetch travel plans for all returned users in one query.
-      const userIds = users.map((u: any) => u?.id).filter((id: any): id is number => typeof id === "number");
-      const travelPlansRows =
-        userIds.length > 0
-          ? await db.select().from(travelPlans).where(inArray(travelPlans.userId, userIds))
-          : [];
-      const travelPlansByUserId = new Map<number, any[]>();
-      for (const plan of travelPlansRows) {
-        const uid = (plan as any)?.userId as number | null | undefined;
-        if (!uid) continue;
-        const arr = travelPlansByUserId.get(uid);
-        if (arr) arr.push(plan);
-        else travelPlansByUserId.set(uid, [plan]);
-      }
-
-      const enrichedUsers = users.map((user: any) => {
-        const profileImage = user?.profileImage as any;
-        const hasProfileImage = !!profileImage;
-        const safeProfileImage =
-          typeof profileImage === "string" && /^https?:\/\//i.test(profileImage) ? profileImage : null;
-        const userTravelPlans = travelPlansByUserId.get(user.id) || [];
+      const enrichedUsers = await Promise.all(users.map(async (user) => {
+        const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
         
         // Find active travel plan (currently traveling)
         const activePlan = userTravelPlans.find(plan => {
@@ -3122,8 +3077,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         const isAvail = availableNowUserIds.has(user.id);
         return {
           ...user,
-          profileImage: safeProfileImage,
-          hasProfileImage,
           travelPlans: userTravelPlans.map(plan => ({
             ...plan,
             destination: plan.destination || `${plan.destinationCity || ''}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry || ''}`.replace(/^,\s*|,\s*$/g, '').trim()
@@ -3135,7 +3088,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           available_now: isAvail,
           availableNow: isAvail
         };
-      });
+      }));
       
       return res.json(enrichedUsers);
     } catch (error: any) {
@@ -7390,24 +7343,9 @@ Questions? Just reply to this message. Welcome aboard!
         ));
       const availableNowUserIds = new Set(availableNowResults.map(r => r.userId));
       
-      // Avoid N+1: fetch travel plans for all returned users in one query.
-      const userIds = filteredUsers.map((u: any) => u?.id).filter((id: any): id is number => typeof id === "number");
-      const travelPlansRows =
-        userIds.length > 0
-          ? await db.select().from(travelPlans).where(inArray(travelPlans.userId, userIds))
-          : [];
-      const travelPlansByUserId = new Map<number, any[]>();
-      for (const plan of travelPlansRows) {
-        const uid = (plan as any)?.userId as number | null | undefined;
-        if (!uid) continue;
-        const arr = travelPlansByUserId.get(uid);
-        if (arr) arr.push(plan);
-        else travelPlansByUserId.set(uid, [plan]);
-      }
-      
       // Enrich filtered users with their travel plans for frontend travel detection
-      const enrichedUsers = filteredUsers.map((user: any) => {
-        const userTravelPlans = travelPlansByUserId.get(user.id) || [];
+      const enrichedUsers = await Promise.all(filteredUsers.map(async (user) => {
+        const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
         
         // Format travel plans to match frontend expectations (preserve plan.destination when destinationCity is null)
         const formattedTravelPlans = userTravelPlans.map(plan => {
@@ -7425,9 +7363,7 @@ Questions? Just reply to this message. Welcome aboard!
         });
         
         // Remove password and add travel plans + travel status
-        const { password: _, profileImage, ...userWithoutPassword } = user;
-        const safeProfileImage =
-          typeof profileImage === "string" && /^https?:\/\//i.test(profileImage) ? profileImage : null;
+        const { password: _, ...userWithoutPassword } = user;
         // CRITICAL: Only set travel fields when user has ACTIVE trip (today within dates), not future travel
         let travelDestination = activePlan
           ? (activePlan.destinationCity
@@ -7441,8 +7377,6 @@ Questions? Just reply to this message. Welcome aboard!
           ...userWithoutPassword,
           hometownCity: user.hometownCity || '',
           location: user.location,
-          profileImage: safeProfileImage,
-          hasProfileImage: !!profileImage,
           travelPlans: formattedTravelPlans,
           // CRITICAL: Include travel status for airplane badge + destination on user cards (web + iOS)
           isCurrentlyTraveling: !!activePlan,
@@ -7453,7 +7387,7 @@ Questions? Just reply to this message. Welcome aboard!
           available_now: isAvail,
           availableNow: isAvail
         };
-      });
+      }));
       
       if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH RESULT: ${enrichedUsers.length} users found with filters`);
       return res.json(enrichedUsers);
