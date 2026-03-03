@@ -81,6 +81,32 @@ export function QuickMeetupWidget({
     },
     refetchInterval: 30000, // Refresh every 30 seconds for real-time updates
   });
+
+  // Chat overlay: resolve chatroom for the selected meetup.
+  // IMPORTANT: Hooks must be unconditional (React #310 protection).
+  const chatOverlayMeetupId = chatOverlayMeetup?.id as number | undefined;
+  const { data: chatroomForOverlay } = useQuery<any>({
+    queryKey: chatOverlayMeetupId
+      ? ["/api/quick-meetup-chatrooms", chatOverlayMeetupId]
+      : ["quick-meetup-chatroom-disabled"],
+    enabled: !!chatOverlayMeetupId,
+    queryFn: async () => {
+      if (!chatOverlayMeetupId) return null;
+      const res = await fetch(
+        `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatOverlayMeetupId}`,
+        {
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+            ...(actualUser?.id ? { "x-user-id": String(actualUser.id) } : {}),
+          },
+        },
+      );
+      if (!res.ok) throw new Error(String(res.status));
+      return res.json();
+    },
+    retry: 1,
+  });
   const resolvedLocation = (() => {
     if (!actualUser) return { city: '', state: '', country: 'United States' };
     const now = new Date();
@@ -439,28 +465,6 @@ export function QuickMeetupWidget({
     !!actualUser?.id &&
     Array.isArray(detailsMeetup?.participantIds) &&
     detailsMeetup.participantIds.map((x: any) => Number(x)).includes(Number(actualUser.id));
-
-  const { data: chatroomForOverlay } = useQuery<any>({
-    queryKey: chatOverlayMeetup?.id
-      ? ["/api/quick-meetup-chatrooms", chatOverlayMeetup.id]
-      : ["quick-meetup-chatroom-disabled"],
-    enabled: !!chatOverlayMeetup?.id,
-    queryFn: async () => {
-      const res = await fetch(
-        `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatOverlayMeetup.id}`,
-        {
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-            ...(actualUser?.id ? { "x-user-id": String(actualUser.id) } : {}),
-          },
-        },
-      );
-      if (!res.ok) throw new Error(String(res.status));
-      return res.json();
-    },
-    retry: 1,
-  });
 
   return (
     <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="quick-meetup-widget">
