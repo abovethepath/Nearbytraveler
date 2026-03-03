@@ -21,6 +21,9 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const user = authStorage.getUser();
+  const isDarkMode =
+    typeof document !== "undefined" &&
+    document.documentElement.classList.contains("dark");
   const bottomNavSafeOffset = 'max(5rem, calc(60px + 1rem + var(--sab)))';
   const bottomNavSafeOffsetMinimized = 'max(1rem, calc(60px + 1rem + var(--sab)))';
 
@@ -242,10 +245,16 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
             >
               <div
                 className={`max-w-[70%] p-2 rounded-lg text-sm ${
-                  msg.senderId === user?.id
-                    ? 'bg-blue-600 dark:bg-blue-600 text-white dark:text-white'
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
+                  msg.senderId === user?.id ? '' : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
                 }`}
+                style={
+                  msg.senderId === user?.id
+                    ? {
+                        backgroundColor: isDarkMode ? "#005C4B" : "#DCF8C6",
+                        color: isDarkMode ? "#fff" : "#111",
+                      }
+                    : undefined
+                }
               >
                 {msg.content}
               </div>
