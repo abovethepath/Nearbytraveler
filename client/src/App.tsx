@@ -1771,7 +1771,7 @@ function Router() {
   if (shouldGateAuthenticatedRendering) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-300 border-t-orange-500" />
+        <div className="text-sm font-semibold text-gray-500 dark:text-gray-400">Loading…</div>
       </div>
     );
   }
