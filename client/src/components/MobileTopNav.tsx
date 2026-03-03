@@ -57,7 +57,6 @@ export function MobileTopNav() {
     const handleUpdate = (e: any) => {
       if (e?.detail) {
         setCurrentUser(e.detail);
-        localStorage.setItem('travelconnect_user', JSON.stringify(e.detail));
       }
     };
     window.addEventListener("profilePhotoUpdated", handleUpdate);

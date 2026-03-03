@@ -85,9 +85,6 @@ export default function FinishingSetup() {
         if (!mounted.current) return;
         setDone(true);
         setUser(serverUser);
-        try {
-          localStorage.setItem("user", JSON.stringify(serverUser));
-        } catch (_) {}
         setMessage("Taking you home…");
         setTimeout(() => {
           if (mounted.current) setLocation("/home");

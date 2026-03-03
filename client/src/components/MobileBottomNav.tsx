@@ -29,19 +29,11 @@ export function MobileBottomNav() {
       setResolvedUser(authContext.user);
       return;
     }
-    try {
-      const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('currentUser');
-      if (storedUser) {
-        const parsed = JSON.parse(storedUser);
-        if (parsed?.id) { setResolvedUser(parsed); return; }
-      }
-    } catch {}
     fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' })
       .then(res => res.ok ? res.json() : null)
       .then(sessionUser => {
         if (sessionUser?.id) {
           setResolvedUser(sessionUser);
-          try { localStorage.setItem('user', JSON.stringify(sessionUser)); } catch {}
         }
       })
       .catch(() => {});

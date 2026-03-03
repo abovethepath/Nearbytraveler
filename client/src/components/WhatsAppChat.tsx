@@ -43,6 +43,10 @@ interface ChatMember {
   profileImage?: string;
   userType: string;
   hometownCity: string;
+  hometownState?: string;
+  hometownCountry?: string;
+  location?: string;
+  locationLabel?: string;
   isAdmin: boolean;
   joinedAt: string;
   isMuted?: boolean;
@@ -396,29 +400,58 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     const out: ChatMember[] = [];
 
     for (const item of raw) {
-      // Already in ChatMember shape (chatrooms)
-      if (item && typeof item === 'object' && 'id' in item && 'username' in item && 'isAdmin' in item) {
-        out.push(item as ChatMember);
-        continue;
-      }
+      const toText = (v: any): string => {
+        if (v == null) return "";
+        const t = String(v).trim();
+        if (!t || t.toLowerCase() === "null" || t.toLowerCase() === "undefined") return "";
+        return t;
+      };
 
-      // Event/meetup participants return nested `user`
-      const user = item?.user;
-      const id = Number(user?.id ?? item?.userId ?? item?.id);
-      const username = String(user?.username ?? item?.username ?? '');
+      // Event/meetup participants may return nested `user`; chatrooms return a flat member row.
+      const src = (item && typeof item === "object" && (item as any).user) ? (item as any).user : item;
+      const id = Number((src as any)?.id ?? (item as any)?.userId ?? (item as any)?.id);
+      const username = String((src as any)?.username ?? (item as any)?.username ?? '');
       if (!Number.isFinite(id) || id <= 0 || !username) continue;
+
+      const hometownCity = toText(
+        (src as any)?.hometownCity ??
+          (src as any)?.hometown_city ??
+          (item as any)?.hometownCity ??
+          (item as any)?.hometown_city,
+      );
+      const hometownState = toText(
+        (src as any)?.hometownState ??
+          (src as any)?.hometown_state ??
+          (item as any)?.hometownState ??
+          (item as any)?.hometown_state,
+      );
+      const hometownCountry = toText(
+        (src as any)?.hometownCountry ??
+          (src as any)?.hometown_country ??
+          (item as any)?.hometownCountry ??
+          (item as any)?.hometown_country,
+      );
+      const location = toText((src as any)?.location ?? (item as any)?.location);
+      const locationLabel =
+        (hometownCity
+          ? `${hometownCity}${hometownState ? `, ${hometownState}` : ""}`
+          : (location ? location : "")) || "";
 
       out.push({
         id,
         username,
-        name: String(user?.name ?? item?.name ?? ''),
-        profileImage: (user?.profileImage ?? item?.profileImage) || undefined,
-        userType: String(user?.userType ?? item?.userType ?? ''),
-        hometownCity: String(user?.hometownCity ?? item?.hometownCity ?? ''),
+        name: toText((src as any)?.name ?? (item as any)?.name),
+        profileImage: ((src as any)?.profileImage ?? (item as any)?.profileImage) || undefined,
+        userType: toText((src as any)?.userType ?? (item as any)?.userType),
+        hometownCity,
+        hometownState: hometownState || undefined,
+        hometownCountry: hometownCountry || undefined,
+        location: location || undefined,
+        locationLabel: locationLabel || undefined,
         // Do not assume admin/moderator privileges from participant lists
-        isAdmin: Boolean(item?.isAdmin) || false,
-        joinedAt: String(item?.joinedAt ?? item?.createdAt ?? new Date().toISOString()),
-        isMuted: Boolean(item?.isMuted) || undefined,
+        isAdmin: Boolean((item as any)?.isAdmin) || false,
+        joinedAt: String((item as any)?.joinedAt ?? (item as any)?.createdAt ?? new Date().toISOString()),
+        isMuted: Boolean((item as any)?.isMuted) || undefined,
       });
     }
 
@@ -489,7 +522,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     return (
       member.name?.toLowerCase().includes(searchLower) ||
       member.username?.toLowerCase().includes(searchLower) ||
-      member.hometownCity?.toLowerCase().includes(searchLower)
+      member.hometownCity?.toLowerCase().includes(searchLower) ||
+      member.location?.toLowerCase().includes(searchLower) ||
+      member.locationLabel?.toLowerCase().includes(searchLower)
     );
   });
 
@@ -1394,7 +1429,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         {member.isAdmin && <span className="ml-2 text-xs text-green-400">Admin</span>}
                         {member.isMuted && <span className="ml-2 text-xs text-red-400">Muted</span>}
                       </p>
-                      <p className="text-xs text-gray-400 truncate">{member.hometownCity || 'Unknown'}</p>
+                      <p className="text-xs text-gray-400 truncate">{member.locationLabel || member.location || member.hometownCity || 'Unknown'}</p>
                     </div>
                   </div>
                   {isCurrentUserAdmin && member.id !== currentUserId && (
@@ -1583,7 +1618,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                             {member.isAdmin && <span className="ml-2 text-xs text-green-400">Admin</span>}
                             {member.isMuted && <span className="ml-2 text-xs text-red-400">Muted</span>}
                           </p>
-                          <p className="text-xs text-gray-400 truncate">{member.hometownCity || 'Unknown'}</p>
+                          <p className="text-xs text-gray-400 truncate">{member.locationLabel || member.location || member.hometownCity || 'Unknown'}</p>
                         </div>
                       </div>
                       {isCurrentUserAdmin && member.id !== currentUserId && (

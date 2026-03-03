@@ -241,8 +241,6 @@ function Navbar() {
 
         // Update all storage systems
         if (setUser) setUser(updatedUser);
-        authStorage.setUser(updatedUser);
-        localStorage.setItem("travelconnect_user", JSON.stringify(updatedUser));
 
         console.log("🔄 Navbar: Using event user data directly");
       }

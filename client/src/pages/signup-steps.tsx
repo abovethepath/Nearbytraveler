@@ -142,7 +142,6 @@ export default function SignupSteps() {
       return response.json();
     },
     onSuccess: (user) => {
-      localStorage.setItem('travelconnect_user', JSON.stringify(user));
       setUser(user);
       toast({
         title: "Account created successfully!",

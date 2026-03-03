@@ -4,7 +4,7 @@ import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 
 import { queryClient, invalidateUserCache, getApiBaseUrl } from "./lib/queryClient";
-import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
+import { QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -215,6 +215,36 @@ function NativeIOSSearchWidget() {
   return <AdvancedSearchWidget open={open} onOpenChange={setOpen} />;
 }
 
+function ProfileByUsername({ username }: { username: string }) {
+  const normalized = (username || "").trim();
+  const { data, isLoading, isError } = useQuery<{ id: number; username?: string }>({
+    queryKey: ["userIdByUsername", normalized.toLowerCase()],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/users/by-username/${encodeURIComponent(normalized)}`, {
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const err: any = new Error("Failed to resolve username");
+        err.status = res.status;
+        throw err;
+      }
+      return res.json();
+    },
+    enabled: normalized.length > 0,
+  });
+
+  if (!normalized) return <NotFound />;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-sm font-semibold text-gray-500 dark:text-gray-400">Loading…</div>
+      </div>
+    );
+  }
+  if (isError || !data?.id) return <NotFound />;
+  return <ProfileComplete userId={data.id} />;
+}
+
 function Router() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(!user);
@@ -400,16 +430,8 @@ function Router() {
   const hasLocalAuthEvidence = React.useCallback(() => {
     try {
       if (isSessionMarkedInvalid()) return false;
-      // Never treat localStorage as auth unless the server session has been verified
-      // for this tab (prevents incognito/no-cookie showing logged-in UI).
-      if (!isSessionVerified()) return false;
-      return (
-        !!localStorage.getItem("user") ||
-        !!localStorage.getItem("travelconnect_user") ||
-        !!localStorage.getItem("current_user") ||
-        !!localStorage.getItem("authUser") ||
-        !!localStorage.getItem("currentUser")
-      );
+      // Do not use localStorage as an auth source (ever).
+      return false;
     } catch {
       return false;
     }
@@ -420,23 +442,29 @@ function Router() {
   const hasCachedUserData = React.useCallback(() => {
     try {
       if (isSessionMarkedInvalid()) return false;
-      return (
-        !!localStorage.getItem("user") ||
-        !!localStorage.getItem("travelconnect_user") ||
-        !!localStorage.getItem("current_user") ||
-        !!localStorage.getItem("authUser") ||
-        !!localStorage.getItem("currentUser")
-      );
+      // We don't rely on localStorage for auth hydration; only the in-memory `user`
+      // and the server session check determine authenticated rendering.
+      return false;
     } catch {
       return false;
     }
   }, [isSessionMarkedInvalid]);
 
-  const clearLocalAuthState = React.useCallback(() => {
-    // Intentionally NOT destructive: we only clear localStorage on explicit logout.
-    // When a session expires, we mark it invalid and stop treating stale localStorage
-    // as authenticated, but we don't wipe keys automatically.
-    markSessionInvalid("clearLocalAuthState");
+  const clearLocalAuthState = React.useCallback((reason: string) => {
+    // When the server says "no session", immediately stop any stale client-side identity
+    // from influencing UI, especially in incognito/private mode.
+    try {
+      authStorage.clearUser();
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("current_user");
+      localStorage.removeItem("userData");
+      localStorage.removeItem("userSession");
+    } catch {
+      // ignore storage errors
+    }
+    markSessionInvalid(reason);
+    clearSessionVerified();
   }, []);
 
   const syncAuthFromServer = React.useCallback(
@@ -457,7 +485,7 @@ function Router() {
       authSyncInFlightRef.current = true;
       const seq = ++authSyncSeqRef.current;
 
-      const expectedAuth = !!user?.id || hasCachedUserData();
+      const expectedAuth = !!user?.id;
       if (expectedAuth) setIsVerifyingAuth(true);
 
       try {
@@ -476,26 +504,17 @@ function Router() {
             clearSessionInvalid();
             markSessionVerified();
             setUser(serverUser);
-            authStorage.setUser(serverUser);
-            try {
-              localStorage.setItem("user", JSON.stringify(serverUser));
-            } catch {
-              // ignore storage errors
-            }
           }
           return;
         }
 
         if (res.status === 401) {
-          // Session is invalid/expired → mark invalid for this tab (do NOT wipe localStorage).
-          markSessionInvalid("syncAuthFromServer:401");
-          clearSessionVerified();
+          // No valid session → treat as logged out immediately.
+          clearLocalAuthState("syncAuthFromServer:401");
           setUser(null);
 
-          // Only force redirect when we *thought* we were authenticated (prevents bouncing public pages).
-          // Also never redirect during auth hydration/initial validation to avoid "Welcome Back" flashes.
-          // Only redirect on protected routes.
-          if (expectedAuth && !isPublicRoute && !(authLoading || !authInitialized || isLoading)) {
+          // Redirect unauthenticated users away from protected routes.
+          if (!isPublicRoute && !(authLoading || !authInitialized || isLoading)) {
             try {
               // Preserve intended destination for after login.
               if (!isLandingPage) localStorage.setItem("postAuthRedirect", location);
@@ -588,9 +607,8 @@ function Router() {
   }, [syncAuthFromServer]);
 
   useEffect(() => {
-    // Explicit auth hydration/loading gate (web only):
-    // keep route guards from making redirect/layout decisions until we've restored
-    // any stored user and finished the initial session validation flow.
+    // Explicit auth gate (web only): don't render protected routes (or "/") until
+    // we have confirmed session state with the server.
     if (!isNativeIOSApp()) setAuthLoading(true);
 
     // Skip auth check for signup routes and public pages (but not root '/' which needs auth check for redirect)
@@ -604,7 +622,7 @@ function Router() {
 
     console.log('🚀 PRODUCTION CACHE BUST v2025-08-17-17-28 - Starting authentication check');
 
-    // Check server-side session first
+    // Check server-side session first (cookie/session is source of truth)
     const checkServerAuth = async () => {
       try {
         console.log('🔍 Checking server-side authentication...');
@@ -632,9 +650,6 @@ function Router() {
           clearSessionInvalid();
           markSessionVerified();
           setUser(serverUser);
-          authStorage.setUser(serverUser);
-          localStorage.setItem('user', JSON.stringify(serverUser));
-          localStorage.removeItem('just_registered');
           
           if (serverUser && !localStorage.getItem('welcomed_' + serverUser.id)) {
             console.log('🎉 New user detected - showing welcome');
@@ -644,57 +659,18 @@ function Router() {
           setIsLoading(false);
           setAuthInitialized(true);
           return;
+        }
+        
+        if (response.status === 401) {
+          // No session cookie / expired session.
+          clearLocalAuthState("checkServerAuth:401");
+          setUser(null);
         } else {
-          console.log('❌ No server session found (401) - attempting recovery...');
+          console.log("⚠️ Server auth check returned non-OK:", response.status);
         }
       } catch (error) {
         console.log('❌ Server auth check failed:', error);
       }
-
-      // RECOVERY: If we have user data in localStorage, try to recover the session
-      const storedUserData = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-      if (storedUserData) {
-        try {
-          const storedUser = JSON.parse(storedUserData);
-          if (storedUser && storedUser.id) {
-            console.log('🔄 Attempting session recovery for user:', storedUser.username);
-            const recoveryResponse = await fetch(`${getApiBaseUrl()}/api/auth/recover-session`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              credentials: 'include',
-              body: JSON.stringify({
-                userId: storedUser.id,
-                email: storedUser.email,
-                username: storedUser.username
-              })
-            });
-            
-            if (recoveryResponse.ok) {
-              const recoveredUser = await recoveryResponse.json();
-              console.log('✅ Session recovered successfully for:', recoveredUser.username);
-              clearSessionInvalid();
-              markSessionVerified();
-              setUser(recoveredUser);
-              authStorage.setUser(recoveredUser);
-              localStorage.setItem('user', JSON.stringify(recoveredUser));
-              localStorage.removeItem('just_registered');
-              setIsLoading(false);
-              setAuthInitialized(true);
-              return;
-            } else {
-              console.log('❌ Session recovery failed - credentials mismatch');
-            }
-          }
-        } catch (e) {
-          console.error('❌ Session recovery error:', e);
-        }
-      }
-
-      // If server session is missing AND recovery failed, mark invalid (do NOT wipe localStorage automatically).
-      console.log('🚫 Session invalid after recovery attempt - marking invalid (no storage wipe)');
-      markSessionInvalid("checkServerAuth:recovery-failed");
-      clearSessionVerified();
-      setUser(null);
 
       setIsLoading(false);
       setAuthInitialized(true);
@@ -711,9 +687,9 @@ function Router() {
     !isNativeIOSApp() &&
     // Only gate during initial hydration/first validation; don't block UI for background re-checks.
     (authLoading || !authInitialized || isLoading) &&
-    // Gate protected routes, and also gate public routes when we have local auth evidence,
-    // to avoid flashing authenticated layouts before the server session is validated.
-    (!isPublicRoute || hasCachedUserData() || !!user?.id);
+    // Gate protected routes, and also gate "/" so we don't render logged-out vs logged-in UI
+    // before the session check completes.
+    (!isPublicRoute || normalizedPath === "/");
 
   // Initialize WebSocket connection for authenticated users
   useEffect(() => {
@@ -784,21 +760,14 @@ function Router() {
 
   const authValue = React.useMemo(() => {
     // Robust authentication check that accounts for timing issues
-    const hasUserInState = !!user;
-    const hasUserInStorage = !!localStorage.getItem("user");
-    const hasTravelConnectUser = !!localStorage.getItem("travelconnect_user");
-    const actualAuth =
-      !isSessionMarkedInvalid() &&
-      (hasUserInState || (isSessionVerified() && (hasUserInStorage || hasTravelConnectUser)));
-
-    console.log('🔍 AUTH CHECK: user in state:', hasUserInState, 'user in storage:', hasUserInStorage, 'travelconnect user:', hasTravelConnectUser, 'session invalid:', isSessionMarkedInvalid(), 'final auth:', actualAuth);
+    const actualAuth = !isSessionMarkedInvalid() && !!user?.id;
 
     return {
       user: user,
       setUser: (newUser: User | null) => {
         console.log('AuthContext setUser called with:', newUser?.username || 'null');
-        authStorage.setUser(newUser);
         setUser(newUser);
+        if (!newUser?.id) clearSessionVerified();
       },
       logout: async (redirectTo = '/') => {
         console.log('🚪 AuthContext logout called - starting logout process');
@@ -875,11 +844,8 @@ function Router() {
         // CRITICAL: Clear ALL old user data first to prevent stale data from previous user
         authStorage.clearUser();
         invalidateUserCache();
-        // Now store the new user
-        authStorage.setUser(userData);
-        if (token) {
-          localStorage.setItem('auth_token', token);
-        }
+        clearSessionInvalid();
+        markSessionVerified();
         setUser(userData);
       },
       isAuthenticated: actualAuth,
@@ -895,6 +861,9 @@ function Router() {
     isLoading,
     isSessionMarkedInvalid,
     isSessionVerified,
+    clearSessionVerified,
+    clearSessionInvalid,
+    markSessionVerified,
   ]);
 
   // Post-auth redirect (used for invite links, etc.)
@@ -1274,6 +1243,29 @@ function Router() {
     }
 
     console.log('✅ USER AUTHENTICATED - routing to:', location, 'user:', effectiveUser?.username || 'unknown user');
+
+    // Profile routes (fixes /profile/:username returning NotFound)
+    const profilePath = (() => {
+      const noHash = location.split('#')[0];
+      const noQuery = noHash.split('?')[0];
+      return (noQuery || '/');
+    })();
+
+    if (profilePath === '/profile') {
+      return <ProfileComplete />;
+    }
+
+    if (profilePath.startsWith('/profile/')) {
+      const rawIdent = profilePath.split('/')[2] || '';
+      const decoded = decodeURIComponent(rawIdent);
+      const ident = decoded.startsWith('@') ? decoded.slice(1) : decoded;
+      if (!ident) return <NotFound />;
+      const asNum = Number.parseInt(ident, 10);
+      if (!Number.isNaN(asNum) && String(asNum) === ident) {
+        return <ProfileComplete userId={asNum} />;
+      }
+      return <ProfileByUsername username={ident} />;
+    }
 
     if (location === '/welcome') {
       return <Welcome />;

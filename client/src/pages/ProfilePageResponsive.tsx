@@ -14,16 +14,7 @@ export default function ProfilePageResponsive() {
   useEffect(() => {
     async function fetchFreshUserData() {
       try {
-        // First check if user is authenticated
         const contextUser = authContext.user;
-        const storageUser = localStorage.getItem('user');
-        const travelConnectUser = localStorage.getItem('travelConnectUser');
-        
-        if (!contextUser && !storageUser && !travelConnectUser) {
-          // Not authenticated
-          setIsReady(true);
-          return;
-        }
         
         // Fetch fresh data from API
         const response = await fetch(`${getApiBaseUrl()}/api/auth/user`, {
@@ -33,32 +24,14 @@ export default function ProfilePageResponsive() {
         if (response.ok) {
           const freshUser = await response.json();
           setActualUser(freshUser);
-          // Update localStorage with fresh data
-          localStorage.setItem('user', JSON.stringify(freshUser));
         } else {
-          // Fallback to cached data if API fails
-          if (contextUser) {
-            setActualUser(contextUser);
-          } else if (storageUser) {
-            setActualUser(JSON.parse(storageUser));
-          } else if (travelConnectUser) {
-            setActualUser(JSON.parse(travelConnectUser));
-          }
+          // Fallback to context user only (never to localStorage)
+          setActualUser(contextUser ?? null);
         }
       } catch (error) {
         console.error('Failed to fetch user data:', error);
-        // Fallback to cached data
-        const contextUser = authContext.user;
-        const storageUser = localStorage.getItem('user');
-        if (contextUser) {
-          setActualUser(contextUser);
-        } else if (storageUser) {
-          try {
-            setActualUser(JSON.parse(storageUser));
-          } catch (e) {
-            console.error('Failed to parse cached user');
-          }
-        }
+        // Fallback to context user only (never to localStorage)
+        setActualUser(authContext.user ?? null);
       } finally {
         setIsReady(true);
       }

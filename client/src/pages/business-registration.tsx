@@ -102,8 +102,7 @@ export default function BusinessRegistration() {
       // Clear session storage
       sessionStorage.removeItem('businessRegistrationData');
       
-      // Store user data and redirect
-      localStorage.setItem("travelconnect_user", JSON.stringify(response));
+      // Redirect; session cookie is the source of truth
       window.location.href = "/profile";
     },
     onError: (error: any) => {

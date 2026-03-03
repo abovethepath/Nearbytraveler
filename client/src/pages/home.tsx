@@ -746,7 +746,6 @@ export default function Home() {
             console.log('Fresh user data from database:', freshUser);
 
             // Update with fresh data
-            localStorage.setItem('travelconnect_user', JSON.stringify(freshUser));
             setUser(freshUser);
           }
         } catch (error) {
@@ -1607,9 +1606,6 @@ export default function Home() {
               setUser(finalUpdatedUser);
             }
 
-            // Update localStorage with the new user data
-            localStorage.setItem('travelconnect_user', JSON.stringify(finalUpdatedUser));
-
             // Invalidate queries to refresh content including recommendations
             queryClient.invalidateQueries({ queryKey: ['/api/users'] });
             queryClient.invalidateQueries({ queryKey: ['/api/events'] });
@@ -2035,7 +2031,7 @@ export default function Home() {
                 {/* Quick Meetup Widget - "Let's Meet Now" - MOVED HERE for better visibility - HIDE FOR BUSINESS USERS */}
                 {loadedSections.has('quickMeets') && effectiveUser?.userType !== 'business' && (
                   <div className="mb-8">
-                    <QuickMeetupWidget currentUser={effectiveUser} />
+                    <QuickMeetupWidget currentUser={effectiveUser} compactOnly />
                   </div>
                 )}
                 

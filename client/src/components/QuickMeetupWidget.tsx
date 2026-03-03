@@ -8,15 +8,16 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Zap, Clock, MapPin, Users, Coffee, Plus, MessageCircle, Edit3, Trash2, MessageSquare, Mic, Sparkles } from 'lucide-react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/App';
-import { authStorage } from '@/lib/auth';
 import SmartLocationInput from '@/components/SmartLocationInput';
 import { isStateOptionalForCountry } from '@/lib/locationHelpers';
 import { isNativeIOSApp } from '@/lib/nativeApp';
 import { useLocation } from 'wouter';
 import { AIQuickCreateMeetup } from '@/components/AIQuickCreateMeetup';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import WhatsAppChat from "@/components/WhatsAppChat";
 
 interface NewMeetup {
   title: string;
@@ -31,7 +32,19 @@ interface NewMeetup {
   organizerNotes: string; // Contact info like "call me if lost"
 }
 
-export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentUser }: { city?: string; profileUserId?: number; triggerCreate?: boolean; currentUser?: any }) {
+export function QuickMeetupWidget({
+  city,
+  profileUserId,
+  triggerCreate,
+  currentUser,
+  compactOnly = false,
+}: {
+  city?: string;
+  profileUserId?: number;
+  triggerCreate?: boolean;
+  currentUser?: any;
+  compactOnly?: boolean;
+}) {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -39,9 +52,12 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
   const [isCustomActivity, setIsCustomActivity] = useState(false);
   const [editingMeetupId, setEditingMeetupId] = useState<number | null>(null);
   const [useAiVoice, setUseAiVoice] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [detailsMeetup, setDetailsMeetup] = useState<any | null>(null);
+  const [chatOverlayMeetup, setChatOverlayMeetup] = useState<any | null>(null);
 
-  // CRITICAL FIX: Get user data like navbar does (authStorage is more reliable)
-  const actualUser = user || authStorage.getUser();
+  // Current user (session-based auth)
+  const actualUser = user || currentUser;
 
   // Fetch existing quick meetups
   const { data: quickMeetups, isLoading } = useQuery({
@@ -125,10 +141,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
   // when user is not yet a member. Do NOT navigate directly to quick-meetup-chat without joining first.
   const joinMutation = useMutation({
     mutationFn: async (meetupId: number) => {
-      if (!actualUser?.id) {
-        console.error('❌ JOIN FAILED: User not authenticated:', { contextUser: user, storageUser: authStorage.getUser() });
-        throw new Error("Please log in to join quick meets");
-      }
+      if (!actualUser?.id) throw new Error("Please log in to join quick meets");
 
       console.log('🚀 ATTEMPTING JOIN:', { meetupId, userId: actualUser.id });
       
@@ -149,8 +162,16 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
         title: "Joined!",
         description: "You've successfully joined the quick meet.",
       });
-      // Navigate to chatroom after joining
-      window.location.href = `/quick-meetup-chat/${data.meetupId}`;
+      setDetailsMeetup((prev) => {
+        if (!prev || prev.id !== data.meetupId) return prev;
+        const ids: number[] = Array.isArray(prev.participantIds) ? [...prev.participantIds] : [];
+        if (actualUser?.id && !ids.includes(actualUser.id)) ids.push(actualUser.id);
+        return {
+          ...prev,
+          participantIds: ids,
+          participantCount: Math.max(Number(prev.participantCount || 0), ids.length),
+        };
+      });
     },
     onError: (error: any) => {
       toast({
@@ -178,6 +199,17 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
       toast({ title: "Left meetup", description: "You've left the quick meetup." });
+      setDetailsMeetup((prev) => {
+        if (!prev || !actualUser?.id) return prev;
+        const ids: number[] = Array.isArray(prev.participantIds)
+          ? prev.participantIds.filter((x: any) => Number(x) !== Number(actualUser.id))
+          : [];
+        return {
+          ...prev,
+          participantIds: ids,
+          participantCount: Math.max(0, ids.length),
+        };
+      });
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message || "Failed to leave", variant: "destructive" });
@@ -388,6 +420,48 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
     new Date(meetup.expiresAt).getTime() > Date.now()
   ) || [];
 
+  const openDetails = (meetup: any) => {
+    setDetailsMeetup(meetup);
+    setDetailsOpen(true);
+  };
+
+  const timeRemainingLabel = (expiresAtIso?: string) => {
+    if (!expiresAtIso) return "";
+    const expiresAt = new Date(expiresAtIso);
+    const timeLeft = Math.max(0, expiresAt.getTime() - Date.now());
+    const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+    const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    return hoursLeft > 0 ? `${hoursLeft}h ${minutesLeft}m` : `${minutesLeft}m`;
+  };
+
+  const isDetailsJoined =
+    !!detailsMeetup?.id &&
+    !!actualUser?.id &&
+    Array.isArray(detailsMeetup?.participantIds) &&
+    detailsMeetup.participantIds.map((x: any) => Number(x)).includes(Number(actualUser.id));
+
+  const { data: chatroomForOverlay } = useQuery<any>({
+    queryKey: chatOverlayMeetup?.id
+      ? ["/api/quick-meetup-chatrooms", chatOverlayMeetup.id]
+      : ["quick-meetup-chatroom-disabled"],
+    enabled: !!chatOverlayMeetup?.id,
+    queryFn: async () => {
+      const res = await fetch(
+        `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatOverlayMeetup.id}`,
+        {
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+            ...(actualUser?.id ? { "x-user-id": String(actualUser.id) } : {}),
+          },
+        },
+      );
+      if (!res.ok) throw new Error(String(res.status));
+      return res.json();
+    },
+    retry: 1,
+  });
+
   return (
     <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="quick-meetup-widget">
       {/* ACTIVE MEETUPS - Show ALL active hangouts prominently at top for everyone to see */}
@@ -414,12 +488,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
                   return (
                     <div 
                       key={meetup.id}
-                      className={`bg-white dark:bg-gray-800 rounded-xl p-3 cursor-pointer hover:shadow-lg transition-all ${isOwn ? 'border-2 border-orange-400 dark:border-orange-500 ring-2 ring-orange-200 dark:ring-orange-800' : 'border border-green-200 dark:border-green-700'}`}
-                      onClick={() => {
-                        if (isOwn) setLocation(`/quick-meetups?id=${meetup.id}`);
-                        else if (isJoined) window.location.href = `/quick-meetup-chat/${meetup.id}`;
-                        else handleJoinMeetup(meetup.id);
-                      }}
+                      className={`bg-white dark:bg-gray-800 rounded-xl p-3 hover:shadow-lg transition-all ${isOwn ? 'border-2 border-orange-400 dark:border-orange-500 ring-2 ring-orange-200 dark:ring-orange-800' : 'border border-green-200 dark:border-green-700'}`}
                     >
                       <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
                         <div className="flex items-center gap-2 min-w-0">
@@ -441,17 +510,17 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
                           {hoursLeft > 0 ? `${hoursLeft}h ${minutesLeft}m` : `${minutesLeft}m`}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
-                        <span className="flex items-center gap-1">
+                      <div className="flex items-center justify-between gap-2 text-xs text-gray-600 dark:text-gray-400">
+                        <span className="flex items-center gap-1 min-w-0">
                           <MapPin className="w-3 h-3" />
-                          {meetup.city}
+                          <span className="truncate">{meetup.city}</span>
                         </span>
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center gap-1 shrink-0">
                           <Users className="w-3 h-3" />
                           {meetup.participantCount || 0} joined
                         </span>
                       </div>
-                      <div className="mt-2">
+                      <div className="mt-2 flex items-center justify-between gap-2">
                         {isOwn ? (
                           <Button
                             size="sm"
@@ -459,27 +528,53 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
                               e.stopPropagation();
                               setLocation(`/quick-meetups?id=${meetup.id}`);
                             }}
-                            className="w-full text-xs h-8 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
+                            className="flex-1 text-xs h-8 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
                           >
                             <Edit3 className="w-3 h-3 mr-1" />
-                            Manage Your Meetup
+                            Manage
                           </Button>
                         ) : isJoined ? (
-                          <div className="w-full text-center text-xs font-semibold text-green-700 dark:text-green-300">
-                            Joined ✓
-                          </div>
+                          <>
+                            <div className="text-xs font-semibold text-green-700 dark:text-green-300">
+                              Joined ✓
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openDetails(meetup);
+                              }}
+                              className="h-8 px-2 text-xs text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                            >
+                              View Details
+                            </Button>
+                          </>
                         ) : (
-                          <Button
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleJoinMeetup(meetup.id);
-                            }}
-                            className="w-full text-xs h-8 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white"
-                          >
-                            <Users className="w-3 h-3 mr-1" />
-                            Join This Hangout!
-                          </Button>
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleJoinMeetup(meetup.id);
+                              }}
+                              className="flex-1 text-xs h-8 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white"
+                            >
+                              <Users className="w-3 h-3 mr-1" />
+                              Join Meetup
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openDetails(meetup);
+                              }}
+                              className="h-8 px-2 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            >
+                              See More
+                            </Button>
+                          </>
                         )}
                       </div>
                     </div>
@@ -754,7 +849,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
       </Card>
 
       {/* Existing Quick Meetups - Only show ACTIVE meetups */}
-      {quickMeetups && quickMeetups.length > 0 && (
+      {!compactOnly && quickMeetups && quickMeetups.length > 0 && (
         <div className="grid gap-3 mt-4">
           {quickMeetups
             .filter((meetup: any) => new Date(meetup.expiresAt).getTime() > Date.now())
@@ -786,7 +881,6 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
                   className="backdrop-blur-sm bg-white/70 dark:bg-gray-800/70 border border-orange-300/50 dark:border-orange-700/50 overflow-visible cursor-pointer hover:shadow-xl hover:border-orange-400/60 dark:hover:border-orange-600/60 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300"
                   onClick={() => {
                     if (isOwn) setLocation(`/quick-meetups?id=${meetup.id}`);
-                    else if (isJoined) window.location.href = `/quick-meetup-chat/${meetup.id}`;
                     else handleJoinMeetup(meetup.id);
                   }}
                   data-testid={`quick-meetup-card-${meetup.id}`}
@@ -978,13 +1072,13 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
                               variant="outline"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                                setLocation(`/quick-meetup-chat/${meetup.id}`);
                               }}
                               className="text-xs border-blue-500 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                               data-testid={`button-open-chat-${meetup.id}`}
                             >
                               <MessageSquare className="w-3 h-3 mr-1" />
-                              Open Chat
+                              Chat
                             </Button>
                             <Button
                               size="sm"
@@ -1023,6 +1117,120 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate, currentU
                 </>
             );
           })}
+        </div>
+      )}
+
+      {/* Home mode: details modal (no route change) */}
+      <Dialog
+        open={detailsOpen}
+        onOpenChange={(open) => {
+          setDetailsOpen(open);
+          if (!open) setDetailsMeetup(null);
+        }}
+      >
+        <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-lg p-0 overflow-hidden !top-auto !bottom-0 !translate-y-0 sm:!top-1/2 sm:!bottom-auto sm:!-translate-y-1/2 rounded-t-2xl sm:rounded-2xl">
+          {detailsMeetup && (
+            <div className="bg-white dark:bg-gray-900">
+              <DialogHeader className="px-4 pt-4 pb-2">
+                <DialogTitle className="text-base font-bold text-gray-900 dark:text-white">
+                  {detailsMeetup.title}
+                </DialogTitle>
+                <div className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                  Host: @{detailsMeetup.organizerUsername || "unknown"} • {timeRemainingLabel(detailsMeetup.expiresAt)} left •{" "}
+                  {detailsMeetup.participantCount || 0} joined
+                </div>
+              </DialogHeader>
+
+              <div className="px-4 pb-3 space-y-3">
+                {detailsMeetup.description && (
+                  <div>
+                    <div className="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1">Description</div>
+                    <div className="text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">
+                      {detailsMeetup.description}
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <div className="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1">Meet location</div>
+                  <div className="text-sm text-gray-800 dark:text-gray-100">{detailsMeetup.meetingPoint || "—"}</div>
+                  {detailsMeetup.street && (
+                    <div className="text-sm text-gray-700 dark:text-gray-200">{detailsMeetup.street}</div>
+                  )}
+                  <div className="text-sm text-gray-700 dark:text-gray-200">
+                    {detailsMeetup.city}
+                    {detailsMeetup.state ? `, ${detailsMeetup.state}` : ""}
+                    {detailsMeetup.country ? `, ${detailsMeetup.country}` : ""}
+                  </div>
+                </div>
+
+                {detailsMeetup.organizerNotes && (
+                  <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-3">
+                    <div className="text-xs font-semibold text-blue-900 dark:text-blue-200 mb-1">Contact info</div>
+                    <div className="text-sm text-blue-900 dark:text-blue-100 whitespace-pre-wrap">
+                      {detailsMeetup.organizerNotes}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between gap-2 pt-2">
+                  {!isDetailsJoined ? (
+                    <Button
+                      onClick={() => detailsMeetup?.id && handleJoinMeetup(detailsMeetup.id)}
+                      disabled={joinMutation.isPending}
+                      className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white"
+                    >
+                      {joinMutation.isPending ? "Joining..." : "Join Meetup"}
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        onClick={() => {
+                          setChatOverlayMeetup(detailsMeetup);
+                          setDetailsOpen(false);
+                        }}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Open Chat
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => detailsMeetup?.id && leaveMutation.mutate(detailsMeetup.id)}
+                        disabled={leaveMutation.isPending}
+                        className="border-red-300 text-red-700 dark:text-red-300 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      >
+                        {leaveMutation.isPending ? "Leaving..." : "Leave"}
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Full-screen chat overlay (keeps user on home page route) */}
+      {chatOverlayMeetup && (
+        <div className="fixed inset-0 z-[99999] bg-black/60">
+          <div className="absolute inset-0">
+            {chatroomForOverlay?.id && actualUser?.id ? (
+              <WhatsAppChat
+                chatId={chatroomForOverlay.id}
+                chatType="meetup"
+                meetupId={chatOverlayMeetup.id}
+                title={chatOverlayMeetup.title}
+                subtitle={`${chatOverlayMeetup.participantCount || 0} participants`}
+                currentUserId={actualUser.id}
+                onBack={() => setChatOverlayMeetup(null)}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full bg-gray-900 text-white">
+                Loading chat…
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

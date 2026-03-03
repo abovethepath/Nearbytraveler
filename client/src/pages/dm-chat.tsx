@@ -16,13 +16,6 @@ interface UserDetails {
 }
 
 function getStoredUser() {
-  try {
-    const stored =
-      localStorage.getItem('user') ||
-      localStorage.getItem('travelconnect_user') ||
-      localStorage.getItem('current_user');
-    if (stored) return JSON.parse(stored);
-  } catch {}
   return null;
 }
 
@@ -69,7 +62,6 @@ export default function DMChat() {
       .then(sessionUser => {
         if (!cancelled && sessionUser?.id) {
           setResolvedUser(sessionUser);
-          try { localStorage.setItem('user', JSON.stringify(sessionUser)); } catch {}
         }
       })
       .catch(() => {})

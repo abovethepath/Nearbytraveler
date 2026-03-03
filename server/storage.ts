@@ -9969,6 +9969,9 @@ export class DatabaseStorage implements IStorage {
           profileImage: users.profileImage,
           userType: users.userType,
           hometownCity: users.hometownCity,
+          hometownState: users.hometownState,
+          hometownCountry: users.hometownCountry,
+          location: users.location,
           role: eventParticipants.role,
           joinedAt: eventParticipants.joinedAt,
           status: eventParticipants.status

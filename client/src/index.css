@@ -1172,6 +1172,17 @@ p, span, div, button, input, textarea, select {
    - Do NOT affect profile hero areas
    ============================================================ */
 
+/* High-contrast text on specific dark surfaces:
+   If a container uses these exact backgrounds, any muted/dim text must be near-white. */
+.dark :is(.bg-\[\#0f1923\], .bg-\[\#2a3540\]) {
+  color: rgb(240 240 240);
+}
+.dark :is(.bg-\[\#0f1923\], .bg-\[\#2a3540\])
+:is(.text-muted-foreground, .text-gray-300, .text-gray-400, .text-gray-500, .text-slate-300, .text-slate-400, .text-slate-500, .text-neutral-300, .text-neutral-400, .text-neutral-500) {
+  color: rgb(240 240 240) !important; /* #F0F0F0 */
+  -webkit-text-fill-color: rgb(240 240 240) !important;
+}
+
 /* Placeholders: make them clearly readable on mobile */
 .dark :is(input, textarea)::placeholder {
   color: rgb(240 240 240) !important; /* #F0F0F0 */

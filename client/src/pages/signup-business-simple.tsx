@@ -286,17 +286,6 @@ export default function SignupBusinessSimple() {
         login(response.user, response.token);
       }
       
-      // Store auth data in localStorage as backup (login function should handle this)
-      if (response.user) {
-        localStorage.setItem('user', JSON.stringify(response.user));
-        localStorage.setItem('userData', JSON.stringify(response.user));
-        localStorage.setItem('travelconnect_user', JSON.stringify(response.user));
-      }
-      if (response.token) {
-        localStorage.setItem('authToken', response.token);
-        localStorage.setItem('auth_token', response.token);
-      }
-      
       // Clear sessionStorage account data since signup is complete
       sessionStorage.removeItem('accountData');
       

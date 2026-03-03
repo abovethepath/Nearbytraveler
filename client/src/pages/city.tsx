@@ -53,11 +53,10 @@ export default function CityPage({ cityName }: CityPageProps) {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   
-  // Use robust authentication check with localStorage fallback
+  // Auth is session/cookie based; do not fall back to localStorage.
   const authContext = useAuth();
-  const authStorageUser = localStorage.getItem('user');
-  const hasStoredUser = !!authStorageUser;
-  const isActuallyAuthenticated = authContext.isAuthenticated || hasStoredUser;
+  const isActuallyAuthenticated = authContext.isAuthenticated;
+  const currentUserId = authContext.user?.id;
 
   // Extract city name from URL if not provided as prop
   const urlCityName = cityName || (location.split('/')[2] ? decodeURIComponent(location.split('/')[2]) : '');
@@ -435,8 +434,8 @@ export default function CityPage({ cityName }: CityPageProps) {
                             secretActivities: user.secretActivities || ""
                           }} 
                           searchLocation={decodedCityName}
-                          currentUserId={isActuallyAuthenticated ? JSON.parse(authStorageUser || '{}').id : undefined}
-                          isCurrentUser={isActuallyAuthenticated && user.id === JSON.parse(authStorageUser || '{}').id}
+                          currentUserId={isActuallyAuthenticated ? currentUserId : undefined}
+                          isCurrentUser={isActuallyAuthenticated && !!currentUserId && user.id === currentUserId}
                           isAvailableNow={availableNowIds.includes(user.id)}
                           variant="homeCity"
                         />
@@ -506,8 +505,8 @@ export default function CityPage({ cityName }: CityPageProps) {
                           key={business.id} 
                           user={business}
                           compact
-                          currentUserId={isActuallyAuthenticated ? JSON.parse(authStorageUser || '{}').id : undefined}
-                          isCurrentUser={isActuallyAuthenticated && business.id === JSON.parse(authStorageUser || '{}').id}
+                          currentUserId={isActuallyAuthenticated ? currentUserId : undefined}
+                          isCurrentUser={isActuallyAuthenticated && !!currentUserId && business.id === currentUserId}
                           isAvailableNow={availableNowIds.includes(business.id)}
                         />
                       ))}

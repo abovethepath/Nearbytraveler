@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
+import { useAuth } from "@/App";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,8 +61,8 @@ export default function Explore() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const storedUser = localStorage.getItem("user");
-  const currentUser = storedUser ? JSON.parse(storedUser) : null;
+  const auth = useAuth();
+  const currentUser = auth.user;
 
   // Fetch travel plans to determine if user is currently traveling (active destination)
   const { data: travelPlans = [] } = useQuery({
@@ -117,15 +118,9 @@ export default function Explore() {
   const { data: liveShares = [], isLoading: loadingShares, isError: errorShares } = useQuery<any[]>({
     queryKey: ["/api/live-shares", userCity],
     queryFn: async () => {
-      const user = typeof window !== "undefined" ? (() => {
-        try {
-          const raw = localStorage.getItem("user") || localStorage.getItem("travelconnect_user");
-          return raw ? JSON.parse(raw) : null;
-        } catch { return null; }
-      })() : null;
       const url = `${getApiBaseUrl()}/api/live-shares?city=${encodeURIComponent(userCity)}`;
       const headers: Record<string, string> = {};
-      if (user?.id) headers["x-user-id"] = String(user.id);
+      if (currentUser?.id) headers["x-user-id"] = String(currentUser.id);
       const res = await fetch(url, { credentials: "include", headers });
       if (!res.ok) return [];
       const data = await res.json();
@@ -138,15 +133,9 @@ export default function Explore() {
   const { data: myLiveShare } = useQuery<any>({
     queryKey: ["/api/live-shares/mine"],
     queryFn: async () => {
-      const user = typeof window !== "undefined" ? (() => {
-        try {
-          const raw = localStorage.getItem("user") || localStorage.getItem("travelconnect_user");
-          return raw ? JSON.parse(raw) : null;
-        } catch { return null; }
-      })() : null;
       const url = `${getApiBaseUrl()}/api/live-shares/mine`;
       const headers: Record<string, string> = {};
-      if (user?.id) headers["x-user-id"] = String(user.id);
+      if (currentUser?.id) headers["x-user-id"] = String(currentUser.id);
       const res = await fetch(url, { credentials: "include", headers });
       if (!res.ok) return null;
       return res.json();
@@ -157,8 +146,8 @@ export default function Explore() {
   const { data: communityTagsList = [], isLoading: loadingTags, isError: errorTags } = useQuery<any[]>({
     queryKey: ["/api/community-tags"],
     queryFn: async () => {
-      const res = await fetch("/api/community-tags?includePrivate=true");
-      if (!res.ok) return [];
+      const res = await fetch(`${getApiBaseUrl()}/api/community-tags?includePrivate=true`, { credentials: "include" });
+      if (!res.ok) throw new Error(`Failed to load communities (${res.status})`);
       return res.json();
     },
   });

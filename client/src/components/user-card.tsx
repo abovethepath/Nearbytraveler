@@ -177,7 +177,9 @@ export default function UserCard({
   return (
     <button 
       type="button"
-      className={`user-card w-full min-w-0 max-w-none !p-0 block overflow-hidden shadow-sm hover:shadow-md transition-all text-left flex flex-col items-stretch gap-0 leading-none ${
+      className={`user-card w-full min-w-0 max-w-none !p-0 block overflow-hidden shadow-sm hover:shadow-md transition-all ${
+        variant === "homeCity" ? "text-center" : "text-left"
+      } flex flex-col items-stretch gap-0 leading-none ${
         compact ? 'rounded-lg' : 'rounded-[14px] lg:rounded-[14px]'
       } ${showAvailableNow && !isCurrentUser ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : ''} ${
         variant === "homeCity" ? "bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2a2d3a]" : ""
@@ -232,14 +234,21 @@ export default function UserCard({
           </div>
         )}
         
-        {/* Business badge */}
-        {user.userType === 'business' && (
-          <div className="absolute top-1.5 right-1.5">
-            <span className="bg-orange-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
-              Biz
-            </span>
+        {/* Top-right badges (Home/Cities only): "You" + optional Biz */}
+        {(variant === "homeCity" && isCurrentUser) || user.userType === "business" ? (
+          <div className="absolute top-1.5 right-1.5 z-10 flex flex-col items-end gap-1">
+            {variant === "homeCity" && isCurrentUser && (
+              <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold border border-black/10 bg-black/55 text-white backdrop-blur-sm dark:border-white/10 dark:bg-white/10 dark:text-white/85">
+                You
+              </span>
+            )}
+            {user.userType === "business" && (
+              <span className="bg-orange-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
+                Biz
+              </span>
+            )}
           </div>
-        )}
+        ) : null}
         
         {/* Available Now badge - green, visible to everyone (web and native app) */}
         {showAvailableNow && (
@@ -266,7 +275,7 @@ export default function UserCard({
               <div className="truncate w-full font-extrabold text-[14px] text-gray-900 dark:text-white">
                 {handle}
               </div>
-              <div className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:text-white/70">
+              <div className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:text-[#D1D5DB]">
                 <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
                 <span className="truncate">{hometownLine}</span>
               </div>
@@ -277,25 +286,28 @@ export default function UserCard({
                   color: undefined,
                   fontSize: 12.5,
                   lineHeight: 1.5,
-                  minHeight: '2.5rem',
-                  maxHeight: '2.5rem',
-                  overflow: 'hidden',
+                  minHeight: "3.6rem", // 3 lines @ 12.5px * 1.5
+                  maxHeight: "3.6rem",
+                  overflow: "hidden",
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical" as any,
+                  WebkitLineClamp: 3 as any,
                 }}
               >
-                <span className="text-gray-800 dark:text-white/90">
+                <span className="text-gray-800 dark:text-[#F0F0F0]">
                   {bioText || '\u00A0'}
                 </span>
               </div>
-              {!isCurrentUser && (
-                <div className="mt-1 w-full flex flex-col items-center">
-                  <span className="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-semibold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[rgba(37,99,235,0.35)] dark:border-[rgba(147,197,253,0.45)] dark:text-[#BFDBFE]">
-                    {thingsInCommon} things in common
-                  </span>
-                  <div className="mt-0.5 text-[11px] font-medium text-gray-500 dark:text-white/60 truncate">
-                    {contactsInCommon} contacts in common
-                  </div>
+              <div
+                className={`mt-1 w-full flex flex-col items-center text-center ${isCurrentUser ? "invisible" : ""}`}
+              >
+                <span className="inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[#FF6B35] dark:border-[#FF6B35] dark:text-white dark:shadow-[0_10px_25px_rgba(255,107,53,0.18)]">
+                  {thingsInCommon} things in common
+                </span>
+                <div className="mt-0.5 text-[11px] font-medium text-gray-500 dark:text-[#D1D5DB] truncate">
+                  {contactsInCommon} contacts in common
                 </div>
-              )}
+              </div>
             </div>
           ) : (
             <>
@@ -351,7 +363,7 @@ export default function UserCard({
               <div className="truncate w-full font-extrabold text-[14px] text-gray-900 dark:text-white">
                 {handle}
               </div>
-              <div className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:text-white/70">
+              <div className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:text-[#D1D5DB]">
                 <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
                 <span className="truncate">{hometownLine}</span>
               </div>
@@ -362,25 +374,28 @@ export default function UserCard({
                   color: undefined,
                   fontSize: 12.5,
                   lineHeight: 1.5,
-                  minHeight: '3.75rem',
-                  maxHeight: '3.75rem',
-                  overflow: 'hidden',
+                  minHeight: "3.6rem", // 3 lines @ 12.5px * 1.5
+                  maxHeight: "3.6rem",
+                  overflow: "hidden",
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical" as any,
+                  WebkitLineClamp: 3 as any,
                 }}
               >
-                <span className="text-gray-800 dark:text-white/90">
+                <span className="text-gray-800 dark:text-[#F0F0F0]">
                   {bioText || '\u00A0'}
                 </span>
               </div>
-              {!isCurrentUser && (
-                <div className="mt-1 w-full flex flex-col items-center">
-                  <span className="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-semibold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[rgba(37,99,235,0.35)] dark:border-[rgba(147,197,253,0.45)] dark:text-[#BFDBFE]">
-                    {thingsInCommon} things in common
-                  </span>
-                  <div className="mt-0.5 text-[11px] font-medium text-gray-500 dark:text-white/60 truncate">
-                    {contactsInCommon} contacts in common
-                  </div>
+              <div
+                className={`mt-1 w-full flex flex-col items-center text-center ${isCurrentUser ? "invisible" : ""}`}
+              >
+                <span className="inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[#FF6B35] dark:border-[#FF6B35] dark:text-white dark:shadow-[0_10px_25px_rgba(255,107,53,0.18)]">
+                  {thingsInCommon} things in common
+                </span>
+                <div className="mt-0.5 text-[11px] font-medium text-gray-500 dark:text-[#D1D5DB] truncate">
+                  {contactsInCommon} contacts in common
                 </div>
-              )}
+              </div>
             </div>
           ) : (
             <>

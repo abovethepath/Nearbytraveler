@@ -78,11 +78,6 @@ export default function Auth() {
             fullUser = await fullUserRes.json();
           }
           
-          // Store fresh auth data
-          authStorage.setUser(fullUser);
-          localStorage.setItem('auth_token', 'authenticated');
-          localStorage.setItem('current_user', JSON.stringify(fullUser));
-          
           // Invalidate auth queries to refresh user state
           queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
           

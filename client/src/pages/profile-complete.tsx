@@ -1318,7 +1318,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Update localStorage when fresh data is fetched to keep it in sync
   React.useEffect(() => {
     if (fetchedUser && isOwnProfile) {
-      localStorage.setItem('travelconnect_user', JSON.stringify(fetchedUser));
       // Dispatch custom event to notify navbar of profile image update
       window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: fetchedUser }));
     }
@@ -2275,9 +2274,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           setAuthUser(updatedUser);
         }
         
-        // Also update localStorage directly as backup
-        localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
-        
         // Force immediate refresh of all user data
         queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
         queryClient.setQueryData(['/api/users'], (oldData: any) => {
@@ -2385,9 +2381,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           console.log('Calling setAuthUser with updated gallery cover photo data for navbar refresh');
           setAuthUser(updatedUser);
         }
-        
-        // Also update localStorage directly as backup
-        localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
         
         // Force immediate refresh of all user data
         queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
@@ -2776,9 +2769,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           console.log('Calling setAuthUser with updated cover photo data for immediate UI refresh');
           setAuthUser(updatedUser);
         }
-        
-        // Update localStorage directly as backup
-        localStorage.setItem('travelconnect_user', JSON.stringify(updatedUser));
         
         // Force immediate refresh of all user data - CRITICAL FOR COVER PHOTO DISPLAY
         queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);

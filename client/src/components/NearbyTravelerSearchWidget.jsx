@@ -24,7 +24,8 @@ const pillStyle = (active) => ({
   border: active ? "1px solid transparent" : "1px solid rgba(255,255,255,0.1)",
   borderRadius: 22,
   padding: "8px 16px",
-  color: active ? "#fff" : "#b0bec5",
+  // Dark surfaces: enforce near-white text for readability
+  color: active ? "#fff" : "#F0F0F0",
   fontSize: 13,
   fontWeight: active ? 600 : 400,
   cursor: "pointer",
@@ -71,7 +72,7 @@ function Section({ title, icon, count, children, defaultOpen = false }) {
         </div>
         <span
           style={{
-            color: "#6b7f90",
+            color: "#F0F0F0",
             fontSize: 11,
             display: "inline-block",
             transition: "transform 0.2s",
@@ -259,7 +260,7 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
             <h2 style={{ color: "#fff", fontSize: 20, fontWeight: 700, margin: 0, letterSpacing: "-0.3px" }}>
               Find Travelers
             </h2>
-            <p style={{ color: "#6b7f90", fontSize: 12, margin: "2px 0 0" }}>
+            <p style={{ color: "#F0F0F0", fontSize: 12, margin: "2px 0 0" }}>
               {totalSelected > 0 ? `${totalSelected} filter${totalSelected !== 1 ? "s" : ""} active` : "No filters applied"}
             </p>
           </div>
@@ -287,7 +288,7 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
                 style={{
                   background: "rgba(255,255,255,0.06)",
                   border: "1px solid rgba(255,255,255,0.1)",
-                  color: "#6b7f90",
+                  color: "#F0F0F0",
                   borderRadius: 8,
                   padding: "6px 12px",
                   fontSize: 12,
@@ -590,7 +591,7 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
             border: "none",
             borderRadius: 16,
             padding: "16px",
-            color: totalSelected > 0 ? "#fff" : "#6b7f90",
+            color: totalSelected > 0 ? "#fff" : "#F0F0F0",
             fontSize: 15,
             fontWeight: 700,
             cursor: "pointer",

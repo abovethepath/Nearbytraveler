@@ -6028,6 +6028,22 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Resolve a user id by username (for /profile/:username routing)
+  app.get("/api/users/by-username/:username", async (req, res) => {
+    try {
+      const raw = String(req.params.username || "").trim();
+      if (!raw) return res.status(400).json({ message: "Username required" });
+
+      const user = await storage.getUserByUsername(raw);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      return res.json({ id: user.id, username: user.username });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === "development") console.error("Error resolving username:", error);
+      return res.status(500).json({ message: "Failed to resolve username" });
+    }
+  });
+
   // OPTIMIZED: Profile bundle endpoint - returns ALL profile data in one request
   // This replaces 18 separate API calls with a single batched request
   app.get("/api/users/:userId/profile-bundle", async (req, res) => {
@@ -11023,6 +11039,9 @@ Questions? Just reply to this message. Welcome aboard!
           profileImage: users.profileImage,
           userType: users.userType,
           hometownCity: users.hometownCity,
+          hometownState: users.hometownState,
+          hometownCountry: users.hometownCountry,
+          location: users.location,
           role: chatroomMembers.role,
           joinedAt: chatroomMembers.joinedAt,
           isActive: chatroomMembers.isActive,
@@ -23953,46 +23972,60 @@ Questions? Just reply to this message. Welcome aboard!
       const systemUserId = 1; // for community chatrooms created by system
       // Ensure default communities exist (idempotent)
       for (const c of DEFAULT_COMMUNITIES) {
-        const [existing] = await db.select().from(communityTags).where(eq(communityTags.name, c.name));
-        if (!existing) {
-          await db.insert(communityTags).values({
-            name: c.name,
-            displayName: c.displayName,
-            category: c.category,
-            icon: c.icon,
-            color: c.color,
-            description: c.description,
-            isUserCreated: false,
-          });
+        try {
+          const [existing] = await db.select().from(communityTags).where(eq(communityTags.name, c.name));
+          if (!existing) {
+            await db.insert(communityTags).values({
+              name: c.name,
+              displayName: c.displayName,
+              category: c.category,
+              icon: c.icon,
+              color: c.color,
+              description: c.description,
+              isUserCreated: false,
+            });
+          }
+        } catch (e) {
+          if (process.env.NODE_ENV === "development") console.error("Failed to ensure default community:", c?.name, e);
         }
       }
 
       // Backfill chatroom for any community that has no chatroom (preset or existing)
-      const withoutChatroom = await db.select().from(communityTags).where(isNull(communityTags.chatroomId));
+      let withoutChatroom: any[] = [];
+      try {
+        withoutChatroom = await db.select().from(communityTags).where(isNull(communityTags.chatroomId));
+      } catch (e) {
+        if (process.env.NODE_ENV === "development") console.error("Failed to load communities missing chatroom:", e);
+        withoutChatroom = [];
+      }
       for (const tag of withoutChatroom) {
-        const [newRoom] = await db.insert(citychatrooms).values({
-          name: tag.displayName,
-          description: tag.description || `Chat for ${tag.displayName}`,
-          city: "Community",
-          state: "",
-          country: "Global",
-          createdById: tag.createdBy ?? systemUserId,
-          isPublic: true,
-          maxMembers: 500,
-          tags: ["community"],
-        }).returning();
-        if (newRoom) {
-          await db.update(communityTags).set({ chatroomId: newRoom.id }).where(eq(communityTags.id, tag.id));
-          const [existingMember] = await db.select().from(chatroomMembers)
-            .where(and(eq(chatroomMembers.chatroomId, newRoom.id), eq(chatroomMembers.userId, tag.createdBy ?? systemUserId)));
-          if (!existingMember) {
-            await db.insert(chatroomMembers).values({
-              chatroomId: newRoom.id,
-              userId: tag.createdBy ?? systemUserId,
-              role: "admin",
-              isActive: true,
-            });
+        try {
+          const [newRoom] = await db.insert(citychatrooms).values({
+            name: tag.displayName,
+            description: tag.description || `Chat for ${tag.displayName}`,
+            city: "Community",
+            state: "",
+            country: "Global",
+            createdById: tag.createdBy ?? systemUserId,
+            isPublic: true,
+            maxMembers: 500,
+            tags: ["community"],
+          }).returning();
+          if (newRoom) {
+            await db.update(communityTags).set({ chatroomId: newRoom.id }).where(eq(communityTags.id, tag.id));
+            const [existingMember] = await db.select().from(chatroomMembers)
+              .where(and(eq(chatroomMembers.chatroomId, newRoom.id), eq(chatroomMembers.userId, tag.createdBy ?? systemUserId)));
+            if (!existingMember) {
+              await db.insert(chatroomMembers).values({
+                chatroomId: newRoom.id,
+                userId: tag.createdBy ?? systemUserId,
+                role: "admin",
+                isActive: true,
+              });
+            }
           }
+        } catch (e) {
+          if (process.env.NODE_ENV === "development") console.error("Failed to backfill community chatroom:", tag?.id, e);
         }
       }
 
@@ -24024,7 +24057,8 @@ Questions? Just reply to this message. Welcome aboard!
 
       res.json(tags);
     } catch (error: any) {
-      res.json([]);
+      if (process.env.NODE_ENV === "development") console.error("Error loading community tags:", error);
+      res.status(500).json({ error: "Failed to load communities" });
     }
   });
 

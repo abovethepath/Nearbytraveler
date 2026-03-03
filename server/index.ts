@@ -584,6 +584,22 @@ app.use(
   }),
 );
 
+// Security hardening: never accept header-based identity without a real session user.
+// This prevents stale client storage (incl. incognito) from implicitly authenticating API calls.
+app.use((req, _res, next) => {
+  try {
+    const hasSessionUser = !!(req as any)?.session?.user?.id;
+    if (!hasSessionUser) {
+      delete (req.headers as any)["x-user-id"];
+      delete (req.headers as any)["x-user-data"];
+      delete (req.headers as any)["x-user-type"];
+    }
+  } catch {
+    // ignore
+  }
+  next();
+});
+
 // CRITICAL FIX: Increase payload limits to prevent 431 "Request Header Fields Too Large" errors
 app.use(express.json({ limit: "50mb" }));
 app.use(
@@ -847,6 +863,75 @@ app.use((req, res, next) => {
       if (req.originalUrl.startsWith("/api/")) {
         console.log("🔄 API route preserved:", req.originalUrl);
         return next(); // Let API routes handle themselves
+      }
+
+      // Server-side protection for authenticated SPA routes:
+      // If there is no valid session user, redirect HTML navigations to "/"
+      // (prevents protected pages from rendering before auth is confirmed).
+      try {
+        const accept = String(req.headers.accept || "");
+        const isHtmlNav = req.method === "GET" && accept.includes("text/html");
+        if (isHtmlNav) {
+          const rawPath = (req.path || "/").split("?")[0];
+          const normalized = (rawPath.replace(/\/+$/, "") || "/") as string;
+
+          const PUBLIC_MARKETING_ROUTES = new Set([
+            "/landing",
+            "/landing-new",
+            "/landing-simple",
+            "/landing-minimal",
+            "/landing-streamlined",
+            "/landing-1",
+            "/landing-2",
+            "/events-landing",
+            "/business-landing",
+            "/locals-landing",
+            "/travelers-landing",
+            "/couchsurfing",
+            "/cs",
+            "/b",
+            "/privacy",
+            "/terms",
+            "/cookies",
+            "/about",
+            "/ambassador",
+            "/ambassador-program",
+            "/getting-started",
+            "/welcome",
+            "/welcome-business",
+            "/finishing-setup",
+            "/quick-login",
+            "/preview-landing",
+            "/preview-first-landing",
+            "/travel-quiz",
+            "/TravelIntentQuiz",
+            "/business-card",
+            "/qr-code",
+            "/launching-soon",
+            "/join",
+          ]);
+
+          const isPublic =
+            normalized === "/" ||
+            normalized === "/auth" ||
+            normalized === "/signin" ||
+            normalized === "/signup" ||
+            normalized.startsWith("/signup/") ||
+            normalized === "/forgot-password" ||
+            normalized === "/reset-password" ||
+            normalized.startsWith("/landing") ||
+            PUBLIC_MARKETING_ROUTES.has(normalized) ||
+            normalized.startsWith("/invite/") ||
+            normalized.startsWith("/join-trip/") ||
+            (normalized.startsWith("/events/") && !!normalized.split("/")[2]);
+
+          const hasSessionUser = !!(req as any)?.session?.user?.id;
+          if (!hasSessionUser && !isPublic) {
+            return res.redirect(302, "/");
+          }
+        }
+      } catch {
+        // ignore and fall through to SPA
       }
 
       // Serve index.html only for frontend routes
