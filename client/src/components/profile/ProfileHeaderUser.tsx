@@ -13,7 +13,6 @@ import { isNativeIOSApp } from "@/lib/nativeApp";
 import { useTheme } from "@/components/theme-provider";
 import { useIsDesktop } from "@/hooks/useDeviceType";
 import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
-import { VouchButton } from "@/components/VouchButton";
 import { ProfileTabBar } from "./ProfileTabBar";
 import type { ProfilePageProps } from "./profile-complete-types";
 import { resolveAndJoinHostelChatroom } from "@/lib/hostelChatrooms";
@@ -57,7 +56,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const invalidDestinations = ['unknown', '—', '–', '-', '--', 'n/a', 'null', ''];
   const hasValidTravelDestination = currentTravelPlan && typeof currentTravelPlan === 'string' && currentTravelPlan.trim().length > 0 && !invalidDestinations.includes(currentTravelPlan.trim().toLowerCase()) && !/^[\s\-—–]+$/.test(currentTravelPlan);
   const connectionsCount = (userConnections as any[])?.length ?? 0;
-  const vouchesCount = (userVouches as any[])?.length ?? 0;
   const mutedOrange = "#e8834a";
   const mutedOrangeHover = "#d4703a";
 
@@ -105,7 +103,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       }}
       className={
         inline
-          ? "p-1 rounded-full bg-gray-900/90 hover:bg-gray-900 transition-colors inline-flex items-center justify-center shrink-0 ring-1 ring-black/30 shadow-sm"
+          ? (!isOwnProfile && isMobileWeb
+              ? "p-1 rounded-full bg-black/70 hover:bg-black/80 transition-colors inline-flex items-center justify-center shrink-0 ring-1 ring-white/60 shadow-md"
+              : "p-1 rounded-full bg-gray-900/90 hover:bg-gray-900 transition-colors inline-flex items-center justify-center shrink-0 ring-1 ring-black/30 shadow-sm")
           : "absolute top-4 right-4 z-20 p-1.5 rounded-full bg-gray-900/90 hover:bg-gray-900 transition-colors ring-1 ring-black/30 shadow-sm"
       }
       style={{ touchAction: 'manipulation' }}
@@ -121,6 +121,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   return (
     <div
       className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 relative isolate profile-hero-fixed ${isNativeIOSApp() ? 'py-6 sm:py-8 lg:py-12' : (isDesktopOwnProfile || isDesktopOtherUser) ? 'py-4 sm:py-5 lg:pt-6 lg:pb-16' : 'pt-12 sm:pt-14 lg:pt-20 pb-6 sm:pb-8 lg:pb-16'}`}
+      data-profile-hero-owner={isOwnProfile ? "own" : "other"}
       style={
         isMobileWeb
           ? { width: "100vw", position: "relative", left: "50%", transform: "translateX(-50%)" }
@@ -431,18 +432,38 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             </div>
 
                             <div className="mt-2 space-y-1">
-                              <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text">
-                                Nearby Local <span className="text-black/70">·</span> <span className="text-black">{hometown}</span>
-                              </div>
+                              {isMobileWeb ? (
+                                <>
+                                  <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text leading-tight">
+                                    <div>Nearby Local</div>
+                                    <div className="font-medium">{hometown}</div>
+                                  </div>
 
-                              {hasValidTravelDestination && (
-                                <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text" title={currentTravelPlan!}>
-                                  <span className="text-black">Nearby Traveler</span>
-                                  <span className="text-black/70"> → </span>
-                                  <span className="text-black">
-                                    {formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
-                                  </span>
-                                </div>
+                                  {hasValidTravelDestination && (
+                                    <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text leading-tight" title={currentTravelPlan!}>
+                                      <div>Nearby Traveler</div>
+                                      <div className="font-medium">
+                                        {formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
+                                      </div>
+                                    </div>
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text">
+                                    Nearby Local <span className="text-black/70">·</span> <span className="text-black">{hometown}</span>
+                                  </div>
+
+                                  {hasValidTravelDestination && (
+                                    <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text" title={currentTravelPlan!}>
+                                      <span className="text-black">Nearby Traveler</span>
+                                      <span className="text-black/70"> → </span>
+                                      <span className="text-black">
+                                        {formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
+                                      </span>
+                                    </div>
+                                  )}
+                                </>
                               )}
                             </div>
                           </div>
@@ -454,7 +475,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               type="button"
                               className={
                                 isMobileWeb
-                                  ? "inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-3 h-8 text-[13px] !bg-gradient-to-r !from-[#3B82F6] !to-[#F97316] hover:!from-[#2563EB] hover:!to-[#EA580C] !text-black !border-0 shadow-sm w-[10.5rem] sm:w-44"
+                                  ? "inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-3 h-8 text-[13px] !bg-blue-600 hover:!bg-blue-700 !text-white !border-0 shadow-sm w-[10.5rem] sm:w-44"
                                   : "inline-flex items-center justify-center rounded-lg transition-all font-semibold cursor-pointer px-3 h-8 text-[13px] !bg-white hover:!bg-white !text-black border border-gray-200 shadow-sm w-[10.5rem] sm:w-44"
                               }
                               onClick={(e) => {
@@ -484,17 +505,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </div>
 
                           <div className="flex flex-wrap items-center gap-2 mt-2">
-                            <VouchButton
-                              currentUserId={currentUser?.id || 0}
-                              targetUserId={user?.id || 0}
-                              targetUsername={user?.username}
-                              appearance="ghost"
-                              className={
-                                isMobileWeb
-                                  ? "h-8 px-2.5 text-xs !bg-green-600 hover:!bg-green-700 !text-black !border-0"
-                                  : "h-8 px-2.5 text-xs !text-black"
-                              }
-                            />
                             <Button
                               type="button"
                               onClick={(e) => {
@@ -610,8 +620,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     </div>
 
                     {/* Tab bar (already text-only on web) */}
-                    <div className="w-full mt-5">
+                    <div className="w-full mt-5 relative">
                       <ProfileTabBar {...props} variant="hero" />
+                      {isMobileWeb && (
+                        <div
+                          aria-hidden
+                          className="pointer-events-none absolute right-0 top-0 h-full w-10 flex items-center justify-end pr-1 bg-gradient-to-l from-white/70 to-transparent"
+                        >
+                          <span className="text-black/70 text-lg leading-none">›</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* See all modal */}
@@ -892,15 +910,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               </div>
 
                               <div className="flex flex-wrap gap-2">
-                                {!isNativeIOSApp() && (
-                                  <VouchButton
-                                    currentUserId={currentUser?.id || 0}
-                                    targetUserId={user?.id || 0}
-                                    targetUsername={user?.username}
-                                    appearance="ghost"
-                                    className="!bg-green-600 hover:!bg-green-700 !text-white !border-0"
-                                  />
-                                )}
                                 {currentUser ? (
                                   <Button
                                     type="button"
@@ -966,7 +975,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 type="button"
                                 className={
                                   isMobileWeb
-                                    ? `inline-flex items-center rounded-lg shadow-md transition-all font-semibold cursor-pointer px-4 py-1.5 text-sm bg-white hover:bg-gray-50 text-black border border-gray-300`
+                                    ? `inline-flex items-center rounded-lg shadow-md transition-all font-semibold cursor-pointer px-4 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white border-0`
                                     : `inline-flex items-center rounded-lg shadow-md transition-all font-medium cursor-pointer ${isNativeIOSApp() ? 'shrink-0 px-4 py-1.5 text-sm' : 'px-4 py-1.5 text-sm'} bg-white hover:bg-gray-50 text-black border border-gray-300`
                                 }
                                 onClick={(e) => {
@@ -988,15 +997,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 appearance="ghost"
                                 className="rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm !bg-blue-600 hover:!bg-blue-700 !text-white !border-0"
                               />
-                              {!isNativeIOSApp() && (
-                                <VouchButton
-                                  currentUserId={currentUser?.id || 0}
-                                  targetUserId={user?.id || 0}
-                                  targetUsername={user?.username}
-                                  appearance="ghost"
-                                  className="!bg-green-600 hover:!bg-green-700 !text-white !border-0"
-                                />
-                              )}
                               {currentUser ? (
                                 <Button
                                   type="button"

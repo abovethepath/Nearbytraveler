@@ -438,6 +438,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                           currentUserId={isActuallyAuthenticated ? JSON.parse(authStorageUser || '{}').id : undefined}
                           isCurrentUser={isActuallyAuthenticated && user.id === JSON.parse(authStorageUser || '{}').id}
                           isAvailableNow={availableNowIds.includes(user.id)}
+                          variant="homeCity"
                         />
                       ))}
                     </div>

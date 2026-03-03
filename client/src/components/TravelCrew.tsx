@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
-import { Users, UserPlus, Baby, Link, Copy, X, Check, Mail, MessageSquare, MessageCircle } from 'lucide-react';
+import { Users, UserPlus, Baby, Link, Copy, X, Check, Mail, MessageSquare, MessageCircle, Pencil, Trash2 } from 'lucide-react';
 import { TravelCrewChat } from './TravelCrewChat';
 
 interface Companion {
@@ -47,6 +47,12 @@ export function TravelCrew({ travelPlanId, userId, isOwner }: TravelCrewProps) {
   const [showInvite, setShowInvite] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [newCompanion, setNewCompanion] = useState({ label: '', ageBracket: '', notesPrivate: '' });
+  const [editingCompanionId, setEditingCompanionId] = useState<number | null>(null);
+  const [editCompanionDraft, setEditCompanionDraft] = useState<{ label: string; ageBracket: string; notesPrivate: string }>({
+    label: '',
+    ageBracket: '',
+    notesPrivate: '',
+  });
   const [inviteLink, setInviteLink] = useState('');
   const [copied, setCopied] = useState(false);
   const [memberQuery, setMemberQuery] = useState('');
@@ -103,6 +109,33 @@ export function TravelCrew({ travelPlanId, userId, isOwner }: TravelCrewProps) {
       queryClient.invalidateQueries({ queryKey: ['/api/travel-plans', travelPlanId, 'crew'] });
       toast({ title: 'Companion removed from trip' });
     }
+  });
+
+  const updateCompanionMutation = useMutation({
+    mutationFn: async (payload: { id: number; label: string; ageBracket?: string; notesPrivate?: string }) => {
+      const { id, ...data } = payload;
+      return apiRequest('PATCH', `/api/companions/${id}`, data).then(r => r.json());
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/companions'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/travel-plans', travelPlanId, 'crew'] });
+      toast({ title: 'Companion updated' });
+      setEditingCompanionId(null);
+    },
+    onError: () => toast({ title: 'Failed to update companion', variant: 'destructive' }),
+  });
+
+  const deleteCompanionMutation = useMutation({
+    mutationFn: async (companionId: number) => {
+      return apiRequest('DELETE', `/api/companions/${companionId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/companions'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/travel-plans', travelPlanId, 'crew'] });
+      toast({ title: 'Companion deleted' });
+      setEditingCompanionId(null);
+    },
+    onError: () => toast({ title: 'Failed to delete companion', variant: 'destructive' }),
   });
 
   const removeMemberMutation = useMutation({
@@ -179,6 +212,21 @@ export function TravelCrew({ travelPlanId, userId, isOwner }: TravelCrewProps) {
   const availableCompanions = userCompanions.filter(
     c => !crewCompanions.some(cc => cc.companionId === c.id)
   );
+
+  const beginEditCompanion = (companionId: number) => {
+    const full = userCompanions.find((c) => c.id === companionId);
+    setEditingCompanionId(companionId);
+    setEditCompanionDraft({
+      label: (full?.label || '').toString(),
+      ageBracket: (full?.ageBracket || '').toString(),
+      notesPrivate: (full?.notesPrivate || '').toString(),
+    });
+  };
+
+  const cancelEditCompanion = () => {
+    setEditingCompanionId(null);
+    setEditCompanionDraft({ label: '', ageBracket: '', notesPrivate: '' });
+  };
 
   const ageBrackets = [
     { value: '0-4', label: 'Infant/Toddler (0-4)' },
@@ -334,29 +382,138 @@ export function TravelCrew({ travelPlanId, userId, isOwner }: TravelCrewProps) {
               <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Companions</h4>
               <div className="space-y-2">
                 {crewCompanions.map(comp => (
-                  <div key={comp.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-lg px-3 py-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                        <Baby className="w-4 h-4 text-blue-600" />
+                  <div key={comp.id} className="bg-gray-50 dark:bg-gray-800 rounded-lg px-3 py-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                          <Baby className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-gray-900 dark:text-white truncate">{comp.label}</span>
+                            {comp.ageBracket && (
+                              <span className="text-xs text-gray-500 dark:text-gray-300 flex-shrink-0">({comp.ageBracket})</span>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-gray-900 dark:text-white">{comp.label}</span>
-                      {comp.ageBracket && (
-                        <span className="text-xs text-gray-500">({comp.ageBracket})</span>
+
+                      {isOwner && (
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              beginEditCompanion(comp.companionId);
+                            }}
+                            title="Edit companion"
+                          >
+                            <Pencil className="w-4 h-4 text-gray-400" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              const ok = window.confirm(`Delete "${comp.label}"? This will permanently delete this companion.`);
+                              if (!ok) return;
+                              deleteCompanionMutation.mutate(comp.companionId);
+                            }}
+                            disabled={deleteCompanionMutation.isPending && editingCompanionId === comp.companionId}
+                            title="Delete companion"
+                          >
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </div>
                       )}
                     </div>
-                    {isOwner && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          removeCompanionMutation.mutate(comp.companionId);
-                        }}
-                      >
-                        <X className="w-4 h-4 text-gray-400" />
-                      </Button>
+
+                    {isOwner && editingCompanionId === comp.companionId && (
+                      <div className="mt-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/40 p-3">
+                        <div className="grid gap-3 sm:grid-cols-3">
+                          <div className="sm:col-span-1">
+                            <Label className="text-gray-700 dark:text-gray-300">Label</Label>
+                            <Input
+                              value={editCompanionDraft.label}
+                              onChange={(e) => setEditCompanionDraft((p) => ({ ...p, label: e.target.value }))}
+                              placeholder="e.g., Sophie, Kid 1"
+                            />
+                          </div>
+
+                          <div className="sm:col-span-1">
+                            <Label className="text-gray-700 dark:text-gray-300">Age bracket</Label>
+                            <Select
+                              value={editCompanionDraft.ageBracket || 'none'}
+                              onValueChange={(v) => setEditCompanionDraft((p) => ({ ...p, ageBracket: v === 'none' ? '' : v }))}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select age bracket" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="none">Not specified</SelectItem>
+                                {ageBrackets.map((b) => (
+                                  <SelectItem key={b.value} value={b.value}>
+                                    {b.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="sm:col-span-1">
+                            <Label className="text-gray-700 dark:text-gray-300">Private notes</Label>
+                            <Input
+                              value={editCompanionDraft.notesPrivate}
+                              onChange={(e) => setEditCompanionDraft((p) => ({ ...p, notesPrivate: e.target.value }))}
+                              placeholder="Allergies, special needs, etc."
+                            />
+                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Only visible to you</p>
+                          </div>
+                        </div>
+
+                        <div className="mt-3 flex justify-end gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              cancelEditCompanion();
+                            }}
+                            disabled={updateCompanionMutation.isPending}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!editCompanionDraft.label.trim()) {
+                                toast({ title: 'Label is required', variant: 'destructive' });
+                                return;
+                              }
+                              updateCompanionMutation.mutate({
+                                id: comp.companionId,
+                                label: editCompanionDraft.label.trim(),
+                                ageBracket: editCompanionDraft.ageBracket || undefined,
+                                notesPrivate: editCompanionDraft.notesPrivate || undefined,
+                              });
+                            }}
+                            disabled={updateCompanionMutation.isPending || !editCompanionDraft.label.trim()}
+                            className="bg-orange-500 hover:bg-orange-600 text-white"
+                          >
+                            {updateCompanionMutation.isPending ? 'Saving…' : 'Save'}
+                          </Button>
+                        </div>
+                      </div>
                     )}
                   </div>
                 ))}

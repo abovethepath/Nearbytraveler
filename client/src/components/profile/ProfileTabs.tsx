@@ -1267,11 +1267,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                                     key={`top-interest-${index}`} 
                                     className={
                                       isMobileWeb
-                                        ? "pill-interests bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
+                                        ? "pill-interests bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#7C3500]/35 dark:border-[#FF8C42]/45 dark:text-[#FF8C42]"
                                         : `h-8 px-4 rounded-full text-sm font-medium flex items-center ${
                                             isOwnProfile
-                                              ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:border-0 dark:text-black"
-                                              : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:border-0 dark:text-black"
+                                              ? "bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#7C3500]/35 dark:bg-none dark:border-[#FF8C42]/45 dark:text-[#FF8C42]"
+                                              : "bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#7C3500]/35 dark:bg-none dark:border-[#FF8C42]/45 dark:text-[#FF8C42]"
                                           }`
                                     }
                                   >
@@ -1295,11 +1295,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                                     key={`other-interest-${index}`} 
                                     className={
                                       isMobileWeb
-                                        ? "pill-interests bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
+                                        ? "pill-interests bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#3B1F6B]/35 dark:border-[#C084FC]/45 dark:text-[#C084FC]"
                                         : `h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
                                             isOwnProfile
-                                              ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
-                                              : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
+                                              ? "bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#3B1F6B]/35 dark:bg-none dark:border-[#C084FC]/45 dark:text-[#C084FC]"
+                                              : "bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#3B1F6B]/35 dark:bg-none dark:border-[#C084FC]/45 dark:text-[#C084FC]"
                                           }`
                                     }
                                   >
@@ -1311,11 +1311,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                                     key={`custom-interest-${index}`} 
                                     className={
                                       isMobileWeb
-                                        ? "pill-interests bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
+                                        ? "pill-interests bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#3B1F6B]/35 dark:border-[#C084FC]/45 dark:text-[#C084FC]"
                                         : `h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
                                             isOwnProfile
-                                              ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
-                                              : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400 dark:border-0 dark:text-black"
+                                              ? "bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#3B1F6B]/35 dark:bg-none dark:border-[#C084FC]/45 dark:text-[#C084FC]"
+                                              : "bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#3B1F6B]/35 dark:bg-none dark:border-[#C084FC]/45 dark:text-[#C084FC]"
                                           }`
                                     }
                                   >
@@ -1361,11 +1361,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                                 key={`activity-${index}`} 
                                 className={
                                   isMobileWeb
-                                    ? "pill-activities bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
+                                    ? "pill-activities bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#0F3D2E]/35 dark:border-[#34D399]/45 dark:text-[#34D399]"
                                     : `h-8 px-4 rounded-full text-sm font-medium shadow-md flex items-center ${
                                         isOwnProfile
-                                          ? "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-700 dark:to-blue-400 dark:border-0 dark:text-black"
-                                          : "bg-white text-gray-900 border border-gray-200 shadow-none dark:bg-gradient-to-r dark:from-blue-700 dark:to-blue-400 dark:border-0 dark:text-black"
+                                          ? "bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#0F3D2E]/35 dark:bg-none dark:border-[#34D399]/45 dark:text-[#34D399]"
+                                          : "bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#0F3D2E]/35 dark:bg-none dark:border-[#34D399]/45 dark:text-[#34D399]"
                                       }`
                                 }
                               >
@@ -1383,16 +1383,19 @@ export function ProfileTabs(props: ProfilePageProps) {
 
                     {/* SECRET ACTIVITIES - only if user has them */}
                     {user?.userType !== 'business' && !!((user as any)?.secretActivities || (user as any)?.secret_activities) && (
-                      <div className={!isOwnProfile ? "mt-8 dark:mt-0" : ""}>
-                        <h4 className="font-medium text-gray-800 dark:text-white mb-2">
-                          Secret things I would do if my closest friends came to town
-                        </h4>
-                        <p
-                          className="text-gray-700 dark:text-gray-300 text-sm italic whitespace-pre-wrap break-words"
-                          data-testid="text-secret-activities"
-                        >
-                          {(user as any)?.secretActivities || (user as any)?.secret_activities}
-                        </p>
+                      <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div className="rounded-xl border border-blue-200/70 dark:border-blue-400/30 bg-blue-50/70 dark:bg-blue-950/30 p-4">
+                          <h4 className="font-extrabold text-[#1a1a1a] dark:text-white mb-2 flex items-center gap-2">
+                            <span aria-hidden>🤫</span>
+                            <span>Secret things I would do if my closest friends came to town</span>
+                          </h4>
+                          <p
+                            className="text-[#333333] dark:text-gray-100 text-sm italic whitespace-pre-wrap break-words"
+                            data-testid="text-secret-activities"
+                          >
+                            {(user as any)?.secretActivities || (user as any)?.secret_activities}
+                          </p>
+                        </div>
                       </div>
                     )}
 

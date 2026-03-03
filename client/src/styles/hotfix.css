@@ -175,6 +175,19 @@ html, body { overflow-x: hidden; }
   fill: currentColor !important;
 }
 
+/* MOBILE (other user's hero only): share button must be clearly visible and icon must be white. */
+@media (max-width: 767.98px) {
+  .profile-hero-fixed[data-profile-hero-owner="other"] [data-testid="button-share-profile"] {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  }
+  .profile-hero-fixed[data-profile-hero-owner="other"] [data-testid="button-share-profile"] svg {
+    color: #ffffff !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
+  }
+}
+
 /* 6f) HERO TAB BAR (mobile responsive web only): single row, horizontal scroll, no wrapping */
 @media (max-width: 767.98px) {
   body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed .profile-tabbar.profile-tabbar-hero {
@@ -255,40 +268,8 @@ html, body { overflow-x: hidden; }
   }
 }
 
-/* 8) PROFILE: Interests & Activities pills/tags must always be black text.
-   Applies to mobile + desktop, light + dark (requested). */
-.profile-interests-activities-section .pill-interests,
-.profile-interests-activities-section .pill-activities,
-.profile-interests-activities-section .pill-events,
-.profile-interests-activities-section [class*="pill-interests"],
-.profile-interests-activities-section [class*="pill-activities"],
-.profile-interests-activities-section [class*="pill-events"] {
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
-}
-
-/* In dark mode, force these pills/tags onto a light surface so black text stays readable. */
-.dark .profile-interests-activities-section .pill-interests,
-.dark .profile-interests-activities-section .pill-activities,
-.dark .profile-interests-activities-section .pill-events,
-.dark .profile-interests-activities-section [class*="pill-interests"],
-.dark .profile-interests-activities-section [class*="pill-activities"],
-.dark .profile-interests-activities-section [class*="pill-events"] {
-  background-color: #ffffff !important;
-  background-image: none !important;
-  border-color: rgb(229 231 235) !important;
-}
-
-/* Edit-mode "pill buttons" in this section (rounded-full chips). */
-.profile-interests-activities-section button.rounded-full {
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
-}
-.dark .profile-interests-activities-section button.rounded-full {
-  background-color: #ffffff !important;
-  background-image: none !important;
-  border-color: rgb(229 231 235) !important;
-}
+/* 8) PROFILE: Interest/Activity pill colors are now controlled per-section in components
+   (Top Interests, Other Interests, Activities, City Plans). Avoid global overrides here. */
 
 /* 9) What You Have in Common
    Desktop/tablet: keep as a light card in dark mode (legacy).
@@ -665,9 +646,10 @@ html, body { overflow-x: hidden; }
   [class~="text-gray-600"],
   [class~="text-gray-500"],
   [class~="text-gray-400"]
-):not([class*="bg-"]) {
-  color: rgb(209 213 219) !important; /* gray-300 */
-  -webkit-text-fill-color: rgb(209 213 219) !important;
+):not([class*="bg-"]):not(.profile-hero-fixed):not(.profile-hero-fixed *):not(:is(button, a, [role="button"])) {
+  /* Readability upgrade: use a near-white for body/helper text in dark mode */
+  color: rgb(240 240 240) !important; /* #F0F0F0 */
+  -webkit-text-fill-color: rgb(240 240 240) !important;
 }
 
 /* Fix explicitly-bad Tailwind "dark:" text classes that set DARK text in dark mode. */
@@ -692,6 +674,26 @@ html, body { overflow-x: hidden; }
 ) {
   color: rgb(243 244 246) !important; /* gray-100 */
   -webkit-text-fill-color: rgb(243 244 246) !important;
+}
+
+/* Dark mode readability: lift overly-dim `dark:text-*-400/500/600` to near-white.
+   Scope: avoid profile hero; don't interfere with buttons' own contrast logic. */
+.dark :where(
+  [class*="dark:text-gray-600"],
+  [class*="dark:text-gray-500"],
+  [class*="dark:text-gray-400"],
+  [class*="dark:text-slate-600"],
+  [class*="dark:text-slate-500"],
+  [class*="dark:text-slate-400"],
+  [class*="dark:text-neutral-600"],
+  [class*="dark:text-neutral-500"],
+  [class*="dark:text-neutral-400"],
+  [class*="dark:text-zinc-600"],
+  [class*="dark:text-zinc-500"],
+  [class*="dark:text-zinc-400"]
+):not(.profile-hero-fixed):not(.profile-hero-fixed *):not(:is(button, a, [role="button"])) {
+  color: rgb(240 240 240) !important; /* #F0F0F0 */
+  -webkit-text-fill-color: rgb(240 240 240) !important;
 }
 
 /* CTA/button contrast safety in dark mode:
@@ -823,19 +825,34 @@ html, body { overflow-x: hidden; }
 
 /* MOBILE RESPONSIVE WEB ONLY: Other-user hero wants brand gradient CTAs that stay readable in both themes. */
 @media (max-width: 767.98px) {
-  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-message"],
+  /* OTHER USER HERO (mobile): Message button should be solid + white text for readability. */
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed[data-profile-hero-owner="other"] [data-testid="button-message"] {
+    background-image: none !important;
+    background-color: rgb(37 99 235) !important; /* blue-600 */
+    border: 0 !important;
+    color: #ffffff !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed[data-profile-hero-owner="other"] [data-testid="button-message"] * {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed[data-profile-hero-owner="other"] [data-testid="button-message"] svg {
+    color: #ffffff !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
+  }
+
+  /* Keep Write Reference as-is (brand gradient) */
   body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-write-reference"] {
     background-image: linear-gradient(to right, #3B82F6, #F97316) !important;
     background-color: transparent !important;
     border: 0 !important;
     color: #000000 !important;
   }
-  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-message"] *,
   body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-write-reference"] * {
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
   }
-  body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-message"] svg,
   body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed [data-testid="button-write-reference"] svg {
     color: #000000 !important;
     stroke: currentColor !important;

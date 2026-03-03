@@ -1975,6 +1975,7 @@ export default function Home() {
                             compact={isCompactMode}
                             connectionDegree={connectionDegreesData?.degrees?.[otherUser.id]}
                             isAvailableNow={effectiveAvailableNowIds.has(Number(otherUser.id))}
+                            variant="homeCity"
                           />
                       ))
                     ) : (

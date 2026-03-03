@@ -15,6 +15,25 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { profileEditButtonClass } from "@/components/profile/editButtonClass";
 
+function useIsDarkModeClass() {
+  const [isDark, setIsDark] = useState(() =>
+    typeof document !== "undefined" && document.documentElement.classList.contains("dark"),
+  );
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const el = document.documentElement;
+    const update = () => setIsDark(el.classList.contains("dark"));
+    update();
+
+    const observer = new MutationObserver(update);
+    observer.observe(el, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  return isDark;
+}
+
 interface ThingsIWantToDoSectionProps {
   userId: number;
   isOwnProfile: boolean;
@@ -63,6 +82,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+  const isDarkModeClass = useIsDarkModeClass();
   const [, setLocation] = useLocation();
   const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; cityName: string } | null>(null);
   const [editOpen, setEditOpen] = useState(false);
@@ -511,7 +531,10 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   if (loadingCityActivities || loadingJoinedEvents || loadingEventInterests || loadingTravelPlans || loadingProfile) {
     return (
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Things I Want to Do in:</h2>
+        <h2 className="text-xl md:text-2xl font-extrabold text-[#1a1a1a] dark:text-white mb-6 flex items-center gap-2">
+          <span aria-hidden>✈️</span>
+          <span>Things I Want to Do in:</span>
+        </h2>
         <div className="text-gray-600 dark:text-gray-400">Loading...</div>
       </div>
     );
@@ -575,7 +598,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           {showHostel && (
             <button
               type="button"
-              className="pill-interests dark:border-0 dark:bg-gradient-to-r dark:from-slate-700 dark:to-slate-700 dark:text-gray-100 hover:underline underline-offset-2 text-left"
+              className="pill-interests border border-gray-200 hover:underline underline-offset-2 text-left dark:bg-[#0D2F5E]/40 dark:border-[#60A5FA]/45 dark:text-[#60A5FA]"
               onClick={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -608,7 +631,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           {/* Sub-Interest Pills - for travel destinations */}
           {cityData.travelPlan && citySubInterests.map((subInterest, idx) => (
             <div key={`sub-${idx}-${subInterest}`} className="relative group">
-              <div className="pill-interests dark:bg-gradient-to-r dark:from-orange-500 dark:to-yellow-500 dark:border-0">
+              <div className="pill-interests border border-gray-200 dark:bg-[#0D2F5E]/40 dark:border-[#60A5FA]/45 dark:text-[#60A5FA]">
                 ✨ {subInterest}
               </div>
             </div>
@@ -617,7 +640,13 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           {/* Activity Pills (display only; editing happens in modal) */}
           {cityData.activities.map((activity) => (
             <div key={`act-${activity.id}`} className="relative">
-              <div className="pill-activities dark:bg-gradient-to-r dark:from-blue-600 dark:to-blue-500 dark:border-0">
+              <div
+                className={
+                  isDarkModeClass
+                    ? "h-8 px-4 rounded-full text-xs sm:text-sm font-semibold flex items-center border border-[#60A5FA]/45 bg-[#0D2F5E]/40 text-[#60A5FA] shadow-[0_0_0_1px_rgba(96,165,250,0.20)] hover:shadow-[0_0_12px_rgba(96,165,250,0.18)] transition-shadow"
+                    : "h-8 px-4 rounded-full text-xs sm:text-sm font-semibold flex items-center border border-blue-500 bg-gradient-to-r from-blue-300 via-blue-200 to-blue-300 text-black shadow-[0_0_0_1px_rgba(59,130,246,0.30)] hover:shadow-[0_0_12px_rgba(59,130,246,0.25)] transition-shadow"
+                }
+              >
                 {activity.activityName}
               </div>
             </div>
@@ -632,11 +661,9 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
             return (
               <div key={`evt-${event.id}`} className={`relative ${isEventPast ? 'opacity-60' : ''}`}>
                 <Link href={eventUrl}>
-                  <div className={`pill-events cursor-pointer transition-all md:hover:scale-105 dark:border-0 ${
-                    isEventPast
-                      ? "dark:bg-gradient-to-r dark:from-gray-500 dark:to-gray-400"
-                      : "dark:bg-gradient-to-r dark:from-blue-600 dark:to-cyan-500 dark:hover:from-blue-700 dark:hover:to-cyan-600"
-                  }`}>
+                  <div
+                    className={`pill-events cursor-pointer transition-all md:hover:scale-105 border border-gray-200 dark:bg-[#0D2F5E]/40 dark:border-[#60A5FA]/45 dark:text-[#60A5FA]`}
+                  >
                     {isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}
                   </div>
                 </Link>
@@ -707,7 +734,10 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       {showContent ? (
         <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
           <div className="flex items-center justify-between gap-3 mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Things I Want to Do in:</h2>
+            <h2 className="text-xl md:text-2xl font-extrabold text-[#1a1a1a] dark:text-white flex items-center gap-2">
+              <span aria-hidden>📍</span>
+              <span>Things I Want to Do in:</span>
+            </h2>
             {isOwnProfile && (
               <Button
                 type="button"
@@ -760,8 +790,9 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       ) : (
         <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
           <div className="flex items-center justify-between gap-3 mb-4">
-            <h2 className={`font-semibold text-gray-900 dark:text-white ${isMobile ? 'text-base' : 'text-lg'}`}>
-              Things I Want to Do in{isOwnProfile ? ":" : ` ${headerCity}:`}
+            <h2 className={`font-extrabold text-[#1a1a1a] dark:text-white flex items-center gap-2 ${isMobile ? 'text-lg' : 'text-xl'}`}>
+              <span aria-hidden>📍</span>
+              <span>Things I Want to Do in{isOwnProfile ? ":" : ` ${headerCity}:`}</span>
             </h2>
             {isOwnProfile && (
               <Button

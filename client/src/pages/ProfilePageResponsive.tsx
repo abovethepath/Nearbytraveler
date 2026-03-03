@@ -277,9 +277,14 @@ export default function ProfilePageResponsive() {
             <div className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4 md:p-6 bg-white dark:bg-gray-800">
               <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">More Info</h2>
               {user.secretActivities && (
-                <div className="mb-4">
-                  <h3 className="font-medium text-sm mb-1 text-gray-900 dark:text-gray-100">Secret things I would do if my closest friends came to town:</h3>
-                  <p className="text-sm text-gray-700 dark:text-gray-300" data-testid="text-secret-activities">{user.secretActivities}</p>
+                <div className="mb-5">
+                  <div className="rounded-xl border border-blue-200/70 dark:border-blue-400/30 bg-blue-50/70 dark:bg-blue-950/30 p-4">
+                    <h3 className="font-extrabold text-sm mb-1.5 text-[#1a1a1a] dark:text-white flex items-center gap-2">
+                      <span aria-hidden>🤫</span>
+                      <span>Secret things I would do if my closest friends came to town:</span>
+                    </h3>
+                    <p className="text-sm text-[#333333] dark:text-gray-100 italic" data-testid="text-secret-activities">{user.secretActivities}</p>
+                  </div>
                 </div>
               )}
               {user.events && user.events.length > 0 && (

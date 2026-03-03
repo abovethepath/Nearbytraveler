@@ -921,7 +921,8 @@ img {
 }
 
 .dark .chat-input-wrapper input::placeholder {
-  color: #9ca3af !important;
+  color: rgb(240 240 240) !important; /* #F0F0F0 */
+  opacity: 1 !important;
 }
 
 /* Set Inter as the default font for the entire application */
@@ -1127,7 +1128,8 @@ p, span, div, button, input, textarea, select {
   --secondary: 217 33% 20%;
   --secondary-foreground: 210 40% 98%;
   --muted: 217 33% 20%;
-  --muted-foreground: 215 20.2% 70%;
+  /* Readability upgrade (mobile-first): make muted text/placeholder much lighter in dark mode */
+  --muted-foreground: 215 20% 92%;
   --accent: 217 33% 20%;
   --accent-foreground: 210 40% 98%;
   --destructive: 0 62.8% 30.6%;
@@ -1148,7 +1150,7 @@ p, span, div, button, input, textarea, select {
   --msg-bubble-other: 217 19% 35%;
   --msg-text-self: 0 0% 100%;
   --msg-text-other: 0 0% 100%;
-  --msg-timestamp: 220 14% 71%;
+  --msg-timestamp: 220 14% 92%;
   --msg-input-bg: 217 33% 20%;
   --msg-input-border: 217 33% 25%;
   --msg-reaction-bg: 217 33% 25%;
@@ -1161,6 +1163,36 @@ p, span, div, button, input, textarea, select {
 .dark {
   /* Force minimum contrast for all text elements */
   color: rgb(243 244 246); /* gray-100 */
+}
+
+/* ============================================================
+   DARK MODE READABILITY (site-wide, web + iOS WebView)
+   - Brighter placeholders on iPhone
+   - Brighter dropdown values + options
+   - Do NOT affect profile hero areas
+   ============================================================ */
+
+/* Placeholders: make them clearly readable on mobile */
+.dark :is(input, textarea)::placeholder {
+  color: rgb(240 240 240) !important; /* #F0F0F0 */
+  opacity: 1 !important; /* Safari/iOS often reduces placeholder opacity */
+}
+
+/* Dropdown/select triggers: selected value & placeholder should be near-white */
+.dark :is(button[role="combobox"], [data-radix-select-trigger]):not(.profile-hero-fixed):not(.profile-hero-fixed *) {
+  color: rgb(243 244 246) !important; /* gray-100 */
+  -webkit-text-fill-color: rgb(243 244 246) !important;
+}
+.dark :is(button[role="combobox"], [data-radix-select-trigger])
+:is([data-placeholder], [data-radix-select-value]) {
+  color: rgb(243 244 246) !important;
+  -webkit-text-fill-color: rgb(243 244 246) !important;
+}
+
+/* Dropdown option text: ensure options are white in dark mode */
+.dark :is([role="option"], [data-radix-select-item], [role="menuitem"]) {
+  color: rgb(243 244 246) !important; /* gray-100 */
+  -webkit-text-fill-color: rgb(243 244 246) !important;
 }
 
 /* Override for navbar CTA buttons that need black text on light backgrounds */
@@ -1191,8 +1223,25 @@ p, span, div, button, input, textarea, select {
 }
 
 /* Fix for any remaining invisible text */
-.dark [class*="text-gray-"]:not([class*="text-gray-1"]):not([class*="text-gray-2"]):not([class*="text-gray-3"]):not([class*="text-gray-4"]) {
-  color: rgb(156 163 175) !important; /* gray-400 */
+.dark [class*="text-gray-"]
+  :not([class*="text-gray-1"])
+  :not([class*="text-gray-2"])
+  :not([class*="text-gray-3"])
+  :not([class*="text-gray-4"])
+  :not(.profile-hero-fixed)
+  :not(.profile-hero-fixed *)
+  :not(button)
+  :not(a)
+  :not([role="button"]) {
+  /* Readability upgrade: avoid dim gray text on dark backgrounds (mobile-first) */
+  color: rgb(240 240 240) !important; /* #F0F0F0 */
+  -webkit-text-fill-color: rgb(240 240 240) !important;
+}
+
+/* Button/link text: don't globally override their internal hierarchy */
+.dark :is(button, a, [role="button"]) [class*="text-gray-"] {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
 }
 
 /* COMPREHENSIVE DARK MODE FIXES - PRESERVE COLORFUL PILLS */
@@ -1216,11 +1265,11 @@ p, span, div, button, input, textarea, select {
 }
 
 .dark .text-gray-700 {
-  @apply text-gray-300 !important;
+  @apply text-gray-200 !important;
 }
 
 .dark .text-gray-600 {
-  @apply text-gray-400 !important;
+  @apply text-gray-200 !important;
 }
 
 

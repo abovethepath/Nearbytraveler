@@ -807,7 +807,11 @@ export default function Messages() {
                               onDoubleClick={() => setSelectedMessage(msg)}
                             >
                               {editingMessageId === msg.id ? (
-                                <div className={`px-4 py-2 rounded-2xl ${isOwnMessage ? 'bg-green-600' : 'bg-gray-700'}`}>
+                                <div
+                                  className={`px-4 py-2 rounded-2xl ${
+                                    isOwnMessage ? 'bg-[#DCF8C6] text-gray-900 dark:bg-[#005C4B] dark:text-white' : 'bg-gray-700'
+                                  }`}
+                                >
                                   <Textarea
                                     value={editText}
                                     onChange={(e) => setEditText(e.target.value)}
@@ -828,26 +832,26 @@ export default function Messages() {
                               ) : (
                                 <div className={`relative px-4 py-2 rounded-2xl cursor-pointer overflow-visible ${
                                   isOwnMessage 
-                                    ? 'bg-green-600 dark:bg-green-600' 
+                                    ? 'bg-[#DCF8C6] dark:bg-[#005C4B]' 
                                     : 'bg-gray-200 dark:bg-gray-700'
                                 }`} style={{ overflow: 'visible' }}>
                                   {/* Reply Context */}
                                   {msg.replyToId && msg.repliedMessage && (
                                     <div className={`mb-2 pl-2 border-l-2 ${
                                       isOwnMessage 
-                                        ? 'border-white/50' 
+                                        ? 'border-black/20 dark:border-white/35' 
                                         : 'border-gray-400 dark:border-gray-500'
                                     }`}>
                                       <p className={`text-xs opacity-70 ${
                                         isOwnMessage 
-                                          ? 'text-white' 
+                                          ? 'text-black/70 dark:text-white/80' 
                                           : 'text-gray-600 dark:text-gray-400'
                                       }`}>
                                         {Number(msg.repliedMessage.senderId) === userId ? 'You' : `@${selectedUser?.username}`}
                                       </p>
                                       <p className={`text-xs opacity-80 truncate ${
                                         isOwnMessage 
-                                          ? 'text-white' 
+                                          ? 'text-black/80 dark:text-white/90' 
                                           : 'text-gray-700 dark:text-gray-300'
                                       }`}>
                                         {msg.repliedMessage.content}
@@ -857,7 +861,7 @@ export default function Messages() {
                                   
                                   <p className={`text-sm whitespace-pre-wrap break-words ${
                                     isOwnMessage 
-                                      ? 'text-white' 
+                                      ? 'text-gray-900 dark:text-white' 
                                       : 'text-gray-900 dark:text-gray-100'
                                   }`}>
                                     {msg.content}
@@ -865,12 +869,16 @@ export default function Messages() {
                                   <div className="flex items-center justify-end gap-1 mt-1">
                                     <p className={`text-xs opacity-70 ${
                                       isOwnMessage 
-                                        ? 'text-white' 
+                                        ? 'text-black/60 dark:text-white/70' 
                                         : 'text-gray-600 dark:text-gray-400'
                                     }`}>
                                       {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </p>
-                                    {msg.isEdited && <span className="text-xs opacity-60 italic text-gray-400">Edited</span>}
+                                    {msg.isEdited && (
+                                      <span className={`text-xs opacity-60 italic ${isOwnMessage ? 'text-black/50 dark:text-white/60' : 'text-gray-400'}`}>
+                                        Edited
+                                      </span>
+                                    )}
                                   </div>
                                   
                                   {/* Reactions display */}

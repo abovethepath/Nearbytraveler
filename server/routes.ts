@@ -1341,6 +1341,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   // SECURITY: Requires both userId AND email to prevent session hijacking
   app.post("/api/auth/recover-session", async (req, res) => {
     try {
+      // SECURITY: Do not allow "recover session" to act as a login mechanism when there is
+      // no existing session cookie. This prevents incognito/no-cookie sessions from
+      // appearing logged in via cached localStorage + headers.
+      const hasSessionCookie = typeof req.headers.cookie === "string" && req.headers.cookie.includes("nt.sid=");
+      if (!hasSessionCookie) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
       const { userId, email, username } = req.body;
       if (!userId) {
         return res.status(400).json({ message: "User ID required" });
@@ -7499,7 +7507,10 @@ Questions? Just reply to this message. Welcome aboard!
       let userId = req.session?.user?.id;
       
       // If session doesn't have user but we have auth header, refresh the session
-      if (!userId && req.headers['x-user-data']) {
+      // SECURITY: never "re-auth" a request purely from client-provided headers unless the
+      // request already has a session cookie (prevents incognito/no-cookie from appearing logged in).
+      const hasSessionCookie = typeof req.headers.cookie === "string" && req.headers.cookie.includes("nt.sid=");
+      if (!userId && hasSessionCookie && req.headers['x-user-data']) {
         try {
           const userData = JSON.parse(req.headers['x-user-data'] as string);
           if (userData && userData.id) {
@@ -7817,6 +7828,11 @@ Questions? Just reply to this message. Welcome aboard!
 
   // Refresh session from x-user-data when session is empty (fixes desktop when session cookie not sent)
   const ensureStealthAuth = (req: any): number | null => {
+    // SECURITY: Do not allow header/body "stealth auth" to act as a login mechanism.
+    // Only honor these fallbacks when a session cookie already exists.
+    const hasSessionCookie = typeof req.headers?.cookie === "string" && req.headers.cookie.includes("nt.sid=");
+    if (!hasSessionCookie) return null;
+
     let userId = getStealthUserId(req);
     if (userId) return userId;
     if (req.headers['x-user-data']) {
@@ -7836,12 +7852,6 @@ Questions? Just reply to this message. Welcome aboard!
           }
         }
       } catch {}
-    }
-    // Fallback: body.userId
-    const bodyUserId = req.body?.userId ?? req.body?.currentUserId;
-    if (bodyUserId != null) {
-      const id = typeof bodyUserId === 'number' ? bodyUserId : parseInt(String(bodyUserId), 10);
-      if (!isNaN(id) && id > 0) return id;
     }
     return null;
   };

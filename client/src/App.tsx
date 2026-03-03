@@ -216,28 +216,7 @@ function NativeIOSSearchWidget() {
 }
 
 function Router() {
-  // BULLETPROOF POST-SIGNUP FIX: If just_registered flag exists, load user from localStorage
-  // synchronously in the useState initializer. This handles the case where:
-  // 1. iOS WebView reloads the page after signup (full remount)
-  // 2. The Router component remounts for any reason after signup
-  // Without this, user=null on first render -> landing navbar flashes
-  const [user, setUser] = useState<User | null>(() => {
-    const flag = localStorage.getItem('just_registered');
-    if (flag === 'true') {
-      const stored = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          if (parsed && parsed.id) {
-            console.log('🎯 INIT: just_registered user loaded:', parsed.username);
-            localStorage.removeItem('just_registered');
-            return parsed;
-          }
-        } catch (e) { /* ignore */ }
-      }
-    }
-    return null;
-  });
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(!user);
   // Web: explicit auth hydration/loading gate to prevent redirect/layout flashes.
   const [authLoading, setAuthLoading] = useState(true);
@@ -278,9 +257,17 @@ function Router() {
   // - stop treating stale localStorage user JSON as "authenticated"
   // - avoid destructive localStorage clearing during transient auth issues
   const sessionInvalidKey = "nt_session_invalid";
+  const sessionVerifiedKey = "nt_session_verified";
   const isSessionMarkedInvalid = React.useCallback(() => {
     try {
       return sessionStorage.getItem(sessionInvalidKey) === "1";
+    } catch {
+      return false;
+    }
+  }, []);
+  const isSessionVerified = React.useCallback(() => {
+    try {
+      return sessionStorage.getItem(sessionVerifiedKey) === "1";
     } catch {
       return false;
     }
@@ -289,6 +276,20 @@ function Router() {
     try {
       sessionStorage.setItem(sessionInvalidKey, "1");
       if (reason) sessionStorage.setItem(sessionInvalidKey + "_reason", reason);
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+  const markSessionVerified = React.useCallback(() => {
+    try {
+      sessionStorage.setItem(sessionVerifiedKey, "1");
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+  const clearSessionVerified = React.useCallback(() => {
+    try {
+      sessionStorage.removeItem(sessionVerifiedKey);
     } catch {
       // ignore storage errors
     }
@@ -399,6 +400,9 @@ function Router() {
   const hasLocalAuthEvidence = React.useCallback(() => {
     try {
       if (isSessionMarkedInvalid()) return false;
+      // Never treat localStorage as auth unless the server session has been verified
+      // for this tab (prevents incognito/no-cookie showing logged-in UI).
+      if (!isSessionVerified()) return false;
       return (
         !!localStorage.getItem("user") ||
         !!localStorage.getItem("travelconnect_user") ||
@@ -409,7 +413,24 @@ function Router() {
     } catch {
       return false;
     }
-  }, []);
+  }, [isSessionMarkedInvalid, isSessionVerified]);
+
+  // UI-only helper: used to avoid flashing the landing page while a session check is in flight.
+  // This MUST NOT be treated as authenticated; it only influences loading gates.
+  const hasCachedUserData = React.useCallback(() => {
+    try {
+      if (isSessionMarkedInvalid()) return false;
+      return (
+        !!localStorage.getItem("user") ||
+        !!localStorage.getItem("travelconnect_user") ||
+        !!localStorage.getItem("current_user") ||
+        !!localStorage.getItem("authUser") ||
+        !!localStorage.getItem("currentUser")
+      );
+    } catch {
+      return false;
+    }
+  }, [isSessionMarkedInvalid]);
 
   const clearLocalAuthState = React.useCallback(() => {
     // Intentionally NOT destructive: we only clear localStorage on explicit logout.
@@ -436,7 +457,7 @@ function Router() {
       authSyncInFlightRef.current = true;
       const seq = ++authSyncSeqRef.current;
 
-      const expectedAuth = !!user?.id || hasLocalAuthEvidence();
+      const expectedAuth = !!user?.id || hasCachedUserData();
       if (expectedAuth) setIsVerifyingAuth(true);
 
       try {
@@ -453,6 +474,7 @@ function Router() {
           if (serverUser?.id) {
             // Session is valid → ensure UI + storage reflect it.
             clearSessionInvalid();
+            markSessionVerified();
             setUser(serverUser);
             authStorage.setUser(serverUser);
             try {
@@ -467,6 +489,7 @@ function Router() {
         if (res.status === 401) {
           // Session is invalid/expired → mark invalid for this tab (do NOT wipe localStorage).
           markSessionInvalid("syncAuthFromServer:401");
+          clearSessionVerified();
           setUser(null);
 
           // Only force redirect when we *thought* we were authenticated (prevents bouncing public pages).
@@ -479,7 +502,7 @@ function Router() {
             } catch {
               // ignore
             }
-            setLocation("/auth");
+            setLocation("/");
           }
           return;
         }
@@ -494,6 +517,7 @@ function Router() {
     [
       clearLocalAuthState,
       hasLocalAuthEvidence,
+      hasCachedUserData,
       isPublicRoute,
       isLandingPage,
       isSignupRoute,
@@ -502,6 +526,8 @@ function Router() {
       authLoading,
       authInitialized,
       isLoading,
+      markSessionVerified,
+      clearSessionVerified,
       user?.id,
     ],
   );
@@ -567,71 +593,9 @@ function Router() {
     // any stored user and finished the initial session validation flow.
     if (!isNativeIOSApp()) setAuthLoading(true);
 
-    // Restore user from storage ASAP (web). We still validate server session below.
-    if (!isNativeIOSApp()) {
-      try {
-        const restored = authStorage.getUser();
-        if (restored?.id && !user?.id) setUser(restored);
-      } catch {
-        // ignore storage errors
-      }
-    }
-
-    // BULLETPROOF FIX #1: If user was already set from useState initializer (just_registered),
-    // skip the server auth check entirely. The server might return 401 due to iOS WebView
-    // cookie timing, which would incorrectly clear the user we just set.
-      if (user && user.id) {
-      console.log('🎯 User already initialized (likely from just_registered), skipping server auth check:', user.username);
-      setIsLoading(false);
-        setAuthInitialized(true);
-      setAuthLoading(false);
-      return;
-    }
-
-    // BULLETPROOF FIX #2: Fallback check for just_registered flag (in case initializer missed it)
-    const justRegistered = localStorage.getItem('just_registered');
-    const storedUserForJustReg = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-    if (justRegistered === 'true' && storedUserForJustReg) {
-      try {
-        const parsedUser = JSON.parse(storedUserForJustReg);
-        if (parsedUser && parsedUser.id) {
-          console.log('🎯 JUST REGISTERED - trusting localStorage, skipping server auth check for:', parsedUser.username);
-          setUser(parsedUser);
-          authStorage.setUser(parsedUser);
-          localStorage.removeItem('just_registered');
-          setIsLoading(false);
-          setAuthInitialized(true);
-          setAuthLoading(false);
-          return;
-        }
-      } catch (e) {
-        console.error('Failed to parse just_registered user data:', e);
-      }
-    }
-
     // Skip auth check for signup routes and public pages (but not root '/' which needs auth check for redirect)
     if (isSignupRoute || (isLandingPage && location !== '/')) {
       console.log('🔥 PUBLIC PAGE - skipping auth check:', location);
-      setIsLoading(false);
-      setAuthInitialized(true);
-      setAuthLoading(false);
-      return;
-    }
-
-    // CRITICAL iOS FIX: Skip auth check for /profile and /profile/:id when we have just_registered or user in storage.
-    // After signup, user may land on /profile/:id before cookie propagates; don't clear them.
-    const storedForProfile = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-    if ((location === '/profile' || location.startsWith('/profile/')) && (justRegistered === 'true' || storedForProfile)) {
-      console.log('🎯 PROFILE ROUTE POST-SIGNUP - skipping server auth check for:', location);
-      if (storedForProfile) {
-        try {
-          const parsedUser = JSON.parse(storedForProfile);
-          if (parsedUser?.id) {
-            setUser(parsedUser);
-            authStorage.setUser(parsedUser);
-          }
-        } catch {}
-      }
       setIsLoading(false);
       setAuthInitialized(true);
       setAuthLoading(false);
@@ -644,14 +608,29 @@ function Router() {
     const checkServerAuth = async () => {
       try {
         console.log('🔍 Checking server-side authentication...');
-        const response = await fetch(`${getApiBaseUrl()}/api/auth/user`, {
-          credentials: 'include'
-        });
+        const doCheck = async () =>
+          fetch(`${getApiBaseUrl()}/api/auth/user`, {
+            credentials: "include",
+            headers: { Accept: "application/json" },
+          });
+
+        let response = await doCheck();
+
+        // iOS WebView can sometimes lag cookie propagation; retry a few times before
+        // concluding the session is missing. This does NOT trust localStorage as auth.
+        if (isNativeIOSApp() && response.status === 401) {
+          for (const delayMs of [200, 500, 800]) {
+            await new Promise((r) => setTimeout(r, delayMs));
+            response = await doCheck();
+            if (response.ok) break;
+          }
+        }
         
         if (response.ok) {
           const serverUser = await response.json();
           console.log('✅ Server session found:', serverUser.username, 'ID:', serverUser.id);
           clearSessionInvalid();
+          markSessionVerified();
           setUser(serverUser);
           authStorage.setUser(serverUser);
           localStorage.setItem('user', JSON.stringify(serverUser));
@@ -694,6 +673,7 @@ function Router() {
               const recoveredUser = await recoveryResponse.json();
               console.log('✅ Session recovered successfully for:', recoveredUser.username);
               clearSessionInvalid();
+              markSessionVerified();
               setUser(recoveredUser);
               authStorage.setUser(recoveredUser);
               localStorage.setItem('user', JSON.stringify(recoveredUser));
@@ -713,6 +693,7 @@ function Router() {
       // If server session is missing AND recovery failed, mark invalid (do NOT wipe localStorage automatically).
       console.log('🚫 Session invalid after recovery attempt - marking invalid (no storage wipe)');
       markSessionInvalid("checkServerAuth:recovery-failed");
+      clearSessionVerified();
       setUser(null);
 
       setIsLoading(false);
@@ -732,7 +713,7 @@ function Router() {
     (authLoading || !authInitialized || isLoading) &&
     // Gate protected routes, and also gate public routes when we have local auth evidence,
     // to avoid flashing authenticated layouts before the server session is validated.
-    (!isPublicRoute || hasLocalAuthEvidence() || !!user?.id);
+    (!isPublicRoute || hasCachedUserData() || !!user?.id);
 
   // Initialize WebSocket connection for authenticated users
   useEffect(() => {
@@ -804,9 +785,11 @@ function Router() {
   const authValue = React.useMemo(() => {
     // Robust authentication check that accounts for timing issues
     const hasUserInState = !!user;
-    const hasUserInStorage = !!localStorage.getItem('user');
-    const hasTravelConnectUser = !!localStorage.getItem('travelconnect_user');
-    const actualAuth = !isSessionMarkedInvalid() && (hasUserInState || hasUserInStorage || hasTravelConnectUser);
+    const hasUserInStorage = !!localStorage.getItem("user");
+    const hasTravelConnectUser = !!localStorage.getItem("travelconnect_user");
+    const actualAuth =
+      !isSessionMarkedInvalid() &&
+      (hasUserInState || (isSessionVerified() && (hasUserInStorage || hasTravelConnectUser)));
 
     console.log('🔍 AUTH CHECK: user in state:', hasUserInState, 'user in storage:', hasUserInStorage, 'travelconnect user:', hasTravelConnectUser, 'session invalid:', isSessionMarkedInvalid(), 'final auth:', actualAuth);
 
@@ -902,7 +885,17 @@ function Router() {
       isAuthenticated: actualAuth,
       authLoading: authLoading || !authInitialized || isVerifyingAuth || isLoading,
     };
-  }, [user, setLocation, queryClient, authLoading, authInitialized, isVerifyingAuth, isLoading]);
+  }, [
+    user,
+    setLocation,
+    queryClient,
+    authLoading,
+    authInitialized,
+    isVerifyingAuth,
+    isLoading,
+    isSessionMarkedInvalid,
+    isSessionVerified,
+  ]);
 
   // Post-auth redirect (used for invite links, etc.)
   useEffect(() => {
@@ -936,7 +929,7 @@ function Router() {
     } catch {
       // ignore storage errors
     }
-    setLocation("/auth");
+    setLocation("/");
   }, [
     authValue.authLoading,
     authValue.isAuthenticated,
@@ -1024,83 +1017,14 @@ function Router() {
       return <SignOutPage />;
     }
 
-    // IMPROVED AUTHENTICATION CHECK: Multiple fallbacks to ensure authenticated users stay authenticated
-    const hasUserInLocalStorage = !!localStorage.getItem('user');
-    const hasAuthToken = !!localStorage.getItem('auth_token');
-    const hasUserInState = !!user;
-    const hasTravelConnectUser = !!localStorage.getItem('travelconnect_user');
+    // Session-cookie-only auth: localStorage is NOT an auth source. If the server session
+    // hasn't been verified in this tab, treat the user as logged out.
+    const isActuallyAuthenticated = authValue.isAuthenticated || (!!effectiveUser && isSessionVerified());
 
-    // More comprehensive authentication check.
-    // IMPORTANT: never treat `auth_token` alone as an authenticated session (it can get out of sync and cause "auth limbo").
-    const isActuallyAuthenticated =
-      authValue.isAuthenticated ||
-      hasUserInState ||
-      hasUserInLocalStorage ||
-      hasTravelConnectUser ||
-      (hasAuthToken && (hasUserInLocalStorage || hasTravelConnectUser));
-
-    // Quick user state recovery
-    if (!hasUserInState && hasUserInLocalStorage && !user && !isLoading) {
-      try {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          if (parsedUser && parsedUser.id) {
-            console.log('🔄 Quick recovery: Setting user from storage');
-            setUser(parsedUser);
-          }
-        }
-      } catch (error) {
-        console.error('Error parsing stored user:', error);
-      }
-    }
-
-    console.log('🔍 COMPREHENSIVE AUTH CHECK:', {
-      'authValue.isAuthenticated': authValue.isAuthenticated,
-      'hasUserInState': hasUserInState,
-      'hasUserInLocalStorage': hasUserInLocalStorage,
-      'hasAuthToken': hasAuthToken,
-      'hasTravelConnectUser': hasTravelConnectUser,
-      'final_isActuallyAuthenticated': isActuallyAuthenticated
-    });
-
-    // Simplified user state fix - recover user from storage and re-render for current location
-    if (!hasUserInState && (hasUserInLocalStorage || hasTravelConnectUser) && !user && !isLoading && overrideUser === undefined) {
-      console.log('🔄 FIXING USER STATE: User has auth data but no state, rendering for current location');
-      try {
-        const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-        if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          if (parsedUser && parsedUser.id) {
-            console.log('🔧 Setting user from storage:', parsedUser.username);
-            setUser(parsedUser);
-            return renderPage(parsedUser); // Preserve current route instead of forcing Home
-          }
-        }
-      } catch (error) {
-        console.error('Error parsing stored user:', error);
-      }
-    }
-
-    // ✅ CRITICAL FIX: Handle all profile routes BEFORE authentication check
-    // This prevents redirect loops when user state fluctuates
-    if (location.startsWith('/profile/')) {
-      const userId = parseInt(location.split('/')[2]);
-      console.log('🔍 PROFILE ROUTE (pre-auth): userId:', userId, 'location:', location);
-      return <ProfileComplete userId={userId} />;
-    }
-    
-    // Handle own profile route (no ID)
-    if (location === '/profile') {
-      console.log('🔍 OWN PROFILE ROUTE (pre-auth)');
-      return <ProfileComplete />;
-    }
-    
-    // Handle business profile routes
-    if (location.startsWith('/business/') && !location.includes('/offers')) {
-      const businessId = location.split('/')[2];
-      console.log('🔍 BUSINESS PROFILE ROUTE (pre-auth): businessId:', businessId);
-      return <ProfileComplete userId={parseInt(businessId)} />;
+    // Protected-route handling for unauthenticated users: show landing here (redirect is handled
+    // by the route-guard effect so the URL also updates to "/").
+    if (!isActuallyAuthenticated && !isPublicRoute) {
+      return <LandingStreamlined />;
     }
 
     // Legacy landing variants: keep routes but render the canonical landing
@@ -1140,14 +1064,7 @@ function Router() {
       }
 
       // Only redirect unauthenticated users from /events to /events-landing
-      // Double-check authentication before redirecting
       if (location === '/events') {
-        // Extra check: if there's any sign of authentication, show the real events page
-        if (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token') || user) {
-          console.log('🎉 MOBILE FIX: User has auth data, showing real Events page instead of landing');
-          return <Events />;
-        }
-        console.log('🚫 Truly unauthenticated user accessing /events - showing landing');
         return <EventsLanding />;
       }
 
@@ -1236,12 +1153,7 @@ function Router() {
 
       // Show appropriate page for root path based on authentication
       if (location === '/') {
-        // If user has any authentication data, show the home page instead of landing
-        if (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token') || user) {
-          console.log('🏠 MOBILE FIX: User has auth data, showing Home page instead of landing');
-          return <Home />;
-        }
-        return <LandingStreamlined />;
+        return isActuallyAuthenticated ? <Home /> : <LandingStreamlined />;
       }
       // QR code signup route - handled by early return above
       // Allow access to legal pages without authentication
@@ -1307,28 +1219,6 @@ function Router() {
         console.log('Returning BusinessCard component for /business-card - PUBLIC ACCESS');
         return <BusinessCardPage />;
       }
-
-      // Enhanced routing for potentially authenticated users accessing main routes
-      // Check for common app routes that authenticated users might be trying to access
-      const commonAppRoutes = ['/discover', '/match-in-city', '/quick-meetups', '/messages', '/profile', '/profile-new', '/profile-complete', '/cities', '/plan-trip', '/home', '/events', '/deals', '/city-chatrooms', '/chatroom', '/explore'];
-      const isCommonAppRoute = commonAppRoutes.some(route => location.startsWith(route));
-
-      if (isCommonAppRoute && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || (localStorage.getItem('auth_token') && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user'))))) {
-        console.log('🔧 MOBILE FIX: User has auth data, but was going to be shown landing, routing to authenticated section');
-        // Force re-evaluation as authenticated user by bypassing this unauthenticated section
-        let authUser = user;
-        if (!authUser) { try { authUser = JSON.parse(localStorage.getItem('travelconnect_user') || localStorage.getItem('user') || '{}'); } catch { authUser = null; } }
-        if (authUser && (authUser.id || authUser.username)) {
-          // Temporarily set user if it's missing from state but exists in storage
-          if (!user && authUser) {
-            console.log('🔄 Temporarily setting user from localStorage for routing');
-            setUser(authUser);
-          }
-          // Skip the rest of unauthenticated routing and let it fall through to authenticated section
-          return null; // This will trigger a re-render with proper authentication state
-        }
-      }
-
 
       // CRITICAL: Root path should always show landing page for unauthenticated users
       if (location === '/' || location === '') {
@@ -1784,10 +1674,7 @@ function Router() {
 
 
   // NAVIGATION RELIABILITY FIX: Check ALL authentication sources immediately
-  const hasAnyAuthEvidence = 
-    authValue.isAuthenticated || 
-    (!!user) || 
-    (!isSessionMarkedInvalid() && (!!localStorage.getItem('user') || !!localStorage.getItem('travelconnect_user')));
+  const hasAnyAuthEvidence = authValue.isAuthenticated;
 
   return (
     <AuthContext.Provider value={authValue}>
@@ -1809,34 +1696,11 @@ function Router() {
           <Auth />
         </>
       ) : !hasAnyAuthEvidence ? (
-        // MOBILE FIX: Check if this is a navigation to home page from mobile nav
-        location === '/home' && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user')) ? (
-          // User clicked home button and has auth data - force authenticate
-          <>
-            {console.log('🏠 MOBILE HOME FIX: User clicked home with auth data, forcing authentication')}
-            {(() => {
-              // Temporarily set user from localStorage to render home page
-              const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-              if (storedUser && !user) {
-                try {
-                  const parsedUser = JSON.parse(storedUser);
-                  if (parsedUser && parsedUser.id) {
-                    setUser(parsedUser);
-                  }
-                } catch (e) {
-                  console.error('Error parsing stored user:', e);
-                }
-              }
-              return <Home />;
-            })()}
-          </>
-        ) : (
-          // Show appropriate page based on routing for unauthenticated users
-          <>
-            {console.log('🔍 APP ROUTING: User NOT authenticated, showing unauthenticated page for location:', location)}
-            {renderPage()}
-          </>
-        )
+        // Show appropriate page based on routing for unauthenticated users
+        <>
+          {console.log('🔍 APP ROUTING: User NOT authenticated, showing unauthenticated page for location:', location)}
+          {renderPage()}
+        </>
       ) : (
         // Show full app with navbar when ANY authentication evidence exists
         <>
@@ -1861,12 +1725,12 @@ function Router() {
       )}
 
       {/* Bottom Navigation - rendered outside conditional branches so it always shows for authenticated users */}
-      {!isSignupRoute && !isNativeIOSApp() && (user || (!isSessionMarkedInvalid() && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user')))) && (
+      {!isSignupRoute && !isNativeIOSApp() && authValue.isAuthenticated && (
         <MobileBottomNav />
       )}
 
       {/* Advanced Search for native iOS - web nav is hidden, so we render the widget here and open it via postMessage from native header */}
-      {isNativeIOSApp() && !isSignupRoute && (user || (!isSessionMarkedInvalid() && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user')))) && (
+      {isNativeIOSApp() && !isSignupRoute && authValue.isAuthenticated && (
         <NativeIOSSearchWidget />
       )}
     </AuthContext.Provider>

@@ -48,6 +48,11 @@ interface UserCardProps {
     mutualCount: number;
   };
   isAvailableNow?: boolean;
+  /**
+   * Visual-only variant selector.
+   * IMPORTANT: Keep "default" behavior/styling identical for non-Home/Cities pages.
+   */
+  variant?: "default" | "homeCity";
 }
 
 export default function UserCard({ 
@@ -59,7 +64,8 @@ export default function UserCard({
   compatibilityData,
   compact = false,
   connectionDegree,
-  isAvailableNow = false
+  isAvailableNow = false,
+  variant = "default",
 }: UserCardProps) {
   // Use prop first (from parent's effectiveAvailableNowIds), fallback to API-returned isAvailableNow
   const showAvailableNow = isAvailableNow || !!(user as any).isAvailableNow || !!(user as any).is_available_now || !!(user as any).availableNow;
@@ -171,12 +177,23 @@ export default function UserCard({
   return (
     <button 
       type="button"
-      className={`user-card w-full min-w-0 max-w-none !p-0 block overflow-hidden shadow-sm hover:shadow-md transition-all text-left flex flex-col items-stretch gap-0 leading-none ${compact ? 'rounded-lg' : 'rounded-[14px] lg:rounded-[14px]'} ${showAvailableNow && !isCurrentUser ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : ''}`}
+      className={`user-card w-full min-w-0 max-w-none !p-0 block overflow-hidden shadow-sm hover:shadow-md transition-all text-left flex flex-col items-stretch gap-0 leading-none ${
+        compact ? 'rounded-lg' : 'rounded-[14px] lg:rounded-[14px]'
+      } ${showAvailableNow && !isCurrentUser ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : ''} ${
+        variant === "homeCity" ? "bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#2a2d3a]" : ""
+      }`}
       style={{
-        backgroundColor: '#1a1d27',
-        border: '1px solid #2a2d3a',
-        borderRadius: 14,
-        padding: 0,
+        ...(variant === "homeCity"
+          ? {
+              borderRadius: 14,
+              padding: 0,
+            }
+          : {
+              backgroundColor: '#1a1d27',
+              border: '1px solid #2a2d3a',
+              borderRadius: 14,
+              padding: 0,
+            }),
       }}
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
@@ -236,42 +253,87 @@ export default function UserCard({
       </div>
       
       {/* Info box - structure is intentionally consistent for mobile + desktop */}
-      <div className={`${compact ? 'p-1 min-h-[6.5rem]' : 'p-1 lg:p-1.5 min-h-[7.5rem]'} flex flex-col justify-start`} style={{ backgroundColor: '#1a1d27' }}>
+      <div
+        className={`${compact ? 'p-1 min-h-[6.5rem]' : 'p-1 lg:p-1.5 min-h-[7.5rem]'} flex flex-col justify-start ${
+          variant === "homeCity" ? "bg-transparent" : ""
+        }`}
+        style={variant === "homeCity" ? undefined : { backgroundColor: '#1a1d27' }}
+      >
         {/* Mobile / compact */}
         <div className={compact ? '' : 'lg:hidden'}>
-          <div
-            className="truncate"
-            style={{ color: '#3b82f6', fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500 }}
-          >
-            {handle}
-          </div>
-          <div className="mt-1 flex items-center gap-1 min-w-0" style={{ color: '#e8834a', fontSize: 11.5 }}>
-            <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#e8834a' }} />
-            <span className="truncate">{hometownLine}</span>
-          </div>
-          <div
-            className="user-card-bio"
-            title={user.bio || undefined}
-            style={{
-              color: '#9ca3af',
-              fontSize: 12.5,
-              lineHeight: 1.5,
-              minHeight: '2.5rem',
-              maxHeight: '2.5rem',
-              marginTop: 6,
-              overflow: 'hidden',
-            }}
-          >
-            {bioText || '\u00A0'}
-          </div>
-          {!isCurrentUser && (
+          {variant === "homeCity" ? (
+            <div className="flex flex-col items-center text-center">
+              <div className="truncate w-full font-extrabold text-[14px] text-gray-900 dark:text-white">
+                {handle}
+              </div>
+              <div className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:text-white/70">
+                <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
+                <span className="truncate">{hometownLine}</span>
+              </div>
+              <div
+                className="user-card-bio mt-1.5 w-full"
+                title={user.bio || undefined}
+                style={{
+                  color: undefined,
+                  fontSize: 12.5,
+                  lineHeight: 1.5,
+                  minHeight: '2.5rem',
+                  maxHeight: '2.5rem',
+                  overflow: 'hidden',
+                }}
+              >
+                <span className="text-gray-800 dark:text-white/90">
+                  {bioText || '\u00A0'}
+                </span>
+              </div>
+              {!isCurrentUser && (
+                <div className="mt-1 w-full flex flex-col items-center">
+                  <span className="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-semibold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[rgba(37,99,235,0.35)] dark:border-[rgba(147,197,253,0.45)] dark:text-[#BFDBFE]">
+                    {thingsInCommon} things in common
+                  </span>
+                  <div className="mt-0.5 text-[11px] font-medium text-gray-500 dark:text-white/60 truncate">
+                    {contactsInCommon} contacts in common
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
             <>
-              <div className="truncate mt-1" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
-                {thingsInCommon} things in common
+              <div
+                className="truncate"
+                style={{ color: '#3b82f6', fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500 }}
+              >
+                {handle}
               </div>
-              <div className="truncate mt-0.5" style={{ color: '#9ca3af', fontSize: 12, fontWeight: 500 }}>
-                {contactsInCommon} contacts in common
+              <div className="mt-1 flex items-center gap-1 min-w-0" style={{ color: '#e8834a', fontSize: 11.5 }}>
+                <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#e8834a' }} />
+                <span className="truncate">{hometownLine}</span>
               </div>
+              <div
+                className="user-card-bio"
+                title={user.bio || undefined}
+                style={{
+                  color: '#9ca3af',
+                  fontSize: 12.5,
+                  lineHeight: 1.5,
+                  minHeight: '2.5rem',
+                  maxHeight: '2.5rem',
+                  marginTop: 6,
+                  overflow: 'hidden',
+                }}
+              >
+                {bioText || '\u00A0'}
+              </div>
+              {!isCurrentUser && (
+                <>
+                  <div className="truncate mt-1" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
+                    {thingsInCommon} things in common
+                  </div>
+                  <div className="truncate mt-0.5" style={{ color: '#9ca3af', fontSize: 12, fontWeight: 500 }}>
+                    {contactsInCommon} contacts in common
+                  </div>
+                </>
+              )}
             </>
           )}
           {travelCityFinal && user.userType !== 'business' && (
@@ -284,39 +346,79 @@ export default function UserCard({
 
         {/* Desktop (non-compact only) */}
         <div className={compact ? 'hidden' : 'hidden lg:flex lg:flex-col lg:min-h-[7.5rem]'} style={{ minHeight: '7.5rem' }}>
-          <div
-            className="truncate"
-            style={{ color: '#3b82f6', fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500 }}
-          >
-            {handle}
-          </div>
-          <div className="mt-1 flex items-center gap-1 min-w-0" style={{ color: '#e8834a', fontSize: 11.5 }}>
-            <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#e8834a' }} />
-            <span className="truncate">{hometownLine}</span>
-          </div>
-          <div
-            className="user-card-bio"
-            title={user.bio || undefined}
-            style={{
-              color: '#9ca3af',
-              fontSize: 12.5,
-              lineHeight: 1.5,
-              minHeight: '3.75rem',
-              maxHeight: '3.75rem',
-              marginTop: 6,
-              overflow: 'hidden',
-            }}
-          >
-            {bioText || '\u00A0'}
-          </div>
-          {!isCurrentUser && (
+          {variant === "homeCity" ? (
+            <div className="flex flex-col items-center text-center">
+              <div className="truncate w-full font-extrabold text-[14px] text-gray-900 dark:text-white">
+                {handle}
+              </div>
+              <div className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:text-white/70">
+                <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
+                <span className="truncate">{hometownLine}</span>
+              </div>
+              <div
+                className="user-card-bio mt-1.5 w-full"
+                title={user.bio || undefined}
+                style={{
+                  color: undefined,
+                  fontSize: 12.5,
+                  lineHeight: 1.5,
+                  minHeight: '3.75rem',
+                  maxHeight: '3.75rem',
+                  overflow: 'hidden',
+                }}
+              >
+                <span className="text-gray-800 dark:text-white/90">
+                  {bioText || '\u00A0'}
+                </span>
+              </div>
+              {!isCurrentUser && (
+                <div className="mt-1 w-full flex flex-col items-center">
+                  <span className="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-semibold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[rgba(37,99,235,0.35)] dark:border-[rgba(147,197,253,0.45)] dark:text-[#BFDBFE]">
+                    {thingsInCommon} things in common
+                  </span>
+                  <div className="mt-0.5 text-[11px] font-medium text-gray-500 dark:text-white/60 truncate">
+                    {contactsInCommon} contacts in common
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
             <>
-              <div className="truncate mt-1" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
-                {thingsInCommon} things in common
+              <div
+                className="truncate"
+                style={{ color: '#3b82f6', fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500 }}
+              >
+                {handle}
               </div>
-              <div className="truncate mt-0.5" style={{ color: '#9ca3af', fontSize: 12, fontWeight: 500 }}>
-                {contactsInCommon} contacts in common
+              <div className="mt-1 flex items-center gap-1 min-w-0" style={{ color: '#e8834a', fontSize: 11.5 }}>
+                <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#e8834a' }} />
+                <span className="truncate">{hometownLine}</span>
               </div>
+              <div
+                className="user-card-bio"
+                title={user.bio || undefined}
+                style={{
+                  color: '#9ca3af',
+                  fontSize: 12.5,
+                  lineHeight: 1.5,
+                  minHeight: '3.75rem',
+                  maxHeight: '3.75rem',
+                  marginTop: 6,
+                  overflow: 'hidden',
+                }}
+              >
+                {bioText || '\u00A0'}
+              </div>
+              {!isCurrentUser && (
+                <>
+                  <div className="truncate mt-1" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
+                    {thingsInCommon} things in common
+                  </div>
+                  <div className="truncate mt-0.5" style={{ color: '#9ca3af', fontSize: 12, fontWeight: 500 }}>
+                    {contactsInCommon} contacts in common
+                  </div>
+                </>
+              )}
             </>
           )}
           {travelCityFinal && user.userType !== 'business' && (

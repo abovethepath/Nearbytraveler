@@ -16,55 +16,12 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
-let sessionRecoveryInProgress: Promise<boolean> | null = null;
-
-async function attemptSessionRecovery(): Promise<boolean> {
-  if (sessionRecoveryInProgress) return sessionRecoveryInProgress;
-  
-  sessionRecoveryInProgress = (async () => {
-    try {
-      const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-      if (!storedUser) return false;
-      
-      let user;
-      try { user = JSON.parse(storedUser); } catch { return false; }
-      if (!user?.id) return false;
-
-      if (!user?.email && !user?.username) {
-        console.log('❌ Session recovery skipped: no email or username for identity verification');
-        return false;
-      }
-
-      console.log('🔄 Auto-recovering session for:', user.username);
-      const response = await fetch('/api/auth/recover-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ userId: user.id, email: user.email, username: user.username })
-      });
-      
-      if (response.ok) {
-        const recoveredUser = await response.json();
-        if (recoveredUser?.id && String(recoveredUser.id) !== String(user.id)) {
-          console.log('⚠️ Session recovery returned different user! Clearing stale data.');
-          localStorage.removeItem('user');
-          localStorage.removeItem('travelconnect_user');
-          localStorage.removeItem('currentUser');
-          localStorage.removeItem('authUser');
-          return false;
-        }
-        console.log('✅ Session auto-recovered successfully for:', recoveredUser?.username);
-        return true;
-      }
-      return false;
-    } catch {
-      return false;
-    } finally {
-      sessionRecoveryInProgress = null;
-    }
-  })();
-  
-  return sessionRecoveryInProgress;
+function hasVerifiedSession(): boolean {
+  try {
+    return sessionStorage.getItem("nt_session_verified") === "1";
+  } catch {
+    return false;
+  }
 }
 
 // Cache user data to avoid localStorage parsing on every request
@@ -75,6 +32,15 @@ let cacheTimestamp = 0;
 const CACHE_DURATION = 30000; // 30 seconds
 
 function getCachedUser() {
+  // Security hardening: never treat localStorage as auth unless the server session
+  // has been verified in this tab. This prevents incognito/no-cookie sessions from
+  // sending x-user-id headers and appearing "logged in".
+  if (!hasVerifiedSession()) {
+    cachedUser = null;
+    cacheTimestamp = 0;
+    return null;
+  }
+
   const now = Date.now();
   if (!cachedUser || now - cacheTimestamp > CACHE_DURATION) {
     for (const key of USER_STORAGE_KEYS) {
@@ -158,15 +124,6 @@ export async function apiRequest(
     
     clearTimeout(timeoutId);
     
-    // If 401 and we have stored user data, try session recovery then retry (desktop session may have expired)
-    if (res.status === 401 && user) {
-      const recovered = await attemptSessionRecovery();
-      if (recovered) {
-        invalidateUserCache(); // Refresh cached user after recovery
-        res = await doFetch();
-      }
-    }
-    
     // Only log in development
     if (import.meta.env.DEV) {
       console.log('Response received:', { status: res.status, statusText: res.statusText, ok: res.ok });
@@ -230,17 +187,6 @@ export const getQueryFn: <T>(options: {
       credentials: "include",
       headers,
     });
-
-    // If 401 and we have stored user data, try session recovery then retry
-    if (res.status === 401 && user) {
-      const recovered = await attemptSessionRecovery();
-      if (recovered) {
-        res = await fetch(fullUrl, {
-          credentials: "include",
-          headers,
-        });
-      }
-    }
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
       return null;

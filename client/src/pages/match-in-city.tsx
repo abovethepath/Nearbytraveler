@@ -145,6 +145,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       return null;
     }
   })();
+
+  const currentUserId = user?.id as number | undefined;
   
   const [selectedCity, setSelectedCity] = useState<string>('');
   
@@ -2057,7 +2059,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     try {
       // Extra defense-in-depth: only allow deleting activities created by the current user.
       const activity = cityActivities.find((a: any) => a?.id === activityId);
-      if (!activity || activity.createdByUserId !== currentUserId2) {
+      if (!activity || !currentUserId || activity.createdByUserId !== currentUserId) {
         toast({ title: "Not allowed", description: "You can only delete plans you created.", variant: "destructive" });
         return;
       }
@@ -2065,7 +2067,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       const apiBase = getApiBaseUrl();
       const response = await fetch(`${apiBase}/api/city-activities/${activityId}`, {
         method: 'DELETE',
-        headers: { 'x-user-id': String(currentUserId2 || '') }
+        headers: { 'x-user-id': String(currentUserId) }
       });
 
       if (response.ok) {
@@ -2432,10 +2434,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 
                 {/* GROUP 1: City-Specific Activities (each city's hardcoded list) */}
                 {(() => {
-                  const storedUser2 = localStorage.getItem('travelconnect_user');
-                  const actualUser2 = user || (storedUser2 ? JSON.parse(storedUser2) : null);
-                  const currentUserId2 = actualUser2?.id;
-                  
                   // Enforce order: Group 1 = FEATURED, Group 2 = STATIC (+ AI/user-created), Group 3 = GENERIC
                   const isFeatured = (a: any) => (a.isFeatured || a.source === 'featured');
                   const isStatic = (a: any) => a.source === 'static';
@@ -2580,7 +2578,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           const isFeatured = (activity as any).isFeatured || (activity as any).source === 'featured';
                           const isAICreated = activity.createdByUserId === 1;
                           const isUserCreated = activity.createdByUserId != null && activity.createdByUserId !== 1;
-                          const isCreatedByMe = activity.createdByUserId === currentUserId2; // only creator can edit/delete what they added
+                          const isCreatedByMe = !!currentUserId && activity.createdByUserId === currentUserId; // only creator can edit/delete what they added
                           const userActivity = userActivities.find(ua => ua.activityId === activity.id || (ua.activityName === activity.activityName && ua.cityName === selectedCity));
                           
                               return (
@@ -2588,10 +2586,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               <button
                                 className={`inline-flex max-w-full items-center justify-center h-8 px-4 rounded-full text-sm font-medium transition-colors border shadow-none touch-manipulation select-none ${
                                   isSelected
-                                    ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm'
+                                    ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm dark:bg-gradient-to-r dark:from-blue-500/70 dark:to-sky-400/35 dark:hover:from-blue-500/80 dark:hover:to-sky-400/45 dark:border-blue-300/70 dark:text-blue-50 dark:ring-1 dark:ring-sky-300/30 dark:shadow-[0_0_0_1px_rgba(56,189,248,0.22),0_10px_30px_rgba(59,130,246,0.12)]'
                                     : isFeatured
-                                      ? 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-yellow-400/50'
-                                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                                      ? 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-yellow-400/50 dark:bg-slate-800/80 dark:text-slate-100 dark:border-slate-500 dark:ring-1 dark:ring-white/5 dark:hover:bg-slate-700/80 dark:hover:border-yellow-400/50'
+                                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 dark:bg-slate-800/80 dark:text-slate-100 dark:border-slate-500 dark:ring-1 dark:ring-white/5 dark:hover:bg-slate-700/80 dark:hover:border-slate-400'
                                 } ${isUserCreated && isCreatedByMe ? 'pr-9' : ''}`}
                                 type="button"
                                 onPointerDown={(e) => {
@@ -2613,21 +2611,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   )}
                                 </span>
                               </button>
-                              {isAICreated && !isSelected && (
-                                <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <button
-                                    className="w-5 h-5 bg-gray-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-gray-600"
-                                    onClick={(e) => { e.stopPropagation(); dismissAIActivity(activity.id); }}
-                                    title="Hide this suggestion"
-                                  >
-                                    <X className="w-2.5 h-2.5" />
-                                  </button>
-                                </div>
-                              )}
                               {isUserCreated && isCreatedByMe && (
-                                <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                <div className="absolute -top-1 -right-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex gap-1">
                                   <button
-                                    className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
+                                    className="w-7 h-7 md:w-5 md:h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setEditingActivity(activity);
@@ -2637,14 +2624,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                     }}
                                     title="Edit (only you can edit what you added)"
                                   >
-                                    <Edit className="w-2.5 h-2.5" />
+                                    <Edit className="w-3.5 h-3.5 md:w-2.5 md:h-2.5" />
                                   </button>
                                   <button
-                                    className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
+                                    className="w-7 h-7 md:w-5 md:h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       // Only allow deleting city-wide activities that the current user created.
-                                      if (activity.createdByUserId !== currentUserId2) {
+                                      if (!currentUserId || activity.createdByUserId !== currentUserId) {
                                         toast({ title: "Not allowed", description: "You can only delete plans you created.", variant: "destructive" });
                                         return;
                                       }
@@ -2652,7 +2639,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                     }}
                                     title="Remove"
                                   >
-                                    <X className="w-2.5 h-2.5" />
+                                    <X className="w-3.5 h-3.5 md:w-2.5 md:h-2.5" />
                                   </button>
                                 </div>
                               )}
@@ -2672,7 +2659,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             {displayedGroup2.map((activity) => {
                               const isAICreated = activity.createdByUserId === 1;
                               const isUserCreated = activity.createdByUserId != null && activity.createdByUserId !== 1;
-                              const isCreatedByMe = activity.createdByUserId === currentUserId2;
+                              const isCreatedByMe = !!currentUserId && activity.createdByUserId === currentUserId;
                               const isSelected = userActivities.some(ua => 
                                 ua.activityId === activity.id || 
                                 (ua.activityName && activity.activityName && ua.activityName.toLowerCase().trim() === activity.activityName.toLowerCase().trim() && ua.cityName === selectedCity)
@@ -2683,8 +2670,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                     type="button"
                                     className={`inline-flex max-w-full items-center justify-center h-8 px-4 rounded-full text-sm font-medium transition-colors border shadow-none touch-manipulation select-none ${
                                       isSelected
-                                        ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm'
-                                        : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                                        ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm dark:bg-gradient-to-r dark:from-blue-500/70 dark:to-sky-400/35 dark:hover:from-blue-500/80 dark:hover:to-sky-400/45 dark:border-blue-300/70 dark:text-blue-50 dark:ring-1 dark:ring-sky-300/30 dark:shadow-[0_0_0_1px_rgba(56,189,248,0.22),0_10px_30px_rgba(59,130,246,0.12)]'
+                                        : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 dark:bg-slate-800/80 dark:text-slate-100 dark:border-slate-500 dark:ring-1 dark:ring-white/5 dark:hover:bg-slate-700/80 dark:hover:border-slate-400'
                                     } ${isUserCreated && isCreatedByMe ? 'pr-9' : ''}`}
                                     onPointerDown={(e) => {
                                       if (e.pointerType === 'touch') {
@@ -2699,21 +2686,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                       {formatActivityLabel(activity.activityName)}
                                     </span>
                                   </button>
-                                  {isAICreated && !isSelected && (
-                                    <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                      <button
-                                        className="w-5 h-5 bg-gray-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-gray-600"
-                                        onClick={(e) => { e.stopPropagation(); dismissAIActivity(activity.id); }}
-                                        title="Hide this suggestion"
-                                      >
-                                        <X className="w-2.5 h-2.5" />
-                                      </button>
-                                    </div>
-                                  )}
                                   {isUserCreated && isCreatedByMe && (
-                                    <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                    <div className="absolute -top-1 -right-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex gap-1">
                                       <button
-                                        className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
+                                        className="w-7 h-7 md:w-5 md:h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setEditingActivity(activity);
@@ -2723,13 +2699,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                         }}
                                         title="Edit"
                                       >
-                                        <Edit className="w-2.5 h-2.5" />
+                                        <Edit className="w-3.5 h-3.5 md:w-2.5 md:h-2.5" />
                                       </button>
                                       <button
-                                        className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
+                                        className="w-7 h-7 md:w-5 md:h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          if (activity.createdByUserId !== currentUserId2) {
+                                          if (!currentUserId || activity.createdByUserId !== currentUserId) {
                                             toast({ title: "Not allowed", description: "You can only delete plans you created.", variant: "destructive" });
                                             return;
                                           }
@@ -2737,7 +2713,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                         }}
                                         title="Remove"
                                       >
-                                        <X className="w-2.5 h-2.5" />
+                                        <X className="w-3.5 h-3.5 md:w-2.5 md:h-2.5" />
                                       </button>
                                     </div>
                                   )}
@@ -2795,8 +2771,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   type="button"
                                   className={`inline-flex max-w-full items-center justify-center h-8 px-4 rounded-full text-sm font-medium transition-colors border shadow-none touch-manipulation select-none ${
                                     isSelected
-                                      ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm'
-                                    : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                                      ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm dark:bg-gradient-to-r dark:from-blue-500/70 dark:to-sky-400/35 dark:hover:from-blue-500/80 dark:hover:to-sky-400/45 dark:border-blue-300/70 dark:text-blue-50 dark:ring-1 dark:ring-sky-300/30 dark:shadow-[0_0_0_1px_rgba(56,189,248,0.22),0_10px_30px_rgba(59,130,246,0.12)]'
+                                    : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 hover:border-gray-300 dark:bg-slate-800/80 dark:text-slate-100 dark:border-slate-500 dark:ring-1 dark:ring-white/5 dark:hover:bg-slate-700/80 dark:hover:border-slate-400'
                                   }`}
                                   onPointerDown={(e) => {
                                     if (e.pointerType === 'touch') {
@@ -2871,11 +2847,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 {/* SECTION 3: YOUR PLANS - User's selected + user-created activities */}
                 {(() => {
                   const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
-                  const storedUser3 = localStorage.getItem('travelconnect_user');
-                  const authUser3 = localStorage.getItem('user');
-                  const actualUser3 = user || (storedUser3 ? JSON.parse(storedUser3) : null) || (authUser3 ? JSON.parse(authUser3) : null);
-                  const currentUserId3 = actualUser3?.id;
-                  
                   const isMobileVisible = activeMobileSection === 'selected' || activeMobileSection === 'all';
                   
                   return (
@@ -2936,13 +2907,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               const activityNameRaw = ua.activityName || activity?.activityName || 'Unknown';
                               const activityName = formatActivityLabel(activityNameRaw);
                               const isCreatedByMe =
-                                (activity?.createdByUserId != null && activity?.createdByUserId === currentUserId2) ||
-                                (ua.source === 'user' && ua.createdByUserId != null && ua.createdByUserId === currentUserId2);
+                                !!currentUserId &&
+                                ((activity?.createdByUserId != null && activity?.createdByUserId === currentUserId) ||
+                                  (ua.source === 'user' && ua.createdByUserId != null && ua.createdByUserId === currentUserId));
                               const categoryInfo = CITY_PICK_CATEGORIES.find(c => c.id === activity?.category);
                               
                               return (
                                 <div key={ua.id} className="group relative">
-                                  <div className="inline-flex max-w-full items-center gap-1 h-8 px-4 rounded-full text-sm font-medium bg-blue-600 text-white border border-blue-600 shadow-sm">
+                                  <div className="inline-flex max-w-full items-center gap-1 h-8 px-4 rounded-full text-sm font-medium bg-blue-600 text-white border border-blue-600 shadow-sm dark:bg-gradient-to-r dark:from-blue-500/70 dark:to-sky-400/35 dark:border-blue-300/70 dark:text-blue-50 dark:ring-1 dark:ring-sky-300/30 dark:shadow-[0_0_0_1px_rgba(56,189,248,0.22),0_10px_30px_rgba(59,130,246,0.12)]">
                                     {categoryInfo && <span className="text-xs">{categoryInfo.emoji}</span>}
                                     <span>{activityName}</span>
                                     <button
