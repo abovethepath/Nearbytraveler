@@ -140,7 +140,7 @@ export function CityChatlroomsWidget({ city, state, country }: CityChatlroomsWid
                 <div className="flex items-center gap-2">
                   <Badge 
                     variant={chatroom.isPublic ? "default" : "secondary"}
-                    className="text-xs"
+                    className="text-xs dark:text-white"
                   >
                     {chatroom.isPublic ? "Public" : "Private"}
                   </Badge>

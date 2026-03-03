@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2, ChevronsUpDown, Check } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2, ChevronsUpDown, Check, Pencil } from "lucide-react";
 import { calculateAge } from "@/lib/ageUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { useIsDesktop } from "@/hooks/useDeviceType";
@@ -31,6 +31,7 @@ import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
 import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS } from "@shared/base-options";
 import type { ProfilePageProps } from "./profile-complete-types";
+import { profileEditButtonClass } from "@/components/profile/editButtonClass";
 
 export function ProfileTabs(props: ProfilePageProps) {
   const {
@@ -53,6 +54,7 @@ export function ProfileTabs(props: ProfilePageProps) {
   const forceMobileWebAboutPanel = isMobileWeb && !isOwnProfile;
   /* Back-compat: avoid rendering the same card twice; only show this fallback when About panel isn't mounted yet. */
   const showWhatYouHaveInCommonInTabs = showWhatYouHaveInCommon && !(loadedTabs as any)?.has?.('about');
+  const editButtonClass = profileEditButtonClass;
 
   const commonStats = (props as any)?.commonStats as
     | {
@@ -348,14 +350,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                   // Reset after scrolling completes
                   setTimeout(() => setTriggerQuickMeetup(false), 500);
                 }}
-                className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0
-                           px-4 sm:px-6 py-2 sm:py-2 text-sm font-medium rounded-lg
-                           w-full sm:w-auto flex items-center justify-center transition-all duration-200"
-                style={{ color: 'black' }}
+                className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 border-0
+                           px-4 sm:px-6 py-2 sm:py-2 text-sm font-semibold rounded-lg
+                           w-full sm:w-auto flex items-center justify-center transition-all duration-200 text-white"
                 data-testid="button-lets-meet-now"
               >
-                <Calendar className="w-4 h-4 mr-2" style={{ color: 'black' }} />
-                <span style={{ color: 'black' }}>Let's Meet Now</span>
+                <Calendar className="w-4 h-4 mr-2" />
+                Let's Meet Now
               </Button>
             )}
           </div>
@@ -403,23 +404,22 @@ export function ProfileTabs(props: ProfilePageProps) {
                           <span className="inline-block">&#8594;</span>
                         </span>
                       )}
-                      <button
+                      <Button
                         type="button"
+                        size="sm"
+                        variant="outline"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           setIsEditMode(true);
                         }}
-                        className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-transparent dark:border-gray-400 ${
-                          isProfileIncomplete()
-                            ? 'bg-gradient-to-r from-red-500 to-red-400 hover:from-red-600 hover:to-red-500 dark:from-red-500 dark:to-red-500 dark:hover:from-red-600 dark:hover:to-red-600 text-white dark:ring-2 dark:ring-red-400 animate-pulse'
-                            : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 dark:ring-2 dark:ring-gray-400'
-                        }`}
+                        className={`${editButtonClass} ${isProfileIncomplete() ? "border-orange-400 text-orange-700 dark:text-orange-300 animate-pulse" : ""}`}
                         style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer', touchAction: 'manipulation' }}
                         data-testid="button-edit-profile"
                       >
-                        <span className={isProfileIncomplete() ? 'text-white font-medium' : 'text-black font-medium'}>Edit</span>
-                      </button>
+                        <Pencil className="w-3.5 h-3.5 mr-2" />
+                        Edit
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -743,12 +743,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                               if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                             }, 100);
                           }}
-                          className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 text-black px-4 py-2 text-sm shrink-0"
                           size="sm"
+                          variant="outline"
+                          className={editButtonClass}
                           data-testid="button-edit-interests-activities"
                         >
-                          <Edit2 className="w-4 h-4 mr-1 text-black" />
-                          <span className="text-black">Edit</span>
+                          <Pencil className="w-3.5 h-3.5 mr-2" />
+                          Edit
                         </Button>
                       )}
                     </div>
@@ -850,12 +851,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                           activities: allActivities
                         });
                       }}
-                      className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 text-black px-4 py-2 text-sm shrink-0"
                       size="sm"
+                      variant="outline"
+                      className={editButtonClass}
                       data-testid="button-edit-interests"
                     >
-                      <Edit2 className="w-4 h-4 mr-1 text-black" />
-                      <span className="text-black">Edit</span>
+                      <Pencil className="w-3.5 h-3.5 mr-2" />
+                      Edit
                     </Button>
                   )}
                 </div>
@@ -1422,6 +1424,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   {/* Single Edit Button for All Business Preferences - TOP RIGHT */}
                   {isOwnProfile && !editingInterests && !editingActivities && (
                     <Button
+                      type="button"
                       onClick={() => {
                         console.log('ðŸ”§ BUSINESS EDIT - Starting:', { 
                           user,
@@ -1469,10 +1472,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                           activities: userActivities
                         });
                       }}
-                      className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 text-sm"
                       size="sm"
+                      variant="outline"
+                      className={editButtonClass}
                     >
-                      <Edit2 className="w-4 h-4 mr-1" />
+                      <Pencil className="w-3.5 h-3.5 mr-2" />
                       Edit
                     </Button>
                   )}

@@ -64,6 +64,7 @@ import { ContextualEventRecommendations } from "@/components/ContextualEventReco
 import CityMap from "@/components/CityMap";
 import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
 import LocationSortedEvents from "@/components/LocationSortedEvents";
+import NearbyTravelerSearchWidget from "@/components/NearbyTravelerSearchWidget";
 
 
 // Import centralized constants for consistency
@@ -77,6 +78,7 @@ export default function Home() {
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [showDestinationModal, setShowDestinationModal] = useState(false);
   const [showConnectModal, setShowConnectModal] = useState(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [activeLocationFilter, setActiveLocationFilter] = useState<string>("");
   const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
   const [connectTargetUser, setConnectTargetUser] = useState<any>(null);
@@ -1062,7 +1064,19 @@ export default function Home() {
   // CRITICAL FIX: Apply location-based prioritization ONLY for default browsing
   // When user selects filters or searches, skip prioritization to respect their intent
   // This allows getSortedUsers() to properly apply the user's selected sort
-  const isDefaultBrowsing = !filters.location && !filters.search && activeFilter !== 'best-matches';
+  const hasAnyAdvancedFilters =
+    filters.gender.length > 0 ||
+    filters.sexualPreference.length > 0 ||
+    filters.interests.length > 0 ||
+    filters.activities.length > 0 ||
+    filters.userType.length > 0 ||
+    filters.events.length > 0 ||
+    filters.travelerTypes.length > 0 ||
+    filters.militaryStatus.length > 0 ||
+    !!filters.minAge ||
+    !!filters.maxAge;
+  const isDefaultBrowsing =
+    !filters.location && !filters.search && !hasAnyAdvancedFilters && activeFilter !== 'best-matches';
   const usersBeforeFilter = isDefaultBrowsing ? prioritizeUsers(usersToFilter) : usersToFilter;
 
   const filteredUsers = usersBeforeFilter.filter(otherUser => {
@@ -1238,6 +1252,14 @@ export default function Home() {
         console.log(`User ${otherUser.username} excluded - userType filter (user: ${otherUser.userType}, required: ${filters.userType})`);
       }
       return false;
+    }
+
+    // Traveler types filter
+    if (filters.travelerTypes.length > 0) {
+      const raw = (otherUser as any).travelerType;
+      const userTravelerTypes = Array.isArray(raw) ? raw : raw ? [raw] : [];
+      const hasMatch = filters.travelerTypes.some((t: string) => userTravelerTypes.includes(t));
+      if (!hasMatch) return false;
     }
 
     // Search filter - check if search term matches name, username, bio, or location/city
@@ -1676,6 +1698,9 @@ export default function Home() {
                   filters.interests.length > 0 || 
                   filters.activities.length > 0 || 
                   filters.userType.length > 0 ||
+                  filters.events.length > 0 ||
+                  filters.travelerTypes.length > 0 ||
+                  filters.militaryStatus.length > 0 ||
                   filters.minAge ||
                   filters.maxAge) && (
                   <Button
@@ -1720,6 +1745,16 @@ export default function Home() {
               </div>
               
               <div className="flex items-center gap-1 sm:gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAdvancedFilters(true)}
+                  className="inline-flex"
+                  data-testid="button-open-advanced-filters"
+                >
+                  <Filter className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Filters</span>
+                </Button>
                 {/* Sort Dropdown */}
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
                   <SelectTrigger className="w-32 sm:w-40" data-testid="select-sort">
@@ -1973,6 +2008,17 @@ export default function Home() {
       </div>
       
       {/* Connect and Destination Modals */}
+      {showAdvancedFilters && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div style={{ height: "90vh", width: "100%", maxWidth: 460, borderRadius: 20, overflow: "hidden" }}>
+            <NearbyTravelerSearchWidget
+              filters={filters}
+              setFilters={setFilters}
+              onClose={() => setShowAdvancedFilters(false)}
+            />
+          </div>
+        </div>
+      )}
       <DestinationModal 
         isOpen={showDestinationModal}
         onClose={() => setShowDestinationModal(false)}

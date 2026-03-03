@@ -135,7 +135,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
           <div className="flex flex-col lg:relative">
             {/* Desktop (lg+): overlapping avatar block anchored to hero bottom-left */}
             {/* Avoid transforms on the text block (crisper desktop text). Avatar overlap is achieved via bottom offset instead of translate. */}
-            <div className="hidden lg:flex flex-col items-start absolute left-8 bottom-[-56px] z-30">
+            <div className="hidden lg:flex flex-col items-start absolute left-8 top-0 z-30">
               <div className="relative">
                 <div
                   className="w-48 h-48 rounded-full overflow-hidden cursor-pointer ring-4 ring-white/90 shadow-2xl"
@@ -197,7 +197,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               )}
             </div>
             {/* RIGHT: @username + Share Profile, buttons - bio has its own dedicated section below hero */}
-            <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0.5 lg:pl-[23rem]">
+            <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0 lg:pl-[23rem]">
               <div className="flex items-center gap-2.5 shrink-0 w-full max-w-full">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-black break-all leading-tight crisp-hero-text">
                   @{user?.username}
@@ -306,12 +306,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 <Button
                   type="button"
                   size="sm"
-                  variant="outline"
-                  className={
-                    isMobileWeb
-                      ? "h-9 px-3 text-sm font-semibold bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 !text-black !border-0 shadow-md ring-0"
-                      : "h-9 px-3 text-sm font-semibold !bg-white hover:!bg-white !text-black !border !border-gray-200 shadow-sm ring-1 ring-black/10"
-                  }
+                  className="h-9 px-3 text-sm font-semibold bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md"
                   onClick={() => {
                     const widget = document.querySelector('[data-testid="quick-meet-widget"]');
                     if (widget) widget.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -320,7 +315,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   }}
                   data-testid="button-lets-meet-now-hero"
                 >
-                  <Calendar className={isMobileWeb ? "w-4 h-4 mr-2 text-black" : "w-4 h-4 mr-2 !text-black"} />
+                  <Calendar className="w-4 h-4 mr-2" />
                   Let's Meet Now
                 </Button>
               </div>

@@ -10,6 +10,7 @@ import type { TripPlan } from "@shared/schema";
 import ComprehensiveItinerary from "@/components/ComprehensiveItinerary";
 import { resolveAndJoinHostelChatroom } from "@/lib/hostelChatrooms";
 import { useToast } from "@/hooks/use-toast";
+import { profileEditButtonClass } from "@/components/profile/editButtonClass";
 
 interface TravelPlansWidgetProps {
   userId: number | undefined;
@@ -209,8 +210,9 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                       <Button
                         variant="ghost"
                         size="sm"
+                        type="button"
                         onClick={() => setLocation(`/plan-trip?edit=${plan.id}`)}
-                        className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
+                        className={profileEditButtonClass}
                       >
                         Edit
                       </Button>
@@ -297,8 +299,9 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                       <Button
                         variant="ghost"
                         size="sm"
+                        type="button"
                         onClick={() => setLocation(`/plan-trip?edit=${plan.id}`)}
-                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                        className={profileEditButtonClass}
                       >
                         Edit
                       </Button>

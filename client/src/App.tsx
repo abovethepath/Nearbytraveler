@@ -339,6 +339,46 @@ function Router() {
     // Auth entry
     if (normalizedPath === "/auth") return true;
 
+    // Marketing / public landing routes
+    // These are linked from the public landing header/navbar and must not trigger auth redirects.
+    const PUBLIC_MARKETING_ROUTES = new Set([
+      "/landing",
+      "/landing-new",
+      "/landing-simple",
+      "/landing-minimal",
+      "/landing-streamlined",
+      "/landing-1",
+      "/landing-2",
+      "/events-landing",
+      "/business-landing",
+      "/locals-landing",
+      "/travelers-landing",
+      "/couchsurfing",
+      "/cs",
+      "/b",
+      "/privacy",
+      "/terms",
+      "/cookies",
+      "/about",
+      "/ambassador",
+      "/ambassador-program",
+      "/getting-started",
+      "/welcome",
+      "/welcome-business",
+      "/finishing-setup",
+      "/quick-login",
+      "/preview-landing",
+      "/preview-first-landing",
+      "/travel-quiz",
+      "/TravelIntentQuiz",
+      "/business-card",
+      "/qr-code",
+      "/launching-soon",
+      "/join",
+    ]);
+    if (PUBLIC_MARKETING_ROUTES.has(normalizedPath)) return true;
+    if (normalizedPath.startsWith("/landing")) return true;
+
     // Signup flows
     if (normalizedPath === "/signup" || normalizedPath.startsWith("/signup/")) return true;
 

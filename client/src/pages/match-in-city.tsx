@@ -840,18 +840,46 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
       if (response.ok) {
         const newActivity = await response.json();
-        toast({
-          title: "Activity Added",
-          description: `Added "${newActivityName}" to ${selectedCity}`,
-        });
         
         // Immediately update local state
         setCityActivities(prev => [...prev, newActivity]);
+
+        // If the user created it, they obviously want it selected too → persist to user-city-interests
+        const interestResponse = await fetch(`${apiBase}/api/user-city-interests`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': String(userId),
+          },
+          body: JSON.stringify({
+            activityId: newActivity.id,
+            cityName: selectedCity,
+          }),
+        });
+
+        if (interestResponse.ok) {
+          const newUserActivity = await interestResponse.json();
+          setUserActivities(prev => prev.concat(newUserActivity));
+          queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
+        } else {
+          // If selecting fails, keep the activity created but surface the error.
+          const err = await interestResponse.json().catch(() => ({} as any));
+          toast({
+            title: "Created, but not selected",
+            description: err?.error || err?.message || "We couldn't auto-select this plan. Please tap it to select.",
+            variant: "destructive",
+          });
+        }
         
         // Clear form
         setNewActivityName('');
         setNewActivityDescription('');
         setShowAddForm(false);
+
+        toast({
+          title: "Activity Added & Selected",
+          description: `Created and selected "${newActivity.activityName || newActivityName}" for ${selectedCity}`,
+        });
         
         fetchMatchingUsers();
       } else {
@@ -2027,9 +2055,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   // Delete city activity function (for activities user hasn't selected)
   const handleDeleteCityActivity = async (activityId: number) => {
     try {
+      // Extra defense-in-depth: only allow deleting activities created by the current user.
+      const activity = cityActivities.find((a: any) => a?.id === activityId);
+      if (!activity || activity.createdByUserId !== currentUserId2) {
+        toast({ title: "Not allowed", description: "You can only delete plans you created.", variant: "destructive" });
+        return;
+      }
+
       const apiBase = getApiBaseUrl();
       const response = await fetch(`${apiBase}/api/city-activities/${activityId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: { 'x-user-id': String(currentUserId2 || '') }
       });
 
       if (response.ok) {
@@ -2497,9 +2533,30 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                     if (prev.some((a: any) => a?.id === newActivity?.id)) return prev;
                                     return [...prev, newActivity];
                                   });
+
+                                  // Auto-select immediately so it appears in "Things I Want to Do in..."
+                                  const interestResponse = await fetch(`${apiBase}/api/user-city-interests`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json', 'x-user-id': String(uid) },
+                                    body: JSON.stringify({ activityId: newActivity.id, cityName: selectedCity }),
+                                  });
+                                  if (interestResponse.ok) {
+                                    const newUserActivity = await interestResponse.json();
+                                    setUserActivities(prev => prev.concat(newUserActivity));
+                                    queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${uid}`] });
+                                  } else {
+                                    const err = await interestResponse.json().catch(() => ({} as any));
+                                    toast({
+                                      title: "Created, but not selected",
+                                      description: err?.error || err?.message || "We couldn't auto-select this plan. Please tap it to select.",
+                                      variant: "destructive",
+                                    });
+                                  }
+
                                   setCustomActivityText('');
-                                  toast({ title: "Added", description: `"${addedName}" added to ${selectedCity}` });
+                                  toast({ title: "Added & Selected", description: `"${addedName}" added to your plans for ${selectedCity}` });
                                   fetchCityActivities();
+                                  fetchUserActivities();
                                   fetchMatchingUsers();
                                 } else {
                                   const err = await res.json();
@@ -2522,8 +2579,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           );
                           const isFeatured = (activity as any).isFeatured || (activity as any).source === 'featured';
                           const isAICreated = activity.createdByUserId === 1;
-                          const isUserCreated = activity.createdByUserId != null && activity.createdByUserId !== 1; // any user-created: deletable by all
-                          const isCreatedByMe = activity.createdByUserId === currentUserId2; // only creator can edit (avoids someone changing e.g. "Taylor Swift May 4" to May 5)
+                          const isUserCreated = activity.createdByUserId != null && activity.createdByUserId !== 1;
+                          const isCreatedByMe = activity.createdByUserId === currentUserId2; // only creator can edit/delete what they added
                           const userActivity = userActivities.find(ua => ua.activityId === activity.id || (ua.activityName === activity.activityName && ua.cityName === selectedCity));
                           
                               return (
@@ -2567,27 +2624,30 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   </button>
                                 </div>
                               )}
-                              {isUserCreated && (
+                              {isUserCreated && isCreatedByMe && (
                                 <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                                  {isCreatedByMe && (
-                                    <button
-                                      className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setEditingActivity(activity);
-                                        setEditActivityName(activity.activityName);
-                                        setEditActivityDescription((activity as any).description || '');
-                                        setEditingActivityName(activity.activityName);
-                                      }}
-                                      title="Edit (only you can edit what you added)"
-                                    >
-                                      <Edit className="w-2.5 h-2.5" />
-                                    </button>
-                                  )}
+                                  <button
+                                    className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditingActivity(activity);
+                                      setEditActivityName(activity.activityName);
+                                      setEditActivityDescription((activity as any).description || '');
+                                      setEditingActivityName(activity.activityName);
+                                    }}
+                                    title="Edit (only you can edit what you added)"
+                                  >
+                                    <Edit className="w-2.5 h-2.5" />
+                                  </button>
                                   <button
                                     className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
                                     onClick={(e) => {
                                       e.stopPropagation();
+                                      // Only allow deleting city-wide activities that the current user created.
+                                      if (activity.createdByUserId !== currentUserId2) {
+                                        toast({ title: "Not allowed", description: "You can only delete plans you created.", variant: "destructive" });
+                                        return;
+                                      }
                                       handleDeleteCityActivity(activity.id);
                                     }}
                                     title="Remove"
@@ -2650,26 +2710,31 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                       </button>
                                     </div>
                                   )}
-                                  {isUserCreated && (
+                                  {isUserCreated && isCreatedByMe && (
                                     <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                                      {isCreatedByMe && (
-                                        <button
-                                          className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setEditingActivity(activity);
-                                            setEditActivityName(activity.activityName);
-                                            setEditActivityDescription((activity as any).description || '');
-                                            setEditingActivityName(activity.activityName);
-                                          }}
-                                          title="Edit"
-                                        >
-                                          <Edit className="w-2.5 h-2.5" />
-                                        </button>
-                                      )}
+                                      <button
+                                        className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setEditingActivity(activity);
+                                          setEditActivityName(activity.activityName);
+                                          setEditActivityDescription((activity as any).description || '');
+                                          setEditingActivityName(activity.activityName);
+                                        }}
+                                        title="Edit"
+                                      >
+                                        <Edit className="w-2.5 h-2.5" />
+                                      </button>
                                       <button
                                         className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
-                                        onClick={(e) => { e.stopPropagation(); handleDeleteCityActivity(activity.id); }}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          if (activity.createdByUserId !== currentUserId2) {
+                                            toast({ title: "Not allowed", description: "You can only delete plans you created.", variant: "destructive" });
+                                            return;
+                                          }
+                                          handleDeleteCityActivity(activity.id);
+                                        }}
                                         title="Remove"
                                       >
                                         <X className="w-2.5 h-2.5" />
@@ -2870,8 +2935,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               const activity = cityActivities.find(ca => ca.id === ua.activityId);
                               const activityNameRaw = ua.activityName || activity?.activityName || 'Unknown';
                               const activityName = formatActivityLabel(activityNameRaw);
-                              const isUserCreated = (activity?.createdByUserId != null && activity?.createdByUserId !== 1) ||
-                                                    (ua.source === 'user' && ua.createdByUserId != null && ua.createdByUserId !== 1);
+                              const isCreatedByMe =
+                                (activity?.createdByUserId != null && activity?.createdByUserId === currentUserId2) ||
+                                (ua.source === 'user' && ua.createdByUserId != null && ua.createdByUserId === currentUserId2);
                               const categoryInfo = CITY_PICK_CATEGORIES.find(c => c.id === activity?.category);
                               
                               return (
@@ -2882,7 +2948,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        if (isUserCreated && activity) {
+                                        if (isCreatedByMe && activity) {
                                           if (confirm(`Delete "${activityName}"? This will remove it completely.`)) {
                                             handleDeleteCityActivity(activity.id);
                                           }
@@ -2891,7 +2957,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                         }
                                       }}
                                       className="ml-1 p-0.5 rounded-full hover:bg-white/20 transition-colors"
-                                      title={isUserCreated ? "Delete plan" : "Remove from your plans"}
+                                      title={isCreatedByMe ? "Delete plan" : "Remove from your plans"}
                                     >
                                       <X className="w-3.5 h-3.5" />
                                     </button>

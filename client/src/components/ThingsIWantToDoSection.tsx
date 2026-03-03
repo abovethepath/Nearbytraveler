@@ -13,6 +13,7 @@ import { Building2 } from "lucide-react";
 import { resolveAndJoinHostelChatroom } from "@/lib/hostelChatrooms";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { profileEditButtonClass } from "@/components/profile/editButtonClass";
 
 interface ThingsIWantToDoSectionProps {
   userId: number;
@@ -716,7 +717,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   setEditCityKey(hometownCityKey || uniqueRows.find((r) => !!r.key)?.key || "");
                   setEditOpen(true);
                 }}
-                className="h-8 px-3 text-xs font-semibold"
+                className={profileEditButtonClass}
                 data-testid="button-edit-things-to-do"
               >
                 <Pencil className="w-3.5 h-3.5 mr-2" />
@@ -771,7 +772,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   setEditCityKey(hometownCityKey || uniqueRows.find((r) => !!r.key)?.key || "");
                   setEditOpen(true);
                 }}
-                className="h-8 px-3 text-xs font-semibold"
+                className={profileEditButtonClass}
                 data-testid="button-edit-things-to-do"
               >
                 <Pencil className="w-3.5 h-3.5 mr-2" />
