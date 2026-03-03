@@ -40,6 +40,29 @@ export default function ProfilePageResponsive() {
     fetchFreshUserData();
   }, [authContext.user]);
 
+  // IMPORTANT: Hooks must not be conditional. Use `enabled` instead of early-returning
+  // before hooks run (prevents React minified error #310 in production).
+  const userId = actualUser?.id as number | undefined;
+
+  const { data: availableNowIds = [] } = useQuery<number[]>({
+    queryKey: ['/api/available-now/active-ids'],
+    refetchInterval: 30000,
+    enabled: !!userId,
+  });
+
+  const { data: cityInterests = [] } = useQuery<any[]>({
+    queryKey: ['/api/user-city-interests', userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      const res = await fetch(`${getApiBaseUrl()}/api/user-city-interests/${userId}`, {
+        credentials: 'include'
+      });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!userId,
+  });
+
   if (!isReady) {
     return (
       <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
@@ -69,23 +92,6 @@ export default function ProfilePageResponsive() {
   }
   
   const user = actualUser;
-
-  const { data: availableNowIds = [] } = useQuery<number[]>({
-    queryKey: ['/api/available-now/active-ids'],
-    refetchInterval: 30000,
-  });
-
-  const { data: cityInterests = [] } = useQuery<any[]>({
-    queryKey: ['/api/user-city-interests', user.id],
-    queryFn: async () => {
-      const res = await fetch(`${getApiBaseUrl()}/api/user-city-interests/${user.id}`, {
-        credentials: 'include'
-      });
-      if (!res.ok) return [];
-      return res.json();
-    },
-    enabled: !!user.id,
-  });
 
   const isAvailableNow = user?.id ? availableNowIds.includes(user.id) : false;
 

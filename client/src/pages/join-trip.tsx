@@ -69,6 +69,28 @@ export default function JoinTrip() {
     }
   });
 
+  // If the user just completed auth, auto-accept the invite once.
+  // IMPORTANT: This hook must be unconditional (no early returns before hooks).
+  useEffect(() => {
+    if (!token) return;
+    if (!currentUser?.id) return;
+    if (isLoading) return;
+    if (error) return;
+
+    const inviteStatus = inviteData?.status as string | undefined;
+    const valid = !!inviteData?.valid;
+    if (!valid && inviteStatus !== 'accepted') return;
+
+    try {
+      const pending = localStorage.getItem('pendingTripInviteToken');
+      if (pending && pending === token) {
+        joinMutation.mutate();
+      }
+    } catch {
+      // ignore
+    }
+  }, [token, currentUser?.id, isLoading, error, inviteData?.valid, inviteData?.status]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
@@ -104,21 +126,6 @@ export default function JoinTrip() {
   }
 
   const { trip, invitedBy } = inviteData;
-
-  // If the user just completed auth, auto-accept the invite once.
-  useEffect(() => {
-    if (!token) return;
-    if (!currentUser?.id) return;
-    try {
-      const pending = localStorage.getItem('pendingTripInviteToken');
-      if (pending && pending === token) {
-        joinMutation.mutate();
-      }
-    } catch {
-      // ignore
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, currentUser?.id]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
