@@ -728,7 +728,8 @@ function Router() {
   // Only decide "redirect to /auth" once loading is complete.
   const shouldGateAuthenticatedRendering =
     !isNativeIOSApp() &&
-    (authLoading || !authInitialized || isVerifyingAuth || isLoading) &&
+    // Only gate during initial hydration/first validation; don't block UI for background re-checks.
+    (authLoading || !authInitialized || isLoading) &&
     // Gate protected routes, and also gate public routes when we have local auth evidence,
     // to avoid flashing authenticated layouts before the server session is validated.
     (!isPublicRoute || hasLocalAuthEvidence() || !!user?.id);
