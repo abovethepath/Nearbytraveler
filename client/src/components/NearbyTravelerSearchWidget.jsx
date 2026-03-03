@@ -4,8 +4,10 @@ import {
   TOP_CHOICES,
   getAllActivities,
   getAllInterests,
+  getAllLanguages,
 } from "@shared/base-options";
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS } from "@/lib/formConstants";
+import { COUNTRIES } from "@/lib/locationData";
 
 const AGE_RANGES = [
   { label: "18–25", min: "18", max: "25" },
@@ -89,11 +91,17 @@ function Section({ title, icon, count, children, defaultOpen = false }) {
 
 export default function NearbyTravelerSearchWidget({ filters, setFilters, onClose }) {
   const [searchQuery, setSearchQuery] = useState(filters.search || "");
+  const [hostelQuery, setHostelQuery] = useState(filters.hostelName || "");
+  const [languageQuery, setLanguageQuery] = useState("");
+  const [countryQuery, setCountryQuery] = useState("");
 
   const allInterests = useMemo(() => getAllInterests(), []);
   const allActivities = useMemo(() => getAllActivities(), []);
+  const allLanguages = useMemo(() => getAllLanguages(), []);
   // This codebase no longer has "events" in shared/base-options; reuse TOP_CHOICES as event-category chips.
   const allEvents = useMemo(() => TOP_CHOICES, []);
+  const allTopChoices = useMemo(() => TOP_CHOICES, []);
+  const allCountries = useMemo(() => COUNTRIES, []);
 
   const toggleArray = (key, value) => {
     setFilters((prev) => {
@@ -119,13 +127,34 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
     setFilters((prev) => ({ ...prev, search: val }));
   };
 
+  const handleHostel = (e) => {
+    const val = e.target.value;
+    setHostelQuery(val);
+    setFilters((prev) => ({ ...prev, hostelName: val }));
+  };
+
   const totalSelected = useMemo(() => {
     let n = 0;
-    ["gender", "sexualPreference", "userType", "interests", "activities", "events", "travelerTypes", "militaryStatus"].forEach(
+    [
+      "topChoices",
+      "gender",
+      "sexualPreference",
+      "userType",
+      "interests",
+      "activities",
+      "events",
+      "travelerTypes",
+      "militaryStatus",
+      "languages",
+      "countriesVisited",
+    ].forEach(
       (k) => {
         n += (filters[k] || []).length;
       }
     );
+    if (filters.newToTown) n += 1;
+    if (filters.travelingWithChildren) n += 1;
+    if (filters.hostelName) n += 1;
     if (filters.minAge || filters.maxAge) n += 1;
     if (filters.search) n += 1;
     return n;
@@ -133,7 +162,19 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
 
   const activeChips = useMemo(() => {
     const chips = [];
-    ["gender", "sexualPreference", "userType", "interests", "activities", "events", "travelerTypes", "militaryStatus"].forEach(
+    [
+      "topChoices",
+      "gender",
+      "sexualPreference",
+      "userType",
+      "interests",
+      "activities",
+      "events",
+      "travelerTypes",
+      "militaryStatus",
+      "languages",
+      "countriesVisited",
+    ].forEach(
       (key) => {
         (filters[key] || []).forEach((val) => chips.push({ key, val }));
       }
@@ -142,12 +183,22 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
       const r = AGE_RANGES.find((r) => String(r.min) === String(filters.minAge) && String(r.max) === String(filters.maxAge));
       if (r) chips.push({ key: "age", val: r.label });
     }
+    if (filters.newToTown) chips.push({ key: "newToTown", val: "New to town" });
+    if (filters.travelingWithChildren) chips.push({ key: "travelingWithChildren", val: "Traveling with children" });
+    if (filters.hostelName) chips.push({ key: "hostelName", val: `Hostel: ${filters.hostelName}` });
     return chips;
   }, [filters]);
 
   const removeChip = ({ key, val }) => {
     if (key === "age") {
       setFilters((prev) => ({ ...prev, minAge: "", maxAge: "" }));
+    } else if (key === "newToTown") {
+      setFilters((prev) => ({ ...prev, newToTown: false }));
+    } else if (key === "travelingWithChildren") {
+      setFilters((prev) => ({ ...prev, travelingWithChildren: false }));
+    } else if (key === "hostelName") {
+      setHostelQuery("");
+      setFilters((prev) => ({ ...prev, hostelName: "" }));
     } else {
       toggleArray(key, val);
     }
@@ -155,7 +206,9 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
 
   const clearAll = () => {
     setSearchQuery("");
+    setHostelQuery("");
     setFilters({
+      topChoices: [],
       gender: [],
       sexualPreference: [],
       minAge: "",
@@ -168,6 +221,11 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
       events: [],
       travelerTypes: [],
       militaryStatus: [],
+      languages: [],
+      countriesVisited: [],
+      newToTown: false,
+      travelingWithChildren: false,
+      hostelName: "",
       startDate: "",
       endDate: "",
     });
@@ -303,6 +361,18 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
       </div>
 
       <div style={{ padding: "8px 16px 140px", overflowY: "auto", flexGrow: 1 }}>
+        <Section title="Top Choices" icon="⭐" count={(filters.topChoices || []).length}>
+          {allTopChoices.map((opt) => (
+            <button
+              key={opt}
+              style={pillStyle((filters.topChoices || []).includes(opt))}
+              onClick={() => toggleArray("topChoices", opt)}
+            >
+              {opt}
+            </button>
+          ))}
+        </Section>
+
         <Section title="Gender" icon="🪪" count={filters.gender.length} defaultOpen>
           {GENDER_OPTIONS.map((opt) => (
             <button key={opt} style={pillStyle(filters.gender.includes(opt))} onClick={() => toggleArray("gender", opt)}>
@@ -355,6 +425,37 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
           ))}
         </Section>
 
+        <Section title="Military Status" icon="🎖️" count={(filters.militaryStatus || []).length}>
+          {["Active Duty", "Veteran"].map((opt) => (
+            <button
+              key={opt}
+              style={pillStyle((filters.militaryStatus || []).includes(opt))}
+              onClick={() => toggleArray("militaryStatus", opt)}
+            >
+              {opt}
+            </button>
+          ))}
+        </Section>
+
+        <Section
+          title="Family & Local Status"
+          icon="👨‍👩‍👧‍👦"
+          count={(filters.newToTown ? 1 : 0) + (filters.travelingWithChildren ? 1 : 0)}
+        >
+          <button
+            style={pillStyle(!!filters.newToTown)}
+            onClick={() => setFilters((prev) => ({ ...prev, newToTown: !prev.newToTown }))}
+          >
+            New to town
+          </button>
+          <button
+            style={pillStyle(!!filters.travelingWithChildren)}
+            onClick={() => setFilters((prev) => ({ ...prev, travelingWithChildren: !prev.travelingWithChildren }))}
+          >
+            Traveling with children
+          </button>
+        </Section>
+
         <Section title="Interests" icon="💡" count={filters.interests.length}>
           {allInterests.map((opt) => (
             <button key={opt} style={pillStyle(filters.interests.includes(opt))} onClick={() => toggleArray("interests", opt)}>
@@ -381,6 +482,93 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
               {opt}
             </button>
           ))}
+        </Section>
+
+        <Section title="Languages" icon="🗣️" count={(filters.languages || []).length}>
+          <div style={{ width: "100%" }}>
+            <input
+              value={languageQuery}
+              onChange={(e) => setLanguageQuery(e.target.value)}
+              placeholder="Type to filter languages…"
+              style={{
+                width: "100%",
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 12,
+                padding: "10px 12px",
+                color: "#fff",
+                fontSize: 13,
+                outline: "none",
+                boxSizing: "border-box",
+                marginBottom: 10,
+              }}
+            />
+          </div>
+          {allLanguages
+            .filter((l) => !languageQuery.trim() || String(l).toLowerCase().includes(languageQuery.trim().toLowerCase()))
+            .map((opt) => (
+              <button
+                key={opt}
+                style={pillStyle((filters.languages || []).includes(opt))}
+                onClick={() => toggleArray("languages", opt)}
+              >
+                {opt}
+              </button>
+            ))}
+        </Section>
+
+        <Section title="Countries Visited" icon="🌍" count={(filters.countriesVisited || []).length}>
+          <div style={{ width: "100%" }}>
+            <input
+              value={countryQuery}
+              onChange={(e) => setCountryQuery(e.target.value)}
+              placeholder="Type to filter countries…"
+              style={{
+                width: "100%",
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 12,
+                padding: "10px 12px",
+                color: "#fff",
+                fontSize: 13,
+                outline: "none",
+                boxSizing: "border-box",
+                marginBottom: 10,
+              }}
+            />
+          </div>
+          {allCountries
+            .filter((c) => !countryQuery.trim() || String(c).toLowerCase().includes(countryQuery.trim().toLowerCase()))
+            .map((opt) => (
+              <button
+                key={opt}
+                style={pillStyle((filters.countriesVisited || []).includes(opt))}
+                onClick={() => toggleArray("countriesVisited", opt)}
+              >
+                {opt}
+              </button>
+            ))}
+        </Section>
+
+        <Section title="Hostel Connect" icon="🏨" count={filters.hostelName ? 1 : 0}>
+          <div style={{ width: "100%" }}>
+            <input
+              value={hostelQuery}
+              onChange={handleHostel}
+              placeholder="Hostel name (optional)…"
+              style={{
+                width: "100%",
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 12,
+                padding: "10px 12px",
+                color: "#fff",
+                fontSize: 13,
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
         </Section>
       </div>
 

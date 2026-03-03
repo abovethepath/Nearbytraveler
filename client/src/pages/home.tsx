@@ -614,6 +614,7 @@ export default function Home() {
   const [businessesDisplayCount, setBusinessesDisplayCount] = useState(3);
   const [displayLimit, setDisplayLimit] = useState(8);
   const [filters, setFilters] = useState({
+    topChoices: [] as string[],
     gender: [] as string[],
     sexualPreference: [] as string[],
     minAge: "",
@@ -626,6 +627,11 @@ export default function Home() {
     events: [] as string[],
     travelerTypes: [] as string[],
     militaryStatus: [] as string[],
+    languages: [] as string[],
+    countriesVisited: [] as string[],
+    newToTown: false,
+    travelingWithChildren: false,
+    hostelName: "",
     startDate: "",
     endDate: ""
   });
@@ -1072,6 +1078,7 @@ export default function Home() {
   // When user selects filters or searches, skip prioritization to respect their intent
   // This allows getSortedUsers() to properly apply the user's selected sort
   const hasAnyAdvancedFilters =
+    filters.topChoices.length > 0 ||
     filters.gender.length > 0 ||
     filters.sexualPreference.length > 0 ||
     filters.interests.length > 0 ||
@@ -1080,6 +1087,11 @@ export default function Home() {
     filters.events.length > 0 ||
     filters.travelerTypes.length > 0 ||
     filters.militaryStatus.length > 0 ||
+    filters.languages.length > 0 ||
+    filters.countriesVisited.length > 0 ||
+    filters.newToTown ||
+    filters.travelingWithChildren ||
+    !!filters.hostelName ||
     !!filters.minAge ||
     !!filters.maxAge;
   const isDefaultBrowsing =
@@ -1293,6 +1305,18 @@ export default function Home() {
       if (!matchesSearch) return false;
     }
 
+    // Top choices filter
+    if (filters.topChoices.length > 0) {
+      const userTopChoiceHaystack = [
+        ...(otherUser.interests || []),
+        ...(otherUser.travelInterests || []),
+      ];
+      const hasMatchingTopChoice = filters.topChoices.some((choice: string) =>
+        userTopChoiceHaystack.some((x: string) => String(x).toLowerCase().includes(choice.toLowerCase()))
+      );
+      if (!hasMatchingTopChoice) return false;
+    }
+
     if (filters.interests.length > 0) {
       const userInterests = otherUser.interests || [];
       const hasMatchingInterest = filters.interests.some((interest: string) => 
@@ -1323,6 +1347,56 @@ export default function Home() {
         )
       );
       if (!hasMatchingEventInterest) return false;
+    }
+
+    // Military status (schema has booleans: isVeteran / isActiveDuty)
+    if (filters.militaryStatus.length > 0) {
+      const isVeteran = !!(otherUser as any)?.isVeteran;
+      const isActiveDuty = !!(otherUser as any)?.isActiveDuty;
+      const hasMatch = filters.militaryStatus.some((s: string) => {
+        const norm = s.toLowerCase();
+        if (norm.includes("veteran")) return isVeteran;
+        if (norm.includes("active")) return isActiveDuty;
+        return false;
+      });
+      if (!hasMatch) return false;
+    }
+
+    // Languages (schema: languagesSpoken array)
+    if (filters.languages.length > 0) {
+      const userLanguages = (otherUser as any)?.languagesSpoken ?? (otherUser as any)?.languages_spoken ?? [];
+      const arr = Array.isArray(userLanguages) ? userLanguages : [];
+      const hasLanguage = filters.languages.some((lang: string) =>
+        arr.some((u: string) => String(u).toLowerCase() === lang.toLowerCase())
+      );
+      if (!hasLanguage) return false;
+    }
+
+    // Countries visited (schema: countriesVisited array)
+    if (filters.countriesVisited.length > 0) {
+      const userCountries = (otherUser as any)?.countriesVisited ?? (otherUser as any)?.countries_visited ?? [];
+      const arr = Array.isArray(userCountries) ? userCountries : [];
+      const hasCountry = filters.countriesVisited.some((country: string) =>
+        arr.some((u: string) => String(u).toLowerCase() === country.toLowerCase())
+      );
+      if (!hasCountry) return false;
+    }
+
+    // New to town (schema: isNewToTown boolean)
+    if (filters.newToTown) {
+      if (!(otherUser as any)?.isNewToTown) return false;
+    }
+
+    // Traveling with children (schema: travelingWithChildren boolean)
+    if (filters.travelingWithChildren) {
+      if (!(otherUser as any)?.travelingWithChildren) return false;
+    }
+
+    // Hostel name (schema: hostelName text)
+    if (filters.hostelName && filters.hostelName.trim()) {
+      const q = filters.hostelName.trim().toLowerCase();
+      const hn = String((otherUser as any)?.hostelName || "").toLowerCase();
+      if (!hn.includes(q)) return false;
     }
 
     // Apply basic filter logic
@@ -1700,6 +1774,7 @@ export default function Home() {
                 {(activeFilter !== "all" || 
                   filters.location || 
                   filters.search || 
+                  filters.topChoices.length > 0 ||
                   filters.gender.length > 0 || 
                   filters.sexualPreference.length > 0 || 
                   filters.interests.length > 0 || 
@@ -1708,6 +1783,11 @@ export default function Home() {
                   filters.events.length > 0 ||
                   filters.travelerTypes.length > 0 ||
                   filters.militaryStatus.length > 0 ||
+                  filters.languages.length > 0 ||
+                  filters.countriesVisited.length > 0 ||
+                  filters.newToTown ||
+                  filters.travelingWithChildren ||
+                  !!filters.hostelName ||
                   filters.minAge ||
                   filters.maxAge) && (
                   <Button
@@ -1716,6 +1796,7 @@ export default function Home() {
                     onClick={() => {
                       // Reset all filters
                       setFilters({
+                        topChoices: [],
                         gender: [],
                         sexualPreference: [],
                         minAge: "",
@@ -1728,6 +1809,11 @@ export default function Home() {
                         events: [],
                         travelerTypes: [],
                         militaryStatus: [],
+                        languages: [],
+                        countriesVisited: [],
+                        newToTown: false,
+                        travelingWithChildren: false,
+                        hostelName: "",
                         startDate: "",
                         endDate: ""
                       });
