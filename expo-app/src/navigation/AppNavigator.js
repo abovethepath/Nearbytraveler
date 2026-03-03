@@ -44,7 +44,8 @@ const TabIcon = ({ emoji, focused }) => (
 
 // WebView stacks: one screen each with session cookie (GenericWebViewScreen uses api.getSessionCookie())
 // gestureEnabled: false prevents iOS swipe-back from dispatching GO_BACK when there's no screen to pop (avoids "GO_BACK was not handled")
-function WebViewStack({ path, tabLabel }) {
+function WebViewStack({ route }) {
+  const path = route?.params?.path;
   return (
     <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: false }}>
       <Stack.Screen name="WebViewPage" component={GenericWebViewScreen} initialParams={{ path }} />
@@ -171,20 +172,20 @@ function MainTabs() {
     >
       <Tab.Screen
         name="Home"
+        component={WebViewStack}
         options={{
           tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} />,
         }}
-      >
-        {() => <WebViewStack path="/home" tabLabel="Home" />}
-      </Tab.Screen>
+        initialParams={{ path: "/home" }}
+      />
       <Tab.Screen
         name="Explore"
+        component={WebViewStack}
         options={{
           tabBarIcon: ({ focused }) => <TabIcon emoji="🔍" focused={focused} />,
         }}
-      >
-        {() => <WebViewStack path="/explore" tabLabel="Explore" />}
-      </Tab.Screen>
+        initialParams={{ path: "/explore" }}
+      />
       <Tab.Screen
         name="Create"
         component={CreateStack}
@@ -199,21 +200,21 @@ function MainTabs() {
       />
       <Tab.Screen
         name="Messages"
+        component={WebViewStack}
         options={{
           tabBarIcon: ({ focused }) => <TabIcon emoji="💬" focused={focused} />,
         }}
-      >
-        {() => <WebViewStack path="/messages" tabLabel="Messages" />}
-      </Tab.Screen>
+        initialParams={{ path: "/messages" }}
+      />
       <Tab.Screen
         name="Profile"
+        component={WebViewStack}
         options={{
           tabBarIcon: ({ focused }) => <TabIcon emoji="👤" focused={focused} />,
           unmountOnBlur: false,
         }}
-      >
-        {() => <WebViewStack path="/profile" tabLabel="Profile" />}
-      </Tab.Screen>
+        initialParams={{ path: "/profile" }}
+      />
     </Tab.Navigator>
   );
 }

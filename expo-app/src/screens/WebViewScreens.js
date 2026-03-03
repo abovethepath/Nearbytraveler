@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Linking, Platform, useColorScheme, useWindowDimensions, ScrollView, RefreshControl, Image, BackHandler, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useFocusEffect, CommonActions } from '@react-navigation/native';
@@ -57,9 +57,9 @@ function pathWithNativeIOS(path) {
   return `${path}${hasQuery ? '&' : '?'}native=ios`;
 }
 
-function webViewSource(path) {
+function webViewSource(path, cookieOverride) {
   const uri = `${BASE_URL}${pathWithNativeIOS(path)}`;
-  const cookie = api.getSessionCookie();
+  const cookie = cookieOverride || api.getSessionCookie();
   if (cookie) {
     // Native iOS RNCWebViewImpl.m expects lowercase "cookie" key (line 849)
     return { uri, headers: { cookie } };
@@ -111,7 +111,7 @@ function WebViewWithChrome({ path, navigation }) {
   const [sessionReady, setSessionReady] = useState(false);
   const webViewRef = useRef(null);
   const displayUser = authUser || user;
-  const source = webViewSource(path);
+  const source = useMemo(() => webViewSource(path, sessionCookie), [path, sessionCookie]);
 
   // Ensure session is loaded from AsyncStorage before WebView loads (so cookie is available)
   useEffect(() => {
@@ -133,7 +133,9 @@ function WebViewWithChrome({ path, navigation }) {
   useEffect(() => {
     if (displayUser) setAuthWaitExpired(false);
   }, [displayUser]);
-  const effectiveSource = (shouldWaitForAuth && !authWaitExpired) || !sessionReady ? null : source;
+  const effectiveSource = useMemo(() => {
+    return (shouldWaitForAuth && !authWaitExpired) || !sessionReady ? null : source;
+  }, [shouldWaitForAuth, authWaitExpired, sessionReady, source]);
   const showAuthWaiting = shouldWaitForAuth && !authWaitExpired;
 
   const loadUser = useCallback(() => {
@@ -361,7 +363,8 @@ function WebViewWithChrome({ path, navigation }) {
     );
   }
 
-  const loadingBg = dark ? DARK.bg : '#FFFFFF';
+  // Use the same background as the app shell to avoid gray flashes.
+  const loadingBg = dark ? '#0f1923' : '#FFFFFF';
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: containerBg }]}>
@@ -410,14 +413,12 @@ function WebViewWithChrome({ path, navigation }) {
         </View>
       </View>
       {!effectiveSource ? (
-        <View style={[styles.webview, { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: loadingBg }]}>
-          <ActivityIndicator size="large" color="#F97316" />
-        </View>
+        <View style={[styles.webview, { flex: 1, backgroundColor: loadingBg }]} />
       ) : (
       <WebView
         ref={webViewRef}
         source={effectiveSource}
-        style={[styles.webview, dark && { backgroundColor: DARK.bg }]}
+        style={[styles.webview, { backgroundColor: loadingBg }]}
         injectedJavaScriptBeforeContentLoaded={
           displayUser
             ? NATIVE_INJECT_JS + `
@@ -466,9 +467,7 @@ true;
         thirdPartyCookiesEnabled={true}
         fadeDuration={0}
         renderLoading={() => (
-          <View style={{ flex: 1, backgroundColor: loadingBg, justifyContent: 'center', alignItems: 'center' }}>
-            <ActivityIndicator size="large" color="#F97316" />
-          </View>
+          <View style={{ flex: 1, backgroundColor: loadingBg }} />
         )}
       />
       )}
@@ -477,13 +476,19 @@ true;
 }
 
 function NTWebView({ uri }) {
+  const colorScheme = useColorScheme();
+  const dark = colorScheme === 'dark';
+  const loadingBg = dark ? '#0f1923' : '#FFFFFF';
+  const source = useMemo(() => ({ uri: addNativeParam(uri) }), [uri]);
   return (
     <WebView
-      source={{ uri: addNativeParam(uri) }}
-      style={styles.webview}
+      source={source}
+      style={[styles.webview, { backgroundColor: loadingBg }]}
       sharedCookiesEnabled={true}
       thirdPartyCookiesEnabled={true}
       injectedJavaScriptBeforeContentLoaded={NATIVE_INJECT_JS}
+      startInLoadingState={true}
+      renderLoading={() => <View style={{ flex: 1, backgroundColor: loadingBg }} />}
       onShouldStartLoadWithRequest={(request) => {
         if (isExternalUrl(request.url)) {
           Linking.openURL(request.url).catch(() => {});
@@ -502,10 +507,10 @@ function ensureNoLandingPath(path) {
   return path || '/home';
 }
 
-export function GenericWebViewScreen({ route, navigation }) {
+export const GenericWebViewScreen = React.memo(function GenericWebViewScreen({ route, navigation }) {
   const path = ensureNoLandingPath(route?.params?.path);
   return <WebViewWithChrome path={path} navigation={navigation} />;
-}
+});
 
 /**
  * Join/Sign-up WebView - loads /join which has the correct 3-step flow:
@@ -525,7 +530,7 @@ export function JoinWebViewScreen({ navigation }) {
   const webViewRef = useRef(null);
   const signupCompletedRef = useRef(false);
   const joinUri = `${BASE_URL}${pathWithNativeIOS('/join')}`;
-  const source = { uri: joinUri };
+  const source = useMemo(() => ({ uri: joinUri }), [joinUri]);
 
   const handleMessage = useCallback(async (event) => {
     try {
@@ -712,7 +717,7 @@ export function BusinessSignupWebViewScreen({ navigation }) {
   }, [navigation]);
 
   const businessUri = `${BASE_URL}${pathWithNativeIOS('/signup/business')}`;
-  const source = { uri: businessUri };
+  const source = useMemo(() => ({ uri: businessUri }), [businessUri]);
 
   const onLoadStart = useCallback(() => { setLoading(true); setError(null); }, []);
   const onLoadEnd = useCallback(() => setLoading(false), []);
