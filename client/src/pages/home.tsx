@@ -689,6 +689,13 @@ export default function Home() {
     window.scrollTo(0, 0);
   }, []);
 
+  // Allow navbar / bottom nav to open the Home advanced filters UI.
+  useEffect(() => {
+    const handler = () => setShowAdvancedFilters(true);
+    window.addEventListener("openAdvancedFilters", handler as any);
+    return () => window.removeEventListener("openAdvancedFilters", handler as any);
+  }, []);
+
 
 
 
@@ -2009,8 +2016,16 @@ export default function Home() {
       
       {/* Connect and Destination Modals */}
       {showAdvancedFilters && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div style={{ height: "90vh", width: "100%", maxWidth: 460, borderRadius: 20, overflow: "hidden" }}>
+        <div
+          className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowAdvancedFilters(false);
+          }}
+        >
+          <div
+            style={{ height: "90vh", width: "100%", maxWidth: 460, borderRadius: 20, overflow: "hidden" }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <NearbyTravelerSearchWidget
               filters={filters}
               setFilters={setFilters}

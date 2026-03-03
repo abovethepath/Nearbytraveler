@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Home, Plus, MessageSquare, User, Calendar, Search, X, MapPin, Zap, Users } from "lucide-react";
 import { AuthContext } from "@/App";
-import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import { useQuery } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/queryClient";
 
@@ -22,7 +21,6 @@ export function MobileBottomNav() {
   const [location, setLocation] = useLocation();
   const [showActionMenu, setShowActionMenu] = useState(false);
   const isDark = useIsDarkMode();
-  const [showSearchWidget, setShowSearchWidget] = useState(false);
   const authContext = React.useContext(AuthContext);
   const [resolvedUser, setResolvedUser] = useState<any>(null);
 
@@ -83,6 +81,13 @@ export function MobileBottomNav() {
     { icon: MessageSquare, label: "Messages", path: "/messages" },
     { icon: User, label: "Profile", path: profilePath },
   ];
+
+  const openAdvancedFilters = () => {
+    if (location !== "/") setLocation("/");
+    setTimeout(() => {
+      window.dispatchEvent(new Event("openAdvancedFilters"));
+    }, 0);
+  };
   
   // Business: deals only. Regular users: events, plan trip, quick meetups (no deals here).
   const actionMenuItems = isBusinessUser ? [
@@ -257,7 +262,7 @@ export function MobileBottomNav() {
                   e.preventDefault();
                   e.stopPropagation();
                   if (item.action === "search") {
-                    setShowSearchWidget(true);
+                    openAdvancedFilters();
                   } else if (item.path) {
                     setLocation(item.path);
                   }
@@ -345,7 +350,7 @@ export function MobileBottomNav() {
               e.preventDefault();
               e.stopPropagation();
               if (item.action === "search") {
-                setShowSearchWidget(true);
+                openAdvancedFilters();
               } else if (item.path) {
                 if (isMessagesItem) {
                   setLocation("/messages");
@@ -426,11 +431,6 @@ export function MobileBottomNav() {
           })}
         </div>
       </div>
-
-      <AdvancedSearchWidget 
-        open={showSearchWidget}
-        onOpenChange={setShowSearchWidget}
-      />
 
       <style>{`
         @keyframes iosSheetUp {

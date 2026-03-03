@@ -38,7 +38,6 @@ import {
 import Logo from "@/components/logo";
 import ConnectModal from "@/components/connect-modal";
 import NotificationBell from "@/components/notification-bell";
-import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import { useTheme } from "@/components/theme-provider";
 import { AdaptiveThemeToggle } from "@/components/adaptive-theme-toggle";
 import { authStorage } from "@/lib/auth";
@@ -93,7 +92,6 @@ function Navbar() {
   const { user, setUser } = useContext(AuthContext);
   const [showConnectModal, setShowConnectModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [showSearchWidget, setShowSearchWidget] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { toggleTheme } = useTheme();
@@ -218,12 +216,14 @@ function Navbar() {
   // close on route change
   useEffect(() => setIsMobileMenuOpen(false), [location]);
 
-  // Listen for openSearchWidget from MobileTopNav or other components
-  useEffect(() => {
-    const handler = () => setShowSearchWidget(true);
-    window.addEventListener("openSearchWidget", handler);
-    return () => window.removeEventListener("openSearchWidget", handler);
-  }, []);
+  const openAdvancedFilters = React.useCallback(() => {
+    // Always open the new filters UI on Home where `filters` state lives.
+    if (location !== "/") setLocation("/");
+    // Defer so the Home page can mount before receiving the event.
+    setTimeout(() => {
+      window.dispatchEvent(new Event("openAdvancedFilters"));
+    }, 0);
+  }, [location, setLocation]);
 
   // Listen for profile updates to refresh user data
   useEffect(() => {
@@ -486,7 +486,7 @@ function Navbar() {
                       <button
                         key="search"
                         type="button"
-                        onClick={() => setShowSearchWidget(true)}
+                        onClick={openAdvancedFilters}
                         className="flex items-center gap-1.5 font-medium text-gray-700 dark:text-white hover:text-travel-blue transition-colors"
                         aria-label="Search"
                       >
@@ -591,7 +591,7 @@ function Navbar() {
                     <span>My Profile</span>
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem onClick={() => setShowSearchWidget(true)}>
+                  <DropdownMenuItem onClick={openAdvancedFilters}>
                     <Search className="mr-2 h-4 w-4" />
                     <span>Search</span>
                   </DropdownMenuItem>
@@ -913,12 +913,6 @@ function Navbar() {
         isOpen={showConnectModal}
         onClose={() => setShowConnectModal(false)}
         userTravelPlans={(userTravelPlans as any[]) || []}
-      />
-
-      {/* Advanced Search - sitewide access from navbar */}
-      <AdvancedSearchWidget
-        open={showSearchWidget}
-        onOpenChange={setShowSearchWidget}
       />
     </>
   );
