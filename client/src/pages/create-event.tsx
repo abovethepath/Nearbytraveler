@@ -22,7 +22,6 @@ import { Badge } from "@/components/ui/badge";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { authStorage } from "@/lib/auth";
 import { AIQuickCreateEvent } from "@/components/AIQuickCreateEvent";
-import { Sparkles } from "lucide-react";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 
 // Categories removed - users can describe their event in the description field!
@@ -87,6 +86,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   const [useBusinessAddress, setUseBusinessAddress] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurrenceType, setRecurrenceType] = useState("");
+  const [addEndTime, setAddEndTime] = useState(false);
   const [eventUrl, setEventUrl] = useState("");
   const [isImportingEvent, setIsImportingEvent] = useState(false);
   const [importedFromUrl, setImportedFromUrl] = useState(false);
@@ -96,7 +96,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   const [showPrivateSettings, setShowPrivateSettings] = useState(false);
   const [additionalCities, setAdditionalCities] = useState<string[]>([]);
   const [showAdditionalCities, setShowAdditionalCities] = useState(false);
-  const [showAiQuickCreate, setShowAiQuickCreate] = useState(true);
+  const [openQuickPanel, setOpenQuickPanel] = useState<"import" | "ai" | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -105,9 +105,16 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('ai') === 'true') {
-      setShowAiQuickCreate(true);
+      setOpenQuickPanel("ai");
     }
   }, []);
+
+  // If a user imported an event, keep the import panel open so they can complete organizer confirmation.
+  useEffect(() => {
+    if (importedFromUrl) {
+      setOpenQuickPanel("import");
+    }
+  }, [importedFromUrl]);
 
   // Get current user data (check both keys - auth may use 'user' or 'travelconnect_user')
   const currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || localStorage.getItem('user') || '{}');
@@ -150,6 +157,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
     formState: { errors },
     setValue,
     watch,
+    clearErrors,
     reset
   } = useForm<EventFormData>({
     defaultValues: {
@@ -318,7 +326,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
 
   const handleAiDraftReady = (draft: any) => {
     // Close AI Quick Create panel first
-    setShowAiQuickCreate(false);
+    setOpenQuickPanel(null);
     
     // Populate all form fields
     if (draft.title) setValue("title", draft.title, { shouldValidate: true, shouldDirty: true });
@@ -371,6 +379,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       try {
         const endDate = new Date(draft.endDateTime);
         if (!isNaN(endDate.getTime())) {
+          setAddEndTime(true);
           setValue("endDate", endDate.toISOString().split('T')[0], { shouldValidate: true, shouldDirty: true });
           setValue("endTime", endDate.toTimeString().slice(0, 5), { shouldValidate: true, shouldDirty: true });
         }
@@ -698,29 +707,319 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
             }}
             className="space-y-6"
           >
-            {/* AI Quick Create - Describe your event in natural language */}
-            <Card 
-              className="border border-gray-200 dark:border-orange-800 bg-white dark:bg-gradient-to-r dark:from-orange-950/30 dark:to-amber-950/30 cursor-pointer hover:border-gray-300 dark:hover:border-orange-600 transition-colors"
-              onClick={() => setShowAiQuickCreate(!showAiQuickCreate)}
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg flex items-center gap-2 text-orange-800 dark:text-orange-200">
-                    <Sparkles className="w-5 h-5" />
-                    AI Quick Create
-                  </CardTitle>
-                  <span className="text-sm font-medium text-orange-600 dark:text-orange-400">
-                    {showAiQuickCreate ? "Hide" : "Try it"}
-                  </span>
+            {/* Quick options (collapsed by default) */}
+            <div className="space-y-3">
+              <button
+                type="button"
+                className="w-full rounded-xl border border-blue-200 dark:border-blue-800 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 p-4 text-left hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-950/40 dark:hover:to-purple-950/40 transition-colors"
+                onClick={() => setOpenQuickPanel((prev) => (prev === "import" ? null : "import"))}
+                aria-expanded={openQuickPanel === "import"}
+                aria-controls="quick-import-panel"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-sm sm:text-base font-semibold text-blue-900 dark:text-blue-100">
+                      🔗 Have a Couchsurfing or Meetup event? Import it here
+                    </div>
+                    <div className="mt-1 text-xs sm:text-sm text-blue-700 dark:text-blue-300">
+                      Paste a URL and we’ll auto-fill the form in seconds.
+                    </div>
+                  </div>
+                  <div className="mt-0.5 text-blue-700 dark:text-blue-300">
+                    {openQuickPanel === "import" ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                  </div>
                 </div>
-                {!showAiQuickCreate && (
-                  <p className="text-sm text-orange-700 dark:text-orange-300">
-                    Describe your event in plain English and let AI fill out the form for you!
-                  </p>
-                )}
-              </CardHeader>
-              {showAiQuickCreate && (
-                <CardContent>
+              </button>
+
+              {openQuickPanel === "import" && (
+                <div id="quick-import-panel" className="rounded-xl border border-blue-200 dark:border-blue-800 bg-white/70 dark:bg-gray-900/40 p-4 space-y-3">
+                  <div className="flex gap-2">
+                    <Input
+                      value={eventUrl}
+                      onChange={(e) => setEventUrl(e.target.value)}
+                      placeholder="https://www.couchsurfing.com/events/... or https://www.meetup.com/..."
+                      className="flex-1 bg-white dark:bg-gray-800"
+                      data-testid="input-event-url"
+                    />
+                    <Button
+                      type="button"
+                      onClick={async () => {
+                        if (!eventUrl.trim()) {
+                          toast({
+                            title: "Missing URL",
+                            description: "Please paste a Couchsurfing or Meetup event URL",
+                            variant: "destructive"
+                          });
+                          return;
+                        }
+                        
+                        // Check if it's a supported URL
+                        if (!eventUrl.includes('meetup.com') && !eventUrl.includes('couchsurfing.com')) {
+                          toast({
+                            title: "Invalid URL",
+                            description: "Please paste a Couchsurfing or Meetup event URL",
+                            variant: "destructive"
+                          });
+                          return;
+                        }
+                        
+                        setIsImportingEvent(true);
+                        try {
+                          const response = await apiRequest('POST', '/api/events/import-url', { url: eventUrl });
+                          
+                          if (!response.ok) {
+                            // Parse error message from backend
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || "Failed to import event");
+                          }
+                          const eventData = await response.json();
+                          
+                          console.log('📥 Imported event data:', eventData);
+                          
+                          // Auto-fill the form with scraped data - using shouldValidate/shouldDirty to force input updates
+                          if (eventData.title) setValue("title", eventData.title, { shouldValidate: true, shouldDirty: true });
+                          if (eventData.description) setValue("description", eventData.description, { shouldValidate: true, shouldDirty: true });
+                          if (eventData.venueName) setValue("venueName", eventData.venueName, { shouldValidate: true, shouldDirty: true });
+                          
+                          // Handle location - street address comes separately now
+                          if (eventData.street) {
+                            setValue("street", eventData.street, { shouldValidate: true, shouldDirty: true });
+                          } else if (eventData.location) {
+                            // Fallback: parse from full location
+                            const addressParts = eventData.location.split(',').map((p: string) => p.trim());
+                            if (addressParts.length > 0) setValue("street", addressParts[0], { shouldValidate: true, shouldDirty: true });
+                          }
+                          
+                          if (eventData.city) setValue("city", eventData.city, { shouldValidate: true, shouldDirty: true });
+                          if (eventData.state) setValue("state", eventData.state, { shouldValidate: true, shouldDirty: true });
+                          if (eventData.country) setValue("country", eventData.country, { shouldValidate: true, shouldDirty: true });
+                          if (eventData.zipcode) setValue("zipcode", eventData.zipcode, { shouldValidate: true, shouldDirty: true });
+                          
+                          // Handle date - convert to YYYY-MM-DD format
+                          if (eventData.date) {
+                            try {
+                              const parsedDate = new Date(eventData.date);
+                              if (!isNaN(parsedDate.getTime())) {
+                                const formattedDate = parsedDate.toISOString().split('T')[0];
+                                setValue("date", formattedDate, { shouldValidate: true, shouldDirty: true });
+                                console.log('📅 Set date:', formattedDate, 'from', eventData.date);
+                                
+                                // Handle end date for multi-day events
+                                if (eventData.endDate) {
+                                  // Multi-day event - use provided end date
+                                  const parsedEndDate = new Date(eventData.endDate);
+                                  if (!isNaN(parsedEndDate.getTime())) {
+                                    const formattedEndDate = parsedEndDate.toISOString().split('T')[0];
+                                    setAddEndTime(true);
+                                    setValue("isSameDay", false, { shouldValidate: true, shouldDirty: true });
+                                    setValue("endDate", formattedEndDate, { shouldValidate: true, shouldDirty: true });
+                                    console.log('📅 Set end date:', formattedEndDate, 'from', eventData.endDate, '(multi-day event)');
+                                  }
+                                }
+                              }
+                            } catch (e) {
+                              console.error('Date parse error:', e);
+                            }
+                          }
+                          
+                          // Handle start and end times - convert from 12-hour to 24-hour format
+                          const convert12to24Hour = (time12h: string): string => {
+                            const match = time12h.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+                            if (!match) return time12h; // Return as-is if format doesn't match
+                            
+                            let [_, hours, minutes, period] = match;
+                            let hour = parseInt(hours);
+                            
+                            if (period.toUpperCase() === 'PM' && hour !== 12) {
+                              hour += 12;
+                            } else if (period.toUpperCase() === 'AM' && hour === 12) {
+                              hour = 0;
+                            }
+                            
+                            return `${hour.toString().padStart(2, '0')}:${minutes}`;
+                          };
+                          
+                          if (eventData.startTime) {
+                            const time24h = convert12to24Hour(eventData.startTime);
+                            setValue("startTime", time24h, { shouldValidate: true, shouldDirty: true });
+                            console.log('⏰ Set start time:', time24h, 'from', eventData.startTime);
+                          }
+                          if (eventData.endTime) {
+                            const time24h = convert12to24Hour(eventData.endTime);
+                            setAddEndTime(true);
+                            setValue("endTime", time24h, { shouldValidate: true, shouldDirty: true });
+                            if (!eventData.endDate) {
+                              setValue("isSameDay", true, { shouldValidate: true, shouldDirty: true });
+                              const startDate = watch("date");
+                              const existingEndDate = watch("endDate");
+                              if (startDate && !existingEndDate) {
+                                setValue("endDate", startDate, { shouldValidate: true, shouldDirty: true });
+                              }
+                            }
+                            console.log('⏰ Set end time:', time24h, 'from', eventData.endTime);
+                          }
+                          
+                          // Handle image URL
+                          if (eventData.imageUrl) {
+                            setValue("imageUrl", eventData.imageUrl, { shouldValidate: true, shouldDirty: true });
+                            setImagePreview(eventData.imageUrl);
+                            console.log('🖼️ Set image:', eventData.imageUrl);
+                          }
+                          
+                          // Update location state
+                          if (eventData.country) setSelectedCountry(eventData.country);
+                          if (eventData.state) setSelectedState(eventData.state);
+                          
+                          console.log('✅ Import complete - check form fields above');
+                          
+                          // Mark as imported and track platform AND organizer
+                          const sourcePlatform = eventData.source || (eventUrl.includes('couchsurfing') ? 'Couchsurfing' : 'Meetup');
+                          setImportedFromUrl(true);
+                          setImportedPlatform(sourcePlatform);
+                          setExternalOrganizerName(eventData.organizer || ''); // Store external organizer name (e.g., "Dan Cullen")
+                          setIsOriginalOrganizer(null); // Reset to require user confirmation
+                          
+                          toast({
+                            title: "✨ Event imported!",
+                            description: `Successfully imported from ${sourcePlatform}. Please confirm if you are the original organizer.`,
+                          });
+                        } catch (error) {
+                          toast({
+                            title: "Import failed",
+                            description: error instanceof Error ? error.message : "Could not import event",
+                            variant: "destructive"
+                          });
+                        } finally {
+                          setIsImportingEvent(false);
+                        }
+                      }}
+                      disabled={isImportingEvent || !eventUrl.trim()}
+                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                      data-testid="button-import-event"
+                    >
+                      {isImportingEvent ? "Importing..." : "Import"}
+                    </Button>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-xs text-blue-700 dark:text-blue-300">
+                      💡 Tip: Works with Couchsurfing and Meetup events! Automatically imports title, organizer, location, date/time, and cover image.
+                    </p>
+                    <p className="text-xs text-blue-600/80 dark:text-blue-300/80 italic">
+                      Note: Event descriptions are often hidden behind login walls and cannot be imported. You'll need to add the description manually.
+                    </p>
+                  </div>
+
+                  {/* Organizer Confirmation - Shows after importing from URL */}
+                  {importedFromUrl && (
+                    <Card className="border-2 border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/20">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg flex items-center gap-2 text-orange-800 dark:text-orange-200">
+                          ⚠️ Organizer Confirmation Required
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <p className="text-sm text-orange-700 dark:text-orange-300">
+                          You imported this event from <strong>{importedPlatform}</strong>. Please confirm your role:
+                        </p>
+                        
+                        <div className="space-y-3">
+                          <div 
+                            className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                              isOriginalOrganizer === true 
+                                ? 'border-green-500 bg-green-50 dark:bg-green-950/30' 
+                                : 'border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-700'
+                            }`}
+                            onClick={() => setIsOriginalOrganizer(true)}
+                            data-testid="option-original-organizer"
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 ${
+                                isOriginalOrganizer === true 
+                                  ? 'border-blue-500 bg-blue-500' 
+                                  : 'border-gray-300 dark:border-gray-600'
+                              }`}>
+                                {isOriginalOrganizer === true && (
+                                  <div className="w-2 h-2 bg-white rounded-full" />
+                                )}
+                              </div>
+                              <div>
+                                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                                  ✅ I am the original organizer
+                                </p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  I created this event on {importedPlatform} and I'm the official organizer
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div 
+                            className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                              isOriginalOrganizer === false 
+                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30' 
+                                : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700'
+                            }`}
+                            onClick={() => setIsOriginalOrganizer(false)}
+                            data-testid="option-sharing-event"
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 ${
+                                isOriginalOrganizer === false 
+                                  ? 'border-blue-500 bg-blue-500' 
+                                  : 'border-gray-300 dark:border-gray-600'
+                              }`}>
+                                {isOriginalOrganizer === false && (
+                                  <div className="w-2 h-2 bg-white rounded-full" />
+                                )}
+                              </div>
+                              <div>
+                                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                                  📢 I'm sharing someone else's event
+                                </p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  I found this event and want to share it with the Nearby Traveler community
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {isOriginalOrganizer === null && (
+                          <p className="text-sm text-orange-600 dark:text-orange-400 font-medium">
+                            ⚠️ Please select an option above before creating the event
+                          </p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              )}
+
+              <button
+                type="button"
+                className="w-full rounded-xl border border-orange-200 dark:border-orange-800 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 p-4 text-left hover:from-orange-100 hover:to-amber-100 dark:hover:from-orange-950/40 dark:hover:to-amber-950/40 transition-colors"
+                onClick={() => setOpenQuickPanel((prev) => (prev === "ai" ? null : "ai"))}
+                aria-expanded={openQuickPanel === "ai"}
+                aria-controls="quick-ai-panel"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-sm sm:text-base font-semibold text-orange-900 dark:text-orange-100">
+                      ✨ Use AI or Voice to create your event
+                    </div>
+                    <div className="mt-1 text-xs sm:text-sm text-orange-700 dark:text-orange-300">
+                      Describe your event in plain English and we’ll fill out the form.
+                    </div>
+                  </div>
+                  <div className="mt-0.5 text-orange-700 dark:text-orange-300">
+                    {openQuickPanel === "ai" ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                  </div>
+                </div>
+              </button>
+
+              {openQuickPanel === "ai" && (
+                <div id="quick-ai-panel" className="rounded-xl border border-orange-200 dark:border-orange-800 bg-white/70 dark:bg-gray-900/40 p-4">
                   <AIQuickCreateEvent
                     onDraftReady={handleAiDraftReady}
                     defaultCity={(() => {
@@ -732,277 +1031,18 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                       return hasActiveTrip ? currentUser.destinationCity : (currentUser.hometownCity || currentUser.destinationCity);
                     })()}
                   />
-                </CardContent>
+                </div>
               )}
-            </Card>
+            </div>
 
-            {/* Import from URL - Couchsurfing, Meetup, etc. */}
-            <Card className="border-2 border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/20">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2 text-purple-800 dark:text-purple-200">
-                  🚀 Quick Import from URL
-                </CardTitle>
-                <p className="text-sm text-purple-700 dark:text-purple-300">
-                  Paste a Couchsurfing or Meetup event URL to auto-fill the form in seconds!
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex gap-2">
-                  <Input
-                    value={eventUrl}
-                    onChange={(e) => setEventUrl(e.target.value)}
-                    placeholder="https://www.couchsurfing.com/events/... or https://www.meetup.com/..."
-                    className="flex-1 bg-white dark:bg-gray-800"
-                    data-testid="input-event-url"
-                  />
-                  <Button
-                    type="button"
-                    onClick={async () => {
-                      if (!eventUrl.trim()) {
-                        toast({
-                          title: "Missing URL",
-                          description: "Please paste a Couchsurfing or Meetup event URL",
-                          variant: "destructive"
-                        });
-                        return;
-                      }
-                      
-                      // Check if it's a supported URL
-                      if (!eventUrl.includes('meetup.com') && !eventUrl.includes('couchsurfing.com')) {
-                        toast({
-                          title: "Invalid URL",
-                          description: "Please paste a Couchsurfing or Meetup event URL",
-                          variant: "destructive"
-                        });
-                        return;
-                      }
-                      
-                      setIsImportingEvent(true);
-                      try {
-                        const response = await apiRequest('POST', '/api/events/import-url', { url: eventUrl });
-                        
-                        if (!response.ok) {
-                          // Parse error message from backend
-                          const errorData = await response.json();
-                          throw new Error(errorData.message || "Failed to import event");
-                        }
-                        const eventData = await response.json();
-                        
-                        console.log('📥 Imported event data:', eventData);
-                        
-                        // Auto-fill the form with scraped data - using shouldValidate/shouldDirty to force input updates
-                        if (eventData.title) setValue("title", eventData.title, { shouldValidate: true, shouldDirty: true });
-                        if (eventData.description) setValue("description", eventData.description, { shouldValidate: true, shouldDirty: true });
-                        if (eventData.venueName) setValue("venueName", eventData.venueName, { shouldValidate: true, shouldDirty: true });
-                        
-                        // Handle location - street address comes separately now
-                        if (eventData.street) {
-                          setValue("street", eventData.street, { shouldValidate: true, shouldDirty: true });
-                        } else if (eventData.location) {
-                          // Fallback: parse from full location
-                          const addressParts = eventData.location.split(',').map((p: string) => p.trim());
-                          if (addressParts.length > 0) setValue("street", addressParts[0], { shouldValidate: true, shouldDirty: true });
-                        }
-                        
-                        if (eventData.city) setValue("city", eventData.city, { shouldValidate: true, shouldDirty: true });
-                        if (eventData.state) setValue("state", eventData.state, { shouldValidate: true, shouldDirty: true });
-                        if (eventData.country) setValue("country", eventData.country, { shouldValidate: true, shouldDirty: true });
-                        if (eventData.zipcode) setValue("zipcode", eventData.zipcode, { shouldValidate: true, shouldDirty: true });
-                        
-                        // Handle date - convert to YYYY-MM-DD format
-                        if (eventData.date) {
-                          try {
-                            const parsedDate = new Date(eventData.date);
-                            if (!isNaN(parsedDate.getTime())) {
-                              const formattedDate = parsedDate.toISOString().split('T')[0];
-                              setValue("date", formattedDate, { shouldValidate: true, shouldDirty: true });
-                              console.log('📅 Set date:', formattedDate, 'from', eventData.date);
-                              
-                              // Handle end date for multi-day events
-                              if (eventData.endDate) {
-                                // Multi-day event - use provided end date
-                                const parsedEndDate = new Date(eventData.endDate);
-                                if (!isNaN(parsedEndDate.getTime())) {
-                                  const formattedEndDate = parsedEndDate.toISOString().split('T')[0];
-                                  setValue("isSameDay", false, { shouldValidate: true, shouldDirty: true });
-                                  setValue("endDate", formattedEndDate, { shouldValidate: true, shouldDirty: true });
-                                  console.log('📅 Set end date:', formattedEndDate, 'from', eventData.endDate, '(multi-day event)');
-                                }
-                              } else {
-                                // Same-day event - use same date for both start and end
-                                setValue("isSameDay", false, { shouldValidate: true, shouldDirty: true });
-                                setValue("endDate", formattedDate, { shouldValidate: true, shouldDirty: true });
-                                console.log('📅 Set end date:', formattedDate, '(same-day event)');
-                              }
-                            }
-                          } catch (e) {
-                            console.error('Date parse error:', e);
-                          }
-                        }
-                        
-                        // Handle start and end times - convert from 12-hour to 24-hour format
-                        const convert12to24Hour = (time12h: string): string => {
-                          const match = time12h.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-                          if (!match) return time12h; // Return as-is if format doesn't match
-                          
-                          let [_, hours, minutes, period] = match;
-                          let hour = parseInt(hours);
-                          
-                          if (period.toUpperCase() === 'PM' && hour !== 12) {
-                            hour += 12;
-                          } else if (period.toUpperCase() === 'AM' && hour === 12) {
-                            hour = 0;
-                          }
-                          
-                          return `${hour.toString().padStart(2, '0')}:${minutes}`;
-                        };
-                        
-                        if (eventData.startTime) {
-                          const time24h = convert12to24Hour(eventData.startTime);
-                          setValue("startTime", time24h, { shouldValidate: true, shouldDirty: true });
-                          console.log('⏰ Set start time:', time24h, 'from', eventData.startTime);
-                        }
-                        if (eventData.endTime) {
-                          const time24h = convert12to24Hour(eventData.endTime);
-                          setValue("endTime", time24h, { shouldValidate: true, shouldDirty: true });
-                          console.log('⏰ Set end time:', time24h, 'from', eventData.endTime);
-                        }
-                        
-                        // Handle image URL
-                        if (eventData.imageUrl) {
-                          setValue("imageUrl", eventData.imageUrl, { shouldValidate: true, shouldDirty: true });
-                          setImagePreview(eventData.imageUrl);
-                          console.log('🖼️ Set image:', eventData.imageUrl);
-                        }
-                        
-                        // Update location state
-                        if (eventData.country) setSelectedCountry(eventData.country);
-                        if (eventData.state) setSelectedState(eventData.state);
-                        
-                        console.log('✅ Import complete - check form fields above');
-                        
-                        // Mark as imported and track platform AND organizer
-                        const sourcePlatform = eventData.source || (eventUrl.includes('couchsurfing') ? 'Couchsurfing' : 'Meetup');
-                        setImportedFromUrl(true);
-                        setImportedPlatform(sourcePlatform);
-                        setExternalOrganizerName(eventData.organizer || ''); // Store external organizer name (e.g., "Dan Cullen")
-                        setIsOriginalOrganizer(null); // Reset to require user confirmation
-                        
-                        toast({
-                          title: "✨ Event imported!",
-                          description: `Successfully imported from ${sourcePlatform}. Please confirm if you are the original organizer.`,
-                        });
-                      } catch (error) {
-                        toast({
-                          title: "Import failed",
-                          description: error instanceof Error ? error.message : "Could not import event",
-                          variant: "destructive"
-                        });
-                      } finally {
-                        setIsImportingEvent(false);
-                      }
-                    }}
-                    disabled={isImportingEvent || !eventUrl.trim()}
-                    className="bg-purple-600 hover:bg-purple-700 text-white"
-                    data-testid="button-import-event"
-                  >
-                    {isImportingEvent ? "Importing..." : "Import"}
-                  </Button>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-purple-600 dark:text-purple-400">
-                    💡 Tip: Works with Couchsurfing and Meetup events! Automatically imports title, organizer, location, date/time, and cover image.
-                  </p>
-                  <p className="text-xs text-purple-500/80 dark:text-purple-400/80 italic">
-                    Note: Event descriptions are often hidden behind login walls and cannot be imported. You'll need to add the description manually.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Organizer Confirmation - Shows after importing from URL */}
-            {importedFromUrl && (
-              <Card className="border-2 border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/20">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2 text-orange-800 dark:text-orange-200">
-                    ⚠️ Organizer Confirmation Required
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-orange-700 dark:text-orange-300">
-                    You imported this event from <strong>{importedPlatform}</strong>. Please confirm your role:
-                  </p>
-                  
-                  <div className="space-y-3">
-                    <div 
-                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                        isOriginalOrganizer === true 
-                          ? 'border-green-500 bg-green-50 dark:bg-green-950/30' 
-                          : 'border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-700'
-                      }`}
-                      onClick={() => setIsOriginalOrganizer(true)}
-                      data-testid="option-original-organizer"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 ${
-                          isOriginalOrganizer === true 
-                            ? 'border-blue-500 bg-blue-500' 
-                            : 'border-gray-300 dark:border-gray-600'
-                        }`}>
-                          {isOriginalOrganizer === true && (
-                            <div className="w-2 h-2 bg-white rounded-full" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-900 dark:text-gray-100">
-                            ✅ I am the original organizer
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            I created this event on {importedPlatform} and I'm the official organizer
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div 
-                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                        isOriginalOrganizer === false 
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30' 
-                          : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700'
-                      }`}
-                      onClick={() => setIsOriginalOrganizer(false)}
-                      data-testid="option-sharing-event"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 ${
-                          isOriginalOrganizer === false 
-                            ? 'border-blue-500 bg-blue-500' 
-                            : 'border-gray-300 dark:border-gray-600'
-                        }`}>
-                          {isOriginalOrganizer === false && (
-                            <div className="w-2 h-2 bg-white rounded-full" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-900 dark:text-gray-100">
-                            📢 I'm sharing someone else's event
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            I found this event and want to share it with the Nearby Traveler community
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {isOriginalOrganizer === null && (
-                    <p className="text-sm text-orange-600 dark:text-orange-400 font-medium">
-                      ⚠️ Please select an option above before creating the event
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            )}
+            <div className="relative py-2">
+              <div className="border-t border-gray-200 dark:border-gray-700" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="px-3 text-xs font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900">
+                  Or fill out manually
+                </span>
+              </div>
+            </div>
 
             {/* Event Title */}
             <div className="space-y-2">
@@ -1080,14 +1120,17 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
               {/* Street Address */}
               <div className="space-y-2">
                 <Label htmlFor="street" className="text-sm font-medium dark:text-white">
-                  Street Address *
+                  Street Address (Optional)
                 </Label>
                 <Input
                   id="street"
-                  {...register("street", { required: "Street address is required" })}
+                  {...register("street")}
                   placeholder="123 Main Street"
                   className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
                 />
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Exact address can be shared with attendees later
+                </p>
                 {errors.street && (
                   <p className="text-sm text-red-500">{errors.street.message}</p>
                 )}
@@ -1361,56 +1404,85 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                 )}
               </div>
 
-              {/* Same Day Checkbox */}
+              {/* End Time (optional) */}
               <div className="flex items-center gap-3 py-3 px-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
                 <Checkbox
-                  id="isSameDay"
-                  checked={watch("isSameDay") || false}
+                  id="addEndTime"
+                  checked={addEndTime}
                   onCheckedChange={(checked) => {
-                    setValue("isSameDay", !!checked);
-                    if (checked) {
-                      // Auto-copy start date to end date
+                    const enabled = !!checked;
+                    setAddEndTime(enabled);
+                    if (enabled) {
+                      // Default to same-day when enabling end time to reduce friction
+                      setValue("isSameDay", true);
                       const startDate = watch("date");
-                      if (startDate) {
-                        setValue("endDate", startDate);
-                      }
+                      if (startDate) setValue("endDate", startDate);
+                    } else {
+                      setValue("endDate", "");
+                      setValue("endTime", "");
+                      setValue("isSameDay", false);
+                      clearErrors(["endDate", "endTime"]);
                     }
                   }}
                   className="h-5 w-5 border-2 border-blue-500 dark:border-blue-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                 />
-                <Label htmlFor="isSameDay" className="text-sm font-medium text-gray-800 dark:text-white cursor-pointer">
-                  Same day event (most events start and end on the same day)
+                <Label htmlFor="addEndTime" className="text-sm font-medium text-gray-800 dark:text-white cursor-pointer">
+                  Add end time (optional)
                 </Label>
               </div>
 
-              {/* End Date & Time */}
-              <div className="border rounded-lg p-4 space-y-4 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-                <h4 className="font-medium text-sm text-gray-700 dark:text-white uppercase tracking-wide">
-                  {watch("isSameDay") ? "End Time *" : "End Date & Time *"}
-                </h4>
-                <div className={`grid ${watch("isSameDay") ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"} gap-4`}>
-                  {!watch("isSameDay") && (
-                    <div className="space-y-2">
-                      <Label htmlFor="endDate" className="text-sm font-medium dark:text-white">
-                        Date *
-                      </Label>
-                      <Input
-                        id="endDate"
-                        type="date"
-                        {...register("endDate", { required: !watch("isSameDay") ? "End date is required" : false })}
-                        min={new Date().toISOString().split('T')[0]}
-                        max="9999-12-31"
-                        placeholder="20__-__-__"
-                        className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
-                        style={{ colorScheme: 'light dark' }}
-                      />
-                    </div>
-                  )}
-                  <div className="space-y-2">
-                    <Label htmlFor="endTime" className="text-sm font-medium dark:text-white">
-                      {watch("isSameDay") ? "End Time *" : "Time *"}
+              {addEndTime && (
+                <>
+                  {/* Same Day Checkbox */}
+                  <div className="flex items-center gap-3 py-3 px-3 bg-blue-50/60 dark:bg-blue-900/20 rounded-lg border border-blue-200/80 dark:border-blue-700/60">
+                    <Checkbox
+                      id="isSameDay"
+                      checked={watch("isSameDay") || false}
+                      onCheckedChange={(checked) => {
+                        setValue("isSameDay", !!checked);
+                        if (checked) {
+                          // Auto-copy start date to end date
+                          const startDate = watch("date");
+                          if (startDate) {
+                            setValue("endDate", startDate);
+                          }
+                        }
+                      }}
+                      className="h-5 w-5 border-2 border-blue-500 dark:border-blue-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                    />
+                    <Label htmlFor="isSameDay" className="text-sm font-medium text-gray-800 dark:text-white cursor-pointer">
+                      Same day event
                     </Label>
-                    <div className="flex gap-1 items-center">
+                  </div>
+
+                  {/* End Date & Time */}
+                  <div className="border rounded-lg p-4 space-y-4 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                    <h4 className="font-medium text-sm text-gray-700 dark:text-white uppercase tracking-wide">
+                      {watch("isSameDay") ? "End Time" : "End Date & Time"}
+                    </h4>
+                    <div className={`grid ${watch("isSameDay") ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"} gap-4`}>
+                      {!watch("isSameDay") && (
+                        <div className="space-y-2">
+                          <Label htmlFor="endDate" className="text-sm font-medium dark:text-white">
+                            Date
+                          </Label>
+                          <Input
+                            id="endDate"
+                            type="date"
+                            {...register("endDate", { required: addEndTime && !watch("isSameDay") ? "End date is required" : false })}
+                            min={new Date().toISOString().split('T')[0]}
+                            max="9999-12-31"
+                            placeholder="20__-__-__"
+                            className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
+                            style={{ colorScheme: 'light dark' }}
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-2">
+                        <Label htmlFor="endTime" className="text-sm font-medium dark:text-white">
+                          {watch("isSameDay") ? "End Time" : "Time"}
+                        </Label>
+                        <div className="flex gap-1 items-center">
                       <select
                         className="flex-1 h-10 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-2 text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                         value={(() => {
@@ -1500,20 +1572,22 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                         </button>
                       </div>
                     </div>
-                    <input type="hidden" {...register("endTime", { required: "End time is required" })} />
+                    <input type="hidden" {...register("endTime", { required: addEndTime ? "End time is required" : false })} />
                   </div>
                 </div>
-                {(errors.endDate || errors.endTime) && (
-                  <div className="space-y-1">
-                    {errors.endDate && (
-                      <p className="text-sm text-red-500">{errors.endDate.message}</p>
-                    )}
-                    {errors.endTime && (
-                      <p className="text-sm text-red-500">{errors.endTime.message}</p>
+                    {(errors.endDate || errors.endTime) && (
+                      <div className="space-y-1">
+                        {errors.endDate && (
+                          <p className="text-sm text-red-500">{errors.endDate.message}</p>
+                        )}
+                        {errors.endTime && (
+                          <p className="text-sm text-red-500">{errors.endTime.message}</p>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
+                </>
+              )}
             </div>
 
             {/* Recurring Event Options */}
@@ -1698,6 +1772,63 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
               <input type="hidden" {...register("externalRsvpProvider")} />
             </div>
 
+            {/* Event Image Upload */}
+            <div className="space-y-4">
+              <Label className="flex items-center gap-2 text-base font-semibold">
+                <ImageIcon className="w-5 h-5" />
+                Event Photo (Optional)
+              </Label>
+              
+              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
+                {imagePreview ? (
+                  <div className="space-y-4">
+                    <div className="relative inline-block">
+                      <img
+                        src={imagePreview}
+                        alt="Event preview"
+                        className="max-w-full h-48 object-cover rounded-lg mx-auto"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImagePreview(null);
+                          setValue("imageUrl", "");
+                        }}
+                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg transition-colors"
+                        aria-label="Remove image"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="text-gray-500 dark:text-gray-300">
+                      <ImageIcon className="w-12 h-12 mx-auto mb-2" />
+                      <p className="text-sm">Upload an event photo to attract more participants</p>
+                    </div>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (e) => {
+                            const result = e.target?.result as string;
+                            setImagePreview(result);
+                            setValue("imageUrl", result);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="max-w-xs mx-auto"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* PRIVATE EVENT VISIBILITY TAGS - Collapsible */}
             <Card className="border-2 border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/20">
               <CardHeader 
@@ -1821,65 +1952,6 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
             </Card>
 
             {/* Tags section removed - keeping it simple! Event descriptions cover everything */}
-
-            {/* Event Image Upload */}
-            <div className="space-y-4">
-              <Label className="flex items-center gap-2 text-base font-semibold">
-                <ImageIcon className="w-5 h-5" />
-                Event Photo (Optional)
-              </Label>
-              
-              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
-                {imagePreview ? (
-                  <div className="space-y-4">
-                    <div className="relative inline-block">
-                      <img
-                        src={imagePreview}
-                        alt="Event preview"
-                        className="max-w-full h-48 object-cover rounded-lg mx-auto"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setImagePreview(null);
-                          setValue("imageUrl", "");
-                        }}
-                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg transition-colors"
-                        aria-label="Remove image"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="text-gray-500 dark:text-gray-300">
-                      <ImageIcon className="w-12 h-12 mx-auto mb-2" />
-                      <p className="text-sm">Upload an event photo to attract more participants</p>
-                    </div>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onload = (e) => {
-                            const result = e.target?.result as string;
-                            setImagePreview(result);
-                            setValue("imageUrl", result);
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                      className="max-w-xs mx-auto"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-
             {/* Instagram Posting Option - Only show if user has handle */}
             {currentUser.instagramHandle && (
               <div className="border rounded-lg p-4 space-y-4 bg-gradient-to-r from-pink-50 to-gray-50 dark:from-pink-900/20 dark:to-gray-900/20 dark:border-gray-600">
@@ -1927,7 +1999,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                   handleSubmit(onSubmit, (validationErrors) => {
                     toast({
                       title: "Please fix the form",
-                      description: "Fill in all required fields (title, address, date, start time).",
+                      description: "Fill in the required fields (title, location, date, start time).",
                       variant: "destructive"
                     });
                   })(e);
