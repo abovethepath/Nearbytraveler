@@ -28,6 +28,7 @@ interface Reference {
 interface ReferencesWidgetProps {
   userId: number;
   currentUserId?: number;
+  onWriteReference?: () => void;
 }
 
 const getExperienceColor = (experience: string) => {
@@ -41,7 +42,7 @@ const getExperienceColor = (experience: string) => {
   }
 };
 
-function ReferencesWidgetNew({ userId, currentUserId }: ReferencesWidgetProps) {
+function ReferencesWidgetNew({ userId, currentUserId, onWriteReference }: ReferencesWidgetProps) {
   const [expandedReference, setExpandedReference] = useState<number | null>(null);
   const [showAllReferences, setShowAllReferences] = useState(false);
   const [editingReferenceId, setEditingReferenceId] = useState<number | null>(null);
@@ -138,6 +139,18 @@ function ReferencesWidgetNew({ userId, currentUserId }: ReferencesWidgetProps) {
             <p className="text-xs text-gray-400 dark:text-gray-500">
               References from connections will appear here
             </p>
+            {!!onWriteReference && (
+              <div className="mt-4 flex justify-center">
+                <Button
+                  type="button"
+                  onClick={onWriteReference}
+                  className="bg-[#FF6B35] hover:bg-[#F97316] text-white font-bold px-5 py-2 rounded-lg shadow-md"
+                  data-testid="button-write-reference-empty-state"
+                >
+                  Write a Reference
+                </Button>
+              </div>
+            )}
           </div>
         ) : (
           <>

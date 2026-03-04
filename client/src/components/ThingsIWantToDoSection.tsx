@@ -207,7 +207,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     const cityPrefix = `${cityName}: `;
     return userProfile.subInterests
       .filter((si: string) => si.startsWith(cityPrefix))
-      .map((si: string) => si.replace(cityPrefix, ''));
+      .map((si: string) => si.replace(cityPrefix, '').trim())
+      .filter(Boolean);
   };
 
   // Fetch events that the user is attending  
@@ -581,11 +582,26 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     );
   }
 
+  const otherUsername = (userProfile as any)?.username ? `@${(userProfile as any).username}` : "@username";
+
+  const openPrefilledDmForCity = (cityLabel: string) => {
+    const city = String(cityLabel || "").split(",")[0]?.trim() || "this city";
+    const prefilledMessage = `Hey! I noticed you haven't filled out your plans for ${city} yet — what are you hoping to do there?`;
+    setLocation(`/messages?userId=${encodeURIComponent(String(userId))}&prefill=${encodeURIComponent(prefilledMessage)}`);
+  };
+
+  const normalizeCityItems = (cityKey: string) => {
+    const cityData = (cityKey && citiesByName[cityKey]) || { activities: [], events: [], travelPlan: null };
+    const activities = (cityData.activities || []).filter((a: any) => String(a?.activityName || "").trim().length > 0);
+    const events = (cityData.events || []).filter((e: any) => String(e?.eventTitle || (e as any)?.title || "").trim().length > 0);
+    const subInterests = getSubInterestsForCity(cityKey);
+    return { cityData, activities, events, subInterests };
+  };
+
   // Render a single city row: city name (no label) | activity pills | + Add Plans
   const renderCityRow = (cityKey: string, displayName: string, isDestination: boolean) => {
-    const cityData = (cityKey && citiesByName[cityKey]) || { activities: [], events: [], travelPlan: null };
-    const citySubInterests = getSubInterestsForCity(cityKey);
-    const hasContent = cityData.activities.length > 0 || cityData.events.length > 0 || (cityData.travelPlan && citySubInterests.length > 0);
+    const { cityData, activities, events, subInterests: citySubInterests } = normalizeCityItems(cityKey);
+    const hasContent = activities.length > 0 || events.length > 0 || (cityData.travelPlan && citySubInterests.length > 0);
     const showHostel =
       !!cityData.travelPlan?.hostelName &&
       (isOwnProfile || cityData.travelPlan?.hostelVisibility === "public");
@@ -698,7 +714,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           ))}
 
           {/* Activity Pills (display only; editing happens in modal) */}
-          {cityData.activities.map((activity) => (
+          {activities.map((activity: any) => (
             <div key={`act-${activity.id}`} className="relative">
               <div
                 className={`${pillBaseClass} hover:shadow-[0_0_12px_rgba(0,0,0,0.12)]`}
@@ -710,7 +726,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           ))}
 
           {/* Event Pills (display only; editing happens in modal) */}
-          {cityData.events.map((event) => {
+          {events.map((event: any) => {
             const eventId = (event as any).eventId || event.id;
             const eventUrl = `/events/${eventId}`;
             const eventDate = (event as any).date || (event as any).eventDate;
@@ -729,6 +745,20 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
             );
           })}
         </div>
+
+        {/* Other-user: per-city prompt when the row exists but has no items */}
+        {!isOwnProfile && activities.length === 0 && events.length === 0 && (!cityData.travelPlan || citySubInterests.length === 0) && (
+          <div className="mt-2">
+            <button
+              type="button"
+              onClick={() => openPrefilledDmForCity(displayName)}
+              className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 underline underline-offset-2"
+              data-testid={`button-ask-plans-prefill-dm-row-${encodeURIComponent(cityKey)}`}
+            >
+              Ask {otherUsername} what they&apos;re planning to do here →
+            </button>
+          </div>
+        )}
       </div>
     );
   };
@@ -760,8 +790,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   // Rows 3+: All other cities with activities or events (future trips, past trips, etc.)
   cities.forEach(cityKey => {
     if (addedKeys.has(cityKey)) return;
-    const cityData = citiesByName[cityKey];
-    const hasContent = cityData.activities.length > 0 || cityData.events.length > 0 || (cityData.travelPlan && (getSubInterestsForCity(cityKey).length > 0));
+    const { cityData, activities, events, subInterests } = normalizeCityItems(cityKey);
+    const hasContent = activities.length > 0 || events.length > 0 || (cityData.travelPlan && (subInterests.length > 0));
     if (hasContent) {
       const displayName = consolidateCity(cityData.travelPlan?.cityName || cityKey);
       rowsToShow.push({ key: cityKey, displayName, isDestination: !!cityData.travelPlan });
@@ -770,19 +800,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   });
   const uniqueRows = rowsToShow.filter((r, i, arr) => arr.findIndex(x => x.key === r.key) === i);
   const showContent = isOwnProfile ? uniqueRows.length > 0 : cities.length > 0;
-
-  const otherUsername = (userProfile as any)?.username ? `@${(userProfile as any).username}` : "@username";
   const headerCity = (uniqueRows[0]?.displayName || userProfile?.hometownCity || "").split(",")[0]?.trim() || "this city";
-  const hasAnyPlanItems = uniqueRows.some(({ key }) => {
-    const cityData = (key && citiesByName[key]) || { activities: [], events: [], travelPlan: null };
-    const citySubInterests = getSubInterestsForCity(key);
-    return (cityData.activities?.length || 0) > 0 || (cityData.events?.length || 0) > 0 || (citySubInterests?.length || 0) > 0;
-  });
-  const shouldShowAskPrompt = !isOwnProfile && !hasAnyPlanItems;
-  const prefilledMessage = `Hey! I noticed you haven't filled out your plans for ${headerCity} yet — what are you hoping to do there?`;
-  const openPrefilledDm = () => {
-    setLocation(`/messages?userId=${encodeURIComponent(String(userId))}&prefill=${encodeURIComponent(prefilledMessage)}`);
-  };
+  const openPrefilledDm = () => openPrefilledDmForCity(headerCity);
 
   return (
     <div 
@@ -832,18 +851,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           <div className="space-y-0">
             {uniqueRows.map(({ key, displayName, isDestination }) => renderCityRow(key, displayName, isDestination))}
           </div>
-          {shouldShowAskPrompt && (
-            <div className="pt-3 mt-3 border-t border-gray-200 dark:border-gray-700">
-              <button
-                type="button"
-                onClick={openPrefilledDm}
-                className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 underline underline-offset-2"
-                data-testid="button-ask-plans-prefill-dm"
-              >
-                Ask {otherUsername} what they&apos;re planning to do here →
-              </button>
-            </div>
-          )}
+          {/* Per-city prompts are shown inline on empty rows for other-user profiles. */}
         </div>
       ) : (
         <div className={`rounded-2xl border-2 border-orange-200/70 dark:border-orange-700/50 bg-gradient-to-br from-orange-50 via-white to-white dark:from-[#24140b] dark:via-gray-900/40 dark:to-gray-900 shadow-lg ${isMobile ? 'p-4' : 'p-6'}`}>

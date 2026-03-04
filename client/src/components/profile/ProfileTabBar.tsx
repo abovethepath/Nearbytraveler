@@ -30,6 +30,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
 
   const isHero = variant === "hero";
   const isDesktopWeb = !isNativeIOSApp();
+  const isOtherHero = isHero && !isOwnProfile;
   const isMobileWeb =
     !isNativeIOSApp() &&
     typeof window !== "undefined" &&
@@ -39,12 +40,15 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
   // iOS: keep About in the hero/tab navigation as requested previously.
   const showAboutTab = !(isHero && isDesktopWeb);
 
-  // Hero background is a colorful gradient across themes; use brand badges (no teal/cyan).
-  const badgeClass = isHero
-    ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-[#FF6B35] text-white border border-black/20 md:bg-[#1a1a1a] md:text-white md:border-white/10"
-    : (isDesktopWeb
-        ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-600 text-white"
-        : "ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-white/20 text-white");
+  // Hero background is a colorful gradient across themes.
+  // For other-user hero, keep badge numbers BLACK (requested explicitly).
+  const badgeClass = isOtherHero
+    ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-white/70 text-black border border-black/20"
+    : (isHero
+        ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-[#FF6B35] text-white border border-black/20 md:bg-[#1a1a1a] md:text-white md:border-white/10"
+        : (isDesktopWeb
+            ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-600 text-white"
+            : "ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-white/20 text-white"));
 
   const tabWebBase =
     "relative px-0 py-2 text-sm sm:text-base font-semibold transition-colors select-none";

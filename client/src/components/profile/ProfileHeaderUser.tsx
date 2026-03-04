@@ -503,25 +503,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </div>
 
                           <div className="flex flex-wrap items-center gap-2 mt-2">
-                            <Button
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                if (currentUser) setShowWriteReferenceModal?.(true);
-                                else setLocation("/auth");
-                              }}
-                              variant="outline"
-                              className={
-                                isMobileWeb
-                                  ? "!bg-[#FF6B35] hover:!bg-[#F97316] !text-white !border-0 shadow-sm shrink-0 px-2.5 h-8 text-xs font-bold"
-                                  : "!bg-[#FF6B35] hover:!bg-[#F97316] !text-white !border-0 shadow-sm shrink-0 px-2.5 h-8 text-xs font-bold"
-                              }
-                              data-testid="button-write-reference"
-                            >
-                              Write Reference
-                            </Button>
-
                             {/* Subtle share icon near actions */}
                             {shareButton(true)}
                           </div>
@@ -567,9 +548,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                       {/* RIGHT: What You Have in Common (desktop only; mobile shows it below hero to avoid duplicates) */}
                       {!isMobileWeb && (
-                        <div className="lg:w-[340px] lg:flex-shrink-0">
+                        <div className="lg:w-[320px] lg:flex-shrink-0 lg:-ml-6">
                           <div
-                            className="what-you-have-in-common-card bg-white/70 dark:bg-[#1e2139] backdrop-blur-md rounded-2xl border border-white/40 dark:border-white/10 shadow-lg p-4 overflow-hidden cursor-pointer"
+                            className="what-you-have-in-common-card bg-white/70 dark:bg-[#1e2139] backdrop-blur-md rounded-2xl border border-white/40 dark:border-white/10 shadow-lg p-4 overflow-hidden cursor-pointer min-w-[280px] min-h-[220px]"
                             role="button"
                             tabIndex={0}
                             onClick={() => setSeeAllCommonOpen(true)}
@@ -738,16 +719,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             </div>
 
             <div className="flex flex-col gap-1 min-w-0 w-full max-w-[280px] mt-4">
-              <span
-                className="text-lg font-semibold text-orange-600 dark:text-orange-400 crisp-hero-text"
-                style={{ color: mutedOrange }}
-              >
+              <span className="text-lg font-semibold !text-black crisp-hero-text">
                 Nearby Local
               </span>
               <span className="text-base font-medium break-words !text-black crisp-hero-text" title={hometown}>{hometown}</span>
               {hasValidTravelDestination && (
                 <>
-                  <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1 crisp-hero-text">
+                  <span className="text-sm font-semibold !text-black mt-1 crisp-hero-text">
                     Nearby Traveler
                   </span>
                   <span className="text-sm font-medium break-words !text-black crisp-hero-text" title={currentTravelPlan!}>
@@ -824,11 +802,19 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               </>
             )}
             <div className={`flex flex-col gap-1 min-w-0 w-full max-w-[280px] sm:max-w-none ${!isNativeIOSApp() ? 'mt-5' : 'mt-3'}`}>
-              <span className="text-base sm:text-lg lg:text-xl font-semibold text-orange-600 dark:text-orange-400 crisp-hero-text">Nearby Local</span>
+              <span
+                className={`text-base sm:text-lg lg:text-xl font-semibold crisp-hero-text ${!isOwnProfile ? "!text-black" : "text-orange-600 dark:text-orange-400"}`}
+              >
+                Nearby Local
+              </span>
               <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text ${isDesktopOtherUser ? '!text-black' : !isNativeIOSApp() ? 'text-black md:text-black' : ''}`} title={hometown} style={isNativeIOSApp() ? { color: '#000' } : undefined}>{hometown}</span>
               {hasValidTravelDestination && (
                 <>
-                  <span className="text-base sm:text-lg lg:text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1 crisp-hero-text">Nearby Traveler</span>
+                  <span
+                    className={`text-base sm:text-lg lg:text-sm font-semibold mt-1 crisp-hero-text ${!isOwnProfile ? "!text-black" : "text-blue-600 dark:text-blue-400"}`}
+                  >
+                    Nearby Traveler
+                  </span>
                   <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text ${isDesktopOtherUser ? '!text-black' : !isNativeIOSApp() ? 'text-black md:text-black' : ''}`} title={currentTravelPlan!} style={isNativeIOSApp() ? { color: '#000' } : undefined}>
                     {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
                   </span>
@@ -899,7 +885,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     <div className="flex items-center gap-2 flex-wrap">
                       <div className="flex items-center gap-2.5 shrink-0 w-fit max-w-full">
                         <div className="lg:inline-flex lg:items-center lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm">
-                          <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all text-black lg:!text-white lg:[text-shadow:0_1px_2px_rgba(0,0,0,0.65)] crisp-hero-text">
+                          <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all !text-black crisp-hero-text">
                             @{user?.username}
                           </h1>
                         </div>
@@ -921,7 +907,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     </div>
 
                     {!isOwnProfile && (
-                      <div className={`flex mt-2 ${isDesktopOtherUser ? 'flex-row flex-wrap items-start gap-4 lg:gap-8 w-full lg:pr-2' : `flex-row flex-wrap items-center gap-2 ${!isNativeIOSApp() ? 'justify-start' : 'justify-center'}`}`}>
+                      <div className={`flex mt-2 ${isDesktopOtherUser ? 'flex-row flex-wrap items-start gap-4 lg:gap-4 w-full lg:pr-2' : `flex-row flex-wrap items-center gap-2 ${!isNativeIOSApp() ? 'justify-start' : 'justify-center'}`}`}>
                         <div className={isDesktopOtherUser ? 'flex flex-col flex-nowrap items-stretch gap-3 shrink-0' : 'flex flex-row flex-wrap items-center gap-2'}>
                           {/* Desktop (lg+): primary actions first, secondary actions below */}
                           {isDesktopOtherUser ? (
@@ -953,31 +939,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               </div>
 
                               <div className="flex flex-wrap gap-2">
-                                {currentUser ? (
-                                  <Button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      setShowWriteReferenceModal?.(true);
-                                    }}
-                                    variant="outline"
-                                    className="bg-[#FF6B35] hover:bg-[#F97316] text-white border-0 shrink-0 px-4 py-2 text-sm font-bold"
-                                    data-testid="button-write-reference"
-                                  >
-                                    Write Reference
-                                  </Button>
-                                ) : (
-                                  <Button
-                                    type="button"
-                                    onClick={() => setLocation('/auth')}
-                                    variant="outline"
-                                    className="bg-[#FF6B35] hover:bg-[#F97316] text-white border-0 shrink-0 px-4 py-2 text-sm font-bold"
-                                    data-testid="button-write-reference"
-                                  >
-                                    Write Reference
-                                  </Button>
-                                )}
                                 {/* Other user's profile: share button near action buttons (not beside username) */}
                                 {shareButton(true)}
                               </div>
@@ -993,7 +954,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                       size="sm"
                                       showIcon={false}
                                       appearance="link"
-                                      className="!bg-transparent !border-0 px-0 py-0 text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
+                                      className="!bg-transparent !border-0 px-0 py-0 text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 underline underline-offset-2 font-medium"
                                     />
                                   ) : (
                                     <button
@@ -1004,7 +965,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                         setLocation('/auth');
                                       }}
                                       onPointerDown={(e) => e.stopPropagation()}
-                                      className="text-xs text-red-200 hover:text-red-100 underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer"
+                                      className="text-xs text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer"
                                       data-radix-dismissable-layer-ignore=""
                                     >
                                       Report
@@ -1041,29 +1002,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 appearance="default"
                                 className="rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
                               />
-                              {currentUser ? (
-                                <Button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setShowWriteReferenceModal?.(true);
-                                  }}
-                                  className="bg-[#FF6B35] hover:bg-[#F97316] text-white border-0 shrink-0 px-4 py-1.5 text-sm font-bold"
-                                  data-testid="button-write-reference"
-                                >
-                                  Write Reference
-                                </Button>
-                              ) : (
-                                <Button
-                                  type="button"
-                                  onClick={() => setLocation('/auth')}
-                                  className="bg-[#FF6B35] hover:bg-[#F97316] text-white border-0 shrink-0 px-4 py-1.5 text-sm font-bold"
-                                  data-testid="button-write-reference"
-                                >
-                                  Write Reference
-                                </Button>
-                              )}
                               {/* Other user's profile: share button near action buttons (not beside username) */}
                               {shareButton(true)}
                               {user && (
@@ -1076,7 +1014,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     size="sm"
                                     showIcon={false}
                                     appearance="link"
-                                    className="!bg-transparent !border-0 px-0 py-0 underline underline-offset-2 font-medium text-red-200 hover:text-red-100"
+                                    className="!bg-transparent !border-0 px-0 py-0 underline underline-offset-2 font-medium text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400"
                                   />
                                 ) : (
                                   <button
@@ -1087,7 +1025,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                       setLocation('/auth');
                                     }}
                                     onPointerDown={(e) => e.stopPropagation()}
-                                    className="text-xs text-red-200 hover:text-red-100 underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer shrink-0"
+                                    className="text-xs text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer shrink-0"
                                     data-radix-dismissable-layer-ignore=""
                                   >
                                     Report
@@ -1119,7 +1057,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </Avatar>
                         ))}
                       </div>
-                      <span className="text-sm text-blue-800 dark:text-blue-200">
+                      <span className="text-sm !text-black">
                         <Users className="w-3 h-3 inline mr-1" />
                         {connectionDegreeData.mutualCount} mutual {connectionDegreeData.mutualCount === 1 ? 'connection' : 'connections'}
                       </span>
@@ -1134,10 +1072,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         <Building2 className="w-5 h-5 text-orange-600 dark:text-orange-300" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-bold text-orange-800 dark:text-orange-200">
+                        <p className="text-sm font-bold !text-black">
                           You're both staying at {hostelMatch.hostelName}!
                         </p>
-                        <p className="text-xs text-orange-600 dark:text-orange-400">
+                        <p className="text-xs !text-black">
                           in {hostelMatch.destination} during overlapping dates
                         </p>
                       </div>

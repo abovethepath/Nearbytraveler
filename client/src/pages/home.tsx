@@ -1684,11 +1684,11 @@ export default function Home() {
   {isMobile ? (
     <div className="text-center">
       <div className="inline-flex items-center gap-2 bg-[#FF6B35] border border-[#FF6B35] dark:bg-gray-800/80 dark:border-gray-700 rounded-full px-6 py-2 mb-6">
-        <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+        <div className="w-2 h-2 bg-gradient-to-r from-[#FF6B35] to-[#A855F7] rounded-full"></div>
         <span className="text-sm font-bold text-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 dark:bg-clip-text dark:text-transparent">Connect • Discover • Experience</span>
       </div>
 
-      <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
+      <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6">
         {effectiveUser?.userType === "business" ? (
           <>
             <span
@@ -1729,7 +1729,7 @@ export default function Home() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 space-y-4">
-        <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+        <p className="text-xl lg:text-2xl text-gray-600 dark:text-white/90 leading-relaxed font-medium">
           Travel doesn't change you. The people you meet do.
         </p>
       </div>
@@ -1737,14 +1737,14 @@ export default function Home() {
   ) : (
     <div className="relative py-6 lg:py-0">
       <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center lg:flex lg:items-center lg:justify-between lg:gap-10">
-        <div className="md:col-span-3">
+        <div className="md:col-span-3 md:relative md:pl-4 md:before:content-[''] md:before:absolute md:before:left-0 md:before:top-2 md:before:bottom-2 md:before:w-[4px] md:before:rounded-full md:before:bg-gradient-to-b md:before:from-[#FF6B35] md:before:to-[#A855F7] md:before:opacity-70">
           <div className="inline-flex items-center gap-2 bg-[#FF6B35] border border-[#FF6B35] dark:bg-gray-800 dark:border-gray-700 rounded-full px-6 py-2.5 lg:px-5 lg:py-2 mb-5 lg:mb-3">
-            <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+            <div className="w-2 h-2 bg-gradient-to-r from-[#FF6B35] to-[#A855F7] rounded-full"></div>
             <span className="text-sm font-bold text-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 dark:bg-clip-text dark:text-transparent">Connect • Discover • Experience</span>
           </div>
 
           <div className="space-y-4 lg:space-y-3">
-            <h1 className="text-3xl md:text-4xl lg:text-3xl font-bold tracking-tight leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-[2.15rem] font-extrabold tracking-tight leading-tight">
               <span
                 className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent"
                 style={{ WebkitTextFillColor: "transparent" }}
@@ -1762,7 +1762,7 @@ export default function Home() {
             </h1>
             
             <div className="max-w-2xl space-y-3 lg:space-y-2">
-              <p className="text-base lg:text-sm text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+              <p className="text-base lg:text-base text-gray-600 dark:text-white/85 leading-relaxed font-medium">
                 Travel doesn't change you. The people you meet do.
               </p>
               <p className="text-sm lg:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
@@ -1772,10 +1772,10 @@ export default function Home() {
           </div>
         </div>
       
-        <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
+        <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last lg:mr-10">
           <div className="relative group">
             <div className="relative">
-              <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-sm h-[220px] sm:h-[260px] md:h-[300px] lg:h-[190px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50">
+              <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-sm h-[220px] sm:h-[260px] md:h-[300px] lg:h-[190px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 ring-1 ring-orange-400/20 dark:ring-purple-400/20 shadow-[0_0_26px_rgba(255,107,53,0.14)] dark:shadow-[0_0_34px_rgba(168,85,247,0.18)]">
                 <img
                   src={staticHeroMedia}
                   alt="Travelers connecting"
@@ -1911,13 +1911,13 @@ export default function Home() {
                   className="inline-flex dark:bg-white/10 dark:border-white/15 dark:text-white dark:hover:bg-white/15 dark:[&_*]:text-white"
                   data-testid="button-open-advanced-filters"
                 >
-                  <Filter className="w-4 h-4 sm:mr-2 text-gray-800 dark:text-white" />
-                  <span className="hidden sm:inline">Filters</span>
+                  <Filter className="w-4 h-4 sm:mr-2 text-gray-800 dark:hidden" />
+                  <span className="hidden sm:inline dark:inline dark:!text-white">Filters</span>
                 </Button>
                 {/* Sort Dropdown */}
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
                   <SelectTrigger className="w-[7.5rem] sm:w-40 px-2 sm:px-3 dark:bg-white/10 dark:border-white/15 dark:text-white dark:hover:bg-white/15 dark:[&_*]:text-white" data-testid="select-sort">
-                    <ArrowUpDown className="w-4 h-4 mr-1 sm:mr-2 text-gray-800 dark:text-white flex-shrink-0" />
+                    <ArrowUpDown className="w-4 h-4 mr-1 sm:mr-2 text-gray-800 dark:hidden flex-shrink-0" />
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>

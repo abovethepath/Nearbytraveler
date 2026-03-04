@@ -183,28 +183,28 @@ export default function BusinessLanding() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gradient-to-br dark:from-green-900/30 dark:to-green-800/30 rounded-xl p-6 text-center border border-gray-200 dark:border-gray-700 shadow-sm">
-              <h3 className="font-bold text-gray-900 text-lg mb-2">Direct Customer Connection</h3>
-              <p className="text-sm text-gray-700 mb-3">Get customers other businesses can't reach</p>
-              <ul className="text-xs text-gray-600 space-y-1 text-left">
+            <div className="bg-white dark:bg-[#1e2139] rounded-xl p-6 text-center border border-gray-200 dark:border-white/10 shadow-sm">
+              <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2">Direct Customer Connection</h3>
+              <p className="text-sm text-gray-700 dark:text-gray-200 mb-3">Get customers other businesses can't reach</p>
+              <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1 text-left">
                 <li>• Direct customer connection</li>
                 <li>• No competitor interference</li>
                 <li>• Exclusive access to travelers</li>
               </ul>
             </div>
-            <div className="bg-white dark:bg-gradient-to-br dark:from-orange-900/30 dark:to-orange-800/30 rounded-xl p-6 text-center border border-gray-200 dark:border-gray-700 shadow-sm">
-              <h3 className="font-bold text-gray-900 text-lg mb-2">Quality Customers</h3>
-              <p className="text-sm text-gray-700 mb-3">Experience seekers with spending power</p>
-              <ul className="text-xs text-gray-600 space-y-1 text-left">
+            <div className="bg-white dark:bg-[#1e2139] rounded-xl p-6 text-center border border-gray-200 dark:border-white/10 shadow-sm">
+              <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2">Quality Customers</h3>
+              <p className="text-sm text-gray-700 dark:text-gray-200 mb-3">Experience seekers with spending power</p>
+              <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1 text-left">
                 <li>• Higher lifetime value</li>
                 <li>• Authentic experience seekers</li>
                 <li>• Word-of-mouth promoters</li>
               </ul>
             </div>
-            <div className="bg-white dark:bg-gradient-to-br dark:from-purple-900/30 dark:to-purple-800/30 rounded-xl p-6 text-center border border-gray-200 dark:border-gray-700 shadow-sm">
-              <h3 className="font-bold text-gray-900 text-lg mb-2">Smart Matching</h3>
-              <p className="text-sm text-gray-700 mb-3">Connect with travelers who want exactly what you offer</p>
-              <ul className="text-xs text-gray-600 space-y-1 text-left">
+            <div className="bg-white dark:bg-[#1e2139] rounded-xl p-6 text-center border border-gray-200 dark:border-white/10 shadow-sm">
+              <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2">Smart Matching</h3>
+              <p className="text-sm text-gray-700 dark:text-gray-200 mb-3">Connect with travelers who want exactly what you offer</p>
+              <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1 text-left">
                 <li>• Know travel dates & duration</li>
                 <li>• See interests & preferences</li>
                 <li>• Understand group size & budget</li>
@@ -226,25 +226,29 @@ export default function BusinessLanding() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Keep 100% of Your Revenue</h3>
-              <p className="text-gray-700 text-sm">No commission fees like TripAdvisor or Viator. What you earn is yours.</p>
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Keep 100% of Your Revenue</h3>
+              <p className="text-gray-700 dark:text-gray-200 text-sm">No commission fees like TripAdvisor or Viator. What you earn is yours.</p>
             </div>
-            <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Direct Relationships</h3>
-              <p className="text-gray-700 text-sm">Build lasting customer relationships without middlemen taking a cut.</p>
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Direct Relationships</h3>
+              <p className="text-gray-700 dark:text-gray-200 text-sm">Build lasting customer relationships without middlemen taking a cut.</p>
             </div>
-            <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Recurring Customers</h3>
-              <p className="text-gray-700 text-sm">Travelers return and bring friends. Build a loyal following.</p>
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Recurring Customers</h3>
+              <p className="text-gray-700 dark:text-gray-200 text-sm">Travelers return and bring friends. Build a loyal following.</p>
             </div>
-            <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Real Customer Insights</h3>
-              <p className="text-gray-700 text-sm">Understand what travelers want before they arrive in your city.</p>
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Real Customer Insights</h3>
+              <p className="text-gray-700 dark:text-gray-200 text-sm">Understand what travelers want before they arrive in your city.</p>
             </div>
-            <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Instant Notifications</h3>
-              <p className="text-gray-700 text-sm">Get alerted when travelers matching your services are planning trips.</p>
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Instant Notifications</h3>
+              <p className="text-gray-700 dark:text-gray-200 text-sm">Get alerted when travelers matching your services are planning trips.</p>
+            </div>
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Event Sponsorship Opportunities</h3>
+              <p className="text-gray-700 dark:text-gray-200 text-sm">Sponsor local experiences to get featured visibility with travelers who want what you offer.</p>
             </div>
           </div>
         </div>
@@ -296,19 +300,19 @@ export default function BusinessLanding() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gradient-to-br dark:from-blue-900/30 dark:to-blue-800/30 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Local Tour Guide</h3>
               <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                 "Maria runs photography walking tours. Through Nearby Traveler, she connects with photography enthusiasts before they arrive. She now books 15-20 tours monthly with travelers who specifically want her expertise."
               </p>
             </div>
-            <div className="bg-white dark:bg-gradient-to-br dark:from-orange-900/30 dark:to-orange-800/30 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Hidden Restaurant</h3>
               <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                 "Carlos owns a family taqueria locals love but tourists never find. Now travelers seeking authentic Mexican food discover him through local recommendations. His evening crowds doubled."
               </p>
             </div>
-            <div className="bg-white dark:bg-gradient-to-br dark:from-green-900/30 dark:to-green-800/30 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Adventure Activity Provider</h3>
               <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                 "Jake offers sunrise kayaking tours. He connects with early-bird travelers who love outdoor adventures. No more competing with hundreds of activities on tourist sites—just direct connections with his ideal customers."
@@ -432,11 +436,10 @@ export default function BusinessLanding() {
               setLocation('/join');
             }}
             size="lg"
-            variant="ghost"
-            className="bg-white hover:bg-gray-100 font-bold text-xl px-12 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
+            className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold text-xl px-12 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
             data-testid="button-final-cta"
           >
-            <span style={{ color: '#000000' }}>Claim Your Free Beta Access</span>
+            Claim Your Free Beta Access
           </Button>
         </div>
       </section>

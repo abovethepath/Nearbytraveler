@@ -79,7 +79,7 @@ export function ProfileTabs(props: ProfilePageProps) {
 
     return (
       <div
-        className="what-you-have-in-common-inline relative overflow-hidden rounded-2xl border-2 border-orange-200 shadow-lg bg-white/90 dark:bg-[#1e2139] dark:border-orange-500/30"
+        className="what-you-have-in-common-inline relative overflow-hidden rounded-2xl border-2 border-orange-500/30 shadow-lg bg-[#1e2139] min-h-[240px]"
         role="button"
         tabIndex={0}
         onClick={() => setExpanded((v) => !v)}
@@ -93,19 +93,19 @@ export function ProfileTabs(props: ProfilePageProps) {
         <div className="p-4 sm:p-5">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <div className="text-base sm:text-lg font-extrabold text-gray-900 dark:text-white">
+              <div className="text-base sm:text-lg font-extrabold text-white">
                 <span className="inline-flex items-center gap-2">
                   <span aria-hidden>🤝</span>
                   <span>What You Have in Common</span>
                 </span>
               </div>
-              <div className="mt-1 text-sm text-gray-700 dark:text-gray-200">
+              <div className="mt-1 text-sm text-white/80">
                 Tap to {expanded ? "collapse" : "expand"}
               </div>
             </div>
             <button
               type="button"
-              className="shrink-0 text-xs sm:text-sm font-bold text-orange-700 hover:text-orange-800 dark:text-orange-300 dark:hover:text-orange-200 underline underline-offset-2"
+              className="shrink-0 text-xs sm:text-sm font-bold text-white/90 hover:text-white underline underline-offset-2"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -129,21 +129,21 @@ export function ProfileTabs(props: ProfilePageProps) {
           </div>
 
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-white/70 dark:bg-black/20 border border-orange-200/70 dark:border-orange-700/50 text-gray-900 dark:text-white">
+            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white">
               <span className="font-extrabold mr-1">{sharedContactsCount}</span> contacts
             </span>
-            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-white/70 dark:bg-black/20 border border-orange-200/70 dark:border-orange-700/50 text-gray-900 dark:text-white">
+            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white">
               <span className="font-extrabold mr-1">{sharedCountries.length}</span> countries
             </span>
             {sharedLanguagesNonEnglish.length > 0 && (
-              <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-white/70 dark:bg-black/20 border border-orange-200/70 dark:border-orange-700/50 text-gray-900 dark:text-white">
+              <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white">
                 <span className="font-extrabold mr-1">{sharedLanguagesNonEnglish.length}</span> languages
               </span>
             )}
           </div>
 
           <div className="mt-5">
-            <div className="text-sm font-extrabold text-gray-900 dark:text-white">
+            <div className="text-sm font-extrabold text-white">
               Shared Interests ({sharedInterests.length})
             </div>
             <div className="mt-3 flex flex-wrap gap-2.5">
@@ -157,7 +157,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   </span>
                 ))
               ) : (
-                <span className="text-sm text-gray-600 dark:text-gray-300">No shared interests yet</span>
+                <span className="text-sm text-white/70">No shared interests yet</span>
               )}
             </div>
           </div>
@@ -166,14 +166,14 @@ export function ProfileTabs(props: ProfilePageProps) {
             <div className="mt-5 space-y-4">
               {sharedCountries.length > 0 && (
                 <div>
-                  <div className="text-sm font-extrabold text-gray-900 dark:text-white">
+                  <div className="text-sm font-extrabold text-white">
                     Shared Countries ({sharedCountries.length})
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {sharedCountries.map((c) => (
                       <span
                         key={c}
-                        className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-white/70 dark:bg-black/20 border border-orange-200/70 dark:border-orange-700/50 text-gray-900 dark:text-white"
+                        className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white"
                       >
                         {c}
                       </span>
@@ -184,14 +184,14 @@ export function ProfileTabs(props: ProfilePageProps) {
 
               {sharedLanguagesNonEnglish.length > 0 && (
                 <div>
-                  <div className="text-sm font-extrabold text-gray-900 dark:text-white">
+                  <div className="text-sm font-extrabold text-white">
                     Shared Languages ({sharedLanguagesNonEnglish.length})
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {sharedLanguagesNonEnglish.map((l) => (
                       <span
                         key={l}
-                        className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-white/70 dark:bg-black/20 border border-orange-200/70 dark:border-orange-700/50 text-gray-900 dark:text-white"
+                        className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white"
                       >
                         {l}
                       </span>
@@ -523,13 +523,6 @@ export function ProfileTabs(props: ProfilePageProps) {
                     }
                   </p>
                 </div>
-
-                {/* What You Have in Common - shown below bio on other-user profiles */}
-                {showWhatYouHaveInCommon && !isMobileWeb && (
-                  <div>
-                    <WhatYouHaveInCommonInline />
-                  </div>
-                )}
 
                 {user?.userType !== 'business' && (
                   <VideoIntroPlayer
@@ -902,15 +895,6 @@ export function ProfileTabs(props: ProfilePageProps) {
                   </CardContent>
                 </Card>
               </>
-            )}
-
-            {/* What You Have in Common Section - On desktop other-user it lives in hero beside action buttons; show here only on mobile/non-desktop */}
-            {showWhatYouHaveInCommonInTabs && !isMobileWeb && !isOwnProfile && currentUser && user?.id && user?.userType !== 'business' && (
-              <Card>
-                <CardContent className="p-0">
-                  <WhatYouHaveInCommonInline />
-                </CardContent>
-              </Card>
             )}
 
             {/* Interests, Activities & Events Section */}
@@ -3126,122 +3110,6 @@ export function ProfileTabs(props: ProfilePageProps) {
               </Card>
             )}
 
-            {/* Reference Widget - Show for other users' profiles (no connection required) */}
-            {!isOwnProfile && currentUser && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="w-5 h-5 text-green-500" />
-                    Write a Reference
-                  </CardTitle>
-                  <p className="text-sm text-gray-600">
-                    Share your experience with {user?.username} to help others in the community
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <div 
-                    onClick={() => setShowWriteReferenceModal(true)}
-                    className="w-full px-6 py-3 rounded-lg font-semibold text-white cursor-pointer transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-3"
-                    style={{
-                      background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 25%, #f97316 75%, #ea580c 100%)',
-                      boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)'
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.background = 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 25%, #ea580c 75%, #dc2626 100%)';
-                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.6)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.background = 'linear-gradient(135deg, #2563eb 0%, #3b82f6 25%, #f97316 75%, #ea580c 100%)';
-                      e.currentTarget.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.4)';
-                    }}
-                  >
-                    <MessageSquare className="w-5 h-5" />
-                    Write Reference for {user?.username}
-                  </div>
-                  
-                  {showReferenceForm && (
-                    <div className="space-y-4 mt-4">
-                      <Form {...referenceForm}>
-                        <form onSubmit={referenceForm.handleSubmit((data) => {
-                          console.log('Form submitted with data:', data);
-                          console.log('Form errors:', referenceForm.formState.errors);
-                          // Ensure required fields are set according to userReferences schema
-                          const submissionData = {
-                            reviewerId: currentUser?.id || 0,
-                            revieweeId: user?.id || 0,
-                            experience: data.experience || 'positive',
-                            content: data.content || '',
-                          };
-                          createReference.mutate(submissionData);
-                        }, (errors) => {
-                          console.log('Form validation errors:', errors);
-                        })} className="space-y-4">
-                          
-                          {/* Note: revieweeId and reviewerId handled in submission data */}
-
-                          {/* Reference Content */}
-                          <FormField
-                            control={referenceForm.control}
-                            name="content"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Your Reference</FormLabel>
-                                <FormControl>
-                                  <textarea
-                                    placeholder="Share your experience with this person..."
-                                    className="w-full min-h-[100px] p-3 border rounded-lg resize-none bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          {/* Experience Type */}
-                          <FormField
-                            control={referenceForm.control}
-                            name="experience"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Experience Type</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select experience type" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="positive">Positive Experience</SelectItem>
-                                    <SelectItem value="neutral">Neutral Experience</SelectItem>
-                                    <SelectItem value="negative">Negative Experience</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <div className="flex justify-end space-x-2">
-                            <Button 
-                              type="button" 
-                              variant="outline"
-                              onClick={() => setShowReferenceForm(false)}
-                            >
-                              Cancel
-                            </Button>
-                            <Button type="submit" disabled={createReference.isPending}>
-                              {createReference.isPending ? 'Submitting...' : 'Submit Reference'}
-                            </Button>
-                          </div>
-                        </form>
-                      </Form>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
             {/* MOBILE-FRIENDLY RIGHT-SIDE WIDGETS SECTION */}
             
             {/* Languages Widget - Top Priority for Customer Visibility */}
@@ -3417,7 +3285,15 @@ export function ProfileTabs(props: ProfilePageProps) {
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="bg-white dark:bg-gray-900">
-                        <ReferencesWidgetNew userId={user.id} currentUserId={currentUser?.id} />
+                        <ReferencesWidgetNew
+                          userId={user.id}
+                          currentUserId={currentUser?.id}
+                          onWriteReference={
+                            !isOwnProfile && !!currentUser?.id
+                              ? () => setShowWriteReferenceModal(true)
+                              : undefined
+                          }
+                        />
                       </CardContent>
                     </Card>
                   </div>

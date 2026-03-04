@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Footer from "@/components/footer";
-import LandingNavbar from "@/components/landing-navbar";
-import { isNativeIOSApp } from "@/lib/nativeApp";
+import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 
 type PointItem = {
   title: string;
@@ -46,12 +45,6 @@ export default function AmbassadorLanding() {
   const [, setLocation] = useLocation();
   useScrollReveal();
 
-  const hasAnyAuthEvidence =
-    typeof window !== "undefined" &&
-    (!!localStorage.getItem("user") ||
-      !!localStorage.getItem("travelconnect_user") ||
-      !!localStorage.getItem("auth_token"));
-
   const points: PointItem[] = [
     { title: "Refer a Friend (Signs Up)", description: "Friend creates account via your link", points: "+50 pts" },
     { title: "Refer a Business Lead", description: "Connect a local business to the platform", points: "+75 pts" },
@@ -90,13 +83,8 @@ export default function AmbassadorLanding() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {!isNativeIOSApp() && !hasAnyAuthEvidence && (
-        <header className="border-b border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-900/80 backdrop-blur">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <LandingNavbar />
-          </div>
-        </header>
-      )}
+      <LandingHeader />
+      <LandingHeaderSpacer />
 
       {/* 1) HERO */}
       <section className="py-14 sm:py-16 px-4 sm:px-6 lg:px-8">

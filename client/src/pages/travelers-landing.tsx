@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
 import { trackEvent } from "@/lib/analytics";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const travelersHeaderImage = "/travlersonastreet.jpg";
 
 export default function TravelersLanding() {
@@ -11,6 +12,86 @@ export default function TravelersLanding() {
   const [isMobile, setIsMobile] = useState(false);
   const [currentWisdom, setCurrentWisdom] = useState(0);
   const wisdomSayings = ["Adventure Awaits Everywhere.", "The World Is Your Playground.", "Travel Like a Local."];
+
+  const whyChooseCards = [
+    {
+      title: "Quality Over Quantity",
+      description:
+        "We focus on meaningful connections, not endless swiping. Every match is based on genuine compatibility and shared interests.",
+    },
+    {
+      title: "Safe & Verified",
+      description:
+        "All users are verified for safety. Meet in public places and trust your instincts - we provide the tools for safe connections.",
+    },
+    {
+      title: "Connect Before You Arrive",
+      description:
+        "Meet locals and travelers before your trip starts. Plan meetups, get insider tips, and hit the ground running.",
+    },
+    {
+      title: "Know When Friends Are Nearby",
+      description:
+        "Reconnect when paths cross again. See when someone you met in Barcelona shows up in Tokyo.",
+    },
+    {
+      title: "Join Weekly Sponsored Events",
+      description:
+        "Free and low-cost events every week. From beach bonfires to taco tours—authentic experiences hosted by passionate locals.",
+    },
+    {
+      title: "Friendships That Last",
+      description:
+        "Build a global network of real connections. These aren't just travel buddies—they're lifelong friends.",
+    },
+  ] as const;
+
+  // Detailed reasons below the card grid. Keep this list at 6 to balance the layout.
+  // (We promote “Friendships That Last” in the grid above.)
+  const whyChooseTabs = [
+    {
+      value: "quality",
+      label: "Quality",
+      title: "Quality Over Quantity",
+      body:
+        "Skip the noise. Meet people you’ll genuinely click with—based on shared interests, travel style, and what you actually want to do.",
+    },
+    {
+      value: "safety",
+      label: "Safety",
+      title: "Safe & Verified",
+      body:
+        "Verified profiles plus community-first design means you can focus on fun, with tools that encourage meeting safely in public and building trust.",
+    },
+    {
+      value: "before",
+      label: "Before You Arrive",
+      title: "Connect Before You Arrive",
+      body:
+        "Line up plans before you land—meetups, tips, and people who are excited to explore with you so your first day isn’t spent figuring it out alone.",
+    },
+    {
+      value: "nearby",
+      label: "Nearby Friends",
+      title: "Know When Friends Are Nearby",
+      body:
+        "Turn one great meetup into a worldwide network. Get reconnected when your paths cross again in future cities.",
+    },
+    {
+      value: "events",
+      label: "Weekly Events",
+      title: "Join Weekly Sponsored Events",
+      body:
+        "Hop into weekly community experiences—easy, social, and designed to help you meet people without awkward introductions.",
+    },
+    {
+      value: "coordination",
+      label: "Coordination",
+      title: "Real-Time Coordination",
+      body:
+        "Chat, share photos, coordinate meetups, and keep group conversations in one place—no more juggling apps mid-trip.",
+    },
+  ] as const;
 
   useEffect(() => {
     const checkMobile = () => {
@@ -126,28 +207,28 @@ export default function TravelersLanding() {
             What Makes Us Different
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gradient-to-br dark:from-purple-900/30 dark:to-purple-800/30 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Instant Meetups</h3>
-              <p className="text-gray-700 mb-3">Create "meet now" events for instant connections.</p>
-              <ul className="text-sm text-gray-700 space-y-1">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Instant Meetups</h3>
+              <p className="text-gray-700 dark:text-gray-200 mb-3">Create "meet now" events for instant connections.</p>
+              <ul className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
                 <li>• Spontaneous adventures</li>
                 <li>• Skip the planning stress</li>
                 <li>• Connect in real-time</li>
               </ul>
             </div>
-            <div className="bg-white dark:bg-gradient-to-br dark:from-pink-900/30 dark:to-pink-800/30 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Local Connections</h3>
-              <p className="text-gray-700 mb-3">Connect with locals for authentic experiences.</p>
-              <ul className="text-sm text-gray-700 space-y-1">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Local Connections</h3>
+              <p className="text-gray-700 dark:text-gray-200 mb-3">Connect with locals for authentic experiences.</p>
+              <ul className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
                 <li>• Skip tourist traps</li>
                 <li>• Insider knowledge</li>
                 <li>• Authentic cultural exchange</li>
               </ul>
             </div>
-            <div className="bg-white dark:bg-gradient-to-br dark:from-teal-900/30 dark:to-teal-800/30 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Real-Time Chat</h3>
-              <p className="text-gray-700 mb-3">Instant messaging with full features.</p>
-              <ul className="text-sm text-gray-700 space-y-1">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Real-Time Chat</h3>
+              <p className="text-gray-700 dark:text-gray-200 mb-3">Instant messaging with full features.</p>
+              <ul className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
                 <li>• Group conversations</li>
                 <li>• Photo & location sharing</li>
                 <li>• Coordinated meetups</li>
@@ -201,34 +282,47 @@ export default function TravelersLanding() {
             Why Choose Nearby Traveler?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-              <h3 className="text-xl font-bold mb-3 text-black">Quality Over Quantity</h3>
-              <p className="text-black flex-grow">We focus on meaningful connections, not endless swiping. Every match is based on genuine compatibility and shared interests.</p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-              <h3 className="text-xl font-bold mb-3 text-black">Safe & Verified</h3>
-              <p className="text-black flex-grow">All users are verified for safety. Meet in public places and trust your instincts - we provide the tools for safe connections.</p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-              <h3 className="text-xl font-bold mb-3 text-black">Connect Before You Arrive</h3>
-              <p className="text-black flex-grow">Meet locals and travelers before your trip starts. Plan meetups, get insider tips, and hit the ground running.</p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-              <h3 className="text-xl font-bold mb-3 text-black">Know When Friends Are Nearby</h3>
-              <p className="text-black flex-grow">Reconnect when paths cross again. See when someone you met in Barcelona shows up in Tokyo.</p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-              <h3 className="text-xl font-bold mb-3 text-black">Join Weekly Sponsored Events</h3>
-              <p className="text-black flex-grow">Free and low-cost events every week. From beach bonfires to taco tours—authentic experiences hosted by passionate locals.</p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-              <h3 className="text-xl font-bold mb-3 text-black">Real-Time Coordination</h3>
-              <p className="text-black flex-grow">Full-featured chat with photos, location sharing, and group conversations. No more juggling apps.</p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-              <h3 className="text-xl font-bold mb-3 text-black">Friendships That Last</h3>
-              <p className="text-black flex-grow">Build a global network of real connections. These aren't just travel buddies—they're lifelong friends.</p>
-            </div>
+            {whyChooseCards.map((card) => (
+              <div
+                key={card.title}
+                className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full"
+              >
+                <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">{card.title}</h3>
+                <p className="text-gray-700 dark:text-gray-200 flex-grow">{card.description}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Balanced detail section: 6 tabs */}
+          <div className="mt-10">
+            <Tabs defaultValue={whyChooseTabs[0].value} className="w-full">
+              <TabsList className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 bg-transparent p-0 h-auto">
+                {whyChooseTabs.map((t) => (
+                  <TabsTrigger
+                    key={t.value}
+                    value={t.value}
+                    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/70 data-[state=active]:bg-[#FF6B35] data-[state=active]:text-white data-[state=active]:border-[#FF6B35] text-gray-900 dark:text-gray-100"
+                  >
+                    {t.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+
+              <div className="mt-5">
+                {whyChooseTabs.map((t) => (
+                  <TabsContent key={t.value} value={t.value} className="m-0">
+                    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+                      <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                        {t.title}
+                      </div>
+                      <p className="mt-2 text-gray-700 dark:text-gray-200 leading-relaxed">
+                        {t.body}
+                      </p>
+                    </div>
+                  </TabsContent>
+                ))}
+              </div>
+            </Tabs>
           </div>
         </div>
 
@@ -263,23 +357,23 @@ export default function TravelersLanding() {
         <div className="max-w-6xl mx-auto mb-12">
           <h3 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">Perfect For</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-sm border border-gray-200 dark:border-white/10">
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">Solo Travelers</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Turn exploring alone into shared adventures</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-sm border border-gray-200 dark:border-white/10">
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">Families</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Connect with local families and fellow travelers with kids</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-sm border border-gray-200 dark:border-white/10">
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">Business Travelers</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Make work trips more than just meetings</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-sm border border-gray-200 dark:border-white/10">
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">New in Town</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Moving to a new city? Find your tribe fast</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-sm border border-gray-200 dark:border-white/10">
               <h4 className="font-bold text-gray-900 dark:text-white mb-2">Digital Nomads</h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">Build community wherever you land</p>
             </div>
