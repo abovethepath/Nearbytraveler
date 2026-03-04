@@ -311,17 +311,12 @@ button.user-card:first-child > div:first-of-type {
   padding-top: 0 !important;
 }
 
-/* User card bio: clamp to 2 lines on mobile, 3 on desktop */
+/* User card bio: clamp strictly to 3 lines (Home/Cities cards) */
 .user-card-bio {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   overflow: hidden;
-}
-@media (min-width: 1024px) {
-  .user-card-bio {
-    -webkit-line-clamp: 3;
-  }
 }
 
 /* MOBILE APP WRAPPER - Ensures all pages work for native app wrapping */
@@ -1196,7 +1191,6 @@ p, span, div, button, input, textarea, select {
 .dark {
   /* Force minimum contrast for all text elements */
   color: rgb(var(--nt-text-primary)) !important;
-  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
 }
 
 /* ============================================================

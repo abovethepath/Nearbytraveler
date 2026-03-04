@@ -272,11 +272,11 @@ export default function UserCard({
         <div className={compact ? '' : 'lg:hidden'}>
           {variant === "homeCity" ? (
             <div className="flex flex-col items-center text-center">
-              <div className="truncate w-full font-extrabold text-[14px] text-gray-900 dark:!text-white">
+              <div className="truncate w-full text-center font-extrabold text-[14px] text-gray-900 dark:!text-white">
                 {handle}
               </div>
               <div
-                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:!text-[#D1D5DB]"
+                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:!text-[#60A5FA]"
                 data-role="user-card-location"
               >
                 <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
@@ -289,8 +289,8 @@ export default function UserCard({
                   color: undefined,
                   fontSize: 12.5,
                   lineHeight: 1.5,
-                  minHeight: "3.6rem", // 3 lines @ 12.5px * 1.5
-                  maxHeight: "3.6rem",
+                  minHeight: "4.5em",
+                  maxHeight: "4.5em",
                   overflow: "hidden",
                   display: "-webkit-box",
                   WebkitBoxOrient: "vertical" as any,
@@ -363,11 +363,11 @@ export default function UserCard({
         <div className={compact ? 'hidden' : 'hidden lg:flex lg:flex-col lg:min-h-[7.5rem]'} style={{ minHeight: '7.5rem' }}>
           {variant === "homeCity" ? (
             <div className="flex flex-col items-center text-center">
-              <div className="truncate w-full font-extrabold text-[14px] text-gray-900 dark:!text-white">
+              <div className="truncate w-full text-center font-extrabold text-[14px] text-gray-900 dark:!text-white">
                 {handle}
               </div>
               <div
-                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:!text-[#D1D5DB]"
+                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:!text-[#60A5FA]"
                 data-role="user-card-location"
               >
                 <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
@@ -380,8 +380,8 @@ export default function UserCard({
                   color: undefined,
                   fontSize: 12.5,
                   lineHeight: 1.5,
-                  minHeight: "3.6rem", // 3 lines @ 12.5px * 1.5
-                  maxHeight: "3.6rem",
+                  minHeight: "4.5em",
+                  maxHeight: "4.5em",
                   overflow: "hidden",
                   display: "-webkit-box",
                   WebkitBoxOrient: "vertical" as any,
