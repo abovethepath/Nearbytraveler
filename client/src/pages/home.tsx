@@ -1683,21 +1683,31 @@ export default function Home() {
 
   {isMobile ? (
     <div className="text-center">
-      <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2 mb-6">
+      <div className="inline-flex items-center gap-2 bg-[#FF6B35] border border-[#FF6B35] dark:bg-gray-800/80 dark:border-gray-700 rounded-full px-6 py-2 mb-6">
         <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
-        <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
+        <span className="text-sm font-bold text-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 dark:bg-clip-text dark:text-transparent">Connect • Discover • Experience</span>
       </div>
 
       <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
         {effectiveUser?.userType === "business" ? (
           <>
-            <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Nearby Traveler</span>
+            <span
+              className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent"
+              style={{ WebkitTextFillColor: "transparent" }}
+            >
+              Nearby Traveler
+            </span>
             <br />
             <span className="text-gray-900 dark:text-white">Connect Your Business with Travelers & Locals</span>
           </>
         ) : (
           <>
-            <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Nearby Traveler</span>
+            <span
+              className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent"
+              style={{ WebkitTextFillColor: "transparent" }}
+            >
+              Nearby Traveler
+            </span>
             <br />
             <span className="text-gray-900 dark:text-white">Connect with Travelers & Locals Worldwide</span>
           </>
@@ -1728,14 +1738,17 @@ export default function Home() {
     <div className="relative py-6 lg:py-0">
       <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center lg:flex lg:items-center lg:justify-between lg:gap-10">
         <div className="md:col-span-3">
-          <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2.5 lg:px-5 lg:py-2 mb-5 lg:mb-3">
+          <div className="inline-flex items-center gap-2 bg-[#FF6B35] border border-[#FF6B35] dark:bg-gray-800 dark:border-gray-700 rounded-full px-6 py-2.5 lg:px-5 lg:py-2 mb-5 lg:mb-3">
             <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
-            <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
+            <span className="text-sm font-bold text-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 dark:bg-clip-text dark:text-transparent">Connect • Discover • Experience</span>
           </div>
 
           <div className="space-y-4 lg:space-y-3">
             <h1 className="text-3xl md:text-4xl lg:text-3xl font-bold tracking-tight leading-tight">
-              <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
+              <span
+                className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent"
+                style={{ WebkitTextFillColor: "transparent" }}
+              >
                 Nearby Traveler
               </span>
               <br />

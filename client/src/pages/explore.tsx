@@ -206,6 +206,18 @@ export default function Explore() {
     enabled: !!userCity,
   });
 
+  const peopleInCity = useMemo(() => {
+    const base = Array.isArray(nearbyUsers) ? nearbyUsers : [];
+    const visible = base.filter((u: any) => u?.id !== currentUser?.id).slice(0, 40);
+    const locals = visible.filter((u: any) => u?.cityMatchType !== "travel");
+    const travelers = visible.filter((u: any) => u?.cityMatchType === "travel");
+    const displayedCount =
+      travelers.length > 0
+        ? Math.min(locals.length, 20) + Math.min(travelers.length, 20)
+        : Math.min(locals.length, 20);
+    return { visible, locals, travelers, displayedCount };
+  }, [nearbyUsers, currentUser?.id]);
+
   // Mutations
   const createLiveShareMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -394,7 +406,7 @@ export default function Explore() {
                 size="sm"
                 variant="secondary"
                 onClick={() => setCityView("hometown")}
-                className={`${cityView === "hometown" ? "bg-white/90 text-black hover:bg-white" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30`}
+                className={`${cityView === "hometown" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30`}
               >
                 🏠 Hometown
               </Button>
@@ -402,7 +414,7 @@ export default function Explore() {
                 size="sm"
                 variant="secondary"
                 onClick={() => setCityView("travel")}
-                className={`${cityView === "travel" ? "bg-white/90 text-black hover:bg-white" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30`}
+                className={`${cityView === "travel" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30`}
               >
                 ✈️ Travel city
               </Button>
@@ -819,8 +831,10 @@ export default function Explore() {
               <div className="flex items-center gap-2">
                 <Users className="w-5 h-5 text-orange-500" />
                 <h2 className="font-bold text-lg text-gray-900 dark:text-white">People in {userCity}</h2>
-                {!loadingUsers && nearbyUsers.length > 0 && (
-                  <Badge variant="secondary" className="text-xs text-gray-900 dark:!text-white dark:bg-gray-800 dark:border dark:border-gray-700">{nearbyUsers.length}</Badge>
+                {!loadingUsers && peopleInCity.displayedCount > 0 && (
+                  <Badge variant="secondary" className="text-xs text-gray-900 dark:!text-white dark:bg-gray-800 dark:border dark:border-gray-700">
+                    {peopleInCity.displayedCount}
+                  </Badge>
                 )}
               </div>
               {nearbyUsers.length > 6 && (
@@ -847,10 +861,6 @@ export default function Explore() {
               </Card>
             ) : (
               (() => {
-                const visible = nearbyUsers.filter((u: any) => u.id !== currentUser?.id).slice(0, 40);
-                const locals = visible.filter((u: any) => u.cityMatchType !== "travel");
-                const travelers = visible.filter((u: any) => u.cityMatchType === "travel");
-
                 const renderStrip = (list: any[]) => (
                   <div className="flex gap-3 overflow-x-auto pb-2">
                     {list.slice(0, 20).map((user: any) => (
@@ -876,6 +886,9 @@ export default function Explore() {
                     ))}
                   </div>
                 );
+
+                const locals = peopleInCity.locals;
+                const travelers = peopleInCity.travelers;
 
                 return (
                   <div className="space-y-3">
