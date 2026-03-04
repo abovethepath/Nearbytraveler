@@ -4,12 +4,14 @@ import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 
 import { queryClient, invalidateUserCache, getApiBaseUrl } from "./lib/queryClient";
+import { posthogIdentifyUser, posthogReset } from "@/lib/posthog";
 import { QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import GlobalHotfixes from "@/GlobalHotfixes";
 import { DarkModeSuggestionBanner } from "@/components/DarkModeSuggestionBanner";
+import { FullPageSkeleton } from "@/components/FullPageSkeleton";
 import { METRO_AREAS } from "@shared/constants";
 import Home from "@/pages/home";
 import Welcome from "@/pages/welcome";
@@ -235,11 +237,7 @@ function ProfileByUsername({ username }: { username: string }) {
 
   if (!normalized) return <NotFound />;
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-sm font-semibold text-gray-500 dark:text-gray-400">Loading…</div>
-      </div>
-    );
+    return <FullPageSkeleton />;
   }
   if (isError || !data?.id) return <NotFound />;
   return <ProfileComplete userId={data.id} />;
@@ -883,7 +881,9 @@ function Router() {
         setUser(userData);
       },
       isAuthenticated: actualAuth,
-      authLoading: authLoading || !authInitialized || isVerifyingAuth || isLoading,
+      // IMPORTANT: authLoading should reflect only initial hydration, not background re-verification.
+      // Background session checks must not flip the whole UI into "Loading..." states.
+      authLoading: authLoading || !authInitialized || isLoading,
     };
   }, [
     user,
@@ -891,7 +891,6 @@ function Router() {
     queryClient,
     authLoading,
     authInitialized,
-    isVerifyingAuth,
     isLoading,
     isSessionMarkedInvalid,
     isSessionVerified,
@@ -1696,11 +1695,7 @@ function Router() {
   // IMPORTANT: Never return early before all hooks have run.
   // Returning early during auth init/resync changes hook count and causes React prod error #310.
   if (shouldGateAuthenticatedRendering) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-sm font-semibold text-gray-500 dark:text-gray-400">Loading…</div>
-      </div>
-    );
+    return <FullPageSkeleton />;
   }
 
   // Don't render React app for API routes - let browser handle them
@@ -1781,10 +1776,42 @@ function App() {
     }
   }, []);
 
-  const isMobileViewport =
-    typeof window !== "undefined" &&
-    !!window.matchMedia &&
-    window.matchMedia("(max-width: 768px)").matches;
+  // Disable floating chatbot on mobile/touch devices (including iPad/tablets),
+  // not just small viewport widths.
+  const [disableFloatingChatbot, setDisableFloatingChatbot] = React.useState(false);
+  useEffect(() => {
+    const compute = () => {
+      if (typeof window === "undefined") return false;
+      const ua = (navigator.userAgent || "").toLowerCase();
+      const uaMobile =
+        ua.includes("mobi") ||
+        ua.includes("android") ||
+        ua.includes("iphone") ||
+        ua.includes("ipad") ||
+        ua.includes("ipod");
+      const coarsePointer =
+        !!window.matchMedia &&
+        (window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(hover: none)").matches);
+      const smallViewport = !!window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
+      return uaMobile || coarsePointer || smallViewport;
+    };
+
+    const update = () => setDisableFloatingChatbot(compute());
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+
+    const mqCoarse = window.matchMedia?.("(pointer: coarse)");
+    const mqSmall = window.matchMedia?.("(max-width: 768px)");
+    mqCoarse?.addEventListener?.("change", update);
+    mqSmall?.addEventListener?.("change", update);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+      mqCoarse?.removeEventListener?.("change", update);
+      mqSmall?.removeEventListener?.("change", update);
+    };
+  }, []);
 
   // Initialize Google Analytics when app loads
   useEffect(() => {
@@ -1805,7 +1832,7 @@ function App() {
           <Toaster />
           <DarkModeSuggestionBanner />
           <Router />
-          {!isNativeIOSApp() && !isMobileViewport && <HelpChatbot />}
+          {!isNativeIOSApp() && !disableFloatingChatbot && <HelpChatbot />}
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>

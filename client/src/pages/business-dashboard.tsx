@@ -302,7 +302,7 @@ export default function BusinessDashboard() {
       return data;
     },
     enabled: !!storageUser?.id,
-    staleTime: 30000, // Cache for 30 seconds
+    staleTime: 60000, // Cache for 1 minute
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: false,
     refetchOnWindowFocus: false
@@ -315,7 +315,7 @@ export default function BusinessDashboard() {
   const { data: offers = [], isLoading, refetch: refetchOffers } = useQuery<BusinessOffer[]>({
     queryKey: [`/api/business-deals/business/${storageUser?.id}`],
     enabled: !!storageUser?.id && storageUser?.userType === 'business',
-    staleTime: 30000, // Cache for 30 seconds
+    staleTime: 60000, // Cache for 1 minute
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -326,7 +326,7 @@ export default function BusinessDashboard() {
   const { data: allOffers = [], isLoading: isPastOffersLoading } = useQuery<BusinessOffer[]>({
     queryKey: [`/api/business-deals/business/${storageUser?.id}`],
     enabled: !!storageUser?.id && storageUser?.userType === 'business',
-    staleTime: 30000, // Cache for 30 seconds
+    staleTime: 60000, // Cache for 1 minute
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: false
   });
@@ -364,7 +364,7 @@ export default function BusinessDashboard() {
   }>({
     queryKey: ['/api/business-deals/analytics'],
     enabled: !!storageUser?.id && storageUser?.userType === 'business',
-    staleTime: 30000, // Cache for 30 seconds
+    staleTime: 60000, // Cache for 1 minute
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: false,
     refetchOnWindowFocus: false
@@ -390,7 +390,7 @@ export default function BusinessDashboard() {
       return response.json();
     },
     enabled: !!storageUser?.id && storageUser?.userType === 'business',
-    staleTime: 30000, // Cache for 30 seconds
+    staleTime: 60000, // Cache for 1 minute
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: false
   });
@@ -413,7 +413,7 @@ export default function BusinessDashboard() {
       return response.json();
     },
     enabled: !!storageUser?.id && storageUser?.userType === 'business',
-    staleTime: 30000,
+    staleTime: 60000,
     refetchOnMount: true
   });
 

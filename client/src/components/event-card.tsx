@@ -83,7 +83,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
       return userParticipant?.status || null;
     },
     enabled: !!currentUser?.id && !isOrganizer,
-    staleTime: 10000, // Cache for 10 seconds
+    staleTime: 60000, // Cache for 1 minute
   });
   
   // User is already attending if they have 'going' or 'interested' status
@@ -338,20 +338,20 @@ export default function EventCard({ event, compact = false, featured = false }: 
             
             {/* Show organizer badge if user is the organizer */}
             {isOrganizer ? (
-              <Badge className="flex items-center gap-1 bg-gradient-to-r from-blue-500 to-orange-500 text-white px-3 py-1">
+              <Badge className="flex items-center gap-1 bg-gradient-to-r from-[#2563EB] to-[#E85D2F] text-white px-3 py-1">
                 <Users className="h-3 w-3" />
                 Organizer
               </Badge>
             ) : isGoing ? (
               /* Show "Going" badge if already going */
-              <Badge className="flex items-center gap-1 bg-orange-500 text-white px-3 py-1">
+              <Badge className="flex items-center gap-1 bg-[#E85D2F] text-white px-3 py-1">
                 <Check className="h-3 w-3" />
                 Going
               </Badge>
             ) : isInterested ? (
               /* Show "Interested" badge and upgrade to Going button */
               <>
-                <Badge className="flex items-center gap-1 bg-blue-500 text-white px-3 py-1">
+                <Badge className="flex items-center gap-1 bg-[#2563EB] text-white px-3 py-1">
                   <Check className="h-3 w-3" />
                   Interested
                 </Badge>
@@ -364,7 +364,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                   }}
                   disabled={joinEventMutation.isPending}
                   style={{ 
-                    background: 'linear-gradient(to right, #3b82f6, #ea580c)',
+                    background: 'linear-gradient(to right, #2563EB, #E85D2F)',
                     border: 'none',
                     color: 'white'
                   }}
@@ -385,7 +385,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                   }}
                   disabled={joinEventMutation.isPending}
                   style={{ 
-                    background: 'linear-gradient(to right, #3b82f6, #ea580c)',
+                    background: 'linear-gradient(to right, #2563EB, #E85D2F)',
                     border: 'none',
                     color: 'white'
                   }}

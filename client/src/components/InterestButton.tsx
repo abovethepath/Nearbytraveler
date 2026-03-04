@@ -39,7 +39,7 @@ export function InterestButton({
   const { data: interestedUsers = [], isLoading: loadingUsers } = useQuery({
     queryKey: ['/api/events/interested-users', eventIdentifier],
     enabled: showInterestedCount,
-    staleTime: 1000 * 30, // 30 seconds
+    staleTime: 1000 * 60, // 1 minute
   });
 
   const isInterested = (interestCheck as any)?.isInterested || false;

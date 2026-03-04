@@ -12,6 +12,7 @@ import { AuthContext } from "@/App";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { FullPageSkeleton } from "@/components/FullPageSkeleton";
 // MobileNav removed - using global mobile navigation
 
 
@@ -152,26 +153,11 @@ export default function DiscoverPage() {
 
   // Don't show destination discovery to business users while redirecting
   if (user?.userType === 'business') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
-            Redirecting to Business Dashboard...
-          </h2>
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-        </div>
-      </div>
-    );
+    return <FullPageSkeleton />;
   }
 
   if (statsLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">Loading destinations...</div>
-        </div>
-      </div>
-    );
+    return <FullPageSkeleton variant="cards" />;
   }
 
   const pageContent = (

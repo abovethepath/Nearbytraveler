@@ -79,9 +79,7 @@ function EventsWidget({ userId }: EventsWidgetProps) {
   const { data: userEvents = [], isLoading: userEventsLoading } = useQuery({
     queryKey: [`/api/users/${userId}/all-events`],
     enabled: !!userId,
-    staleTime: 0, // Always refresh to get latest joined events
-    gcTime: 0,
-
+    staleTime: 60000, // Cache for 1 minute
   });
 
   // Debug logging for userEvents
@@ -133,8 +131,7 @@ function EventsWidget({ userId }: EventsWidgetProps) {
       }));
     },
     enabled: discoveryLocations.allCities.length > 0,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 60000,
   });
 
   const today = new Date();

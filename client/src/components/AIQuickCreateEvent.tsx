@@ -445,7 +445,7 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
           <Button
             onClick={handleGenerate}
             disabled={generateDraftMutation.isPending || inputText.length < 10}
-            className="w-full bg-[#e8834a] hover:bg-[#d4703a] text-white"
+            className="w-full bg-gradient-to-b from-[#F06A3A] to-[#E85D2F] hover:from-[#E85D2F] hover:to-[#D95427] text-white"
           >
             {generateDraftMutation.isPending ? (
               <>

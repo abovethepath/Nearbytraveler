@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CurrentCityWidgetProps {
   userId: number | undefined;

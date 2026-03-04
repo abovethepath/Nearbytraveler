@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { FullPageSkeleton } from "@/components/FullPageSkeleton";
 import { MessageCircle, Users, MapPin, UserPlus, Loader2, Plus, ArrowLeft, Lock, Globe } from "lucide-react";
 import { useLocation } from "wouter";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
@@ -65,7 +66,7 @@ export default function CityChatroomsPage() {
   // Fetch chatrooms with proper member counts
   const { data: chatrooms = [], isLoading, refetch } = useQuery<CityChatroom[]>({
     queryKey: ['/api/chatrooms/my-locations'],
-    staleTime: 30000, // Cache for 30 seconds
+    staleTime: 60000, // Cache for 1 minute
     gcTime: 60000, // Keep in cache for 1 minute
     refetchInterval: 60000, // Refresh every minute instead of 10 seconds
     refetchOnWindowFocus: true,
@@ -231,19 +232,7 @@ export default function CityChatroomsPage() {
   });
 
   if (isLoading) {
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-blue-500" />
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            Loading Chatrooms...
-          </h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Finding chatrooms in your area
-          </p>
-        </div>
-      </div>
-    );
+    return <FullPageSkeleton variant="page" />;
   }
 
   return (

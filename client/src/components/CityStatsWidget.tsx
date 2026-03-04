@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CityStatsWidgetProps {
   city: string;
@@ -35,7 +36,7 @@ export function CityStatsWidget({ city, state, country, onOpenModal }: CityStats
       const data = await response.json();
       return data;
     },
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 60 * 1000, // 1 minute
     gcTime: 5 * 60 * 1000 // 5 minutes
   });
 
@@ -56,7 +57,11 @@ export function CityStatsWidget({ city, state, country, onOpenModal }: CityStats
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-gray-500 dark:text-gray-400">Loading...</div>
+          <div className="space-y-3">
+            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
         </CardContent>
       </Card>
     );

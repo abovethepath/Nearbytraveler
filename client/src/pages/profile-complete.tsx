@@ -29,6 +29,7 @@ type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries' | 'v
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
+import { FullPageSkeleton } from "@/components/FullPageSkeleton";
 import FriendReferralWidget from "@/components/friend-referral-widget";
 import { EventShareModal } from "@/components/EventShareModal";
 
@@ -1147,7 +1148,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     enabled: !!effectiveUserId,
-    staleTime: 30000, // Cache for 30 seconds
+    staleTime: 60000, // Cache for 1 minute
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: 'always',
     refetchOnWindowFocus: true,
@@ -1217,7 +1218,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return Array.isArray(data) ? data : [];
     },
     enabled: isOwnProfile ? !!currentUser?.id : !!effectiveUserId,
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 60 * 1000, // 1 minute
   });
 
   // BUNDLE-DERIVED: Compatibility score from profile bundle
@@ -1436,7 +1437,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return result;
     },
     enabled: !!effectiveUserId,
-    staleTime: 0, // Always refetch when filters change
+    staleTime: 60000, // Cache for 1 minute
   });
 
   // Sort connections to show mutual connections first (when viewing someone else's profile)
@@ -1499,7 +1500,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const { data: referencesData } = useQuery<{ references: any[]; counts: { total: number; positive: number; negative: number; neutral: number } }>({
     queryKey: [`/api/users/${effectiveUserId}/references`],
     enabled: !!effectiveUserId,
-    staleTime: 0, // Always fresh
+    staleTime: 60000, // Cache for 1 minute
     refetchOnMount: true,
   });
   const userReferences = referencesData?.references || [];
@@ -3606,11 +3607,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   if (userLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-orange-500 dark:border-gray-600 dark:border-t-orange-500" />
-      </div>
-    );
+    return <FullPageSkeleton />;
   }
 
   if (userError && !user) {
@@ -3652,11 +3649,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Show loading while waiting for authentication to load
   if (!effectiveUserId) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
+    return <FullPageSkeleton />;
   }
 
   if (!user && !userLoading) {
@@ -3676,11 +3669,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Safety check to ensure user exists before rendering main content
   if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
+    return <FullPageSkeleton />;
   }
 
   // Clean gradient background when no cover photo exists

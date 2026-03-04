@@ -68,10 +68,8 @@ export default function Deals() {
   const { data: businessDeals = [], isLoading: isBusinessDealsLoading, error: businessDealsError, refetch: refetchBusinessDeals } = useQuery<BusinessDeal[]>({
     queryKey: ['/api/business-deals'],
     enabled: !!effectiveUser,
-    refetchOnWindowFocus: true, // Enable refetch on focus to get fresh business data
-    refetchOnMount: true, // Always refetch when component mounts
-    staleTime: 0, // No stale time - always fetch fresh data for dynamic bio updates
-    gcTime: 0, // Don't cache to ensure fresh business info (gcTime replaces cacheTime in newer versions)
+    // Use global React Query caching defaults (staleTime/gcTime) to avoid showing
+    // a full reload on every navigation.
   });
 
   // Fetch quick deals
@@ -79,7 +77,7 @@ export default function Deals() {
     queryKey: ['/api/quick-deals'],
     enabled: !!effectiveUser,
     refetchOnWindowFocus: false,
-    staleTime: 30000, // 30 seconds
+    staleTime: 60000, // 1 minute
   });
 
   // Combine all deals

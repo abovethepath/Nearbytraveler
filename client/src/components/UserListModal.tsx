@@ -80,7 +80,7 @@ export function UserListModal({ isOpen, onClose, city, state, country, userType,
       return Array.isArray(data) ? data : [];
     },
     enabled: !!(isOpen && city && userType),
-    staleTime: 0, // No cache
+    staleTime: 60000, // Cache for 1 minute
     refetchOnMount: true,
     refetchOnWindowFocus: false
   });

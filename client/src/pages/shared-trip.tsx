@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, Clock, Ticket, Users, Check, Star } from 'lucide-react';
 import { getApiBaseUrl } from '@/lib/queryClient';
+import { FullPageSkeleton } from '@/components/FullPageSkeleton';
 
 interface TravelPlan {
   id: number;
@@ -89,11 +90,7 @@ export default function SharedTripPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full" />
-      </div>
-    );
+    return <FullPageSkeleton />;
   }
 
   if (error || !travelPlan) {

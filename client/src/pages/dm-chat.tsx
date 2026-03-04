@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { AuthContext } from "@/App";
 import { getApiBaseUrl } from "@/lib/queryClient";
+import { ChatPageSkeleton } from "@/components/ui/chat-page-skeleton";
 
 interface UserDetails {
   id: number;
@@ -41,34 +42,15 @@ export default function DMChat() {
 
   const authContext = useContext(AuthContext);
   const contextUser = authContext?.user;
-  const [resolvedUser, setResolvedUser] = useState<any>(contextUser ?? getStoredUser() ?? {});
-  const [userCheckDone, setUserCheckDone] = useState(false);
+  const authLoading = authContext?.authLoading;
+  const [resolvedUser, setResolvedUser] = useState<any>(contextUser ?? {});
 
   useEffect(() => {
     if (contextUser?.id) {
       setResolvedUser(contextUser);
-      setUserCheckDone(true);
       return;
     }
-    const stored = getStoredUser();
-    if (stored?.id) {
-      setResolvedUser(stored);
-      setUserCheckDone(true);
-      return;
-    }
-    let cancelled = false;
-    fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' })
-      .then(res => res.ok ? res.json() : null)
-      .then(sessionUser => {
-        if (!cancelled && sessionUser?.id) {
-          setResolvedUser(sessionUser);
-        }
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (!cancelled) setUserCheckDone(true);
-      });
-    return () => { cancelled = true; };
+    setResolvedUser({});
   }, [contextUser?.id]);
 
   const user = resolvedUser;
@@ -111,9 +93,7 @@ export default function DMChat() {
   }
 
   if (!user?.id) {
-    if (!userCheckDone) {
-      return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading...</div>;
-    }
+    if (authLoading) return <ChatPageSkeleton variant="dark" />;
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">Please log in to view this conversation</p>
@@ -126,7 +106,7 @@ export default function DMChat() {
   }
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading...</div>;
+    return <ChatPageSkeleton variant="dark" />;
   }
 
   if (isError || !otherUser) {

@@ -871,49 +871,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     res.type('text/plain').send('loaderio-15c7c050ef251dcf711cfbdec3d0eb28');
   });
 
-  // Serve OG logo with proper CORS headers for social media crawlers
-  app.get("/api/og-image", async (req, res) => {
-    try {
-      const { readFile } = await import('fs/promises');
-      const { join } = await import('path');
-      const imagePath = join(process.cwd(), 'client', 'public', 'og-social.png');
-      
-      const imageBuffer = await readFile(imagePath);
-      res.set({
-        'Content-Type': 'image/png',
-        'Content-Length': imageBuffer.length,
-        'Cross-Origin-Resource-Policy': 'cross-origin',
-        'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'public, max-age=86400'
-      });
-      res.send(imageBuffer);
-    } catch (error) {
-      console.error('OG image error:', error);
-      res.status(500).send('Error serving image');
-    }
-  });
-
-  // Serve square OG image for WhatsApp (avoids cropping)
-  app.get("/api/og-image-square", async (req, res) => {
-    try {
-      const { readFile } = await import('fs/promises');
-      const { join } = await import('path');
-      const imagePath = join(process.cwd(), 'client', 'public', 'og-social-square.png');
-      
-      const imageBuffer = await readFile(imagePath);
-      res.set({
-        'Content-Type': 'image/png',
-        'Content-Length': imageBuffer.length,
-        'Cross-Origin-Resource-Policy': 'cross-origin',
-        'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'public, max-age=86400'
-      });
-      res.send(imageBuffer);
-    } catch (error) {
-      console.error('OG square image error:', error);
-      res.status(500).send('Error serving image');
-    }
-  });
+  // OG image is now a static asset at /og-image.png (faster + more reliable for crawlers).
 
   // Dynamic Open Graph meta tags for homepage (for social media sharing)
   app.get("/", (req, res, next) => {
@@ -926,18 +884,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       return next();
     }
     
-    const isWhatsApp = /WhatsApp/i.test(userAgent);
-    
-    const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
-    const host = req.headers.host || 'nearbytraveler.org';
-    const baseUrl = `${protocol}://${host}`;
-    
-    // WhatsApp gets square image to avoid cropping
-    const imageUrl = isWhatsApp
-      ? `${baseUrl}/api/og-image-square?v=15`
-      : `${baseUrl}/api/og-image?v=15`;
-    const width = isWhatsApp ? 800 : 1200;
-    const height = isWhatsApp ? 800 : 630;
+    const baseUrl = `https://nearbytraveler.org`;
+    const imageUrl = `${baseUrl}/og-image.png`;
+    const width = 1200;
+    const height = 630;
     
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -1026,9 +976,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       // Get event image - ensure it's an absolute URL (not base64)
       // Using landscape logo (16:9) for better social sharing on mobile
-      // Using /api/og-image to bypass CORS restrictions on static files
-      // Version parameter forces social media to refresh cached images
-      let imageUrl = `${baseUrl}/api/og-image?v=12`;
+      // Use static /og-image.png for reliable social previews
+      let imageUrl = `https://nearbytraveler.org/og-image.png`;
       if (event.imageUrl && !event.imageUrl.startsWith('data:')) {
         // Only use if it's a real URL, not a base64 data URI
         if (event.imageUrl.startsWith('http')) {

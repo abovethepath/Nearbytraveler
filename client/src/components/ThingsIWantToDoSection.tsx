@@ -140,7 +140,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   // Fetch city-specific activities
   const { data: cityActivities = [], isLoading: loadingCityActivities } = useQuery({
     queryKey: [`/api/user-city-interests/${userId}`],
-    staleTime: 0, // Always fresh - no cache delay
+    staleTime: 60000, // Cache for 1 minute
     gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
@@ -214,8 +214,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   // Fetch events that the user is attending  
   const { data: joinedEvents = [], isLoading: loadingJoinedEvents } = useQuery({
     queryKey: [`/api/users/${userId}/all-events`],
-    staleTime: 0, // Always refresh to get latest joined events
-    gcTime: 0,
+    staleTime: 60000, // Cache for 1 minute
   });
 
   // Fetch user event interests (events they marked interest in from city pages)

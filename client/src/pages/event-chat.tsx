@@ -5,7 +5,8 @@ import WhatsAppChat from "@/components/WhatsAppChat";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
-import { authStorage } from "@/lib/auth";
+import { useAuth } from "@/App";
+import { ChatPageSkeleton } from "@/components/ui/chat-page-skeleton";
 
 interface User {
   id: number;
@@ -33,17 +34,8 @@ export default function EventChat() {
   const { toast } = useToast();
   const eventId = params?.eventId ? parseInt(params.eventId) : null;
 
-  const [userId, setUserId] = useState<number | undefined>(() => authStorage.getUser()?.id ?? undefined);
-  useEffect(() => {
-    const u = authStorage.getUser();
-    if (u?.id) setUserId(u.id);
-  }, []);
-  useEffect(() => {
-    if (userId != null) return;
-    const t1 = setTimeout(() => { const u = authStorage.getUser(); if (u?.id) setUserId(u.id); }, 300);
-    const t2 = setTimeout(() => { const u = authStorage.getUser(); if (u?.id) setUserId(u.id); }, 1200);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [userId]);
+  const { user, authLoading } = useAuth();
+  const userId = user?.id;
 
   const { data: event, isLoading, isError, error, failureCount } = useQuery<Event>({
     queryKey: [`/api/events/${eventId}`],
@@ -88,7 +80,7 @@ export default function EventChat() {
   }
 
   if (isLoading || chatroomLoading) {
-    return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading...</div>;
+    return <ChatPageSkeleton variant="dark" />;
   }
 
   if (isError || !event || !chatroom) {
@@ -106,7 +98,16 @@ export default function EventChat() {
   }
 
   if (!userId) {
-    return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading chat...</div>;
+    if (authLoading) return <ChatPageSkeleton variant="dark" />;
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
+        <p className="text-lg">Please log in to view this chat</p>
+        <Button onClick={() => setLocation('/events')} variant="outline">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Events
+        </Button>
+      </div>
+    );
   }
 
   return (

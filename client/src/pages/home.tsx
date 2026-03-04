@@ -143,7 +143,7 @@ export default function Home() {
   const { data: travelPlans = [], isLoading: isLoadingTravelPlans } = useQuery<any[]>({
     queryKey: [`/api/travel-plans/${currentUserId}`],
     enabled: !!currentUserId,
-    staleTime: 30000, // 30 seconds to reduce flickering
+    staleTime: 60000, // 1 minute to reduce flickering
   });
 
   const matchedUsersUserId = currentUserId;
@@ -728,7 +728,7 @@ export default function Home() {
       return data;
     },
     enabled: !!matchedUsersUserId,
-    staleTime: 30 * 1000,
+    staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
@@ -981,8 +981,7 @@ export default function Home() {
       console.log('Combined quick meets:', unique.length, 'meets from ALL', discoveryLocations.allCities.length, 'locations');
       return unique;
     },
-    staleTime: 30 * 1000, // 30-second cache
-    gcTime: 0,
+    staleTime: 60 * 1000, // 1-minute cache
   });
 
   const quickMeets = allQuickMeets;
@@ -1027,7 +1026,7 @@ export default function Home() {
       }
     },
     enabled: true, // Always enabled
-    staleTime: 30000, // Cache for 30 seconds to prevent constant refetching
+    staleTime: 60000, // Cache for 1 minute to prevent constant refetching
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: false,
     refetchOnWindowFocus: false,

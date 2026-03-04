@@ -17,6 +17,7 @@ interface InstagramShareProps {
     state?: string | null;
     country?: string | null;
     venueName?: string | null;
+    imageUrl?: string | null;
   };
   trigger?: React.ReactNode;
 }
@@ -63,98 +64,159 @@ export function InstagramShare({ event, trigger }: InstagramShareProps) {
     try {
       const canvas = document.createElement("canvas");
       canvas.width = 1080;
-      canvas.height = 1920; // Instagram story dimensions
+      canvas.height = 1080; // Instagram square dimensions
       const ctx = canvas.getContext("2d");
       
       if (!ctx) {
         throw new Error("Canvas not supported");
       }
 
-      // Background gradient
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, "#FF6B35"); // Orange
-      gradient.addColorStop(1, "#004E89"); // Blue
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const W = canvas.width;
+      const H = canvas.height;
 
-      // Add semi-transparent overlay
-      ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const drawWrappedText = (opts: {
+        text: string;
+        x: number;
+        y: number;
+        maxWidth: number;
+        lineHeight: number;
+        maxLines: number;
+      }) => {
+        const words = (opts.text || "").trim().split(/\s+/).filter(Boolean);
+        const lines: string[] = [];
+        let line = "";
 
-      // Event title
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = "bold 72px Arial";
-      ctx.textAlign = "center";
-      
-      // Word wrap for title
-      const words = event.title.split(" ");
-      let line = "";
-      let y = 300;
-      const maxWidth = 900;
-      
-      for (const word of words) {
-        const testLine = line + word + " ";
-        const metrics = ctx.measureText(testLine);
-        if (metrics.width > maxWidth && line !== "") {
-          ctx.fillText(line, canvas.width / 2, y);
-          line = word + " ";
-          y += 85;
-        } else {
-          line = testLine;
-        }
-      }
-      ctx.fillText(line, canvas.width / 2, y);
-
-      // Date and time
-      const eventDate = format(new Date(event.date), "EEEE, MMMM d, yyyy");
-      const time = event.startTime || "";
-      
-      y += 150;
-      ctx.font = "48px Arial";
-      ctx.fillText(`📅 ${eventDate}`, canvas.width / 2, y);
-      
-      if (time) {
-        y += 70;
-        ctx.fillText(`🕐 ${time}`, canvas.width / 2, y);
-      }
-
-      // Location
-      const location = [event.venueName, event.city, event.state].filter(Boolean).join(", ");
-      if (location) {
-        y += 70;
-        ctx.font = "42px Arial";
-        ctx.fillText(`📍 ${location}`, canvas.width / 2, y);
-      }
-
-      // Description
-      if (event.description) {
-        y += 150;
-        ctx.font = "36px Arial";
-        const desc = event.description.slice(0, 150) + (event.description.length > 150 ? "..." : "");
-        const descWords = desc.split(" ");
-        line = "";
-        
-        for (const word of descWords) {
-          const testLine = line + word + " ";
-          const metrics = ctx.measureText(testLine);
-          if (metrics.width > maxWidth && line !== "") {
-            ctx.fillText(line, canvas.width / 2, y);
-            line = word + " ";
-            y += 50;
+        for (const w of words) {
+          const test = line ? `${line} ${w}` : w;
+          if (ctx.measureText(test).width <= opts.maxWidth) {
+            line = test;
           } else {
-            line = testLine;
+            if (line) lines.push(line);
+            line = w;
+            if (lines.length >= opts.maxLines) break;
           }
         }
-        ctx.fillText(line, canvas.width / 2, y);
+        if (lines.length < opts.maxLines && line) lines.push(line);
+
+        // Ellipsize last line if we had to truncate
+        if (lines.length > opts.maxLines) lines.length = opts.maxLines;
+        if (lines.length === opts.maxLines && words.length > 0) {
+          let last = lines[lines.length - 1] || "";
+          while (ctx.measureText(last + "…").width > opts.maxWidth && last.length > 0) {
+            last = last.slice(0, -1);
+          }
+          if (last !== lines[lines.length - 1]) {
+            lines[lines.length - 1] = last.trimEnd() + "…";
+          }
+        }
+
+        lines.forEach((ln, i) => ctx.fillText(ln, opts.x, opts.y + i * opts.lineHeight));
+        return opts.y + lines.length * opts.lineHeight;
+      };
+
+      const drawCoverImage = (img: HTMLImageElement) => {
+        const iw = img.naturalWidth || img.width;
+        const ih = img.naturalHeight || img.height;
+        const scale = Math.max(W / iw, H / ih);
+        const dw = iw * scale;
+        const dh = ih * scale;
+        const dx = (W - dw) / 2;
+        const dy = (H - dh) / 2;
+        ctx.drawImage(img, dx, dy, dw, dh);
+      };
+
+      // Background: event photo (preferred) or brand gradient fallback
+      let blobUrl: string | null = null;
+      try {
+        if (event.imageUrl) {
+          // Prefer fetching as blob to avoid canvas CORS tainting on many CDNs.
+          const res = await fetch(event.imageUrl, { mode: "cors" });
+          if (res.ok) {
+            const blob = await res.blob();
+            blobUrl = URL.createObjectURL(blob);
+            const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+              const im = new Image();
+              im.onload = () => resolve(im);
+              im.onerror = reject;
+              im.src = blobUrl as string;
+            });
+            drawCoverImage(img);
+          } else {
+            throw new Error("Image fetch failed");
+          }
+        } else {
+          throw new Error("No image URL");
+        }
+      } catch {
+        const bg = ctx.createLinearGradient(0, 0, 0, H);
+        bg.addColorStop(0, "#004E89"); // Blue
+        bg.addColorStop(1, "#FF6B35"); // Orange
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, W, H);
+      } finally {
+        if (blobUrl) URL.revokeObjectURL(blobUrl);
+      }
+
+      // Bottom overlay gradient for readability
+      const overlay = ctx.createLinearGradient(0, H * 0.35, 0, H);
+      overlay.addColorStop(0, "rgba(0,0,0,0)");
+      overlay.addColorStop(0.6, "rgba(0,0,0,0.55)");
+      overlay.addColorStop(1, "rgba(0,0,0,0.80)");
+      ctx.fillStyle = overlay;
+      ctx.fillRect(0, 0, W, H);
+
+      // Text styles
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      const pad = 72;
+      const textMaxWidth = W - pad * 2;
+      let y = H - 360;
+
+      // Event title (2 lines max)
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "800 64px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      y = drawWrappedText({
+        text: event.title,
+        x: pad,
+        y,
+        maxWidth: textMaxWidth,
+        lineHeight: 74,
+        maxLines: 2,
+      });
+
+      // Date + time (single line)
+      const eventDate = format(new Date(event.date), "MMM d, yyyy");
+      const timeText =
+        event.startTime && event.endTime
+          ? `${event.startTime} - ${event.endTime}`
+          : event.startTime
+            ? event.startTime
+            : "";
+      const dateLine = timeText ? `${eventDate} · ${timeText}` : eventDate;
+
+      ctx.font = "600 34px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      ctx.fillStyle = "rgba(255,255,255,0.95)";
+      ctx.fillText(dateLine, pad, y + 10);
+
+      // Location (single line)
+      const location = [event.venueName, event.city, event.state].filter(Boolean).join(", ");
+      if (location) {
+        ctx.font = "600 34px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        // Truncate location manually to fit
+        let loc = location;
+        while (ctx.measureText(loc).width > textMaxWidth && loc.length > 0) {
+          loc = loc.slice(0, -1);
+        }
+        if (loc !== location) loc = loc.trimEnd() + "…";
+        ctx.fillText(loc, pad, y + 56);
       }
 
       // Branding
-      ctx.font = "bold 64px Arial";
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillText("Nearby Traveler", canvas.width / 2, canvas.height - 200);
-      
-      ctx.font = "36px Arial";
-      ctx.fillText("Connect • Explore • Experience", canvas.width / 2, canvas.height - 130);
+      ctx.textAlign = "right";
+      ctx.fillStyle = "rgba(255,255,255,0.9)";
+      ctx.font = "700 28px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      ctx.fillText("NearbyTraveler.org", W - pad, H - 56);
 
       // Convert canvas to blob and download
       canvas.toBlob((blob) => {

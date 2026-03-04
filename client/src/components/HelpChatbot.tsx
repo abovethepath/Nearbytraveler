@@ -40,8 +40,19 @@ export function HelpChatbot() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isMobileViewport, setIsMobileViewport] = useState(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return false;
-    return window.matchMedia('(max-width: 768px)').matches;
+    if (typeof window === 'undefined') return false;
+    const ua = (navigator.userAgent || '').toLowerCase();
+    const uaMobile =
+      ua.includes('mobi') ||
+      ua.includes('android') ||
+      ua.includes('iphone') ||
+      ua.includes('ipad') ||
+      ua.includes('ipod');
+    const coarsePointer =
+      !!window.matchMedia &&
+      (window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(hover: none)').matches);
+    const smallViewport = !!window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+    return uaMobile || coarsePointer || smallViewport;
   });
 
   // Hide on landing/public pages - chatbot is for logged-in users only
@@ -66,11 +77,34 @@ export function HelpChatbot() {
 
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return;
-    const mq = window.matchMedia('(max-width: 768px)');
-    const update = () => setIsMobileViewport(!!mq.matches);
+    const mqSmall = window.matchMedia('(max-width: 768px)');
+    const mqCoarse = window.matchMedia('(pointer: coarse)');
+    const mqHoverNone = window.matchMedia('(hover: none)');
+    const update = () => {
+      const ua = (navigator.userAgent || '').toLowerCase();
+      const uaMobile =
+        ua.includes('mobi') ||
+        ua.includes('android') ||
+        ua.includes('iphone') ||
+        ua.includes('ipad') ||
+        ua.includes('ipod');
+      const coarsePointer = !!mqCoarse.matches || !!mqHoverNone.matches;
+      const smallViewport = !!mqSmall.matches;
+      setIsMobileViewport(uaMobile || coarsePointer || smallViewport);
+    };
     update();
-    mq.addEventListener?.('change', update);
-    return () => mq.removeEventListener?.('change', update);
+    mqSmall.addEventListener?.('change', update);
+    mqCoarse.addEventListener?.('change', update);
+    mqHoverNone.addEventListener?.('change', update);
+    window.addEventListener('resize', update);
+    window.addEventListener('orientationchange', update);
+    return () => {
+      mqSmall.removeEventListener?.('change', update);
+      mqCoarse.removeEventListener?.('change', update);
+      mqHoverNone.removeEventListener?.('change', update);
+      window.removeEventListener('resize', update);
+      window.removeEventListener('orientationchange', update);
+    };
   }, []);
 
   // Early return AFTER all hooks
@@ -138,12 +172,18 @@ export function HelpChatbot() {
     setShowSuggestions(true);
   };
 
+  const floatingStyle = {
+    right: 'calc(env(safe-area-inset-right, 0px) + 24px)',
+    bottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)',
+  } as any;
+
   return (
     <div>
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[9999] h-11 w-11 md:h-14 md:w-14 rounded-full bg-gradient-to-r from-[#FF6B35] to-[#F97316] text-white shadow-[0_12px_28px_rgba(0,0,0,0.28)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.55)] ring-1 ring-white/10 hover:shadow-[0_16px_34px_rgba(0,0,0,0.33)] transition-transform duration-150 ease-out hover:scale-[1.03] active:scale-[0.98] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6B35] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="fixed z-[9999] h-11 w-11 md:h-14 md:w-14 rounded-full bg-gradient-to-r from-[#FF6B35] to-[#F97316] text-white shadow-[0_12px_28px_rgba(0,0,0,0.28)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.55)] ring-1 ring-white/10 hover:shadow-[0_16px_34px_rgba(0,0,0,0.33)] transition-transform duration-150 ease-out hover:scale-[1.03] active:scale-[0.98] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6B35] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          style={floatingStyle}
           aria-label="Open help chat"
         >
           <MessageCircleQuestion className="w-5 h-5 md:w-6 md:h-6 text-white" />
@@ -157,8 +197,8 @@ export function HelpChatbot() {
           onClick={() => setIsOpen(false)}
         />
         <div 
-          className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[9999] w-[360px] max-w-[calc(100vw-32px)] h-[450px] md:h-[500px] max-h-[calc(100vh-140px)] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-300 dark:border-gray-600 flex flex-col overflow-hidden"
-          style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
+          className="fixed z-[9999] w-[360px] max-w-[calc(100vw-32px)] h-[450px] md:h-[500px] max-h-[calc(100vh-140px)] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-300 dark:border-gray-600 flex flex-col overflow-hidden"
+          style={{ ...floatingStyle, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
         >
           <div className="bg-gradient-to-r from-[#FF6B35] to-[#F97316] px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">

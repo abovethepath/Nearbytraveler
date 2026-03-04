@@ -31,11 +31,13 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
   const isHero = variant === "hero";
   const isDesktopWeb = !isNativeIOSApp();
   const isOtherHero = isHero && !isOwnProfile;
+  const isOwnHero = isHero && !!isOwnProfile;
   const isMobileWeb =
     !isNativeIOSApp() &&
     typeof window !== "undefined" &&
     !!window.matchMedia &&
     window.matchMedia("(max-width: 767.98px)").matches;
+  const isDesktopHero = isHero && isDesktopWeb && !isMobileWeb;
   // Web: About section is already visible below the hero, so don't show an About hero tab.
   // iOS: keep About in the hero/tab navigation as requested previously.
   const showAboutTab = !(isHero && isDesktopWeb);
@@ -44,14 +46,17 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
   // For other-user hero, keep badge numbers BLACK (requested explicitly).
   const badgeClass = isOtherHero
     ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-white/70 text-black border border-black/20"
-    : (isHero
-        ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-[#FF6B35] text-white border border-black/20 md:bg-[#1a1a1a] md:text-white md:border-white/10"
-        : (isDesktopWeb
-            ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-600 text-white"
-            : "ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-white/20 text-white"));
+    : (isOwnHero
+        ? "ml-1.5 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-[#1a1a1a] !text-white border border-white/15"
+        : (isHero
+            ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-[#FF6B35] text-white border border-black/20"
+            : (isDesktopWeb
+                ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-600 text-white"
+                : "ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-white/20 text-white")))
 
-  const tabWebBase =
-    "relative px-0 py-2 text-sm sm:text-base font-semibold transition-colors select-none";
+  const tabWebBase = isHero
+    ? "relative px-0 py-1.5 text-[13px] leading-tight font-semibold transition-colors select-none whitespace-nowrap"
+    : "relative px-0 py-2 text-sm sm:text-base font-semibold transition-colors select-none";
   // Hero background is a gradient that does not change by theme, so keep tab text dark/crisp even in dark mode.
   const tabWebInactive = isHero
     ? "text-black hover:text-black"
@@ -73,11 +78,17 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
     return `${tabLegacyBase} ${active ? tabLegacyActive : tabLegacyInactive}`;
   };
 
+  // Desktop other-user hero: force all tab label text to black via inline styles (resists overrides).
+  const forceBlackHeroText = isOtherHero && isDesktopWeb && !isMobileWeb;
+  const heroTextStyle = forceBlackHeroText ? ({ color: "#000000" } as React.CSSProperties) : undefined;
+
   return (
     <div
       className={`profile-tabbar ${isHero ? "profile-tabbar-hero" : "profile-tabbar-standalone"} flex ${
-        isHero && isMobileWeb ? "flex-nowrap overflow-x-auto overflow-y-hidden" : "flex-wrap"
-      } items-end gap-4 sm:gap-5 ${
+        isDesktopHero
+          ? "flex-nowrap"
+          : (isHero && isMobileWeb ? "flex-nowrap overflow-x-auto overflow-y-hidden" : "flex-wrap")
+      } items-end ${isDesktopHero ? "gap-2 sm:gap-2 lg:gap-3" : "gap-4 sm:gap-5"} ${
         isHero ? "pt-4 mt-4" : ""
       } ${isDesktopWeb ? (isHero ? "border-b border-gray-200/70 pb-1" : "border-b border-gray-200 dark:border-white/15 pb-1") : ""}`}
       style={isHero && isMobileWeb ? { WebkitOverflowScrolling: "touch" } : undefined}
@@ -90,6 +101,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           onClick={() => openTab("about")}
           className={btn(activeTab === "about")}
           data-testid="tab-about"
+          style={heroTextStyle}
         >
           About
         </button>
@@ -102,6 +114,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         onClick={() => openTab("contacts")}
         className={btn(activeTab === "contacts")}
         data-testid="tab-contacts"
+        style={heroTextStyle}
       >
         Contacts
         {!!(userConnections?.length) && (
@@ -118,6 +131,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         onClick={() => openTab("photos")}
         className={btn(activeTab === "photos")}
         data-testid="tab-photos"
+        style={heroTextStyle}
       >
         Photos
         {!!(photos?.length + (userTravelMemories?.length || 0)) && (
@@ -134,6 +148,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         onClick={() => openTab("references")}
         className={btn(activeTab === "references")}
         data-testid="tab-references"
+        style={heroTextStyle}
       >
         References
         {(userReferences?.length || 0) > 0 && (
@@ -151,6 +166,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           onClick={() => openTab("travel")}
           className={btn(activeTab === "travel")}
           data-testid="tab-travel"
+          style={heroTextStyle}
         >
           Travel Plans
           {!!(travelPlans?.length) && (
@@ -169,6 +185,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           onClick={() => openTab("countries")}
           className={btn(activeTab === "countries")}
           data-testid="tab-countries"
+          style={heroTextStyle}
         >
           Countries
           {!!(countriesVisited?.length) && (
@@ -187,6 +204,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           onClick={() => openTab("chatrooms")}
           className={btn(activeTab === "chatrooms")}
           data-testid="tab-chatrooms"
+          style={heroTextStyle}
         >
           Chatrooms
           {!!(userChatrooms?.length) && (
@@ -205,6 +223,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           onClick={() => openTab("vouches")}
           className={btn(activeTab === "vouches")}
           data-testid="tab-vouches"
+          style={heroTextStyle}
         >
           Vouches
           <span className={badgeClass}>

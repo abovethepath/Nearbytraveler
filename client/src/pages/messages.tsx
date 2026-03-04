@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { UniversalBackButton } from '@/components/UniversalBackButton';
 import { isNativeIOSApp } from '@/lib/nativeApp';
 import { AuthContext } from '@/App';
+import { FullPageSkeleton } from '@/components/FullPageSkeleton';
 
 function getReplyPreviewText(msg: any): string {
   if (!msg) return '';
@@ -63,16 +64,6 @@ export default function Messages() {
       setResolvedUser(stored);
       return;
     }
-    let cancelled = false;
-    fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' })
-      .then(res => res.ok ? res.json() : null)
-      .then(sessionUser => {
-        if (!cancelled && sessionUser?.id) {
-          setResolvedUser(sessionUser);
-        }
-      })
-      .catch(() => {});
-    return () => { cancelled = true; };
   }, [contextUser?.id]);
 
   const user = resolvedUser;
@@ -191,7 +182,7 @@ export default function Messages() {
       return res.json();
     },
     enabled: !!userId,
-    staleTime: 30000,
+    staleTime: 60000,
     gcTime: 300000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -311,7 +302,7 @@ export default function Messages() {
   // Fetch all users for name lookup
   const { data: allUsers = [] } = useQuery({
     queryKey: ['/api/users'],
-    staleTime: 30000
+    staleTime: 60000
   });
 
   // Build conversations list
@@ -603,6 +594,10 @@ export default function Messages() {
     console.log('🎯 Selected user:', selectedUser?.username || 'None');
   }, [selectedConversation, selectedUser]);
 
+  if (authContext?.authLoading) {
+    return <FullPageSkeleton variant="chat" />;
+  }
+
   if (!hasUser) {
     return (
       <div className={`flex items-center justify-center bg-white dark:bg-gray-900 ${isNativeIOSApp() ? 'native-ios-fullpage' : 'min-h-screen'}`}>
@@ -612,11 +607,7 @@ export default function Messages() {
   }
 
   if ((connectionsLoading || messagesLoading) && !targetUserId) {
-    return (
-      <div className="h-screen bg-white dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-gray-600 dark:text-gray-400">Loading messages...</div>
-      </div>
-    );
+    return <FullPageSkeleton variant="chat" />;
   }
 
   return (

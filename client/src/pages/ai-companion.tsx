@@ -94,7 +94,7 @@ function AICompanionPaused() {
   const { data: recommendations = [], isLoading, refetch } = useQuery({
     queryKey: [`/api/ai-recommendations/${user?.id || 83}`],
     enabled: !!user?.id,
-    staleTime: 0, // No cache to ensure fresh data
+    staleTime: 60000, // Cache for 1 minute
     refetchOnWindowFocus: false,
     refetchInterval: false, // Don't auto-refetch
     retry: 3

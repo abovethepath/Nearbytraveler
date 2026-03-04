@@ -61,7 +61,7 @@ export default function ConnectPage() {
   const { data: userTravelPlans = [], isLoading: isLoadingTravelPlans, refetch: refetchTravelPlans } = useQuery<TravelPlan[]>({
     queryKey: [`/api/travel-plans/${user?.id}`],
     enabled: !!user?.id && typeof user.id === 'number' && !isNaN(user.id),
-    staleTime: 0, // Always consider data stale for fresh fetches
+    staleTime: 60000, // Cache for 1 minute
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     refetchOnMount: true,
     refetchOnWindowFocus: true,

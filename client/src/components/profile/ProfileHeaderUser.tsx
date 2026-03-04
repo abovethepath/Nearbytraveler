@@ -711,24 +711,26 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               >
                 <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
               </div>
-              {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-3">
-                  New to Town
-                </span>
-              )}
             </div>
 
             <div className="flex flex-col gap-1 min-w-0 w-full max-w-[280px] mt-4">
-              <span className="text-lg font-semibold !text-black crisp-hero-text">
-                Nearby Local
-              </span>
-              <span className="text-base font-medium break-words !text-black crisp-hero-text" title={hometown}>{hometown}</span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-lg font-semibold crisp-hero-text" style={{ color: "#000000" }}>
+                  Nearby Local <span style={{ color: "#000000" }}>·</span>{" "}
+                  <span style={{ color: "#000000" }}>{hometown}</span>
+                </span>
+                {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-black">
+                    New to Town
+                  </span>
+                )}
+              </div>
               {hasValidTravelDestination && (
                 <>
-                  <span className="text-sm font-semibold !text-black mt-1 crisp-hero-text">
+                  <span className="text-sm font-semibold mt-1 crisp-hero-text" style={{ color: "#000000" }}>
                     Nearby Traveler
                   </span>
-                  <span className="text-sm font-medium break-words !text-black crisp-hero-text" title={currentTravelPlan!}>
+                  <span className="text-sm font-medium break-words crisp-hero-text" title={currentTravelPlan!} style={{ color: "#000000" }}>
                     {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
                   </span>
                 </>
@@ -803,7 +805,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             )}
             <div className={`flex flex-col gap-1 min-w-0 w-full max-w-[280px] sm:max-w-none ${!isNativeIOSApp() ? 'mt-5' : 'mt-3'}`}>
               <span
-                className={`text-base sm:text-lg lg:text-xl font-semibold crisp-hero-text ${!isOwnProfile ? "!text-black" : "text-orange-600 dark:text-orange-400"}`}
+                className={`text-base sm:text-lg lg:text-xl font-semibold crisp-hero-text ${!isOwnProfile ? "!text-black" : "text-orange-600"}`}
               >
                 Nearby Local
               </span>
@@ -811,7 +813,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               {hasValidTravelDestination && (
                 <>
                   <span
-                    className={`text-base sm:text-lg lg:text-sm font-semibold mt-1 crisp-hero-text ${!isOwnProfile ? "!text-black" : "text-blue-600 dark:text-blue-400"}`}
+                    className={`text-base sm:text-lg lg:text-sm font-semibold mt-1 crisp-hero-text ${!isOwnProfile ? "!text-black" : "text-blue-600"}`}
                   >
                     Nearby Traveler
                   </span>
@@ -885,7 +887,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     <div className="flex items-center gap-2 flex-wrap">
                       <div className="flex items-center gap-2.5 shrink-0 w-fit max-w-full">
                         <div className="lg:inline-flex lg:items-center lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm">
-                          <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all !text-black crisp-hero-text">
+                          <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all !text-black crisp-hero-text" style={{ color: "#000000" }}>
                             @{user?.username}
                           </h1>
                         </div>

@@ -202,7 +202,7 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 30 * 1000, // 30 seconds - fast refresh for profile updates
+      staleTime: 60 * 1000, // 1 minute - avoid refetching on every navigation
       gcTime: 5 * 60 * 1000, // 5 minutes cache time
       retry: (failureCount, error: any) => {
         // Don't retry on 4xx errors except 429 (rate limit)

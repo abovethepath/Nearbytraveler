@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle, Star, Sparkles, ChevronDown, MessageCircle, History, Link2 } from "lucide-react";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { useAuth } from "@/App";
 
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
 import { getMetroContext } from "@shared/metro-areas";
@@ -87,13 +88,35 @@ export default function Events() {
     };
   }, [showCreateEvent]);
 
-  // Get current user from localStorage
-  const currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
+  // Auth is cookie/session based; use AuthContext user (not localStorage).
+  const { user: authedUser } = useAuth();
+  const currentUser = authedUser;
+
+  const resolveMetroMainFromMetropolitanArea = (metro: any): string => {
+    const raw = String(metro || "").trim();
+    if (!raw) return "";
+    const map: Record<string, string> = {
+      "Los Angeles Metro": "Los Angeles",
+      "New York Metro": "New York",
+      "Chicago Metro": "Chicago",
+      "San Francisco Bay Area": "San Francisco",
+    };
+    if (map[raw]) return map[raw];
+    // Best-effort normalization
+    if (/\\bmetro\\b/i.test(raw)) return raw.replace(/\\s*metro\\s*$/i, "").trim();
+    if (/bay\\s*area/i.test(raw) && /san\\s*francisco/i.test(raw)) return "San Francisco";
+    return raw;
+  };
+
+  const hometownFallback =
+    (currentUser as any)?.hometownCity ||
+    resolveMetroMainFromMetropolitanArea((currentUser as any)?.metropolitanArea ?? (currentUser as any)?.metropolitan_area) ||
+    "";
 
   // Get user data from API
   const { data: apiUser } = useQuery({
-    queryKey: [`/api/users/${currentUser?.id || 1}`],
-    staleTime: 30000, // Cache for 30 seconds to prevent constant refetching
+    queryKey: currentUser?.id ? [`/api/users/${currentUser.id}`] : ["__no_user__"],
+    staleTime: 60000, // Cache for 1 minute to prevent constant refetching
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -136,7 +159,8 @@ export default function Events() {
   const getCitiesToQuery = (): string[] => {
     if (selectedLocation === "custom") return customCity ? [customCity] : [];
     if (selectedLocation === "hometown") {
-      const hometown = user?.hometownCity || "Boston";
+      const hometown = user?.hometownCity || hometownFallback;
+      if (!hometown) return [];
       const currentDestination = getCurrentTravelDestination();
       if (currentDestination) {
         const travelCity = currentDestination.split(',')[0].trim();
@@ -160,7 +184,8 @@ export default function Events() {
       return [currentDestination.split(',')[0].trim()];
     }
 
-    return [user?.hometownCity || "Boston"];
+    const hometown = user?.hometownCity || hometownFallback;
+    return hometown ? [hometown] : [];
   };
 
   const citiesToQueryRaw = getCitiesToQuery();
@@ -183,7 +208,11 @@ export default function Events() {
   const effectiveCitiesToQuery: string[] = [
     ...new Set(rawForQuery.map((c) => getMetroContext(c).queryCity).filter(Boolean)),
   ];
-  const cityToQuery = effectiveCitiesToQuery[0] || (citiesToQueryRaw[0] ? getMetroContext(citiesToQueryRaw[0]).queryCity : "") || ""; // Metro for empty state copy
+  const cityToQuery =
+    effectiveCitiesToQuery[0] ||
+    (citiesToQueryRaw[0] ? getMetroContext(citiesToQueryRaw[0]).queryCity : "") ||
+    (hometownFallback ? getMetroContext(hometownFallback).queryCity : "") ||
+    ""; // Metro for empty state copy
 
   // Fetch events based on selected city/cities with optimized loading
   // When traveling and viewing hometown: fetches from BOTH travel destination AND hometown (or filtered by pill)
@@ -237,7 +266,7 @@ export default function Events() {
       return data;
     },
     enabled: !!currentUser, // Always fetch when user is logged in to show user events
-    staleTime: 30000,
+    staleTime: 60000,
   });
 
   // Optimized participants fetch - only fetch for visible events and cache results
@@ -651,48 +680,48 @@ export default function Events() {
         <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div 
             onClick={() => setShowCreateEvent(true)}
-            className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-6 shadow-lg cursor-pointer hover:from-blue-700 hover:to-indigo-800 transition-all"
+            className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 shadow-lg cursor-pointer transition-all border border-white/10 hover:border-white/20 hover:from-gray-900 hover:to-gray-700"
             data-testid="create-event-main-cta"
           >
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
+              <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
                 <Plus className="w-8 h-8 text-white" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-white">Create An Event</h2>
-                <p className="text-blue-100 text-sm">Organize a gathering in your city</p>
+                <p className="text-gray-300 text-sm">Organize a gathering in your city</p>
               </div>
             </div>
           </div>
           
           <div 
             onClick={() => setLocation('/create-event?ai=true')}
-            className="bg-gradient-to-r from-orange-500 to-amber-600 rounded-xl p-6 shadow-lg cursor-pointer hover:from-orange-600 hover:to-amber-700 transition-all"
+            className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 shadow-lg cursor-pointer transition-all border border-white/10 hover:border-white/20 hover:from-gray-900 hover:to-gray-700"
             data-testid="ai-create-event-cta"
           >
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
+              <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
                 <Sparkles className="w-7 h-7 text-white" />
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white">AI Quick Create</h2>
-                <p className="text-orange-100 text-sm">Describe your event, AI fills the form</p>
+                <p className="text-gray-300 text-sm">Describe your event, AI fills the form</p>
               </div>
             </div>
           </div>
           
           <div 
             onClick={() => setLocation('/create-event?import=true')}
-            className="bg-white rounded-xl p-6 shadow-lg cursor-pointer hover:bg-gray-50 transition-all border border-gray-200 dark:bg-gradient-to-r dark:from-gray-700 dark:to-gray-800 dark:hover:from-gray-800 dark:hover:to-gray-900 dark:border-gray-600"
+            className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 shadow-lg cursor-pointer transition-all border border-white/10 hover:border-white/20 hover:from-gray-900 hover:to-gray-700"
             data-testid="import-event-cta"
           >
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center dark:bg-white/10">
-                <Link2 className="w-7 h-7 text-gray-700 dark:text-gray-300" />
+              <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
+                <Link2 className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Link External Event</h2>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Add a Meetup or Couchsurfing URL</p>
+                <h2 className="text-lg font-bold text-white">Link External Event</h2>
+                <p className="text-gray-300 text-sm">Add a Meetup or Couchsurfing URL</p>
               </div>
             </div>
           </div>
@@ -708,9 +737,11 @@ export default function Events() {
                 <SelectValue placeholder="Select city to browse events" />
               </SelectTrigger>
               <SelectContent>
-                {currentUser?.hometownCity && (
+                {(user?.hometownCity || hometownFallback) && (
                   <SelectItem value="hometown">
-                    {getMetroContext(currentUser.hometownCity).displayName || currentUser.hometownCity}{currentUser.hometownState ? `, ${currentUser.hometownState}` : ''}{currentUser.hometownCountry ? `, ${currentUser.hometownCountry}` : ''}
+                    {getMetroContext(user?.hometownCity || hometownFallback).displayName || (user?.hometownCity || hometownFallback)}
+                    {user?.hometownState ? `, ${user.hometownState}` : ''}
+                    {user?.hometownCountry ? `, ${user.hometownCountry}` : ''}
                   </SelectItem>
                 )}
                 {userTravelPlans.length > 0 && (
@@ -1107,7 +1138,7 @@ export default function Events() {
                   <div className="text-5xl mb-4">🎉</div>
                   <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
                     {upcomingEvents.length === 0 
-                      ? `Be the first to host an event in ${cityToQuery}!`
+                      ? `Be the first to host an event in ${cityToQuery || "your city"}!`
                       : "No events match your search"
                     }
                   </h3>
@@ -1395,7 +1426,7 @@ export default function Events() {
           <div className="space-y-6">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                Local Meetups in {cityToQuery}
+                Local Meetups in {cityToQuery || "your area"}
               </h2>
               <p className="text-gray-600 dark:text-gray-300">
                 Discover meetups and community events happening near you

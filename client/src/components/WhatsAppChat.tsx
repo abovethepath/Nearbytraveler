@@ -97,6 +97,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [isWsConnected, setIsWsConnected] = useState(false);
   const [hasConnectedBefore, setHasConnectedBefore] = useState(false);
   const [messagesLoaded, setMessagesLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [swipingMessageId, setSwipingMessageId] = useState<number | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSendingPhoto, setIsSendingPhoto] = useState(false);
@@ -107,6 +108,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const loadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const prevMessageCountRef = useRef<number>(0);
@@ -541,6 +543,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         }
       } else {
         console.warn('⚠️ WhatsApp Chat: HTTP fallback failed with status:', response.status);
+        if (chatType !== 'dm') {
+          setLoadError((prev) => prev || `Couldn't load this chat (HTTP ${response.status}).`);
+        }
         if (chatType === 'dm') {
           // DM-specific resilience: allow user to type/send even if history fetch fails
           setMessagesLoaded(true);
@@ -548,6 +553,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       }
     } catch (error) {
       console.error('❌ WhatsApp Chat: HTTP fallback error:', error);
+      if (chatType !== 'dm') {
+        setLoadError((prev) => prev || "Couldn't load this chat. Please try again.");
+      }
       if (chatType === 'dm') {
         // DM-specific resilience: allow user to type/send even if history fetch fails
         setMessagesLoaded(true);
@@ -788,6 +796,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     return parts[0] || 'User';
   };
 
+  const wsChatType = chatType === "chatroom" ? "city" : chatType;
+
   // Initialize WebSocket connection with auto-reconnect
   useEffect(() => {
     if (!currentUserId || !chatId) return;
@@ -795,6 +805,13 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     // Reset messages state when chatId changes
     setMessages([]);
     setMessagesLoaded(false);
+    setLoadError(null);
+
+    // Never spin forever: after 5s, show an error instead of endless "Loading..."
+    if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
+    loadTimeoutRef.current = setTimeout(() => {
+      setLoadError((prev) => prev || "This chat is taking longer than expected to load. Please try again.");
+    }, 5000);
     
     // Immediately fetch messages via HTTP for fast initial display
     // WebSocket will update with real-time messages once connected
@@ -956,9 +973,15 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           // DM-specific resilience: allow user to type/send even if history fetch fails
           console.warn('⚠️ WhatsApp Chat: Immediate HTTP load failed for DM with status:', response.status);
           setMessagesLoaded(true);
+        } else {
+          console.warn('⚠️ WhatsApp Chat: Immediate HTTP load failed with status:', response.status);
+          setLoadError((prev) => prev || `Couldn't load this chat (HTTP ${response.status}).`);
         }
       } catch (error) {
         console.warn('⚠️ WhatsApp Chat: Immediate HTTP load failed, will use WebSocket:', error);
+        if (chatType !== 'dm') {
+          setLoadError((prev) => prev || "Couldn't load this chat. Please try again.");
+        }
         if (chatType === 'dm') {
           // DM-specific resilience: allow user to type/send even if history fetch fails
           setMessagesLoaded(true);
@@ -992,7 +1015,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         }));
       };
 
-      ws.onmessage = (event) => {
+        ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log('📨 WhatsApp Chat: Received WebSocket message:', data.type, 'for chatId:', chatId);
 
@@ -1004,7 +1027,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             // Now request message history
             const historyRequest = {
               type: 'sync:history',
-              chatType,
+                chatType: wsChatType,
               chatroomId: chatId,
               payload: {}
             };
@@ -1026,22 +1049,19 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               clearTimeout(syncTimeoutRef.current);
               syncTimeoutRef.current = null;
             }
-            if (data.payload?.messages) {
-              setMessages(data.payload.messages.reverse());
-              setMessagesLoaded(true);
-            } else {
-              console.warn('⚠️ WhatsApp Chat: No messages array in sync:response payload');
-              if (chatType === 'dm') {
-                // DM-specific resilience: clear loading even if payload is empty/unexpected
-                setMessagesLoaded(true);
+              if (Array.isArray(data.payload?.messages)) {
+                setMessages(data.payload.messages.reverse());
+              } else {
+                console.warn('⚠️ WhatsApp Chat: No messages array in sync:response payload');
               }
-            }
+              // Even if empty/unexpected, we did receive a sync response: stop "Loading..." state.
+              setMessagesLoaded(true);
             scrollToBottom();
             break;
 
           case 'message:new':
             console.log('💬 WhatsApp Chat: New message received, chatType:', data.chatType, 'chatroomId:', data.chatroomId, 'expected chatType:', chatType, 'expected chatId:', chatId);
-            if (data.chatType === chatType) {
+              if (data.chatType === wsChatType) {
               if (chatType === 'dm') {
                 const payload = data.payload || {};
                 const msgSenderId =
@@ -1150,9 +1170,20 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       isCleaningUp = true;
       if (reconnectTimeout) clearTimeout(reconnectTimeout);
       if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+      if (loadTimeoutRef.current) clearTimeout(loadTimeoutRef.current);
       if (ws) ws.close();
     };
   }, [currentUserId, chatId]);
+
+  // Clear the timeout once messages arrive or we show an error.
+  useEffect(() => {
+    if (messagesLoaded || !!loadError) {
+      if (loadTimeoutRef.current) {
+        clearTimeout(loadTimeoutRef.current);
+        loadTimeoutRef.current = null;
+      }
+    }
+  }, [messagesLoaded, loadError]);
 
   const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
     setTimeout(() => {
@@ -2324,9 +2355,25 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         {/* Input box - fixed at bottom; native app: no bottom nav; mobile web: pb for bottom nav + safe area; desktop: pb-4 mb-4 for lift from edge */}
         <div className={`px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-4' : 'pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))] md:pb-4 md:mb-4 lg:pb-6 lg:mb-4'}`}>
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
-          {!messagesLoaded && !isWsConnected && (
-            <div className="text-center text-yellow-400 text-xs mb-2 animate-pulse">
-              Loading...
+          {!messagesLoaded && !isWsConnected && !loadError && (
+            <div className="text-center text-yellow-400 text-xs mb-2 animate-pulse">Loading...</div>
+          )}
+          {!messagesLoaded && !isWsConnected && !!loadError && (
+            <div className="mb-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-200 flex items-center justify-between gap-3">
+              <span className="min-w-0 truncate">{loadError}</span>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="h-7 px-2 text-xs border-red-500/40 text-red-100 hover:bg-red-500/10"
+                onClick={() => {
+                  setLoadError(null);
+                  fetchMessagesViaHttp();
+                }}
+                data-testid="button-chat-retry-load"
+              >
+                Retry
+              </Button>
             </div>
           )}
           <div className="flex items-end gap-2">

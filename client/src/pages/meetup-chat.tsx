@@ -4,6 +4,8 @@ import { isNativeIOSApp } from "@/lib/nativeApp";
 import WhatsAppChat from "@/components/WhatsAppChat";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { useAuth } from "@/App";
+import { ChatPageSkeleton } from "@/components/ui/chat-page-skeleton";
 
 interface Meetup {
   id: number;
@@ -18,8 +20,7 @@ export default function MeetupChat() {
   const [, setLocation] = useLocation();
   const meetupId = params?.meetupId ? parseInt(params.meetupId) : null;
 
-  let user: any = {};
-  try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { }
+  const { user, authLoading } = useAuth();
 
   const { data: meetup, isLoading, isError, error } = useQuery<Meetup>({
     queryKey: [`/api/quick-meets/${meetupId}`],
@@ -41,7 +42,7 @@ export default function MeetupChat() {
   }
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading...</div>;
+    return <ChatPageSkeleton variant="dark" />;
   }
 
   if (isError || !meetup) {
@@ -65,7 +66,7 @@ export default function MeetupChat() {
       meetupId={meetupId}
       title={meetup.title}
       subtitle={`${meetup.participantCount} participants`}
-      currentUserId={user.id}
+      currentUserId={user?.id}
     />
   );
 }

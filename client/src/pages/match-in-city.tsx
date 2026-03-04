@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/App";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 import { METRO_AREAS } from "@shared/constants";
 import { getMetroAreaName, getMetroCities } from "@shared/metro-areas";
 import { SUB_INTEREST_CATEGORIES } from "@shared/base-options";
@@ -1958,9 +1959,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
           {/* Cities Grid - RESTORED BEAUTIFUL DESIGN */}
           {isCitiesLoading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-400 dark:border-white mb-4"></div>
-              <p className="text-gray-700 dark:text-white text-lg">Loading cities...</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
+                  <Skeleton className="h-48 w-full rounded-none" />
+                  <div className="p-6 space-y-2">
+                    <Skeleton className="h-5 w-2/3" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-8 w-28 rounded-full" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filteredCities.length === 0 && citySearchTerm ? (
             <div className="flex flex-col items-center justify-center py-20">
@@ -2970,9 +2979,19 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       </div>
                       
                       {realEventsLoading ? (
-                        <div className="text-center py-8">
-                          <div className="animate-spin w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-2"></div>
-                          <p className="text-gray-500 dark:text-gray-400">Loading events...</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} className="rounded-xl p-4 border-2 border-purple-200 dark:border-purple-700 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30">
+                              <div className="flex items-start gap-3">
+                                <Skeleton className="w-16 h-16 rounded-lg flex-shrink-0" />
+                                <div className="min-w-0 flex-1 space-y-2">
+                                  <Skeleton className="h-4 w-3/4" />
+                                  <Skeleton className="h-3 w-2/3" />
+                                  <Skeleton className="h-3 w-1/2" />
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       ) : (
                         <>

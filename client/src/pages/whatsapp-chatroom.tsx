@@ -1,12 +1,13 @@
-import { useParams, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import WhatsAppChat from "@/components/WhatsAppChat";
-import { authStorage } from "@/lib/auth";
-import { getApiBaseUrl, apiRequest, queryClient } from "@/lib/queryClient";
+import { getApiBaseUrl, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { ArrowLeft, MessageCircle, Users, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/App";
+import { ChatPageSkeleton } from "@/components/ui/chat-page-skeleton";
 
 interface ChatroomDetails {
   id: number;
@@ -18,49 +19,51 @@ interface ChatroomDetails {
 }
 
 export default function WhatsAppChatroom() {
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
   const { toast } = useToast();
   const [hasJoined, setHasJoined] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<number | undefined>(() => authStorage.getUser()?.id);
+  const [loadTimedOut, setLoadTimedOut] = useState(false);
+  const { user, authLoading } = useAuth();
+  const currentUserId = user?.id;
 
-  const pathParts = typeof window !== 'undefined' ? window.location.pathname.split('/') : [];
-  const chatroomId = parseInt(pathParts[2] || '0', 10);
-
-  // Re-check user so chat opens even if auth was injected after mount (e.g. native app)
-  useEffect(() => {
-    const u = authStorage.getUser();
-    if (u?.id) setCurrentUserId(u.id);
-  }, []);
-  useEffect(() => {
-    if (currentUserId) return;
-    const t1 = setTimeout(() => {
-      const u = authStorage.getUser();
-      if (u?.id) setCurrentUserId(u.id);
-    }, 300);
-    const t2 = setTimeout(() => {
-      const u = authStorage.getUser();
-      if (u?.id) setCurrentUserId(u.id);
-    }, 1200);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [currentUserId]);
+  const pathParts = String(location || "").split("/");
+  const chatroomId = parseInt(pathParts[2] || "0", 10);
 
   const isValidChatroomId = chatroomId > 0 && !isNaN(chatroomId);
 
-  const { data: chatroom, isLoading } = useQuery<ChatroomDetails>({
+  useEffect(() => {
+    setLoadTimedOut(false);
+    if (!isValidChatroomId) return;
+    const t = setTimeout(() => setLoadTimedOut(true), 5000);
+    return () => clearTimeout(t);
+  }, [isValidChatroomId, chatroomId, currentUserId]);
+
+  const { data: chatroom, isLoading, isError: chatroomIsError, error: chatroomError, refetch: refetchChatroom } = useQuery<ChatroomDetails>({
     queryKey: [`/api/chatrooms/${chatroomId}`],
     enabled: isValidChatroomId && !!currentUserId,
+    queryFn: async () => {
+      const headers: Record<string, string> = {};
+      if (currentUserId) headers["x-user-id"] = String(currentUserId);
+      if (user) headers["x-user-data"] = JSON.stringify({ id: user.id, username: user.username, email: (user as any).email, name: user.name });
+      const res = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatroomId}`, { headers, credentials: "include" });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`${res.status}: ${text || res.statusText}`);
+      }
+      return res.json();
+    },
   });
 
-  const { data: membershipCheck, isLoading: checkingMembership } = useQuery<{ isMember: boolean }>({
+  const { data: membershipCheck, isLoading: checkingMembership, isError: membershipIsError, error: membershipError, refetch: refetchMembership } = useQuery<{ isMember: boolean }>({
     queryKey: [`/api/chatrooms/${chatroomId}/members`, 'membership-check', currentUserId],
     enabled: isValidChatroomId && !!currentUserId && !hasJoined,
     queryFn: async () => {
       try {
-        const u = authStorage.getUser();
         const headers: Record<string, string> = { 'x-user-id': currentUserId?.toString() || '' };
-        if (u) headers['x-user-data'] = JSON.stringify({ id: u.id, username: u.username, email: u.email, name: u.name });
+        if (user) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: (user as any).email, name: user.name });
         const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatroomId}/members`, {
-          headers
+          headers,
+          credentials: "include",
         });
         if (response.status === 403) {
           return { isMember: false };
@@ -105,8 +108,40 @@ export default function WhatsAppChatroom() {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Redirecting...</div>;
   }
 
-  if (isLoading || checkingMembership || !chatroom || !currentUserId) {
-    return <div className="flex items-center justify-center h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">Loading...</div>;
+  const isStillLoading = isLoading || checkingMembership || !chatroom || !currentUserId || (authLoading && !currentUserId);
+  const hasQueryError = chatroomIsError || membershipIsError;
+
+  if (isStillLoading) {
+    if (loadTimedOut || hasQueryError) {
+      const msg =
+        (chatroomError instanceof Error ? chatroomError.message : "") ||
+        (membershipError instanceof Error ? membershipError.message : "") ||
+        "This chat is taking longer than expected to load.";
+      return (
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4 px-6 text-center">
+          <p className="text-lg font-semibold">Couldn't load this chatroom</p>
+          <p className="text-sm text-gray-300 break-words">{msg}</p>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setLoadTimedOut(false);
+                refetchChatroom();
+                refetchMembership();
+              }}
+              data-testid="button-retry-chatroom-load"
+            >
+              Retry
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/chatrooms')} data-testid="button-back-to-chatrooms-timeout">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+          </div>
+        </div>
+      );
+    }
+    return <ChatPageSkeleton variant="light" />;
   }
 
   const isMember = hasJoined || membershipCheck?.isMember;

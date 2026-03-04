@@ -9,6 +9,7 @@ import { isNativeIOSApp } from '@/lib/nativeApp';
 import { Users, MapPin, Calendar, Check, X, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { authStorage } from '@/lib/auth';
+import { FullPageSkeleton } from '@/components/FullPageSkeleton';
 
 export default function JoinTrip() {
   const [, paramsJoinTrip] = useRoute<{ token: string }>('/join-trip/:token');
@@ -92,11 +93,7 @@ export default function JoinTrip() {
   }, [token, currentUser?.id, isLoading, error, inviteData?.valid, inviteData?.status]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
-      </div>
-    );
+    return <FullPageSkeleton />;
   }
 
   const inviteStatus = inviteData?.status as string | undefined;

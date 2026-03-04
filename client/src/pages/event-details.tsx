@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,11 +15,125 @@ import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { InstagramShare } from "@/components/InstagramShare";
 import { EventShareModal } from "@/components/EventShareModal";
 import { useAuth } from "@/App";
+import { FullPageSkeleton } from "@/components/FullPageSkeleton";
 
 import { useLocation } from "wouter";
 
 interface EventDetailsProps {
   eventId: string;
+}
+
+function normalizeLocationString(raw: string): string {
+  const tokens = String(raw || "")
+    .split(/[,\\n]/g)
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const t of tokens) {
+    const key = t.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(t);
+  }
+  return out.join(", ");
+}
+
+function isSameCalendarDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+function formatEventDateRange(startRaw: Date | string, endRaw?: Date | string | null): string {
+  const start = new Date(startRaw);
+  const end = endRaw ? new Date(endRaw) : null;
+
+  const dateShort = (d: Date) => d.toLocaleDateString([], { month: "short", day: "numeric" });
+  const dateLong = (d: Date) => d.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
+  const time = (d: Date) => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+
+  if (!end || isNaN(end.getTime()) || isSameCalendarDay(start, end)) {
+    // Single-day event (or no end): show one date, time range if available.
+    const datePart = dateLong(start);
+    const startTime = time(start);
+    const endTime = end && !isNaN(end.getTime()) ? time(end) : null;
+    return endTime ? `${datePart} · ${startTime} - ${endTime}` : `${datePart} · ${startTime}`;
+  }
+
+  // Multi-day event: Mar 27 - Mar 29, 2026 · 7:00 PM - 11:55 PM
+  const sameYear = start.getFullYear() === end.getFullYear();
+  const datePart = sameYear
+    ? `${dateShort(start)} - ${dateLong(end)}`
+    : `${dateLong(start)} - ${dateLong(end)}`;
+  return `${datePart} · ${time(start)} - ${time(end)}`;
+}
+
+function renderFormattedDescription(text: string) {
+  const lines = String(text || "")
+    .replace(/\\r\\n/g, "\\n")
+    .split("\\n");
+
+  const blocks: Array<
+    { type: "p"; text: string } | { type: "ul"; items: string[] }
+  > = [];
+
+  let currentList: string[] = [];
+  let currentParagraph: string[] = [];
+
+  const flushParagraph = () => {
+    const t = currentParagraph.join(" ").trim();
+    if (t) blocks.push({ type: "p", text: t });
+    currentParagraph = [];
+  };
+  const flushList = () => {
+    const items = currentList.map((s) => s.trim()).filter(Boolean);
+    if (items.length) blocks.push({ type: "ul", items });
+    currentList = [];
+  };
+
+  const isBulletLine = (s: string) => /^\\s*(?:•|-|\\*)\\s+/.test(s);
+
+  for (const raw of lines) {
+    const s = raw.trim();
+    if (!s) {
+      flushList();
+      flushParagraph();
+      continue;
+    }
+    if (isBulletLine(s)) {
+      flushParagraph();
+      currentList.push(s.replace(/^\\s*(?:•|-|\\*)\\s+/, ""));
+      continue;
+    }
+    flushList();
+    currentParagraph.push(s);
+  }
+  flushList();
+  flushParagraph();
+
+  return (
+    <div className="space-y-3">
+      {blocks.map((b, i) =>
+        b.type === "p" ? (
+          <p key={`p-${i}`} className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            {b.text}
+          </p>
+        ) : (
+          <ul key={`ul-${i}`} className="list-disc pl-5 space-y-1 text-gray-700 dark:text-gray-300">
+            {b.items.map((it, j) => (
+              <li key={`li-${i}-${j}`} className="leading-relaxed">
+                {it}
+              </li>
+            ))}
+          </ul>
+        ),
+      )}
+    </div>
+  );
 }
 
 export default function EventDetails({ eventId }: EventDetailsProps) {
@@ -28,7 +142,6 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const queryClient = useQueryClient();
   const [copied, setCopied] = useState(false);
   const [viewAsGuest, setViewAsGuest] = useState(false);
-  const [showFullNames, setShowFullNames] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   
   // Auth is cookie/session based (source of truth is AuthContext, not localStorage).
@@ -188,36 +301,6 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
     },
   });
 
-  if (eventLoading) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-        </div>
-      </div>
-    );
-  }
-
-  if (eventError || !event) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="mb-4">
-          <UniversalBackButton 
-            destination="/events"
-            label="Back"
-            className="bg-transparent hover:bg-gray-100"
-          />
-        </div>
-        
-        <div className="text-center py-12">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Event Not Found</h1>
-          <p className="text-gray-600 mb-6">The event you're looking for doesn't exist or has been removed.</p>
-          <Button onClick={() => setLocation("/events")}>Browse Events</Button>
-        </div>
-      </div>
-    );
-  }
-
   const currentParticipant = participants.find(p => p.userId === currentUser?.id);
   const isParticipant = !!currentParticipant;
   const participantStatus = currentParticipant?.status;
@@ -237,6 +320,35 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   // Organizer is ALWAYS going - add 1 if they're not already in the going list
   const goingCount = goingParticipants.length + (organizerIsInGoingList ? 0 : 1);
   const interestedCount = interestedParticipants.length;
+
+  const locationDisplay = useMemo(() => {
+    const primary = normalizeLocationString(
+      [
+        event.city,
+        event.state && event.state !== event.city ? event.state : null,
+        event.country,
+      ]
+        .filter(Boolean)
+        .join(", "),
+    );
+    const full = normalizeLocationString(
+      [
+        event.venueName,
+        event.street || event.location,
+        event.city,
+        event.state && event.state !== event.city ? event.state : null,
+        event.country,
+        event.zipcode,
+      ]
+        .filter(Boolean)
+        .join(", "),
+    );
+    return {
+      primary: primary || normalizeLocationString(event.location || ""),
+      full,
+      secondary: full && full !== primary ? full : "",
+    };
+  }, [event]);
 
   // Get event URL for sharing
   const getEventUrl = () => `${window.location.origin}/events/${eventId}`;
@@ -313,11 +425,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
 
   // Handle loading and error states
   if (eventLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" aria-label="Loading" />
-      </div>
-    );
+    return <FullPageSkeleton />;
   }
 
   if (eventError || !event) {
@@ -455,6 +563,88 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Sidebar - Going List on LEFT like Couchsurfing */}
         <div className="order-2 lg:order-1 space-y-6">
+          {/* RSVP actions (keep directly above attendees list) */}
+          {!!currentUser?.id && !isOrganizer && (
+            <Card className="border border-gray-200 shadow-lg bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Join this event</CardTitle>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Connect with other attendees and get event updates</p>
+              </CardHeader>
+              <CardContent>
+                {participantStatus ? (
+                  <div className="space-y-3">
+                    <Badge className="w-full justify-center py-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                      ✓ {participantStatus === 'going' ? 'Going' : 'Interested'}
+                    </Badge>
+                    {participantStatus === 'interested' && (
+                      <Button
+                        className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0"
+                        onClick={() => joinEventMutation.mutate('going')}
+                        disabled={joinEventMutation.isPending}
+                        data-testid="button-change-status"
+                      >
+                        {joinEventMutation.isPending ? "..." : "Change to Going"}
+                      </Button>
+                    )}
+                    <button
+                      onClick={() => leaveEventMutation.mutate()}
+                      className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white underline w-full"
+                      disabled={leaveEventMutation.isPending}
+                      data-testid="button-leave-event"
+                    >
+                      {leaveEventMutation.isPending ? "Leaving..." : "No longer interested"}
+                    </button>
+                    <Button
+                      className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600"
+                      onClick={() => setLocation(`/event-chat/${eventId}`)}
+                      data-testid="button-open-chat"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                      Go to chat
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button
+                      className="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0"
+                      onClick={() => joinEventMutation.mutate('going')}
+                      disabled={joinEventMutation.isPending}
+                      data-testid="button-going"
+                    >
+                      {joinEventMutation.isPending ? "..." : "Join?"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => joinEventMutation.mutate('interested')}
+                      disabled={joinEventMutation.isPending}
+                      data-testid="button-interested"
+                    >
+                      {joinEventMutation.isPending ? "..." : "Interested"}
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Login prompt for logged-out visitors only */}
+          {!authLoading && !currentUser?.id && (
+            <Card className="border border-gray-200 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700">
+              <CardContent className="p-4 text-center">
+                <p className="font-medium mb-2">Want to join this event?</p>
+                <Button
+                  className="w-full bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white"
+                  onClick={() => setLocation('/auth')}
+                >
+                  Log in to RSVP
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Participants - Couchsurfing Style */}
           {(() => {
             // Use the already-calculated counts that include organizer
@@ -471,12 +661,9 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                       </span>
                     )}
                   </div>
-                  <button
-                    onClick={() => setShowFullNames(!showFullNames)}
-                    className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mt-1 underline"
-                  >
-                    {showFullNames ? "Username" : "Real name"}
-                  </button>
+                  <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    Attendees
+                  </div>
                 </CardHeader>
                 <CardContent className="pt-4">
                   <div className="space-y-4">
@@ -490,9 +677,15 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                       })
                       .slice(0, 15).map((participant) => {
                       const user = users.find(u => u.id === participant.userId);
-                      const userLocation = user?.hometownCity && user?.hometownState 
-                        ? `${user.hometownCity}, ${user.hometownState.length > 2 ? user.hometownState.substring(0, 2).toUpperCase() : user.hometownState}, ${user.hometownCountry === 'United States' ? 'USA' : user.hometownCountry || ''}`
-                        : user?.hometownCity || '';
+                      const cityLine = normalizeLocationString(
+                        [
+                          user?.hometownCity,
+                          user?.hometownState && user.hometownState !== user.hometownCity ? user.hometownState : null,
+                          user?.hometownCountry,
+                        ]
+                          .filter(Boolean)
+                          .join(", "),
+                      );
                       
                       return (
                         <div key={participant.id} className="flex items-start gap-3 pb-3 border-b border-gray-200 dark:border-gray-800 last:border-0 last:pb-0">
@@ -511,7 +704,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                                 onClick={() => setLocation(`/profile/${user?.id}`)}
                                 className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline text-left truncate"
                               >
-                                {showFullNames ? (user?.name || user?.username || 'Unknown') : (user?.username || user?.name || 'Unknown')}
+                                @{user?.username || 'unknown'}
                               </button>
                               {user?.id === event?.organizerId && event?.isOriginalOrganizer !== false && (
                                 <Badge variant="default" className="text-xs bg-orange-500 hover:bg-orange-600 shrink-0">
@@ -529,9 +722,9 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                                 </Badge>
                               )}
                             </div>
-                            {userLocation && (
+                            {cityLine && (
                               <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                {userLocation}
+                                {cityLine}
                               </p>
                             )}
                           </div>
@@ -551,59 +744,6 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
             );
           })()}
           
-          {/* Join This Event Card - only show if logged in and not organizer */}
-          {!!currentUser?.id && !isOrganizer && (
-            <Card className="border border-gray-200 shadow-lg bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Join this event</CardTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Connect with other attendees and get event updates</p>
-              </CardHeader>
-              <CardContent>
-                {participantStatus ? (
-                  <div className="space-y-3">
-                    <Badge className="w-full justify-center py-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      ✓ {participantStatus === 'going' ? 'Going' : 'Interested'}
-                    </Badge>
-                  </div>
-                ) : (
-                  <div className="flex gap-2">
-                    <Button 
-                      className="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0"
-                      onClick={() => joinEventMutation.mutate('going')}
-                      disabled={joinEventMutation.isPending}
-                      data-testid="button-going"
-                    >
-                      {joinEventMutation.isPending ? "..." : "Join?"}
-                    </Button>
-                    <Button 
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => joinEventMutation.mutate('interested')}
-                      disabled={joinEventMutation.isPending}
-                      data-testid="button-interested"
-                    >
-                      {joinEventMutation.isPending ? "..." : "Interested"}
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
-          
-          {/* Login prompt for non-logged in users */}
-          {!authLoading && !currentUser?.id && (
-            <Card className="border border-gray-200 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700">
-              <CardContent className="p-4 text-center">
-                <p className="font-medium mb-2">Want to join this event?</p>
-                <Button 
-                  className="w-full bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white"
-                  onClick={() => setLocation('/auth')}
-                >
-                  Log in to RSVP
-                </Button>
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         {/* Main Event Details - on RIGHT */}
@@ -623,18 +763,8 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                 <div className="flex items-center gap-3">
                   <Calendar className="w-5 h-5 text-travel-blue" />
                   <div>
-                    <p className="font-medium">{new Date(event.date).toLocaleDateString()}</p>
-                    <p className="text-sm text-gray-500">
-                      {new Date(event.date).toLocaleTimeString([], { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
-                      {event.endDate && (
-                        <span> - {new Date(event.endDate).toLocaleTimeString([], { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}</span>
-                      )}
+                    <p className="font-medium">
+                      {formatEventDateRange(event.date, event.endDate || null)}
                     </p>
                   </div>
                 </div>
@@ -642,17 +772,9 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                 <div className="flex items-center gap-3">
                   <MapPin className="w-5 h-5 text-travel-blue" />
                   <div>
-                    <p className="font-medium">{event.location}</p>
-                    {/* Only show additional address if it's different from location */}
-                    {(event.street || event.city || event.state || event.country || event.zipcode) && 
-                     `${event.street ? event.street + ', ' : ''}${event.city}${event.state ? ', ' + event.state : ''}${event.country ? ', ' + event.country : ''}${event.zipcode ? ' ' + event.zipcode : ''}` !== event.location && (
-                      <p className="text-sm text-gray-500">
-                        {event.street && `${event.street}, `}
-                        {event.city}
-                        {event.state && `, ${event.state}`}
-                        {event.country && `, ${event.country}`}
-                        {event.zipcode && ` ${event.zipcode}`}
-                      </p>
+                    <p className="font-medium">{locationDisplay.primary}</p>
+                    {locationDisplay.secondary && (
+                      <p className="text-sm text-gray-500">{locationDisplay.secondary}</p>
                     )}
                   </div>
                 </div>
@@ -722,7 +844,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
               {event.description && (
                 <div>
                   <h3 className="font-semibold mb-2 dark:text-white">About this event</h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{event.description}</p>
+                  {renderFormattedDescription(event.description)}
                 </div>
               )}
 
@@ -758,166 +880,6 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
           </Card>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Join/Leave Event */}
-          <Card>
-            <CardContent className="p-6">
-              {isOrganizer ? (
-                <div className="text-center space-y-3">
-                  <Badge variant="outline" className="mb-4">
-                    {isPrimaryOrganizer ? "Event Organizer" : "Co-Organizer"}
-                  </Badge>
-                  <p className="text-sm text-gray-600 mb-4">
-                    {isPrimaryOrganizer ? "You're organizing this event" : "You're co-organizing this event"}
-                  </p>
-                  
-                  {isParticipant ? (
-                    <>
-                      <Badge className="w-full justify-center py-2 mb-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                        ✓ Going ({isPrimaryOrganizer ? 'Organizer' : 'Co-Organizer'})
-                      </Badge>
-                    </>
-                  ) : (
-                    /* If organizer somehow isn't in participant list, show button to add them */
-                    <div className="mb-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-700">
-                      <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-2">You need to be in the attendee list</p>
-                      <Button 
-                        className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
-                        onClick={() => joinEventMutation.mutate('going')}
-                        disabled={joinEventMutation.isPending}
-                      >
-                        {joinEventMutation.isPending ? "Joining..." : "Join as Going"}
-                      </Button>
-                    </div>
-                  )}
-                  
-                  <Button 
-                    variant="outline" 
-                    className="w-full mb-3"
-                    onClick={() => setLocation(`/manage-event/${eventId}`)}
-                  >
-                    Manage Event
-                  </Button>
-                  
-                  {/* Open Chat Button for organizers */}
-                  <Button 
-                    className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600"
-                    onClick={() => setLocation(`/event-chat/${eventId}`)}
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                    Open Chat
-                  </Button>
-                  
-                  {/* Leave event option for organizers */}
-                  {isParticipant && (
-                    <button
-                      onClick={() => leaveEventMutation.mutate()}
-                      className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 underline mt-2"
-                      disabled={leaveEventMutation.isPending}
-                    >
-                      {leaveEventMutation.isPending ? "Leaving..." : "Leave event"}
-                    </button>
-                  )}
-                  
-                  {/* Preview how others see the join button */}
-                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <p className="text-xs text-gray-500 mb-2">Preview - How others see this event:</p>
-                    <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <h4 className="font-semibold text-sm mb-2">Join this event</h4>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
-                        Connect with other attendees and get event updates
-                      </p>
-                      <Button 
-                        className="w-full bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0"
-                        disabled
-                      >
-                        Join Event
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center">
-                  {isParticipant ? (
-                    <>
-                      {/* Current RSVP Status Button (like Plura - shows your current status) */}
-                      <Button 
-                        className={`w-full mb-2 ${
-                          participantStatus === 'going' 
-                            ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white' 
-                            : 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white'
-                        }`}
-                        disabled
-                        data-testid={`status-${participantStatus}`}
-                      >
-                        {participantStatus === 'going' ? 'Going' : 'Interested'}
-                      </Button>
-                      
-                      {/* Change Status Link - Only show "Change to Going" for interested users */}
-                      {participantStatus === 'interested' && (
-                        <button
-                          onClick={() => joinEventMutation.mutate('going')}
-                          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline mb-3 w-full"
-                          disabled={joinEventMutation.isPending}
-                          data-testid="button-change-status"
-                        >
-                          {joinEventMutation.isPending ? "Updating..." : "Change to Going"}
-                        </button>
-                      )}
-                      
-                      <button
-                        onClick={() => leaveEventMutation.mutate()}
-                        className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white underline mb-4 w-full"
-                        disabled={leaveEventMutation.isPending}
-                        data-testid="button-leave-event"
-                      >
-                        {leaveEventMutation.isPending ? "Leaving..." : "No longer interested"}
-                      </button>
-                      
-                      {/* Open Chat Button for participants */}
-                      <Button 
-                        className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600"
-                        onClick={() => setLocation(`/event-chat/${eventId}`)}
-                        data-testid="button-open-chat"
-                      >
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                        Go to chat
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      {/* Two side-by-side RSVP buttons (like Plura) */}
-                      <div className="flex gap-3">
-                        <Button 
-                          className="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0"
-                          onClick={() => joinEventMutation.mutate('going')}
-                          disabled={joinEventMutation.isPending}
-                          data-testid="button-going"
-                        >
-                          {joinEventMutation.isPending ? "..." : "Join?"}
-                        </Button>
-                        <Button 
-                          variant="outline"
-                          className="flex-1 border-2 border-white dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                          onClick={() => joinEventMutation.mutate('interested')}
-                          disabled={joinEventMutation.isPending}
-                          data-testid="button-interested"
-                        >
-                          {joinEventMutation.isPending ? "..." : "Interested"}
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
       </div>
       
       {event?.externalRsvpUrl && (

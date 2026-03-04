@@ -110,6 +110,54 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
 
   // Get current user data (check both keys - auth may use 'user' or 'travelconnect_user')
   const currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || localStorage.getItem('user') || '{}');
+
+  const resolveMetroMainFromMetropolitanArea = (metro: any): string => {
+    const raw = String(metro || "").trim();
+    if (!raw) return "";
+    const map: Record<string, string> = {
+      "Los Angeles Metro": "Los Angeles",
+      "New York Metro": "New York",
+      "Chicago Metro": "Chicago",
+      "San Francisco Bay Area": "San Francisco",
+    };
+    if (map[raw]) return map[raw];
+    if (/\bmetro\b/i.test(raw)) return raw.replace(/\s*metro\s*$/i, "").trim();
+    if (/bay\s*area/i.test(raw) && /san\s*francisco/i.test(raw)) return "San Francisco";
+    return raw;
+  };
+
+  const getUserLocationFromProfile = () => {
+    const now = new Date();
+    const hasActiveTrip =
+      !!currentUser?.isCurrentlyTraveling &&
+      !!(currentUser?.destinationCity || currentUser?.travelDestination) &&
+      (!currentUser?.travelEndDate || new Date(currentUser.travelEndDate) >= now) &&
+      (!currentUser?.travelStartDate || new Date(currentUser.travelStartDate) <= now);
+
+    if (hasActiveTrip) {
+      const city =
+        currentUser.destinationCity ||
+        String(currentUser.travelDestination || "").split(",")[0]?.trim() ||
+        "";
+      const state =
+        currentUser.destinationState ||
+        String(currentUser.travelDestination || "").split(",")[1]?.trim() ||
+        "";
+      const country =
+        currentUser.destinationCountry ||
+        String(currentUser.travelDestination || "").split(",")[2]?.trim() ||
+        "United States";
+      return { city, state, country, label: "your travel destination" };
+    }
+
+    const city =
+      currentUser.hometownCity ||
+      resolveMetroMainFromMetropolitanArea(currentUser?.metropolitanArea ?? currentUser?.metropolitan_area) ||
+      "";
+    const state = currentUser.hometownState || "";
+    const country = currentUser.hometownCountry || "United States";
+    return { city, state, country, label: "your hometown" };
+  };
   
   // Check for event template in localStorage
   const loadEventTemplate = () => {
@@ -703,7 +751,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
             <div className="space-y-3">
               <button
                 type="button"
-                className="w-full rounded-xl border border-purple-200 dark:border-purple-700 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white p-4 text-left shadow-sm hover:shadow-md transition-all"
+                className="w-full rounded-xl border border-white/10 bg-gradient-to-br from-gray-900 to-gray-800 hover:from-gray-900 hover:to-gray-700 hover:border-white/20 text-white p-4 text-left shadow-sm hover:shadow-md transition-all"
                 onClick={() => setOpenQuickPanel((prev) => (prev === "import" ? null : "import"))}
                 aria-expanded={openQuickPanel === "import"}
                 aria-controls="quick-import-panel"
@@ -980,7 +1028,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
 
               <button
                 type="button"
-                className="w-full rounded-xl border border-orange-200 dark:border-orange-700 bg-gradient-to-r from-[#FF6B35] to-orange-500 hover:from-[#ff5a1f] hover:to-orange-600 text-white p-4 text-left shadow-sm hover:shadow-md transition-all"
+                className="w-full rounded-xl border border-white/10 bg-gradient-to-br from-gray-900 to-gray-800 hover:from-gray-900 hover:to-gray-700 hover:border-white/20 text-white p-4 text-left shadow-sm hover:shadow-md transition-all"
                 onClick={() => setOpenQuickPanel((prev) => (prev === "ai" ? null : "ai"))}
                 aria-expanded={openQuickPanel === "ai"}
                 aria-controls="quick-ai-panel"
@@ -1140,6 +1188,53 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                       🏠 Use my hometown
                     </Button>
                   )}
+                </div>
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-7 px-2 text-blue-600 border-blue-200 hover:bg-blue-50 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900/20"
+                    onClick={() => {
+                      const loc = getUserLocationFromProfile();
+                      if (!loc.city) {
+                        toast({
+                          title: "Location not available",
+                          description: "Please set your hometown or travel destination in your profile.",
+                          variant: "destructive",
+                        });
+                        return;
+                      }
+
+                      setValue("city", loc.city, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+                      setValue("state", loc.state || "", { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+                      setValue("country", loc.country || "United States", { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+                      setValue(
+                        "location",
+                        `${loc.city}${loc.state ? `, ${loc.state}` : ""}`,
+                        { shouldDirty: true, shouldTouch: true, shouldValidate: true }
+                      );
+
+                      setSelectedCountry(loc.country || "United States");
+                      setSelectedState(loc.state || "");
+                      if ((loc.country || "United States") === "United States") {
+                        setAvailableStates(Object.keys(US_CITIES_BY_STATE));
+                        if (loc.state && US_CITIES_BY_STATE[loc.state]) {
+                          setAvailableCities(US_CITIES_BY_STATE[loc.state]);
+                        }
+                      } else {
+                        setAvailableStates([]);
+                        setAvailableCities([]);
+                      }
+
+                      toast({
+                        title: "Location set!",
+                        description: `Using ${loc.label}: ${loc.city}`,
+                      });
+                    }}
+                  >
+                    📍 Use My Location
+                  </Button>
                 </div>
                 <SmartLocationInput
                   city={watch("city") || ""}

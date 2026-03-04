@@ -26,6 +26,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SettingsPage() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -39,10 +40,15 @@ export default function SettingsPage() {
   // Early return if no user
   if (!isAuthenticated || !user?.id) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Loading user data...</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+          <Skeleton className="h-8 w-40" />
+          <Skeleton className="h-10 w-full" />
+          <div className="space-y-4">
+            <Skeleton className="h-28 w-full" />
+            <Skeleton className="h-28 w-full" />
+            <Skeleton className="h-28 w-full" />
+          </div>
         </div>
       </div>
     );
@@ -646,7 +652,26 @@ export default function SettingsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {user ? <BlockedUsersList userId={user.id} /> : <div>Loading...</div>}
+                  {user ? (
+                    <BlockedUsersList userId={user.id} />
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-4 w-40" />
+                          <Skeleton className="h-3 w-56" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-4 w-36" />
+                          <Skeleton className="h-3 w-52" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

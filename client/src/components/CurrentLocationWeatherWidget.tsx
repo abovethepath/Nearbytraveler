@@ -4,6 +4,7 @@ import { AuthContext } from "@/App";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { 
   Cloud, 
   Sun, 
@@ -278,9 +279,19 @@ export default function CurrentLocationWeatherWidget() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-center py-4">
-              <div className="animate-spin w-6 h-6 border-2 border-gradient-to-r from-blue-500 to-purple-500 border-t-transparent rounded-full mx-auto mb-2"></div>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Loading weather...</p>
+            <div className="py-4 space-y-3">
+              <div className="flex items-center justify-center gap-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-3 w-40" />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <Skeleton className="h-14 w-full rounded-xl" />
+                <Skeleton className="h-14 w-full rounded-xl" />
+                <Skeleton className="h-14 w-full rounded-xl" />
+              </div>
             </div>
           </CardContent>
         </Card>

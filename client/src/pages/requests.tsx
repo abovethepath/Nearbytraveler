@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { FullPageSkeleton } from "@/components/FullPageSkeleton";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { User, Connection } from "@shared/schema";
 import { Check, X, UserPlus, Clock } from "lucide-react";
@@ -163,15 +164,7 @@ export default function Requests() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 p-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-          </div>
-        </div>
-      </div>
-    );
+    return <FullPageSkeleton />;
   }
 
   return (

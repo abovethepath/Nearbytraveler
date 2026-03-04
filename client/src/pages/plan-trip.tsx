@@ -1195,7 +1195,7 @@ export default function PlanTrip() {
               <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
                 <Button 
                   type="button"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-colors text-sm sm:text-base md:text-lg h-12 sm:h-14 break-words touch-manipulation" 
+                  className="w-full bg-gradient-to-b from-[#2F6BF2] to-[#2563EB] hover:from-[#2A60E6] hover:to-[#1F55D6] text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-colors text-sm sm:text-base md:text-lg h-12 sm:h-14 break-words touch-manipulation" 
                   disabled={createTravelPlan.isPending}
                   onClick={(e) => {
                     e.preventDefault();

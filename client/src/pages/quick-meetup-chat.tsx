@@ -6,6 +6,8 @@ import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { getApiBaseUrl } from "@/lib/queryClient";
+import { useAuth } from "@/App";
+import { ChatPageSkeleton } from "@/components/ui/chat-page-skeleton";
 
 interface QuickMeetup {
   id: number;
@@ -27,12 +29,7 @@ export default function QuickMeetupChat() {
   const { toast } = useToast();
   const meetupId = params?.meetupId ? parseInt(params.meetupId) : null;
 
-  let user: { id?: number } = {};
-  try {
-    user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
-  } catch {
-    user = {};
-  }
+  const { user, authLoading } = useAuth();
 
   const { data: meetup, isLoading: meetupLoading, isError: meetupError, error, failureCount } = useQuery<QuickMeetup>({
     queryKey: ['/api/quick-meets', meetupId],
@@ -85,7 +82,7 @@ export default function QuickMeetupChat() {
   }
 
   if (meetupLoading || chatroomLoading) {
-    return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading...</div>;
+    return <ChatPageSkeleton variant="dark" />;
   }
 
   if (meetupError || !meetup) {
@@ -115,6 +112,7 @@ export default function QuickMeetupChat() {
   }
 
   if (!user?.id) {
+    if (authLoading) return <ChatPageSkeleton variant="dark" />;
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">Please log in to view this chat</p>

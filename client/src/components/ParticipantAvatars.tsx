@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import type { EventParticipantWithUser } from "@shared/schema";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ParticipantAvatarsProps {
   type: 'meetup' | 'event';
@@ -27,7 +28,11 @@ export function ParticipantAvatars({ type, itemId, maxVisible = 5, className = '
   if (isLoading) {
     return (
       <div className={`flex items-center space-x-1 ${className}`}>
-        <div className="text-xs text-gray-500">Loading...</div>
+        <div className="flex -space-x-2">
+          {Array.from({ length: Math.min(maxVisible, 4) }).map((_, i) => (
+            <Skeleton key={i} className="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800 bg-muted" />
+          ))}
+        </div>
       </div>
     );
   }

@@ -40,8 +40,9 @@ export function BlockedUsersList({ userId }: BlockedUsersListProps) {
     enabled: !!userId,
     retry: 2,
     retryDelay: 500,
-    refetchOnMount: true,
-    staleTime: 30000,
+    // Prefer cached data first; refresh can still happen via invalidation.
+    refetchOnMount: false,
+    staleTime: 60000,
   });
 
   console.log("BlockedUsersList debug:", { userId, blockedUsers, isLoading, error });

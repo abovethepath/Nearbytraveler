@@ -34,7 +34,7 @@ export function CityChatlroomsWidget({ city, state, country }: CityChatlroomsWid
       return data;
     },
     enabled: !!city,
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 60 * 1000, // 1 minute
     gcTime: 5 * 60 * 1000 // 5 minutes
   });
 
