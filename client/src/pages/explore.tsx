@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
@@ -75,17 +75,37 @@ export default function Explore() {
     enabled: !!currentUser?.id,
   });
 
-  // Prefer active travel destination when set; otherwise use hometown (resolveCurrentCity)
+  // Prefer active travel destination when set; allow switching between travel city and hometown.
   const activeTravelDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
-  const resolved = (() => {
-    if (activeTravelDestination) {
-      const parts = String(activeTravelDestination).split(/,\s*/);
-      const city = parts[0]?.trim() || "";
-      const country = parts.length > 1 ? parts[parts.length - 1].trim() : (currentUser?.hometownCountry || "United States");
-      return { city, country };
+  const travelResolved = useMemo(() => {
+    if (!activeTravelDestination) return { city: "", country: "" };
+    const parts = String(activeTravelDestination).split(/,\s*/);
+    const city = parts[0]?.trim() || "";
+    const country =
+      parts.length > 1
+        ? parts[parts.length - 1].trim()
+        : (currentUser?.hometownCountry || "United States");
+    return { city, country };
+  }, [activeTravelDestination, currentUser?.hometownCountry]);
+  const hometownResolved = useMemo(() => resolveCurrentCity({ ...(currentUser || {}), isCurrentlyTraveling: false }), [currentUser]);
+  const hasTravelCity = !!travelResolved.city;
+  const hasHometownCity = !!hometownResolved.city;
+  const [cityView, setCityView] = useState<"travel" | "hometown">("hometown");
+  const [cityViewAutoSet, setCityViewAutoSet] = useState(false);
+  // Keep the old behavior: if a travel city exists, default to it (once travel plans load).
+  useEffect(() => {
+    if (cityViewAutoSet) return;
+    if (hasTravelCity) {
+      setCityView("travel");
+      setCityViewAutoSet(true);
+      return;
     }
-    return resolveCurrentCity(currentUser);
-  })();
+    if (hasHometownCity) {
+      setCityView("hometown");
+      setCityViewAutoSet(true);
+    }
+  }, [cityViewAutoSet, hasTravelCity, hasHometownCity]);
+  const resolved = cityView === "travel" && hasTravelCity ? travelResolved : hometownResolved;
   const rawCity = resolved.city;
   const userCity = rawCity ? getMetroAreaName(rawCity) : "";
   const userCountry = resolved.country;
@@ -146,14 +166,31 @@ export default function Explore() {
   const { data: communityTagsList = [], isLoading: loadingTags, isError: errorTags } = useQuery<any[]>({
     queryKey: ["/api/community-tags"],
     queryFn: async () => {
-      const res = await fetch(`${getApiBaseUrl()}/api/community-tags?includePrivate=true`, { credentials: "include" });
+      const headers: Record<string, string> = {};
+      if (currentUser?.id) headers["x-user-id"] = String(currentUser.id);
+      // includePrivate lets the user see private tags they belong to (server will still enforce)
+      const res = await fetch(`${getApiBaseUrl()}/api/community-tags?includePrivate=true`, { credentials: "include", headers });
       if (!res.ok) throw new Error(`Failed to load communities (${res.status})`);
-      return res.json();
+      const data = await res.json();
+      if (Array.isArray(data)) return data;
+      if (Array.isArray((data as any)?.communities)) return (data as any).communities;
+      if (Array.isArray((data as any)?.tags)) return (data as any).tags;
+      return [];
     },
+    enabled: !!currentUser?.id,
   });
 
   const { data: myCommunityTags = [] } = useQuery<any[]>({
     queryKey: ["/api/community-tags/mine"],
+    queryFn: async () => {
+      const headers: Record<string, string> = {};
+      if (currentUser?.id) headers["x-user-id"] = String(currentUser.id);
+      const res = await fetch(`${getApiBaseUrl()}/api/community-tags/mine`, { credentials: "include", headers });
+      if (!res.ok) return [];
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    },
+    enabled: !!currentUser?.id,
   });
 
   const { data: nearbyUsers = [], isLoading: loadingUsers } = useQuery<any[]>({
@@ -351,6 +388,26 @@ export default function Explore() {
             <h1 className="text-2xl font-bold">Explore</h1>
           </div>
           <p className="text-white/80 text-sm">Who's live right now, and communities to join — in {userCity || "your city"}</p>
+          {hasHometownCity && hasTravelCity && (
+            <div className="mt-3 flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setCityView("hometown")}
+                className={`${cityView === "hometown" ? "bg-white/90 text-black hover:bg-white" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30`}
+              >
+                🏠 Hometown
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setCityView("travel")}
+                className={`${cityView === "travel" ? "bg-white/90 text-black hover:bg-white" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30`}
+              >
+                ✈️ Travel city
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -763,7 +820,7 @@ export default function Explore() {
                 <Users className="w-5 h-5 text-orange-500" />
                 <h2 className="font-bold text-lg text-gray-900 dark:text-white">People in {userCity}</h2>
                 {!loadingUsers && nearbyUsers.length > 0 && (
-                  <Badge variant="secondary" className="text-xs">{nearbyUsers.length}</Badge>
+                  <Badge variant="secondary" className="text-xs text-gray-900 dark:!text-white dark:bg-gray-800 dark:border dark:border-gray-700">{nearbyUsers.length}</Badge>
                 )}
               </div>
               {nearbyUsers.length > 6 && (
@@ -826,12 +883,10 @@ export default function Explore() {
                       <>
                         <div className="flex items-center justify-between">
                           <div className="text-xs font-bold text-gray-700 dark:text-gray-300">🏠 {userCity} Locals</div>
-                          <div className="text-[11px] text-gray-500 dark:text-gray-400">{locals.length}</div>
                         </div>
                         {renderStrip(locals)}
                         <div className="flex items-center justify-between pt-1">
                           <div className="text-xs font-bold text-gray-700 dark:text-gray-300">✈️ Traveling to {userCity}</div>
-                          <div className="text-[11px] text-gray-500 dark:text-gray-400">{travelers.length}</div>
                         </div>
                         {renderStrip(travelers)}
                       </>

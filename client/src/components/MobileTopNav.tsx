@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { Menu, X, Home, MapPin, Calendar, Users, MessageCircle, User, LogOut, Compass, Zap, Building2, Star, ChevronRight, Settings, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getProfileImageUrl } from "@/components/simple-avatar";
 import { AuthContext } from "@/App";
@@ -9,14 +8,12 @@ import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { getApiBaseUrl } from "@/lib/queryClient";
-import { getMetroContext } from "@shared/metro-areas";
 
 export function MobileTopNav() {
   const isNative = isNativeIOSApp();
   const authContext = React.useContext(AuthContext);
   const { user, logout } = authContext;
-  const [, setLocation] = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
+  const [location, setLocation] = useLocation();
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   // CRITICAL: Session is the ONLY source of truth for avatar. Never trust localStorage first.
@@ -69,25 +66,17 @@ export function MobileTopNav() {
     };
   }, []);
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
-  const handleMenuToggle = () => {
-    setIsOpen(prev => !prev);
+  const openSearch = () => {
+    // Use the same “full search” experience already wired on Home via openAdvancedFilters.
+    if (location !== "/") setLocation("/");
+    setTimeout(() => {
+      window.dispatchEvent(new Event("openAdvancedFilters"));
+    }, 0);
   };
 
   const handleAvatarTap = async (e: React.TouchEvent | React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsOpen(false);
     if (!currentUser?.id) {
       setLocation("/profile");
       return;
@@ -110,13 +99,7 @@ export function MobileTopNav() {
     setLocation(`/profile/${currentUser.id}`);
   };
 
-  const navigate = (path: string) => {
-    setIsOpen(false);
-    setLocation(path);
-  };
-
   const handleLogout = async () => {
-    setIsOpen(false);
     if (!authContext.user && currentUser) {
       localStorage.clear();
       sessionStorage.clear();
@@ -126,70 +109,6 @@ export function MobileTopNav() {
       await logout();
     }
   };
-
-  const isBusiness = currentUser?.userType === "business";
-
-  const menuGroups = isBusiness ? [
-    {
-      title: "Main",
-      items: [
-        { icon: Home, label: "Dashboard", path: "/" },
-        { icon: Search, label: "Search", action: "search" },
-        { icon: Building2, label: "Manage Deals", path: "/business-dashboard" },
-      ]
-    },
-    {
-      title: "Events & Chat",
-      items: [
-        { icon: Calendar, label: "Create Event", path: "/create-event" },
-        { icon: Calendar, label: "View Events", path: "/events" },
-        { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
-        { icon: MessageCircle, label: "Customer Messages", path: "/messages" },
-      ]
-    },
-    {
-      title: "Account",
-      items: [
-        { icon: User, label: "Business Profile", path: currentUser?.id ? `/profile/${currentUser.id}` : "/profile" },
-        { icon: MapPin, label: "View Cities", path: "/discover" },
-      ]
-    }
-  ] : [
-    {
-      title: "Discover",
-      items: [
-        { icon: Home, label: "Home", path: "/" },
-        { icon: Search, label: "Search", action: "search" },
-        { icon: MapPin, label: "Cities", path: "/discover" },
-        { icon: Calendar, label: "Events", path: "/events" },
-        { icon: Zap, label: "Event Integrations", path: "/integrations" },
-      ]
-    },
-    {
-      title: "Connect",
-      items: [
-        { icon: Compass, label: "Plan Trip", path: "/plan-trip" },
-        { icon: Zap, label: "Quick Meetups", path: "/quick-meetups" },
-        { icon: Users, label: "City Plans", path: "/match-in-city" },
-        { icon: Users, label: "Connect", path: "/connect" },
-      ]
-    },
-    {
-      title: "Messages",
-      items: [
-        { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
-        { icon: MessageCircle, label: "Messages", path: "/messages" },
-      ]
-    },
-    {
-      title: "Account",
-      items: [
-        { icon: User, label: "Profile", path: currentUser?.id ? `/profile/${currentUser.id}` : "/profile" },
-        { icon: Star, label: "Ambassador Program", path: "/ambassador-program" },
-        { icon: Settings, label: "Settings", path: "/settings" },
-      ]
-    }
-  ];
 
   if (isNative) {
     return null;
@@ -209,9 +128,8 @@ export function MobileTopNav() {
         >
           <button
             type="button"
-            aria-label="Menu"
-            aria-expanded={isOpen}
-            data-testid="button-mobile-menu"
+            aria-label="Search"
+            data-testid="button-mobile-search"
             className="ios-touch-target flex items-center justify-center rounded-xl text-gray-700 dark:text-gray-200 active:bg-gray-200/60 dark:active:bg-gray-700/60"
             style={{
               width: '44px',
@@ -219,9 +137,13 @@ export function MobileTopNav() {
               touchAction: 'manipulation',
               WebkitTapHighlightColor: 'transparent',
             }}
-            onClick={handleMenuToggle}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              openSearch();
+            }}
           >
-            {isOpen ? <X className="w-[22px] h-[22px] pointer-events-none" /> : <Menu className="w-[22px] h-[22px] pointer-events-none" />}
+            <Search className="w-[22px] h-[22px] pointer-events-none" />
           </button>
 
           <div className="flex-1 flex justify-center pointer-events-none">
@@ -253,156 +175,6 @@ export function MobileTopNav() {
           </button>
         </div>
       </header>
-
-      {isOpen && createPortal(
-        <>
-          <div
-            className="fixed inset-0 z-[10001] md:hidden ios-menu-backdrop"
-            onClick={() => setIsOpen(false)}
-          />
-
-          <nav
-            className="fixed top-0 left-0 bottom-0 w-80 max-w-[85vw] z-[10002] md:hidden flex flex-col ios-slide-menu"
-            style={{
-              paddingTop: 'env(safe-area-inset-top, 0px)',
-              paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200/60 dark:border-gray-700/60">
-              <span className="text-[17px] font-semibold text-gray-900 dark:text-white">Menu</span>
-              <button
-                type="button"
-                className="ios-touch-target flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800"
-                style={{ width: '30px', height: '30px', touchAction: 'manipulation' }}
-                onClick={() => setIsOpen(false)}
-              >
-                <X className="w-4 h-4 text-gray-500 dark:text-gray-400 pointer-events-none" />
-              </button>
-            </div>
-
-            <div
-              className="flex-1 overflow-y-auto overscroll-contain"
-              style={{
-                WebkitOverflowScrolling: 'touch',
-                overscrollBehavior: 'contain',
-                minHeight: 0,
-              }}
-            >
-              {currentUser && (
-                <div className="px-4 py-4 border-b border-gray-200/60 dark:border-gray-700/60">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="w-14 h-14 pointer-events-none ring-2 ring-orange-200 dark:ring-orange-800">
-                      <AvatarImage src={getProfileImageUrl(currentUser) || undefined} className="pointer-events-none" />
-                      <AvatarFallback className="bg-orange-500 text-white text-lg pointer-events-none">
-                        {(currentUser.name || currentUser.fullName || currentUser.displayName || currentUser.username || '').charAt(0)?.toUpperCase() || "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-[17px] text-gray-900 dark:text-white truncate">{currentUser.name || currentUser.username}</p>
-                      <p className="text-[13px] text-gray-500 dark:text-gray-400 truncate">@{currentUser.username}</p>
-                      {currentUser.hometownCity && (
-                        <p className="text-[13px] text-gray-600 dark:text-gray-500 flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-3 h-3" />
-                          {getMetroContext(currentUser.hometownCity).displayName || currentUser.hometownCity}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {menuGroups.map((group, groupIdx) => (
-                <div key={groupIdx} className="py-1">
-                  <p className="px-4 pt-4 pb-1.5 text-[13px] font-medium text-gray-600 dark:text-gray-500 uppercase tracking-wider">
-                    {group.title}
-                  </p>
-                  <div className="mx-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden">
-                    {group.items.map((item, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        className="w-full flex items-center gap-3 px-4 text-left text-[15px] text-gray-900 dark:text-gray-100 active:bg-gray-200/80 dark:active:bg-gray-700/80 transition-colors"
-                        style={{ 
-                          touchAction: 'manipulation',
-                          minHeight: '44px',
-                          borderBottom: idx < group.items.length - 1 ? '0.5px solid rgba(0,0,0,0.08)' : 'none',
-                        }}
-                        onClick={() => {
-                          if ((item as { action?: string }).action === "search") {
-                            setIsOpen(false);
-                            window.dispatchEvent(new CustomEvent("openSearchWidget"));
-                          } else {
-                            navigate(item.path);
-                          }
-                        }}
-                      >
-                        <div className="w-7 h-7 rounded-md bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
-                          <item.icon className="w-4 h-4 text-orange-600 dark:text-orange-400 pointer-events-none" />
-                        </div>
-                        <span className="flex-1 pointer-events-none">{item.label}</span>
-                        <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 pointer-events-none" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-
-              <div className="py-1 pb-4">
-                <div className="mx-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden">
-                  <button
-                    type="button"
-                    className="w-full flex items-center gap-3 px-4 text-left text-[15px] text-red-500 dark:text-red-400 active:bg-red-50 dark:active:bg-red-900/20 transition-colors"
-                    style={{ touchAction: 'manipulation', minHeight: '44px' }}
-                    onClick={handleLogout}
-                  >
-                    <div className="w-7 h-7 rounded-md bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
-                      <LogOut className="w-4 h-4 text-red-500 dark:text-red-400 pointer-events-none" />
-                    </div>
-                    <span className="flex-1 pointer-events-none">Sign Out</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </nav>
-        </>,
-        document.body
-      )}
-
-      <style>{`
-        .ios-nav-bar {
-          background: #ffffff;
-          border-bottom: 1px solid #e5e7eb;
-        }
-        .dark .ios-nav-bar {
-          background: #111827;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .ios-menu-backdrop {
-          background: rgba(0, 0, 0, 0.5);
-        }
-        .ios-slide-menu {
-          background: #f8fafc;
-          box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
-          animation: iosSlideIn 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-        }
-        .dark .ios-slide-menu {
-          background: #111827;
-        }
-        @keyframes iosSlideIn {
-          from { transform: translateX(-100%); opacity: 0.8; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        .ios-touch-target {
-          -webkit-tap-highlight-color: transparent;
-          touch-action: manipulation;
-          cursor: pointer;
-        }
-        .ios-scroll-container {
-          -webkit-overflow-scrolling: touch;
-          scroll-behavior: smooth;
-        }
-      `}</style>
     </>
   );
 }

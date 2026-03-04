@@ -381,8 +381,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     sharedLanguagesCountForDisplay +
                     otherCommonalities.length);
 
-                const visibleInterestPills = sharedInterests.slice(0, 6);
-                const hasOverflow = sharedInterests.length > visibleInterestPills.length;
+                const visibleInterestPills = sharedInterests;
+                const hasOverflow = false;
 
                 return (
                   <>
@@ -494,7 +494,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               targetUserId={user?.id || 0}
                               targetUsername={user?.username}
                               targetName={user?.name}
-                              appearance="ghost"
+                              appearance="default"
                               className={
                                 isMobileWeb
                                   ? "rounded-lg shadow-sm transition-all px-3 h-8 text-[13px] font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0 w-[10.5rem] sm:w-44"
@@ -515,8 +515,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               variant="outline"
                               className={
                                 isMobileWeb
-                                  ? "!bg-transparent hover:!bg-[#FF6B35]/10 !text-[#FF6B35] !border-[#FF6B35] shadow-sm shrink-0 px-2.5 h-8 text-xs font-bold"
-                                  : "!bg-transparent hover:!bg-[#FF6B35]/10 !text-[#FF6B35] !border-[#FF6B35] shadow-sm shrink-0 px-2.5 h-8 text-xs font-bold"
+                                  ? "!bg-[#FF6B35] hover:!bg-[#F97316] !text-white !border-0 shadow-sm shrink-0 px-2.5 h-8 text-xs font-bold"
+                                  : "!bg-[#FF6B35] hover:!bg-[#F97316] !text-white !border-0 shadow-sm shrink-0 px-2.5 h-8 text-xs font-bold"
                               }
                               data-testid="button-write-reference"
                             >
@@ -539,8 +539,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 appearance="link"
                                 className={
                                   isMobileWeb
-                                    ? "!bg-transparent !border-0 px-0 py-0 !text-black/80 hover:!text-black underline underline-offset-2 font-medium"
-                                    : "!bg-transparent !border-0 px-0 py-0 !text-black/80 hover:!text-black underline underline-offset-2 font-medium"
+                                    ? "!bg-transparent !border-0 px-0 py-0 text-white/85 hover:text-white underline underline-offset-2 font-medium"
+                                    : "!bg-transparent !border-0 px-0 py-0 text-white/85 hover:text-white underline underline-offset-2 font-medium"
                                 }
                               />
                             ) : (
@@ -554,8 +554,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 onPointerDown={(e) => e.stopPropagation()}
                                 className={
                                   isMobileWeb
-                                    ? "text-sm text-black/80 hover:text-black underline underline-offset-2 font-medium"
-                                    : "text-sm text-black/80 hover:text-black underline underline-offset-2 font-medium"
+                                    ? "text-sm text-white/85 hover:text-white underline underline-offset-2 font-medium"
+                                    : "text-sm text-white/85 hover:text-white underline underline-offset-2 font-medium"
                                 }
                                 data-radix-dismissable-layer-ignore=""
                               >
@@ -569,7 +569,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       {/* RIGHT: What You Have in Common (desktop only; mobile shows it below hero to avoid duplicates) */}
                       {!isMobileWeb && (
                         <div className="lg:w-[340px] lg:flex-shrink-0">
-                          <div className="bg-white/55 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-4 max-h-[260px] overflow-hidden">
+                          <div
+                            className="bg-white/55 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-4 max-h-[260px] overflow-auto cursor-pointer"
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => setSeeAllCommonOpen(true)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") setSeeAllCommonOpen(true);
+                            }}
+                            aria-label="Open full What You Have in Common details"
+                          >
                             <div className="flex items-center justify-between gap-2">
                               <div className="text-sm font-bold text-black">What You Have in Common</div>
                               <div className="text-xs font-semibold text-black">{totalCommon} things in common</div>
@@ -585,7 +594,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                             <div className="mt-3">
                               <div className="text-xs font-semibold text-black mb-1">Shared interests ({sharedInterests.length})</div>
-                              <div className="flex flex-wrap gap-1.5 max-h-[92px] overflow-hidden">
+                              <div className="flex flex-wrap gap-1.5">
                                 {visibleInterestPills.length > 0 ? (
                                   visibleInterestPills.map((interest) => (
                                     <span
@@ -600,18 +609,20 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 )}
                               </div>
 
-                              {hasOverflow && (
-                                <div className="mt-2">
-                                  <button
-                                    type="button"
-                                    className="text-xs font-semibold !text-black hover:!text-black underline underline-offset-2"
-                                    onClick={() => setSeeAllCommonOpen(true)}
-                                    data-testid="button-see-all-common"
-                                  >
-                                    See all
-                                  </button>
-                                </div>
-                              )}
+                              <div className="mt-2">
+                                <button
+                                  type="button"
+                                  className="text-xs font-semibold !text-black hover:!text-black underline underline-offset-2"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setSeeAllCommonOpen(true);
+                                  }}
+                                  data-testid="button-see-all-common"
+                                >
+                                  See all
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -624,9 +635,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       {isMobileWeb && (
                         <div
                           aria-hidden
-                          className="pointer-events-none absolute right-0 top-0 h-full w-10 flex items-center justify-end pr-1 bg-gradient-to-l from-white/70 to-transparent"
+                          className="pointer-events-none absolute right-0 top-0 h-full w-12 flex items-center justify-end pr-1 bg-gradient-to-l from-black/45 via-black/15 to-transparent"
                         >
-                          <span className="text-black/70 text-lg leading-none">›</span>
+                          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/35 text-white text-lg leading-none shadow-[0_10px_24px_rgba(0,0,0,0.35)] backdrop-blur-sm">
+                            ›
+                          </span>
                         </div>
                       )}
                     </div>
@@ -921,7 +934,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   targetUserId={user?.id || 0}
                                   targetUsername={user?.username}
                                   targetName={user?.name}
-                                  appearance="ghost"
+                                  appearance="default"
                                   className="w-full rounded-lg shadow-md transition-all px-4 py-2 text-sm font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
                                 />
                               </div>
@@ -936,7 +949,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                       setShowWriteReferenceModal?.(true);
                                     }}
                                     variant="outline"
-                                    className="bg-transparent hover:bg-[#FF6B35]/10 text-[#FF6B35] border border-[#FF6B35] shrink-0 px-4 py-2 text-sm font-bold"
+                                    className="bg-[#FF6B35] hover:bg-[#F97316] text-white border-0 shrink-0 px-4 py-2 text-sm font-bold"
                                     data-testid="button-write-reference"
                                   >
                                     Write Reference
@@ -946,7 +959,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     type="button"
                                     onClick={() => setLocation('/auth')}
                                     variant="outline"
-                                    className="bg-transparent hover:bg-[#FF6B35]/10 text-[#FF6B35] border border-[#FF6B35] shrink-0 px-4 py-2 text-sm font-bold"
+                                    className="bg-[#FF6B35] hover:bg-[#F97316] text-white border-0 shrink-0 px-4 py-2 text-sm font-bold"
                                     data-testid="button-write-reference"
                                   >
                                     Write Reference
@@ -978,7 +991,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                         setLocation('/auth');
                                       }}
                                       onPointerDown={(e) => e.stopPropagation()}
-                                      className="text-xs text-gray-200/90 hover:text-white underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer"
+                                      className="text-xs text-white/85 hover:text-white underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer"
                                       data-radix-dismissable-layer-ignore=""
                                     >
                                       Report
@@ -1012,7 +1025,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 targetUserId={user?.id || 0}
                                 targetUsername={user?.username}
                                 targetName={user?.name}
-                                appearance="ghost"
+                                appearance="default"
                                 className="rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
                               />
                               {currentUser ? (
@@ -1023,7 +1036,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     e.stopPropagation();
                                     setShowWriteReferenceModal?.(true);
                                   }}
-                                  className="bg-transparent hover:bg-[#FF6B35]/10 text-[#FF6B35] border border-[#FF6B35] shrink-0 px-4 py-1.5 text-sm font-bold"
+                                  className="bg-[#FF6B35] hover:bg-[#F97316] text-white border-0 shrink-0 px-4 py-1.5 text-sm font-bold"
                                   data-testid="button-write-reference"
                                 >
                                   Write Reference
@@ -1032,7 +1045,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 <Button
                                   type="button"
                                   onClick={() => setLocation('/auth')}
-                                  className="bg-transparent hover:bg-[#FF6B35]/10 text-[#FF6B35] border border-[#FF6B35] shrink-0 px-4 py-1.5 text-sm font-bold"
+                                  className="bg-[#FF6B35] hover:bg-[#F97316] text-white border-0 shrink-0 px-4 py-1.5 text-sm font-bold"
                                   data-testid="button-write-reference"
                                 >
                                   Write Reference
@@ -1050,7 +1063,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     size="sm"
                                     showIcon={false}
                                     appearance="link"
-                                    className="!bg-transparent !border-0 px-0 py-0 underline underline-offset-2 font-medium text-black/80 hover:text-black dark:text-white/85 dark:hover:text-white"
+                                    className="!bg-transparent !border-0 px-0 py-0 underline underline-offset-2 font-medium text-white/85 hover:text-white"
                                   />
                                 ) : (
                                   <button
@@ -1061,7 +1074,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                       setLocation('/auth');
                                     }}
                                     onPointerDown={(e) => e.stopPropagation()}
-                                    className="text-xs text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer shrink-0"
+                                    className="text-xs text-white/85 hover:text-white underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer shrink-0"
                                     data-radix-dismissable-layer-ignore=""
                                   >
                                     Report

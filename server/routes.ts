@@ -10596,6 +10596,49 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Delete an entire DM conversation (all messages between two users)
+  app.delete("/api/messages/conversation/:otherUserId", async (req, res) => {
+    try {
+      const otherUserId = parseInt(req.params.otherUserId || "0", 10);
+      if (!otherUserId || isNaN(otherUserId)) {
+        return res.status(400).json({ error: "Valid other user ID is required" });
+      }
+
+      let userId: number | null = null;
+      if (req.headers["x-user-id"]) {
+        const parsed = parseInt(req.headers["x-user-id"] as string, 10);
+        if (parsed) userId = parsed;
+      }
+      if (!userId && (req as any).session?.user?.id) userId = (req as any).session.user.id;
+      if (!userId && req.body?.userId) {
+        const parsed = parseInt(String(req.body.userId), 10);
+        if (parsed) userId = parsed;
+      }
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      // Safety: prevent deleting a conversation with yourself (no-op)
+      if (userId === otherUserId) {
+        return res.status(400).json({ error: "Invalid conversation" });
+      }
+
+      await db
+        .delete(messages)
+        .where(
+          or(
+            and(eq(messages.senderId, userId), eq(messages.receiverId, otherUserId)),
+            and(eq(messages.senderId, otherUserId), eq(messages.receiverId, userId))
+          )
+        );
+
+      return res.json({ success: true });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === "development") console.error("Error deleting conversation:", error);
+      return res.status(500).json({ error: "Failed to delete conversation" });
+    }
+  });
+
   // CRITICAL: Send message for IM system (handles offline message delivery)
   app.post("/api/messages", async (req, res) => {
     try {

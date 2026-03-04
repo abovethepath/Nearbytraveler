@@ -14,6 +14,13 @@ interface ChatMessage {
 }
 
 export default function AIChatBot() {
+  const isMobileViewport =
+    typeof window !== "undefined" &&
+    !!window.matchMedia &&
+    window.matchMedia("(max-width: 768px)").matches;
+
+  if (isMobileViewport) return null;
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {

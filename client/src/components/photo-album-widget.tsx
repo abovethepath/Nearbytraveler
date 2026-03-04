@@ -442,10 +442,10 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
         {isOwnProfile && (
           <Button
             onClick={() => setShowCreateModal(true)}
-            className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black [&>*]:text-black"
+            className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
           >
-            <Plus className="w-4 h-4 mr-2 text-black" />
-            <span className="text-black">Create Memory</span>
+            <Plus className="w-4 h-4 mr-2 text-black dark:text-white" />
+            <span className="text-black dark:text-white">Create Memory</span>
           </Button>
         )}
       </div>
@@ -467,10 +467,10 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
             {isOwnProfile && (
               <Button
                 onClick={() => setShowCreateModal(true)}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black [&>*]:text-black"
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
               >
-                <Plus className="w-4 h-4 mr-2 text-black" />
-                <span className="text-black">Create Your First Memory</span>
+                <Plus className="w-4 h-4 mr-2 text-black dark:text-white" />
+                <span className="text-black dark:text-white">Create Your First Memory</span>
               </Button>
             )}
           </CardContent>

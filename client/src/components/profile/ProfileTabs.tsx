@@ -70,15 +70,26 @@ export function ProfileTabs(props: ProfilePageProps) {
   const WhatYouHaveInCommonInline = () => {
     if (!commonStats || !(commonStats.totalCommon && commonStats.totalCommon > 0)) return null;
 
+    const [expanded, setExpanded] = React.useState(false);
+
     const sharedInterests = Array.isArray(commonStats.sharedInterests) ? commonStats.sharedInterests : [];
     const sharedCountries = Array.isArray(commonStats.sharedCountries) ? commonStats.sharedCountries : [];
     const sharedLanguagesNonEnglish = Array.isArray(commonStats.sharedLanguagesNonEnglish) ? commonStats.sharedLanguagesNonEnglish : [];
     const sharedContactsCount = Number.isFinite(commonStats.sharedContactsCount as number) ? (commonStats.sharedContactsCount as number) : 0;
 
-    const visibleInterests = sharedInterests.slice(0, 10);
-
     return (
-      <div className="what-you-have-in-common-inline relative overflow-hidden rounded-2xl border-2 border-orange-200 dark:border-orange-700/60 shadow-lg bg-gradient-to-br from-orange-50 via-white to-orange-100 dark:from-[#24140b] dark:via-gray-900/30 dark:to-[#1b120d]">
+      <div
+        className="what-you-have-in-common-inline relative overflow-hidden rounded-2xl border-2 border-orange-200 shadow-lg bg-white dark:bg-[#1e2139] dark:border-orange-500/30"
+        role="button"
+        tabIndex={0}
+        onClick={() => setExpanded((v) => !v)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") setExpanded((v) => !v);
+        }}
+        aria-expanded={expanded}
+        data-testid="what-you-have-in-common-inline"
+        style={{ cursor: "pointer" }}
+      >
         <div className="p-5 sm:p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
@@ -86,9 +97,21 @@ export function ProfileTabs(props: ProfilePageProps) {
                 🤝 What You Have in Common
               </div>
               <div className="mt-1 text-sm text-gray-700 dark:text-gray-200">
-                A little celebration of your overlap
+                Tap to {expanded ? "collapse" : "expand"}
               </div>
             </div>
+            <button
+              type="button"
+              className="shrink-0 text-xs sm:text-sm font-bold text-orange-700 hover:text-orange-800 dark:text-orange-300 dark:hover:text-orange-200 underline underline-offset-2"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setExpanded((v) => !v);
+              }}
+              data-testid="button-toggle-common-details"
+            >
+              {expanded ? "See less" : "See details"}
+            </button>
           </div>
 
           <div className="mt-4 flex items-center justify-center">
@@ -96,16 +119,8 @@ export function ProfileTabs(props: ProfilePageProps) {
               className="inline-flex items-center justify-center rounded-2xl px-5 py-4 text-center bg-white/80 dark:bg-black/20 border border-orange-200/70 dark:border-orange-700/50 shadow-[0_12px_30px_rgba(255,107,53,0.18)]"
               data-testid="common-count-badge"
             >
-              <div className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white leading-none">
-                {commonStats.totalCommon}
-              </div>
-              <div className="ml-3 text-left">
-                <div className="text-sm sm:text-base font-extrabold text-gray-900 dark:text-white leading-tight">
-                  things
-                </div>
-                <div className="text-sm sm:text-base font-extrabold text-gray-900 dark:text-white leading-tight">
-                  in common ✨
-                </div>
+              <div className="text-lg sm:text-xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                {commonStats.totalCommon} things in common
               </div>
             </div>
           </div>
@@ -129,8 +144,8 @@ export function ProfileTabs(props: ProfilePageProps) {
               Shared Interests ({sharedInterests.length})
             </div>
             <div className="mt-3 flex flex-wrap gap-2.5">
-              {visibleInterests.length > 0 ? (
-                visibleInterests.map((interest) => (
+              {sharedInterests.length > 0 ? (
+                sharedInterests.map((interest) => (
                   <span
                     key={interest}
                     className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-[#7C3500] text-[#FF8C42] border border-[#FF8C42]/40 shadow-[0_10px_22px_rgba(124,53,0,0.18)]"
@@ -143,6 +158,46 @@ export function ProfileTabs(props: ProfilePageProps) {
               )}
             </div>
           </div>
+
+          {expanded && (
+            <div className="mt-5 space-y-4">
+              {sharedCountries.length > 0 && (
+                <div>
+                  <div className="text-sm font-extrabold text-gray-900 dark:text-white">
+                    Shared Countries ({sharedCountries.length})
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {sharedCountries.map((c) => (
+                      <span
+                        key={c}
+                        className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-white/70 dark:bg-black/20 border border-orange-200/70 dark:border-orange-700/50 text-gray-900 dark:text-white"
+                      >
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {sharedLanguagesNonEnglish.length > 0 && (
+                <div>
+                  <div className="text-sm font-extrabold text-gray-900 dark:text-white">
+                    Shared Languages ({sharedLanguagesNonEnglish.length})
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {sharedLanguagesNonEnglish.map((l) => (
+                      <span
+                        key={l}
+                        className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-white/70 dark:bg-black/20 border border-orange-200/70 dark:border-orange-700/50 text-gray-900 dark:text-white"
+                      >
+                        {l}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -3195,8 +3250,12 @@ export function ProfileTabs(props: ProfilePageProps) {
                     Languages I Speak
                   </CardTitle>
                   {isOwnProfile && !editingLanguages && (
-                    <Button size="sm" onClick={handleEditLanguages} className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 [&]:text-black [&>*]:text-black">
-                      <Edit className="w-3 h-3 text-black" />
+                    <Button
+                      size="sm"
+                      onClick={handleEditLanguages}
+                      className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
+                    >
+                      <Edit className="w-3 h-3 text-black dark:text-white" />
                     </Button>
                   )}
                 </div>
@@ -3444,10 +3503,10 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <Button
                         size="sm"
                         onClick={() => setLocation('/travel-quiz')}
-                        className="ml-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 [&]:text-black [&>*]:text-black"
+                        className="ml-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
                       >
-                        <Edit className="w-3 h-3 mr-1 text-black" />
-                        <span className="text-black">Update</span>
+                        <Edit className="w-3 h-3 mr-1 text-black dark:text-white" />
+                        <span className="text-black dark:text-white">Update</span>
                       </Button>
                     )}
                   </CardTitle>

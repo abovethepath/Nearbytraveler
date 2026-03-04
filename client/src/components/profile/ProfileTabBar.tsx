@@ -39,12 +39,14 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
   // iOS: keep About in the hero/tab navigation as requested previously.
   const showAboutTab = !(isHero && isDesktopWeb);
 
-  // Hero background never changes by theme; keep badge text black on web hero.
+  // Hero background never changes by theme; keep badge text dark for legibility.
   const badgeClass = isDesktopWeb
     ? (isHero
-      ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-200 text-black border border-teal-300"
+      ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-200 text-[#111111] border border-teal-300"
       : "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-600 text-white")
-    : "ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-white/20 text-white";
+    : (isHero
+      ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-200/90 text-[#111111] border border-teal-300/70"
+      : "ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-white/20 text-white");
 
   const tabWebBase =
     "relative px-0 py-2 text-sm sm:text-base font-semibold transition-colors select-none";

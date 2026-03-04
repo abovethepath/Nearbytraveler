@@ -200,6 +200,18 @@ main,
 @tailwind components;
 @tailwind utilities;
 
+/* Home page: Discover People cards (mobile, dark mode) */
+@media (max-width: 768px) {
+  .dark .home-discover-people [data-role="user-card-location"] {
+    color: #60a5fa !important;
+    -webkit-text-fill-color: #60a5fa !important;
+  }
+  .dark .home-discover-people [data-role="user-card-location"] svg {
+    color: #60a5fa !important;
+    stroke: #60a5fa !important;
+  }
+}
+
 /* CRITICAL: Prevent ALL horizontal scrolling on mobile */
 html {
   overflow-x: hidden !important;
@@ -223,6 +235,26 @@ body {
   transform: translateZ(0);
   will-change: transform;
   backface-visibility: hidden;
+}
+
+/* Mobile bottom nav must never hide during scroll (mobile only) */
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 9999 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translate3d(0, 0, 0) !important;
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    contain: layout paint style;
+    transition: none !important;
+  }
 }
 
 /* Fix text descenders (g, y, p, q, j) being clipped site-wide - desktop web only */
@@ -1259,11 +1291,34 @@ p, span, div, button, input, textarea, select {
   -webkit-text-fill-color: rgb(var(--nt-text-tertiary)) !important;
 }
 
+/* SVG/icon safety net:
+   If any inline SVG hardcodes black stroke/fill, force it to white in dark mode. */
+.dark :is(svg, svg *)[stroke="black"],
+.dark :is(svg, svg *)[stroke="#000"],
+.dark :is(svg, svg *)[stroke="#000000"] {
+  stroke: rgb(var(--nt-text-primary)) !important;
+}
+.dark :is(svg, svg *)[fill="black"],
+.dark :is(svg, svg *)[fill="#000"],
+.dark :is(svg, svg *)[fill="#000000"] {
+  fill: rgb(var(--nt-text-primary)) !important;
+}
+
 /* Placeholders should read as tertiary in dark mode */
 .dark :is(input, textarea)::placeholder {
   color: rgb(var(--nt-text-tertiary)) !important;
   -webkit-text-fill-color: rgb(var(--nt-text-tertiary)) !important;
   opacity: 1 !important;
+}
+
+/* SVG safety net in dark mode:
+   Some icons are shipped with explicit black stroke/fill (not currentColor),
+   which bypasses our text-class remapping. Force those to white in dark mode. */
+.dark :is(svg[stroke="black"], svg[stroke="#000"], svg[stroke="#000000"], [stroke="black"], [stroke="#000"], [stroke="#000000"]) {
+  stroke: rgb(var(--nt-text-primary)) !important;
+}
+.dark :is(svg[fill="black"], svg[fill="#000"], svg[fill="#000000"], [fill="black"], [fill="#000"], [fill="#000000"]) {
+  fill: rgb(var(--nt-text-primary)) !important;
 }
 
 /* NOTE: Older hard-coded #F0F0F0 readability overrides were replaced

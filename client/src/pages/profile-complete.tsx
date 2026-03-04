@@ -3955,10 +3955,10 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
             <div className="flex flex-col sm:flex-row gap-2">
               <Button 
                 onClick={() => window.location.href = '/create-event'}
-                className="cta-gradient w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 [&]:text-black [&>*]:text-black"
+                className="cta-gradient w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
               >
-                <Plus className="w-4 h-4 mr-2 text-black" />
-                <span className="text-black">Create New Event</span>
+                <Plus className="w-4 h-4 mr-2 text-black dark:text-white" />
+                <span className="text-black dark:text-white">Create New Event</span>
               </Button>
             </div>
           </div>
@@ -4085,10 +4085,10 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
               </p>
               <Button 
                 onClick={() => window.location.href = '/create-event'}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black [&>*]:text-black"
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
               >
-                <Plus className="w-4 h-4 mr-2 text-black" />
-                <span className="text-black">Create Your First Event</span>
+                <Plus className="w-4 h-4 mr-2 text-black dark:text-white" />
+                <span className="text-black dark:text-white">Create Your First Event</span>
               </Button>
             </div>
           )}

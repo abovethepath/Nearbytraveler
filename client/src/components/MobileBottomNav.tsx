@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useLocation } from "wouter";
-import { Home, Plus, MessageSquare, User, Calendar, Search, X, MapPin, Zap, Users } from "lucide-react";
+import { Home, Plus, MessageSquare, User, Calendar, Search, X, MapPin, Zap, Users, Compass } from "lucide-react";
 import { AuthContext } from "@/App";
 import { useQuery } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/queryClient";
@@ -69,7 +70,7 @@ export function MobileBottomNav() {
     { icon: User, label: "Profile", path: profilePath },
   ] : [
     { icon: Home, label: "Home", path: "/" },
-    { icon: Search, label: "Search", action: "search" },
+    { icon: Compass, label: "Explore", path: "/explore" },
     { icon: MessageSquare, label: "Messages", path: "/messages" },
     { icon: User, label: "Profile", path: profilePath },
   ];
@@ -100,6 +101,215 @@ export function MobileBottomNav() {
   // Light mode: use black/dark for nav (keep Create orange)
   const lightNavInactive = "#111827";
   const lightNavActive = "#000000";
+
+  const bottomNav = (
+    <div 
+      className="mobile-bottom-nav"
+      style={{ 
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 9999, 
+        width: '100vw',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        background: isDark ? '#1c1c1e' : '#f8f8f8',
+        borderTop: `1px solid ${isDark ? '#38383a' : '#e5e5e5'}`,
+        overflow: 'visible',
+      }}
+    >
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'flex-end', 
+        justifyContent: 'space-between', 
+        padding: '0 16px', 
+        maxWidth: '700px', 
+        margin: '0 auto', 
+        height: '60px',
+        position: 'relative',
+        overflow: 'visible',
+      }}>
+        {navItems.slice(0, 2).map((item, index) => {
+          const isActive = item.path ? (location === item.path || (item.path === '/' && location === '/')) : false;
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.path || item.action || index}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (item.action === "search") {
+                  openAdvancedFilters();
+                } else if (item.path) {
+                  setLocation(item.path);
+                }
+              }}
+              style={{ 
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1,
+                touchAction: 'manipulation', 
+                WebkitTapHighlightColor: 'transparent', 
+                minHeight: '60px',
+                paddingTop: '8px',
+                paddingBottom: '4px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+              aria-label={item.label}
+            >
+              <Icon 
+                style={{ 
+                  width: '26px', 
+                  height: '26px', 
+                  marginBottom: '3px',
+                  color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
+                  strokeWidth: isActive ? 2.5 : 1.8,
+                }}
+              />
+              <span style={{ 
+                fontSize: '12px', 
+                lineHeight: '14px', 
+                fontWeight: isActive ? 600 : 500,
+                color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
+              }}>
+                {item.label}
+              </span>
+            </button>
+          );
+        })}
+
+        <button
+          type="button"
+          onClick={handleCreateTap}
+          aria-label="Create"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: 1,
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent',
+            minHeight: '60px',
+            paddingTop: '8px',
+            paddingBottom: '4px',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          <div style={{
+            width: '34px',
+            height: '34px',
+            borderRadius: '10px',
+            background: '#f97316',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '3px',
+          }}>
+            <Plus style={{ width: '20px', height: '20px', color: 'white' }} strokeWidth={2.5} />
+          </div>
+          <span style={{ fontSize: '12px', lineHeight: '14px', fontWeight: 500, color: '#f97316' }}>
+            Create
+          </span>
+        </button>
+
+        {navItems.slice(2).map((item, index) => {
+          const isActive = item.path ? (location === item.path || location === item.path + '/' || (item.path === '/messages' && location.startsWith('/messages')) || (item.path === '/business-dashboard' && location.startsWith('/business-dashboard')) || (item.path.startsWith('/profile') && location.startsWith('/profile'))) : false;
+          const Icon = item.icon;
+          const isMessagesItem = item.label === "Messages";
+          const handleNavClick = (e: React.MouseEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (item.action === "search") {
+              openAdvancedFilters();
+            } else if (item.path) {
+              if (isMessagesItem) {
+                setLocation("/messages");
+              } else {
+                setLocation(item.path);
+              }
+            }
+          };
+
+          return (
+            <button
+              key={item.path || item.action || index}
+              type="button"
+              onClick={handleNavClick}
+              data-testid={isMessagesItem ? "nav-messages" : undefined}
+              style={{ 
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1,
+                touchAction: 'manipulation', 
+                WebkitTapHighlightColor: 'transparent', 
+                minHeight: '60px',
+                paddingTop: '8px',
+                paddingBottom: '4px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                overflow: 'visible',
+              }}
+              aria-label={item.label}
+            >
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '32px', overflow: 'visible' }}>
+                <Icon 
+                  style={{ 
+                    width: '26px', 
+                    height: '26px', 
+                    minWidth: '26px',
+                    marginBottom: '3px',
+                    color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
+                    strokeWidth: isActive ? 2.5 : 1.8,
+                    flexShrink: 0,
+                  }}
+                />
+                {isMessagesItem && unreadCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '-6px',
+                    right: '-10px',
+                    minWidth: '18px',
+                    height: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#ef4444',
+                    color: 'white',
+                    borderRadius: '9999px',
+                    padding: '0 4px',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                  }}>
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+              </div>
+              <span style={{ 
+                fontSize: '12px', 
+                lineHeight: '14px', 
+                fontWeight: isActive ? 600 : 500,
+                color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
+              }}>
+                {item.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -216,213 +426,7 @@ export function MobileBottomNav() {
           </div>
         </div>
       )}
-
-      <div 
-        className="mobile-bottom-nav"
-        style={{ 
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 9999, 
-          width: '100vw',
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-          background: isDark ? '#1c1c1e' : '#f8f8f8',
-          borderTop: `1px solid ${isDark ? '#38383a' : '#e5e5e5'}`,
-          overflow: 'visible',
-        }}
-      >
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'flex-end', 
-          justifyContent: 'space-between', 
-          padding: '0 16px', 
-          maxWidth: '700px', 
-          margin: '0 auto', 
-          height: '60px',
-          position: 'relative',
-          overflow: 'visible',
-        }}>
-          {navItems.slice(0, 2).map((item, index) => {
-            const isActive = item.path ? (location === item.path || (item.path === '/' && location === '/')) : false;
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.path || item.action || index}
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (item.action === "search") {
-                    openAdvancedFilters();
-                  } else if (item.path) {
-                    setLocation(item.path);
-                  }
-                }}
-                style={{ 
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flex: 1,
-                  touchAction: 'manipulation', 
-                  WebkitTapHighlightColor: 'transparent', 
-                  minHeight: '60px',
-                  paddingTop: '8px',
-                  paddingBottom: '4px',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-                aria-label={item.label}
-              >
-                <Icon 
-                  style={{ 
-                    width: '26px', 
-                    height: '26px', 
-                    marginBottom: '3px',
-                    color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
-                    strokeWidth: isActive ? 2.5 : 1.8,
-                  }}
-                />
-                <span style={{ 
-                  fontSize: '12px', 
-                  lineHeight: '14px', 
-                  fontWeight: isActive ? 600 : 500,
-                  color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
-                }}>
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
-
-          <button
-            type="button"
-            onClick={handleCreateTap}
-            aria-label="Create"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flex: 1,
-              touchAction: 'manipulation',
-              WebkitTapHighlightColor: 'transparent',
-              minHeight: '60px',
-              paddingTop: '8px',
-              paddingBottom: '4px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <div style={{
-              width: '34px',
-              height: '34px',
-              borderRadius: '10px',
-              background: '#f97316',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '3px',
-            }}>
-              <Plus style={{ width: '20px', height: '20px', color: 'white' }} strokeWidth={2.5} />
-            </div>
-            <span style={{ fontSize: '12px', lineHeight: '14px', fontWeight: 500, color: '#f97316' }}>
-              Create
-            </span>
-          </button>
-
-          {navItems.slice(2).map((item, index) => {
-            const isActive = item.path ? (location === item.path || location === item.path + '/' || (item.path === '/messages' && location.startsWith('/messages')) || (item.path === '/business-dashboard' && location.startsWith('/business-dashboard')) || (item.path.startsWith('/profile') && location.startsWith('/profile'))) : false;
-            const Icon = item.icon;
-            const isMessagesItem = item.label === "Messages";
-            const handleNavClick = (e: React.MouseEvent) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (item.action === "search") {
-                openAdvancedFilters();
-              } else if (item.path) {
-                if (isMessagesItem) {
-                  setLocation("/messages");
-                } else {
-                  setLocation(item.path);
-                }
-              }
-            };
-
-            return (
-              <button
-                key={item.path || item.action || index}
-                type="button"
-                onClick={handleNavClick}
-                data-testid={isMessagesItem ? "nav-messages" : undefined}
-                style={{ 
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flex: 1,
-                  touchAction: 'manipulation', 
-                  WebkitTapHighlightColor: 'transparent', 
-                  minHeight: '60px',
-                  paddingTop: '8px',
-                  paddingBottom: '4px',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  overflow: 'visible',
-                }}
-                aria-label={item.label}
-              >
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '32px', overflow: 'visible' }}>
-                  <Icon 
-                    style={{ 
-                      width: '26px', 
-                      height: '26px', 
-                      minWidth: '26px',
-                      marginBottom: '3px',
-                      color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
-                      strokeWidth: isActive ? 2.5 : 1.8,
-                      flexShrink: 0,
-                    }}
-                  />
-                  {isMessagesItem && unreadCount > 0 && (
-                    <span style={{
-                      position: 'absolute',
-                      top: '-6px',
-                      right: '-10px',
-                      minWidth: '18px',
-                      height: '18px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: '#ef4444',
-                      color: 'white',
-                      borderRadius: '9999px',
-                      padding: '0 4px',
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                    }}>
-                      {unreadCount > 99 ? '99+' : unreadCount}
-                    </span>
-                  )}
-                </div>
-                <span style={{ 
-                  fontSize: '12px', 
-                  lineHeight: '14px', 
-                  fontWeight: isActive ? 600 : 500,
-                  color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
-                }}>
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      {typeof document !== "undefined" ? createPortal(bottomNav, document.body) : bottomNav}
 
       <style>{`
         @keyframes iosSheetUp {

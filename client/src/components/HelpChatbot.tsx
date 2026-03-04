@@ -39,6 +39,10 @@ export function HelpChatbot() {
   const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isMobileViewport, setIsMobileViewport] = useState(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return false;
+    return window.matchMedia('(max-width: 768px)').matches;
+  });
 
   // Hide on landing/public pages - chatbot is for logged-in users only
   const landingPaths = ['/', '/landing', '/landing-new', '/locals-landing', '/travelers-landing', '/events-landing', '/business-landing', '/couchsurfing', '/cs', '/networking-landing', '/signup', '/signin', '/auth', '/join', '/launching-soon', '/about', '/privacy', '/terms', '/cookies', '/support', '/ambassador-program', '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/b', '/preview-landing', '/preview-first-landing', '/getting-started', '/quick-login'];
@@ -60,8 +64,17 @@ export function HelpChatbot() {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(max-width: 768px)');
+    const update = () => setIsMobileViewport(!!mq.matches);
+    update();
+    mq.addEventListener?.('change', update);
+    return () => mq.removeEventListener?.('change', update);
+  }, []);
+
   // Early return AFTER all hooks
-  if (isMessagePage || isLandingPage) return null;
+  if (isMobileViewport || isMessagePage || isLandingPage) return null;
 
   const sendMessage = async (messageText: string) => {
     if (!messageText.trim() || isLoading) return;

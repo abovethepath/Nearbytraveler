@@ -1809,11 +1809,11 @@ export default function Home() {
               <MeetupAlertBanner userId={effectiveUser.id} />
             )}
 
-            <div className="relative z-10 bg-white dark:bg-gray-900 rounded-3xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="home-discover-people relative z-10 bg-white dark:bg-gray-900 rounded-3xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
             
             <div className="flex items-center justify-between mb-6" data-testid="discover-people-section">
-              <div className="flex items-center gap-2 sm:gap-4">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-600 via-cyan-600 to-orange-500 bg-clip-text text-transparent">
+              <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+                <h2 className="text-xl sm:text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-600 via-cyan-600 to-orange-500 bg-clip-text text-transparent whitespace-nowrap truncate min-w-0">
                   {activeFilter === "travel-dates" 
                     ? `Travel Connections to ${user?.travelDestination}` 
                     : "Discover People"
@@ -1892,16 +1892,16 @@ export default function Home() {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowAdvancedFilters(true)}
-                  className="inline-flex"
+                  className="inline-flex dark:bg-white/10 dark:border-white/15 dark:text-white dark:hover:bg-white/15 dark:[&_*]:text-white"
                   data-testid="button-open-advanced-filters"
                 >
-                  <Filter className="w-4 h-4 sm:mr-2" />
+                  <Filter className="w-4 h-4 sm:mr-2 text-gray-800 dark:text-white" />
                   <span className="hidden sm:inline">Filters</span>
                 </Button>
                 {/* Sort Dropdown */}
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                  <SelectTrigger className="w-32 sm:w-40" data-testid="select-sort">
-                    <ArrowUpDown className="w-4 h-4 mr-2" />
+                  <SelectTrigger className="w-[7.5rem] sm:w-40 px-2 sm:px-3 dark:bg-white/10 dark:border-white/15 dark:text-white dark:hover:bg-white/15 dark:[&_*]:text-white" data-testid="select-sort">
+                    <ArrowUpDown className="w-4 h-4 mr-1 sm:mr-2 text-gray-800 dark:text-white flex-shrink-0" />
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>

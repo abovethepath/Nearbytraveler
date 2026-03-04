@@ -275,7 +275,10 @@ export default function UserCard({
               <div className="truncate w-full font-extrabold text-[14px] text-gray-900 dark:!text-white">
                 {handle}
               </div>
-              <div className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:!text-[#D1D5DB]">
+              <div
+                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:!text-[#D1D5DB]"
+                data-role="user-card-location"
+              >
                 <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
                 <span className="truncate">{hometownLine}</span>
               </div>
@@ -363,7 +366,10 @@ export default function UserCard({
               <div className="truncate w-full font-extrabold text-[14px] text-gray-900 dark:!text-white">
                 {handle}
               </div>
-              <div className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:!text-[#D1D5DB]">
+              <div
+                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:!text-[#D1D5DB]"
+                data-role="user-card-location"
+              >
                 <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
                 <span className="truncate">{hometownLine}</span>
               </div>

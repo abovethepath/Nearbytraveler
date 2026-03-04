@@ -10,7 +10,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp, Camera } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp, Camera, User as UserIcon, ShieldAlert, Share2, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
@@ -74,6 +75,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     typeof window !== "undefined" &&
     !!window.matchMedia &&
     window.matchMedia("(max-width: 768px)").matches;
+  const isMobile =
+    typeof window !== "undefined" &&
+    !!window.matchMedia &&
+    window.matchMedia("(max-width: 768px)").matches;
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
@@ -85,6 +90,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [muteDialogOpen, setMuteDialogOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<ChatMember | null>(null);
   const [muteReason, setMuteReason] = useState("");
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [notificationsMuted, setNotificationsMuted] = useState(false);
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const [isWsConnected, setIsWsConnected] = useState(false);
@@ -103,6 +110,177 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const prevMessageCountRef = useRef<number>(0);
+
+  const muteKey = useMemo(() => {
+    if (chatType === "dm") return `nt-muted-dm-${chatId}`;
+    if (chatType === "chatroom") return `nt-muted-chatroom-${chatId}`;
+    return `nt-muted-${chatType}-${chatId}`;
+  }, [chatType, chatId]);
+
+  useEffect(() => {
+    try {
+      setNotificationsMuted(localStorage.getItem(muteKey) === "1");
+    } catch {
+      setNotificationsMuted(false);
+    }
+  }, [muteKey]);
+
+  const toggleNotificationsMuted = () => {
+    const next = !notificationsMuted;
+    setNotificationsMuted(next);
+    try {
+      localStorage.setItem(muteKey, next ? "1" : "0");
+    } catch {}
+    toast({
+      title: next ? "Notifications muted" : "Notifications unmuted",
+      description: chatType === "dm" ? "This conversation is muted." : "This chatroom is muted.",
+    });
+  };
+
+  const shareChatroomLink = async () => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const url = `${origin}/whatsapp-chatroom/${chatId}`;
+    try {
+      if ((navigator as any).share) {
+        await (navigator as any).share({ title: "Join my chatroom", text: `Join "${title}" on NearbyTraveler`, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast({ title: "Link copied", description: "Share it anywhere." });
+      }
+    } catch {
+      toast({ title: "Couldn't share", description: "Please try again.", variant: "destructive" });
+    }
+  };
+
+  const reportChatroom = async () => {
+    const details = typeof window !== "undefined" ? window.prompt("Optional: add details for this report (or leave blank).", "") : "";
+    try {
+      const u: any = (() => {
+        try { return JSON.parse(localStorage.getItem("user") || localStorage.getItem("travelconnect_user") || localStorage.getItem("current_user") || "{}"); } catch { return {}; }
+      })();
+      const uid = Number(currentUserId || u?.id || 0);
+      const res = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/report`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": uid ? String(uid) : "",
+          ...(u?.id ? { "x-user-data": JSON.stringify({ id: u.id, username: u.username, email: u.email, name: u.name }) } : {}),
+        },
+        body: JSON.stringify({ userId: uid || undefined, reason: "inappropriate", details: details || undefined }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || data?.message || `HTTP ${res.status}`);
+      toast({ title: "Report submitted", description: data?.message || "Thanks — our team will review it." });
+    } catch (e: any) {
+      toast({ title: "Couldn't submit report", description: String(e?.message || "Please try again."), variant: "destructive" });
+    }
+  };
+
+  const reportConversation = async () => {
+    if (chatType !== "dm") return;
+    const details = typeof window !== "undefined" ? window.prompt("Optional: add details for this report (or leave blank).", "") : "";
+    try {
+      const u: any = (() => {
+        try { return JSON.parse(localStorage.getItem("user") || localStorage.getItem("travelconnect_user") || localStorage.getItem("current_user") || "{}"); } catch { return {}; }
+      })();
+      const uid = Number(currentUserId || u?.id || 0);
+      const res = await fetch(`${getApiBaseUrl()}/api/users/report`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": uid ? String(uid) : "",
+        },
+        body: JSON.stringify({
+          reportedUserId: chatId,
+          reason: "inappropriate",
+          details: details ? `Reported from DM conversation: ${details}` : "Reported from DM conversation",
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || data?.message || `HTTP ${res.status}`);
+      toast({ title: "Report submitted", description: data?.message || "Thanks — our team will review it." });
+    } catch (e: any) {
+      toast({ title: "Couldn't submit report", description: String(e?.message || "Please try again."), variant: "destructive" });
+    }
+  };
+
+  const blockDmUser = async () => {
+    if (chatType !== "dm") return;
+    if (typeof window !== "undefined" && !window.confirm("Block this user? They won't be able to contact you.")) return;
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/users/block`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blockedUserId: chatId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || data?.message || `HTTP ${res.status}`);
+      toast({ title: "User blocked", description: "They can no longer message you." });
+      navigate("/messages");
+    } catch (e: any) {
+      toast({ title: "Couldn't block user", description: String(e?.message || "Please try again."), variant: "destructive" });
+    }
+  };
+
+  const deleteDmConversation = async () => {
+    if (chatType !== "dm") return;
+    if (typeof window !== "undefined" && !window.confirm("Delete this conversation? This cannot be undone.")) return;
+    try {
+      const u: any = (() => {
+        try { return JSON.parse(localStorage.getItem("user") || localStorage.getItem("travelconnect_user") || localStorage.getItem("current_user") || "{}"); } catch { return {}; }
+      })();
+      const uid = Number(currentUserId || u?.id || 0);
+      const res = await fetch(`${getApiBaseUrl()}/api/messages/conversation/${chatId}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": uid ? String(uid) : "",
+        },
+        body: JSON.stringify({ userId: uid || undefined }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || data?.message || `HTTP ${res.status}`);
+      queryClient.invalidateQueries({ queryKey: ["/api/messages"] });
+      toast({ title: "Conversation deleted" });
+      navigate("/messages");
+    } catch (e: any) {
+      toast({ title: "Couldn't delete conversation", description: String(e?.message || "Please try again."), variant: "destructive" });
+    }
+  };
+
+  const leaveChatroom = async () => {
+    if (chatType !== "chatroom") return;
+    if (typeof window !== "undefined" && !window.confirm("Leave this chatroom?")) return;
+    try {
+      const u: any = (() => {
+        try { return JSON.parse(localStorage.getItem("user") || localStorage.getItem("travelconnect_user") || localStorage.getItem("current_user") || "{}"); } catch { return {}; }
+      })();
+      const uid = Number(currentUserId || u?.id || 0);
+      const res = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/leave`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": uid ? String(uid) : "",
+          ...(u?.id ? { "x-user-data": JSON.stringify({ id: u.id, username: u.username, email: u.email, name: u.name }) } : {}),
+        },
+        body: JSON.stringify({ userId: uid || undefined }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.message || data?.error || `HTTP ${res.status}`);
+      toast({ title: "Left chatroom" });
+      queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatId}/members`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatId}`] });
+      if (onBack) onBack();
+      else navigate("/chatrooms");
+    } catch (e: any) {
+      toast({ title: "Couldn't leave chatroom", description: String(e?.message || "Please try again."), variant: "destructive" });
+    }
+  };
 
   const fileToDataUrl = (file: File) =>
     new Promise<string>((resolve, reject) => {
@@ -1657,9 +1835,222 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             </SheetContent>
           </Sheet>
         )}
-        <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700 h-8 w-8">
-          <MoreVertical className="w-4 h-4" />
-        </Button>
+        {/* 3-dot menu: bottom sheet on mobile, dropdown on desktop */}
+        {isMobile ? (
+          <Sheet open={moreMenuOpen} onOpenChange={setMoreMenuOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-gray-700 h-8 w-8"
+                onClick={() => setMoreMenuOpen(true)}
+                data-testid="button-chat-more"
+              >
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="bg-gray-900 border-t border-gray-700 text-white">
+              <SheetHeader>
+                <SheetTitle className="text-white">Options</SheetTitle>
+              </SheetHeader>
+              <div className="mt-4 space-y-2">
+                {chatType === "dm" ? (
+                  <>
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
+                      onClick={() => {
+                        setMoreMenuOpen(false);
+                        navigate(`/profile/${chatId}`);
+                      }}
+                    >
+                      <UserIcon className="w-5 h-5" />
+                      <span className="font-semibold">View Profile</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
+                      onClick={() => {
+                        setMoreMenuOpen(false);
+                        toggleNotificationsMuted();
+                      }}
+                    >
+                      {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                      <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
+                      onClick={() => {
+                        setMoreMenuOpen(false);
+                        blockDmUser();
+                      }}
+                    >
+                      <ShieldAlert className="w-5 h-5" />
+                      <span className="font-semibold">Block User</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
+                      onClick={() => {
+                        setMoreMenuOpen(false);
+                        reportConversation();
+                      }}
+                    >
+                      <ShieldAlert className="w-5 h-5" />
+                      <span className="font-semibold">Report Conversation</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-red-300"
+                      onClick={() => {
+                        setMoreMenuOpen(false);
+                        deleteDmConversation();
+                      }}
+                    >
+                      <Trash2 className="w-5 h-5" />
+                      <span className="font-semibold">Delete Conversation</span>
+                    </button>
+                  </>
+                ) : chatType === "chatroom" ? (
+                  <>
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
+                      onClick={() => {
+                        setMoreMenuOpen(false);
+                        setShowMembers(true);
+                      }}
+                    >
+                      <Users className="w-5 h-5" />
+                      <span className="font-semibold">View Members</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
+                      onClick={() => {
+                        setMoreMenuOpen(false);
+                        toggleNotificationsMuted();
+                      }}
+                    >
+                      {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                      <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
+                      onClick={() => {
+                        setMoreMenuOpen(false);
+                        shareChatroomLink();
+                      }}
+                    >
+                      <Share2 className="w-5 h-5" />
+                      <span className="font-semibold">Share Chatroom</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
+                      onClick={() => {
+                        setMoreMenuOpen(false);
+                        reportChatroom();
+                      }}
+                    >
+                      <ShieldAlert className="w-5 h-5" />
+                      <span className="font-semibold">Report Chatroom</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-red-300"
+                      onClick={() => {
+                        setMoreMenuOpen(false);
+                        leaveChatroom();
+                      }}
+                    >
+                      <LogOut className="w-5 h-5" />
+                      <span className="font-semibold">Leave Chatroom</span>
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
+                    onClick={() => {
+                      setMoreMenuOpen(false);
+                      toggleNotificationsMuted();
+                    }}
+                  >
+                    {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                    <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
+                  </button>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700 h-8 w-8" data-testid="button-chat-more">
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 bg-gray-900 text-white border border-gray-700">
+              {chatType === "dm" ? (
+                <>
+                  <DropdownMenuItem onClick={() => navigate(`/profile/${chatId}`)}>
+                    <UserIcon className="w-4 h-4 mr-2" />
+                    View Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={toggleNotificationsMuted}>
+                    {(notificationsMuted ? <Volume2 className="w-4 h-4 mr-2" /> : <VolumeX className="w-4 h-4 mr-2" />)}
+                    {notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={blockDmUser}>
+                    <ShieldAlert className="w-4 h-4 mr-2" />
+                    Block User
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={reportConversation}>
+                    <ShieldAlert className="w-4 h-4 mr-2" />
+                    Report Conversation
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-gray-700" />
+                  <DropdownMenuItem className="text-red-300 focus:text-red-200" onClick={deleteDmConversation}>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Conversation
+                  </DropdownMenuItem>
+                </>
+              ) : chatType === "chatroom" ? (
+                <>
+                  <DropdownMenuItem onClick={() => setShowMembers(true)}>
+                    <Users className="w-4 h-4 mr-2" />
+                    View Members
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={toggleNotificationsMuted}>
+                    {(notificationsMuted ? <Volume2 className="w-4 h-4 mr-2" /> : <VolumeX className="w-4 h-4 mr-2" />)}
+                    {notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={shareChatroomLink}>
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Share Chatroom
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={reportChatroom}>
+                    <ShieldAlert className="w-4 h-4 mr-2" />
+                    Report Chatroom
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-gray-700" />
+                  <DropdownMenuItem className="text-red-300 focus:text-red-200" onClick={leaveChatroom}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Leave Chatroom
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <DropdownMenuItem onClick={toggleNotificationsMuted}>
+                  {(notificationsMuted ? <Volume2 className="w-4 h-4 mr-2" /> : <VolumeX className="w-4 h-4 mr-2" />)}
+                  {notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       {/* Messages - Flex wrapper ensures proper spacing; min-h-0 allows flex child to shrink */}

@@ -1736,6 +1736,11 @@ function App() {
     }
   }, []);
 
+  const isMobileViewport =
+    typeof window !== "undefined" &&
+    !!window.matchMedia &&
+    window.matchMedia("(max-width: 768px)").matches;
+
   // Initialize Google Analytics when app loads
   useEffect(() => {
     // Verify required environment variable is present
@@ -1755,7 +1760,7 @@ function App() {
           <Toaster />
           <DarkModeSuggestionBanner />
           <Router />
-          {!isNativeIOSApp() && <HelpChatbot />}
+          {!isNativeIOSApp() && !isMobileViewport && <HelpChatbot />}
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
