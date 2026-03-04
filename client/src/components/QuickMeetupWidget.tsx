@@ -58,6 +58,21 @@ export function QuickMeetupWidget({
 
   // Current user (session-based auth)
   const actualUser = user || currentUser;
+  const actualUserId = Number((actualUser as any)?.id || 0) || 0;
+
+  // Participant ids often come back as numbers, but current user ids can be strings in some clients.
+  // Normalize comparisons so "Joined" / Chat / Leave always show correctly.
+  const getParticipantIds = (m: any): number[] => {
+    const raw = (m as any)?.participantIds;
+    if (!Array.isArray(raw)) return [];
+    return raw
+      .map((x: any) => Number(x))
+      .filter((n: any) => Number.isFinite(n));
+  };
+  const isJoinedBy = (m: any, userId: number) => {
+    if (!userId) return false;
+    return getParticipantIds(m).includes(userId);
+  };
 
   // Fetch existing quick meetups
   const { data: quickMeetups, isLoading } = useQuery({
@@ -167,12 +182,12 @@ export function QuickMeetupWidget({
   // when user is not yet a member. Do NOT navigate directly to quick-meetup-chat without joining first.
   const joinMutation = useMutation({
     mutationFn: async (meetupId: number) => {
-      if (!actualUser?.id) throw new Error("Please log in to join quick meets");
+      if (!actualUserId) throw new Error("Please log in to join quick meets");
 
-      console.log('🚀 ATTEMPTING JOIN:', { meetupId, userId: actualUser.id });
+      console.log('🚀 ATTEMPTING JOIN:', { meetupId, userId: actualUserId });
       
       const result = await apiRequest('POST', `/api/quick-meets/${meetupId}/join`, {
-        userId: actualUser.id
+        userId: actualUserId
       });
 
       if (!result.ok) {
@@ -191,7 +206,7 @@ export function QuickMeetupWidget({
       setDetailsMeetup((prev) => {
         if (!prev || prev.id !== data.meetupId) return prev;
         const ids: number[] = Array.isArray(prev.participantIds) ? [...prev.participantIds] : [];
-        if (actualUser?.id && !ids.includes(actualUser.id)) ids.push(actualUser.id);
+        if (actualUserId && !ids.map((x: any) => Number(x)).includes(actualUserId)) ids.push(actualUserId);
         return {
           ...prev,
           participantIds: ids,
@@ -226,9 +241,9 @@ export function QuickMeetupWidget({
       queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
       toast({ title: "Left meetup", description: "You've left the quick meetup." });
       setDetailsMeetup((prev) => {
-        if (!prev || !actualUser?.id) return prev;
+        if (!prev || !actualUserId) return prev;
         const ids: number[] = Array.isArray(prev.participantIds)
-          ? prev.participantIds.filter((x: any) => Number(x) !== Number(actualUser.id))
+          ? prev.participantIds.filter((x: any) => Number(x) !== Number(actualUserId))
           : [];
         return {
           ...prev,
@@ -460,11 +475,7 @@ export function QuickMeetupWidget({
     return hoursLeft > 0 ? `${hoursLeft}h ${minutesLeft}m` : `${minutesLeft}m`;
   };
 
-  const isDetailsJoined =
-    !!detailsMeetup?.id &&
-    !!actualUser?.id &&
-    Array.isArray(detailsMeetup?.participantIds) &&
-    detailsMeetup.participantIds.map((x: any) => Number(x)).includes(Number(actualUser.id));
+  const isDetailsJoined = isJoinedBy(detailsMeetup, actualUserId);
 
   return (
     <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="quick-meetup-widget">
@@ -483,7 +494,7 @@ export function QuickMeetupWidget({
               <div className="space-y-2 max-h-[300px] overflow-y-auto">
                 {allActiveMeetups.slice(0, 5).map((meetup: any) => {
                   const isOwn = meetup.organizerId === actualUser?.id;
-                  const isJoined = (meetup.participantIds || []).includes(actualUser?.id);
+                  const isJoined = isJoinedBy(meetup, actualUserId);
                   const expiresAt = new Date(meetup.expiresAt);
                   const timeLeft = Math.max(0, expiresAt.getTime() - Date.now());
                   const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
@@ -860,7 +871,7 @@ export function QuickMeetupWidget({
             .slice(0, 3)
             .map((meetup: any) => {
               const isOwn = meetup.organizerId === actualUser?.id;
-              const isJoined = (meetup.participantIds || []).includes(actualUser?.id);
+              const isJoined = isJoinedBy(meetup, actualUserId);
               
               // ALWAYS USE LOCAL TIME for countdown calculations
               const now = new Date();
@@ -1204,7 +1215,7 @@ export function QuickMeetupWidget({
                         disabled={leaveMutation.isPending}
                         className="border-red-300 text-red-700 dark:text-red-300 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20"
                       >
-                        {leaveMutation.isPending ? "Leaving..." : "Leave"}
+                        {leaveMutation.isPending ? "Leaving..." : "Leave Meetup"}
                       </Button>
                     </>
                   )}
