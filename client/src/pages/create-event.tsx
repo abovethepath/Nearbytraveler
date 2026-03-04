@@ -36,7 +36,7 @@ interface EventFormData {
   title: string;
   description?: string;
   venueName?: string; // Name of the venue (e.g., "Jameson Pub")
-  street: string;
+  street?: string;
   city: string;
   state: string;
   country: string;
@@ -100,14 +100,6 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
-
-  // Auto-open AI Quick Create if ?ai=true in URL
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('ai') === 'true') {
-      setOpenQuickPanel("ai");
-    }
-  }, []);
 
   // If a user imported an event, keep the import panel open so they can complete organizer confirmation.
   useEffect(() => {
@@ -711,23 +703,13 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
             <div className="space-y-3">
               <button
                 type="button"
-                className="w-full rounded-xl border border-blue-200 dark:border-blue-800 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 p-4 text-left hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-950/40 dark:hover:to-purple-950/40 transition-colors"
+                className="w-full rounded-xl border border-purple-200 dark:border-purple-700 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white p-4 text-left shadow-sm hover:shadow-md transition-all"
                 onClick={() => setOpenQuickPanel((prev) => (prev === "import" ? null : "import"))}
                 aria-expanded={openQuickPanel === "import"}
                 aria-controls="quick-import-panel"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-sm sm:text-base font-semibold text-blue-900 dark:text-blue-100">
-                      🔗 Have a Couchsurfing or Meetup event? Import it here
-                    </div>
-                    <div className="mt-1 text-xs sm:text-sm text-blue-700 dark:text-blue-300">
-                      Paste a URL and we’ll auto-fill the form in seconds.
-                    </div>
-                  </div>
-                  <div className="mt-0.5 text-blue-700 dark:text-blue-300">
-                    {openQuickPanel === "import" ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                  </div>
+                <div className="text-sm sm:text-base font-bold">
+                  🔗 Have a Couchsurfing or Meetup event? Import it here
                 </div>
               </button>
 
@@ -998,23 +980,13 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
 
               <button
                 type="button"
-                className="w-full rounded-xl border border-orange-200 dark:border-orange-800 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 p-4 text-left hover:from-orange-100 hover:to-amber-100 dark:hover:from-orange-950/40 dark:hover:to-amber-950/40 transition-colors"
+                className="w-full rounded-xl border border-orange-200 dark:border-orange-700 bg-gradient-to-r from-[#FF6B35] to-orange-500 hover:from-[#ff5a1f] hover:to-orange-600 text-white p-4 text-left shadow-sm hover:shadow-md transition-all"
                 onClick={() => setOpenQuickPanel((prev) => (prev === "ai" ? null : "ai"))}
                 aria-expanded={openQuickPanel === "ai"}
                 aria-controls="quick-ai-panel"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-sm sm:text-base font-semibold text-orange-900 dark:text-orange-100">
-                      ✨ Use AI or Voice to create your event
-                    </div>
-                    <div className="mt-1 text-xs sm:text-sm text-orange-700 dark:text-orange-300">
-                      Describe your event in plain English and we’ll fill out the form.
-                    </div>
-                  </div>
-                  <div className="mt-0.5 text-orange-700 dark:text-orange-300">
-                    {openQuickPanel === "ai" ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                  </div>
+                <div className="text-sm sm:text-base font-bold">
+                  ✨ Use AI or Voice to create your event
                 </div>
               </button>
 
@@ -1427,7 +1399,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                   className="h-5 w-5 border-2 border-blue-500 dark:border-blue-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                 />
                 <Label htmlFor="addEndTime" className="text-sm font-medium text-gray-800 dark:text-white cursor-pointer">
-                  Add end time (optional)
+                  Add end time
                 </Label>
               </div>
 
@@ -1588,6 +1560,63 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                   </div>
                 </>
               )}
+            </div>
+
+            {/* Event Image Upload */}
+            <div className="space-y-4">
+              <Label className="flex items-center gap-2 text-base font-semibold">
+                <ImageIcon className="w-5 h-5" />
+                Event Photo (Optional)
+              </Label>
+
+              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
+                {imagePreview ? (
+                  <div className="space-y-4">
+                    <div className="relative inline-block">
+                      <img
+                        src={imagePreview}
+                        alt="Event preview"
+                        className="max-w-full h-48 object-cover rounded-lg mx-auto"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImagePreview(null);
+                          setValue("imageUrl", "");
+                        }}
+                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg transition-colors"
+                        aria-label="Remove image"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="text-gray-500 dark:text-gray-300">
+                      <ImageIcon className="w-12 h-12 mx-auto mb-2" />
+                      <p className="text-sm">Upload an event photo to attract more participants</p>
+                    </div>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (e) => {
+                            const result = e.target?.result as string;
+                            setImagePreview(result);
+                            setValue("imageUrl", result);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="max-w-xs mx-auto"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Recurring Event Options */}
@@ -1770,63 +1799,6 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                 </div>
               )}
               <input type="hidden" {...register("externalRsvpProvider")} />
-            </div>
-
-            {/* Event Image Upload */}
-            <div className="space-y-4">
-              <Label className="flex items-center gap-2 text-base font-semibold">
-                <ImageIcon className="w-5 h-5" />
-                Event Photo (Optional)
-              </Label>
-              
-              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
-                {imagePreview ? (
-                  <div className="space-y-4">
-                    <div className="relative inline-block">
-                      <img
-                        src={imagePreview}
-                        alt="Event preview"
-                        className="max-w-full h-48 object-cover rounded-lg mx-auto"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setImagePreview(null);
-                          setValue("imageUrl", "");
-                        }}
-                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg transition-colors"
-                        aria-label="Remove image"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="text-gray-500 dark:text-gray-300">
-                      <ImageIcon className="w-12 h-12 mx-auto mb-2" />
-                      <p className="text-sm">Upload an event photo to attract more participants</p>
-                    </div>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onload = (e) => {
-                            const result = e.target?.result as string;
-                            setImagePreview(result);
-                            setValue("imageUrl", result);
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                      className="max-w-xs mx-auto"
-                    />
-                  </div>
-                )}
-              </div>
             </div>
 
             {/* PRIVATE EVENT VISIBILITY TAGS - Collapsible */}

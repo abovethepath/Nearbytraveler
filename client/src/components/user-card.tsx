@@ -271,17 +271,22 @@ export default function UserCard({
         {/* Mobile / compact */}
         <div className={compact ? '' : 'lg:hidden'}>
           {variant === "homeCity" ? (
-            <div className="w-full flex flex-col items-center text-center">
-              <div className="truncate w-full text-center font-extrabold text-[14px] text-gray-900 dark:!text-white">
+            <div className="!flex !flex-col !items-center !w-full !text-center" data-role="user-card-text-container">
+              <div
+                data-role="user-card-username"
+                className="truncate !w-full !text-center !block font-extrabold text-[14px] !text-[#FF6B35]"
+              >
                 {handle}
               </div>
               <div
-                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-center text-[11.5px] !text-blue-500"
+                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 !w-full !text-center text-[11.5px] !text-[#3b82f6]"
                 data-role="user-card-location"
                 style={{ width: "100%", textAlign: "center" }}
               >
                 <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
-                <span className="truncate text-center">{hometownLine}</span>
+                <span data-role="user-card-city" className="truncate !text-center !w-full !block">
+                  {hometownLine}
+                </span>
               </div>
               <div
                 className="user-card-bio mt-1.5 w-full text-center"
@@ -305,11 +310,17 @@ export default function UserCard({
               <div
                 className={`mt-1 w-full flex flex-col items-center text-center ${isCurrentUser ? "invisible" : ""}`}
               >
-                <span className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[#FF6B35] dark:border-[#FF6B35] dark:text-white dark:shadow-[0_10px_25px_rgba(255,107,53,0.18)]">
-                  {thingsInCommon} things in common
-                </span>
+                <div className="!w-full !flex !justify-center">
+                  <span
+                    data-role="user-card-things-pill"
+                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[#FF6B35] dark:border-[#FF6B35] dark:text-white dark:shadow-[0_10px_25px_rgba(255,107,53,0.18)] !mx-auto"
+                  >
+                    {thingsInCommon} things in common
+                  </span>
+                </div>
                 <div
-                  className="mt-0.5 w-full text-center text-[11px] font-medium !text-blue-500 truncate"
+                  data-role="user-card-contacts"
+                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium !text-[#3b82f6] truncate"
                   style={{ width: "100%", textAlign: "center" }}
                 >
                   {contactsInCommon} contacts in common
@@ -366,17 +377,22 @@ export default function UserCard({
         {/* Desktop (non-compact only) */}
         <div className={compact ? 'hidden' : 'hidden lg:flex lg:flex-col lg:min-h-[7.5rem]'} style={{ minHeight: '7.5rem' }}>
           {variant === "homeCity" ? (
-            <div className="w-full flex flex-col items-center text-center">
-              <div className="truncate w-full text-center font-extrabold text-[14px] text-gray-900 dark:!text-white">
+            <div className="!flex !flex-col !items-center !w-full !text-center" data-role="user-card-text-container">
+              <div
+                data-role="user-card-username"
+                className="truncate !w-full !text-center !block font-extrabold text-[14px] !text-[#FF6B35]"
+              >
                 {handle}
               </div>
               <div
-                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-center text-[11.5px] !text-blue-500"
+                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 !w-full !text-center text-[11.5px] !text-[#3b82f6]"
                 data-role="user-card-location"
                 style={{ width: "100%", textAlign: "center" }}
               >
                 <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
-                <span className="truncate text-center">{hometownLine}</span>
+                <span data-role="user-card-city" className="truncate !text-center !w-full !block">
+                  {hometownLine}
+                </span>
               </div>
               <div
                 className="user-card-bio mt-1.5 w-full text-center"
@@ -400,11 +416,17 @@ export default function UserCard({
               <div
                 className={`mt-1 w-full flex flex-col items-center text-center ${isCurrentUser ? "invisible" : ""}`}
               >
-                <span className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[#FF6B35] dark:border-[#FF6B35] dark:text-white dark:shadow-[0_10px_25px_rgba(255,107,53,0.18)]">
-                  {thingsInCommon} things in common
-                </span>
+                <div className="!w-full !flex !justify-center">
+                  <span
+                    data-role="user-card-things-pill"
+                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[#FF6B35] dark:border-[#FF6B35] dark:text-white dark:shadow-[0_10px_25px_rgba(255,107,53,0.18)] !mx-auto"
+                  >
+                    {thingsInCommon} things in common
+                  </span>
+                </div>
                 <div
-                  className="mt-0.5 w-full text-center text-[11px] font-medium !text-blue-500 truncate"
+                  data-role="user-card-contacts"
+                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium !text-[#3b82f6] truncate"
                   style={{ width: "100%", textAlign: "center" }}
                 >
                   {contactsInCommon} contacts in common

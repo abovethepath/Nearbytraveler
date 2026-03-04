@@ -1908,15 +1908,15 @@ export default function Home() {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowAdvancedFilters(true)}
-                  className="inline-flex dark:bg-white/10 dark:border-white/15 dark:text-white dark:hover:bg-white/15 dark:[&_*]:text-white"
+                  className="!inline-flex !items-center !justify-center gap-2 bg-gray-900/90 hover:bg-gray-900 text-white border border-white/15 dark:bg-white/10 dark:hover:bg-white/15 dark:border-white/15 !text-white dark:!text-white dark:[&_*]:text-white [&_*]:text-white"
                   data-testid="button-open-advanced-filters"
                 >
                   <Filter className="w-4 h-4 sm:mr-2 text-gray-800 dark:hidden" />
-                  <span className="hidden sm:inline dark:inline dark:!text-white">Filters</span>
+                  <span className="hidden sm:inline dark:inline !text-white">Filters</span>
                 </Button>
                 {/* Sort Dropdown */}
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                  <SelectTrigger className="w-[7.5rem] sm:w-40 px-2 sm:px-3 dark:bg-white/10 dark:border-white/15 dark:text-white dark:hover:bg-white/15 dark:[&_*]:text-white" data-testid="select-sort">
+                  <SelectTrigger className="w-[7.5rem] sm:w-40 px-2 sm:px-3 !flex !items-center !justify-center bg-gray-900/90 hover:bg-gray-900 text-white border border-white/15 dark:bg-white/10 dark:hover:bg-white/15 dark:border-white/15 !text-white dark:!text-white dark:[&_*]:text-white [&_*]:text-white" data-testid="select-sort">
                     <ArrowUpDown className="w-4 h-4 mr-1 sm:mr-2 text-gray-800 dark:hidden flex-shrink-0" />
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>

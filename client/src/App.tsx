@@ -253,8 +253,38 @@ function Router() {
   // Auth init/verification gates to prevent landing/login flashes during nav.
   const [authInitialized, setAuthInitialized] = useState(false);
   const [isVerifyingAuth, setIsVerifyingAuth] = useState(false);
+  const LOGIN_PENDING_KEY = "nt_login_pending";
+  const [loginPending, setLoginPending] = useState(() => {
+    try {
+      return sessionStorage.getItem(LOGIN_PENDING_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
+
+  const setLoginPendingFlag = React.useCallback((pending: boolean) => {
+    setLoginPending(pending);
+    try {
+      if (pending) {
+        sessionStorage.setItem(LOGIN_PENDING_KEY, "1");
+      } else {
+        sessionStorage.removeItem(LOGIN_PENDING_KEY);
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+
+  useEffect(() => {
+    const onPending = (e: Event) => {
+      const ce = e as CustomEvent;
+      setLoginPendingFlag(!!ce.detail);
+    };
+    window.addEventListener("nt-login-pending", onPending as EventListener);
+    return () => window.removeEventListener("nt-login-pending", onPending as EventListener);
+  }, [setLoginPendingFlag]);
   
   // Track page views for analytics
   useAnalytics();
@@ -504,6 +534,7 @@ function Router() {
             clearSessionInvalid();
             markSessionVerified();
             setUser(serverUser);
+            setLoginPendingFlag(false);
           }
           return;
         }
@@ -512,6 +543,7 @@ function Router() {
           // No valid session → treat as logged out immediately.
           clearLocalAuthState("syncAuthFromServer:401");
           setUser(null);
+          setLoginPendingFlag(false);
 
           // Redirect unauthenticated users away from protected routes.
           if (!isPublicRoute && !(authLoading || !authInitialized || isLoading)) {
@@ -650,6 +682,7 @@ function Router() {
           clearSessionInvalid();
           markSessionVerified();
           setUser(serverUser);
+          setLoginPendingFlag(false);
           
           if (serverUser && !localStorage.getItem('welcomed_' + serverUser.id)) {
             console.log('🎉 New user detected - showing welcome');
@@ -665,6 +698,7 @@ function Router() {
           // No session cookie / expired session.
           clearLocalAuthState("checkServerAuth:401");
           setUser(null);
+          setLoginPendingFlag(false);
         } else {
           console.log("⚠️ Server auth check returned non-OK:", response.status);
         }
@@ -890,6 +924,7 @@ function Router() {
   useEffect(() => {
     if (isNativeIOSApp()) return;
     if (authValue.authLoading) return;
+    if (loginPending) return;
     if (isPublicRoute) return;
     if (authValue.isAuthenticated) return;
 
@@ -989,6 +1024,16 @@ function Router() {
     // Session-cookie-only auth: localStorage is NOT an auth source. If the server session
     // hasn't been verified in this tab, treat the user as logged out.
     const isActuallyAuthenticated = authValue.isAuthenticated || (!!effectiveUser && isSessionVerified());
+
+    // Login transition gate: while a login submit is in-flight (or cookie propagation is settling),
+    // never show the unauthenticated landing UI for a protected route.
+    if (loginPending && !isActuallyAuthenticated) {
+      return (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+          <div className="text-sm font-semibold text-gray-500 dark:text-gray-400">Signing you in…</div>
+        </div>
+      );
+    }
 
     // Protected-route handling for unauthenticated users: show landing here (redirect is handled
     // by the route-guard effect so the URL also updates to "/").

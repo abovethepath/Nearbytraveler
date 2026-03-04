@@ -30,7 +30,7 @@ export default function QuickLogin() {
       if (response.ok) {
         const userData = await response.json();
         login(userData);
-        setLocation(isNativeIOSApp() ? '/home' : '/');
+        setLocation('/home');
       } else {
         console.error('Login failed:', response.statusText);
       }
