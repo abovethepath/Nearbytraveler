@@ -117,7 +117,7 @@ export default function AIChatBot() {
       <div className="fixed bottom-6 right-4 hidden md:flex" style={{ zIndex: 10000 }}>
         <Button
           onClick={() => setIsOpen(true)}
-          className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 shadow-lg"
+          className="h-14 w-14 rounded-full bg-gradient-to-r from-[#FF6B35] to-[#F97316] text-white shadow-[0_12px_28px_rgba(0,0,0,0.28)] ring-1 ring-white/10 hover:shadow-[0_16px_34px_rgba(0,0,0,0.33)] transition-transform duration-150 ease-out hover:scale-[1.03] active:scale-[0.98]"
           size="icon"
         >
           <MessageCircle className="h-6 w-6 text-white" />

@@ -126,14 +126,14 @@ export function HelpChatbot() {
   };
 
   return (
-    <div className="hidden md:block">
+    <div>
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[9999] w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center"
+          className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[9999] h-11 w-11 md:h-14 md:w-14 rounded-full bg-gradient-to-r from-[#FF6B35] to-[#F97316] text-white shadow-[0_12px_28px_rgba(0,0,0,0.28)] dark:shadow-[0_14px_34px_rgba(0,0,0,0.55)] ring-1 ring-white/10 hover:shadow-[0_16px_34px_rgba(0,0,0,0.33)] transition-transform duration-150 ease-out hover:scale-[1.03] active:scale-[0.98] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6B35] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           aria-label="Open help chat"
         >
-          <MessageCircleQuestion className="w-6 h-6 md:w-7 md:h-7" />
+          <MessageCircleQuestion className="w-5 h-5 md:w-6 md:h-6 text-white" />
         </button>
       )}
 
@@ -147,7 +147,7 @@ export function HelpChatbot() {
           className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[9999] w-[360px] max-w-[calc(100vw-32px)] h-[450px] md:h-[500px] max-h-[calc(100vh-140px)] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-300 dark:border-gray-600 flex flex-col overflow-hidden"
           style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
         >
-          <div className="bg-gradient-to-r from-blue-500 to-orange-500 px-4 py-3 flex items-center justify-between">
+          <div className="bg-gradient-to-r from-[#FF6B35] to-[#F97316] px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-white" />
               <span className="font-semibold text-white">Nearby Helper</span>

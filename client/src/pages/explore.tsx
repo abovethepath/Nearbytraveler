@@ -789,27 +789,57 @@ export default function Explore() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="flex gap-3 overflow-x-auto pb-2">
-                {nearbyUsers.filter((u: any) => u.id !== currentUser?.id).slice(0, 20).map((user: any) => (
-                  <div key={user.id} className="flex-shrink-0 w-20 text-center cursor-pointer" onClick={() => setLocation(`/profile/${user.id}`)}>
-                    <div className="relative mx-auto w-14 h-14 mb-1">
-                      {user.profileImage ? (
-                        <img src={user.profileImage} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-orange-300 dark:border-orange-600" />
-                      ) : (
-                        <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-white text-lg border-2 border-orange-300 dark:border-orange-600"
-                             style={{ backgroundColor: user.avatarColor || "#F97316" }}>
-                          {(user.username || "?")[0].toUpperCase()}
+              (() => {
+                const visible = nearbyUsers.filter((u: any) => u.id !== currentUser?.id).slice(0, 40);
+                const locals = visible.filter((u: any) => u.cityMatchType !== "travel");
+                const travelers = visible.filter((u: any) => u.cityMatchType === "travel");
+
+                const renderStrip = (list: any[]) => (
+                  <div className="flex gap-3 overflow-x-auto pb-2">
+                    {list.slice(0, 20).map((user: any) => (
+                      <div key={user.id} className="flex-shrink-0 w-20 text-center cursor-pointer" onClick={() => setLocation(`/profile/${user.id}`)}>
+                        <div className="relative mx-auto w-14 h-14 mb-1">
+                          {user.profileImage ? (
+                            <img src={user.profileImage} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-orange-300 dark:border-orange-600" />
+                          ) : (
+                            <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-white text-lg border-2 border-orange-300 dark:border-orange-600"
+                                 style={{ backgroundColor: user.avatarColor || "#F97316" }}>
+                              {(user.username || "?")[0].toUpperCase()}
+                            </div>
+                          )}
+                          {user.onlineStatus === "online" && (
+                            <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-950" />
+                          )}
                         </div>
-                      )}
-                      {user.onlineStatus === "online" && (
-                        <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-950" />
-                      )}
-                    </div>
-                    <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">{user.username}</p>
-                    <p className="text-[10px] text-gray-400 truncate">{user.userType === "business" ? "Business" : user.isCurrentlyTraveling ? "Traveler" : "Local"}</p>
+                        <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">{user.username}</p>
+                        <p className="text-[10px] text-gray-400 truncate">
+                          {user.userType === "business" ? "Business" : (user.cityMatchType === "travel" ? "Traveler" : "Local")}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                );
+
+                return (
+                  <div className="space-y-3">
+                    {travelers.length > 0 && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <div className="text-xs font-bold text-gray-700 dark:text-gray-300">🏠 {userCity} Locals</div>
+                          <div className="text-[11px] text-gray-500 dark:text-gray-400">{locals.length}</div>
+                        </div>
+                        {renderStrip(locals)}
+                        <div className="flex items-center justify-between pt-1">
+                          <div className="text-xs font-bold text-gray-700 dark:text-gray-300">✈️ Traveling to {userCity}</div>
+                          <div className="text-[11px] text-gray-500 dark:text-gray-400">{travelers.length}</div>
+                        </div>
+                        {renderStrip(travelers)}
+                      </>
+                    )}
+                    {travelers.length === 0 && renderStrip(locals)}
+                  </div>
+                );
+              })()
             )}
           </div>
         )}

@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2, ChevronsUpDown, Check, Pencil } from "lucide-react";
+import { MapPin, Camera, Globe, Languages, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2, ChevronsUpDown, Check, Pencil } from "lucide-react";
 import { calculateAge } from "@/lib/ageUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { useIsDesktop } from "@/hooks/useDeviceType";
@@ -78,37 +78,68 @@ export function ProfileTabs(props: ProfilePageProps) {
     const visibleInterests = sharedInterests.slice(0, 10);
 
     return (
-      <div className="what-you-have-in-common-inline bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden">
-        <div className="p-4">
-          <div className="flex items-center justify-between gap-3">
-            <div className="font-semibold text-gray-900 dark:text-gray-100">What You Have in Common</div>
-            <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{commonStats.totalCommon} things in common</div>
+      <div className="what-you-have-in-common-inline relative overflow-hidden rounded-2xl border-2 border-orange-200 dark:border-orange-700/60 shadow-lg bg-gradient-to-br from-orange-50 via-white to-orange-100 dark:from-[#24140b] dark:via-gray-900/30 dark:to-[#1b120d]">
+        <div className="p-5 sm:p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <div className="text-base sm:text-lg font-extrabold text-gray-900 dark:text-white">
+                🤝 What You Have in Common
+              </div>
+              <div className="mt-1 text-sm text-gray-700 dark:text-gray-200">
+                A little celebration of your overlap
+              </div>
+            </div>
           </div>
 
-          <div className="mt-2 text-xs sm:text-sm text-gray-700 dark:text-gray-200 flex flex-wrap gap-x-4 gap-y-1">
-            <span><span className="font-semibold">{sharedContactsCount}</span> contacts</span>
-            <span><span className="font-semibold">{sharedCountries.length}</span> countries</span>
+          <div className="mt-4 flex items-center justify-center">
+            <div
+              className="inline-flex items-center justify-center rounded-2xl px-5 py-4 text-center bg-white/80 dark:bg-black/20 border border-orange-200/70 dark:border-orange-700/50 shadow-[0_12px_30px_rgba(255,107,53,0.18)]"
+              data-testid="common-count-badge"
+            >
+              <div className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white leading-none">
+                {commonStats.totalCommon}
+              </div>
+              <div className="ml-3 text-left">
+                <div className="text-sm sm:text-base font-extrabold text-gray-900 dark:text-white leading-tight">
+                  things
+                </div>
+                <div className="text-sm sm:text-base font-extrabold text-gray-900 dark:text-white leading-tight">
+                  in common ✨
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-white/70 dark:bg-black/20 border border-orange-200/70 dark:border-orange-700/50 text-gray-900 dark:text-white">
+              <span className="font-extrabold mr-1">{sharedContactsCount}</span> contacts
+            </span>
+            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-white/70 dark:bg-black/20 border border-orange-200/70 dark:border-orange-700/50 text-gray-900 dark:text-white">
+              <span className="font-extrabold mr-1">{sharedCountries.length}</span> countries
+            </span>
             {sharedLanguagesNonEnglish.length > 0 && (
-              <span><span className="font-semibold">{sharedLanguagesNonEnglish.length}</span> languages</span>
+              <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-white/70 dark:bg-black/20 border border-orange-200/70 dark:border-orange-700/50 text-gray-900 dark:text-white">
+                <span className="font-extrabold mr-1">{sharedLanguagesNonEnglish.length}</span> languages
+              </span>
             )}
           </div>
 
-          <div className="mt-3">
-            <div className="text-xs font-semibold text-gray-900 dark:text-gray-100">
+          <div className="mt-5">
+            <div className="text-sm font-extrabold text-gray-900 dark:text-white">
               Shared Interests ({sharedInterests.length})
             </div>
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2.5">
               {visibleInterests.length > 0 ? (
                 visibleInterests.map((interest) => (
                   <span
                     key={interest}
-                    className="pill-interests bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
+                    className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-[#7C3500] text-[#FF8C42] border border-[#FF8C42]/40 shadow-[0_10px_22px_rgba(124,53,0,0.18)]"
                   >
                     {interest}
                   </span>
                 ))
               ) : (
-                <span className="text-sm text-gray-500 dark:text-gray-300">No shared interests yet</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">No shared interests yet</span>
               )}
             </div>
           </div>
@@ -350,12 +381,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                   // Reset after scrolling completes
                   setTimeout(() => setTriggerQuickMeetup(false), 500);
                 }}
-                className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 border-0
-                           px-4 sm:px-6 py-2 sm:py-2 text-sm font-semibold rounded-lg
+                className="bg-[#FF6B35] hover:bg-[#F97316] border-0
+                           px-4 sm:px-6 py-2 sm:py-2 text-sm font-bold rounded-lg
                            w-full sm:w-auto flex items-center justify-center transition-all duration-200 text-white"
                 data-testid="button-lets-meet-now"
               >
-                <Calendar className="w-4 h-4 mr-2" />
                 Let's Meet Now
               </Button>
             )}
@@ -3161,7 +3191,7 @@ export function ProfileTabs(props: ProfilePageProps) {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
-                    <Globe className="w-5 h-5 text-blue-600" />
+                    <Languages className="w-5 h-5 text-blue-600" />
                     Languages I Speak
                   </CardTitle>
                   {isOwnProfile && !editingLanguages && (

@@ -34,6 +34,47 @@ function useIsDarkModeClass() {
   return isDark;
 }
 
+type CityAccent = {
+  darkBg: string;
+  accent: string; // border + text in dark mode
+};
+
+const CITY_ACCENTS: CityAccent[] = [
+  { darkBg: "#7C3500", accent: "#FF8C42" }, // orange (LA)
+  { darkBg: "#0F3D2E", accent: "#34D399" }, // teal (Austin)
+  { darkBg: "#3B1F6B", accent: "#C084FC" }, // purple (Paris)
+  { darkBg: "#0D2F5E", accent: "#60A5FA" }, // blue (Tokyo)
+];
+
+function hashToIndex(input: string, mod: number) {
+  const s = String(input || "");
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return mod > 0 ? h % mod : 0;
+}
+
+function getCityAccent(cityLike: string): CityAccent {
+  const raw = String(cityLike || "").trim().toLowerCase();
+  if (raw.includes("los angeles")) return CITY_ACCENTS[0];
+  if (raw.includes("austin")) return CITY_ACCENTS[1];
+  if (raw.includes("paris")) return CITY_ACCENTS[2];
+  if (raw.includes("tokyo")) return CITY_ACCENTS[3];
+  return CITY_ACCENTS[hashToIndex(raw, CITY_ACCENTS.length)];
+}
+
+function hexToRgb(hex: string) {
+  const h = String(hex || "").replace("#", "");
+  const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
+  const n = Number.parseInt(full, 16);
+  if (!Number.isFinite(n)) return { r: 0, g: 0, b: 0 };
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+
+function rgba(hex: string, alpha: number) {
+  const { r, g, b } = hexToRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 interface ThingsIWantToDoSectionProps {
   userId: number;
   isOwnProfile: boolean;
@@ -530,10 +571,10 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   if (loadingCityActivities || loadingJoinedEvents || loadingEventInterests || loadingTravelPlans || loadingProfile) {
     return (
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-        <h2 className="text-xl md:text-2xl font-extrabold text-[#1a1a1a] dark:text-white mb-6 flex items-center gap-2">
+      <div className="rounded-2xl border-2 border-orange-200/70 dark:border-orange-700/50 bg-gradient-to-br from-orange-50 via-white to-white dark:from-[#24140b] dark:via-gray-900/40 dark:to-gray-900 shadow-lg p-6">
+        <h2 className="text-2xl md:text-3xl font-black text-[#1a1a1a] dark:text-white mb-6 flex items-center gap-2">
           <span aria-hidden>✈️</span>
-          <span>Things I Want to Do in:</span>
+          <span>📍 Things I Want to Do in:</span>
         </h2>
         <div className="text-gray-600 dark:text-gray-400">Loading...</div>
       </div>
@@ -549,13 +590,31 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       !!cityData.travelPlan?.hostelName &&
       (isOwnProfile || cityData.travelPlan?.hostelVisibility === "public");
 
+    const accent = getCityAccent(displayName || cityKey);
+    const cityBorder = isDarkModeClass ? rgba(accent.accent, 0.45) : rgba(accent.accent, 0.38);
+    const citySurface = isDarkModeClass ? rgba(accent.darkBg, 0.28) : rgba(accent.accent, 0.10);
+    const pillBaseClass =
+      "h-8 px-4 rounded-full text-xs sm:text-sm font-semibold inline-flex items-center border shadow-sm transition-shadow";
+    const pillStyle: React.CSSProperties = isDarkModeClass
+      ? { backgroundColor: accent.darkBg, borderColor: rgba(accent.accent, 0.55), color: accent.accent }
+      : { backgroundColor: rgba(accent.accent, 0.16), borderColor: rgba(accent.accent, 0.45), color: "#000000" };
+
     return (
-      <div key={cityKey} className="py-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0 last:pb-0 first:pt-0">
+      <div
+        key={cityKey}
+        className="relative rounded-xl p-3 sm:p-4 mb-3 last:mb-0 border"
+        style={{ borderColor: cityBorder, backgroundColor: citySurface }}
+      >
         {/* Header row: city label + actions */}
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate" title={displayName}>
-              {displayName}
+            <div
+              className="text-base sm:text-lg font-extrabold truncate flex items-center gap-2"
+              title={displayName}
+              style={{ color: isDarkModeClass ? accent.accent : "#111827" }}
+            >
+              <span aria-hidden>📍</span>
+              <span className="truncate">{displayName}</span>
             </div>
           </div>
 
@@ -598,7 +657,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           {showHostel && (
             <button
               type="button"
-              className="pill-interests border border-gray-200 hover:underline underline-offset-2 text-left dark:bg-[#0D2F5E]/40 dark:border-[#60A5FA]/45 dark:text-[#60A5FA]"
+              className={`${pillBaseClass} hover:shadow-md hover:underline underline-offset-2 text-left`}
+              style={pillStyle}
               onClick={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -631,7 +691,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           {/* Sub-Interest Pills - for travel destinations */}
           {cityData.travelPlan && citySubInterests.map((subInterest, idx) => (
             <div key={`sub-${idx}-${subInterest}`} className="relative group">
-              <div className="pill-interests border border-gray-200 dark:bg-[#0D2F5E]/40 dark:border-[#60A5FA]/45 dark:text-[#60A5FA]">
+              <div className={pillBaseClass} style={pillStyle}>
                 ✨ {subInterest}
               </div>
             </div>
@@ -641,11 +701,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           {cityData.activities.map((activity) => (
             <div key={`act-${activity.id}`} className="relative">
               <div
-                className={
-                  isDarkModeClass
-                    ? "h-8 px-4 rounded-full text-xs sm:text-sm font-semibold flex items-center border border-[#60A5FA]/45 bg-[#0D2F5E]/40 text-[#60A5FA] shadow-[0_0_0_1px_rgba(96,165,250,0.20)] hover:shadow-[0_0_12px_rgba(96,165,250,0.18)] transition-shadow"
-                    : "h-8 px-4 rounded-full text-xs sm:text-sm font-semibold flex items-center border border-blue-500 bg-gradient-to-r from-blue-300 via-blue-200 to-blue-300 text-black shadow-[0_0_0_1px_rgba(59,130,246,0.30)] hover:shadow-[0_0_12px_rgba(59,130,246,0.25)] transition-shadow"
-                }
+                className={`${pillBaseClass} hover:shadow-[0_0_12px_rgba(0,0,0,0.12)]`}
+                style={pillStyle}
               >
                 {activity.activityName}
               </div>
@@ -662,7 +719,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
               <div key={`evt-${event.id}`} className={`relative ${isEventPast ? 'opacity-60' : ''}`}>
                 <Link href={eventUrl}>
                   <div
-                    className={`pill-events cursor-pointer transition-all md:hover:scale-105 border border-gray-200 dark:bg-[#0D2F5E]/40 dark:border-[#60A5FA]/45 dark:text-[#60A5FA]`}
+                    className={`${pillBaseClass} cursor-pointer transition-all md:hover:scale-105 hover:shadow-md`}
+                    style={pillStyle}
                   >
                     {isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}
                   </div>
@@ -732,11 +790,11 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       data-section="things-i-want-to-do"
     >
       {showContent ? (
-        <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
+        <div className={`rounded-2xl border-2 border-orange-200/70 dark:border-orange-700/50 bg-gradient-to-br from-orange-50 via-white to-white dark:from-[#24140b] dark:via-gray-900/40 dark:to-gray-900 shadow-lg ${isMobile ? 'p-4' : 'p-6'}`}>
           <div className="flex items-center justify-between gap-3 mb-4">
-            <h2 className="text-xl md:text-2xl font-extrabold text-[#1a1a1a] dark:text-white flex items-center gap-2">
-              <span aria-hidden>📍</span>
-              <span>Things I Want to Do in:</span>
+            <h2 className="text-2xl md:text-3xl font-black text-[#1a1a1a] dark:text-white flex items-center gap-2">
+              <span aria-hidden>✈️</span>
+              <span>📍 Things I Want to Do in:</span>
             </h2>
             {isOwnProfile && (
               <Button
@@ -788,11 +846,11 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           )}
         </div>
       ) : (
-        <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
+        <div className={`rounded-2xl border-2 border-orange-200/70 dark:border-orange-700/50 bg-gradient-to-br from-orange-50 via-white to-white dark:from-[#24140b] dark:via-gray-900/40 dark:to-gray-900 shadow-lg ${isMobile ? 'p-4' : 'p-6'}`}>
           <div className="flex items-center justify-between gap-3 mb-4">
-            <h2 className={`font-extrabold text-[#1a1a1a] dark:text-white flex items-center gap-2 ${isMobile ? 'text-lg' : 'text-xl'}`}>
-              <span aria-hidden>📍</span>
-              <span>Things I Want to Do in{isOwnProfile ? ":" : ` ${headerCity}:`}</span>
+            <h2 className={`font-black text-[#1a1a1a] dark:text-white flex items-center gap-2 ${isMobile ? 'text-xl' : 'text-2xl'}`}>
+              <span aria-hidden>✈️</span>
+              <span>📍 Things I Want to Do in{isOwnProfile ? ":" : ` ${headerCity}:`}</span>
             </h2>
             {isOwnProfile && (
               <Button

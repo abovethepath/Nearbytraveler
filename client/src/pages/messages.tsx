@@ -17,6 +17,20 @@ import { UniversalBackButton } from '@/components/UniversalBackButton';
 import { isNativeIOSApp } from '@/lib/nativeApp';
 import { AuthContext } from '@/App';
 
+function getReplyPreviewText(msg: any): string {
+  if (!msg) return '';
+  const raw =
+    (typeof msg.content === 'string' ? msg.content : null) ??
+    (typeof msg.message === 'string' ? msg.message : null) ??
+    (typeof msg.text === 'string' ? msg.text : null) ??
+    '';
+  const trimmed = String(raw || '').trim();
+  if (trimmed) return trimmed;
+  // If the message is media-only, show a stable label instead of a date/placeholder.
+  if (msg.mediaUrl || msg.messageType === 'image' || msg.messageType === 'photo') return 'Photo';
+  return '';
+}
+
 function getInitialTargetUserId(): number | null {
   try {
     const loc = window.location;
@@ -916,7 +930,7 @@ export default function Messages() {
                         Replying to @{Number(replyingTo.senderId) === userId ? 'You' : selectedUser?.username}
                       </p>
                       <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
-                        {replyingTo.content}
+                        {getReplyPreviewText(replyingTo)}
                       </p>
                     </div>
                     <Button

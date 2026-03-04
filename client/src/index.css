@@ -921,7 +921,8 @@ img {
 }
 
 .dark .chat-input-wrapper input::placeholder {
-  color: rgb(240 240 240) !important; /* #F0F0F0 */
+  color: rgb(var(--nt-text-tertiary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-tertiary)) !important;
   opacity: 1 !important;
 }
 
@@ -1162,7 +1163,8 @@ p, span, div, button, input, textarea, select {
 /* Global Dark Mode Fix - Ensures all text is visible in dark mode */
 .dark {
   /* Force minimum contrast for all text elements */
-  color: rgb(243 244 246); /* gray-100 */
+  color: rgb(var(--nt-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
 }
 
 /* ============================================================
@@ -1172,38 +1174,121 @@ p, span, div, button, input, textarea, select {
    - Do NOT affect profile hero areas
    ============================================================ */
 
-/* High-contrast text on specific dark surfaces:
-   If a container uses these exact backgrounds, any muted/dim text must be near-white. */
-.dark :is(.bg-\[\#0f1923\], .bg-\[\#2a3540\]) {
-  color: rgb(240 240 240);
-}
-.dark :is(.bg-\[\#0f1923\], .bg-\[\#2a3540\])
-:is(.text-muted-foreground, .text-gray-300, .text-gray-400, .text-gray-500, .text-slate-300, .text-slate-400, .text-slate-500, .text-neutral-300, .text-neutral-400, .text-neutral-500) {
-  color: rgb(240 240 240) !important; /* #F0F0F0 */
-  -webkit-text-fill-color: rgb(240 240 240) !important;
+/* ============================================================
+   DARK MODE TEXT SYSTEM (site-wide)
+   Primary   (titles/usernames/labels):  #FFFFFF
+   Secondary (subtitles/location/date):  #D1D5DB
+   Tertiary  (counts/metadata):         #9CA3AF
+   Only remap *gray/black* text classes on dark surfaces.
+   ============================================================ */
+.dark {
+  --nt-text-primary: 255 255 255;   /* #FFFFFF */
+  --nt-text-secondary: 209 213 219; /* #D1D5DB */
+  --nt-text-tertiary: 156 163 175;  /* #9CA3AF */
 }
 
-/* Placeholders: make them clearly readable on mobile */
-.dark :is(input, textarea)::placeholder {
-  color: rgb(240 240 240) !important; /* #F0F0F0 */
-  opacity: 1 !important; /* Safari/iOS often reduces placeholder opacity */
+/* Default foreground in dark mode should be primary white */
+.dark,
+.dark .text-foreground {
+  color: rgb(var(--nt-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
 }
+
+/* Primary: any "dark" gray/black text classes become white in dark mode */
+.dark :is(
+  .text-black,
+  .dark\:text-black,
+  .text-gray-50, .text-gray-100,
+  .dark\:text-gray-50, .dark\:text-gray-100,
+  .text-gray-950, .text-gray-900, .text-gray-800, .text-gray-700,
+  .dark\:text-gray-950, .dark\:text-gray-900, .dark\:text-gray-800, .dark\:text-gray-700,
+  .text-slate-50, .text-slate-100,
+  .dark\:text-slate-50, .dark\:text-slate-100,
+  .text-slate-950, .text-slate-900, .text-slate-800, .text-slate-700,
+  .dark\:text-slate-950, .dark\:text-slate-900, .dark\:text-slate-800, .dark\:text-slate-700,
+  .text-zinc-50, .text-zinc-100,
+  .dark\:text-zinc-50, .dark\:text-zinc-100,
+  .text-zinc-950, .text-zinc-900, .text-zinc-800, .text-zinc-700,
+  .dark\:text-zinc-950, .dark\:text-zinc-900, .dark\:text-zinc-800, .dark\:text-zinc-700,
+  .text-neutral-50, .text-neutral-100,
+  .dark\:text-neutral-50, .dark\:text-neutral-100,
+  .text-neutral-950, .text-neutral-900, .text-neutral-800, .text-neutral-700,
+  .dark\:text-neutral-950, .dark\:text-neutral-900, .dark\:text-neutral-800, .dark\:text-neutral-700,
+  .text-stone-50, .text-stone-100,
+  .dark\:text-stone-50, .dark\:text-stone-100,
+  .text-stone-950, .text-stone-900, .text-stone-800, .text-stone-700,
+  .dark\:text-stone-950, .dark\:text-stone-900, .dark\:text-stone-800, .dark\:text-stone-700
+) {
+  color: rgb(var(--nt-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
+}
+
+/* Secondary: common "subtitle" grays become #D1D5DB */
+.dark :is(
+  .text-gray-600, .text-gray-400, .text-gray-300, .text-gray-200,
+  .dark\:text-gray-600, .dark\:text-gray-400, .dark\:text-gray-300, .dark\:text-gray-200,
+  .text-slate-600, .text-slate-400, .text-slate-300, .text-slate-200,
+  .dark\:text-slate-600, .dark\:text-slate-400, .dark\:text-slate-300, .dark\:text-slate-200,
+  .text-zinc-600, .text-zinc-400, .text-zinc-300, .text-zinc-200,
+  .dark\:text-zinc-600, .dark\:text-zinc-400, .dark\:text-zinc-300, .dark\:text-zinc-200,
+  .text-neutral-600, .text-neutral-400, .text-neutral-300, .text-neutral-200,
+  .dark\:text-neutral-600, .dark\:text-neutral-400, .dark\:text-neutral-300, .dark\:text-neutral-200,
+  .text-stone-600, .text-stone-400, .text-stone-300, .text-stone-200,
+  .dark\:text-stone-600, .dark\:text-stone-400, .dark\:text-stone-300, .dark\:text-stone-200
+) {
+  color: rgb(var(--nt-text-secondary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-secondary)) !important;
+}
+
+/* Tertiary: muted/meta text becomes #9CA3AF */
+.dark :is(
+  .text-muted-foreground,
+  .dark\:text-muted-foreground,
+  .text-gray-500,
+  .dark\:text-gray-500,
+  .text-slate-500,
+  .dark\:text-slate-500,
+  .text-zinc-500,
+  .dark\:text-zinc-500,
+  .text-neutral-500,
+  .dark\:text-neutral-500,
+  .text-stone-500,
+  .dark\:text-stone-500
+) {
+  color: rgb(var(--nt-text-tertiary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-tertiary)) !important;
+}
+
+/* Placeholders should read as tertiary in dark mode */
+.dark :is(input, textarea)::placeholder {
+  color: rgb(var(--nt-text-tertiary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-tertiary)) !important;
+  opacity: 1 !important;
+}
+
+/* NOTE: Older hard-coded #F0F0F0 readability overrides were replaced
+   by the 3-level dark-mode text system above. */
 
 /* Dropdown/select triggers: selected value & placeholder should be near-white */
-.dark :is(button[role="combobox"], [data-radix-select-trigger]):not(.profile-hero-fixed):not(.profile-hero-fixed *) {
-  color: rgb(243 244 246) !important; /* gray-100 */
-  -webkit-text-fill-color: rgb(243 244 246) !important;
+.dark :is(button[role="combobox"], [data-radix-select-trigger]) {
+  color: rgb(var(--nt-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
 }
 .dark :is(button[role="combobox"], [data-radix-select-trigger])
-:is([data-placeholder], [data-radix-select-value]) {
-  color: rgb(243 244 246) !important;
-  -webkit-text-fill-color: rgb(243 244 246) !important;
+:is([data-placeholder]) {
+  color: rgb(var(--nt-text-tertiary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-tertiary)) !important;
+}
+.dark :is(button[role="combobox"], [data-radix-select-trigger])
+:is([data-radix-select-value]) {
+  color: rgb(var(--nt-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
 }
 
 /* Dropdown option text: ensure options are white in dark mode */
 .dark :is([role="option"], [data-radix-select-item], [role="menuitem"]) {
-  color: rgb(243 244 246) !important; /* gray-100 */
-  -webkit-text-fill-color: rgb(243 244 246) !important;
+  color: rgb(var(--nt-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
 }
 
 /* Override for navbar CTA buttons that need black text on light backgrounds */
@@ -1217,40 +1302,27 @@ p, span, div, button, input, textarea, select {
 
 .dark select:not([class*="bg-"]):not([class*="text-"]) {
   background-color: rgb(31 41 55); /* gray-800 */
-  color: rgb(243 244 246); /* gray-100 */
+  color: rgb(var(--nt-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
   border-color: rgb(75 85 99); /* gray-600 */
 }
 
 .dark textarea:not([class*="bg-"]):not([class*="text-"]) {
   background-color: rgb(31 41 55); /* gray-800 */
-  color: rgb(243 244 246); /* gray-100 */
+  color: rgb(var(--nt-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
   border-color: rgb(75 85 99); /* gray-600 */
 }
 
 /* Ensure dropdown content has proper contrast */
 .dark [role="option"],
 .dark [role="menuitem"] {
-  color: rgb(243 244 246) !important; /* gray-100 */
+  color: rgb(var(--nt-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
 }
 
-/* Fix for any remaining invisible text */
-.dark [class*="text-gray-"]
-  :not([class*="text-gray-1"])
-  :not([class*="text-gray-2"])
-  :not([class*="text-gray-3"])
-  :not([class*="text-gray-4"])
-  :not(.profile-hero-fixed)
-  :not(.profile-hero-fixed *)
-  :not(button)
-  :not(a)
-  :not([role="button"]) {
-  /* Readability upgrade: avoid dim gray text on dark backgrounds (mobile-first) */
-  color: rgb(240 240 240) !important; /* #F0F0F0 */
-  -webkit-text-fill-color: rgb(240 240 240) !important;
-}
-
-/* Button/link text: don't globally override their internal hierarchy */
-.dark :is(button, a, [role="button"]) [class*="text-gray-"] {
+/* Button text: don't globally override hierarchy on light buttons */
+.dark :is(button, [role="button"]) [class*="text-gray-"] {
   color: inherit !important;
   -webkit-text-fill-color: inherit !important;
 }
@@ -1259,30 +1331,14 @@ p, span, div, button, input, textarea, select {
 
 /* Force dark mode colors globally */
 .dark body {
-  @apply bg-gray-900 text-gray-100;
+  @apply bg-gray-900;
+  color: rgb(var(--nt-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
 }
 
 .dark * {
   border-color: theme('colors.gray.700');
 }
-
-/* Fix common dark mode text issues */
-.dark .text-gray-900 {
-  @apply text-gray-100 !important;
-}
-
-.dark .text-gray-800 {
-  @apply text-gray-200 !important;
-}
-
-.dark .text-gray-700 {
-  @apply text-gray-200 !important;
-}
-
-.dark .text-gray-600 {
-  @apply text-gray-200 !important;
-}
-
 
 /* Fix backgrounds that might be causing black on black */
 .dark .bg-gray-50 {
@@ -1303,7 +1359,9 @@ p, span, div, button, input, textarea, select {
 .dark .bg-white.rounded-full,
 .dark .bg-white.rounded-lg,
 .dark .bg-white.rounded-md {
-  @apply bg-gray-700 text-gray-100 !important;
+  @apply bg-gray-700 !important;
+  color: rgb(var(--nt-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
 }
 
 /* Fix white text on colored backgrounds in dark mode */

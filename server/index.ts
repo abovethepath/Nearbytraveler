@@ -35,6 +35,7 @@ import {
   businessOffers,
   quickMeetups,
   quickDeals,
+  travelPlans,
 } from "../shared/schema";
 import { TravelStatusService } from "./services/travel-status-service";
 import {
@@ -400,29 +401,67 @@ app.get("/api/users-by-location/:city/:userType", async (req, res) => {
       `🌍 users-by-location [CRITICAL]: searching ${expandedCities.length} cities for "${searchCity}" (type: ${userType})`,
     );
 
-    const cityConditions = expandedCities.map((c) =>
+    // 1) Locals by hometown (and current location as best-effort legacy signal)
+    const localCityConditions = expandedCities.map((c) =>
       or(ilike(users.hometownCity, `%${c}%`), ilike(users.location, `%${c}%`)),
     );
+    const localConditions: any[] = [or(...localCityConditions), eq(users.isActive, true)];
+    if (userType && userType !== "all") localConditions.push(eq(users.userType, userType));
+    const localResults = await db.select().from(users).where(and(...localConditions));
 
-    const conditions: any[] = [or(...cityConditions)];
+    // 2) Travelers with an upcoming/current travel plan to this city (destination signal)
+    const travelCityConditions = expandedCities.map((c) =>
+      or(ilike(travelPlans.destinationCity, `%${c}%`), ilike(travelPlans.destination, `%${c}%`)),
+    );
+    const now = new Date();
+    const travelPlanRows = await db
+      .select({ userId: travelPlans.userId })
+      .from(travelPlans)
+      .where(
+        and(
+          or(...travelCityConditions),
+          // Only consider plans that haven't ended (or have no end date set)
+          or(isNull(travelPlans.endDate), gte(travelPlans.endDate, now)),
+          // Exclude explicit past plans when status is set
+          or(isNull(travelPlans.status), ne(travelPlans.status, "past")),
+        ),
+      );
+    const travelerUserIds = [...new Set(travelPlanRows.map((r) => r.userId).filter(Boolean))] as number[];
 
-    if (userType && userType !== "all") {
-      conditions.push(eq(users.userType, userType));
+    const travelerResults =
+      travelerUserIds.length > 0
+        ? await db
+            .select()
+            .from(users)
+            .where(
+              and(
+                inArray(users.id, travelerUserIds),
+                eq(users.isActive, true),
+                ...(userType && userType !== "all" ? [eq(users.userType, userType)] : []),
+              ),
+            )
+        : [];
+
+    const localIds = new Set(localResults.map((u: any) => u.id));
+    const travelerIds = new Set(travelerResults.map((u: any) => u.id));
+
+    // Merge results, locals first, then travelers not already included.
+    const merged: any[] = [];
+    for (const u of localResults as any[]) {
+      const { password, ...rest } = u;
+      const cityMatchType = travelerIds.has(u.id) ? "both" : "hometown";
+      merged.push({ ...rest, cityMatchType });
+    }
+    for (const u of travelerResults as any[]) {
+      if (localIds.has(u.id)) continue;
+      const { password, ...rest } = u;
+      merged.push({ ...rest, cityMatchType: "travel" });
     }
 
-    conditions.push(eq(users.isActive, true));
-
-    const results = await db
-      .select()
-      .from(users)
-      .where(and(...conditions));
-
-    const safeResults = results.map(({ password, ...rest }) => rest);
-
     console.log(
-      `🌍 users-by-location [CRITICAL]: found ${safeResults.length} ${userType} users for "${searchCity}"`,
+      `🌍 users-by-location [CRITICAL]: found ${merged.length} ${userType} users for "${searchCity}" (locals=${localResults.length}, travelers=${travelerResults.length})`,
     );
-    res.json(safeResults);
+    res.json(merged);
   } catch (error: any) {
     console.error("Error in users-by-location endpoint:", error);
     res

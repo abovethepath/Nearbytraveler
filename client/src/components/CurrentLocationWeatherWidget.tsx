@@ -202,7 +202,20 @@ export default function CurrentLocationWeatherWidget() {
 
   if (!currentCity || !currentCountry) {
     return (
-      <div className="w-full relative overflow-hidden rounded-3xl" data-testid="weather-widget">
+      <div className="w-full relative overflow-hidden rounded-3xl nt-weather-widget-scrollbar-hide" data-testid="weather-widget">
+        <style>{`
+          .nt-weather-widget-scrollbar-hide,
+          .nt-weather-widget-scrollbar-hide * {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge legacy */
+          }
+          .nt-weather-widget-scrollbar-hide::-webkit-scrollbar,
+          .nt-weather-widget-scrollbar-hide *::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+            width: 0;
+            height: 0;
+          }
+        `}</style>
         {/* Animated Gradient Orbs Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-300 to-cyan-400 rounded-full opacity-25 blur-3xl animate-float"></div>
@@ -231,7 +244,20 @@ export default function CurrentLocationWeatherWidget() {
 
   if (isLoading) {
     return (
-      <div className="w-full relative overflow-hidden rounded-3xl" data-testid="weather-widget">
+      <div className="w-full relative overflow-hidden rounded-3xl nt-weather-widget-scrollbar-hide" data-testid="weather-widget">
+        <style>{`
+          .nt-weather-widget-scrollbar-hide,
+          .nt-weather-widget-scrollbar-hide * {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge legacy */
+          }
+          .nt-weather-widget-scrollbar-hide::-webkit-scrollbar,
+          .nt-weather-widget-scrollbar-hide *::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+            width: 0;
+            height: 0;
+          }
+        `}</style>
         {/* Animated Gradient Orbs Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-300 to-cyan-400 rounded-full opacity-25 blur-3xl animate-float"></div>
@@ -264,7 +290,20 @@ export default function CurrentLocationWeatherWidget() {
 
   if (error || !weatherData) {
     return (
-      <div className="w-full relative overflow-hidden rounded-3xl" data-testid="weather-widget">
+      <div className="w-full relative overflow-hidden rounded-3xl nt-weather-widget-scrollbar-hide" data-testid="weather-widget">
+        <style>{`
+          .nt-weather-widget-scrollbar-hide,
+          .nt-weather-widget-scrollbar-hide * {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge legacy */
+          }
+          .nt-weather-widget-scrollbar-hide::-webkit-scrollbar,
+          .nt-weather-widget-scrollbar-hide *::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+            width: 0;
+            height: 0;
+          }
+        `}</style>
         {/* Animated Gradient Orbs Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-300 to-cyan-400 rounded-full opacity-25 blur-3xl animate-float"></div>
@@ -310,7 +349,20 @@ export default function CurrentLocationWeatherWidget() {
   const condition = weatherData?.current?.condition?.text;
 
   return (
-    <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="weather-widget">
+    <div className="w-full relative overflow-hidden rounded-3xl group nt-weather-widget-scrollbar-hide" data-testid="weather-widget">
+      <style>{`
+        .nt-weather-widget-scrollbar-hide,
+        .nt-weather-widget-scrollbar-hide * {
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none; /* IE/Edge legacy */
+        }
+        .nt-weather-widget-scrollbar-hide::-webkit-scrollbar,
+        .nt-weather-widget-scrollbar-hide *::-webkit-scrollbar {
+          display: none; /* Chrome/Safari */
+          width: 0;
+          height: 0;
+        }
+      `}</style>
       {/* Animated Gradient Orbs Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30 blur-3xl animate-float"></div>

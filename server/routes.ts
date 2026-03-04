@@ -23983,7 +23983,28 @@ Questions? Just reply to this message. Welcome aboard!
               color: c.color,
               description: c.description,
               isUserCreated: false,
+              // IMPORTANT: Many UIs filter by isActive=true; ensure presets are visible.
+              isActive: true,
+              isPrivate: false,
+              isFlagged: false,
+              memberCount: 0,
+              createdBy: systemUserId,
             });
+          } else {
+            // Backfill legacy rows so presets don't disappear due to NULL/false flags.
+            const patch: Record<string, any> = {};
+            if ((existing as any).isActive !== true) patch.isActive = true;
+            if ((existing as any).isPrivate == null) patch.isPrivate = false;
+            if ((existing as any).isFlagged == null) patch.isFlagged = false;
+            if (!(existing as any).displayName) patch.displayName = c.displayName;
+            if (!(existing as any).category) patch.category = c.category;
+            if (!(existing as any).icon) patch.icon = c.icon;
+            if (!(existing as any).color) patch.color = c.color;
+            if (!(existing as any).description) patch.description = c.description;
+            if (!(existing as any).createdBy) patch.createdBy = systemUserId;
+            if (Object.keys(patch).length > 0) {
+              await db.update(communityTags).set(patch).where(eq(communityTags.id, (existing as any).id));
+            }
           }
         } catch (e) {
           if (process.env.NODE_ENV === "development") console.error("Failed to ensure default community:", c?.name, e);
