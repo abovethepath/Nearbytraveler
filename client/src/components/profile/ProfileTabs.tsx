@@ -79,7 +79,7 @@ export function ProfileTabs(props: ProfilePageProps) {
 
     return (
       <div
-        className="what-you-have-in-common-inline relative overflow-hidden rounded-2xl border-2 border-orange-200 shadow-lg bg-white dark:bg-[#1e2139] dark:border-orange-500/30"
+        className="what-you-have-in-common-inline relative overflow-hidden rounded-2xl border-2 border-orange-200 shadow-lg bg-white/90 dark:bg-[#1e2139] dark:border-orange-500/30"
         role="button"
         tabIndex={0}
         onClick={() => setExpanded((v) => !v)}
@@ -90,11 +90,14 @@ export function ProfileTabs(props: ProfilePageProps) {
         data-testid="what-you-have-in-common-inline"
         style={{ cursor: "pointer" }}
       >
-        <div className="p-5 sm:p-6">
+        <div className="p-4 sm:p-5">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <div className="text-base sm:text-lg font-extrabold text-gray-900 dark:text-white">
-                🤝 What You Have in Common
+                <span className="inline-flex items-center gap-2">
+                  <span aria-hidden>🤝</span>
+                  <span>What You Have in Common</span>
+                </span>
               </div>
               <div className="mt-1 text-sm text-gray-700 dark:text-gray-200">
                 Tap to {expanded ? "collapse" : "expand"}
@@ -114,12 +117,12 @@ export function ProfileTabs(props: ProfilePageProps) {
             </button>
           </div>
 
-          <div className="mt-4 flex items-center justify-center">
+          <div className="mt-2 flex items-center justify-center">
             <div
-              className="inline-flex items-center justify-center rounded-2xl px-5 py-4 text-center bg-white/80 dark:bg-black/20 border border-orange-200/70 dark:border-orange-700/50 shadow-[0_12px_30px_rgba(255,107,53,0.18)]"
+              className="inline-flex items-center justify-center rounded-2xl px-5 py-3 text-center bg-[#FF6B35] text-white border border-black/10 shadow-[0_14px_34px_rgba(255,107,53,0.32)]"
               data-testid="common-count-badge"
             >
-              <div className="text-lg sm:text-xl font-extrabold text-gray-900 dark:text-white leading-tight">
+              <div className="text-lg sm:text-xl font-extrabold text-white leading-tight">
                 {commonStats.totalCommon} things in common
               </div>
             </div>
@@ -148,7 +151,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 sharedInterests.map((interest) => (
                   <span
                     key={interest}
-                    className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-[#7C3500] text-[#FF8C42] border border-[#FF8C42]/40 shadow-[0_10px_22px_rgba(124,53,0,0.18)]"
+                    className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-[#FF6B35] text-white border border-black/10 shadow-[0_12px_26px_rgba(255,107,53,0.28)]"
                   >
                     {interest}
                   </span>

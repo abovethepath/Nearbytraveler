@@ -564,6 +564,31 @@ export function QuickMeetupWidget({
                             >
                               View Details
                             </Button>
+                            <Button
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setLocation(`/quick-meetup-chat/${meetup.id}`);
+                              }}
+                              className="h-8 px-2 text-xs bg-blue-600 hover:bg-blue-700 text-white"
+                              data-testid={`button-open-chat-compact-${meetup.id}`}
+                            >
+                              <MessageSquare className="w-3 h-3 mr-1" />
+                              Open Chat
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                leaveMutation.mutate(meetup.id);
+                              }}
+                              disabled={leaveMutation.isPending}
+                              className="h-8 px-2 text-xs border-red-500 text-red-700 dark:text-white dark:border-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                              data-testid={`button-leave-meetup-compact-${meetup.id}`}
+                            >
+                              {leaveMutation.isPending ? 'Leaving...' : 'Leave Meetup'}
+                            </Button>
                           </>
                         ) : (
                           <>

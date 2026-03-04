@@ -1826,7 +1826,10 @@ export default function Home() {
             
             <div className="flex items-center justify-between mb-6" data-testid="discover-people-section">
               <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-                <h2 className="text-xl sm:text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-600 via-cyan-600 to-orange-500 bg-clip-text text-transparent whitespace-nowrap truncate min-w-0">
+                <h2
+                  className="text-xl sm:text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-600 via-cyan-600 to-orange-500 bg-clip-text text-transparent whitespace-nowrap truncate min-w-0"
+                  style={{ WebkitTextFillColor: "transparent" }}
+                >
                   {activeFilter === "travel-dates" 
                     ? `Travel Connections to ${user?.travelDestination}` 
                     : "Discover People"

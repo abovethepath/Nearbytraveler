@@ -276,14 +276,14 @@ export default function UserCard({
                 {handle}
               </div>
               <div
-                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:!text-[#60A5FA]"
+                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-center text-[11.5px] !text-[#60A5FA]"
                 data-role="user-card-location"
               >
                 <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
-                <span className="truncate">{hometownLine}</span>
+                <span className="truncate text-center">{hometownLine}</span>
               </div>
               <div
-                className="user-card-bio mt-1.5 w-full"
+                className="user-card-bio mt-1.5 w-full text-center"
                 title={user.bio || undefined}
                 style={{
                   color: undefined,
@@ -297,17 +297,17 @@ export default function UserCard({
                   WebkitLineClamp: 3 as any,
                 }}
               >
-                <span className="text-gray-800 dark:!text-[#F0F0F0]">
+                <span className="text-center text-gray-800 dark:!text-[#F0F0F0]">
                   {bioText || '\u00A0'}
                 </span>
               </div>
               <div
                 className={`mt-1 w-full flex flex-col items-center text-center ${isCurrentUser ? "invisible" : ""}`}
               >
-                <span className="inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[#FF6B35] dark:border-[#FF6B35] dark:text-white dark:shadow-[0_10px_25px_rgba(255,107,53,0.18)]">
+                <span className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[#FF6B35] dark:border-[#FF6B35] dark:text-white dark:shadow-[0_10px_25px_rgba(255,107,53,0.18)]">
                   {thingsInCommon} things in common
                 </span>
-                <div className="mt-0.5 text-[11px] font-medium text-gray-500 dark:!text-[#D1D5DB] truncate">
+                <div className="mt-0.5 text-center text-[11px] font-medium text-gray-500 dark:!text-[#9CA3AF] truncate">
                   {contactsInCommon} contacts in common
                 </div>
               </div>
@@ -367,14 +367,14 @@ export default function UserCard({
                 {handle}
               </div>
               <div
-                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-[11.5px] text-gray-600 dark:!text-[#60A5FA]"
+                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 w-full text-center text-[11.5px] !text-[#60A5FA]"
                 data-role="user-card-location"
               >
                 <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
-                <span className="truncate">{hometownLine}</span>
+                <span className="truncate text-center">{hometownLine}</span>
               </div>
               <div
-                className="user-card-bio mt-1.5 w-full"
+                className="user-card-bio mt-1.5 w-full text-center"
                 title={user.bio || undefined}
                 style={{
                   color: undefined,
@@ -388,17 +388,17 @@ export default function UserCard({
                   WebkitLineClamp: 3 as any,
                 }}
               >
-                <span className="text-gray-800 dark:!text-[#F0F0F0]">
+                <span className="text-center text-gray-800 dark:!text-[#F0F0F0]">
                   {bioText || '\u00A0'}
                 </span>
               </div>
               <div
                 className={`mt-1 w-full flex flex-col items-center text-center ${isCurrentUser ? "invisible" : ""}`}
               >
-                <span className="inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[#FF6B35] dark:border-[#FF6B35] dark:text-white dark:shadow-[0_10px_25px_rgba(255,107,53,0.18)]">
+                <span className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[#FF6B35] dark:border-[#FF6B35] dark:text-white dark:shadow-[0_10px_25px_rgba(255,107,53,0.18)]">
                   {thingsInCommon} things in common
                 </span>
-                <div className="mt-0.5 text-[11px] font-medium text-gray-500 dark:!text-[#D1D5DB] truncate">
+                <div className="mt-0.5 text-center text-[11px] font-medium text-gray-500 dark:!text-[#9CA3AF] truncate">
                   {contactsInCommon} contacts in common
                 </div>
               </div>

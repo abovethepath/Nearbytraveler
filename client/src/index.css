@@ -1217,7 +1217,6 @@ p, span, div, button, input, textarea, select {
 .dark,
 .dark .text-foreground {
   color: rgb(var(--nt-text-primary)) !important;
-  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
 }
 
 /* Primary: any "dark" gray/black text classes become white in dark mode */

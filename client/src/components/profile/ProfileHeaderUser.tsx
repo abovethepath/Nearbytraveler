@@ -103,10 +103,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       }}
       className={
         inline
-          ? (!isOwnProfile && isMobileWeb
-              ? "p-2 rounded-full bg-white/25 hover:bg-white/35 transition-colors inline-flex items-center justify-center shrink-0 ring-1 ring-white/50 shadow-md backdrop-blur-sm"
-              : "p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors inline-flex items-center justify-center shrink-0 ring-1 ring-white/40 shadow-sm backdrop-blur-sm")
-          : "absolute top-4 right-4 z-20 p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors ring-1 ring-white/40 shadow-sm backdrop-blur-sm"
+          ? "p-2 rounded-full bg-[#374151] hover:bg-[#4B5563] transition-colors inline-flex items-center justify-center shrink-0 ring-1 ring-black/20 shadow-md"
+          : "absolute top-4 right-4 z-20 p-2 rounded-full bg-[#374151] hover:bg-[#4B5563] transition-colors ring-1 ring-black/20 shadow-md"
       }
       style={{ touchAction: 'manipulation' }}
       title="Share profile"
@@ -381,8 +379,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     sharedLanguagesCountForDisplay +
                     otherCommonalities.length);
 
-                const visibleInterestPills = sharedInterests;
-                const hasOverflow = false;
+                // Compact hero card should never scroll: show a small preview and rely on "See all" for the full list.
+                const visibleInterestPills = sharedInterests.slice(0, 4);
+                const hasOverflow = sharedInterests.length > visibleInterestPills.length;
 
                 return (
                   <>
@@ -539,8 +538,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 appearance="link"
                                 className={
                                   isMobileWeb
-                                    ? "!bg-transparent !border-0 px-0 py-0 text-white/85 hover:text-white underline underline-offset-2 font-medium"
-                                    : "!bg-transparent !border-0 px-0 py-0 text-white/85 hover:text-white underline underline-offset-2 font-medium"
+                                    ? "!bg-transparent !border-0 px-0 py-0 text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
+                                    : "!bg-transparent !border-0 px-0 py-0 text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
                                 }
                               />
                             ) : (
@@ -554,8 +553,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 onPointerDown={(e) => e.stopPropagation()}
                                 className={
                                   isMobileWeb
-                                    ? "text-sm text-white/85 hover:text-white underline underline-offset-2 font-medium"
-                                    : "text-sm text-white/85 hover:text-white underline underline-offset-2 font-medium"
+                                    ? "text-sm text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
+                                    : "text-sm text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
                                 }
                                 data-radix-dismissable-layer-ignore=""
                               >
@@ -570,7 +569,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       {!isMobileWeb && (
                         <div className="lg:w-[340px] lg:flex-shrink-0">
                           <div
-                            className="bg-white/55 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-4 max-h-[260px] overflow-auto cursor-pointer"
+                            className="what-you-have-in-common-card bg-white/70 dark:bg-[#1e2139] backdrop-blur-md rounded-2xl border border-white/40 dark:border-white/10 shadow-lg p-4 overflow-hidden cursor-pointer"
                             role="button"
                             tabIndex={0}
                             onClick={() => setSeeAllCommonOpen(true)}
@@ -580,49 +579,63 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             aria-label="Open full What You Have in Common details"
                           >
                             <div className="flex items-center justify-between gap-2">
-                              <div className="text-sm font-bold text-black">What You Have in Common</div>
-                              <div className="text-xs font-semibold text-black">{totalCommon} things in common</div>
+                              <div className="text-sm font-extrabold text-gray-900 dark:text-white">
+                                <span className="inline-flex items-center gap-1.5">
+                                  <span aria-hidden>🤝</span>
+                                  <span>What You Have in Common</span>
+                                </span>
+                              </div>
+                              <div
+                                className="shrink-0 inline-flex items-center rounded-full px-3 py-1 text-[11px] font-extrabold bg-[#FF6B35] text-white shadow-[0_10px_22px_rgba(255,107,53,0.30)]"
+                                data-testid="common-count-badge"
+                              >
+                                {totalCommon} things in common
+                              </div>
                             </div>
 
-                            <div className="mt-2 text-xs text-black flex flex-wrap gap-x-3 gap-y-1">
-                              <span><span className="font-semibold text-black">{sharedContactsCount}</span> contacts</span>
-                              <span><span className="font-semibold text-black">{sharedCountries.length}</span> countries</span>
+                            <div className="mt-2 text-xs text-gray-700 dark:text-gray-200 flex flex-wrap gap-x-3 gap-y-1">
+                              <span><span className="font-extrabold text-gray-900 dark:text-white">{sharedContactsCount}</span> contacts</span>
+                              <span><span className="font-extrabold text-gray-900 dark:text-white">{sharedCountries.length}</span> countries</span>
                               {sharedLanguagesCountForDisplay > 0 && (
-                                <span><span className="font-semibold text-black">{sharedLanguagesCountForDisplay}</span> languages</span>
+                                <span><span className="font-extrabold text-gray-900 dark:text-white">{sharedLanguagesCountForDisplay}</span> languages</span>
                               )}
                             </div>
 
                             <div className="mt-3">
-                              <div className="text-xs font-semibold text-black mb-1">Shared interests ({sharedInterests.length})</div>
+                              <div className="text-xs font-extrabold text-gray-900 dark:text-white mb-1">
+                                Shared interests ({sharedInterests.length})
+                              </div>
                               <div className="flex flex-wrap gap-1.5">
                                 {visibleInterestPills.length > 0 ? (
                                   visibleInterestPills.map((interest) => (
                                     <span
                                       key={interest}
-                                      className="pill-interests !bg-white !text-black !border !border-gray-200 !shadow-none dark:!bg-white dark:!text-black dark:!border-gray-200 dark:!shadow-none"
+                                      className="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold bg-[#FF6B35] text-white border border-black/10 shadow-[0_12px_26px_rgba(255,107,53,0.28)]"
                                     >
                                       {interest}
                                     </span>
                                   ))
                                 ) : (
-                                  <span className="text-xs text-black">No shared interests yet</span>
+                                  <span className="text-xs text-gray-600 dark:text-gray-300">No shared interests yet</span>
                                 )}
                               </div>
 
-                              <div className="mt-2">
-                                <button
-                                  type="button"
-                                  className="text-xs font-semibold !text-black hover:!text-black underline underline-offset-2"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setSeeAllCommonOpen(true);
-                                  }}
-                                  data-testid="button-see-all-common"
-                                >
-                                  See all
-                                </button>
-                              </div>
+                              {hasOverflow && (
+                                <div className="mt-2">
+                                  <button
+                                    type="button"
+                                    className="text-xs font-bold text-orange-700 hover:text-orange-800 dark:text-orange-300 dark:hover:text-orange-200 underline underline-offset-2"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      setSeeAllCommonOpen(true);
+                                    }}
+                                    data-testid="button-see-all-common"
+                                  >
+                                    See all
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -666,7 +679,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               {sharedInterests.length > 0 ? sharedInterests.map((interest) => (
                                 <span
                                   key={interest}
-                                  className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-[#7C3500] text-[#FF8C42] border border-[#FF8C42]/40"
+                                  className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-[#FF6B35] text-white border border-black/10 shadow-[0_12px_26px_rgba(255,107,53,0.28)]"
                                 >
                                   {interest}
                                 </span>
@@ -980,7 +993,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                       size="sm"
                                       showIcon={false}
                                       appearance="link"
-                                      className="!bg-transparent !border-0 px-0 py-0 text-white/85 hover:text-white underline underline-offset-2 font-medium"
+                                      className="!bg-transparent !border-0 px-0 py-0 text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
                                     />
                                   ) : (
                                     <button
@@ -991,7 +1004,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                         setLocation('/auth');
                                       }}
                                       onPointerDown={(e) => e.stopPropagation()}
-                                      className="text-xs text-white/85 hover:text-white underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer"
+                                      className="text-xs text-red-200 hover:text-red-100 underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer"
                                       data-radix-dismissable-layer-ignore=""
                                     >
                                       Report
@@ -1063,7 +1076,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     size="sm"
                                     showIcon={false}
                                     appearance="link"
-                                    className="!bg-transparent !border-0 px-0 py-0 underline underline-offset-2 font-medium text-white/85 hover:text-white"
+                                    className="!bg-transparent !border-0 px-0 py-0 underline underline-offset-2 font-medium text-red-200 hover:text-red-100"
                                   />
                                 ) : (
                                   <button
@@ -1074,7 +1087,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                       setLocation('/auth');
                                     }}
                                     onPointerDown={(e) => e.stopPropagation()}
-                                    className="text-xs text-white/85 hover:text-white underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer shrink-0"
+                                    className="text-xs text-red-200 hover:text-red-100 underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer shrink-0"
                                     data-radix-dismissable-layer-ignore=""
                                   >
                                     Report

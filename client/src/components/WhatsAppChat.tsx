@@ -573,6 +573,47 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     enabled: Boolean(membersEndpoint)
   });
 
+  // Enrich member rows with profile location (some endpoints only return ids/usernames).
+  const memberIdsNeedingProfiles = useMemo(() => {
+    const raw = Array.isArray(membersRaw) ? membersRaw : [];
+    const ids: number[] = [];
+    for (const item of raw) {
+      const src = (item && typeof item === "object" && (item as any).user) ? (item as any).user : item;
+      const id = Number((src as any)?.id ?? (item as any)?.userId ?? (item as any)?.id);
+      if (Number.isFinite(id) && id > 0) ids.push(id);
+    }
+    // unique + stable
+    return Array.from(new Set(ids)).sort((a, b) => a - b);
+  }, [membersRaw]);
+
+  const { data: memberProfilesById = {} } = useQuery<Record<number, any>>({
+    queryKey: ["member-profiles", memberIdsNeedingProfiles],
+    enabled: memberIdsNeedingProfiles.length > 0,
+    queryFn: async () => {
+      const out: Record<number, any> = {};
+      await Promise.all(
+        memberIdsNeedingProfiles.map(async (id) => {
+          try {
+            const res = await fetch(`${getApiBaseUrl()}/api/users/${id}`, {
+              credentials: "include",
+              headers: {
+                Accept: "application/json",
+                ...(currentUserId ? { "x-user-id": String(currentUserId) } : {}),
+              },
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (data && typeof data === "object") out[id] = data;
+          } catch {
+            // Best-effort enrichment only
+          }
+        }),
+      );
+      return out;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
   const members: ChatMember[] = useMemo(() => {
     const raw = Array.isArray(membersRaw) ? membersRaw : [];
     const out: ChatMember[] = [];
@@ -610,10 +651,22 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           (item as any)?.hometown_country,
       );
       const location = toText((src as any)?.location ?? (item as any)?.location);
+
+      // Profile enrichment fallback (fixes "Unknown" in meetup chat member list)
+      const profile = (memberProfilesById as any)?.[id];
+      const profileHometownCity = toText(profile?.hometownCity ?? profile?.hometown_city);
+      const profileHometownState = toText(profile?.hometownState ?? profile?.hometown_state);
+      const profileHometownCountry = toText(profile?.hometownCountry ?? profile?.hometown_country);
+      const profileLocation = toText(profile?.location);
+
+      const hometownCityFinal = hometownCity || profileHometownCity;
+      const hometownStateFinal = hometownState || profileHometownState;
+      const hometownCountryFinal = hometownCountry || profileHometownCountry;
+      const locationFinal = location || profileLocation;
       const locationLabel =
-        (hometownCity
-          ? `${hometownCity}${hometownState ? `, ${hometownState}` : ""}`
-          : (location ? location : "")) || "";
+        (hometownCityFinal
+          ? `${hometownCityFinal}${hometownStateFinal ? `, ${hometownStateFinal}` : ""}`
+          : (locationFinal ? locationFinal : "")) || "";
 
       out.push({
         id,
@@ -621,10 +674,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         name: toText((src as any)?.name ?? (item as any)?.name),
         profileImage: ((src as any)?.profileImage ?? (item as any)?.profileImage) || undefined,
         userType: toText((src as any)?.userType ?? (item as any)?.userType),
-        hometownCity,
-        hometownState: hometownState || undefined,
-        hometownCountry: hometownCountry || undefined,
-        location: location || undefined,
+        hometownCity: hometownCityFinal,
+        hometownState: hometownStateFinal || undefined,
+        hometownCountry: hometownCountryFinal || undefined,
+        location: locationFinal || undefined,
         locationLabel: locationLabel || undefined,
         // Do not assume admin/moderator privileges from participant lists
         isAdmin: Boolean((item as any)?.isAdmin) || false,
@@ -634,7 +687,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
 
     return out;
-  }, [membersRaw]);
+  }, [membersRaw, memberProfilesById]);
   
   // Check if current user is admin (use == for type coercion since currentUserId may be string)
   const currentMember = members.find(m => m.id == currentUserId);

@@ -39,14 +39,12 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
   // iOS: keep About in the hero/tab navigation as requested previously.
   const showAboutTab = !(isHero && isDesktopWeb);
 
-  // Hero background never changes by theme; keep badge text dark for legibility.
-  const badgeClass = isDesktopWeb
-    ? (isHero
-      ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-200 text-[#111111] border border-teal-300"
-      : "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-600 text-white")
-    : (isHero
-      ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-200/90 text-[#111111] border border-teal-300/70"
-      : "ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-white/20 text-white");
+  // Hero background is a colorful gradient across themes; use brand badges (no teal/cyan).
+  const badgeClass = isHero
+    ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-[#FF6B35] text-white border border-black/20 md:bg-[#1a1a1a] md:text-white md:border-white/10"
+    : (isDesktopWeb
+        ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-teal-600 text-white"
+        : "ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-white/20 text-white");
 
   const tabWebBase =
     "relative px-0 py-2 text-sm sm:text-base font-semibold transition-colors select-none";
@@ -60,10 +58,10 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
 
   const tabLegacyBase = "text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all";
   const tabLegacyActive = isHero
-    ? "bg-white text-gray-900 border border-white shadow-md"
+    ? "bg-white/70 text-black border border-white/70 shadow-md"
     : "bg-blue-600 text-white border border-blue-600 shadow-md";
   const tabLegacyInactive = isHero
-    ? "bg-white/20 border border-white/40 text-white hover:bg-white/30 hover:border-white/50 backdrop-blur-sm"
+    ? "bg-white/25 border border-white/50 text-black hover:bg-white/35 hover:border-white/60 backdrop-blur-sm"
     : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400";
 
   const btn = (active: boolean) => {
