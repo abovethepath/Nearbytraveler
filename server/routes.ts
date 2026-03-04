@@ -12530,6 +12530,22 @@ Questions? Just reply to this message. Welcome aboard!
               if (process.env.NODE_ENV === 'development') console.log('⏰ JSON-LD fallback endTime:', endTime);
             }
           }
+
+          // JSON-LD fallback end DATE for multi-day events.
+          // Couchsurfing often provides an accurate endDateTime in JSON-LD even when the DOM doesn't.
+          if (!endDate && jsonLdData?.startDate && jsonLdData?.endDate) {
+            const start = new Date(jsonLdData.startDate);
+            const end = new Date(jsonLdData.endDate);
+            const isDifferentDay =
+              start.getFullYear() !== end.getFullYear() ||
+              start.getMonth() !== end.getMonth() ||
+              start.getDate() !== end.getDate();
+
+            if (isDifferentDay) {
+              endDate = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+              if (process.env.NODE_ENV === 'development') console.log('📅 JSON-LD fallback endDate (multi-day):', endDate);
+            }
+          }
           
           // Extract event cover image from JSON-LD or main event container
           let imageUrl = jsonLdData?.image || '';

@@ -14,6 +14,7 @@ import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { InstagramShare } from "@/components/InstagramShare";
 import { EventShareModal } from "@/components/EventShareModal";
+import { useAuth } from "@/App";
 
 import { useLocation } from "wouter";
 
@@ -30,13 +31,10 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const [showFullNames, setShowFullNames] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   
-  // Get current user
-  const getCurrentUser = () => {
-    const storedUser = localStorage.getItem('travelconnect_user');
-    return storedUser ? JSON.parse(storedUser) : null;
-  };
-  
-  const currentUser = getCurrentUser();
+  // Auth is cookie/session based (source of truth is AuthContext, not localStorage).
+  const { user: authedUser, authLoading } = useAuth();
+  // This page supports "View as Guest" mode for organizers; keep that behavior.
+  const currentUser = viewAsGuest ? null : authedUser;
 
   // Upload event photo mutation
   const uploadPhotoMutation = useMutation({
@@ -120,7 +118,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   // Fetch event participants - only if user is authenticated
   const { data: participants = [], isLoading: participantsLoading } = useQuery<EventParticipant[]>({
     queryKey: [`/api/events/${eventId}/participants`],
-    enabled: !!eventId && !!currentUser,
+    enabled: !!eventId && !!currentUser?.id,
   });
 
   // Fetch users for participant details
@@ -131,9 +129,10 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   // Join event mutation (with status: 'interested' or 'going')
   const joinEventMutation = useMutation({
     mutationFn: async (status: 'interested' | 'going') => {
-      if (!currentUser?.id || !eventId) throw new Error("Missing user or event ID");
-      
-      return await apiRequest("POST", `/api/events/${eventId}/join`, {
+      const resolvedEventId = event?.id ?? parseInt(eventId);
+      if (!currentUser?.id || !resolvedEventId) throw new Error("Missing user or event ID");
+
+      return await apiRequest("POST", `/api/events/${resolvedEventId}/join`, {
         userId: currentUser.id,
         notes: status === 'going' ? "Looking forward to attending!" : "Interested in this event",
         status
@@ -167,11 +166,10 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   // Leave event mutation
   const leaveEventMutation = useMutation({
     mutationFn: async () => {
-      if (!currentUser?.id || !eventId) throw new Error("Missing user or event ID");
-      
-      return await apiRequest("DELETE", `/api/events/${eventId}/leave`, {
-        userId: currentUser.id
-      });
+      const resolvedEventId = event?.id ?? parseInt(eventId);
+      if (!currentUser?.id || !resolvedEventId) throw new Error("Missing user or event ID");
+
+      return await apiRequest("DELETE", `/api/events/${resolvedEventId}/leave`, { userId: currentUser.id });
     },
     onSuccess: () => {
       toast({
@@ -553,8 +551,8 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
             );
           })()}
           
-          {/* Join This Event Card - Also on left sidebar - only show if logged in and not organizer */}
-          {currentUser?.id && !isOrganizer && (
+          {/* Join This Event Card - only show if logged in and not organizer */}
+          {!!currentUser?.id && !isOrganizer && (
             <Card className="border border-gray-200 shadow-lg bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Join this event</CardTitle>
@@ -593,7 +591,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
           )}
           
           {/* Login prompt for non-logged in users */}
-          {!currentUser?.id && (
+          {!authLoading && !currentUser?.id && (
             <Card className="border border-gray-200 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700">
               <CardContent className="p-4 text-center">
                 <p className="font-medium mb-2">Want to join this event?</p>

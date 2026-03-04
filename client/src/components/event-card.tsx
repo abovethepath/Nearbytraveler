@@ -12,6 +12,36 @@ import { useToast } from "@/hooks/use-toast";
 import ImageLoader from "./ImageLoader";
 import { InstagramShare } from "./InstagramShare";
 
+function normalizeLocationString(raw: string): string {
+  const tokens = String(raw || "")
+    .split(/[,\\n]/g)
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const t of tokens) {
+    const key = t.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(t);
+  }
+  return out.join(", ");
+}
+
+function buildEventLocationDisplay(event: Event): string {
+  const rawParts = [
+    event.venueName,
+    event.street || event.location,
+    event.city,
+    event.state && event.state !== event.city ? event.state : null,
+    event.country,
+  ].filter(Boolean) as string[];
+
+  // De-duplicate city/state/country even if they appear inside other fields.
+  return normalizeLocationString(rawParts.join(", "));
+}
+
 interface EventCardProps {
   event: Event;
   compact?: boolean;
@@ -138,14 +168,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
   };
 
   // Build full address for maps link and display
-  const addressParts = [
-    event.venueName,
-    event.street || event.location,
-    event.city,
-    event.state && event.state !== event.city ? event.state : null,
-    event.country,
-  ].filter(Boolean);
-  const fullAddress = addressParts.join(", ");
+  const fullAddress = buildEventLocationDisplay(event);
   const mapsUrl = fullAddress
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`
     : null;
@@ -160,41 +183,41 @@ export default function EventCard({ event, compact = false, featured = false }: 
       >
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
-            <h4 className="font-medium text-gray-900 dark:text-white mb-1 text-crisp text-base">{event.title}</h4>
+            <h4 className="font-medium text-gray-900 dark:text-white mb-1 text-crisp text-base line-clamp-2 break-normal">
+              {event.title}
+            </h4>
             <div className="flex flex-col text-xs text-gray-500 dark:text-gray-400 space-y-1 text-crisp">
-              <span>
-                <Calendar className="w-3 h-3 inline mr-1" />
-                {formatEventDate(event.date)}
+              <span className="flex items-center gap-1 min-w-0">
+                <Calendar className="w-3 h-3 flex-shrink-0" />
+                <span className="truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                  {formatEventDate(event.date)}
+                </span>
               </span>
-              <span className="flex items-start">
-                <MapPin className="w-3 h-3 inline mr-1 mt-0.5 flex-shrink-0" />
+              <span className="flex items-center gap-1 min-w-0">
+                <MapPin className="w-3 h-3 flex-shrink-0" />
                 {mapsUrl ? (
                   <a
                     href={mapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="break-words underline underline-offset-1 hover:text-travel-blue dark:hover:text-blue-400"
+                    className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis underline underline-offset-1 hover:text-travel-blue dark:hover:text-blue-400"
                   >
-                    {event.venueName && <><strong>{event.venueName}</strong><br /></>}
-                    {event.street && <>{event.street}<br /></>}
-                    {event.city}{event.state && event.state !== event.city && `, ${event.state}`}{event.country && `, ${event.country}`}
+                    {fullAddress}
                   </a>
                 ) : (
-                  <span className="break-words">
-                    {event.venueName && <><strong>{event.venueName}</strong><br /></>}
-                    {event.street && <>{event.street}<br /></>}
-                    {event.city}{event.state && event.state !== event.city && `, ${event.state}`}{event.country && `, ${event.country}`}
+                  <span className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                    {fullAddress}
                   </span>
                 )}
               </span>
               {eventPhone && telUrl && (
-                <span className="flex items-center">
-                  <Phone className="w-3 h-3 inline mr-1 flex-shrink-0" />
+                <span className="flex items-center gap-1 min-w-0">
+                  <Phone className="w-3 h-3 flex-shrink-0" />
                   <a
                     href={telUrl}
                     onClick={(e) => e.stopPropagation()}
-                    className="break-words underline underline-offset-1 hover:text-travel-blue dark:hover:text-blue-400"
+                    className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis underline underline-offset-1 hover:text-travel-blue dark:hover:text-blue-400"
                   >
                     {eventPhone}
                   </a>
@@ -235,7 +258,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
         {/* Content */}
         <div className="p-4 md:p-5 space-y-3">
-          <h3 className="text-gray-900 dark:text-white text-lg font-semibold leading-snug line-clamp-2 break-words [overflow-wrap:anywhere]">
+          <h3 className="text-gray-900 dark:text-white text-lg font-semibold leading-snug line-clamp-2 break-normal">
             {event.title}
           </h3>
 
@@ -251,27 +274,29 @@ export default function EventCard({ event, compact = false, featured = false }: 
             </p>
           )}
 
-          {/* Meta — wraps on small screens; address wraps so "CA" etc. isn't cut off */}
-          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+          {/* Meta — single-line rows (no wrapping/overlap) */}
+          <div className="flex flex-col gap-2">
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <Calendar className="h-4 w-4 shrink-0 text-travel-blue" />
-              <span className="break-words">{formatEventDate(event.date)}</span>
+              <span className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                {formatEventDate(event.date)}
+              </span>
             </div>
-            <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 flex-1">
-              <MapPin className="h-4 w-4 shrink-0 text-travel-blue mt-0.5 self-start" />
+            <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <MapPin className="h-4 w-4 shrink-0 text-travel-blue" />
               {mapsUrl ? (
                 <a
                   href={mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="break-words underline underline-offset-1 hover:text-travel-blue dark:hover:text-blue-400 text-left"
+                  className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis underline underline-offset-1 hover:text-travel-blue dark:hover:text-blue-400 text-left"
                 >
-                  {event.venueName && `${event.venueName}, `}{event.street || event.location}{event.city && `, ${event.city}`}{event.state && event.state !== event.city && `, ${event.state}`}{event.country && `, ${event.country}`}
+                  {fullAddress}
                 </a>
               ) : (
-                <span className="break-words">
-                  {event.venueName && `${event.venueName}, `}{event.street || event.location}{event.city && `, ${event.city}`}{event.state && event.state !== event.city && `, ${event.state}`}{event.country && `, ${event.country}`}
+                <span className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                  {fullAddress}
                 </span>
               )}
             </div>
@@ -281,7 +306,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 <a
                   href={telUrl}
                   onClick={(e) => e.stopPropagation()}
-                  className="break-words underline underline-offset-1 hover:text-travel-blue dark:hover:text-blue-400"
+                  className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis underline underline-offset-1 hover:text-travel-blue dark:hover:text-blue-400"
                 >
                   {eventPhone}
                 </a>
@@ -289,7 +314,9 @@ export default function EventCard({ event, compact = false, featured = false }: 
             )}
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <Users className="h-4 w-4 shrink-0" />
-              <span className="break-words">{(event as any).participantCount ?? 0} attending</span>
+              <span className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                {(event as any).participantCount ?? 0} attending
+              </span>
             </div>
           </div>
 

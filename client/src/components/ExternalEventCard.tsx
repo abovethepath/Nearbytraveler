@@ -29,6 +29,23 @@ interface CommunityEvent {
 
 export type { CommunityEvent };
 
+function normalizeLocationString(raw: string): string {
+  const tokens = String(raw || "")
+    .split(/[,\\n]/g)
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const t of tokens) {
+    const key = t.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(t);
+  }
+  return out.join(", ");
+}
+
 function formatEventDate(dateStr: string): string {
   const eventDate = new Date(dateStr);
   const now = new Date();
@@ -58,6 +75,12 @@ export default function ExternalEventCard({ event }: { event: CommunityEvent }) 
       window.open(event.url, '_blank', 'noopener,noreferrer');
     }
   };
+
+  const locationDisplay = normalizeLocationString(
+    [event.venueName, event.address, event.city, event.state && event.state !== event.city ? event.state : null, event.country]
+      .filter(Boolean)
+      .join(", "),
+  );
 
   return (
     <Card
@@ -99,26 +122,28 @@ export default function ExternalEventCard({ event }: { event: CommunityEvent }) 
         )}
 
         <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 min-w-0">
             <Calendar className="h-4 w-4 shrink-0 text-travel-blue" />
-            <span>{formatEventDate(event.startTime)}</span>
+            <span className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis">
+              {formatEventDate(event.startTime)}
+            </span>
           </div>
 
           {(event.venueName || event.city) && (
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 min-w-0">
               <MapPin className="h-4 w-4 shrink-0 text-travel-blue" />
-              <span className="truncate">
-                {event.venueName && `${event.venueName}, `}
-                {event.city}
-                {event.state && event.state !== event.city && `, ${event.state}`}
+              <span className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                {locationDisplay}
               </span>
             </div>
           )}
 
           {event.attendeeCount && event.attendeeCount > 0 && (
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 min-w-0">
               <Users className="h-4 w-4 shrink-0" />
-              <span>{event.attendeeCount} attending</span>
+              <span className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                {event.attendeeCount} attending
+              </span>
             </div>
           )}
         </div>
