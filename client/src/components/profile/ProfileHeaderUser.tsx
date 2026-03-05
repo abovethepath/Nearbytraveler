@@ -701,27 +701,56 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               </div>
             </div>
 
-            <div className="flex flex-col gap-1 min-w-0 w-full max-w-[280px] mt-4">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-lg font-semibold crisp-hero-text" style={{ color: "#000000" }}>
-                  Nearby Local <span style={{ color: "#000000" }}>·</span>{" "}
-                  <span style={{ color: "#000000" }}>{hometown}</span>
-                </span>
-                {!isMobileWeb && isNewToTown && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
-                    New to Town
+            <div className="flex flex-row items-start gap-3 min-w-0 w-full max-w-[520px] mt-4">
+              {/* Nearby Local / Traveler text */}
+              <div className="flex flex-col gap-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-lg font-semibold crisp-hero-text" style={{ color: "#000000" }}>
+                    Nearby Local <span style={{ color: "#000000" }}>·</span>{" "}
+                    <span style={{ color: "#000000" }}>{hometown}</span>
                   </span>
+                  {!isMobileWeb && isNewToTown && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
+                      New to Town
+                    </span>
+                  )}
+                </div>
+                {hasValidTravelDestination && (
+                  <>
+                    <span className="text-sm font-semibold mt-1 crisp-hero-text" style={{ color: "#000000" }}>
+                      Nearby Traveler
+                    </span>
+                    <span className="text-sm font-medium break-words crisp-hero-text" title={currentTravelPlan!} style={{ color: "#000000" }}>
+                      {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
+                    </span>
+                  </>
                 )}
               </div>
-              {hasValidTravelDestination && (
-                <>
-                  <span className="text-sm font-semibold mt-1 crisp-hero-text" style={{ color: "#000000" }}>
-                    Nearby Traveler
+
+              {/* Mutual connections — desktop only, aligned with Nearby Local text */}
+              {connectionDegreeData?.mutualCount && connectionDegreeData.mutualCount > 0 && (
+                <div
+                  className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl border-2 border-blue-500/70 shadow-md"
+                  style={{ background: 'rgba(255,255,255,0.28)', backdropFilter: 'blur(8px)' }}
+                  data-testid="mutual-connections-desktop"
+                >
+                  <div className="flex -space-x-2">
+                    {connectionDegreeData.mutuals?.slice(0, 3).map((mutual: any) => (
+                      <Avatar
+                        key={mutual.id}
+                        className="w-6 h-6 border-2 border-white cursor-pointer hover:ring-2 hover:ring-blue-400"
+                        onClick={() => setLocation(`/profile/${mutual.id}`)}
+                      >
+                        <AvatarImage src={mutual.profileImage || undefined} />
+                        <AvatarFallback className="text-xs bg-blue-200 text-blue-800">{mutual.name?.[0] || mutual.username?.[0] || '?'}</AvatarFallback>
+                      </Avatar>
+                    ))}
+                  </div>
+                  <span className="text-xs font-semibold whitespace-nowrap" style={{ color: '#000000' }}>
+                    <Users className="w-3 h-3 inline mr-1" />
+                    {connectionDegreeData.mutualCount} mutual
                   </span>
-                  <span className="text-sm font-medium break-words crisp-hero-text" title={currentTravelPlan!} style={{ color: "#000000" }}>
-                    {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
-                  </span>
-                </>
+                </div>
               )}
             </div>
           </div>
@@ -988,7 +1017,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               {!isOwnProfile && (
                 <div>
                   {connectionDegreeData?.mutualCount && connectionDegreeData.mutualCount > 0 && (
-                    <div className="flex items-center gap-2 mt-3 p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700" data-testid="mutual-connections">
+                    <div className="lg:hidden flex items-center gap-2 mt-3 p-2 bg-white/30 dark:bg-blue-900/30 backdrop-blur-sm rounded-xl border-2 border-blue-500/60 dark:border-blue-500/40 shadow-md" data-testid="mutual-connections">
                       <div className="flex -space-x-2">
                         {connectionDegreeData.mutuals?.slice(0, 3).map((mutual: any) => (
                           <Avatar
