@@ -1437,6 +1437,13 @@ p, span, div, button, input, textarea, select {
   -webkit-text-fill-color: rgb(251 146 60) !important;
 }
 
+/* Landing page quote: "Travel doesn't change you. The people you meet do."
+   Uses a dedicated class so it wins regardless of Tailwind dark mode cascade. */
+html.dark .landing-quote {
+  color: rgb(251 146 60) !important;
+  -webkit-text-fill-color: rgb(251 146 60) !important;
+}
+
 .dark * {
   border-color: theme('colors.gray.700');
 }
