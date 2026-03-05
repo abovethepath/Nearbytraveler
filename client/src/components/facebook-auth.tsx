@@ -22,7 +22,7 @@ interface FacebookAuthProps {
 export function FacebookAuth({ onLogin, onError, type = 'login', className = '' }: FacebookAuthProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [fbLoaded, setFbLoaded] = useState(false);
-  const { login, startAuthenticating, stopAuthenticating } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
 
@@ -82,8 +82,6 @@ export function FacebookAuth({ onLogin, onError, type = 'login', className = '' 
       return;
     }
 
-    const shouldManageTransition = type === "login" && !onLogin;
-    if (shouldManageTransition) startAuthenticating();
     setIsLoading(true);
 
     try {
@@ -138,7 +136,6 @@ export function FacebookAuth({ onLogin, onError, type = 'login', className = '' 
               }
             } catch (error: any) {
               console.error('Facebook authentication error:', error);
-              if (shouldManageTransition) stopAuthenticating();
               toast({
                 title: "Authentication Failed",
                 description: error.message || "Failed to authenticate with Facebook. Please try again.",
@@ -158,7 +155,6 @@ export function FacebookAuth({ onLogin, onError, type = 'login', className = '' 
           console.log('Facebook login cancelled or failed:', errorMessage);
           
           if (response.error) {
-            if (shouldManageTransition) stopAuthenticating();
             toast({
               title: "Login Failed",
               description: "Facebook login was unsuccessful. Please try again.",
@@ -170,12 +166,10 @@ export function FacebookAuth({ onLogin, onError, type = 'login', className = '' 
             }
           }
           // Don't show error for user cancellation
-          if (shouldManageTransition) stopAuthenticating();
           setIsLoading(false);
         }
       }, { scope: 'email,public_profile' });
     } catch (error: any) {
-      if (shouldManageTransition) stopAuthenticating();
       setIsLoading(false);
       console.error('Facebook login error:', error);
       toast({

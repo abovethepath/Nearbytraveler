@@ -1,7 +1,7 @@
-import { useLocation } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import WhatsAppChat from "@/components/WhatsAppChat";
-import { getApiBaseUrl, queryClient } from "@/lib/queryClient";
+import { getApiBaseUrl, apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { ArrowLeft, MessageCircle, Users, MapPin } from "lucide-react";
@@ -19,42 +19,23 @@ interface ChatroomDetails {
 }
 
 export default function WhatsAppChatroom() {
-  const [location, navigate] = useLocation();
+  const [, navigate] = useLocation();
   const { toast } = useToast();
   const [hasJoined, setHasJoined] = useState(false);
-  const [loadTimedOut, setLoadTimedOut] = useState(false);
   const { user, authLoading } = useAuth();
   const currentUserId = user?.id;
 
-  const pathParts = String(location || "").split("/");
-  const chatroomId = parseInt(pathParts[2] || "0", 10);
+  const pathParts = typeof window !== 'undefined' ? window.location.pathname.split('/') : [];
+  const chatroomId = parseInt(pathParts[2] || '0', 10);
 
   const isValidChatroomId = chatroomId > 0 && !isNaN(chatroomId);
 
-  useEffect(() => {
-    setLoadTimedOut(false);
-    if (!isValidChatroomId) return;
-    const t = setTimeout(() => setLoadTimedOut(true), 5000);
-    return () => clearTimeout(t);
-  }, [isValidChatroomId, chatroomId, currentUserId]);
-
-  const { data: chatroom, isLoading, isError: chatroomIsError, error: chatroomError, refetch: refetchChatroom } = useQuery<ChatroomDetails>({
+  const { data: chatroom, isLoading } = useQuery<ChatroomDetails>({
     queryKey: [`/api/chatrooms/${chatroomId}`],
     enabled: isValidChatroomId && !!currentUserId,
-    queryFn: async () => {
-      const headers: Record<string, string> = {};
-      if (currentUserId) headers["x-user-id"] = String(currentUserId);
-      if (user) headers["x-user-data"] = JSON.stringify({ id: user.id, username: user.username, email: (user as any).email, name: user.name });
-      const res = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatroomId}`, { headers, credentials: "include" });
-      if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(`${res.status}: ${text || res.statusText}`);
-      }
-      return res.json();
-    },
   });
 
-  const { data: membershipCheck, isLoading: checkingMembership, isError: membershipIsError, error: membershipError, refetch: refetchMembership } = useQuery<{ isMember: boolean }>({
+  const { data: membershipCheck, isLoading: checkingMembership } = useQuery<{ isMember: boolean }>({
     queryKey: [`/api/chatrooms/${chatroomId}/members`, 'membership-check', currentUserId],
     enabled: isValidChatroomId && !!currentUserId && !hasJoined,
     queryFn: async () => {
@@ -62,8 +43,7 @@ export default function WhatsAppChatroom() {
         const headers: Record<string, string> = { 'x-user-id': currentUserId?.toString() || '' };
         if (user) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: (user as any).email, name: user.name });
         const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatroomId}/members`, {
-          headers,
-          credentials: "include",
+          headers
         });
         if (response.status === 403) {
           return { isMember: false };
@@ -108,39 +88,8 @@ export default function WhatsAppChatroom() {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Redirecting...</div>;
   }
 
-  const isStillLoading = isLoading || checkingMembership || !chatroom || !currentUserId || (authLoading && !currentUserId);
-  const hasQueryError = chatroomIsError || membershipIsError;
-
-  if (isStillLoading) {
-    if (loadTimedOut || hasQueryError) {
-      const msg =
-        (chatroomError instanceof Error ? chatroomError.message : "") ||
-        (membershipError instanceof Error ? membershipError.message : "") ||
-        "This chat is taking longer than expected to load.";
-      return (
-        <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4 px-6 text-center">
-          <p className="text-lg font-semibold">Couldn't load this chatroom</p>
-          <p className="text-sm text-gray-300 break-words">{msg}</p>
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setLoadTimedOut(false);
-                refetchChatroom();
-                refetchMembership();
-              }}
-              data-testid="button-retry-chatroom-load"
-            >
-              Retry
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/chatrooms')} data-testid="button-back-to-chatrooms-timeout">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-          </div>
-        </div>
-      );
-    }
+  if (isLoading || checkingMembership || !chatroom || !currentUserId) {
+    if (authLoading && !currentUserId) return <ChatPageSkeleton variant="light" />;
     return <ChatPageSkeleton variant="light" />;
   }
 

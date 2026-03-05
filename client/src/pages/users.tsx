@@ -70,8 +70,8 @@ export default function UsersPage() {
       return Array.isArray(data) ? data : [];
     },
     enabled: !!(city && userType),
-    // Use global React Query caching defaults (staleTime/gcTime) to avoid showing
-    // a full reload on every navigation.
+    staleTime: 0,
+    refetchOnMount: true,
     refetchOnWindowFocus: false
   });
 

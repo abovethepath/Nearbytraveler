@@ -38,7 +38,7 @@ function MessagesWidget({ userId: propUserId }: MessagesWidgetProps) {
       return res.json();
     },
     enabled: !!userId,
-    staleTime: 60000,
+    staleTime: 0,
     refetchOnWindowFocus: true,
   });
 

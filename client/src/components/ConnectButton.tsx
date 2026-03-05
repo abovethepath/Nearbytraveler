@@ -36,7 +36,8 @@ export default function ConnectButton({
   }>({
     queryKey: [`/api/connections/status/${currentUserId}/${targetUserId}`],
     enabled: !!currentUserId && !!targetUserId,
-    staleTime: 60000,
+    staleTime: 0,
+    gcTime: 0,
   });
 
   // Individual mutation per button/target user - this prevents the blinking issue

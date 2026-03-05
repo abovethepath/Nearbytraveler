@@ -29,7 +29,6 @@ type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries' | 'v
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
-import { FullPageSkeleton } from "@/components/FullPageSkeleton";
 import FriendReferralWidget from "@/components/friend-referral-widget";
 import { EventShareModal } from "@/components/EventShareModal";
 
@@ -753,23 +752,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     };
     setTimeout(tryScroll, 80);
   }
-
-  // Allow deep-linking to a specific tab (used by Explore -> Activity feed CTAs)
-  const initialTabFromUrlRef = React.useRef(false);
-  React.useEffect(() => {
-    if (initialTabFromUrlRef.current) return;
-    initialTabFromUrlRef.current = true;
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const raw = params.get("tab");
-      if (!raw) return;
-      const key = raw as TabKey;
-      const allowed: TabKey[] = ["about", "contacts", "photos", "references", "travel", "countries", "chatrooms", "vouches"];
-      if (allowed.includes(key)) openTab(key);
-    } catch {
-      // ignore
-    }
-  }, []);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [showKeywordSearch, setShowKeywordSearch] = useState(false);
@@ -1165,7 +1147,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     enabled: !!effectiveUserId,
-    staleTime: 60000, // Cache for 1 minute
+    staleTime: 30000, // Cache for 30 seconds
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: 'always',
     refetchOnWindowFocus: true,
@@ -1235,7 +1217,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return Array.isArray(data) ? data : [];
     },
     enabled: isOwnProfile ? !!currentUser?.id : !!effectiveUserId,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: 30 * 1000, // 30 seconds
   });
 
   // BUNDLE-DERIVED: Compatibility score from profile bundle
@@ -1454,7 +1436,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return result;
     },
     enabled: !!effectiveUserId,
-    staleTime: 60000, // Cache for 1 minute
+    staleTime: 0, // Always refetch when filters change
   });
 
   // Sort connections to show mutual connections first (when viewing someone else's profile)
@@ -1517,7 +1499,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const { data: referencesData } = useQuery<{ references: any[]; counts: { total: number; positive: number; negative: number; neutral: number } }>({
     queryKey: [`/api/users/${effectiveUserId}/references`],
     enabled: !!effectiveUserId,
-    staleTime: 60000, // Cache for 1 minute
+    staleTime: 0, // Always fresh
     refetchOnMount: true,
   });
   const userReferences = referencesData?.references || [];
@@ -3624,7 +3606,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   if (userLoading) {
-    return <FullPageSkeleton />;
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-orange-500 dark:border-gray-600 dark:border-t-orange-500" />
+      </div>
+    );
   }
 
   if (userError && !user) {
@@ -3666,7 +3652,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Show loading while waiting for authentication to load
   if (!effectiveUserId) {
-    return <FullPageSkeleton />;
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
   }
 
   if (!user && !userLoading) {
@@ -3686,7 +3676,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Safety check to ensure user exists before rendering main content
   if (!user) {
-    return <FullPageSkeleton />;
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
   }
 
   // Clean gradient background when no cover photo exists
@@ -4061,11 +4055,11 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
                         variant="outline"
                         onClick={() => duplicateEvent(event)}
                         className="text-xs h-8 px-3 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0"
-                        style={{ color: 'black' }}
+                        style={undefined}
                         title="Duplicate this event"
                       >
-                        <Calendar className="w-3 h-3 mr-1" style={{ color: 'black' }} />
-                        <span style={{ color: 'black' }}>Duplicate</span>
+                        <Calendar className="w-3 h-3 mr-1 text-black dark:text-white" />
+                        <span className="text-black dark:text-white">Duplicate</span>
                       </Button>
                       <Button
                         size="sm"

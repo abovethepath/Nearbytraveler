@@ -18,7 +18,7 @@ import { getDateInputConstraints } from "@/lib/ageUtils";
 export default function SignupLocal() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { login, startAuthenticating, stopAuthenticating } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
     // Basic info (from account signup)
@@ -99,10 +99,8 @@ export default function SignupLocal() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    let didSucceed = false;
     try {
       setIsLoading(true);
-      startAuthenticating();
 
       // Get account data from sessionStorage
       const storedAccountData = sessionStorage.getItem('accountData');
@@ -250,7 +248,7 @@ export default function SignupLocal() {
           try {
             if (data.user) {
               authStorage.setUser(data.user);
-              login(data.user);
+              setUser(data.user);
             }
           } catch (authErr) {
             console.error('Auth storage error (continuing anyway):', authErr);
@@ -271,7 +269,6 @@ export default function SignupLocal() {
           const username = data.user?.username;
           // Keep user on signup page while profile builds — calm transition
           await new Promise((r) => setTimeout(r, 1800));
-          didSucceed = true;
           setLocation(username ? `/profile/${username}` : '/home');
           
         } else {
@@ -299,7 +296,6 @@ export default function SignupLocal() {
       });
     } finally {
       setIsLoading(false);
-      if (!didSucceed) stopAuthenticating();
     }
   };
 

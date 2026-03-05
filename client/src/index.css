@@ -24,6 +24,12 @@ body {
   padding-right: var(--sar);
 }
 
+/* Dark mode: default body text near-white (do not affect light mode) */
+.dark body {
+  color: rgba(255, 255, 255, 0.9);
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.9);
+}
+
 /* iOS momentum scrolling for all scrollable areas */
 .ios-scroll-container,
 [data-radix-scroll-area-viewport],

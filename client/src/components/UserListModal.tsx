@@ -1,4 +1,3 @@
-import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,6 +39,17 @@ export function UserListModal({ isOpen, onClose, city, state, country, userType,
   
   // Debug logging
   console.log('UserListModal - Component rendered with:', { isOpen, city, state, country, userType, title });
+  
+  // Debug query state
+  React.useEffect(() => {
+    console.log('UserListModal - Query state:', { 
+      isLoading, 
+      error: error?.message, 
+      usersCount: users?.length,
+      enabled: !!(isOpen && city && userType),
+      queryEnabled: isOpen && city && userType
+    });
+  }, [isLoading, error, users, isOpen, city, userType]);
   
   // Get current user for connection requests
   let currentUser: any = {};
@@ -84,17 +94,6 @@ export function UserListModal({ isOpen, onClose, city, state, country, userType,
     refetchOnMount: true,
     refetchOnWindowFocus: false
   });
-
-  // Debug query state
-  React.useEffect(() => {
-    console.log('UserListModal - Query state:', { 
-      isLoading, 
-      error: error?.message, 
-      usersCount: users?.length,
-      enabled: !!(isOpen && city && userType),
-      queryEnabled: isOpen && city && userType
-    });
-  }, [isLoading, error, users, isOpen, city, userType]);
 
   // Connection mutation
   const connectMutation = useMutation({

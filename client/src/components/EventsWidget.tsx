@@ -80,6 +80,8 @@ function EventsWidget({ userId }: EventsWidgetProps) {
     queryKey: [`/api/users/${userId}/all-events`],
     enabled: !!userId,
     staleTime: 60000, // Cache for 1 minute
+    gcTime: 0,
+
   });
 
   // Debug logging for userEvents
@@ -132,6 +134,7 @@ function EventsWidget({ userId }: EventsWidgetProps) {
     },
     enabled: discoveryLocations.allCities.length > 0,
     staleTime: 60000,
+    gcTime: 0,
   });
 
   const today = new Date();

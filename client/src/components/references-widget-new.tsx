@@ -53,7 +53,7 @@ function ReferencesWidgetNew({ userId, currentUserId, onWriteReference }: Refere
   
   const { data: referencesData = { references: [], counts: { total: 0, positive: 0, negative: 0, neutral: 0 } }, isLoading, error } = useQuery({
     queryKey: [`/api/users/${userId}/references`],
-    staleTime: 60000, // Cache for 1 minute
+    staleTime: 0, // Always fetch fresh data
     refetchOnMount: true,
   });
 

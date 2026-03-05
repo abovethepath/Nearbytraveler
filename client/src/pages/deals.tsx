@@ -68,8 +68,10 @@ export default function Deals() {
   const { data: businessDeals = [], isLoading: isBusinessDealsLoading, error: businessDealsError, refetch: refetchBusinessDeals } = useQuery<BusinessDeal[]>({
     queryKey: ['/api/business-deals'],
     enabled: !!effectiveUser,
-    // Use global React Query caching defaults (staleTime/gcTime) to avoid showing
-    // a full reload on every navigation.
+    refetchOnWindowFocus: true, // Enable refetch on focus to get fresh business data
+    refetchOnMount: true, // Always refetch when component mounts
+    staleTime: 0, // No stale time - always fetch fresh data for dynamic bio updates
+    gcTime: 0, // Don't cache to ensure fresh business info (gcTime replaces cacheTime in newer versions)
   });
 
   // Fetch quick deals
@@ -77,7 +79,7 @@ export default function Deals() {
     queryKey: ['/api/quick-deals'],
     enabled: !!effectiveUser,
     refetchOnWindowFocus: false,
-    staleTime: 60000, // 1 minute
+    staleTime: 30000, // 30 seconds
   });
 
   // Combine all deals
@@ -301,12 +303,12 @@ export default function Deals() {
               </div>
             )}
             <div className="flex-1 min-w-0 overflow-hidden break-words">
-              <h3 className="font-bold text-sm sm:text-base md:text-lg leading-tight break-words" style={{ color: 'black' }}>
+              <h3 className="font-bold text-sm sm:text-base md:text-lg leading-tight break-words text-black dark:text-white">
                 {deal.businessName || 'Business Name'}
               </h3>
               <div className="flex items-start gap-1 sm:gap-2 text-xs sm:text-sm mt-1 overflow-hidden break-words">
                 <MapPin className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5" />
-                <span style={{ color: 'black' }} className="leading-tight break-words">
+                <span className="leading-tight break-words text-black dark:text-white">
                   {deal.businessAddress ? `${deal.businessAddress}, ${deal.businessLocation}` : deal.businessLocation}
                 </span>
               </div>
@@ -323,7 +325,7 @@ export default function Deals() {
           {/* Deal Title & Discount - Mobile Responsive */}
           <div className="flex justify-between items-start gap-2 overflow-hidden break-words">
             <div className="flex-1 min-w-0 overflow-hidden break-words">
-              <CardTitle className="text-base sm:text-lg md:text-xl font-bold mb-2 break-words" style={{ color: 'black' }}>
+              <CardTitle className="text-base sm:text-lg md:text-xl font-bold mb-2 break-words text-black dark:text-white">
                 {deal.title}
               </CardTitle>
               <div className="flex flex-wrap items-center gap-1 sm:gap-2">
@@ -364,8 +366,8 @@ export default function Deals() {
         <CardContent className="space-y-3 sm:space-y-4 p-3 sm:p-4 md:p-6 overflow-hidden break-words">
           {/* Deal Description */}
           <div className="overflow-hidden break-words">
-            <h4 className="font-semibold mb-1 text-sm sm:text-base break-words" style={{ color: 'black' }}>Deal Details</h4>
-            <p className="text-xs sm:text-sm break-words" style={{ color: 'black' }}>
+            <h4 className="font-semibold mb-1 text-sm sm:text-base break-words text-black dark:text-white">Deal Details</h4>
+            <p className="text-xs sm:text-sm break-words text-black dark:text-white">
               {deal.description}
             </p>
           </div>
@@ -373,8 +375,8 @@ export default function Deals() {
           {/* Business Description */}
           {deal.businessDescription && (
             <div className="overflow-hidden break-words">
-              <h4 className="font-semibold mb-1 text-sm sm:text-base break-words" style={{ color: 'black' }}>About {deal.businessName}</h4>
-              <p className="text-xs sm:text-sm break-words" style={{ color: 'black' }}>
+              <h4 className="font-semibold mb-1 text-sm sm:text-base break-words text-black dark:text-white">About {deal.businessName}</h4>
+              <p className="text-xs sm:text-sm break-words text-black dark:text-white">
                 {deal.businessDescription}
               </p>
             </div>

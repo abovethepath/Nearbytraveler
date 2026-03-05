@@ -796,8 +796,6 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     return parts[0] || 'User';
   };
 
-  const wsChatType = chatType === "chatroom" ? "city" : chatType;
-
   // Initialize WebSocket connection with auto-reconnect
   useEffect(() => {
     if (!currentUserId || !chatId) return;
@@ -1015,7 +1013,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         }));
       };
 
-        ws.onmessage = (event) => {
+      ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log('📨 WhatsApp Chat: Received WebSocket message:', data.type, 'for chatId:', chatId);
 
@@ -1027,7 +1025,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             // Now request message history
             const historyRequest = {
               type: 'sync:history',
-                chatType: wsChatType,
+              chatType,
               chatroomId: chatId,
               payload: {}
             };
@@ -1049,19 +1047,22 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               clearTimeout(syncTimeoutRef.current);
               syncTimeoutRef.current = null;
             }
-              if (Array.isArray(data.payload?.messages)) {
-                setMessages(data.payload.messages.reverse());
-              } else {
-                console.warn('⚠️ WhatsApp Chat: No messages array in sync:response payload');
-              }
-              // Even if empty/unexpected, we did receive a sync response: stop "Loading..." state.
+            if (data.payload?.messages) {
+              setMessages(data.payload.messages.reverse());
               setMessagesLoaded(true);
+            } else {
+              console.warn('⚠️ WhatsApp Chat: No messages array in sync:response payload');
+              if (chatType === 'dm') {
+                // DM-specific resilience: clear loading even if payload is empty/unexpected
+                setMessagesLoaded(true);
+              }
+            }
             scrollToBottom();
             break;
 
           case 'message:new':
             console.log('💬 WhatsApp Chat: New message received, chatType:', data.chatType, 'chatroomId:', data.chatroomId, 'expected chatType:', chatType, 'expected chatId:', chatId);
-              if (data.chatType === wsChatType) {
+            if (data.chatType === chatType) {
               if (chatType === 'dm') {
                 const payload = data.payload || {};
                 const msgSenderId =
@@ -1175,15 +1176,15 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     };
   }, [currentUserId, chatId]);
 
-  // Clear the timeout once messages arrive or we show an error.
+  // Clear the timeout once messages arrive or WS connects.
   useEffect(() => {
-    if (messagesLoaded || !!loadError) {
+    if (messagesLoaded || isWsConnected) {
       if (loadTimeoutRef.current) {
         clearTimeout(loadTimeoutRef.current);
         loadTimeoutRef.current = null;
       }
     }
-  }, [messagesLoaded, loadError]);
+  }, [messagesLoaded, isWsConnected]);
 
   const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
     setTimeout(() => {
