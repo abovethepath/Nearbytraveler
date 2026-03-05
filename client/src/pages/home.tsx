@@ -83,7 +83,7 @@ export default function Home() {
   const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
   const [connectTargetUser, setConnectTargetUser] = useState<any>(null);
   const [showAllUsers, setShowAllUsers] = useState(false);
-  const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical' | 'available_now'>('recent');
+  const [sortBy, setSortBy] = useState<'default' | 'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical' | 'available_now'>('default');
   const isDarkMode = document.documentElement.classList.contains("dark");
   
   // Compact mode via URL parameter (add ?compact=true for smaller cards)
@@ -1134,7 +1134,7 @@ export default function Home() {
       // 3. They're currently traveling (should see themselves in their destination)
       // 4. Sorted by "recent" (newest members) - user should see themselves as newest
       // 5. They have Available Now active - show their card with green badge
-      if (filters.location || filters.search || effectiveUser?.isCurrentlyTraveling || sortBy === 'recent' || sortBy === 'available_now' || effectiveAvailableNowIds.has(Number(otherUser.id))) return true;
+      if (filters.location || filters.search || effectiveUser?.isCurrentlyTraveling || sortBy === 'recent' || sortBy === 'default' || sortBy === 'available_now' || effectiveAvailableNowIds.has(Number(otherUser.id))) return true;
 
       // Only exclude from general browsing without any specific context
       return false;
@@ -1824,10 +1824,10 @@ export default function Home() {
 
             <div className="home-discover-people relative z-10 bg-white dark:bg-gray-900 rounded-3xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
             
-            <div className="flex items-center justify-between mb-6" data-testid="discover-people-section">
-              <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            <div className="flex items-center justify-between gap-2 mb-6 flex-nowrap" data-testid="discover-people-section">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
                 <h2
-                  className="text-xl sm:text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-600 via-cyan-600 to-orange-500 bg-clip-text text-transparent whitespace-nowrap truncate min-w-0"
+                  className="text-xl sm:text-2xl font-black bg-gradient-to-r from-blue-600 via-cyan-600 to-orange-500 bg-clip-text text-transparent whitespace-nowrap truncate min-w-0"
                   style={{ WebkitTextFillColor: "transparent" }}
                 >
                   {activeFilter === "travel-dates" 
@@ -1903,52 +1903,28 @@ export default function Home() {
                 )}
               </div>
               
-              <div className="flex items-center gap-1 sm:gap-2">
+              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setShowAdvancedFilters(true)}
-                  className={
-                    isDarkMode
-                      ? "!inline-flex !items-center !justify-center gap-2 bg-gray-900/90 hover:bg-gray-900 text-white border border-white/15 dark:bg-white/10 dark:hover:bg-white/15 dark:border-white/15 !text-white dark:!text-white dark:[&_*]:text-white [&_*]:text-white"
-                      : "!inline-flex !items-center !justify-center gap-2 bg-white hover:bg-white text-[#1a1a1a] border border-[#E0E0E0]"
-                  }
+                  className="!inline-flex !items-center !justify-center gap-1.5 bg-white dark:bg-white/10 hover:bg-gray-50 dark:hover:bg-white/15 text-gray-800 dark:text-white border border-gray-200 dark:border-white/15"
                   data-testid="button-open-advanced-filters"
                 >
-                  {isDarkMode ? (
-                    <>
-                      <Filter className="w-4 h-4 sm:mr-2 text-gray-800 dark:hidden" />
-                      <span className="hidden sm:inline dark:inline !text-white">Filters</span>
-                    </>
-                  ) : (
-                    <span>Filters</span>
-                  )}
+                  <Filter className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>Filters</span>
                 </Button>
                 {/* Sort Dropdown */}
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                  {isDarkMode ? (
-                    <SelectTrigger className="w-[7.5rem] sm:w-40 px-2 sm:px-3 !flex !items-center !justify-center bg-gray-900/90 hover:bg-gray-900 text-white border border-white/15 dark:bg-white/10 dark:hover:bg-white/15 dark:border-white/15 !text-white dark:!text-white dark:[&_*]:text-white [&_*]:text-white" data-testid="select-sort">
-                      <ArrowUpDown className="w-4 h-4 mr-1 sm:mr-2 text-gray-800 dark:hidden flex-shrink-0" />
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                  ) : (
-                    <SelectTrigger
-                      className="w-[7.5rem] sm:w-40 px-2 sm:px-3 !flex !items-center !justify-center bg-white hover:bg-white text-[#1a1a1a] border border-[#E0E0E0]"
-                      data-testid="select-sort"
-                    >
-                      <span className="inline-flex items-center gap-1">
-                        <span className="inline-flex items-center gap-1">
-                          <span
-                            className="inline-block h-2 w-2 rounded-full bg-green-500"
-                            aria-hidden
-                          />
-                          <span>Available Now</span>
-                        </span>
-                        <span aria-hidden>↓</span>
-                      </span>
-                    </SelectTrigger>
-                  )}
+                  <SelectTrigger
+                    className="w-auto min-w-[2.5rem] px-2 sm:px-3 !flex !items-center !justify-center gap-1 bg-white dark:bg-white/10 hover:bg-gray-50 dark:hover:bg-white/15 text-gray-800 dark:text-white border border-gray-200 dark:border-white/15"
+                    data-testid="select-sort"
+                  >
+                    <ArrowUpDown className="w-3.5 h-3.5 flex-shrink-0" />
+                    {sortBy !== 'default' && <SelectValue />}
+                  </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="default">Default</SelectItem>
                     <SelectItem value="available_now" className="text-green-600 dark:text-green-400 font-semibold">🟢 Available Now</SelectItem>
                     <SelectItem value="recent">Recent</SelectItem>
                     <SelectItem value="active">Most Active</SelectItem>
