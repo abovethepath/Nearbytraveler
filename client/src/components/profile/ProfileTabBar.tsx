@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { useTheme } from "@/components/theme-provider";
 import type { ProfilePageProps } from "./profile-complete-types";
 
 type ProfileTabBarVariant = "hero" | "standalone";
@@ -78,17 +79,9 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
     return `${tabLegacyBase} ${active ? tabLegacyActive : tabLegacyInactive}`;
   };
 
-  // Detect dark mode so badge numbers can flip: dark mode = black text, light mode = white text.
-  const [isDarkMode, setIsDarkMode] = React.useState(
-    typeof document !== "undefined" && document.documentElement.classList.contains("dark")
-  );
-  React.useEffect(() => {
-    const obs = new MutationObserver(() => {
-      setIsDarkMode(document.documentElement.classList.contains("dark"));
-    });
-    obs.observe(document.documentElement, { attributeFilter: ["class"] });
-    return () => obs.disconnect();
-  }, []);
+  // Use the theme provider as source of truth — no MutationObserver needed.
+  const { theme } = useTheme();
+  const isDarkMode = theme === "dark";
 
   // Explicit tab label + badge styles (requested).
   const heroTextStyle = { color: "#000000" } as React.CSSProperties;
