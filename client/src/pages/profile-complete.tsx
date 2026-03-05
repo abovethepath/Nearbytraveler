@@ -1137,7 +1137,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       if (currentUser?.id) {
         headers['x-user-id'] = currentUser.id.toString();
       }
-      const response = await fetch(url, { headers });
+      const response = await fetch(url, { headers, credentials: 'include' });
       if (!response.ok) {
         if (response.status === 403) {
           throw new Error("You cannot view this user's profile due to privacy settings");
@@ -1151,7 +1151,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: 'always',
     refetchOnWindowFocus: true,
-    retry: 1,
+    retry: 2,
+    // Keep previous data while re-fetching (e.g. when auth loads and query key changes).
+    // This prevents the error screen from flashing when the auth-triggered refetch fails transiently.
+    placeholderData: (previousData: any) => previousData,
   });
 
   // Extract data from bundle with fallbacks
@@ -1160,10 +1163,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const userError = bundleError;
   const refetchUser = refetchBundle;
 
+  // Keep a stable ref of the last successfully-fetched user so that a transient
+  // re-fetch failure (e.g. when auth loads and the query key changes) doesn't wipe
+  // out the profile we already displayed.
+  const lastFetchedUserRef = React.useRef<typeof fetchedUser>(undefined);
+  const lastEffectiveUserIdRef = React.useRef<typeof effectiveUserId>(undefined);
+  // Reset ref when navigating to a different user so stale data doesn't bleed through.
+  if (lastEffectiveUserIdRef.current !== effectiveUserId) {
+    lastEffectiveUserIdRef.current = effectiveUserId;
+    lastFetchedUserRef.current = undefined;
+  }
+  if (fetchedUser) {
+    lastFetchedUserRef.current = fetchedUser;
+  }
+  const stableFetchedUser = fetchedUser || lastFetchedUserRef.current;
+
   // Only fall back to currentUser when viewing OWN profile.
   // When viewing another user's profile, never silently substitute the current user's
   // data — this caused the bug where clicking any user card showed your own profile.
-  const user = fetchedUser || (isOwnProfile ? currentUser : undefined);
+  const user = stableFetchedUser || (isOwnProfile ? currentUser : undefined);
 
   // Load gradient selection from database first, then localStorage as fallback
   useEffect(() => {
