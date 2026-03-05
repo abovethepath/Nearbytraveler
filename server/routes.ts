@@ -6373,6 +6373,25 @@ Questions? Just reply to this message. Welcome aboard!
             console.log(`🏙️ CITY SYNC: Updated city field to "${updates.city}" for user ${userId}`);
           }
         }
+
+        // Auto-add "New to Town" when hometown changes — expires after 9 months
+        try {
+          const currentUser = await storage.getUserById(userId);
+          const oldCity = currentUser?.hometownCity || '';
+          const newCity = updates.hometown_city || '';
+          if (newCity && newCity !== oldCity) {
+            const nineMonthsFromNow = new Date();
+            nineMonthsFromNow.setMonth(nineMonthsFromNow.getMonth() + 9);
+            updates.isNewToTown = true;
+            updates.newToTownUntil = nineMonthsFromNow;
+            const existingTags = currentUser?.tags || [];
+            if (!existingTags.includes('new-to-town')) {
+              updates.tags = [...existingTags, 'new-to-town'];
+            }
+          }
+        } catch (e) {
+          console.error('Failed to add new-to-town tag:', e);
+        }
       }
 
       if (process.env.NODE_ENV === 'development') console.log(`🏢 BUSINESS PROFILE: Mapped fields for user ${userId}:`, Object.keys(updates));

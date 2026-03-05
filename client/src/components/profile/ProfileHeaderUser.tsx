@@ -58,6 +58,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const connectionsCount = (userConnections as any[])?.length ?? 0;
   const mutedOrange = "#e8834a";
   const mutedOrangeHover = "#d4703a";
+  const isNewToTown = !!(user?.isNewToTown && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date());
 
   const { resolvedTheme, setTheme } = useTheme();
 
@@ -153,7 +154,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </label>
               </div>
 
-              {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+              {isNewToTown && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 mt-2" style={{ color: '#FFFFFF' }}>
                   New to Town
                 </span>
@@ -183,13 +184,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
               </div>
               {/* Mobile web: place badge under avatar (avoid camera icon overlap) */}
-              {!isNativeIOSApp() && isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+              {!isNativeIOSApp() && isMobileWeb && isNewToTown && (
                 <span className="mt-2 inline-flex items-center self-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm" style={{ color: '#FFFFFF' }}>
                   New to Town
                 </span>
               )}
               {/* Non-mobile web: keep badge below avatar */}
-              {!isNativeIOSApp() && !isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+              {!isNativeIOSApp() && !isMobileWeb && isNewToTown && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 mt-2" style={{ color: '#FFFFFF' }}>
                   New to Town
                 </span>
@@ -396,7 +397,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
                         </div>
 
-                        {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                        {isNewToTown && (
                           <div className="mt-3 flex justify-center">
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-900">
                               New to Town

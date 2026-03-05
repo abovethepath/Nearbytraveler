@@ -728,9 +728,13 @@ export function ProfileDialogs(props: ProfilePageProps) {
                       await queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
                       await queryClient.invalidateQueries({ queryKey: [`/api/users`] });
                       await queryClient.invalidateQueries({ queryKey: ['/api/users/search'] });
+                      await queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
+                      await queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`, currentUser?.id] });
                       
                       // Refetch user data to update the widget with new values
                       await queryClient.refetchQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                      await queryClient.refetchQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
+                      await queryClient.refetchQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`, currentUser?.id] });
                       
                       setPendingLocationData(null);
                       
@@ -1549,7 +1553,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <p className="text-sm font-medium text-orange-800 dark:text-orange-200">
-                      ðŸ“ Are you moving or want to change your hometown location?
+                      🏠 Are you moving or want to change your hometown location?
                     </p>
                     <p className="text-xs text-orange-600 dark:text-orange-300 mt-1">
                       Update where you're a local to connect with the right community
