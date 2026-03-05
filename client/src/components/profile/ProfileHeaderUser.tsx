@@ -459,6 +459,43 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </div>
                         </div>
 
+                        {/* INLINE: What You Have in Common — level with city, near center */}
+                        {!isMobileWeb && (
+                          <div
+                            className="mt-3 mb-1"
+                            onClick={() => setSeeAllCommonOpen(true)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSeeAllCommonOpen(true); }}
+                            aria-label="What You Have in Common — click to expand"
+                          >
+                            <div className="common-radiate-widget inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/40 cursor-pointer select-none transition-all hover:bg-white/25">
+                              <span className="text-2xl flex-shrink-0">🤝</span>
+                              <div className="min-w-0">
+                                <div className="text-[10px] font-extrabold text-white/70 uppercase tracking-widest leading-none mb-1.5">
+                                  What You Have in Common
+                                </div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="inline-flex items-center rounded-full px-3 py-0.5 text-[11px] font-extrabold bg-[#FF6B35] text-white shadow-md flex-shrink-0">
+                                    {totalCommon} in common
+                                  </span>
+                                  {sharedContactsCount > 0 && (
+                                    <span className="text-[11px] text-white/80 font-semibold flex-shrink-0">{sharedContactsCount} contacts</span>
+                                  )}
+                                  {sharedCountries.length > 0 && (
+                                    <span className="text-[11px] text-white/80 font-semibold flex-shrink-0">{sharedCountries.length} countries</span>
+                                  )}
+                                  {visibleInterestPills.slice(0, 3).map((interest) => (
+                                    <span key={interest} className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold bg-white/20 text-white border border-white/30">
+                                      {interest}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
                           <div className="mt-4">
                           <div className="flex flex-wrap items-center gap-2">
                             <button
@@ -534,81 +571,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         </div>
                       </div>
 
-                      {/* RIGHT: What You Have in Common (desktop only; mobile shows it below hero to avoid duplicates) */}
-                      {!isMobileWeb && (
-                        <div className="lg:w-[320px] lg:flex-shrink-0 lg:-ml-6">
-                          <div
-                            className="what-you-have-in-common-card bg-white/70 dark:bg-[#1e2139] backdrop-blur-md rounded-2xl border border-white/40 dark:border-white/10 shadow-lg p-4 overflow-hidden cursor-pointer min-w-[280px] min-h-[220px]"
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => setSeeAllCommonOpen(true)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ") setSeeAllCommonOpen(true);
-                            }}
-                            aria-label="Open full What You Have in Common details"
-                          >
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="text-sm font-extrabold text-gray-900 dark:text-white">
-                                <span className="inline-flex items-center gap-1.5">
-                                  <span aria-hidden>🤝</span>
-                                  <span>What You Have in Common</span>
-                                </span>
-                              </div>
-                              <div
-                                className="shrink-0 inline-flex items-center rounded-full px-3 py-1 text-[11px] font-extrabold bg-[#FF6B35] text-white shadow-[0_10px_22px_rgba(255,107,53,0.30)]"
-                                data-testid="common-count-badge"
-                              >
-                                {totalCommon} things in common
-                              </div>
-                            </div>
-
-                            <div className="mt-2 text-xs text-gray-700 dark:text-gray-200 flex flex-wrap gap-x-3 gap-y-1">
-                              <span><span className="font-extrabold text-gray-900 dark:text-white">{sharedContactsCount}</span> contacts</span>
-                              <span><span className="font-extrabold text-gray-900 dark:text-white">{sharedCountries.length}</span> countries</span>
-                              {sharedLanguagesCountForDisplay > 0 && (
-                                <span><span className="font-extrabold text-gray-900 dark:text-white">{sharedLanguagesCountForDisplay}</span> languages</span>
-                              )}
-                            </div>
-
-                            <div className="mt-3">
-                              <div className="text-xs font-extrabold text-gray-900 dark:text-white mb-1">
-                                Shared interests ({sharedInterests.length})
-                              </div>
-                              <div className="flex flex-wrap gap-1.5">
-                                {visibleInterestPills.length > 0 ? (
-                                  visibleInterestPills.map((interest) => (
-                                    <span
-                                      key={interest}
-                                      className="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold bg-[#FF6B35] text-white border border-black/10 shadow-[0_12px_26px_rgba(255,107,53,0.28)]"
-                                    >
-                                      {interest}
-                                    </span>
-                                  ))
-                                ) : (
-                                  <span className="text-xs text-gray-600 dark:text-gray-300">No shared interests yet</span>
-                                )}
-                              </div>
-
-                              {hasOverflow && (
-                                <div className="mt-2">
-                                  <button
-                                    type="button"
-                                    className="text-xs font-bold text-orange-700 hover:text-orange-800 dark:text-orange-300 dark:hover:text-orange-200 underline underline-offset-2"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      setSeeAllCommonOpen(true);
-                                    }}
-                                    data-testid="button-see-all-common"
-                                  >
-                                    See all
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )}
                     </div>
 
                     {/* Tab bar (already text-only on web) */}
