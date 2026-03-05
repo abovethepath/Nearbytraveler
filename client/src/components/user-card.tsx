@@ -78,6 +78,7 @@ export default function UserCard({
 
   const isDarkMode = document.documentElement.classList.contains("dark");
   const isHomeRoute = location === "/" || location === "/home";
+  const pickTextColor = (light: string, dark: string) => (isDarkMode ? dark : light);
 
   const getUserGradient = () => {
     if (user.avatarGradient) return user.avatarGradient;
@@ -309,7 +310,8 @@ export default function UserCard({
             <div className="!flex !flex-col !items-center !w-full !text-center" data-role="user-card-text-container">
               <div
                 data-role="user-card-username"
-                className="truncate !w-full !text-center !block font-extrabold text-[14px] text-[#FF6B35] dark:text-[#FF6B35]"
+                className="truncate !w-full !text-center !block font-extrabold text-[14px]"
+                style={{ color: pickTextColor("#FF6B35", "#FF6B35") }}
               >
                 {handle}
               </div>
@@ -318,12 +320,17 @@ export default function UserCard({
                 data-role="user-card-location"
                 style={{ width: "100%", textAlign: "center" }}
               >
-                <span data-role="user-card-city" className="truncate !text-center !w-full !block text-[#3b82f6] dark:text-[#3b82f6]">
+                <span
+                  data-role="user-card-city"
+                  className="truncate !text-center !w-full !block"
+                  style={{ color: pickTextColor("#3b82f6", "#3b82f6") }}
+                >
                   {hometownLine}
                 </span>
               </div>
               <div
                 className="user-card-bio mt-1.5 w-full text-center"
+                data-role="user-card-bio"
                 title={user.bio || undefined}
                 style={{
                   color: undefined,
@@ -337,7 +344,10 @@ export default function UserCard({
                   WebkitLineClamp: 3 as any,
                 }}
               >
-                <span className="text-center text-[#1f2937] dark:text-white">
+                <span
+                  className="text-center"
+                  style={{ color: pickTextColor("#1f2937", "#D1D5DB") }}
+                >
                   {bioText || '\u00A0'}
                 </span>
               </div>
@@ -347,8 +357,9 @@ export default function UserCard({
                 <div className="!w-full !flex !justify-center">
                   <span
                     data-role="user-card-things-pill"
-                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border !mx-auto text-[#3b82f6] dark:text-[#FF6B35]"
+                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border !mx-auto"
                     style={{
+                      color: pickTextColor("#3b82f6", "#FF6B35"),
                       backgroundColor: 'rgba(59,130,246,0.12)',
                       borderColor: 'rgba(59,130,246,0.25)',
                     }}
@@ -358,10 +369,12 @@ export default function UserCard({
                 </div>
                 <div
                   data-role="user-card-contacts"
-                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium truncate text-[#FF6B35] dark:text-[#3b82f6]"
+                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium truncate"
                   style={{ width: "100%", textAlign: "center" }}
                 >
+                  <span style={{ color: pickTextColor("#FF6B35", "#3b82f6") }}>
                   {contactsInCommon} contacts in common
+                  </span>
                 </div>
               </div>
             </div>
@@ -369,21 +382,25 @@ export default function UserCard({
             <>
               <div
                 data-role="user-card-username"
-                className="truncate text-[#3b82f6] dark:text-[#FF6B35]"
+                className="truncate"
                 style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500 }}
               >
+                <span style={{ color: pickTextColor("#3b82f6", "#FF6B35") }}>
                 {handle}
+                </span>
               </div>
               <div
-                className="mt-1 flex items-center gap-1 min-w-0 text-[#e8834a] dark:text-[#3b82f6] dark:justify-center dark:w-full dark:text-center"
-                style={{ fontSize: 11.5 }}
+                className="mt-1 flex items-center gap-1 min-w-0 dark:justify-center dark:w-full dark:text-center"
+                style={{ fontSize: 11.5, color: pickTextColor("#e8834a", "#3b82f6") }}
               >
                 <span data-role="user-card-city" className="truncate dark:w-full dark:text-center">{hometownLine}</span>
               </div>
               <div
-                className="user-card-bio text-[#9ca3af] dark:text-white"
+                className="user-card-bio"
+                data-role="user-card-bio"
                 title={user.bio || undefined}
                 style={{
+                  color: pickTextColor("#9ca3af", "#D1D5DB"),
                   fontSize: 12.5,
                   lineHeight: 1.5,
                   minHeight: '2.5rem',
@@ -396,10 +413,18 @@ export default function UserCard({
               </div>
               {!isCurrentUser && (
                 <>
-                  <div className="truncate mt-1 text-[#3b82f6] dark:text-[#FF6B35]" style={{ fontSize: 12, fontWeight: 700 }}>
+                  <div
+                    className="truncate mt-1"
+                    style={{ fontSize: 12, fontWeight: 700, color: pickTextColor("#3b82f6", "#FF6B35") }}
+                    data-role="user-card-things"
+                  >
                     {thingsInCommon} things in common
                   </div>
-                  <div className="truncate mt-0.5 text-[#9ca3af] dark:text-[#3b82f6]" style={{ fontSize: 12, fontWeight: 500 }}>
+                  <div
+                    className="truncate mt-0.5"
+                    style={{ fontSize: 12, fontWeight: 500, color: pickTextColor("#9ca3af", "#3b82f6") }}
+                    data-role="user-card-contacts"
+                  >
                     {contactsInCommon} contacts in common
                   </div>
                 </>
@@ -420,7 +445,8 @@ export default function UserCard({
             <div className="!flex !flex-col !items-center !w-full !text-center" data-role="user-card-text-container">
               <div
                 data-role="user-card-username"
-                className="truncate !w-full !text-center !block font-extrabold text-[14px] text-[#FF6B35] dark:text-[#FF6B35]"
+                className="truncate !w-full !text-center !block font-extrabold text-[14px]"
+                style={{ color: pickTextColor("#FF6B35", "#FF6B35") }}
               >
                 {handle}
               </div>
@@ -429,12 +455,17 @@ export default function UserCard({
                 data-role="user-card-location"
                 style={{ width: "100%", textAlign: "center" }}
               >
-                <span data-role="user-card-city" className="truncate !text-center !w-full !block text-[#3b82f6] dark:text-[#3b82f6]">
+                <span
+                  data-role="user-card-city"
+                  className="truncate !text-center !w-full !block"
+                  style={{ color: pickTextColor("#3b82f6", "#3b82f6") }}
+                >
                   {hometownLine}
                 </span>
               </div>
               <div
                 className="user-card-bio mt-1.5 w-full text-center"
+                data-role="user-card-bio"
                 title={user.bio || undefined}
                 style={{
                   color: undefined,
@@ -448,7 +479,10 @@ export default function UserCard({
                   WebkitLineClamp: 3 as any,
                 }}
               >
-                <span className="text-center text-[#1f2937] dark:text-white">
+                <span
+                  className="text-center"
+                  style={{ color: pickTextColor("#1f2937", "#D1D5DB") }}
+                >
                   {bioText || '\u00A0'}
                 </span>
               </div>
@@ -458,8 +492,9 @@ export default function UserCard({
                 <div className="!w-full !flex !justify-center">
                   <span
                     data-role="user-card-things-pill"
-                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border !mx-auto text-[#3b82f6] dark:text-[#FF6B35]"
+                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border !mx-auto"
                     style={{
+                      color: pickTextColor("#3b82f6", "#FF6B35"),
                       backgroundColor: 'rgba(59,130,246,0.12)',
                       borderColor: 'rgba(59,130,246,0.25)',
                     }}
@@ -469,10 +504,12 @@ export default function UserCard({
                 </div>
                 <div
                   data-role="user-card-contacts"
-                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium truncate text-[#FF6B35] dark:text-[#3b82f6]"
+                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium truncate"
                   style={{ width: "100%", textAlign: "center" }}
                 >
+                  <span style={{ color: pickTextColor("#FF6B35", "#3b82f6") }}>
                   {contactsInCommon} contacts in common
+                  </span>
                 </div>
               </div>
             </div>
@@ -480,21 +517,25 @@ export default function UserCard({
             <>
               <div
                 data-role="user-card-username"
-                className="truncate text-[#3b82f6] dark:text-[#FF6B35]"
+                className="truncate"
                 style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500 }}
               >
+                <span style={{ color: pickTextColor("#3b82f6", "#FF6B35") }}>
                 {handle}
+                </span>
               </div>
               <div
-                className="mt-1 flex items-center gap-1 min-w-0 text-[#e8834a] dark:text-[#3b82f6] dark:justify-center dark:w-full dark:text-center"
-                style={{ fontSize: 11.5 }}
+                className="mt-1 flex items-center gap-1 min-w-0 dark:justify-center dark:w-full dark:text-center"
+                style={{ fontSize: 11.5, color: pickTextColor("#e8834a", "#3b82f6") }}
               >
                 <span data-role="user-card-city" className="truncate dark:w-full dark:text-center">{hometownLine}</span>
               </div>
               <div
-                className="user-card-bio text-[#9ca3af] dark:text-white"
+                className="user-card-bio"
+                data-role="user-card-bio"
                 title={user.bio || undefined}
                 style={{
+                  color: pickTextColor("#9ca3af", "#D1D5DB"),
                   fontSize: 12.5,
                   lineHeight: 1.5,
                   minHeight: '3.75rem',
@@ -507,10 +548,18 @@ export default function UserCard({
               </div>
               {!isCurrentUser && (
                 <>
-                  <div className="truncate mt-1 text-[#3b82f6] dark:text-[#FF6B35]" style={{ fontSize: 12, fontWeight: 700 }}>
+                  <div
+                    className="truncate mt-1"
+                    style={{ fontSize: 12, fontWeight: 700, color: pickTextColor("#3b82f6", "#FF6B35") }}
+                    data-role="user-card-things"
+                  >
                     {thingsInCommon} things in common
                   </div>
-                  <div className="truncate mt-0.5 text-[#9ca3af] dark:text-[#3b82f6]" style={{ fontSize: 12, fontWeight: 500 }}>
+                  <div
+                    className="truncate mt-0.5"
+                    style={{ fontSize: 12, fontWeight: 500, color: pickTextColor("#9ca3af", "#3b82f6") }}
+                    data-role="user-card-contacts"
+                  >
                     {contactsInCommon} contacts in common
                   </div>
                 </>
