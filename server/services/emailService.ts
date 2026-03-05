@@ -29,10 +29,21 @@ export class EmailService {
   private ensureInitialized() {
     if (this.isInitialized) return;
 
-    if (process.env.BREVO_API_KEY) {
-      this.apiKey = process.env.BREVO_API_KEY;
+    const rawKey =
+      process.env.BREVO_API_KEY ||
+      // Legacy / alternate env var names some deployments still use
+      (process.env as any).SENDINBLUE_API_KEY ||
+      (process.env as any).SIB_API_KEY;
+
+    const apiKey = typeof rawKey === "string" ? rawKey.trim() : rawKey;
+
+    if (apiKey && typeof apiKey === "string" && apiKey.length > 0) {
+      this.apiKey = apiKey;
       this.isInitialized = true;
-      console.log('✅ Brevo initialized successfully');
+      console.log("✅ Brevo initialized successfully", {
+        apiKeyPrefix: this.apiKey.slice(0, 4),
+        apiKeyLength: this.apiKey.length,
+      });
     } else {
       console.log('⚠️ BREVO_API_KEY not found - emails will not be sent');
     }

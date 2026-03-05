@@ -86,7 +86,17 @@ process.on("SIGINT", () => {
 
 // Debug environment variables
 console.log("Environment check:", {
-  BREVO_API_KEY: process.env.BREVO_API_KEY ? "LOADED" : "NOT FOUND",
+  BREVO_API_KEY:
+    process.env.BREVO_API_KEY || (process.env as any).SENDINBLUE_API_KEY || (process.env as any).SIB_API_KEY
+      ? "LOADED"
+      : "NOT FOUND",
+  BREVO_API_KEY_SOURCE: process.env.BREVO_API_KEY
+    ? "BREVO_API_KEY"
+    : (process.env as any).SENDINBLUE_API_KEY
+      ? "SENDINBLUE_API_KEY"
+      : (process.env as any).SIB_API_KEY
+        ? "SIB_API_KEY"
+        : "MISSING",
   NODE_ENV: process.env.NODE_ENV,
 });
 
