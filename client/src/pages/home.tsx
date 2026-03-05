@@ -84,6 +84,7 @@ export default function Home() {
   const [connectTargetUser, setConnectTargetUser] = useState<any>(null);
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical' | 'available_now'>('recent');
+  const isDarkMode = document.documentElement.classList.contains("dark");
   
   // Compact mode via URL parameter (add ?compact=true for smaller cards)
   const isCompactMode = useMemo(() => {
@@ -1907,18 +1908,46 @@ export default function Home() {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowAdvancedFilters(true)}
-                  className="!inline-flex !items-center !justify-center gap-2 bg-gray-900/90 hover:bg-gray-900 text-white border border-white/15 dark:bg-white/10 dark:hover:bg-white/15 dark:border-white/15 !text-white dark:!text-white dark:[&_*]:text-white [&_*]:text-white"
+                  className={
+                    isDarkMode
+                      ? "!inline-flex !items-center !justify-center gap-2 bg-gray-900/90 hover:bg-gray-900 text-white border border-white/15 dark:bg-white/10 dark:hover:bg-white/15 dark:border-white/15 !text-white dark:!text-white dark:[&_*]:text-white [&_*]:text-white"
+                      : "!inline-flex !items-center !justify-center gap-2 bg-white hover:bg-white text-[#1a1a1a] border border-[#E0E0E0]"
+                  }
                   data-testid="button-open-advanced-filters"
                 >
-                  <Filter className="w-4 h-4 sm:mr-2 text-gray-800 dark:hidden" />
-                  <span className="hidden sm:inline dark:inline !text-white">Filters</span>
+                  {isDarkMode ? (
+                    <>
+                      <Filter className="w-4 h-4 sm:mr-2 text-gray-800 dark:hidden" />
+                      <span className="hidden sm:inline dark:inline !text-white">Filters</span>
+                    </>
+                  ) : (
+                    <span>Filters</span>
+                  )}
                 </Button>
                 {/* Sort Dropdown */}
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                  <SelectTrigger className="w-[7.5rem] sm:w-40 px-2 sm:px-3 !flex !items-center !justify-center bg-gray-900/90 hover:bg-gray-900 text-white border border-white/15 dark:bg-white/10 dark:hover:bg-white/15 dark:border-white/15 !text-white dark:!text-white dark:[&_*]:text-white [&_*]:text-white" data-testid="select-sort">
-                    <ArrowUpDown className="w-4 h-4 mr-1 sm:mr-2 text-gray-800 dark:hidden flex-shrink-0" />
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
+                  {isDarkMode ? (
+                    <SelectTrigger className="w-[7.5rem] sm:w-40 px-2 sm:px-3 !flex !items-center !justify-center bg-gray-900/90 hover:bg-gray-900 text-white border border-white/15 dark:bg-white/10 dark:hover:bg-white/15 dark:border-white/15 !text-white dark:!text-white dark:[&_*]:text-white [&_*]:text-white" data-testid="select-sort">
+                      <ArrowUpDown className="w-4 h-4 mr-1 sm:mr-2 text-gray-800 dark:hidden flex-shrink-0" />
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                  ) : (
+                    <SelectTrigger
+                      className="w-[7.5rem] sm:w-40 px-2 sm:px-3 !flex !items-center !justify-center bg-white hover:bg-white text-[#1a1a1a] border border-[#E0E0E0]"
+                      data-testid="select-sort"
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        <span className="inline-flex items-center gap-1">
+                          <span
+                            className="inline-block h-2 w-2 rounded-full bg-green-500"
+                            aria-hidden
+                          />
+                          <span>Available Now</span>
+                        </span>
+                        <span aria-hidden>↓</span>
+                      </span>
+                    </SelectTrigger>
+                  )}
                   <SelectContent>
                     <SelectItem value="available_now" className="text-green-600 dark:text-green-400 font-semibold">🟢 Available Now</SelectItem>
                     <SelectItem value="recent">Recent</SelectItem>

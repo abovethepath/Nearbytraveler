@@ -54,7 +54,14 @@ function JoinPageWithSignIn() {
   const [, setLocation] = useLocation();
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col relative">
+    <>
+      <style>{`
+        .nt-hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+        .nt-hide-scrollbar::-webkit-scrollbar { display: none; }
+      `}</style>
+      <div
+        className="nt-hide-scrollbar h-screen overflow-y-auto bg-gradient-to-br from-orange-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col relative"
+      >
       <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-orange-500 to-blue-500" aria-hidden />
 
       <button
@@ -93,6 +100,21 @@ function JoinPageWithSignIn() {
             </p>
           </div>
         </div>
+      </div>
+      </div>
+    </>
+  );
+}
+
+function AuthTransitionScreen() {
+  return (
+    <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <Logo variant="auth" />
+        <div
+          className="h-5 w-5 rounded-full border-2 border-gray-300 dark:border-gray-700 border-t-transparent animate-spin"
+          aria-label="Loading"
+        />
       </div>
     </div>
   );
@@ -189,6 +211,10 @@ export const AuthContext = React.createContext<{
   logout: (redirectTo?: string) => void;
   isAuthenticated: boolean;
   authLoading: boolean;
+  isAuthenticating: boolean;
+  setIsAuthenticating: (isAuthenticating: boolean) => void;
+  startAuthenticating: () => void;
+  stopAuthenticating: () => void;
 }>({
   user: null,
   setUser: () => {},
@@ -196,6 +222,10 @@ export const AuthContext = React.createContext<{
   logout: () => {},
   isAuthenticated: false,
   authLoading: true,
+  isAuthenticating: false,
+  setIsAuthenticating: () => {},
+  startAuthenticating: () => {},
+  stopAuthenticating: () => {},
 });
 
 export const useAuth = () => {
@@ -251,6 +281,7 @@ function Router() {
   // Auth init/verification gates to prevent landing/login flashes during nav.
   const [authInitialized, setAuthInitialized] = useState(false);
   const [isVerifyingAuth, setIsVerifyingAuth] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const LOGIN_PENDING_KEY = "nt_login_pending";
   const [loginPending, setLoginPending] = useState(() => {
     try {
@@ -283,6 +314,12 @@ function Router() {
     window.addEventListener("nt-login-pending", onPending as EventListener);
     return () => window.removeEventListener("nt-login-pending", onPending as EventListener);
   }, [setLoginPendingFlag]);
+
+  // If a submit-triggered auth transition is pending (persisted in sessionStorage),
+  // make sure we always render the transition screen, even across reloads.
+  useEffect(() => {
+    if (loginPending) setIsAuthenticating(true);
+  }, [loginPending]);
   
   // Track page views for analytics
   useAnalytics();
@@ -502,7 +539,7 @@ function Router() {
       if (location.startsWith("/api/")) return;
 
       const reason = opts?.reason || "sync";
-      const force = !!opts?.force;
+      const force = !!opts?.force || loginPending || isAuthenticating;
 
       // Throttle to avoid spamming on rapid navigation.
       const now = Date.now();
@@ -517,10 +554,24 @@ function Router() {
       if (expectedAuth) setIsVerifyingAuth(true);
 
       try {
-        const res = await fetch(`${getApiBaseUrl()}/api/auth/user`, {
-          credentials: "include",
-          headers: { Accept: "application/json" },
-        });
+        const doCheck = async () =>
+          fetch(`${getApiBaseUrl()}/api/auth/user`, {
+            credentials: "include",
+            headers: { Accept: "application/json" },
+          });
+
+        let res = await doCheck();
+
+        // Auth-transition hardening:
+        // Immediately after login/signup, the session cookie can lag briefly.
+        // During this window, a single 401 should NOT clear state or redirect to landing.
+        if (res.status === 401 && (loginPending || isAuthenticating)) {
+          for (const delayMs of [150, 300, 600]) {
+            await new Promise((r) => setTimeout(r, delayMs));
+            res = await doCheck();
+            if (res.ok) break;
+          }
+        }
 
         // Ignore stale results if a newer sync started.
         if (seq !== authSyncSeqRef.current) return;
@@ -542,6 +593,7 @@ function Router() {
           clearLocalAuthState("syncAuthFromServer:401");
           setUser(null);
           setLoginPendingFlag(false);
+          setIsAuthenticating(false);
 
           // Redirect unauthenticated users away from protected routes.
           if (!isPublicRoute && !(authLoading || !authInitialized || isLoading)) {
@@ -578,6 +630,8 @@ function Router() {
       markSessionVerified,
       clearSessionVerified,
       user?.id,
+      loginPending,
+      isAuthenticating,
     ],
   );
 
@@ -801,6 +855,16 @@ function Router() {
         setUser(newUser);
         if (!newUser?.id) clearSessionVerified();
       },
+      isAuthenticating,
+      setIsAuthenticating,
+      startAuthenticating: () => {
+        setIsAuthenticating(true);
+        setLoginPendingFlag(true);
+      },
+      stopAuthenticating: () => {
+        setIsAuthenticating(false);
+        setLoginPendingFlag(false);
+      },
       logout: async (redirectTo = '/') => {
         console.log('🚪 AuthContext logout called - starting logout process');
         console.log('Current user before logout:', user?.username);
@@ -892,11 +956,32 @@ function Router() {
     authLoading,
     authInitialized,
     isLoading,
+    isAuthenticating,
     isSessionMarkedInvalid,
     isSessionVerified,
     clearSessionVerified,
     clearSessionInvalid,
     markSessionVerified,
+    setIsAuthenticating,
+  ]);
+
+  // Clear the auth-transition screen only after:
+  // - we have a confirmed authenticated user, AND
+  // - we've navigated off public/auth routes onto a protected route.
+  useEffect(() => {
+    if (!isAuthenticating) return;
+    if (loginPending) return;
+    if (!authValue.isAuthenticated) return;
+    if (isAuthRoute) return;
+    if (isPublicRoute) return;
+    const t = window.setTimeout(() => setIsAuthenticating(false), 0);
+    return () => window.clearTimeout(t);
+  }, [
+    isAuthenticating,
+    loginPending,
+    authValue.isAuthenticated,
+    isAuthRoute,
+    isPublicRoute,
   ]);
 
   // Post-auth redirect (used for invite links, etc.)
@@ -923,6 +1008,7 @@ function Router() {
   useEffect(() => {
     if (isNativeIOSApp()) return;
     if (authValue.authLoading) return;
+    if (isAuthenticating) return;
     if (loginPending) return;
     if (isPublicRoute) return;
     if (authValue.isAuthenticated) return;
@@ -936,6 +1022,8 @@ function Router() {
   }, [
     authValue.authLoading,
     authValue.isAuthenticated,
+    isAuthenticating,
+    loginPending,
     isPublicRoute,
     location,
     setLocation,
@@ -953,6 +1041,10 @@ function Router() {
     });
     console.log('🔍 ROUTING DEBUG - isAuthenticated:', authValue.isAuthenticated, 'location:', location, 'user:', effectiveUser);
     console.log('🔍 Current window.location.pathname:', window.location.pathname);
+
+    if (isAuthenticating || loginPending) {
+      return <AuthTransitionScreen />;
+    }
 
     // NATIVE APP: Never show marketing/landing; redirect is done in Router useEffect (avoids setLocation during render / loop)
     if (isNativeIOSApp()) {
@@ -1023,16 +1115,6 @@ function Router() {
     // Session-cookie-only auth: localStorage is NOT an auth source. If the server session
     // hasn't been verified in this tab, treat the user as logged out.
     const isActuallyAuthenticated = authValue.isAuthenticated || (!!effectiveUser && isSessionVerified());
-
-    // Login transition gate: while a login submit is in-flight (or cookie propagation is settling),
-    // never show the unauthenticated landing UI for a protected route.
-    if (loginPending && !isActuallyAuthenticated) {
-      return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-          <div className="text-sm font-semibold text-gray-500 dark:text-gray-400">Signing you in…</div>
-        </div>
-      );
-    }
 
     // Protected-route handling for unauthenticated users: show landing here (redirect is handled
     // by the route-guard effect so the URL also updates to "/").

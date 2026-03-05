@@ -455,6 +455,7 @@ export const events = pgTable("events", {
   city: text("city").notNull(),
   state: text("state"), // Optional - only required for countries with states/provinces
   country: text("country").notNull().default("United States"),
+  timeZone: text("time_zone"), // IANA timezone (e.g. "America/Los_Angeles") for display + cross-timezone viewing
   zipcode: text("zipcode").notNull(),
   location: text("location").notNull(), // Combined display address
   date: timestamp("date").notNull(),

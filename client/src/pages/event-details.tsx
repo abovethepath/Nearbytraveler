@@ -48,20 +48,32 @@ function isSameCalendarDay(a: Date, b: Date): boolean {
   );
 }
 
-function formatEventDateRange(startRaw: Date | string, endRaw?: Date | string | null): string {
+function formatEventDateRange(startRaw: Date | string, endRaw?: Date | string | null, timeZone?: string | null): string {
   const start = new Date(startRaw);
   const end = endRaw ? new Date(endRaw) : null;
 
-  const dateShort = (d: Date) => d.toLocaleDateString([], { month: "short", day: "numeric" });
-  const dateLong = (d: Date) => d.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
-  const time = (d: Date) => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const tz = timeZone && String(timeZone).trim() ? String(timeZone).trim() : undefined;
+  const dateShort = (d: Date) => d.toLocaleDateString([], { month: "short", day: "numeric", ...(tz ? { timeZone: tz } : {}) });
+  const dateLong = (d: Date) =>
+    d.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric", ...(tz ? { timeZone: tz } : {}) });
+  const time = (d: Date) => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", ...(tz ? { timeZone: tz } : {}) });
+  const tzAbbr = (() => {
+    if (!tz) return null;
+    try {
+      const parts = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "short" }).formatToParts(start);
+      return parts.find((p) => p.type === "timeZoneName")?.value || null;
+    } catch {
+      return null;
+    }
+  })();
 
   if (!end || isNaN(end.getTime()) || isSameCalendarDay(start, end)) {
     // Single-day event (or no end): show one date, time range if available.
     const datePart = dateLong(start);
     const startTime = time(start);
     const endTime = end && !isNaN(end.getTime()) ? time(end) : null;
-    return endTime ? `${datePart} · ${startTime} - ${endTime}` : `${datePart} · ${startTime}`;
+    const timePart = endTime ? `${startTime} - ${endTime}` : `${startTime}`;
+    return `${datePart} · ${timePart}${tzAbbr ? ` ${tzAbbr}` : ""}`;
   }
 
   // Multi-day event: Mar 27 - Mar 29, 2026 · 7:00 PM - 11:55 PM
@@ -69,7 +81,7 @@ function formatEventDateRange(startRaw: Date | string, endRaw?: Date | string | 
   const datePart = sameYear
     ? `${dateShort(start)} - ${dateLong(end)}`
     : `${dateLong(start)} - ${dateLong(end)}`;
-  return `${datePart} · ${time(start)} - ${time(end)}`;
+  return `${datePart} · ${time(start)} - ${time(end)}${tzAbbr ? ` ${tzAbbr}` : ""}`;
 }
 
 function renderFormattedDescription(text: string) {
@@ -764,7 +776,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                   <Calendar className="w-5 h-5 text-travel-blue" />
                   <div>
                     <p className="font-medium">
-                      {formatEventDateRange(event.date, event.endDate || null)}
+                      {formatEventDateRange(event.date, event.endDate || null, (event as any).timeZone || null)}
                     </p>
                   </div>
                 </div>

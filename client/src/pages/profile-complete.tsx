@@ -753,6 +753,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     };
     setTimeout(tryScroll, 80);
   }
+
+  // Allow deep-linking to a specific tab (used by Explore -> Activity feed CTAs)
+  const initialTabFromUrlRef = React.useRef(false);
+  React.useEffect(() => {
+    if (initialTabFromUrlRef.current) return;
+    initialTabFromUrlRef.current = true;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const raw = params.get("tab");
+      if (!raw) return;
+      const key = raw as TabKey;
+      const allowed: TabKey[] = ["about", "contacts", "photos", "references", "travel", "countries", "chatrooms", "vouches"];
+      if (allowed.includes(key)) openTab(key);
+    } catch {
+      // ignore
+    }
+  }, []);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [showKeywordSearch, setShowKeywordSearch] = useState(false);

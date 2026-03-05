@@ -18,7 +18,7 @@ import { getDateInputConstraints } from "@/lib/ageUtils";
 export default function SignupTraveling() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { setUser } = useAuth();
+  const { login, startAuthenticating, stopAuthenticating } = useAuth();
 
   const [formData, setFormData] = useState({
     // Basic info (from account signup)
@@ -109,11 +109,13 @@ export default function SignupTraveling() {
     console.log('🚀 FORM SUBMIT TRIGGERED - handleSubmit called');
     console.log('🚀 Current formData:', JSON.stringify(formData, null, 2));
     
+    let didSucceed = false;
     setDebugError(null);
     setDebugStatus("Starting submission...");
     
     try {
       setIsLoading(true);
+      startAuthenticating();
       setDebugStatus("Preparing data...");
 
       // Get account data from sessionStorage
@@ -320,7 +322,7 @@ export default function SignupTraveling() {
           try {
             if (data.user) {
               authStorage.setUser(data.user);
-              setUser(data.user);
+              login(data.user);
             }
           } catch (authErr) {
             console.error('Auth storage error (continuing anyway):', authErr);
@@ -341,6 +343,7 @@ export default function SignupTraveling() {
           const username = data.user?.username;
           // Keep user on signup page while profile builds — calm transition
           await new Promise((r) => setTimeout(r, 1800));
+          didSucceed = true;
           setLocation(username ? `/profile/${username}` : '/home');
           
         } else {
@@ -380,6 +383,7 @@ export default function SignupTraveling() {
       });
     } finally {
       setIsLoading(false);
+      if (!didSucceed) stopAuthenticating();
     }
   };
 

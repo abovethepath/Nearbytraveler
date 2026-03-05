@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "wouter";
-import { MapPin, Plane } from "lucide-react";
+import { Plane } from "lucide-react";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { truncateBioToSentences } from "@/lib/bioPreview";
@@ -70,11 +70,14 @@ export default function UserCard({
   // Use prop first (from parent's effectiveAvailableNowIds), fallback to API-returned isAvailableNow
   const showAvailableNow = isAvailableNow || !!(user as any).isAvailableNow || !!(user as any).is_available_now || !!(user as any).availableNow;
   
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setLocation(`/profile/${user.id}`);
   };
+
+  const isDarkMode = document.documentElement.classList.contains("dark");
+  const isHomeRoute = location === "/" || location === "/home";
 
   const getUserGradient = () => {
     if (user.avatarGradient) return user.avatarGradient;
@@ -189,6 +192,7 @@ export default function UserCard({
           ? {
               borderRadius: 14,
               padding: 0,
+              ...(isHomeRoute && !isDarkMode ? { backgroundColor: "#FAF7F2" } : {}),
             }
           : {
               backgroundColor: '#1a1d27',
@@ -221,6 +225,37 @@ export default function UserCard({
             <span className={`font-bold text-white/90 ${compact ? 'text-2xl' : 'text-4xl'}`}>
               {user.name?.charAt(0) || user.username?.charAt(0) || '?'}
             </span>
+
+            {isCurrentUser && variant === "homeCity" && isHomeRoute && (
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setLocation(`/profile/${user.id}`);
+                }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setLocation(`/profile/${user.id}`);
+                  }
+                }}
+                className="absolute inset-0 flex flex-col items-center justify-center"
+                style={{
+                  cursor: "pointer",
+                  backgroundColor: "rgba(0,0,0,0.22)",
+                  color: "#FFFFFF",
+                  textAlign: "center",
+                }}
+                aria-label="Add profile photo"
+                data-testid="add-photo-overlay"
+              >
+                <div style={{ fontSize: 18, lineHeight: "18px", marginBottom: 6 }}>📷</div>
+                <div style={{ fontSize: 13, fontWeight: 700, lineHeight: "16px" }}>Add Photo</div>
+              </div>
+            )}
           </div>
         )}
         
@@ -274,17 +309,17 @@ export default function UserCard({
             <div className="!flex !flex-col !items-center !w-full !text-center" data-role="user-card-text-container">
               <div
                 data-role="user-card-username"
-                className="truncate !w-full !text-center !block font-extrabold text-[14px] !text-[#FF6B35]"
+                className="truncate !w-full !text-center !block font-extrabold text-[14px]"
+                style={{ color: '#FF6B35' }}
               >
                 {handle}
               </div>
               <div
-                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 !w-full !text-center text-[11.5px] !text-[#3b82f6]"
+                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 !w-full !text-center text-[11.5px]"
                 data-role="user-card-location"
                 style={{ width: "100%", textAlign: "center" }}
               >
-                <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
-                <span data-role="user-card-city" className="truncate !text-center !w-full !block">
+                <span data-role="user-card-city" className="truncate !text-center !w-full !block" style={{ color: '#3b82f6' }}>
                   {hometownLine}
                 </span>
               </div>
@@ -303,7 +338,7 @@ export default function UserCard({
                   WebkitLineClamp: 3 as any,
                 }}
               >
-                <span className="text-center text-gray-800 dark:!text-[#F0F0F0]">
+                <span className="text-center" style={{ color: isDarkMode ? '#FFFFFF' : '#1f2937' }}>
                   {bioText || '\u00A0'}
                 </span>
               </div>
@@ -313,15 +348,20 @@ export default function UserCard({
                 <div className="!w-full !flex !justify-center">
                   <span
                     data-role="user-card-things-pill"
-                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[#FF6B35] dark:border-[#FF6B35] dark:text-white dark:shadow-[0_10px_25px_rgba(255,107,53,0.18)] !mx-auto"
+                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border !mx-auto"
+                    style={{
+                      color: '#3b82f6',
+                      backgroundColor: 'rgba(59,130,246,0.12)',
+                      borderColor: 'rgba(59,130,246,0.25)',
+                    }}
                   >
                     {thingsInCommon} things in common
                   </span>
                 </div>
                 <div
                   data-role="user-card-contacts"
-                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium !text-[#3b82f6] truncate"
-                  style={{ width: "100%", textAlign: "center" }}
+                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium truncate"
+                  style={{ width: "100%", textAlign: "center", color: '#FF6B35' }}
                 >
                   {contactsInCommon} contacts in common
                 </div>
@@ -336,7 +376,6 @@ export default function UserCard({
                 {handle}
               </div>
               <div className="mt-1 flex items-center gap-1 min-w-0" style={{ color: '#e8834a', fontSize: 11.5 }}>
-                <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#e8834a' }} />
                 <span className="truncate">{hometownLine}</span>
               </div>
               <div
@@ -356,7 +395,7 @@ export default function UserCard({
               </div>
               {!isCurrentUser && (
                 <>
-                  <div className="truncate mt-1" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
+                  <div className="truncate mt-1" style={{ color: '#3b82f6', fontSize: 12, fontWeight: 700 }}>
                     {thingsInCommon} things in common
                   </div>
                   <div className="truncate mt-0.5" style={{ color: '#9ca3af', fontSize: 12, fontWeight: 500 }}>
@@ -380,17 +419,17 @@ export default function UserCard({
             <div className="!flex !flex-col !items-center !w-full !text-center" data-role="user-card-text-container">
               <div
                 data-role="user-card-username"
-                className="truncate !w-full !text-center !block font-extrabold text-[14px] !text-[#FF6B35]"
+                className="truncate !w-full !text-center !block font-extrabold text-[14px]"
+                style={{ color: '#FF6B35' }}
               >
                 {handle}
               </div>
               <div
-                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 !w-full !text-center text-[11.5px] !text-[#3b82f6]"
+                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 !w-full !text-center text-[11.5px]"
                 data-role="user-card-location"
                 style={{ width: "100%", textAlign: "center" }}
               >
-                <MapPin className="w-3 h-3 flex-shrink-0 opacity-80" />
-                <span data-role="user-card-city" className="truncate !text-center !w-full !block">
+                <span data-role="user-card-city" className="truncate !text-center !w-full !block" style={{ color: '#3b82f6' }}>
                   {hometownLine}
                 </span>
               </div>
@@ -409,7 +448,7 @@ export default function UserCard({
                   WebkitLineClamp: 3 as any,
                 }}
               >
-                <span className="text-center text-gray-800 dark:!text-[#F0F0F0]">
+                <span className="text-center" style={{ color: isDarkMode ? '#FFFFFF' : '#1f2937' }}>
                   {bioText || '\u00A0'}
                 </span>
               </div>
@@ -419,15 +458,20 @@ export default function UserCard({
                 <div className="!w-full !flex !justify-center">
                   <span
                     data-role="user-card-things-pill"
-                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border bg-[rgba(37,99,235,0.10)] border-[rgba(37,99,235,0.22)] text-[#1D4ED8] dark:bg-[#FF6B35] dark:border-[#FF6B35] dark:text-white dark:shadow-[0_10px_25px_rgba(255,107,53,0.18)] !mx-auto"
+                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border !mx-auto"
+                    style={{
+                      color: '#3b82f6',
+                      backgroundColor: 'rgba(59,130,246,0.12)',
+                      borderColor: 'rgba(59,130,246,0.25)',
+                    }}
                   >
                     {thingsInCommon} things in common
                   </span>
                 </div>
                 <div
                   data-role="user-card-contacts"
-                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium !text-[#3b82f6] truncate"
-                  style={{ width: "100%", textAlign: "center" }}
+                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium truncate"
+                  style={{ width: "100%", textAlign: "center", color: '#FF6B35' }}
                 >
                   {contactsInCommon} contacts in common
                 </div>
@@ -442,7 +486,6 @@ export default function UserCard({
                 {handle}
               </div>
               <div className="mt-1 flex items-center gap-1 min-w-0" style={{ color: '#e8834a', fontSize: 11.5 }}>
-                <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: '#e8834a' }} />
                 <span className="truncate">{hometownLine}</span>
               </div>
               <div
@@ -462,7 +505,7 @@ export default function UserCard({
               </div>
               {!isCurrentUser && (
                 <>
-                  <div className="truncate mt-1" style={{ color: '#e8834a', fontSize: 12, fontWeight: 700 }}>
+                  <div className="truncate mt-1" style={{ color: '#3b82f6', fontSize: 12, fontWeight: 700 }}>
                     {thingsInCommon} things in common
                   </div>
                   <div className="truncate mt-0.5" style={{ color: '#9ca3af', fontSize: 12, fontWeight: 500 }}>

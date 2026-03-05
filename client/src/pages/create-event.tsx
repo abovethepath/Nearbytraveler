@@ -47,6 +47,7 @@ interface EventFormData {
   startTime: string;
   endDate?: string;
   endTime?: string;
+  timeZone?: string; // IANA timezone (e.g. "America/Los_Angeles")
   maxParticipants?: number;
   isPublic?: boolean;
   tags?: string[];
@@ -110,6 +111,58 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
 
   // Get current user data (check both keys - auth may use 'user' or 'travelconnect_user')
   const currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || localStorage.getItem('user') || '{}');
+
+  const localTimeZone = React.useMemo(() => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+    } catch {
+      return "UTC";
+    }
+  }, []);
+
+  const TIMEZONE_OPTIONS: string[] = React.useMemo(() => {
+    const fallback = [
+      "UTC",
+      "America/Los_Angeles",
+      "America/Denver",
+      "America/Chicago",
+      "America/New_York",
+      "America/Phoenix",
+      "America/Anchorage",
+      "Pacific/Honolulu",
+      "Europe/London",
+      "Europe/Paris",
+      "Europe/Berlin",
+      "Europe/Rome",
+      "Europe/Madrid",
+      "Asia/Dubai",
+      "Asia/Kolkata",
+      "Asia/Bangkok",
+      "Asia/Singapore",
+      "Asia/Tokyo",
+      "Australia/Sydney",
+    ];
+
+    const supported = (Intl as any)?.supportedValuesOf ? ((Intl as any).supportedValuesOf("timeZone") as string[]) : null;
+    const list = Array.isArray(supported) && supported.length ? supported : fallback;
+
+    // Ensure local tz is included and first (so user sees it quickly)
+    const unique = new Set<string>([localTimeZone, ...list]);
+    return Array.from(unique);
+  }, [localTimeZone]);
+
+  const formatTzLabel = React.useCallback((tz: string) => {
+    try {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: tz,
+        timeZoneName: "short",
+      }).formatToParts(new Date());
+      const abbr = parts.find((p) => p.type === "timeZoneName")?.value;
+      return abbr ? `${abbr} · ${tz}` : tz;
+    } catch {
+      return tz;
+    }
+  }, []);
 
   const resolveMetroMainFromMetropolitanArea = (metro: any): string => {
     const raw = String(metro || "").trim();
@@ -204,6 +257,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       isPublic: true,
       isRecurring: false,
       date: getDefaultDate(), // Default to 2026 for easier event creation
+      timeZone: localTimeZone,
     },
     mode: "onChange"
   });
@@ -634,6 +688,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
         endDate: endDateTime,
         startTime: data.startTime || null,
         endTime: data.endTime || null,
+        timeZone: (data.timeZone || localTimeZone) as any,
         category: "General", // Default category - users can specify type in description
         organizerId: user.id,
         maxParticipants: data.maxParticipants ? parseInt(data.maxParticipants.toString()) : null,
@@ -1348,13 +1403,12 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                 Event Schedule
               </Label>
               
-              {/* Start Date & Time */}
-              <div className="border rounded-lg p-4 space-y-4 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-                <h4 className="font-medium text-sm text-gray-700 dark:text-white uppercase tracking-wide">Start</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
+              {/* Start + End on one row */}
+              <div className="border rounded-lg p-4 space-y-3 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                <div className="flex items-end gap-3 overflow-x-auto pb-1">
+                  <div className="space-y-2 shrink-0 min-w-[170px]">
                     <Label htmlFor="startDate" className="text-sm font-medium dark:text-white">
-                      Date *
+                      Start date *
                     </Label>
                     <Input
                       id="startDate"
@@ -1367,9 +1421,10 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                       style={{ colorScheme: 'light dark' }}
                     />
                   </div>
-                  <div className="space-y-2">
+
+                  <div className="space-y-2 shrink-0 min-w-[270px]">
                     <Label htmlFor="startTime" className="text-sm font-medium dark:text-white">
-                      Time *
+                      Start time *
                     </Label>
                     <div className="flex gap-1 items-center">
                       <select
@@ -1458,17 +1513,160 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                     </div>
                     <input type="hidden" {...register("startTime", { required: "Start time is required" })} />
                   </div>
+
+                  {addEndTime && (
+                    <>
+                      <div className="shrink-0 pb-3 text-gray-500 dark:text-gray-200 font-semibold select-none">
+                        →
+                      </div>
+
+                      {!watch("isSameDay") && (
+                        <div className="space-y-2 shrink-0 min-w-[170px]">
+                          <Label htmlFor="endDate" className="text-sm font-medium dark:text-white">
+                            End date
+                          </Label>
+                          <Input
+                            id="endDate"
+                            type="date"
+                            {...register("endDate", { required: addEndTime && !watch("isSameDay") ? "End date is required" : false })}
+                            min={new Date().toISOString().split('T')[0]}
+                            max="9999-12-31"
+                            placeholder="20__-__-__"
+                            className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
+                            style={{ colorScheme: 'light dark' }}
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2 shrink-0 min-w-[270px]">
+                        <Label htmlFor="endTime" className="text-sm font-medium dark:text-white">
+                          End time
+                        </Label>
+                        <div className="flex gap-1 items-center">
+                          <select
+                            className="flex-1 h-10 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-2 text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                            value={(() => {
+                              const t = watch("endTime");
+                              if (!t) return '';
+                              const h = parseInt(t.split(':')[0]);
+                              return h > 12 ? (h - 12).toString() : (h === 0 ? '12' : h.toString());
+                            })()}
+                            onChange={(e) => {
+                              const hour = parseInt(e.target.value);
+                              const currentTime = watch("endTime") || '17:00';
+                              const currentMinute = currentTime.split(':')[1] || '00';
+                              const currentHour = parseInt(currentTime.split(':')[0]) || 12;
+                              const isPM = currentHour >= 12;
+                              let newHour = hour;
+                              if (isPM && hour !== 12) newHour = hour + 12;
+                              if (!isPM && hour === 12) newHour = 0;
+                              setValue("endTime", `${newHour.toString().padStart(2, '0')}:${currentMinute}`);
+                            }}
+                          >
+                            <option value="">Hr</option>
+                            {[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(h => (
+                              <option key={h} value={h}>{h}</option>
+                            ))}
+                          </select>
+                          <span className="text-lg font-bold dark:text-white">:</span>
+                          <select
+                            className="flex-1 h-10 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-2 text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                            value={watch("endTime")?.split(':')[1] || ''}
+                            onChange={(e) => {
+                              const currentTime = watch("endTime") || '17:00';
+                              const currentHour = currentTime.split(':')[0] || '17';
+                              setValue("endTime", `${currentHour}:${e.target.value}`);
+                            }}
+                          >
+                            <option value="">Min</option>
+                            {['00', '15', '30', '45'].map(m => (
+                              <option key={m} value={m}>{m}</option>
+                            ))}
+                          </select>
+                          <div className="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
+                            <button
+                              type="button"
+                              className={`px-2 py-2 text-sm font-medium transition-colors ${
+                                !watch("endTime") || parseInt(watch("endTime")?.split(':')[0] || '0') < 12
+                                  ? 'bg-orange-500 text-white'
+                                  : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                              }`}
+                              onClick={() => {
+                                const currentTime = watch("endTime");
+                                if (!currentTime) {
+                                  setValue("endTime", '09:00');
+                                } else {
+                                  const hour = parseInt(currentTime.split(':')[0]);
+                                  const minute = currentTime.split(':')[1];
+                                  if (hour >= 12) {
+                                    const newHour = hour === 12 ? 0 : hour - 12;
+                                    setValue("endTime", `${newHour.toString().padStart(2, '0')}:${minute}`);
+                                  }
+                                }
+                              }}
+                            >
+                              AM
+                            </button>
+                            <button
+                              type="button"
+                              className={`px-2 py-2 text-sm font-medium transition-colors ${
+                                watch("endTime") && parseInt(watch("endTime")?.split(':')[0] || '0') >= 12
+                                  ? 'bg-orange-500 text-white'
+                                  : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                              }`}
+                              onClick={() => {
+                                const currentTime = watch("endTime");
+                                if (!currentTime) {
+                                  setValue("endTime", '12:00');
+                                } else {
+                                  const hour = parseInt(currentTime.split(':')[0]);
+                                  const minute = currentTime.split(':')[1];
+                                  if (hour < 12) {
+                                    const newHour = hour === 0 ? 12 : hour + 12;
+                                    setValue("endTime", `${newHour.toString().padStart(2, '0')}:${minute}`);
+                                  }
+                                }
+                              }}
+                            >
+                              PM
+                            </button>
+                          </div>
+                        </div>
+                        <input type="hidden" {...register("endTime", { required: addEndTime ? "End time is required" : false })} />
+                      </div>
+                    </>
+                  )}
                 </div>
-                {(errors.date || errors.startTime) && (
+
+                {(errors.date || errors.startTime || errors.endDate || errors.endTime) && (
                   <div className="space-y-1">
-                    {errors.date && (
-                      <p className="text-sm text-red-500">{errors.date.message}</p>
-                    )}
-                    {errors.startTime && (
-                      <p className="text-sm text-red-500">{errors.startTime.message}</p>
-                    )}
+                    {errors.date && <p className="text-sm text-red-500">{errors.date.message}</p>}
+                    {errors.startTime && <p className="text-sm text-red-500">{errors.startTime.message}</p>}
+                    {errors.endDate && <p className="text-sm text-red-500">{errors.endDate.message}</p>}
+                    {errors.endTime && <p className="text-sm text-red-500">{errors.endTime.message}</p>}
                   </div>
                 )}
+              </div>
+
+              {/* Timezone */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium dark:text-white">Timezone</Label>
+                <Select
+                  value={watch("timeZone") || localTimeZone}
+                  onValueChange={(tz) => setValue("timeZone", tz, { shouldDirty: true, shouldTouch: true })}
+                >
+                  <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600">
+                    <SelectValue placeholder="Select timezone" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[320px]">
+                    {TIMEZONE_OPTIONS.map((tz) => (
+                      <SelectItem key={tz} value={tz}>
+                        {formatTzLabel(tz)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <input type="hidden" {...register("timeZone")} />
               </div>
 
               {/* End Time (optional) */}
@@ -1520,138 +1718,6 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                     <Label htmlFor="isSameDay" className="text-sm font-medium text-gray-800 dark:text-white cursor-pointer">
                       Same day event
                     </Label>
-                  </div>
-
-                  {/* End Date & Time */}
-                  <div className="border rounded-lg p-4 space-y-4 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-                    <h4 className="font-medium text-sm text-gray-700 dark:text-white uppercase tracking-wide">
-                      {watch("isSameDay") ? "End Time" : "End Date & Time"}
-                    </h4>
-                    <div className={`grid ${watch("isSameDay") ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"} gap-4`}>
-                      {!watch("isSameDay") && (
-                        <div className="space-y-2">
-                          <Label htmlFor="endDate" className="text-sm font-medium dark:text-white">
-                            Date
-                          </Label>
-                          <Input
-                            id="endDate"
-                            type="date"
-                            {...register("endDate", { required: addEndTime && !watch("isSameDay") ? "End date is required" : false })}
-                            min={new Date().toISOString().split('T')[0]}
-                            max="9999-12-31"
-                            placeholder="20__-__-__"
-                            className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
-                            style={{ colorScheme: 'light dark' }}
-                          />
-                        </div>
-                      )}
-                      <div className="space-y-2">
-                        <Label htmlFor="endTime" className="text-sm font-medium dark:text-white">
-                          {watch("isSameDay") ? "End Time" : "Time"}
-                        </Label>
-                        <div className="flex gap-1 items-center">
-                      <select
-                        className="flex-1 h-10 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-2 text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                        value={(() => {
-                          const t = watch("endTime");
-                          if (!t) return '';
-                          const h = parseInt(t.split(':')[0]);
-                          return h > 12 ? (h - 12).toString() : (h === 0 ? '12' : h.toString());
-                        })()}
-                        onChange={(e) => {
-                          const hour = parseInt(e.target.value);
-                          const currentTime = watch("endTime") || '17:00';
-                          const currentMinute = currentTime.split(':')[1] || '00';
-                          const currentHour = parseInt(currentTime.split(':')[0]) || 12;
-                          const isPM = currentHour >= 12;
-                          let newHour = hour;
-                          if (isPM && hour !== 12) newHour = hour + 12;
-                          if (!isPM && hour === 12) newHour = 0;
-                          setValue("endTime", `${newHour.toString().padStart(2, '0')}:${currentMinute}`);
-                        }}
-                      >
-                        <option value="">Hr</option>
-                        {[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(h => (
-                          <option key={h} value={h}>{h}</option>
-                        ))}
-                      </select>
-                      <span className="text-lg font-bold dark:text-white">:</span>
-                      <select
-                        className="flex-1 h-10 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-2 text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                        value={watch("endTime")?.split(':')[1] || ''}
-                        onChange={(e) => {
-                          const currentTime = watch("endTime") || '17:00';
-                          const currentHour = currentTime.split(':')[0] || '17';
-                          setValue("endTime", `${currentHour}:${e.target.value}`);
-                        }}
-                      >
-                        <option value="">Min</option>
-                        {['00', '15', '30', '45'].map(m => (
-                          <option key={m} value={m}>{m}</option>
-                        ))}
-                      </select>
-                      <div className="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
-                        <button
-                          type="button"
-                          className={`px-2 py-2 text-sm font-medium transition-colors ${
-                            !watch("endTime") || parseInt(watch("endTime")?.split(':')[0] || '0') < 12
-                              ? 'bg-orange-500 text-white'
-                              : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
-                          }`}
-                          onClick={() => {
-                            const currentTime = watch("endTime");
-                            if (!currentTime) {
-                              setValue("endTime", '09:00');
-                            } else {
-                              const hour = parseInt(currentTime.split(':')[0]);
-                              const minute = currentTime.split(':')[1];
-                              if (hour >= 12) {
-                                const newHour = hour === 12 ? 0 : hour - 12;
-                                setValue("endTime", `${newHour.toString().padStart(2, '0')}:${minute}`);
-                              }
-                            }
-                          }}
-                        >
-                          AM
-                        </button>
-                        <button
-                          type="button"
-                          className={`px-2 py-2 text-sm font-medium transition-colors ${
-                            watch("endTime") && parseInt(watch("endTime")?.split(':')[0] || '0') >= 12
-                              ? 'bg-orange-500 text-white'
-                              : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
-                          }`}
-                          onClick={() => {
-                            const currentTime = watch("endTime");
-                            if (!currentTime) {
-                              setValue("endTime", '12:00');
-                            } else {
-                              const hour = parseInt(currentTime.split(':')[0]);
-                              const minute = currentTime.split(':')[1];
-                              if (hour < 12) {
-                                const newHour = hour === 0 ? 12 : hour + 12;
-                                setValue("endTime", `${newHour.toString().padStart(2, '0')}:${minute}`);
-                              }
-                            }
-                          }}
-                        >
-                          PM
-                        </button>
-                      </div>
-                    </div>
-                    <input type="hidden" {...register("endTime", { required: addEndTime ? "End time is required" : false })} />
-                  </div>
-                </div>
-                    {(errors.endDate || errors.endTime) && (
-                      <div className="space-y-1">
-                        {errors.endDate && (
-                          <p className="text-sm text-red-500">{errors.endDate.message}</p>
-                        )}
-                        {errors.endTime && (
-                          <p className="text-sm text-red-500">{errors.endTime.message}</p>
-                        )}
-                      </div>
-                    )}
                   </div>
                 </>
               )}

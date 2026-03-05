@@ -13,10 +13,11 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Users, Zap, Globe, ArrowRight, Plus, Heart, ChevronRight, Flag, Lock, AlertTriangle } from "lucide-react";
+import { MapPin, Users, Zap, Globe, ArrowRight, Plus, Heart, ChevronRight, Flag, Lock, AlertTriangle, Compass } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getMetroAreaName } from "../../../shared/metro-areas";
+import ActivityFeed from "@/components/ActivityFeed";
 
 function UserAvatar({ user, size = "sm" }: { user: any; size?: string }) {
   const sizeClass = size === "sm" ? "w-8 h-8 text-xs" : size === "md" ? "w-10 h-10 text-sm" : "w-12 h-12 text-base";
@@ -111,6 +112,7 @@ export default function Explore() {
   const userCountry = resolved.country;
 
   const [activeTab, setActiveTab] = useState("live");
+  const [topTab, setTopTab] = useState<"discover" | "activity">("discover");
   const [showCreateLiveShare, setShowCreateLiveShare] = useState(false);
 
   // Live share form state
@@ -347,7 +349,7 @@ export default function Explore() {
 
   const myTagIds = new Set(myCommunityTags.map((t: any) => t.id));
 
-  // Featured preset communities (shown first as a quick grid like the old Groups view)
+  // Featured preset communities (shown first as a quick grid like the old Communities view)
   const toSlug = (value: unknown) =>
     String(value || "")
       .toLowerCase()
@@ -424,14 +426,29 @@ export default function Explore() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-4 min-w-0 overflow-x-hidden">
-        {/* Tabs first: Live and Groups — before People in city */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={topTab} onValueChange={(v) => setTopTab(v as any)}>
+          <TabsList className="grid grid-cols-2 gap-2 mb-4 w-full p-1.5 bg-white/70 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-xl">
+            <TabsTrigger value="discover" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap min-w-0">
+              <Compass className="w-3.5 h-3.5 shrink-0" /> <span>Discover</span>
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap min-w-0">
+              <Zap className="w-3.5 h-3.5 shrink-0" /> <span>Activity</span>
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="activity" className="space-y-4">
+            <ActivityFeed />
+          </TabsContent>
+
+          <TabsContent value="discover" className="space-y-4">
+            {/* Tabs first: Live and Communities — before People in city */}
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid grid-cols-2 gap-2 mb-4 w-full p-1.5">
             <TabsTrigger value="live" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap min-w-0">
               <MapPin className="w-3.5 h-3.5 shrink-0" /> <span>Live</span>
             </TabsTrigger>
             <TabsTrigger value="communities" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap shrink-0 lg:col-span-1">
-              <Globe className="w-3.5 h-3.5 shrink-0" /> <span>Groups</span>
+              <Globe className="w-3.5 h-3.5 shrink-0" /> <span>Communities</span>
             </TabsTrigger>
           </TabsList>
 
@@ -646,10 +663,10 @@ export default function Explore() {
               </div>
             )}
 
-            {/* Featured preset groups (rows/columns) */}
+            {/* Featured preset communities (rows/columns) */}
             {featuredCommunities.length > 0 && (
               <div className="mb-2">
-                <h4 className="font-bold text-sm text-gray-700 dark:text-gray-300 mb-2">Featured Groups</h4>
+                <h4 className="font-bold text-sm text-gray-700 dark:text-gray-300 mb-2">Featured Communities</h4>
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
                   {featuredCommunities.map((tag: any) => {
                     const isJoined = myTagIds.has(tag.id);
@@ -824,7 +841,7 @@ export default function Explore() {
           </TabsContent>
         </Tabs>
 
-        {/* People in city — below Live / Groups */}
+        {/* People in city — below Live / Communities */}
         {userCity && (
           <div className="mt-8 mb-6">
             <div className="flex items-center justify-between mb-3">
@@ -911,6 +928,8 @@ export default function Explore() {
             )}
           </div>
         )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

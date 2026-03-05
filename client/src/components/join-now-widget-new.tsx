@@ -88,7 +88,18 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
       <div className="space-y-3">
         {userTypes.map(({ type, icon: Icon, title, subtitle, gradient, bgLight, bgDark, borderColor, ringColor }) => {
           const isSelected = userType === type;
-          const unselectedBg = darkBackground ? bgDark : bgLight;
+          const selectedBg =
+            type === "local"
+              ? "bg-gradient-to-r from-blue-500 to-orange-500"
+              : type === "traveler"
+                ? "bg-gradient-to-r from-blue-500 to-blue-600"
+                : "bg-gradient-to-r from-orange-500 to-orange-600";
+          const unselectedBg =
+            type === "local"
+              ? "bg-gradient-to-r from-blue-600 to-orange-600"
+              : type === "traveler"
+                ? "bg-gradient-to-r from-blue-600 to-blue-700"
+                : "bg-gradient-to-r from-orange-600 to-orange-700";
 
           return (
             <button
@@ -99,12 +110,8 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
                 w-full relative overflow-hidden rounded-xl p-4 text-left transition-all duration-200
                 flex items-center gap-4
                 ${isSelected 
-                  ? `${
-                      type === 'local' ? 'bg-gradient-to-r from-blue-500 to-orange-500' :
-                      type === 'traveler' ? 'bg-gradient-to-r from-blue-500 to-blue-600' :
-                      'bg-gradient-to-r from-orange-500 to-orange-600'
-                    } text-white shadow-lg scale-[1.02] ring-4 ${ringColor}` 
-                  : `${unselectedBg} border-2 ${borderColor} hover:shadow-md hover:scale-[1.01]`
+                  ? `${selectedBg} text-white shadow-xl scale-[1.02] ring-4 ${ringColor} ring-white/20`
+                  : `${unselectedBg} text-white shadow-md hover:shadow-lg hover:scale-[1.01] border border-white/10 hover:border-white/20`
                 }
               `}
               data-testid={`button-select-${type}`}
@@ -113,19 +120,17 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
                 flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center
                 ${isSelected 
                   ? "bg-white/20" 
-                  : type === 'local' ? 'bg-gradient-to-br from-blue-500 to-orange-500' :
-                    type === 'traveler' ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
-                    'bg-gradient-to-br from-orange-500 to-orange-600'
+                  : "bg-white/15"
                 }
               `}>
                 <Icon className={`w-6 h-6 ${isSelected ? "text-white" : "text-white"}`} />
               </div>
               
               <div className="flex-grow">
-                <div className={`text-lg font-bold ${isSelected ? "text-white" : darkBackground ? "text-white" : "text-gray-900 dark:text-white"}`}>
+                <div className={`text-lg font-bold ${isSelected ? "text-white" : "text-white"}`}>
                   {title}
                 </div>
-                <div className={`text-sm ${isSelected ? "text-white/90" : darkBackground ? "text-gray-300" : "text-gray-600 dark:text-gray-400"}`}>
+                <div className={`text-sm ${isSelected ? "text-white/90" : "text-white/85"}`}>
                   {subtitle}
                 </div>
               </div>

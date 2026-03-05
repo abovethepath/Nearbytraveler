@@ -78,9 +78,9 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
     return `${tabLegacyBase} ${active ? tabLegacyActive : tabLegacyInactive}`;
   };
 
-  // Desktop other-user hero: force all tab label text to black via inline styles (resists overrides).
-  const forceBlackHeroText = isOtherHero && isDesktopWeb && !isMobileWeb;
-  const heroTextStyle = forceBlackHeroText ? ({ color: "#000000" } as React.CSSProperties) : undefined;
+  // Explicit tab label + badge styles (requested).
+  const heroTextStyle = { color: "#000000" } as React.CSSProperties;
+  const badgeStyle = { backgroundColor: "rgba(0,0,0,0.5)", color: "#FFFFFF" } as React.CSSProperties;
 
   return (
     <div
@@ -118,7 +118,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
       >
         Contacts
         {!!(userConnections?.length) && (
-          <span className={badgeClass}>
+          <span className={badgeClass} style={badgeStyle}>
             {userConnections.length}
           </span>
         )}
@@ -135,7 +135,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
       >
         Photos
         {!!(photos?.length + (userTravelMemories?.length || 0)) && (
-          <span className={badgeClass}>
+          <span className={badgeClass} style={badgeStyle}>
             {(photos?.length || 0) + (userTravelMemories?.length || 0)}
           </span>
         )}
@@ -152,7 +152,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
       >
         References
         {(userReferences?.length || 0) > 0 && (
-          <span className={badgeClass}>
+          <span className={badgeClass} style={badgeStyle}>
             {userReferences.length}
           </span>
         )}
@@ -170,7 +170,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         >
           Travel Plans
           {!!(travelPlans?.length) && (
-            <span className={badgeClass}>
+            <span className={badgeClass} style={badgeStyle}>
               {travelPlans.length}
             </span>
           )}
@@ -189,7 +189,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         >
           Countries
           {!!(countriesVisited?.length) && (
-            <span className={badgeClass}>
+            <span className={badgeClass} style={badgeStyle}>
               {countriesVisited.length}
             </span>
           )}
@@ -208,7 +208,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         >
           Chatrooms
           {!!(userChatrooms?.length) && (
-            <span className={badgeClass}>
+            <span className={badgeClass} style={badgeStyle}>
               {userChatrooms.length}
             </span>
           )}
@@ -226,7 +226,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           style={heroTextStyle}
         >
           Vouches
-          <span className={badgeClass}>
+          <span className={badgeClass} style={badgeStyle}>
             {userVouches?.length || 0}
           </span>
         </button>

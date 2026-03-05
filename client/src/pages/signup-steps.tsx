@@ -92,7 +92,7 @@ const BASE_LANGUAGES = getAllLanguages();
 
 export default function SignupSteps() {
   const [, setLocation] = useLocation();
-  const { setUser } = useContext(AuthContext);
+  const { login, startAuthenticating, stopAuthenticating } = useContext(AuthContext);
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -141,8 +141,10 @@ export default function SignupSteps() {
       
       return response.json();
     },
-    onSuccess: (user) => {
-      setUser(user);
+    onSuccess: (response) => {
+      const returnedUser = (response as any)?.user ?? response;
+      const token = (response as any)?.token;
+      if (returnedUser?.id) login(returnedUser, token);
       toast({
         title: "Account created successfully!",
         description: "Welcome to Nearby Traveler! Your profile has been created.",
@@ -153,6 +155,7 @@ export default function SignupSteps() {
     },
     onError: (error: any) => {
       console.error('Registration error:', error);
+      stopAuthenticating();
       toast({
         title: "Registration failed",
         description: error.message || "Unable to create account. Please try again.",
@@ -333,6 +336,7 @@ export default function SignupSteps() {
       isCurrentlyTraveling: formData.userType === 'traveler' ? true : formData.isCurrentlyTraveling
     };
 
+    startAuthenticating();
     registerMutation.mutate(userData);
   };
 

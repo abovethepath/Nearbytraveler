@@ -10,7 +10,7 @@ export default function QuickLogin() {
   const [userId, setUserId] = useState("108");
   const [loading, setLoading] = useState(false);
   const [, setLocation] = useLocation();
-  const { login } = useAuth();
+  const { login, startAuthenticating, stopAuthenticating } = useAuth();
 
   // Auto-login on page load
   useEffect(() => {
@@ -19,6 +19,7 @@ export default function QuickLogin() {
 
   const handleLogin = async () => {
     setLoading(true);
+    startAuthenticating();
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/quick-login/${userId}`, {
         method: 'POST',
@@ -33,9 +34,11 @@ export default function QuickLogin() {
         setLocation('/home');
       } else {
         console.error('Login failed:', response.statusText);
+        stopAuthenticating();
       }
     } catch (error) {
       console.error('Login failed:', error);
+      stopAuthenticating();
     }
     setLoading(false);
   };

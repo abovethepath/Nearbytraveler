@@ -140,15 +140,29 @@ export default function EventCard({ event, compact = false, featured = false }: 
     const now = new Date();
     const diffTime = eventDate.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const tz = (event as any)?.timeZone as string | undefined;
+    const timeOpts: Intl.DateTimeFormatOptions = {
+      hour: 'numeric',
+      minute: '2-digit',
+      ...(tz ? { timeZone: tz, timeZoneName: 'short' as const } : {}),
+    };
+    const dateTimeOpts: Intl.DateTimeFormatOptions = {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      ...timeOpts,
+    };
 
     if (diffDays === 0) {
-      return `Today, ${eventDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+      return `Today, ${eventDate.toLocaleTimeString([], timeOpts)}`;
     } else if (diffDays === 1) {
-      return `Tomorrow, ${eventDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+      return `Tomorrow, ${eventDate.toLocaleTimeString([], timeOpts)}`;
     } else if (diffDays < 7) {
-      return eventDate.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+      return eventDate.toLocaleDateString([], dateTimeOpts);
     } else {
-      return eventDate.toLocaleDateString();
+      return tz
+        ? eventDate.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric', timeZone: tz })
+        : eventDate.toLocaleDateString();
     }
   };
 

@@ -194,7 +194,7 @@ export default function ResponsiveUserGrid({
             {getBioSnippet(user) || '\u00A0'}
           </p>
           {!isCurrentUser && (
-            <p className="text-sm font-medium text-orange-500 truncate mt-0.5">
+            <p className="text-sm font-medium truncate mt-0.5" style={{ color: '#3b82f6' }}>
               {getThingsInCommon(user)} things in common
             </p>
           )}
@@ -287,7 +287,7 @@ export default function ResponsiveUserGrid({
             {getBioSnippet(user) || '\u00A0'}
           </p>
           {!isCurrentUser && (
-            <p className="text-xs font-medium text-orange-500 truncate mt-0.5">
+            <p className="text-xs font-medium truncate mt-0.5" style={{ color: '#3b82f6' }}>
               {getThingsInCommon(user)} things in common
             </p>
           )}

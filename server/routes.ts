@@ -27,6 +27,7 @@ import { storage } from "./storage";
 import appleSignin from "apple-signin-auth";
 import { db, withRetry } from "./db";
 import { sendBrevoEmail } from "./email/brevoSend";
+import { sendWelcomeEmail as sendWelcomeEmailNotification } from "./email/notificationEmails";
 import { cache, cachedQuery, CACHE_TTL } from "./cache";
 import { eventReminderService } from "./services/eventReminderService";
 import { TravelMatchingService } from "./services/matching";
@@ -680,8 +681,6 @@ async function generateCityContent(location: string, topic: string): Promise<str
 // Location-based notification function - sends notifications to EXISTING users about NEW user
 async function sendLocationMatchNotifications(newUser: any) {
   try {
-    const { emailService } = await import('./services/emailService');
-    
     if (!newUser.hometownCity) {
       console.log("Skipping location notifications - new user has no city data");
       return;
@@ -719,18 +718,7 @@ async function sendLocationMatchNotifications(newUser: any) {
           })
         });
 
-        // Send email notification to existing user about new user
-        const sharedInterests = findSharedInterests(existingUser.interests || [], newUser.interests || []);
-        
-        await emailService.sendLocationMatchEmail(existingUser.email, {
-          recipientName: existingUser.name || existingUser.username,
-          newUserName: newUser.username,
-          city: newUser.hometownCity,
-          newUserType: newUser.userType || 'traveler',
-          sharedInterests: sharedInterests
-        });
-
-        console.log(`✅ Location match notification sent to existing user ${existingUser.email} about new user @${newUser.username}`);
+        // Email notifications for location/city match are disabled (in-app only).
       } catch (notificationError) {
         console.error(`❌ Failed to send notification to ${existingUser.email}:`, notificationError);
       }
@@ -862,6 +850,41 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   // Setup Replit Auth (must be called before any protected routes)
   await setupAuth(app);
   console.log("✅ Replit Auth setup complete");
+
+  // Lightweight activity tracking (for DM email rules):
+  // update users.lastSeenAt for authenticated API requests, throttled to avoid excessive writes.
+  const lastSeenWriteMsByUser = new Map<number, number>();
+  const LAST_SEEN_WRITE_MIN_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
+  const getAuthUserIdForLastSeen = (req: any): number | null => {
+    const sessionId = req?.session?.user?.id;
+    if (sessionId && Number.isFinite(Number(sessionId))) return Number(sessionId);
+    const headerId = req?.headers?.["x-user-id"];
+    if (headerId && Number.isFinite(Number(headerId))) return Number(headerId);
+    const headerData = req?.headers?.["x-user-data"];
+    if (headerData) {
+      try {
+        const parsed = JSON.parse(String(headerData));
+        if (parsed?.id && Number.isFinite(Number(parsed.id))) return Number(parsed.id);
+      } catch {}
+    }
+    return null;
+  };
+  app.use((req: any, _res: any, next: any) => {
+    try {
+      if (!req?.path?.startsWith("/api")) return next();
+      if (req.method === "OPTIONS") return next();
+      const userId = getAuthUserIdForLastSeen(req);
+      if (!userId) return next();
+      const now = Date.now();
+      const last = lastSeenWriteMsByUser.get(userId) || 0;
+      if (now - last < LAST_SEEN_WRITE_MIN_INTERVAL_MS) return next();
+      lastSeenWriteMsByUser.set(userId, now);
+      db.update(users).set({ lastSeenAt: new Date() }).where(eq(users.id, userId)).catch(() => {});
+      return next();
+    } catch {
+      return next();
+    }
+  });
 
   // Loader.io verification for load testing
   app.get("/loaderio-15c7c050ef251dcf711cfbdec3d0eb28.txt", (req, res) => {
@@ -3336,6 +3359,36 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // Phone validation endpoint (digits-normalized match)
+  app.post("/api/auth/check-phone", async (req, res) => {
+    try {
+      const raw = (req.body as any)?.phoneNumber as string | undefined;
+      const digits = String(raw || "").replace(/\D/g, "");
+      if (!digits) {
+        return res.status(400).json({ message: "Phone number is required" });
+      }
+
+      // Compare by digits only (handles formatting differences)
+      const existing = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(sql`regexp_replace(${users.phoneNumber}, '\\D', '', 'g') = ${digits}`)
+        .limit(1);
+
+      if (existing.length) {
+        return res.status(409).json({
+          message: "This phone number is already linked to an account. Please sign in instead.",
+          exists: true,
+        });
+      }
+
+      return res.json({ exists: false });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === "development") console.error("Phone check error:", error);
+      return res.status(500).json({ message: "Failed to check phone availability" });
+    }
+  });
+
   // Quick login endpoint for development
   app.post("/api/quick-login/:userId", async (req, res) => {
     try {
@@ -4746,6 +4799,23 @@ Questions? Just reply to this message!
         });
       }
 
+      // Check if phone number already exists (digits-normalized)
+      const phoneDigits = String((userData as any).phoneNumber || "").replace(/\D/g, "");
+      if (phoneDigits) {
+        const existingByPhone = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(sql`regexp_replace(${users.phoneNumber}, '\\D', '', 'g') = ${phoneDigits}`)
+          .limit(1);
+
+        if (existingByPhone.length) {
+          return res.status(409).json({
+            message: "This phone number is already linked to an account. Please sign in instead.",
+            field: "phoneNumber",
+          });
+        }
+      }
+
       // Check if username already exists (with retry logic)
       let existingUserByUsername;
       retryCount = 0;
@@ -4878,12 +4948,17 @@ Questions? Just reply to this message!
         
         // 0. Send welcome email using notification email system
         try {
-          const { sendWelcomeEmail } = await import('./email/notificationEmails');
-          const result = await sendWelcomeEmail(user.id);
+          console.log("📧 BACKGROUND: WELCOME EMAIL - START", { userId: user.id, email: user.email });
+          const result = await sendWelcomeEmailNotification(user.id);
           if (result.success && !result.skipped) {
             console.log(`✅ BACKGROUND: Sent welcome email to ${user.email}`);
           } else if (result.skipped) {
             console.log(`ℹ️ BACKGROUND: Welcome email skipped - ${result.reason}`);
+          } else {
+            console.error(`❌ BACKGROUND: Welcome email failed - ${result.reason || "Unknown error"}`, {
+              userId: user.id,
+              email: user.email,
+            });
           }
         } catch (error) {
           console.error('❌ BACKGROUND: Failed to send welcome email:', error);
@@ -7143,6 +7218,335 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // ---------- ACTIVITY FEED API (Explore -> Activity tab) ----------
+
+  app.get("/api/activity-feed/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || "0", 10);
+      if (!userId) return res.status(400).json({ message: "Invalid user ID" });
+
+      // Auth: session or header must match
+      const sessionUserId = (req as any)?.session?.user?.id as number | undefined;
+      const headerUserIdRaw = req.headers["x-user-id"] as string | undefined;
+      const headerUserId = headerUserIdRaw ? parseInt(headerUserIdRaw, 10) : undefined;
+      const authedUserId = sessionUserId || headerUserId;
+      if (!authedUserId || authedUserId !== userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const now = new Date();
+
+      // Generate post-event followup notifications (24h after event ends) - best-effort
+      try {
+        const participations = await db
+          .select({ eventId: eventParticipants.eventId, status: eventParticipants.status })
+          .from(eventParticipants)
+          .where(eq(eventParticipants.userId, userId));
+
+        const attendedEventIds = participations.filter((p) => p.status === "going").map((p) => p.eventId);
+        if (attendedEventIds.length) {
+          const attendedEvents = await db
+            .select({
+              id: events.id,
+              title: events.title,
+              date: events.date,
+              endDate: (events as any).endDate,
+              endTime: (events as any).endTime,
+              imageUrl: (events as any).imageUrl,
+            })
+            .from(events)
+            .where(inArray(events.id, attendedEventIds));
+
+          for (const ev of attendedEvents) {
+            const endAt = (() => {
+              const base = ev.endDate ? new Date(ev.endDate as any) : new Date(ev.date as any);
+              if (ev.endTime && typeof ev.endTime === "string" && ev.endTime.includes(":")) {
+                const [hhRaw, mmRaw] = ev.endTime.split(":");
+                const hh = parseInt(hhRaw, 10);
+                const mm = parseInt(mmRaw, 10);
+                if (!isNaN(hh) && !isNaN(mm)) base.setHours(hh, mm, 0, 0);
+              }
+              return base;
+            })();
+
+            if (!endAt || isNaN(endAt.getTime())) continue;
+            const eligibleAt = new Date(endAt.getTime() + 24 * 60 * 60 * 1000);
+            if (now < eligibleAt) continue;
+
+            const notifType = `post_event_connect:${ev.id}`;
+            const existing = await db
+              .select({ id: notifications.id })
+              .from(notifications)
+              .where(and(eq(notifications.userId, userId), eq(notifications.type, notifType)))
+              .limit(1);
+            if (existing.length) continue;
+
+            await storage.createNotification({
+              userId,
+              fromUserId: null,
+              type: notifType,
+              title: `Connect with people from ${ev.title}`,
+              message: "Don't miss these connections",
+              data: JSON.stringify({ eventId: ev.id, eventTitle: ev.title, imageUrl: (ev as any).imageUrl || null }),
+            });
+          }
+        }
+      } catch (e) {
+        if (process.env.NODE_ENV === "development") console.warn("Post-event activity generation failed:", e);
+      }
+
+      // Generate suggested connections card (at most 1 per 24h) - best-effort
+      try {
+        const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const existing = await db
+          .select({ id: notifications.id })
+          .from(notifications)
+          .where(
+            and(
+              eq(notifications.userId, userId),
+              like(notifications.type, "suggested_connections:%"),
+              gt(notifications.createdAt, cutoff),
+            ),
+          )
+          .limit(1);
+        if (!existing.length) {
+          const dayKey = now.toISOString().slice(0, 10);
+          await storage.createNotification({
+            userId,
+            fromUserId: null,
+            type: `suggested_connections:${dayKey}`,
+            title: "People you might want to connect with",
+            message: "Suggested connections based on your location and interests",
+            data: JSON.stringify({ dayKey }),
+          });
+        }
+      } catch (e) {
+        if (process.env.NODE_ENV === "development") console.warn("Suggested connections activity generation failed:", e);
+      }
+
+      // Pull recent notifications and filter to activity-relevant ones
+      const userNotifications = await db
+        .select()
+        .from(notifications)
+        .where(eq(notifications.userId, userId))
+        .orderBy(desc(notifications.createdAt))
+        .limit(120);
+
+      const relevantNotifs = userNotifications.filter((n: any) => {
+        const t = String(n.type || "");
+        return (
+          t === "connection_request" ||
+          t.startsWith("reference_written:") ||
+          t.startsWith("post_event_connect:") ||
+          t.startsWith("suggested_connections:")
+        );
+      });
+
+      // Load actor info for left thumbnails
+      const actorIds = Array.from(
+        new Set(relevantNotifs.map((n: any) => n.fromUserId).filter((id: any) => typeof id === "number" && id > 0)),
+      ) as number[];
+      const actors = actorIds.length
+        ? await db
+            .select({ id: users.id, username: users.username, name: users.name, profileImage: users.profileImage })
+            .from(users)
+            .where(inArray(users.id, actorIds))
+        : [];
+      const actorById = new Map<number, any>();
+      for (const a of actors) actorById.set(a.id, a);
+
+      // Connection status enrichment for connection_request items
+      const connectionIds = relevantNotifs
+        .filter((n: any) => String(n.type) === "connection_request" && n.data)
+        .map((n: any) => {
+          try {
+            return JSON.parse(String(n.data || "{}"))?.connectionId as number | undefined;
+          } catch {
+            return undefined;
+          }
+        })
+        .filter((x: any): x is number => typeof x === "number" && x > 0);
+
+      const connectionById = new Map<number, any>();
+      if (connectionIds.length) {
+        const rows = await db.select().from(connections).where(inArray(connections.id, connectionIds));
+        for (const r of rows) connectionById.set(r.id, r);
+      }
+
+      const notificationItems = relevantNotifs.map((n: any) => {
+        const parsedData = (() => {
+          try {
+            return n.data ? JSON.parse(String(n.data)) : null;
+          } catch {
+            return null;
+          }
+        })();
+        const type = String(n.type || "");
+        const actor = n.fromUserId ? actorById.get(n.fromUserId) : null;
+        const category =
+          type === "connection_request" || type.startsWith("reference_written:") || type.startsWith("suggested_connections:")
+            ? "connections"
+            : type.startsWith("post_event_connect:")
+              ? "events"
+              : "all";
+
+        const connectionId = parsedData?.connectionId;
+        const conn = connectionId ? connectionById.get(connectionId) : null;
+
+        return {
+          kind: "notification",
+          id: n.id,
+          type,
+          category,
+          title: n.title,
+          preview: n.message,
+          timestamp: n.createdAt,
+          unread: !n.isRead,
+          actor: actor ? { id: actor.id, username: actor.username, name: actor.name, profileImage: actor.profileImage } : null,
+          data: parsedData,
+          connection: conn ? { id: conn.id, status: conn.status, requesterId: conn.requesterId, receiverId: conn.receiverId } : null,
+        };
+      });
+
+      // Event chat unread summaries (grouped per chatroom)
+      const userParticipations = await db.select().from(eventParticipants).where(eq(eventParticipants.userId, userId));
+      const eventIds = userParticipations.map((p: any) => p.eventId);
+      let unreadChatItems: any[] = [];
+      if (eventIds.length) {
+        const chatrooms = await db.select().from(eventChatrooms).where(inArray(eventChatrooms.eventId, eventIds));
+        const out: any[] = [];
+        for (const chatroom of chatrooms) {
+          const membership = await db
+            .select()
+            .from(chatroomMembers)
+            .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.userId, userId)))
+            .limit(1);
+          const lastReadAt = membership[0]?.lastReadAt || new Date(0);
+
+          const unreadMessages = await db
+            .select({ count: sql<number>`count(*)::int` })
+            .from(chatroomMessages)
+            .where(
+              and(
+                eq(chatroomMessages.chatroomId, chatroom.id),
+                gt(chatroomMessages.createdAt, lastReadAt),
+                ne(chatroomMessages.senderId, userId),
+              ),
+            );
+          const unreadCount = unreadMessages[0]?.count || 0;
+          if (unreadCount <= 0) continue;
+
+          const [eventData] = await db.select().from(events).where(eq(events.id, chatroom.eventId)).limit(1);
+          if (!eventData) continue;
+
+          const [lastMsg] = await db
+            .select({ content: chatroomMessages.content, createdAt: chatroomMessages.createdAt })
+            .from(chatroomMessages)
+            .where(eq(chatroomMessages.chatroomId, chatroom.id))
+            .orderBy(desc(chatroomMessages.createdAt))
+            .limit(1);
+
+          out.push({
+            kind: "event_chat",
+            id: `event_chat_${chatroom.id}`,
+            type: "event_chat",
+            category: "messages",
+            title: `${unreadCount} new message${unreadCount === 1 ? "" : "s"} in ${eventData.title}`,
+            preview: lastMsg?.content ? String(lastMsg.content).slice(0, 140) : "",
+            moreCount: unreadCount > 1 ? unreadCount - 1 : 0,
+            timestamp: lastMsg?.createdAt || eventData.date,
+            unread: true,
+            chatroomId: chatroom.id,
+            eventId: chatroom.eventId,
+            eventTitle: eventData.title,
+            imageUrl: (eventData as any).imageUrl || null,
+          });
+        }
+        unreadChatItems = out;
+      }
+
+      const items = [...unreadChatItems, ...notificationItems].sort((a: any, b: any) => {
+        const at = new Date(a.timestamp).getTime();
+        const bt = new Date(b.timestamp).getTime();
+        return bt - at;
+      });
+
+      const unreadCount =
+        unreadChatItems.length + notificationItems.reduce((acc: number, n: any) => acc + (n.unread ? 1 : 0), 0);
+
+      return res.json({ items, unreadCount });
+    } catch (error: any) {
+      console.error("Error building activity feed:", error);
+      return res.status(500).json({ message: "Failed to fetch activity feed" });
+    }
+  });
+
+  app.get("/api/activity-feed/:userId/unread-count", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || "0", 10);
+      if (!userId) return res.status(400).json({ message: "Invalid user ID" });
+
+      const sessionUserId = (req as any)?.session?.user?.id as number | undefined;
+      const headerUserIdRaw = req.headers["x-user-id"] as string | undefined;
+      const headerUserId = headerUserIdRaw ? parseInt(headerUserIdRaw, 10) : undefined;
+      const authedUserId = sessionUserId || headerUserId;
+      if (!authedUserId || authedUserId !== userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const recent = await db
+        .select({ type: notifications.type, isRead: notifications.isRead })
+        .from(notifications)
+        .where(eq(notifications.userId, userId))
+        .orderBy(desc(notifications.createdAt))
+        .limit(200);
+
+      const unreadNotifs = recent.filter((n: any) => {
+        if (n.isRead) return false;
+        const t = String(n.type || "");
+        return (
+          t === "connection_request" ||
+          t.startsWith("reference_written:") ||
+          t.startsWith("post_event_connect:") ||
+          t.startsWith("suggested_connections:")
+        );
+      }).length;
+
+      // Each unread event chatroom counts as 1 unread activity item
+      const participations = await db.select().from(eventParticipants).where(eq(eventParticipants.userId, userId));
+      const eventIds = participations.map((p: any) => p.eventId);
+      let unreadEventChats = 0;
+      if (eventIds.length) {
+        const chatrooms = await db.select().from(eventChatrooms).where(inArray(eventChatrooms.eventId, eventIds));
+        for (const chatroom of chatrooms) {
+          const membership = await db
+            .select()
+            .from(chatroomMembers)
+            .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.userId, userId)))
+            .limit(1);
+          const lastReadAt = membership[0]?.lastReadAt || new Date(0);
+          const unreadMessages = await db
+            .select({ count: sql<number>`count(*)::int` })
+            .from(chatroomMessages)
+            .where(
+              and(
+                eq(chatroomMessages.chatroomId, chatroom.id),
+                gt(chatroomMessages.createdAt, lastReadAt),
+                ne(chatroomMessages.senderId, userId),
+              ),
+            );
+          const unreadCount = unreadMessages[0]?.count || 0;
+          if (unreadCount > 0) unreadEventChats += 1;
+        }
+      }
+
+      return res.json({ unreadCount: unreadNotifs + unreadEventChats });
+    } catch (error: any) {
+      console.error("Error fetching activity unread count:", error);
+      return res.status(500).json({ message: "Failed to fetch unread count" });
+    }
+  });
+
 
 
   // CRITICAL: Get all users endpoint with FULL SEARCH FILTERING and LA Metro consolidation
@@ -7449,6 +7853,33 @@ Questions? Just reply to this message. Welcome aboard!
       };
       
       const newReference = await storage.createUserReference(referenceData);
+
+      // Activity feed + in-app notification for the recipient (best-effort)
+      try {
+        const reviewer = await db
+          .select({ username: users.username, name: users.name, profileImage: users.profileImage })
+          .from(users)
+          .where(eq(users.id, parseInt(reviewerId)))
+          .then((r) => r[0]);
+        const reviewerUsername = reviewer?.username || "someone";
+
+        await storage.createNotification({
+          userId: parseInt(revieweeId),
+          fromUserId: parseInt(reviewerId),
+          type: `reference_written:${(newReference as any)?.id || ""}`,
+          title: "New reference",
+          message: `@${reviewerUsername} wrote you a reference`,
+          data: JSON.stringify({
+            referenceId: (newReference as any)?.id,
+            reviewerId: parseInt(reviewerId),
+            revieweeId: parseInt(revieweeId),
+            reviewerUsername,
+          }),
+        });
+      } catch (e) {
+        if (process.env.NODE_ENV === "development") console.warn("Reference notification failed:", e);
+      }
+
       return res.json(newReference);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error creating user reference:", error);
@@ -11912,6 +12343,28 @@ Questions? Just reply to this message. Welcome aboard!
       
       const participant = await storage.joinEvent(eventId, userId, notes, status);
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT JOIN: User ${userId} successfully joined event ${eventId} as ${status}`);
+
+      // Transactional email: notify organizer when someone joins (status === 'going' only).
+      // Run in background so event join stays snappy.
+      if (status === "going") {
+        setImmediate(async () => {
+          try {
+            const [evt] = await db.select().from(events).where(eq(events.id, eventId)).limit(1);
+            if (!evt?.organizerId) return;
+            if (Number(evt.organizerId) === Number(userId)) return;
+
+            const { sendEventJoinedEmail } = await import("./email/notificationEmails");
+            const result = await sendEventJoinedEmail(Number(evt.organizerId), Number(userId), Number(eventId));
+            if (result.success && !result.skipped) {
+              console.log(`✅ BACKGROUND: Sent event-joined email to organizer for event ${eventId}`);
+            } else if (result.skipped) {
+              console.log(`ℹ️ BACKGROUND: Event-joined email skipped - ${result.reason}`);
+            }
+          } catch (e) {
+            console.error("❌ BACKGROUND: Failed to send event-joined email:", e);
+          }
+        });
+      }
       
       // Send SMS notification only if status is 'going' (not for 'interested')
       if (status === 'going') {
@@ -12799,6 +13252,7 @@ Questions? Just reply to this message. Welcome aboard!
       if (eventData.description) cleanEventData.description = eventData.description;
       if (eventData.venueName) cleanEventData.venueName = eventData.venueName;
       if (body.endDate) cleanEventData.endDate = safeDate(body.endDate);
+      if (typeof body.timeZone === "string" && body.timeZone.trim()) cleanEventData.timeZone = body.timeZone.trim();
       if (eventData.imageUrl) cleanEventData.imageUrl = eventData.imageUrl;
       if (eventData.maxParticipants) cleanEventData.maxParticipants = eventData.maxParticipants;
       if (eventData.tags && eventData.tags.length > 0) cleanEventData.tags = eventData.tags;
@@ -23966,56 +24420,161 @@ Questions? Just reply to this message. Welcome aboard!
 
   // Default (site-wide) communities — shown for every city. Ensured on first fetch.
   const DEFAULT_COMMUNITIES: Array<{ name: string; displayName: string; category: string; icon: string; color: string; description: string }> = [
-    { name: "solo-female-travelers", displayName: "Solo Female Travelers", category: "identity", icon: "👩", color: "#EC4899", description: "Connect with other solo female travelers. Safe, supportive community for women who travel alone." },
-    { name: "lgbtq-plus", displayName: "LGBTQ+", category: "identity", icon: "🏳️‍🌈", color: "#8B5CF6", description: "LGBTQ+ friendly community. Meet travelers and locals in a welcoming space." },
+    { name: "solo-travelers", displayName: "Solo Travelers", category: "lifestyle", icon: "🧳", color: "#F59E0B", description: "Traveling solo? Find meetups, tips, and friends for your adventures." },
     { name: "digital-nomads", displayName: "Digital Nomads", category: "lifestyle", icon: "💻", color: "#06B6D4", description: "Remote workers and location-independent travelers." },
-    { name: "solo-travelers", displayName: "Solo Travelers", category: "lifestyle", icon: "🧳", color: "#F59E0B", description: "Traveling solo? Find meetups and tips from other solo travelers." },
-    { name: "foodies", displayName: "Foodies", category: "interest", icon: "🍳", color: "#EF4444", description: "Love food and local eats? Connect with fellow foodies." },
-    { name: "veterans", displayName: "Veterans", category: "identity", icon: "🎖️", color: "#6366F1", description: "Veterans and military community. Connect with those who serve." },
+    { name: "couchsurfers", displayName: "Couchsurfers", category: "lifestyle", icon: "🛋️", color: "#8B5CF6", description: "Hosting, surfing, and community travel." },
+    { name: "backpackers", displayName: "Backpackers", category: "lifestyle", icon: "🎒", color: "#10B981", description: "Backpacking routes, hostels, and meetups on the road." },
+    { name: "female-travelers", displayName: "Female Travelers", category: "identity", icon: "👩", color: "#EC4899", description: "Connect with women travelers in a supportive space." },
+    { name: "lgbtq-plus-travelers", displayName: "LGBTQ+ Travelers", category: "identity", icon: "🏳️‍🌈", color: "#A855F7", description: "Meet travelers and locals in an LGBTQ+ friendly community." },
+    { name: "van-life-road-trips", displayName: "Van Life & Road Trips", category: "lifestyle", icon: "🚐", color: "#3B82F6", description: "Road trips, van life, camping spots, and travel buddies." },
+    { name: "budget-travelers", displayName: "Budget Travelers", category: "lifestyle", icon: "💸", color: "#F97316", description: "Affordable travel hacks, cheap eats, and budget itineraries." },
   ];
+
+  const ensureCommunitiesTablesExist = async () => {
+    // Some deployments report "Failed to load communities" because the DB schema is missing
+    // (or partially missing) the community tables. Make the API resilient by ensuring the
+    // required tables/columns exist before querying.
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS community_tags (
+        id serial PRIMARY KEY,
+        name text NOT NULL UNIQUE,
+        display_name text NOT NULL,
+        category text NOT NULL,
+        icon text,
+        color text,
+        description text,
+        member_count integer DEFAULT 0,
+        is_active boolean DEFAULT true,
+        created_by integer,
+        is_user_created boolean DEFAULT false,
+        is_private boolean DEFAULT false,
+        password text,
+        is_flagged boolean DEFAULT false,
+        flag_reason text,
+        flagged_by integer,
+        flagged_at timestamp,
+        chatroom_id integer,
+        created_at timestamp DEFAULT now()
+      );
+    `);
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS user_community_tags (
+        id serial PRIMARY KEY,
+        user_id integer NOT NULL,
+        tag_id integer NOT NULL,
+        visibility text DEFAULT 'public' NOT NULL,
+        joined_at timestamp DEFAULT now(),
+        CONSTRAINT user_community_tags_user_tag_unique UNIQUE (user_id, tag_id)
+      );
+    `);
+    // Ensure commonly-referenced columns exist (safe no-ops if already present).
+    // NOTE: We include the core columns too because some older/manual schemas used camelCase
+    // (e.g. displayName) which causes Drizzle queries (display_name) to 500.
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS name text;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS display_name text;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS category text;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS icon text;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS color text;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS description text;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS created_at timestamp DEFAULT now();`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS created_by integer;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS is_user_created boolean DEFAULT false;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS is_active boolean DEFAULT true;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS is_private boolean DEFAULT false;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS is_flagged boolean DEFAULT false;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS member_count integer DEFAULT 0;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS chatroom_id integer;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS password text;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS flag_reason text;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS flagged_by integer;`);
+    await db.execute(sql`ALTER TABLE community_tags ADD COLUMN IF NOT EXISTS flagged_at timestamp;`);
+
+    // Best-effort backfill from legacy camelCase columns (if they exist).
+    // Using dynamic SQL avoids failing the whole route if those columns are absent.
+    await db.execute(sql`
+      DO $$
+      BEGIN
+        IF EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name = 'community_tags' AND column_name = 'displayname'
+        ) THEN
+          EXECUTE 'UPDATE community_tags SET display_name = COALESCE(display_name, displayname) WHERE display_name IS NULL';
+        END IF;
+      EXCEPTION WHEN others THEN
+        -- ignore
+      END $$;
+    `);
+    await db.execute(sql`
+      DO $$
+      BEGIN
+        IF EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name = 'community_tags' AND column_name = 'membercount'
+        ) THEN
+          EXECUTE 'UPDATE community_tags SET member_count = COALESCE(member_count, membercount) WHERE member_count IS NULL';
+        END IF;
+      EXCEPTION WHEN others THEN
+        -- ignore
+      END $$;
+    `);
+  };
 
   // Get all community tags (site-wide; same list for every city)
   app.get("/api/community-tags", async (req: any, res) => {
     try {
-      const systemUserId = 1; // for community chatrooms created by system
-      // Ensure default communities exist (idempotent)
-      for (const c of DEFAULT_COMMUNITIES) {
-        try {
-          const [existing] = await db.select().from(communityTags).where(eq(communityTags.name, c.name));
-          if (!existing) {
-            await db.insert(communityTags).values({
-              name: c.name,
-              displayName: c.displayName,
-              category: c.category,
-              icon: c.icon,
-              color: c.color,
-              description: c.description,
-              isUserCreated: false,
-              // IMPORTANT: Many UIs filter by isActive=true; ensure presets are visible.
-              isActive: true,
-              isPrivate: false,
-              isFlagged: false,
-              memberCount: 0,
-              createdBy: systemUserId,
-            });
-          } else {
-            // Backfill legacy rows so presets don't disappear due to NULL/false flags.
-            const patch: Record<string, any> = {};
-            if ((existing as any).isActive !== true) patch.isActive = true;
-            if ((existing as any).isPrivate == null) patch.isPrivate = false;
-            if ((existing as any).isFlagged == null) patch.isFlagged = false;
-            if (!(existing as any).displayName) patch.displayName = c.displayName;
-            if (!(existing as any).category) patch.category = c.category;
-            if (!(existing as any).icon) patch.icon = c.icon;
-            if (!(existing as any).color) patch.color = c.color;
-            if (!(existing as any).description) patch.description = c.description;
-            if (!(existing as any).createdBy) patch.createdBy = systemUserId;
-            if (Object.keys(patch).length > 0) {
-              await db.update(communityTags).set(patch).where(eq(communityTags.id, (existing as any).id));
+      let ddlEnsured = false;
+      // Ensure the DB schema exists so this route never 500s due to missing tables.
+      try {
+        await ensureCommunitiesTablesExist();
+        ddlEnsured = true;
+      } catch (e) {
+        if (process.env.NODE_ENV === "development") console.error("Failed to ensure communities tables exist:", e);
+      }
+
+      // Use a real user id if possible for chatroom creation (avoid FK issues when user #1 doesn't exist).
+      const firstUser = await db.select({ id: users.id }).from(users).orderBy(asc(users.id)).limit(1);
+      const systemUserId = firstUser?.[0]?.id ?? null;
+      // Ensure default communities exist (idempotent).
+      // NOTE: Some environments have partial/legacy schemas or restricted DDL perms. This must never block the feed.
+      if (ddlEnsured) {
+        for (const c of DEFAULT_COMMUNITIES) {
+          try {
+            const [existing] = await db.select().from(communityTags).where(eq(communityTags.name, c.name));
+            if (!existing) {
+              await db.insert(communityTags).values({
+                name: c.name,
+                displayName: c.displayName,
+                category: c.category,
+                icon: c.icon,
+                color: c.color,
+                description: c.description,
+                isUserCreated: false,
+                // IMPORTANT: Many UIs filter by isActive=true; ensure presets are visible.
+                isActive: true,
+                isPrivate: false,
+                isFlagged: false,
+                memberCount: 0,
+                createdBy: systemUserId ?? undefined,
+              });
+            } else {
+              // Backfill legacy rows so presets don't disappear due to NULL/false flags.
+              const patch: Record<string, any> = {};
+              if ((existing as any).isActive !== true) patch.isActive = true;
+              if ((existing as any).isPrivate == null) patch.isPrivate = false;
+              if ((existing as any).isFlagged == null) patch.isFlagged = false;
+              if (!(existing as any).displayName) patch.displayName = c.displayName;
+              if (!(existing as any).category) patch.category = c.category;
+              if (!(existing as any).icon) patch.icon = c.icon;
+              if (!(existing as any).color) patch.color = c.color;
+              if (!(existing as any).description) patch.description = c.description;
+              if (!(existing as any).createdBy && systemUserId != null) patch.createdBy = systemUserId;
+              if (Object.keys(patch).length > 0) {
+                await db.update(communityTags).set(patch).where(eq(communityTags.id, (existing as any).id));
+              }
             }
+          } catch (e) {
+            if (process.env.NODE_ENV === "development") console.error("Failed to ensure default community:", c?.name, e);
           }
-        } catch (e) {
-          if (process.env.NODE_ENV === "development") console.error("Failed to ensure default community:", c?.name, e);
         }
       }
 
@@ -24029,13 +24588,15 @@ Questions? Just reply to this message. Welcome aboard!
       }
       for (const tag of withoutChatroom) {
         try {
+          const createdById = (tag.createdBy ?? systemUserId);
+          if (!createdById) continue;
           const [newRoom] = await db.insert(citychatrooms).values({
             name: tag.displayName,
             description: tag.description || `Chat for ${tag.displayName}`,
             city: "Community",
             state: "",
             country: "Global",
-            createdById: tag.createdBy ?? systemUserId,
+            createdById,
             isPublic: true,
             maxMembers: 500,
             tags: ["community"],
@@ -24043,11 +24604,11 @@ Questions? Just reply to this message. Welcome aboard!
           if (newRoom) {
             await db.update(communityTags).set({ chatroomId: newRoom.id }).where(eq(communityTags.id, tag.id));
             const [existingMember] = await db.select().from(chatroomMembers)
-              .where(and(eq(chatroomMembers.chatroomId, newRoom.id), eq(chatroomMembers.userId, tag.createdBy ?? systemUserId)));
+              .where(and(eq(chatroomMembers.chatroomId, newRoom.id), eq(chatroomMembers.userId, createdById)));
             if (!existingMember) {
               await db.insert(chatroomMembers).values({
                 chatroomId: newRoom.id,
-                userId: tag.createdBy ?? systemUserId,
+                userId: createdById,
                 role: "admin",
                 isActive: true,
               });
@@ -24060,34 +24621,128 @@ Questions? Just reply to this message. Welcome aboard!
 
       const category = req.query.category as string;
       const includePrivate = req.query.includePrivate === "true";
-      const conditions = [eq(communityTags.isActive, true)];
-      if (category) conditions.push(eq(communityTags.category, category));
-      if (!includePrivate) conditions.push(eq(communityTags.isPrivate, false));
+      // Prefer the typed Drizzle query, but fall back to a safe SELECT * mapping when the
+      // deployment has legacy/missing columns (a common root cause of "Failed to load communities").
+      try {
+        const conditions = [eq(communityTags.isActive, true)];
+        if (category) conditions.push(eq(communityTags.category, category));
+        if (!includePrivate) conditions.push(eq(communityTags.isPrivate, false));
 
-      const tags = await db.select({
-        id: communityTags.id,
-        name: communityTags.name,
-        displayName: communityTags.displayName,
-        category: communityTags.category,
-        icon: communityTags.icon,
-        color: communityTags.color,
-        description: communityTags.description,
-        memberCount: communityTags.memberCount,
-        isActive: communityTags.isActive,
-        createdBy: communityTags.createdBy,
-        isUserCreated: communityTags.isUserCreated,
-        isPrivate: communityTags.isPrivate,
-        isFlagged: communityTags.isFlagged,
-        chatroomId: communityTags.chatroomId,
-        createdAt: communityTags.createdAt,
-      }).from(communityTags)
-        .where(and(...conditions))
-        .orderBy(desc(communityTags.memberCount));
+        const tags = await db
+          .select({
+            id: communityTags.id,
+            name: communityTags.name,
+            displayName: communityTags.displayName,
+            category: communityTags.category,
+            icon: communityTags.icon,
+            color: communityTags.color,
+            description: communityTags.description,
+            memberCount: communityTags.memberCount,
+            isActive: communityTags.isActive,
+            createdBy: communityTags.createdBy,
+            isUserCreated: communityTags.isUserCreated,
+            isPrivate: communityTags.isPrivate,
+            isFlagged: communityTags.isFlagged,
+            chatroomId: communityTags.chatroomId,
+            createdAt: communityTags.createdAt,
+          })
+          .from(communityTags)
+          .where(and(...conditions))
+          .orderBy(desc(communityTags.memberCount));
 
-      res.json(tags);
+        res.json(tags);
+        return;
+      } catch (e) {
+        if (process.env.NODE_ENV === "development") console.error("Drizzle community tag query failed; falling back to raw rows:", e);
+      }
+
+      let rawRows: any[] = [];
+      try {
+        const result: any = await db.execute(sql`SELECT * FROM community_tags`);
+        rawRows = Array.isArray(result) ? result : (result?.rows || result?.result?.rows || result?.result || []);
+      } catch (e) {
+        if (process.env.NODE_ENV === "development") console.error("Fallback SELECT * FROM community_tags failed:", e);
+        rawRows = [];
+      }
+
+      const mapped = (Array.isArray(rawRows) ? rawRows : []).map((r: any) => {
+        const isActiveRaw = r?.is_active ?? r?.isActive;
+        const isPrivateRaw = r?.is_private ?? r?.isPrivate;
+        const isFlaggedRaw = r?.is_flagged ?? r?.isFlagged;
+        const memberCountRaw = r?.member_count ?? r?.membercount ?? r?.memberCount;
+        return {
+          id: Number(r?.id),
+          name: r?.name ?? "",
+          displayName: r?.display_name ?? r?.displayname ?? r?.displayName ?? r?.name ?? "",
+          category: r?.category ?? "general",
+          icon: r?.icon ?? "🏷️",
+          color: r?.color ?? "#F97316",
+          description: r?.description ?? "",
+          memberCount: Number(memberCountRaw ?? 0) || 0,
+          isActive: isActiveRaw == null ? true : !!isActiveRaw,
+          createdBy: r?.created_by ?? r?.createdBy ?? null,
+          isUserCreated: r?.is_user_created ?? r?.isUserCreated ?? false,
+          isPrivate: isPrivateRaw == null ? false : !!isPrivateRaw,
+          isFlagged: isFlaggedRaw == null ? false : !!isFlaggedRaw,
+          chatroomId: r?.chatroom_id ?? r?.chatroomId ?? null,
+          createdAt: r?.created_at ?? r?.createdAt ?? null,
+        };
+      });
+
+      const filtered = mapped
+        .filter((t) => t?.id && t?.displayName)
+        .filter((t) => (category ? t.category === category : true))
+        .filter((t) => (includePrivate ? true : !t.isPrivate))
+        .filter((t) => t.isActive !== false)
+        .sort((a, b) => (b.memberCount || 0) - (a.memberCount || 0));
+
+      // If the table is empty / unreadable, return the in-memory defaults so the UI never shows an error state.
+      if (filtered.length === 0) {
+        res.json(
+          DEFAULT_COMMUNITIES.map((c, idx) => ({
+            id: -(idx + 1),
+            name: c.name,
+            displayName: c.displayName,
+            category: c.category,
+            icon: c.icon,
+            color: c.color,
+            description: c.description,
+            memberCount: 0,
+            isActive: true,
+            createdBy: systemUserId,
+            isUserCreated: false,
+            isPrivate: false,
+            isFlagged: false,
+            chatroomId: null,
+            createdAt: null,
+          })),
+        );
+        return;
+      }
+
+      res.json(filtered);
     } catch (error: any) {
       if (process.env.NODE_ENV === "development") console.error("Error loading community tags:", error);
-      res.status(500).json({ error: "Failed to load communities" });
+      // Never surface a hard failure to the Explore UI; return defaults instead.
+      res.json(
+        DEFAULT_COMMUNITIES.map((c, idx) => ({
+          id: -(idx + 1),
+          name: c.name,
+          displayName: c.displayName,
+          category: c.category,
+          icon: c.icon,
+          color: c.color,
+          description: c.description,
+          memberCount: 0,
+          isActive: true,
+          createdBy: null,
+          isUserCreated: false,
+          isPrivate: false,
+          isFlagged: false,
+          chatroomId: null,
+          createdAt: null,
+        })),
+      );
     }
   });
 

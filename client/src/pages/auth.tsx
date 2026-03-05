@@ -11,6 +11,7 @@ import { authStorage } from "@/lib/auth";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import JoinNowWidgetNew from "@/components/join-now-widget-new";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/App";
 // Background image handled via direct path in CSS
 
 
@@ -19,24 +20,7 @@ export default function Auth() {
   
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const LOGIN_PENDING_KEY = "nt_login_pending";
-
-  const setLoginPendingFlag = (pending: boolean) => {
-    try {
-      if (pending) {
-        sessionStorage.setItem(LOGIN_PENDING_KEY, "1");
-      } else {
-        sessionStorage.removeItem(LOGIN_PENDING_KEY);
-      }
-    } catch {
-      // ignore storage errors
-    }
-    try {
-      window.dispatchEvent(new CustomEvent("nt-login-pending", { detail: pending }));
-    } catch {
-      // ignore event errors
-    }
-  };
+  const { login, startAuthenticating, stopAuthenticating } = useAuth();
 
   // Check if we're on the join page or signup page or in register mode
   const urlParams = new URLSearchParams(window.location.search);
@@ -68,7 +52,7 @@ export default function Auth() {
     }
 
     // Prevent landing-page flashes during the post-login auth hydration window.
-    setLoginPendingFlag(true);
+    startAuthenticating();
     setIsLoading(true);
     console.log('Starting login request...');
     try {
@@ -97,6 +81,11 @@ export default function Auth() {
           if (fullUserRes.ok) {
             fullUser = await fullUserRes.json();
           }
+
+          // Update global auth state immediately (avoids async auth lag + route flashes).
+          if (fullUser && fullUser.id) {
+            login(fullUser);
+          }
           
           // Invalidate auth queries to refresh user state
           queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
@@ -111,7 +100,7 @@ export default function Auth() {
         } else {
           // Backend returned an error in JSON format
           console.log('Login failed with response:', data);
-          setLoginPendingFlag(false);
+          stopAuthenticating();
           toast({
             title: "Login failed",
             description: data.message || "Invalid credentials. Please try again.",
@@ -129,7 +118,7 @@ export default function Auth() {
           errorMessage = await response.text() || errorMessage;
         }
         console.log('Login failed with error:', errorMessage);
-        setLoginPendingFlag(false);
+        stopAuthenticating();
         toast({
           title: "Login failed",
           description: errorMessage,
@@ -138,7 +127,7 @@ export default function Auth() {
       }
     } catch (error) {
       console.error('Login error:', error);
-      setLoginPendingFlag(false);
+      stopAuthenticating();
       toast({
         title: "Login failed",
         description: "Network error. Please try again.",

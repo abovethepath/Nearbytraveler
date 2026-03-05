@@ -11,6 +11,8 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import Logo from "@/components/logo";
 import { Building, MapPin, Globe, Phone, Mail, Clock, Users, Camera } from "lucide-react";
+import { useLocation } from "wouter";
+import { useAuth } from "@/App";
 
 interface BusinessFormData {
   // Basic user info from previous step
@@ -45,6 +47,8 @@ interface BusinessFormData {
 
 export default function BusinessRegistration() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const { startAuthenticating, stopAuthenticating } = useAuth();
   const [formData, setFormData] = useState<BusinessFormData>({
     email: "",
     password: "",
@@ -103,9 +107,10 @@ export default function BusinessRegistration() {
       sessionStorage.removeItem('businessRegistrationData');
       
       // Redirect; session cookie is the source of truth
-      window.location.href = "/profile";
+      setLocation("/profile");
     },
     onError: (error: any) => {
+      stopAuthenticating();
       toast({
         title: "Registration failed",
         description: error.message || "Please try again.",
@@ -172,6 +177,7 @@ export default function BusinessRegistration() {
       return;
     }
 
+    startAuthenticating();
     registerMutation.mutate({
       // Basic user info
       email: formData.email,

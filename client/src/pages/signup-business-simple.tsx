@@ -80,7 +80,7 @@ type BusinessSignupData = z.infer<typeof businessSignupSchema>;
 export default function SignupBusinessSimple() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { user, isAuthenticated, login } = useAuth();
+  const { user, isAuthenticated, login, startAuthenticating, stopAuthenticating } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
@@ -299,6 +299,7 @@ export default function SignupBusinessSimple() {
       setTimeout(() => setLocation('/business-dashboard'), 1800);
     },
     onError: (error: Error) => {
+      stopAuthenticating();
       toast({
         title: "Business Registration Failed",
         description: error.message || "Please check all required fields and try again.",
@@ -309,6 +310,7 @@ export default function SignupBusinessSimple() {
 
   const onSubmit = (data: BusinessSignupData) => {
     setIsLoading(true);
+    startAuthenticating();
     signupMutation.mutate(data);
   };
 

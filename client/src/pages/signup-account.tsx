@@ -15,6 +15,7 @@ export default function SignupAccount() {
   const { toast } = useToast();
   const [userType, setUserType] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const PHONE_IN_USE_MESSAGE = "This phone number is already linked to an account. Please sign in instead.";
   
   const [formData, setFormData] = useState({
     name: "",
@@ -33,6 +34,9 @@ export default function SignupAccount() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = useState(true);
+  const [phoneChecking, setPhoneChecking] = useState(false);
+  const [phoneInUse, setPhoneInUse] = useState(false);
+  const [phoneLastCheckedDigits, setPhoneLastCheckedDigits] = useState<string>("");
 
   useEffect(() => {
     // Check for QR code flow first (intendedUserType), then regular flow (selectedUserType)
@@ -86,6 +90,44 @@ export default function SignupAccount() {
   const handlePhoneChange = (value: string) => {
     const formatted = formatPhoneNumber(value);
     setFormData({ ...formData, phoneNumber: formatted });
+    if (phoneInUse) setPhoneInUse(false);
+    if (currentError === PHONE_IN_USE_MESSAGE) setCurrentError(null);
+  };
+
+  const checkPhoneInUse = async (rawPhone: string): Promise<boolean> => {
+    const digits = String(rawPhone || "").replace(/\D/g, "");
+    if (digits.length < 10) return false;
+    if (digits === phoneLastCheckedDigits) return phoneInUse;
+
+    setPhoneChecking(true);
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/auth/check-phone`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phoneNumber: rawPhone }),
+      });
+      if (res.status === 409) {
+        setPhoneInUse(true);
+        setPhoneLastCheckedDigits(digits);
+        return true;
+      }
+      // Best-effort parse, but treat non-OK as "unknown/allow" to avoid blocking legit signups due to transient issues.
+      if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const exists = !!(data as any)?.exists;
+        setPhoneInUse(exists);
+        setPhoneLastCheckedDigits(digits);
+        return exists;
+      }
+      setPhoneInUse(false);
+      setPhoneLastCheckedDigits(digits);
+      return false;
+    } catch (e) {
+      console.error("Phone check error:", e);
+      return false;
+    } finally {
+      setPhoneChecking(false);
+    }
   };
 
   const handleUsernameChange = (value: string) => {
@@ -171,6 +213,18 @@ export default function SignupAccount() {
       return;
     }
 
+    // Phone uniqueness check (block signup if already in use)
+    if (await checkPhoneInUse(formData.phoneNumber)) {
+      setCurrentError(PHONE_IN_USE_MESSAGE);
+      toast({
+        title: "Phone number already in use",
+        description: PHONE_IN_USE_MESSAGE,
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     // Store account data for profile completion (business: name = business name, contactName = name of contact)
     const isNewToTown = sessionStorage.getItem('isNewToTown') === 'true';
     const accountData: Record<string, unknown> = {
@@ -227,7 +281,8 @@ export default function SignupAccount() {
     formData.password.trim() !== "" &&
     formData.password.length >= 8 &&
     formData.password === formData.confirmPassword &&
-    usernameAvailable === true;
+    usernameAvailable === true &&
+    !phoneInUse;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
@@ -265,7 +320,17 @@ export default function SignupAccount() {
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                 <div className="flex items-center">
                   <span className="text-red-500 text-xl mr-2">❌</span>
-                  <span className="font-medium">{currentError}</span>
+                  <span className="font-medium">
+                    {currentError}
+                    {currentError === PHONE_IN_USE_MESSAGE && (
+                      <>
+                        {" "}
+                        <a href="/auth" className="underline font-semibold">
+                          Sign In
+                        </a>
+                      </>
+                    )}
+                  </span>
                 </div>
               </div>
             )}
@@ -367,10 +432,27 @@ export default function SignupAccount() {
                   type="tel"
                   value={formData.phoneNumber}
                   onChange={(e) => handlePhoneChange(e.target.value)}
+                  onBlur={async () => {
+                    const exists = await checkPhoneInUse(formData.phoneNumber);
+                    if (exists) {
+                      setCurrentError(PHONE_IN_USE_MESSAGE);
+                    }
+                  }}
                   placeholder="+1 (555) 123-4567"
                   className="text-base py-3"
                   required
                 />
+                {phoneChecking && (
+                  <p className="text-sm text-blue-600 mt-1">Checking phone number...</p>
+                )}
+                {!phoneChecking && phoneInUse && (
+                  <p className="text-sm text-red-600 mt-1">
+                    {PHONE_IN_USE_MESSAGE}{" "}
+                    <a href="/auth" className="underline font-semibold">
+                      Sign In
+                    </a>
+                  </p>
+                )}
               </div>
 
               <div>
