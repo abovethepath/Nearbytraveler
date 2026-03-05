@@ -577,9 +577,10 @@ function Router() {
       const reason = opts?.reason || "sync";
       const force = !!opts?.force || loginPending || isAuthenticating;
 
-      // Throttle to avoid spamming on rapid navigation.
+      // Throttle: at most once every 60 s for background navigation checks.
+      // Force-mode (login/signup transitions) bypasses this.
       const now = Date.now();
-      if (!force && now - lastAuthSyncAtRef.current < 5000) return;
+      if (!force && now - lastAuthSyncAtRef.current < 60_000) return;
       lastAuthSyncAtRef.current = now;
 
       if (authSyncInFlightRef.current) return;
@@ -619,7 +620,11 @@ function Router() {
             clearSessionInvalid();
             markSessionVerified();
             writeSessionCache(serverUser);
-            setUser(serverUser);
+            // Only call setUser when something meaningful changed; avoid a full
+            // app re-render on every background navigation sync.
+            if (serverUser.id !== user?.id || serverUser.username !== user?.username) {
+              setUser(serverUser);
+            }
             stopAuthenticating();
             setLoginPendingFlag(false);
           }
