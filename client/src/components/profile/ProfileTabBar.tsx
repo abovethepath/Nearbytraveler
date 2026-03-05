@@ -78,9 +78,25 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
     return `${tabLegacyBase} ${active ? tabLegacyActive : tabLegacyInactive}`;
   };
 
+  // Detect dark mode so badge numbers can flip: dark mode = black text, light mode = white text.
+  const [isDarkMode, setIsDarkMode] = React.useState(
+    typeof document !== "undefined" && document.documentElement.classList.contains("dark")
+  );
+  React.useEffect(() => {
+    const obs = new MutationObserver(() => {
+      setIsDarkMode(document.documentElement.classList.contains("dark"));
+    });
+    obs.observe(document.documentElement, { attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
   // Explicit tab label + badge styles (requested).
   const heroTextStyle = { color: "#000000" } as React.CSSProperties;
-  const badgeStyle = { backgroundColor: "rgba(0,0,0,0.5)", color: "#FFFFFF" } as React.CSSProperties;
+  // Dark mode → black numbers on lighter badge; Light mode → white numbers on dark badge.
+  const badgeStyle = {
+    backgroundColor: isDarkMode ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.55)",
+    color: isDarkMode ? "#000000" : "#FFFFFF",
+  } as React.CSSProperties;
 
   return (
     <div

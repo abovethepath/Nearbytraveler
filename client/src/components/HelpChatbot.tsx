@@ -173,8 +173,9 @@ export function HelpChatbot() {
   };
 
   const floatingStyle = {
-    right: 'calc(env(safe-area-inset-right, 0px) + 24px)',
-    bottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)',
+    right: 'calc(env(safe-area-inset-right, 0px) + 16px)',
+    // 60px = MobileBottomNav height; 16px = breathing room above it.
+    bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)',
   } as any;
 
   return (
