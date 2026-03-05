@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
+import LandingCTA from "@/components/LandingCTA";
 import { trackEvent } from "@/lib/analytics";
 import karaokeImage from "@assets/image_1756447354157.png";
 import bikeImage from "@assets/image_1756447442403.png";
@@ -454,6 +455,7 @@ export default function EventsLanding() {
         </div>
 
       </div>
+      <LandingCTA />
       <Footer />
     </div>
   );

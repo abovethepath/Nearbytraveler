@@ -2,6 +2,7 @@ import { useLocation, Link } from "wouter";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
+import LandingCTA from "@/components/LandingCTA";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, MapPin, Globe, RefreshCw, Home, ShieldCheck, Plane, Building2, Handshake, Coffee, Heart, Calendar, Star, CheckCircle, X, Award, MessageCircle, Camera, Compass, Gift } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
@@ -501,6 +502,7 @@ export default function CouchsurfingLanding() {
         </div>
       </div>
 
+      <LandingCTA />
       <Footer />
     </div>
   );

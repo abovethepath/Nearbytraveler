@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
+import LandingCTA from "@/components/LandingCTA";
 import { trackEvent } from "@/lib/analytics";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const travelersHeaderImage = "/travlersonastreet.jpg";
@@ -397,6 +398,7 @@ export default function TravelersLanding() {
           </div>
         </div>
       </main>
+      <LandingCTA />
       <Footer />
     </div>
   );

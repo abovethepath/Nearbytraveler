@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Footer from "@/components/footer";
+import LandingCTA from "@/components/LandingCTA";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 
 type PointItem = {
@@ -524,6 +525,7 @@ export default function AmbassadorLanding() {
         </div>
       </section>
 
+      <LandingCTA />
       <Footer />
     </div>
   );

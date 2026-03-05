@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
 import Footer from "@/components/footer";
+import LandingCTA from "@/components/LandingCTA";
 import { AuthContext } from "@/App";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 
@@ -288,6 +289,7 @@ export default function AmbassadorProgram() {
         </div>
       </section>
 
+      <LandingCTA />
       <Footer />
     </div>
   );

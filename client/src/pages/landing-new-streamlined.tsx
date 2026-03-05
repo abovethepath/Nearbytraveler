@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Footer from "@/components/footer";
+import LandingCTA from "@/components/LandingCTA";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Mail, User, CheckCircle } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
@@ -623,6 +624,7 @@ export default function LandingStreamlined() {
         </section>
       </div>
 
+      <LandingCTA />
       <Footer />
     </div>
   );

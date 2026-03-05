@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
+import LandingCTA from "@/components/LandingCTA";
 import { trackEvent } from "@/lib/analytics";
 import localsHeaderImage from "../../assets/locals_1756777112458.png";
 
@@ -413,6 +414,7 @@ BECOME A NEARBY LOCAL NOW
           </p>
         </div>
       </div>
+      <LandingCTA />
       <Footer />
     </div>
   );

@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { trackEvent } from "@/lib/analytics";
+import LandingCTA from "@/components/LandingCTA";
 import { 
   DollarSign, 
   Target,
@@ -443,6 +444,7 @@ export default function BusinessLanding() {
           </Button>
         </div>
       </section>
+      <LandingCTA />
     </div>
   );
 }
