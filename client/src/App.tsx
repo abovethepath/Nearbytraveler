@@ -378,6 +378,15 @@ function Router() {
   ];
   const isSignupRoute = PUBLIC_SIGNUP_PATHS.includes(location) || location.startsWith('/signup/');
 
+  // Chat pages need a locked, non-scrollable layout so the header and input never scroll away
+  const isChatPage = (
+    location.startsWith('/chatroom/') ||
+    location.startsWith('/dm-chat/') ||
+    location.startsWith('/event-chat/') ||
+    location.startsWith('/meetup-chat/') ||
+    location.startsWith('/quick-meetup-chat/')
+  );
+
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/auth/signup', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling',
     '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/ambassador', '/ambassador-program', '/getting-started',
@@ -1880,14 +1889,20 @@ function Router() {
             <Navbar />
           )}
           
-          {/* Main content */}
-          <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden">
-            <main className={`w-full max-w-full overflow-x-hidden main-with-bottom-nav ${isNativeIOSApp() ? 'pt-0 pb-0' : 'pt-0 pb-24 md:pt-0 md:pb-20'}`}>
-              <div className="w-full max-w-full overflow-x-hidden">
-                {renderPage()}
-              </div>
-            </main>
-          </div>
+          {/* Main content — chat pages get a non-scrolling wrapper so header + input stay put */}
+          {isChatPage ? (
+            <div className="w-full overflow-hidden bg-background text-foreground">
+              {renderPage()}
+            </div>
+          ) : (
+            <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden">
+              <main className={`w-full max-w-full overflow-x-hidden main-with-bottom-nav ${isNativeIOSApp() ? 'pt-0 pb-0' : 'pt-0 pb-24 md:pt-0 md:pb-20'}`}>
+                <div className="w-full max-w-full overflow-x-hidden">
+                  {renderPage()}
+                </div>
+              </main>
+            </div>
+          )}
 
           {/* REMOVED: Instant Messaging Components - obsolete functionality */}
         </>

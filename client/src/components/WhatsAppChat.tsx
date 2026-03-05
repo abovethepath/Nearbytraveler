@@ -127,6 +127,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
   }, [muteKey]);
 
+  // Lock page scroll so the header and input box never scroll off screen
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+      document.documentElement.style.overflow = '';
+    };
+  }, []);
+
   const toggleNotificationsMuted = () => {
     const next = !notificationsMuted;
     setNotificationsMuted(next);
@@ -1643,7 +1654,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   };
 
   return (
-    <div className="flex bg-gray-900 text-white overflow-hidden h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5.5rem)] min-h-0" data-chat-page="true">
+    <div className="flex bg-gray-900 text-white overflow-hidden w-full h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5.5rem)] min-h-0" data-chat-page="true">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-r border-gray-700">
@@ -1732,7 +1743,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Main Chat Area */}
       <div className="flex flex-col flex-1 min-w-0">
       {/* Header - compact padding on desktop; smaller title with truncation; no header avatars on desktop (sidebar shows members) */}
-      <div className={`flex items-center ${isMobileWeb ? 'gap-1.5' : 'gap-2'} px-2 bg-gray-800 border-b border-gray-700 min-w-0 ${isNativeIOSApp() ? 'py-1.5 md:py-2' : 'py-1 lg:py-1.5'}`}>
+      <div className={`flex items-center flex-shrink-0 ${isMobileWeb ? 'gap-1.5' : 'gap-2'} px-2 bg-gray-800 border-b border-gray-700 min-w-0 ${isNativeIOSApp() ? 'py-1.5 md:py-2' : 'py-1 lg:py-1.5'}`}>
         <Button
           variant="ghost"
           size="icon"
