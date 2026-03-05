@@ -92,10 +92,10 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
 
   // Explicit tab label + badge styles (requested).
   const heroTextStyle = { color: "#000000" } as React.CSSProperties;
-  // Dark mode → black numbers on lighter badge; Light mode → white numbers on dark badge.
+  // Light mode → black numbers on white badge; Dark mode → white numbers on dark badge.
   const badgeStyle = {
-    backgroundColor: isDarkMode ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.55)",
-    color: isDarkMode ? "#000000" : "#FFFFFF",
+    backgroundColor: isDarkMode ? "rgba(0,0,0,0.60)" : "rgba(255,255,255,0.90)",
+    color: isDarkMode ? "#FFFFFF" : "#000000",
   } as React.CSSProperties;
 
   return (
