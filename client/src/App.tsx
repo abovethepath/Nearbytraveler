@@ -273,13 +273,37 @@ function ProfileByUsername({ username }: { username: string }) {
   return <ProfileComplete userId={data.id} />;
 }
 
+// Session cache for instant hydration — avoids blank loading screen on every page load.
+const SESSION_CACHE_KEY = 'nt_cached_session';
+const readSessionCache = (): User | null => {
+  try {
+    const raw = sessionStorage.getItem(SESSION_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    // Basic sanity: must have id and username
+    if (!parsed?.id || !parsed?.username) return null;
+    return parsed as User;
+  } catch {
+    return null;
+  }
+};
+const writeSessionCache = (u: User | null) => {
+  try {
+    if (u) sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(u));
+    else sessionStorage.removeItem(SESSION_CACHE_KEY);
+  } catch {}
+};
+
 function Router() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(!user);
+  // Instantly hydrate from sessionStorage so the UI renders with no blank loading screen.
+  const cachedUser = readSessionCache();
+  const [user, setUser] = useState<User | null>(cachedUser);
+  // If we have a cached user we can skip the initial loading gate entirely.
+  const [isLoading, setIsLoading] = useState(cachedUser === null);
   // Web: explicit auth hydration/loading gate to prevent redirect/layout flashes.
-  const [authLoading, setAuthLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(cachedUser === null);
   // Auth init/verification gates to prevent landing/login flashes during nav.
-  const [authInitialized, setAuthInitialized] = useState(false);
+  const [authInitialized, setAuthInitialized] = useState(cachedUser !== null);
   const [isVerifyingAuth, setIsVerifyingAuth] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const LOGIN_PENDING_KEY = "nt_login_pending";
@@ -530,6 +554,7 @@ function Router() {
     // When the server says "no session", immediately stop any stale client-side identity
     // from influencing UI, especially in incognito/private mode.
     try {
+      writeSessionCache(null);
       authStorage.clearUser();
       localStorage.removeItem("auth_token");
       localStorage.removeItem("authToken");
@@ -593,6 +618,7 @@ function Router() {
             // Session is valid → ensure UI + storage reflect it.
             clearSessionInvalid();
             markSessionVerified();
+            writeSessionCache(serverUser);
             setUser(serverUser);
             stopAuthenticating();
             setLoginPendingFlag(false);
@@ -707,7 +733,8 @@ function Router() {
   useEffect(() => {
     // Explicit auth gate (web only): don't render protected routes (or "/") until
     // we have confirmed session state with the server.
-    if (!isNativeIOSApp()) setAuthLoading(true);
+    // Skip the loading gate if we already hydrated from cache — do a silent background check instead.
+    if (!isNativeIOSApp() && !readSessionCache()) setAuthLoading(true);
 
     // Skip auth check for signup routes and public pages (but not root '/' which needs auth check for redirect)
     if (isSignupRoute || (isLandingPage && location !== '/')) {
@@ -747,6 +774,7 @@ function Router() {
           console.log('✅ Server session found:', serverUser.username, 'ID:', serverUser.id);
           clearSessionInvalid();
           markSessionVerified();
+          writeSessionCache(serverUser);
           setUser(serverUser);
           stopAuthenticating();
           setLoginPendingFlag(false);
@@ -762,7 +790,8 @@ function Router() {
         }
         
         if (response.status === 401) {
-          // No session cookie / expired session.
+          // No session cookie / expired session — clear cache so next load shows login.
+          writeSessionCache(null);
           clearLocalAuthState("checkServerAuth:401");
           setUser(null);
           setLoginPendingFlag(false);
