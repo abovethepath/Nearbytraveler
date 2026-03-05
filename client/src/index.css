@@ -1411,6 +1411,78 @@ p, span, div, button, input, textarea, select {
   -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
 }
 
+/* ============================================================
+   COMPREHENSIVE RADIX UI OVERLAY DARK MODE SAFETY NET
+   Covers: Select, DropdownMenu, Popover, Command (combobox),
+   Tooltip, ContextMenu, NavigationMenu, Menubar
+   These portals render outside component trees but are still
+   inside <html class="dark">, so CSS variables resolve correctly.
+   We explicitly force text color for full coverage.
+   ============================================================ */
+
+/* All Radix portal overlay content: ensure white text in dark mode */
+.dark [data-radix-select-content],
+.dark [data-radix-select-content] *,
+.dark [data-radix-dropdown-menu-content],
+.dark [data-radix-dropdown-menu-content] *,
+.dark [data-radix-popover-content],
+.dark [data-radix-popover-content] *,
+.dark [data-radix-context-menu-content],
+.dark [data-radix-context-menu-content] *,
+.dark [data-radix-menubar-content],
+.dark [data-radix-menubar-content] * {
+  color: rgb(var(--nt-text-primary));
+  -webkit-text-fill-color: rgb(var(--nt-text-primary));
+}
+
+/* Preserve colored text inside overlays (orange, blue, green, etc.) */
+.dark [data-radix-select-content] [class*="text-orange-"],
+.dark [data-radix-select-content] [class*="text-blue-"],
+.dark [data-radix-select-content] [class*="text-green-"],
+.dark [data-radix-select-content] [class*="text-red-"],
+.dark [data-radix-select-content] [class*="text-purple-"],
+.dark [data-radix-popover-content] [class*="text-orange-"],
+.dark [data-radix-popover-content] [class*="text-blue-"],
+.dark [data-radix-popover-content] [class*="text-green-"],
+.dark [data-radix-popover-content] [class*="text-red-"],
+.dark [data-radix-popover-content] [class*="text-purple-"],
+.dark [data-radix-dropdown-menu-content] [class*="text-orange-"],
+.dark [data-radix-dropdown-menu-content] [class*="text-blue-"],
+.dark [data-radix-dropdown-menu-content] [class*="text-green-"],
+.dark [data-radix-dropdown-menu-content] [class*="text-red-"],
+.dark [data-radix-dropdown-menu-content] [class*="text-purple-"] {
+  color: revert;
+  -webkit-text-fill-color: revert;
+}
+
+/* cmdk Command component items (used in comboboxes) */
+.dark [cmdk-item],
+.dark [cmdk-group-heading],
+.dark [cmdk-input],
+.dark [cmdk-list] {
+  color: rgb(var(--nt-text-primary)) !important;
+  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
+}
+
+/* Gray-box fix: any bg-gray-50/100/200 containers whose children
+   might still inherit light-mode black text */
+.dark .bg-gray-50 > *,
+.dark .bg-gray-100 > *,
+.dark .bg-gray-200 > *,
+.dark [class*="bg-gray-700"] > *,
+.dark [class*="bg-gray-800"] > * {
+  color: rgb(var(--nt-text-primary));
+}
+
+/* But preserve explicitly colored child text */
+.dark .bg-gray-50 > [class*="text-"],
+.dark .bg-gray-100 > [class*="text-"],
+.dark .bg-gray-200 > [class*="text-"],
+.dark [class*="bg-gray-700"] > [class*="text-"],
+.dark [class*="bg-gray-800"] > [class*="text-"] {
+  color: revert;
+}
+
 /* Button text: don't globally override hierarchy on light buttons */
 .dark :is(button, [role="button"]) [class*="text-gray-"] {
   color: inherit !important;

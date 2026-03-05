@@ -182,8 +182,8 @@ export default function About() {
 
             <div className="text-center">
               <Globe className="w-12 h-12 text-teal-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-4" style={{color: '#000000'}}>Los Angeles Beta Launch</h3>
-              <p className="text-gray-600" style={{color: '#000000'}}>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Los Angeles Beta Launch</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 Starting our beta in Los Angeles with plans to expand to cities worldwide.
               </p>
             </div>

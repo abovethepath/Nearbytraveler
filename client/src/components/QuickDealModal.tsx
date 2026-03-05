@@ -219,10 +219,9 @@ export default function QuickDealModal({ onClose, businessId, businessLocation }
             <Button
               type="submit"
               disabled={createQuickDealMutation.isPending}
-              className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
-              style={{ color: 'black' }}
+              className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
             >
-              <span style={{ color: 'black' }}>{createQuickDealMutation.isPending ? 'Creating...' : 'Create Quick Deal'}</span>
+              {createQuickDealMutation.isPending ? 'Creating...' : 'Create Quick Deal'}
             </Button>
           </div>
         </form>

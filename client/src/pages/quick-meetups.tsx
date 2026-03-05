@@ -449,16 +449,15 @@ function QuickMeetupsPage() {
               isExpired ? (
                 <Button 
                   size="sm" 
-                  className="flex-1 text-xs h-7 bg-orange-500 hover:bg-orange-600"
-                  style={{ color: 'black' }}
+                  className="flex-1 text-xs h-7 bg-orange-500 hover:bg-orange-600 text-white"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     setRestartingMeetup(meetup);
                   }}
                 >
-                  <RotateCcw className="w-3 h-3 mr-1" style={{ color: 'black' }} />
-                  <span style={{ color: 'black' }}>Restart Meetup</span>
+                  <RotateCcw className="w-3 h-3 mr-1" />
+                  Restart Meetup
                 </Button>
               ) : (
                 <div className="flex gap-1 flex-1">
@@ -922,16 +921,15 @@ function QuickMeetupsPage() {
                     Close
                   </Button>
                   <Button
-                    className="flex-1 bg-blue-500 hover:bg-blue-600"
-                    style={{ color: 'black' }}
+                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
                     onClick={() => {
                       setLocation(`/quick-meetup-chat/${selectedMeetup.id}`);
                       setSelectedMeetupId(null);
                     }}
                     data-testid="button-goto-chat"
                   >
-                    <MessageCircle className="w-4 h-4 mr-2" style={{ color: 'black' }} />
-                    <span style={{ color: 'black' }}>Go to Chat</span>
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Go to Chat
                   </Button>
                 </div>
               </div>
@@ -969,11 +967,10 @@ function QuickMeetupsPage() {
         <div className="mb-6">
           <Button
             onClick={() => setShowCreateForm(!showCreateForm)}
-            className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600"
-            style={{ color: 'black' }}
+            className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
           >
-            <Plus className="w-4 h-4 mr-2" style={{ color: 'black' }} />
-            <span style={{ color: 'black' }}>{showCreateForm ? 'Cancel' : 'Create Quick Meet'}</span>
+            <Plus className="w-4 h-4 mr-2" />
+            {showCreateForm ? 'Cancel' : 'Create Quick Meet'}
           </Button>
         </div>
 

@@ -189,10 +189,9 @@ export default function LocationSortedEvents({
               e.stopPropagation();
               onEventClick?.(event);
             }}
-            className="flex-1 text-xs bg-purple-600 hover:bg-purple-700"
-            style={{ color: 'black' }}
+            className="flex-1 text-xs bg-purple-600 hover:bg-purple-700 text-white"
           >
-            <span style={{ color: 'black' }}>View Event</span>
+            View Event
           </Button>
           
           <Button
@@ -202,9 +201,8 @@ export default function LocationSortedEvents({
               // Handle join event action
             }}
             className="flex-1 text-xs bg-blue-600 hover:bg-blue-700 text-white"
-            style={{ color: 'black' }}
           >
-            <span style={{ color: 'black' }}>Join Event</span>
+            Join Event
           </Button>
         </div>
 

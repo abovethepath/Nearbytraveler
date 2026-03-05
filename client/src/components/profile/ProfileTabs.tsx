@@ -3251,8 +3251,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                     {user.languagesSpoken && user.languagesSpoken.length > 0 ? (
                       <div className="flex flex-wrap gap-2">
                         {user.languagesSpoken.map((language: string) => (
-                          <div key={language} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-orange-400 to-pink-500 border-0 appearance-none select-none gap-1.5 shadow-md">
-                            <span style={{ color: 'black' }}>{language}</span>
+                          <div key={language} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-orange-400 to-pink-500 border-0 appearance-none select-none gap-1.5 shadow-md text-white">
+                            {language}
                           </div>
                         ))}
                       </div>
@@ -4001,7 +4001,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 <CardHeader className="pb-3">
                   <div className="flex items-center space-x-2 mb-2">
                     <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                    <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-orange-600 border-0 appearance-none select-none gap-1"><span style={{ color: 'black' }}>Success Tips</span></div>
+                    <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-orange-600 border-0 appearance-none select-none gap-1 text-white">Success Tips</div>
                   </div>
                   <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
                     Boost Your Connections
@@ -4013,11 +4013,10 @@ export function ProfileTabs(props: ProfilePageProps) {
                 <CardContent className="pt-0">
                   <Button 
                     onClick={() => setLocation('/getting-started')}
-                    className="w-full bg-gradient-to-r from-violet-500 to-violet-400 hover:from-violet-600 hover:to-violet-500 dark:from-blue-500 dark:via-orange-500 dark:to-violet-500 dark:hover:from-blue-600 dark:hover:via-orange-600 dark:hover:to-violet-600 border-0"
-                    style={{ color: 'black' }}
+                    className="w-full bg-gradient-to-r from-violet-500 to-violet-400 hover:from-violet-600 hover:to-violet-500 dark:from-blue-500 dark:via-orange-500 dark:to-violet-500 dark:hover:from-blue-600 dark:hover:via-orange-600 dark:hover:to-violet-600 border-0 text-white"
                   >
-                    <Star className="w-4 h-4 mr-2" style={{ color: 'black' }} />
-                    <span style={{ color: 'black' }}>Optimize Profile</span>
+                    <Star className="w-4 h-4 mr-2" />
+                    Optimize Profile
                   </Button>
                 </CardContent>
               </Card>
