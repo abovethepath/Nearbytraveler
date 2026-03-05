@@ -179,7 +179,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               </div>
               {/* Mobile web: place badge under avatar (avoid camera icon overlap) */}
               {isMobileWeb && isNewToTown && (
-                <span className="mt-2 inline-flex items-center self-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm" style={{ color: '#FFFFFF' }}>
+                <span className="mt-2 inline-flex items-center self-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm text-green-800">
                   New to Town
                 </span>
               )}
@@ -187,7 +187,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             {/* RIGHT: @username + Share Profile, buttons - bio has its own dedicated section below hero */}
             <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0 lg:pl-[23rem]">
               <div className="flex items-center gap-2.5 shrink-0 w-full max-w-full">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold break-all leading-tight crisp-hero-text" style={{ color: '#FFFFFF' }}>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold break-all leading-tight crisp-hero-text" style={{ color: '#000000' }}>
                   @{user?.username}
                 </h1>
                 {/* Own profile: ⋮ menu lives on username row (top-right) */}
@@ -286,9 +286,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   )}
                 </div>
                 {hasValidTravelDestination && (
-                  <div className="text-sm sm:text-base font-semibold crisp-hero-text" title={currentTravelPlan} style={{ color: '#FFFFFF' }}>
-                    Nearby Traveler <span style={{ color: '#FFFFFF' }}>→</span>{" "}
-                    <span style={{ color: '#FFFFFF' }}>
+                  <div className="text-sm sm:text-base font-semibold crisp-hero-text" title={currentTravelPlan} style={{ color: '#000000' }}>
+                    Nearby Traveler <span style={{ color: '#000000' }}>→</span>{" "}
+                    <span style={{ color: '#000000' }}>
                       {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan) ? formatTravelDestinationShort(currentTravelPlan) : currentTravelPlan}
                     </span>
                   </div>
@@ -445,10 +445,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   </div>
 
                                   {hasValidTravelDestination && (
-                                    <div className="text-sm sm:text-base font-semibold crisp-hero-text" title={currentTravelPlan!} style={{ color: '#FFFFFF' }}>
-                                      <span style={{ color: '#FFFFFF' }}>Nearby Traveler</span>
-                                      <span style={{ color: '#FFFFFF' }}> → </span>
-                                      <span style={{ color: '#FFFFFF' }}>
+                                    <div className="text-sm sm:text-base font-semibold crisp-hero-text" title={currentTravelPlan!} style={{ color: '#000000' }}>
+                                      <span style={{ color: '#000000' }}>Nearby Traveler</span>
+                                      <span style={{ color: '#000000' }}> → </span>
+                                      <span style={{ color: '#000000' }}>
                                         {formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
                                       </span>
                                     </div>
@@ -704,21 +704,21 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             <div className="flex flex-col gap-1 min-w-0 w-full max-w-[280px] mt-4">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-lg font-semibold crisp-hero-text" style={{ color: "#000000" }}>
-                  Nearby Local <span style={{ color: "#FFFFFF" }}>·</span>{" "}
+                  Nearby Local <span style={{ color: "#000000" }}>·</span>{" "}
                   <span style={{ color: "#000000" }}>{hometown}</span>
                 </span>
                 {!isMobileWeb && isNewToTown && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300" style={{ color: '#FFFFFF' }}>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
                     New to Town
                   </span>
                 )}
               </div>
               {hasValidTravelDestination && (
                 <>
-                  <span className="text-sm font-semibold mt-1 crisp-hero-text" style={{ color: "#FFFFFF" }}>
+                  <span className="text-sm font-semibold mt-1 crisp-hero-text" style={{ color: "#000000" }}>
                     Nearby Traveler
                   </span>
-                  <span className="text-sm font-medium break-words crisp-hero-text" title={currentTravelPlan!} style={{ color: "#FFFFFF" }}>
+                  <span className="text-sm font-medium break-words crisp-hero-text" title={currentTravelPlan!} style={{ color: "#000000" }}>
                     {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
                   </span>
                 </>
@@ -760,7 +760,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               </div>
               {/* Mobile web: keep badge centered under avatar */}
               {isMobileWeb && isNewToTown && (
-                <span className="mt-2 inline-flex items-center self-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm" style={{ color: '#FFFFFF' }}>
+                <span className="mt-2 inline-flex items-center self-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm text-green-800">
                   New to Town
                 </span>
               )}
@@ -783,20 +783,20 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             <div className={`flex flex-col gap-1 min-w-0 w-full max-w-[280px] sm:max-w-none ${!isNativeIOSApp() ? 'mt-5' : 'mt-3'}`}>
               <span
                 className={`text-base sm:text-lg lg:text-xl font-semibold crisp-hero-text ${!isOwnProfile ? "" : ""}`}
-                style={{ color: '#FFFFFF' }}
+                style={{ color: '#000000' }}
               >
                 Nearby Local
               </span>
-              <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text ${isDesktopOtherUser ? '' : !isNativeIOSApp() ? '' : ''}`} title={hometown} style={{ color: '#FFFFFF' }}>{hometown}</span>
+              <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text ${isDesktopOtherUser ? '' : !isNativeIOSApp() ? '' : ''}`} title={hometown} style={{ color: '#000000' }}>{hometown}</span>
               {hasValidTravelDestination && (
                 <>
                   <span
                     className={`text-base sm:text-lg lg:text-sm font-semibold mt-1 crisp-hero-text ${!isOwnProfile ? "" : ""}`}
-                    style={{ color: '#FFFFFF' }}
+                    style={{ color: '#000000' }}
                   >
                     Nearby Traveler
                   </span>
-                  <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text ${isDesktopOtherUser ? '' : !isNativeIOSApp() ? '' : ''}`} title={currentTravelPlan!} style={{ color: '#FFFFFF' }}>
+                  <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text ${isDesktopOtherUser ? '' : !isNativeIOSApp() ? '' : ''}`} title={currentTravelPlan!} style={{ color: '#000000' }}>
                     {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
                   </span>
                 </>
@@ -1001,7 +1001,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </Avatar>
                         ))}
                       </div>
-                      <span className="text-sm" style={{ color: '#FFFFFF' }}>
+                      <span className="text-sm" style={{ color: '#000000' }}>
                         <Users className="w-3 h-3 inline mr-1" />
                         {connectionDegreeData.mutualCount} mutual {connectionDegreeData.mutualCount === 1 ? 'connection' : 'connections'}
                       </span>
