@@ -1023,12 +1023,12 @@ p, span, div, button, input, textarea, select {
 
 :root {
   color-scheme: light;
-  /* Light mode canvas (page background): #F7F5F2 */
-  --background: 36 24% 96%;
+  /* Light mode canvas (page background): softer off-white */
+  --background: 36 24% 94%;
   --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
+  --card: 36 24% 98%;
   --card-foreground: 222.2 84% 4.9%;
-  --popover: 0 0% 100%;
+  --popover: 36 24% 98%;
   --popover-foreground: 222.2 84% 4.9%;
   --primary: 221.2 83.2% 53.3%;
   --primary-foreground: 210 40% 98%;
@@ -1081,7 +1081,7 @@ p, span, div, button, input, textarea, select {
 :root:not(.dark) .bg-gray-50.rounded-xl,
 :root:not(.dark) .bg-card.rounded-lg {
   /* Keep card/panel surfaces pure white on top of the warm canvas */
-  background-color: #ffffff;
+  background-color: hsl(var(--card));
   border: 1px solid rgb(229 231 235);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
 }
@@ -1138,7 +1138,7 @@ p, span, div, button, input, textarea, select {
 :root:not(.dark) .bg-gray-50.rounded-md,
 :root:not(.dark) .bg-card.rounded-md {
   /* Keep card/panel surfaces pure white on top of the warm canvas */
-  background-color: #ffffff;
+  background-color: hsl(var(--card));
   border: 1px solid rgb(229 231 235);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
