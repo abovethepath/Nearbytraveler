@@ -44,6 +44,12 @@ body {
   color: rgba(255, 255, 255, 0.9);
 }
 
+/* Home landing page: force orange travel tagline in dark mode */
+.dark .travel-tagline {
+  color: #FF6B35 !important;
+  -webkit-text-fill-color: #FF6B35 !important;
+}
+
 /* iOS momentum scrolling for all scrollable areas */
 .ios-scroll-container,
 [data-radix-scroll-area-viewport],
