@@ -208,7 +208,7 @@ export default function LandingStreamlined() {
                 
                 {/* Subheadline */}
                 <p className="text-lg sm:text-xl md:text-2xl text-white mb-10 sm:mb-12 leading-relaxed max-w-4xl drop-shadow-lg">
-                  Nearby Traveler connects travelers and locals through shared interests, activities, and events. We also let you know when you cross paths with friends in another city — making it easy to meet people, reconnect, and build friendships that last a lifetime.
+                  Nearby Traveler connects travelers and locals through <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400 font-semibold">shared interests, activities, and events</span>. We also let you know when you cross paths with friends in another city — making it easy to meet people, reconnect, and build friendships that last a lifetime.
                 </p>
                 
                 {/* Waitlist Signup */}

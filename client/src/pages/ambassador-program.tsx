@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
 import Footer from "@/components/footer";
 import { AuthContext } from "@/App";
+import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 
 export default function AmbassadorProgram() {
   const { user } = useContext(AuthContext);
@@ -22,6 +23,8 @@ export default function AmbassadorProgram() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <LandingHeader />
+      <LandingHeaderSpacer />
 
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">

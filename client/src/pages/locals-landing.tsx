@@ -84,8 +84,8 @@ export default function LocalsLanding() {
               
               {/* Left text side */}
               <div className="order-2 lg:order-1 text-center lg:text-left">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-6 sm:mb-8">
-                  Turn Your City Knowledge Into Global Friendships
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6 sm:mb-8">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500">Turn Your City Knowledge Into Global Friendships</span>
                 </h1>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   Connect with curious travelers and like-minded locals while sharing what makes your city special. Build real friendships that last a lifetime.
