@@ -1160,8 +1160,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const userError = bundleError;
   const refetchUser = refetchBundle;
 
-  // Always prioritize fetched user data over localStorage cache
-  const user = fetchedUser || currentUser;
+  // Only fall back to currentUser when viewing OWN profile.
+  // When viewing another user's profile, never silently substitute the current user's
+  // data — this caused the bug where clicking any user card showed your own profile.
+  const user = fetchedUser || (isOwnProfile ? currentUser : undefined);
 
   // Load gradient selection from database first, then localStorage as fallback
   useEffect(() => {
