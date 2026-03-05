@@ -174,8 +174,8 @@ export function HelpChatbot() {
 
   const floatingStyle = {
     right: 'calc(env(safe-area-inset-right, 0px) + 16px)',
-    // 60px = MobileBottomNav height; 16px = breathing room above it.
-    bottom: 'calc(env(safe-area-inset-bottom, 0px) + 76px)',
+    // 60px = MobileBottomNav height; 44px = breathing room above it.
+    bottom: 'calc(env(safe-area-inset-bottom, 0px) + 104px)',
   } as any;
 
   return (
@@ -198,7 +198,7 @@ export function HelpChatbot() {
           onClick={() => setIsOpen(false)}
         />
         <div 
-          className="fixed z-[9999] w-[360px] max-w-[calc(100vw-32px)] h-[450px] md:h-[500px] max-h-[calc(100vh-140px)] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-300 dark:border-gray-600 flex flex-col overflow-hidden"
+          className="fixed z-[9999] w-[360px] max-w-[calc(100vw-32px)] h-[420px] md:h-[480px] max-h-[calc(100dvh-190px)] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 border-gray-300 dark:border-gray-600 flex flex-col overflow-hidden"
           style={{ ...floatingStyle, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
         >
           <div className="bg-gradient-to-r from-[#FF6B35] to-[#F97316] px-4 py-3 flex items-center justify-between">
