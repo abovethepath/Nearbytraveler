@@ -76,7 +76,16 @@ export default function UserCard({
     setLocation(`/profile/${user.id}`);
   };
 
-  const isDarkMode = document.documentElement.classList.contains("dark");
+  const [isDarkMode, setIsDarkMode] = React.useState(
+    document.documentElement.classList.contains("dark")
+  );
+  React.useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDarkMode(document.documentElement.classList.contains("dark"));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
   const isHomeRoute = location === "/" || location === "/home";
   const pickTextColor = (light: string, dark: string) => (isDarkMode ? dark : light);
 
