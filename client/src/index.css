@@ -1420,6 +1420,23 @@ p, span, div, button, input, textarea, select {
   -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
 }
 
+/* Preserve gradient text (bg-clip-text) in dark mode —
+   .dark body sets -webkit-text-fill-color globally via !important,
+   which overrides the transparent fill that bg-clip-text needs.
+   This counter-rule restores transparency so the gradient shows. */
+.dark .bg-clip-text {
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+/* Preserve orange accent text in dark mode —
+   Same body override suppresses text-orange-400 and dark:text-orange-400. */
+.dark .text-orange-400,
+.dark .dark\:text-orange-400 {
+  color: rgb(251 146 60) !important;
+  -webkit-text-fill-color: rgb(251 146 60) !important;
+}
+
 .dark * {
   border-color: theme('colors.gray.700');
 }
