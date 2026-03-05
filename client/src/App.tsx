@@ -306,6 +306,17 @@ function Router() {
     }
   }, []);
 
+  const stopAuthenticating = React.useCallback(() => {
+    setIsAuthenticating(false);
+    setLoginPendingFlag(false);
+  }, [setLoginPendingFlag]);
+
+  const startAuthenticating = React.useCallback(() => {
+    setIsAuthenticating(true);
+    setLoginPendingFlag(true);
+    window.setTimeout(() => stopAuthenticating(), 3000);
+  }, [setLoginPendingFlag, stopAuthenticating]);
+
   useEffect(() => {
     const onPending = (e: Event) => {
       const ce = e as CustomEvent;
@@ -583,6 +594,7 @@ function Router() {
             clearSessionInvalid();
             markSessionVerified();
             setUser(serverUser);
+            stopAuthenticating();
             setLoginPendingFlag(false);
           }
           return;
@@ -629,6 +641,8 @@ function Router() {
       isLoading,
       markSessionVerified,
       clearSessionVerified,
+      setLoginPendingFlag,
+      stopAuthenticating,
       user?.id,
       loginPending,
       isAuthenticating,
@@ -734,6 +748,7 @@ function Router() {
           clearSessionInvalid();
           markSessionVerified();
           setUser(serverUser);
+          stopAuthenticating();
           setLoginPendingFlag(false);
           
           if (serverUser && !localStorage.getItem('welcomed_' + serverUser.id)) {
@@ -779,6 +794,7 @@ function Router() {
 
   // Initialize WebSocket connection for authenticated users
   useEffect(() => {
+    if (user && isAuthenticating) stopAuthenticating();
     if (user && user.id && user.username) {
       console.log('🔌 Initializing WebSocket connection for user:', user.username);
 
@@ -805,7 +821,7 @@ function Router() {
     }
     // Return undefined for empty else case
     return undefined;
-  }, [user]);
+  }, [isAuthenticating, stopAuthenticating, user]);
 
   // REMOVED: Hydration from localStorage - it could show wrong user (e.g. admin) before
   // session check completes. Session is the only source of truth; wait for checkServerAuth.
@@ -857,14 +873,8 @@ function Router() {
       },
       isAuthenticating,
       setIsAuthenticating,
-      startAuthenticating: () => {
-        setIsAuthenticating(true);
-        setLoginPendingFlag(true);
-      },
-      stopAuthenticating: () => {
-        setIsAuthenticating(false);
-        setLoginPendingFlag(false);
-      },
+      startAuthenticating,
+      stopAuthenticating,
       logout: async (redirectTo = '/') => {
         console.log('🚪 AuthContext logout called - starting logout process');
         console.log('Current user before logout:', user?.username);
@@ -963,6 +973,8 @@ function Router() {
     clearSessionInvalid,
     markSessionVerified,
     setIsAuthenticating,
+    startAuthenticating,
+    stopAuthenticating,
   ]);
 
   // Clear the auth-transition screen only after:
