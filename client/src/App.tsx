@@ -1984,7 +1984,9 @@ function App() {
           <Toaster />
           <DarkModeSuggestionBanner />
           <Router />
-          {!isNativeIOSApp() && !disableFloatingChatbot && <HelpChatbot />}
+          {!isNativeIOSApp() && !disableFloatingChatbot && (
+            <div className="hidden md:block"><HelpChatbot /></div>
+          )}
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
