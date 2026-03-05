@@ -1720,7 +1720,7 @@ export default function Home() {
             <img 
               src={staticHeroMedia}
               alt="Travelers connecting"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-center"
               loading="eager"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
@@ -1779,7 +1779,7 @@ export default function Home() {
                 <img
                   src={staticHeroMedia}
                   alt="Travelers connecting"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-center"
                   loading="eager"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>

@@ -243,7 +243,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             <ImageLoader
               src={event.imageUrl}
               alt={event.title}
-              className="w-12 h-12 rounded-lg object-cover ml-3 flex-shrink-0"
+              className="w-12 h-12 rounded-lg object-cover object-center ml-3 flex-shrink-0"
               loading="lazy"
             />
           )}
@@ -262,7 +262,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             <img
               src={event.imageUrl}
               alt={event.title}
-              className="w-full h-48 object-cover"
+              className="w-full h-48 object-cover object-center"
               loading="lazy"
             />
 
