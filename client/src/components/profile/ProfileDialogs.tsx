@@ -903,22 +903,17 @@ export function ProfileDialogs(props: ProfilePageProps) {
                     control={profileForm.control}
                     name="isVeteran"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                         <FormControl>
                           <Checkbox
                             checked={!!field.value}
                             onCheckedChange={field.onChange}
-                            className="mt-1 border-blue-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                            className="border-blue-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                           />
                         </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="text-blue-900 dark:text-blue-100">
-                            Military Veteran
-                          </FormLabel>
-                          <FormDescription className="text-xs text-blue-700 dark:text-blue-300">
-                            Check if you are a military veteran
-                          </FormDescription>
-                        </div>
+                        <FormLabel className="text-blue-900 dark:text-blue-100 font-medium cursor-pointer">
+                          Military Veteran
+                        </FormLabel>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -929,22 +924,17 @@ export function ProfileDialogs(props: ProfilePageProps) {
                     control={profileForm.control}
                     name="isActiveDuty"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                         <FormControl>
                           <Checkbox
                             checked={!!field.value}
                             onCheckedChange={field.onChange}
-                            className="mt-1 border-blue-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                            className="border-blue-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                           />
                         </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="text-blue-900 dark:text-blue-100">
-                            Active Duty Military
-                          </FormLabel>
-                          <FormDescription className="text-xs text-blue-700 dark:text-blue-300">
-                            Check if you are currently active duty military
-                          </FormDescription>
-                        </div>
+                        <FormLabel className="text-blue-900 dark:text-blue-100 font-medium cursor-pointer">
+                          Active Duty Military
+                        </FormLabel>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -1147,24 +1137,22 @@ export function ProfileDialogs(props: ProfilePageProps) {
                         <FormItem>
                           <FormLabel>Do you have children?</FormLabel>
                           <FormControl>
-                            <div className="border rounded-md p-3">
-                              <div className="flex items-center space-x-2">
-                                <Checkbox
-                                  id="have-children"
-                                  checked={!!field.value}
-                                  onCheckedChange={(checked) => {
-                                    field.onChange(!!checked);
-                                  }}
-                                  className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
-                                  data-testid="checkbox-have-children"
-                                />
-                                <label 
-                                  htmlFor="have-children" 
-                                  className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
-                                >
-                                  Yes, I have children
-                                </label>
-                              </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id="have-children"
+                                checked={!!field.value}
+                                onCheckedChange={(checked) => {
+                                  field.onChange(!!checked);
+                                }}
+                                className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+                                data-testid="checkbox-have-children"
+                              />
+                              <label 
+                                htmlFor="have-children" 
+                                className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
+                              >
+                                Yes, I have children
+                              </label>
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -1399,13 +1387,10 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   control={profileForm.control}
                   name="isMinorityOwned"
                   render={({ field }) => (
-                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                    <FormItem className="rounded-lg border px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="flex flex-row items-center justify-between">
-                        <div className="space-y-0.5">
+                        <div>
                           <FormLabel className="text-gray-900 dark:text-white">Minority Owned Business</FormLabel>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            Check if your business is minority-owned
-                          </div>
                         </div>
                         <FormControl>
                           <Checkbox
@@ -1446,13 +1431,10 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   control={profileForm.control}
                   name="isFemaleOwned"
                   render={({ field }) => (
-                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                    <FormItem className="rounded-lg border px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="flex flex-row items-center justify-between">
-                        <div className="space-y-0.5">
+                        <div>
                           <FormLabel className="text-gray-900 dark:text-white">Female Owned Business</FormLabel>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            Check if your business is female-owned
-                          </div>
                         </div>
                         <FormControl>
                           <Checkbox
@@ -1493,13 +1475,10 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   control={profileForm.control}
                   name="isLGBTQIAOwned"
                   render={({ field }) => (
-                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                    <FormItem className="rounded-lg border px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="flex flex-row items-center justify-between">
-                        <div className="space-y-0.5">
+                        <div>
                           <FormLabel className="text-gray-900 dark:text-white">LGBTQIA+ Owned Business</FormLabel>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            Check if your business is LGBTQIA+ owned
-                          </div>
                         </div>
                         <FormControl>
                           <Checkbox

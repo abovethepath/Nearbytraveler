@@ -1920,7 +1920,7 @@ export default function BusinessDashboard() {
                             return (
                               <FormItem
                                 key={audience}
-                                className="flex flex-row items-start space-x-3 space-y-0"
+                                className="flex flex-row items-center space-x-3 space-y-0"
                               >
                                 <FormControl>
                                   <Checkbox
