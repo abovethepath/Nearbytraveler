@@ -6020,7 +6020,12 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/users/:userId/profile-bundle", async (req, res) => {
     try {
       const userIdParam = req.params.userId || '0';
-      const viewerId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
+      // Prefer the explicit header (iOS app / older clients); fall back to the
+      // authenticated session so the query key on the frontend can stay stable
+      // (no longer needs currentUser?.id appended).
+      const headerUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
+      const sessionUserId = (req as any).user?.id ?? null;
+      const viewerId = headerUserId || sessionUserId;
       
       if (userIdParam === 'NaN' || userIdParam === 'undefined' || userIdParam === 'null') {
         return res.status(400).json({ message: "Invalid user ID parameter" });

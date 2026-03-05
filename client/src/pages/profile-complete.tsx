@@ -1076,37 +1076,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     return propId === currentId;
   }, [propUserId, currentUser?.id]);
   
-  console.log('🔧 AUTHENTICATION STATE:', {
-    currentUserId: currentUser?.id,
-    currentUsername: currentUser?.username,
-    effectiveUserId,
-    isOwnProfile,
-    propUserId,
-    propUserIdType: typeof propUserId,
-    currentUserIdType: typeof currentUser?.id
-  });
-  
-  console.log('Profile OWNERSHIP:', {
-    isOwnProfile,
-    propUserId,
-    currentUserId: currentUser?.id,
-    effectiveUserId,
-    comparison: `${propUserId} === ${currentUser?.id}`,
-    comparisonResult: propUserId === currentUser?.id,
-    parsedComparison: `parseInt(${propUserId}) === ${currentUser?.id}`,
-    parsedResult: parseInt(String(propUserId || '')) === currentUser?.id
-  });
-  
-  // TEMPORARY DEBUG - REMOVE AFTER TESTING
-  console.warn('⚠️ PROFILE DEBUG:', { 
-    isOwnProfile, 
-    propUserId, 
-    currentUserId: currentUser?.id,
-    authContextUser: !!authContextUser,
-    storageUser: !!authStorage.getUser()
-  });
-  
-
 
   // OPTIMIZED: Fetch ALL profile data in a single batched request
   // This replaces 18 separate API calls with 1 bundled request for 5-10x faster loading
@@ -1130,10 +1099,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     connectionDegree: any;
     businessDeals: any[];
   }>({
-    queryKey: [`/api/users/${effectiveUserId}/profile-bundle`, currentUser?.id],
+    // STABLE key — does NOT include currentUser?.id so the query never re-fires
+    // when auth loads. The viewer is identified server-side via the session cookie
+    // (credentials: 'include'), with x-user-id as a legacy fallback for older iOS clients.
+    queryKey: [`/api/users/${effectiveUserId}/profile-bundle`],
     queryFn: async () => {
       const url = `${getApiBaseUrl()}/api/users/${effectiveUserId}/profile-bundle`;
       const headers: Record<string, string> = {};
+      // Keep header for backward-compat with iOS wrapped app; server now also
+      // reads from the session so viewer-specific data loads correctly either way.
       if (currentUser?.id) {
         headers['x-user-id'] = currentUser.id.toString();
       }
@@ -1147,14 +1121,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     enabled: !!effectiveUserId,
-    staleTime: 30000, // Cache for 30 seconds
-    gcTime: 60000, // Keep in cache for 1 minute
+    staleTime: 30000,
+    gcTime: 60000,
     refetchOnMount: 'always',
     refetchOnWindowFocus: true,
     retry: 2,
-    // Keep previous data while re-fetching (e.g. when auth loads and query key changes).
-    // This prevents the error screen from flashing when the auth-triggered refetch fails transiently.
-    placeholderData: (previousData: any) => previousData,
   });
 
   // Extract data from bundle with fallbacks
@@ -1164,8 +1135,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const refetchUser = refetchBundle;
 
   // Keep a stable ref of the last successfully-fetched user so that a transient
-  // re-fetch failure (e.g. when auth loads and the query key changes) doesn't wipe
-  // out the profile we already displayed.
+  // server error doesn't wipe out the profile we already displayed.
   const lastFetchedUserRef = React.useRef<typeof fetchedUser>(undefined);
   const lastEffectiveUserIdRef = React.useRef<typeof effectiveUserId>(undefined);
   // Reset ref when navigating to a different user so stale data doesn't bleed through.
@@ -3512,7 +3482,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       // CRITICAL: Invalidate profile-bundle to refresh interests/activities immediately
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`, currentUser?.id] });
       
       toast({
         title: "Profile updated",
