@@ -1,3 +1,7 @@
+/* Import modern mobile-optimized font - SF Pro inspired */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
+
 /* Hide scrollbars visually but keep scroll functionality */
 * {
   scrollbar-width: none !important;
@@ -12,10 +16,6 @@
 html, body {
   overflow-y: scroll !important;
 }
-
-/* Import modern mobile-optimized font - SF Pro inspired */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
 
 /* iOS NATIVE FEEL - System font stack + Safe Area Support */
 :root {
