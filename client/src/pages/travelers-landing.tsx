@@ -200,6 +200,7 @@ export default function TravelersLanding() {
         </div>
       </div>
 
+      <LandingCTA />
       <main className="flex-1 px-4 py-6">
 
         {/* Core Features */}
@@ -398,7 +399,6 @@ export default function TravelersLanding() {
           </div>
         </div>
       </main>
-      <LandingCTA />
       <Footer />
     </div>
   );

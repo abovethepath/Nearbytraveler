@@ -45,6 +45,8 @@ export default function AmbassadorProgram() {
         </div>
       </section>
 
+      <LandingCTA />
+
       <section className="py-12 bg-white dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">How It Works</h2>
@@ -289,7 +291,6 @@ export default function AmbassadorProgram() {
         </div>
       </section>
 
-      <LandingCTA />
       <Footer />
     </div>
   );

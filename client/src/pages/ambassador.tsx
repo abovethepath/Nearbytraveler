@@ -154,6 +154,8 @@ export default function AmbassadorLanding() {
         </div>
       </section>
 
+      <LandingCTA />
+
       {/* 2) HOW IT WORKS */}
       <section id="how-it-works" className="py-14 bg-white dark:bg-gray-800 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
@@ -525,7 +527,6 @@ export default function AmbassadorLanding() {
         </div>
       </section>
 
-      <LandingCTA />
       <Footer />
     </div>
   );

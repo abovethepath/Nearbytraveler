@@ -146,6 +146,8 @@ export default function CouchsurfingLanding() {
           </div>
         </div>
 
+        <LandingCTA />
+
         {/* FOR EXPERIENCED HOSTS SECTION */}
         <section className="py-16 sm:py-24 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl mb-16">
           <div className="px-6 sm:px-8">
@@ -502,7 +504,6 @@ export default function CouchsurfingLanding() {
         </div>
       </div>
 
-      <LandingCTA />
       <Footer />
     </div>
   );

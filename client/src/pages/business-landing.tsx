@@ -123,6 +123,8 @@ export default function BusinessLanding() {
         </div>
       </div>
 
+      <LandingCTA />
+
       {/* VALUE PROPOSITION */}
       <section id="problem-section" className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 py-6 sm:py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
@@ -444,7 +446,6 @@ export default function BusinessLanding() {
           </Button>
         </div>
       </section>
-      <LandingCTA />
     </div>
   );
 }

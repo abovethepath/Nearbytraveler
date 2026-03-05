@@ -295,6 +295,8 @@ export default function LandingStreamlined() {
           </div>
         </div>
 
+        <LandingCTA />
+
         {/* Why Nearby Traveler */}
         <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-7xl mx-auto text-center">
@@ -624,7 +626,6 @@ export default function LandingStreamlined() {
         </section>
       </div>
 
-      <LandingCTA />
       <Footer />
     </div>
   );

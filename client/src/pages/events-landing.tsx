@@ -165,6 +165,8 @@ export default function EventsLanding() {
         </div>
       </div>
 
+      <LandingCTA />
+
       {/* Quick Value Prop */}
       <div className="py-3 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 text-center">
@@ -455,7 +457,6 @@ export default function EventsLanding() {
         </div>
 
       </div>
-      <LandingCTA />
       <Footer />
     </div>
   );

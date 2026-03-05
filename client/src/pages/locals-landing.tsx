@@ -170,6 +170,8 @@ export default function LocalsLanding() {
         </div>
       </div>
 
+        <LandingCTA />
+
         {/* FOUNDER STORY SECTION - Consistent with main page */}
         <div className="relative z-10 py-6 overflow-hidden mb-4">
           {/* Clean background for light mode */}
@@ -414,7 +416,6 @@ BECOME A NEARBY LOCAL NOW
           </p>
         </div>
       </div>
-      <LandingCTA />
       <Footer />
     </div>
   );
