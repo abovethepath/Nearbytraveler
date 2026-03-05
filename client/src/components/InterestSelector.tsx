@@ -101,7 +101,7 @@ export function InterestSelector({
       </div>
 
 
-      <div className="max-h-[400px] overflow-y-auto pr-1" style={{ touchAction: 'pan-y' }}>
+      <div className="pr-1">
         <div className="flex flex-wrap gap-1.5 p-2">
           {filteredOptions.map((interest) => {
             const isSelected = selected.includes(interest);
