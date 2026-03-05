@@ -2361,12 +2361,12 @@ body.native-ios-app .native-ios-messages {
 }
 
 /* ===== LANDING PAGE QUOTE — MUST STAY LAST =====
-   "Travel doesn't change you. The people you meet do."
-   Placed at end of file to win all cascade battles.
-   The .dark body rule sets -webkit-text-fill-color globally with !important;
-   this direct rule on .landing-quote overrides it with higher specificity + later position. */
-html.dark .landing-quote,
-html.dark p.landing-quote {
+   Color driven entirely by CSS — no Tailwind color classes on the element.
+   Light mode: dark gray. Dark mode: orange. No cascade conflicts. */
+.landing-quote {
+  color: #1f2937;
+}
+html.dark .landing-quote {
   color: #fb923c !important;
   -webkit-text-fill-color: #fb923c !important;
 }

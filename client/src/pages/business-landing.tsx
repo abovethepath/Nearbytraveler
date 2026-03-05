@@ -99,7 +99,7 @@ export default function BusinessLanding() {
               {/* Right image side */}
               <div className="order-1 lg:order-2 flex flex-col items-center">
                 <div className="mb-4 sm:mb-6 text-center w-full">
-                  <p className="landing-quote text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-orange-400 italic px-2">
+                  <p className="landing-quote text-lg sm:text-xl md:text-2xl font-bold italic px-2">
                     Travel doesn't change you.<br />
                     The people you meet do.
                   </p>
