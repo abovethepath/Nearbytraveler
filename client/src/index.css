@@ -1417,7 +1417,6 @@ p, span, div, button, input, textarea, select {
 .dark body {
   @apply bg-gray-900;
   color: rgb(var(--nt-text-primary)) !important;
-  -webkit-text-fill-color: rgb(var(--nt-text-primary)) !important;
 }
 
 /* Preserve gradient text (bg-clip-text) in dark mode —
