@@ -9,11 +9,13 @@ export default function Footer() {
         <div className="flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-12">
           
           {/* Left side - Logo */}
-          <div className="flex flex-col items-start lg:items-stretch lg:max-w-sm mb-6 lg:mb-0">
-            <Logo
-              variant="footer"
-              className="h-8 sm:h-10 w-auto max-w-[200px] sm:max-w-[240px] object-contain"
-            />
+          <div className="flex flex-col items-start lg:items-start lg:max-w-sm mb-6 lg:mb-0 shrink-0">
+            <div className="w-40">
+              <Logo
+                variant="footer"
+                className="h-8 w-auto max-h-8 max-w-[160px] object-contain object-left"
+              />
+            </div>
           </div>
 
           {/* Right side - Links organized in columns */}
