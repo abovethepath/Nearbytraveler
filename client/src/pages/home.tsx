@@ -1127,7 +1127,7 @@ export default function Home() {
 
     // CRITICAL FIX: Include current user when they're in their travel destination
     // Current user should appear in "Discover People" especially as newest member
-    if (otherUser.id === effectiveUser?.id) {
+    if (Number(otherUser.id) === Number(effectiveUser?.id)) {
       // Always include current user when:
       // 1. Location filter is active (they're viewing a specific city)
       // 2. Search is active
@@ -2010,7 +2010,7 @@ export default function Home() {
                             key={otherUser.id}
                             user={otherUser} 
                             currentUserId={effectiveUser?.id}
-                            isCurrentUser={otherUser.id === effectiveUser?.id}
+                            isCurrentUser={Number(otherUser.id) === Number(effectiveUser?.id)}
                             compatibilityData={buildFastCompatibilityData(otherUser)}
                             compact={isCompactMode}
                             connectionDegree={connectionDegreesData?.degrees?.[otherUser.id]}

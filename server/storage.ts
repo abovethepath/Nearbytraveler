@@ -1041,7 +1041,17 @@ export class DatabaseStorage implements IStorage {
         latitude: 'latitude',
         longitude: 'longitude',
         passwordResetToken: 'password_reset_token',
-        passwordResetExpires: 'password_reset_expires'
+        passwordResetExpires: 'password_reset_expires',
+        isNewToTown: 'is_new_to_town',
+        newToTownUntil: 'new_to_town_until',
+        travelReturnDate: 'travel_return_date',
+        currentTravelCity: 'current_travel_city',
+        currentTravelState: 'current_travel_state',
+        currentTravelCountry: 'current_travel_country',
+        avatarGradient: 'avatar_gradient',
+        coverPhoto: 'cover_photo',
+        videoIntroUrl: 'video_intro_url',
+        videoIntroThumbnail: 'video_intro_thumbnail'
       };
 
       // Convert field names to snake_case for database

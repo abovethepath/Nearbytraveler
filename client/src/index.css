@@ -17,6 +17,12 @@ html, body {
   overflow-y: scroll !important;
 }
 
+/* Allow Radix UI dialogs/modals to lock body scroll (overrides the rule above) */
+/* Without this, mouse wheel scrolls the background page instead of the dialog */
+body[data-scroll-locked="1"] {
+  overflow: hidden !important;
+}
+
 /* iOS NATIVE FEEL - System font stack + Safe Area Support */
 :root {
   --sat: env(safe-area-inset-top);
