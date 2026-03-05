@@ -1692,8 +1692,8 @@ export default function Home() {
         {effectiveUser?.userType === "business" ? (
           <>
             <span
-              className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent"
-              style={{ WebkitTextFillColor: "transparent" }}
+              className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent dark:from-blue-400 dark:to-orange-400"
+              style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: "transparent", backgroundClip: 'text' }}
             >
               Nearby Traveler
             </span>
@@ -1703,8 +1703,8 @@ export default function Home() {
         ) : (
           <>
             <span
-              className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent"
-              style={{ WebkitTextFillColor: "transparent" }}
+              className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent dark:from-blue-400 dark:to-orange-400"
+              style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: "transparent", backgroundClip: 'text' }}
             >
               Nearby Traveler
             </span>
@@ -1746,8 +1746,8 @@ export default function Home() {
           <div className="space-y-4 lg:space-y-3">
             <h1 className="text-4xl md:text-5xl lg:text-[2.15rem] font-extrabold tracking-tight leading-tight">
               <span
-                className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent"
-                style={{ WebkitTextFillColor: "transparent" }}
+                className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent dark:from-blue-400 dark:to-orange-400"
+                style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: "transparent", backgroundClip: 'text' }}
               >
                 Nearby Traveler
               </span>
@@ -1772,7 +1772,7 @@ export default function Home() {
           </div>
         </div>
       
-        <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last lg:mr-10">
+        <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last lg:hidden">
           <div className="relative group">
             <div className="relative">
               <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-sm h-[220px] sm:h-[260px] md:h-[300px] lg:h-[190px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 ring-1 ring-orange-400/20 dark:ring-purple-400/20 shadow-[0_0_26px_rgba(255,107,53,0.14)] dark:shadow-[0_0_34px_rgba(168,85,247,0.18)]">

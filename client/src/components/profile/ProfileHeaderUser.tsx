@@ -153,12 +153,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <input id="avatar-upload-input" type="file" accept="image/*" onChange={(e) => { handleAvatarUpload?.(e); }} className="sr-only" disabled={uploadingPhoto} aria-label="Change avatar" />
                 </label>
               </div>
-
-              {isNewToTown && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 mt-2" style={{ color: '#FFFFFF' }}>
-                  New to Town
-                </span>
-              )}
             </div>
 
             <div className="flex flex-row items-start gap-6 lg:gap-8">
@@ -184,14 +178,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
               </div>
               {/* Mobile web: place badge under avatar (avoid camera icon overlap) */}
-              {!isNativeIOSApp() && isMobileWeb && isNewToTown && (
+              {isMobileWeb && isNewToTown && (
                 <span className="mt-2 inline-flex items-center self-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm" style={{ color: '#FFFFFF' }}>
-                  New to Town
-                </span>
-              )}
-              {/* Non-mobile web: keep badge below avatar */}
-              {!isNativeIOSApp() && !isMobileWeb && isNewToTown && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 mt-2" style={{ color: '#FFFFFF' }}>
                   New to Town
                 </span>
               )}
@@ -291,7 +279,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               <div className="mt-1 space-y-0.5">
                 <div className="text-sm sm:text-base font-semibold crisp-hero-text flex items-center gap-2 flex-wrap" style={{ color: '#000000' }}>
                   Nearby Local · <span style={{ color: '#000000' }}>{hometown}</span>
-                  {isNewToTown && (
+                  {!isMobileWeb && isNewToTown && (
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
                       New to Town
                     </span>
@@ -449,7 +437,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 <>
                                   <div className="text-sm sm:text-base font-semibold crisp-hero-text flex items-center gap-2 flex-wrap" style={{ color: '#000000' }}>
                                     Nearby Local · <span style={{ color: '#000000' }}>{hometown}</span>
-                                    {isNewToTown && (
+                                    {!isMobileWeb && isNewToTown && (
                                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
                                         New to Town
                                       </span>
@@ -506,47 +494,43 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             />
                           </div>
 
-                          <div className="flex flex-wrap items-center gap-2 mt-2">
-                            {/* Subtle share icon near actions */}
-                            {shareButton(true)}
-                          </div>
+                          {isMobileWeb && (
+                            <>
+                              <div className="flex flex-wrap items-center gap-2 mt-2">
+                                {/* Subtle share icon near actions */}
+                                {shareButton(true)}
+                              </div>
 
-                          <div className="mt-2">
-                            {currentUser ? (
-                              <ReportUserButton
-                                userId={currentUser.id}
-                                targetUserId={user.id}
-                                targetUsername={user.username}
-                                variant="ghost"
-                                size="sm"
-                                showIcon={false}
-                                appearance="link"
-                                className={
-                                  isMobileWeb
-                                    ? "!bg-transparent !border-0 px-0 py-0 text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
-                                    : "!bg-transparent !border-0 px-0 py-0 text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
-                                }
-                              />
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  setLocation("/auth");
-                                }}
-                                onPointerDown={(e) => e.stopPropagation()}
-                                className={
-                                  isMobileWeb
-                                    ? "text-sm text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
-                                    : "text-sm text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
-                                }
-                                data-radix-dismissable-layer-ignore=""
-                              >
-                                Report
-                              </button>
-                            )}
-                          </div>
+                              <div className="mt-2">
+                                {currentUser ? (
+                                  <ReportUserButton
+                                    userId={currentUser.id}
+                                    targetUserId={user.id}
+                                    targetUsername={user.username}
+                                    variant="ghost"
+                                    size="sm"
+                                    showIcon={false}
+                                    appearance="link"
+                                    className="!bg-transparent !border-0 px-0 py-0 text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
+                                  />
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      setLocation("/auth");
+                                    }}
+                                    onPointerDown={(e) => e.stopPropagation()}
+                                    className="text-sm text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
+                                    data-radix-dismissable-layer-ignore=""
+                                  >
+                                    Report
+                                  </button>
+                                )}
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
 
@@ -719,11 +703,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
             <div className="flex flex-col gap-1 min-w-0 w-full max-w-[280px] mt-4">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-lg font-semibold crisp-hero-text" style={{ color: "#FFFFFF" }}>
+                <span className="text-lg font-semibold crisp-hero-text" style={{ color: "#000000" }}>
                   Nearby Local <span style={{ color: "#FFFFFF" }}>·</span>{" "}
-                  <span style={{ color: "#FFFFFF" }}>{hometown}</span>
+                  <span style={{ color: "#000000" }}>{hometown}</span>
                 </span>
-                {user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                {!isMobileWeb && isNewToTown && (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300" style={{ color: '#FFFFFF' }}>
                     New to Town
                   </span>
@@ -775,23 +759,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 )}
               </div>
               {/* Mobile web: keep badge centered under avatar */}
-              {!isNativeIOSApp() && isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+              {isMobileWeb && isNewToTown && (
                 <span className="mt-2 inline-flex items-center self-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm" style={{ color: '#FFFFFF' }}>
                   New to Town
                 </span>
               )}
-              {/* New to Town badge - directly below avatar (desktop other-user) */}
-              {!isNativeIOSApp() && !isMobileWeb && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-3">
-                  New to Town
-                </span>
-              )}
             </div>
-            {isNativeIOSApp() && !isOwnProfile && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-800/50 border border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 mt-2">
-                New to Town
-              </span>
-            )}
             {/* iOS: camera/add photo for own profile */}
             {isOwnProfile && isNativeIOSApp() && (
               <>
@@ -919,69 +892,32 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         <div className={isDesktopOtherUser ? 'flex flex-col flex-nowrap items-stretch gap-3 shrink-0' : 'flex flex-row flex-wrap items-center gap-2'}>
                           {/* Desktop (lg+): primary actions first, secondary actions below */}
                           {isDesktopOtherUser ? (
-                            <>
-                              <div className="grid grid-cols-2 gap-2">
-                                <button
-                                  type="button"
-                                  className="inline-flex items-center justify-center rounded-lg shadow-md transition-all font-bold cursor-pointer px-4 py-2 text-sm bg-[#FF6B35] hover:bg-[#F97316] text-white border-0"
-                                  style={{ ["--mutedOrange" as any]: mutedOrange, ["--mutedOrangeHover" as any]: mutedOrangeHover }}
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleMessage?.();
-                                  }}
-                                  onPointerDown={(e) => e.stopPropagation()}
-                                  data-testid="button-message"
-                                  data-radix-dismissable-layer-ignore=""
-                                >
-                                  <span>Message</span>
-                                </button>
-                                <ConnectButton
-                                  currentUserId={currentUser?.id || 0}
-                                  targetUserId={user?.id || 0}
-                                  targetUsername={user?.username}
-                                  targetName={user?.name}
-                                  appearance="default"
-                                  className="w-full rounded-lg shadow-md transition-all px-4 py-2 text-sm font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
-                                />
-                              </div>
-
-                              <div className="flex flex-wrap gap-2">
-                                {/* Other user's profile: share button near action buttons (not beside username) */}
-                                {shareButton(true)}
-                              </div>
-
-                              {user && (
-                                <div className="pt-1">
-                                  {currentUser ? (
-                                    <ReportUserButton
-                                      userId={currentUser.id}
-                                      targetUserId={user.id}
-                                      targetUsername={user.username}
-                                      variant="ghost"
-                                      size="sm"
-                                      showIcon={false}
-                                      appearance="link"
-                                      className="!bg-transparent !border-0 px-0 py-0 text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 underline underline-offset-2 font-medium"
-                                    />
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setLocation('/auth');
-                                      }}
-                                      onPointerDown={(e) => e.stopPropagation()}
-                                      className="text-xs text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer"
-                                      data-radix-dismissable-layer-ignore=""
-                                    >
-                                      Report
-                                    </button>
-                                  )}
-                                </div>
-                              )}
-                            </>
+  <>
+    <div className="grid grid-cols-2 gap-2">
+      <button
+        type="button"
+        className="inline-flex items-center justify-center rounded-lg shadow-md transition-all font-bold cursor-pointer px-4 py-2 text-sm bg-[#FF6B35] hover:bg-[#F97316] text-white border-0"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleMessage?.();
+        }}
+        onPointerDown={(e) => e.stopPropagation()}
+        data-testid="button-message"
+        data-radix-dismissable-layer-ignore=""
+      >
+        <span>Message</span>
+      </button>
+      <ConnectButton
+        currentUserId={currentUser?.id || 0}
+        targetUserId={user?.id || 0}
+        targetUsername={user?.username}
+        targetName={user?.name}
+        appearance="default"
+        className="w-full rounded-lg shadow-md transition-all px-4 py-2 text-sm font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
+      />
+    </div>
+  </>
                           ) : (
                             <>
                               <button

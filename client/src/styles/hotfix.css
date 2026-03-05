@@ -94,4 +94,53 @@ html, body { overflow-x: hidden; }
     margin-top: 10px !important;
   }
 }
+/* Force user card colors in dark mode */
+.dark [data-role="user-card-username"] {
+  color: #FF6B35 !important;
+  -webkit-text-fill-color: #FF6B35 !important;
+}
 
+.dark [data-role="user-card-city"] {
+  color: #3b82f6 !important;
+  -webkit-text-fill-color: #3b82f6 !important;
+}
+
+.dark [data-role="user-card-contacts"] span {
+  color: #FF6B35 !important;
+  -webkit-text-fill-color: #FF6B35 !important;
+}
+
+.dark [data-role="user-card-things-pill"] {
+  color: #3b82f6 !important;
+  border-color: rgba(59,130,246,0.4) !important;
+}
+/* Force user card text centering - both modes */
+[data-role="user-card-text-container"] {
+  text-align: center !important;
+  align-items: center !important;
+}
+
+[data-role="user-card-username"] {
+  text-align: center !important;
+  width: 100% !important;
+}
+
+[data-role="user-card-city"] {
+  text-align: center !important;
+  width: 100% !important;
+}
+
+[data-role="user-card-things-pill"] {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+[data-role="user-card-contacts"] {
+  text-align: center !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}

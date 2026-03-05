@@ -652,7 +652,7 @@ export default function Events() {
                   </div>
                 </div>
               
-                <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
+                <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last lg:hidden">
                   <div className="relative group">
                     <div className="relative">
                       <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-sm h-[220px] sm:h-[260px] md:h-[300px] lg:h-[190px] rounded-xl overflow-hidden shadow-xl ring-2 ring-white/40 dark:ring-gray-500/50 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_12px_40px_-8px_rgba(0,0,0,0.25)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_12px_40px_-8px_rgba(0,0,0,0.6)]">

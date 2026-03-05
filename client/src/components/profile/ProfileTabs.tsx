@@ -501,7 +501,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                           e.stopPropagation();
                           setIsEditMode(true);
                         }}
-                        className={`${editButtonClass} ${isProfileIncomplete() ? "border-orange-400 text-orange-700 dark:text-orange-300 animate-pulse" : ""}`}
+                        className={`bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg ${isProfileIncomplete() ? "animate-pulse ring-2 ring-orange-300/70" : ""}`}
                         style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer', touchAction: 'manipulation' }}
                         data-testid="button-edit-profile"
                       >
@@ -826,7 +826,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                           }}
                           size="sm"
                           variant="outline"
-                          className={editButtonClass}
+                          className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg"
                           data-testid="button-edit-interests-activities"
                         >
                           <Pencil className="w-3.5 h-3.5 mr-2" />
@@ -925,7 +925,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       }}
                       size="sm"
                       variant="outline"
-                      className={editButtonClass}
+                      className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg"
                       data-testid="button-edit-interests"
                     >
                       <Pencil className="w-3.5 h-3.5 mr-2" />

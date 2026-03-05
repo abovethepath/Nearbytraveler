@@ -824,7 +824,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   setEditCityKey(hometownCityKey || uniqueRows.find((r) => !!r.key)?.key || "");
                   setEditOpen(true);
                 }}
-                className={profileEditButtonClass}
+                className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg"
                 data-testid="button-edit-things-to-do"
               >
                 <Pencil className="w-3.5 h-3.5 mr-2" />
@@ -869,7 +869,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   setEditCityKey(hometownCityKey || uniqueRows.find((r) => !!r.key)?.key || "");
                   setEditOpen(true);
                 }}
-                className={profileEditButtonClass}
+                className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg"
                 data-testid="button-edit-things-to-do"
               >
                 <Pencil className="w-3.5 h-3.5 mr-2" />

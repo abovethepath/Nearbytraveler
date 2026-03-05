@@ -71,7 +71,7 @@ export default function UserCard({
   // Use prop first (from parent's effectiveAvailableNowIds), fallback to API-returned isAvailableNow
   const showAvailableNow = isAvailableNow || !!(user as any).isAvailableNow || !!(user as any).is_available_now || !!(user as any).availableNow;
   
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setLocation(`/profile/${user.id}`);

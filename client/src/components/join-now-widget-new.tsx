@@ -94,12 +94,7 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
               : type === "traveler"
                 ? "bg-gradient-to-r from-blue-500 to-blue-600"
                 : "bg-gradient-to-r from-orange-500 to-orange-600";
-          const unselectedBg =
-            type === "local"
-              ? "bg-gradient-to-r from-blue-600 to-orange-600"
-              : type === "traveler"
-                ? "bg-gradient-to-r from-blue-600 to-blue-700"
-                : "bg-gradient-to-r from-orange-600 to-orange-700";
+          const unselectedBg = selectedBg;
 
           return (
             <button
