@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
 import Footer from "@/components/footer";
-import LandingCTA from "@/components/LandingCTA";
 import { AuthContext } from "@/App";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 
@@ -44,8 +43,6 @@ export default function AmbassadorProgram() {
           </p>
         </div>
       </section>
-
-      <LandingCTA />
 
       <section className="py-12 bg-white dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
