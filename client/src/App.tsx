@@ -275,13 +275,22 @@ function ProfileByUsername({ username }: { username: string }) {
 
 // Session cache for instant hydration — avoids blank loading screen on every page load.
 const SESSION_CACHE_KEY = 'nt_cached_session';
+// localStorage so the cache survives navigating away to other sites and coming back —
+// sessionStorage is wiped the moment the user leaves the origin, causing a 2-4s
+// auth-loading spinner every time they return.
+const SESSION_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const readSessionCache = (): User | null => {
   try {
-    const raw = sessionStorage.getItem(SESSION_CACHE_KEY);
+    const raw = localStorage.getItem(SESSION_CACHE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     // Basic sanity: must have id and username
     if (!parsed?.id || !parsed?.username) return null;
+    // Ignore entries older than 24 h — background check will re-establish the session
+    if (parsed._ts && Date.now() - parsed._ts > SESSION_CACHE_TTL_MS) {
+      localStorage.removeItem(SESSION_CACHE_KEY);
+      return null;
+    }
     return parsed as User;
   } catch {
     return null;
@@ -289,13 +298,13 @@ const readSessionCache = (): User | null => {
 };
 const writeSessionCache = (u: User | null) => {
   try {
-    if (u) sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(u));
-    else sessionStorage.removeItem(SESSION_CACHE_KEY);
+    if (u) localStorage.setItem(SESSION_CACHE_KEY, JSON.stringify({ ...u, _ts: Date.now() }));
+    else localStorage.removeItem(SESSION_CACHE_KEY);
   } catch {}
 };
 
 function Router() {
-  // Instantly hydrate from sessionStorage so the UI renders with no blank loading screen.
+  // Instantly hydrate from localStorage so the UI renders with no blank loading screen.
   const cachedUser = readSessionCache();
   const [user, setUser] = useState<User | null>(cachedUser);
   // If we have a cached user we can skip the initial loading gate entirely.

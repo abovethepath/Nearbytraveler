@@ -1123,8 +1123,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     enabled: !!effectiveUserId,
     staleTime: 30000,
     gcTime: 60000,
-    refetchOnMount: 'always',
-    refetchOnWindowFocus: true,
+    // Use cached data immediately if it's fresh (< 30s old) — 'always' was forcing
+    // a server round-trip on every navigation and showing the spinner every time.
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
     retry: 2,
   });
 
