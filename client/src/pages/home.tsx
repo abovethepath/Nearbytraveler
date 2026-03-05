@@ -1729,7 +1729,7 @@ export default function Home() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 space-y-4">
-        <p className="text-xl lg:text-2xl text-gray-600 dark:text-white/90 leading-relaxed font-medium">
+        <p className="text-xl lg:text-2xl text-gray-600 dark:text-[#FF6B35] leading-relaxed font-medium">
           Travel doesn't change you. The people you meet do.
         </p>
       </div>
@@ -1762,7 +1762,7 @@ export default function Home() {
             </h1>
             
             <div className="max-w-2xl space-y-3 lg:space-y-2">
-              <p className="text-base lg:text-base text-gray-600 dark:text-white/85 leading-relaxed font-medium">
+              <p className="text-base lg:text-base text-gray-600 dark:text-[#FF6B35] leading-relaxed font-medium">
                 Travel doesn't change you. The people you meet do.
               </p>
               <p className="text-sm lg:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
