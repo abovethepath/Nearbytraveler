@@ -77,13 +77,13 @@ export default function CouchsurfingLanding() {
                 <span className="inline w-4 h-4 mr-2">❤️</span>
                 Same Spirit, More People
               </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6">
-                Love Couchsurfing?
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500">Love Couchsurfing?
                 <br className="hidden sm:block" />
-                <span className="text-blue-600">You'll Love This.</span>
+                You'll Love This.</span>
               </h1>
               <p className="text-lg sm:text-xl md:text-2xl text-zinc-600 dark:text-zinc-300 mb-8 max-w-4xl mx-auto leading-relaxed">
-                Meet travelers and locals through shared commonalities, activities, events and demographics — whether you can host or not.
+                Meet travelers and locals through <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500 font-semibold">shared commonalities, activities, events and demographics</span> — whether you can host or not.
               </p>
 
               {/* Desktop CTAs */}
