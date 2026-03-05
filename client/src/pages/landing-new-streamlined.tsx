@@ -203,7 +203,7 @@ export default function LandingStreamlined() {
                 
                 {/* Main Headline */}
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-white mb-6 sm:mb-8 drop-shadow-2xl">
-                  Connect with <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400">Locals & Travelers</span> Worldwide
+                  Connect with <span className="text-transparent dark:text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400 dark:from-blue-400 dark:to-orange-400">Locals & Travelers</span> Worldwide
                 </h1>
                 
                 {/* Subheadline */}
