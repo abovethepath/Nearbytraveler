@@ -95,9 +95,3 @@ html, body { overflow-x: hidden; }
   }
 }
 
-/* User cards: block aggressive button color overrides */
-.dark .user-card,
-.dark .user-card * {
-  color: unset !important;
-  -webkit-text-fill-color: unset !important;
-}

@@ -289,8 +289,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
               {/* Nearby Local/Traveler moved under username (inside hero content area) */}
               <div className="mt-1 space-y-0.5">
-                <div className="text-sm sm:text-base font-semibold crisp-hero-text" style={{ color: '#FFFFFF' }}>
-                  Nearby Local <span style={{ color: '#FFFFFF' }}>·</span> <span style={{ color: '#FFFFFF' }}>{hometown}</span>
+                <div className="text-sm sm:text-base font-semibold crisp-hero-text flex items-center gap-2 flex-wrap" style={{ color: '#000000' }}>
+                  Nearby Local · <span style={{ color: '#000000' }}>{hometown}</span>
+                  {isNewToTown && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
+                      New to Town
+                    </span>
+                  )}
                 </div>
                 {hasValidTravelDestination && (
                   <div className="text-sm sm:text-base font-semibold crisp-hero-text" title={currentTravelPlan} style={{ color: '#FFFFFF' }}>
@@ -397,13 +402,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
                         </div>
 
-                        {isNewToTown && (
-                          <div className="mt-3 flex justify-center">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-900">
-                              New to Town
-                            </span>
-                          </div>
-                        )}
                       </div>
 
                       {/* MIDDLE: content (no extra card; sit directly on gradient) */}
@@ -449,8 +447,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 </>
                               ) : (
                                 <>
-                                  <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text">
-                                    Nearby Local <span style={{ color: '#FFFFFF' }}>·</span> <span style={{ color: '#FFFFFF' }}>{hometown}</span>
+                                  <div className="text-sm sm:text-base font-semibold crisp-hero-text flex items-center gap-2 flex-wrap" style={{ color: '#000000' }}>
+                                    Nearby Local · <span style={{ color: '#000000' }}>{hometown}</span>
+                                    {isNewToTown && (
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
+                                        New to Town
+                                      </span>
+                                    )}
                                   </div>
 
                                   {hasValidTravelDestination && (

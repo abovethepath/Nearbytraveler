@@ -1,4 +1,4 @@
-/* Hide scrollbars sitewide but keep scroll functionality */
+/* Hide scrollbars visually but keep scroll functionality */
 * {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
@@ -6,6 +6,11 @@
 
 *::-webkit-scrollbar {
   display: none !important;
+}
+
+/* Ensure scroll still works everywhere */
+html, body {
+  overflow-y: scroll !important;
 }
 
 /* Import modern mobile-optimized font - SF Pro inspired */
@@ -658,6 +663,18 @@ button[role="checkbox"].touch-target,
   height: 16px !important;
   min-width: 16px !important;
   min-height: 16px !important;
+}
+
+/* Prevent checkboxes from stretching in flex containers */
+[role="checkbox"] {
+  align-self: center !important;
+  flex-shrink: 0 !important;
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  max-width: 16px !important;
+  max-height: 16px !important;
 }
 
 /* Native checkboxes (fallback / non-Radix) */

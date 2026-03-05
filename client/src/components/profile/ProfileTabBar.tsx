@@ -99,7 +99,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           aria-selected={activeTab === "about"}
           aria-controls="panel-about"
           onClick={() => openTab("about")}
-          className={btn(activeTab === "about")}
+          className={`${btn(activeTab === "about")} inline-flex items-center gap-1`}
           data-testid="tab-about"
           style={heroTextStyle}
         >
@@ -112,7 +112,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         aria-selected={activeTab === "contacts"}
         aria-controls="panel-contacts"
         onClick={() => openTab("contacts")}
-        className={btn(activeTab === "contacts")}
+        className={`${btn(activeTab === "contacts")} inline-flex items-center gap-1`}
         data-testid="tab-contacts"
         style={heroTextStyle}
       >
@@ -129,7 +129,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         aria-selected={activeTab === "photos"}
         aria-controls="panel-photos"
         onClick={() => openTab("photos")}
-        className={btn(activeTab === "photos")}
+        className={`${btn(activeTab === "photos")} inline-flex items-center gap-1`}
         data-testid="tab-photos"
         style={heroTextStyle}
       >
@@ -146,7 +146,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         aria-selected={activeTab === "references"}
         aria-controls="panel-references"
         onClick={() => openTab("references")}
-        className={btn(activeTab === "references")}
+        className={`${btn(activeTab === "references")} inline-flex items-center gap-1`}
         data-testid="tab-references"
         style={heroTextStyle}
       >
@@ -164,7 +164,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           aria-selected={activeTab === "travel"}
           aria-controls="panel-travel"
           onClick={() => openTab("travel")}
-          className={btn(activeTab === "travel")}
+          className={`${btn(activeTab === "travel")} inline-flex items-center gap-1`}
           data-testid="tab-travel"
           style={heroTextStyle}
         >
@@ -183,7 +183,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           aria-selected={activeTab === "countries"}
           aria-controls="panel-countries"
           onClick={() => openTab("countries")}
-          className={btn(activeTab === "countries")}
+          className={`${btn(activeTab === "countries")} inline-flex items-center gap-1`}
           data-testid="tab-countries"
           style={heroTextStyle}
         >
@@ -202,7 +202,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           aria-selected={activeTab === "chatrooms"}
           aria-controls="panel-chatrooms"
           onClick={() => openTab("chatrooms")}
-          className={btn(activeTab === "chatrooms")}
+          className={`${btn(activeTab === "chatrooms")} inline-flex items-center gap-1`}
           data-testid="tab-chatrooms"
           style={heroTextStyle}
         >
@@ -221,7 +221,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           aria-selected={activeTab === "vouches"}
           aria-controls="panel-vouches"
           onClick={() => openTab("vouches")}
-          className={btn(activeTab === "vouches")}
+          className={`${btn(activeTab === "vouches")} inline-flex items-center gap-1`}
           data-testid="tab-vouches"
           style={heroTextStyle}
         >

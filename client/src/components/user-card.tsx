@@ -5,6 +5,7 @@ import { getCurrentTravelDestination } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { truncateBioToSentences } from "@/lib/bioPreview";
 import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
+import { US_STATES } from "@shared/locationData";
 
 export interface User {
   id: number;
@@ -165,8 +166,27 @@ export default function UserCard({
     const state = (user.hometownState || "").trim();
     const country = (user.hometownCountry || "").trim();
     if (!city) return "Unknown";
-    if (state) return `${city}, ${state}`;
-    if (country) return `${city}, ${country}`;
+
+    const normalizeCountry = (value: string) => value.trim().toLowerCase();
+    const isUsaCountry = (value: string) => {
+      const v = normalizeCountry(value);
+      return v === "united states" || v === "united states of america" || v === "usa" || v === "us" || v === "u.s." || v === "u.s.a.";
+    };
+
+    const toStateAbbrev = (value: string): string => {
+      const v = value.trim();
+      if (!v) return "";
+      if (/^[A-Za-z]{2}$/.test(v)) return v.toUpperCase();
+      const match = US_STATES.find((s) => s.value.toLowerCase() === v.toLowerCase());
+      return match?.abbreviation || v;
+    };
+
+    // If country is provided and is not USA, show "City, Country" (max 2 parts)
+    if (country && !isUsaCountry(country)) return `${city}, ${country}`;
+
+    // Otherwise, treat as USA-style formatting: "City, ST" (abbreviated state) or just "City"
+    const st = toStateAbbrev(state);
+    if (st) return `${city}, ${st}`;
     return city;
   })();
 
@@ -332,7 +352,14 @@ export default function UserCard({
                 <span
                   data-role="user-card-city"
                   className="truncate !text-center !w-full !block"
-                  style={{ color: pickTextColor("#3b82f6", "#3b82f6") }}
+                  style={{
+                    color: pickTextColor("#3b82f6", "#3b82f6"),
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '100%',
+                    display: 'block',
+                  }}
                 >
                   {hometownLine}
                 </span>
@@ -355,7 +382,7 @@ export default function UserCard({
               >
                 <span
                   className="text-center"
-                  style={{ color: pickTextColor("#1f2937", "#D1D5DB") }}
+                  style={{ color: pickTextColor("#1f2937", "#e5e7eb") }}
                 >
                   {bioText || '\u00A0'}
                 </span>
@@ -467,7 +494,14 @@ export default function UserCard({
                 <span
                   data-role="user-card-city"
                   className="truncate !text-center !w-full !block"
-                  style={{ color: pickTextColor("#3b82f6", "#3b82f6") }}
+                  style={{
+                    color: pickTextColor("#3b82f6", "#3b82f6"),
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '100%',
+                    display: 'block',
+                  }}
                 >
                   {hometownLine}
                 </span>
@@ -490,7 +524,7 @@ export default function UserCard({
               >
                 <span
                   className="text-center"
-                  style={{ color: pickTextColor("#1f2937", "#D1D5DB") }}
+                  style={{ color: pickTextColor("#1f2937", "#e5e7eb") }}
                 >
                   {bioText || '\u00A0'}
                 </span>
