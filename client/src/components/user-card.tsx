@@ -418,7 +418,7 @@ export default function UserCard({
             <>
               <div
                 data-role="user-card-username"
-                className="truncate"
+                className="w-full text-center truncate"
                 style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500 }}
               >
                 <span style={{ color: pickTextColor("#3b82f6", "#FF6B35") }}>
@@ -426,13 +426,13 @@ export default function UserCard({
                 </span>
               </div>
               <div
-                className="mt-1 flex items-center gap-1 min-w-0 dark:justify-center dark:w-full dark:text-center"
+                className="mt-1 flex items-center justify-center gap-1 min-w-0 w-full text-center"
                 style={{ fontSize: 11.5, color: pickTextColor("#e8834a", "#3b82f6") }}
               >
-                <span data-role="user-card-city" className="truncate dark:w-full dark:text-center">{hometownLine}</span>
+                <span data-role="user-card-city" className="truncate w-full text-center">{hometownLine}</span>
               </div>
               <div
-                className="user-card-bio"
+                className="user-card-bio text-center"
                 data-role="user-card-bio"
                 title={user.bio || undefined}
                 style={{
@@ -450,14 +450,14 @@ export default function UserCard({
               {!isCurrentUser && (
                 <>
                   <div
-                    className="truncate mt-1"
+                    className="w-full text-center mt-1"
                     style={{ fontSize: 12, fontWeight: 700, color: pickTextColor("#3b82f6", "#FF6B35") }}
                     data-role="user-card-things"
                   >
                     {thingsInCommon} things in common
                   </div>
                   <div
-                    className="truncate mt-0.5"
+                    className="w-full text-center mt-0.5"
                     style={{ fontSize: 12, fontWeight: 500, color: pickTextColor("#9ca3af", "#3b82f6") }}
                     data-role="user-card-contacts"
                   >
@@ -560,7 +560,7 @@ export default function UserCard({
             <>
               <div
                 data-role="user-card-username"
-                className="truncate"
+                className="w-full text-center truncate"
                 style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500 }}
               >
                 <span style={{ color: pickTextColor("#3b82f6", "#FF6B35") }}>
@@ -568,13 +568,13 @@ export default function UserCard({
                 </span>
               </div>
               <div
-                className="mt-1 flex items-center gap-1 min-w-0 dark:justify-center dark:w-full dark:text-center"
+                className="mt-1 flex items-center justify-center gap-1 min-w-0 w-full text-center"
                 style={{ fontSize: 11.5, color: pickTextColor("#e8834a", "#3b82f6") }}
               >
-                <span data-role="user-card-city" className="truncate dark:w-full dark:text-center">{hometownLine}</span>
+                <span data-role="user-card-city" className="truncate w-full text-center">{hometownLine}</span>
               </div>
               <div
-                className="user-card-bio"
+                className="user-card-bio text-center"
                 data-role="user-card-bio"
                 title={user.bio || undefined}
                 style={{
@@ -592,14 +592,14 @@ export default function UserCard({
               {!isCurrentUser && (
                 <>
                   <div
-                    className="truncate mt-1"
+                    className="w-full text-center mt-1"
                     style={{ fontSize: 12, fontWeight: 700, color: pickTextColor("#3b82f6", "#FF6B35") }}
                     data-role="user-card-things"
                   >
                     {thingsInCommon} things in common
                   </div>
                   <div
-                    className="truncate mt-0.5"
+                    className="w-full text-center mt-0.5"
                     style={{ fontSize: 12, fontWeight: 500, color: pickTextColor("#9ca3af", "#3b82f6") }}
                     data-role="user-card-contacts"
                   >
