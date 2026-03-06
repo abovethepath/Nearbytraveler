@@ -606,9 +606,7 @@ export default function Messages() {
     );
   }
 
-  if ((connectionsLoading || messagesLoading) && !targetUserId) {
-    return <FullPageSkeleton variant="chat" />;
-  }
+  // Removed full-page skeleton block — page renders immediately, conversations list shows inline loader
 
   return (
     <div className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5rem)] lg:h-[calc(100dvh-5rem)]'} min-h-0`}>
@@ -641,7 +639,11 @@ export default function Messages() {
         )}
 
         <div className="flex-1 overflow-y-auto">
-          {conversations.length === 0 ? (
+          {(connectionsLoading || messagesLoading) && conversations.length === 0 ? (
+            <div className="p-4 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-blue-500" />
+            </div>
+          ) : conversations.length === 0 ? (
             <div className="p-4 text-center text-gray-600 dark:text-gray-500">
               <MessageCircle className="w-10 h-10 mx-auto mb-2 opacity-50" />
               <p className="text-sm">No conversations yet</p>

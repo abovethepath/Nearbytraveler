@@ -7,38 +7,37 @@ import { Zap } from "lucide-react";
 
 export default function ProfilePageResponsive() {
   const authContext = useAuth();
-  const [actualUser, setActualUser] = useState<any>(null);
-  const [isReady, setIsReady] = useState(false);
+  // Use context user immediately — no blocking spinner on mount
+  const [actualUser, setActualUser] = useState<any>(authContext.user ?? null);
+  const [isReady, setIsReady] = useState(true);
   
-  // CRITICAL FIX: Fetch fresh user data from API to ensure latest data (including secretActivities)
+  // Sync with auth context changes (login/logout)
   useEffect(() => {
-    async function fetchFreshUserData() {
+    if (authContext.user) {
+      setActualUser(authContext.user);
+    }
+  }, [authContext.user]);
+
+  // Background refresh to pick up latest field changes (e.g. secretActivities)
+  // Does NOT block the UI — runs silently after page renders
+  useEffect(() => {
+    async function refreshUserData() {
       try {
-        const contextUser = authContext.user;
-        
-        // Fetch fresh data from API
         const response = await fetch(`${getApiBaseUrl()}/api/auth/user`, {
           credentials: 'include'
         });
-        
         if (response.ok) {
           const freshUser = await response.json();
           setActualUser(freshUser);
-        } else {
-          // Fallback to context user only (never to localStorage)
-          setActualUser(contextUser ?? null);
         }
       } catch (error) {
-        console.error('Failed to fetch user data:', error);
-        // Fallback to context user only (never to localStorage)
-        setActualUser(authContext.user ?? null);
-      } finally {
-        setIsReady(true);
+        // Silently ignore — we already have context user displayed
       }
     }
-    
-    fetchFreshUserData();
-  }, [authContext.user]);
+    if (authContext.user?.id) {
+      refreshUserData();
+    }
+  }, [authContext.user?.id]);
 
   // IMPORTANT: Hooks must not be conditional. Use `enabled` instead of early-returning
   // before hooks run (prevents React minified error #310 in production).

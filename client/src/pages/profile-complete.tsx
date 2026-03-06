@@ -3596,7 +3596,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     return user.hometownCity || "Not specified";
   };
 
-  if (userLoading) {
+  if (userLoading && !user) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-orange-500 dark:border-gray-600 dark:border-t-orange-500" />
