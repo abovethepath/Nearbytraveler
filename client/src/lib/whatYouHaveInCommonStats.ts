@@ -122,9 +122,13 @@ export function computeCommonStats(
     ...sharedActivities.map(v => v.toLowerCase()),
     ...sharedEvents.map(v => v.toLowerCase()),
   ]);
-  const otherCommonalities = dedupe(extraArrays).filter(
-    v => !alreadyShown.has(v.toLowerCase())
-  );
+  const blockedOtherCommonalities = new Set([
+    "welcome to los angeles metro",
+    "welcome to nearby traveler",
+  ]);
+  const otherCommonalities = dedupe(extraArrays)
+    .filter((v) => !blockedOtherCommonalities.has(v.toLowerCase()))
+    .filter((v) => !alreadyShown.has(v.toLowerCase()));
 
   const sharedContactsCount = Math.max(0, Number(connectionDegreeData?.mutualCount || 0) || 0);
 
@@ -147,8 +151,9 @@ export function computeCommonStats(
     (compatibilityData?.bothActiveDuty ? 1 : 0) +
     otherCommonalities.length;
 
-  // Use only arraySum so the count exactly matches the visible pills.
-  const totalCommon = arraySum + sharedContactsCount;
+  // Use only arraySum (from compatibility data) so all views agree.
+  // Contacts in common are shown separately and are NOT part of "things in common".
+  const totalCommon = arraySum;
 
   return {
     sharedInterests,

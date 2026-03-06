@@ -541,58 +541,86 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                       {!isMobileWeb && (
                         <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-center max-h-48 overflow-hidden">
-                          {/* Header row: bold readable headline + count badge */}
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-lg">🤝</span>
-                            <span className="text-sm font-bold text-white leading-none">
-                              What You Have in Common
-                            </span>
-                            <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-extrabold bg-[#FF6B35] text-white">
-                              {totalCommon} in common
-                            </span>
-                          </div>
-
-                          {/* All pills in one horizontal flex-wrap row */}
                           {totalCommon > 0 ? (
-                            <div className="flex flex-row flex-wrap gap-1.5 overflow-hidden">
-                              {nonEnglishSharedLanguages.length > 0 && (
-                                <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-black/50 text-white border border-white/30">
-                                  💬 {nonEnglishSharedLanguages.length} languages
-                                </span>
-                              )}
-                              {visibleTags.map((tag) => (
-                                <span
-                                  key={tag}
-                                  className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-black/50 text-white border border-white/30"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                              {hiddenTagCount > 0 && (
-                                <button
-                                  type="button"
-                                  onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}
-                                  className="text-sm text-white/70 hover:text-white underline underline-offset-2 transition-colors"
-                                >
-                                  See All ({hiddenTagCount})
-                                </button>
-                              )}
-                              {sharedContactsCount > 0 && (
+                            <>
+                              {/* Line 1: count */}
+                              <div className="w-full text-center font-extrabold text-white text-sm leading-none">
+                                {totalCommon} {totalCommon === 1 ? "thing" : "things"} in common
+                              </div>
+
+                              {/* Line 2: up to 5 pills (interests → activities → events) */}
+                              <div className="flex flex-wrap gap-1 justify-center overflow-hidden max-h-14">
+                                {(() => {
+                                  const hostelPill = hostelMatch?.hostelName
+                                    ? `🏨 ${hostelMatch.hostelName}`
+                                    : null;
+                                  const source =
+                                    (Array.isArray(sharedInterests) && sharedInterests.length > 0)
+                                      ? sharedInterests
+                                      : (Array.isArray(sharedActivitiesArr) && sharedActivitiesArr.length > 0)
+                                        ? sharedActivitiesArr
+                                        : sharedEventsArr;
+                                  const pills: Array<{ key: string; label: string; variant?: "hostel" | "default" }> = [];
+
+                                  if (hostelPill) pills.push({ key: `hostel:${hostelPill}`, label: hostelPill, variant: "hostel" });
+
+                                  for (const raw of (source || [])) {
+                                    const label = String(raw || "").trim();
+                                    if (!label) continue;
+                                    if (hostelPill && label.toLowerCase() === hostelPill.toLowerCase()) continue;
+                                    pills.push({ key: label, label, variant: "default" });
+                                    if (pills.length >= 5) break;
+                                  }
+
+                                  return pills.slice(0, 5).map((pill) => (
+                                    <span
+                                      key={pill.key}
+                                      className={
+                                        pill.variant === "hostel"
+                                          ? "inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[11px] font-extrabold bg-emerald-600 text-white border border-emerald-300/30 leading-none max-w-full"
+                                          : "inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[11px] font-semibold bg-[#111827] text-white border border-white/10 leading-none max-w-full"
+                                      }
+                                      title={pill.label}
+                                    >
+                                      <span className="truncate max-w-[10rem]">{pill.label}</span>
+                                    </span>
+                                  ));
+                                })()}
+                              </div>
+
+                              {/* Line 4: contacts left + see all right */}
+                              <div className="mt-1 w-full flex items-center justify-between gap-2 text-xs text-gray-400">
+                                {sharedContactsCount > 0 ? (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const el =
+                                        document.querySelector('[data-testid="mutual-connections"]') ||
+                                        document.querySelector('[data-testid="mutual-connections-desktop"]');
+                                      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                                    }}
+                                    className="text-xs text-gray-400 hover:text-gray-200 underline underline-offset-2"
+                                  >
+                                    Contacts in Common · {sharedContactsCount}
+                                  </button>
+                                ) : (
+                                  <span className="text-xs text-gray-400">Contacts in Common · 0</span>
+                                )}
                                 <button
                                   type="button"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    const el = document.querySelector('[data-testid="mutual-connections"]') || document.querySelector('[data-testid="mutual-connections-desktop"]');
-                                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    setSeeAllCommonOpen(true);
                                   }}
-                                  className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-black/50 text-white border border-white/30 hover:bg-black/70 transition-colors"
+                                  className="text-xs text-gray-400 hover:text-gray-200 underline underline-offset-2"
                                 >
-                                  👥 {sharedContactsCount} contacts in common
+                                  See All →
                                 </button>
-                              )}
-                            </div>
+                              </div>
+                            </>
                           ) : (
-                            <p className="text-[11px] text-white leading-snug">
+                            <p className="text-[11px] text-white leading-snug text-center">
                               Add more interests to your profile to find things in common.
                             </p>
                           )}
@@ -671,7 +699,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         <div className="space-y-5 max-h-[70vh] overflow-y-auto">
                           <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 px-4 py-4">
                             <div className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white leading-tight">
-                              {totalCommon} things in common
+                              {totalCommon} {totalCommon === 1 ? "thing" : "things"} in common
                             </div>
                           </div>
 

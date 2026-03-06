@@ -144,7 +144,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 {commonStats.totalCommon}
               </div>
               <div className="ml-2 text-sm sm:text-base font-semibold text-white/90 leading-tight">
-                things in common
+                {commonStats.totalCommon === 1 ? "thing" : "things"} in common
               </div>
             </div>
           </div>

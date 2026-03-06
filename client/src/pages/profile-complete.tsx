@@ -723,8 +723,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showCreateDeal, setShowCreateDeal] = useState(false);
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
   const [showChatroomList, setShowChatroomList] = useState(false);
-  const [activeTab, setActiveTab] = React.useState<TabKey | ''>('about');
-  const [loadedTabs, setLoadedTabs] = React.useState<Set<TabKey>>(new Set(['about']));
+  const initialTab = React.useMemo<TabKey>(() => {
+    try {
+      const raw = typeof window !== "undefined" ? window.location.search : "";
+      const tab = new URLSearchParams(raw || "").get("tab");
+      const allowed = new Set<TabKey>(["about", "contacts", "photos", "references", "travel", "countries", "vouches", "chatrooms", "menu"]);
+      return (tab && allowed.has(tab as TabKey) ? (tab as TabKey) : "about");
+    } catch {
+      return "about";
+    }
+  }, []);
+
+  const [activeTab, setActiveTab] = React.useState<TabKey | ''>(initialTab);
+  const [loadedTabs, setLoadedTabs] = React.useState<Set<TabKey>>(new Set([initialTab]));
   
   const tabRefs = {
     contacts: React.useRef<HTMLDivElement>(null),
