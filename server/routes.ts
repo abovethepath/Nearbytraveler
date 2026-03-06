@@ -24365,6 +24365,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       res.json({ ok: true });
     } catch (error: any) {
+      console.error("❌ Failed to join community:", error?.message || error);
       res.status(500).json({ error: "Failed to join community" });
     }
   });
