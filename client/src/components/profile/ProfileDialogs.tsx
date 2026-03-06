@@ -864,14 +864,14 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Header colors</h3>
                   <div className="flex flex-wrap gap-2">
                     {[
-                      'linear-gradient(135deg, #3B82F6 0%, #A855F7 50%, #F97316 100%)',
-                      'linear-gradient(135deg, #10B981 0%, #059669 50%, #F97316 100%)',
-                      'linear-gradient(135deg, #3B82F6 0%, #06B6D4 50%, #F97316 100%)',
-                      'linear-gradient(135deg, #A855F7 0%, #EC4899 50%, #EF4444 100%)',
-                      'linear-gradient(135deg, #6366F1 0%, #3B82F6 50%, #10B981 100%)',
-                      'linear-gradient(135deg, #F97316 0%, #EF4444 50%, #EC4899 100%)',
-                      'linear-gradient(135deg, #14B8A6 0%, #3B82F6 50%, #A855F7 100%)',
-                      'linear-gradient(135deg, #EAB308 0%, #F97316 50%, #EF4444 100%)',
+                      'linear-gradient(135deg, #1D4ED8 0%, #7E22CE 50%, #C2410C 100%)',
+                      'linear-gradient(135deg, #15803D 0%, #047857 50%, #C2410C 100%)',
+                      'linear-gradient(135deg, #1D4ED8 0%, #0E7490 50%, #C2410C 100%)',
+                      'linear-gradient(135deg, #BE185D 0%, #BE185D 50%, #B91C1C 100%)',
+                      'linear-gradient(135deg, #4338CA 0%, #1D4ED8 50%, #15803D 100%)',
+                      'linear-gradient(135deg, #C2410C 0%, #B91C1C 50%, #BE185D 100%)',
+                      'linear-gradient(135deg, #0F766E 0%, #1D4ED8 50%, #7E22CE 100%)',
+                      'linear-gradient(135deg, #A16207 0%, #C2410C 50%, #B91C1C 100%)',
                     ].slice(0, gradientOptions.length).map((bg, idx) => (
                       <button
                         key={idx}
