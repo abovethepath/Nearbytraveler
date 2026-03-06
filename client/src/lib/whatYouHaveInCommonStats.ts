@@ -93,7 +93,14 @@ export function computeCommonStats(
     ...(Array.isArray(compatibilityData?.sharedDefaultInterests) ? compatibilityData!.sharedDefaultInterests!.filter(Boolean) : []),
     ...(Array.isArray(compatibilityData?.sharedSecretActivities) ? compatibilityData!.sharedSecretActivities!.filter(Boolean) : []),
   ];
-  const otherCommonalities = dedupe(extraArrays);
+  const alreadyShown = new Set([
+    ...sharedInterests.map(v => v.toLowerCase()),
+    ...sharedActivities.map(v => v.toLowerCase()),
+    ...sharedEvents.map(v => v.toLowerCase()),
+  ]);
+  const otherCommonalities = dedupe(extraArrays).filter(
+    v => !alreadyShown.has(v.toLowerCase())
+  );
 
   const sharedContactsCount = Math.max(0, Number(connectionDegreeData?.mutualCount || 0) || 0);
 
