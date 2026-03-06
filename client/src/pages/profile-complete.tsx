@@ -2311,6 +2311,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           }
           return oldData;
         });
+
+        // Immediately invalidate profile-bundle cache so main profile photo updates without delay
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
+        queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
         
         // Trigger multiple events with immediate and delayed intervals
         window.dispatchEvent(new CustomEvent('profilePhotoUpdated', { detail: updatedUser }));

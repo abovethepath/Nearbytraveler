@@ -6991,6 +6991,9 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(404).json({ message: "User not found" });
       }
 
+      // Bust Redis profile-bundle cache so the profile page reflects the new photo immediately
+      cache.deletePattern(`profile-bundle:${userId}:viewer:*`).catch(() => {});
+
       // Remove password from response
       const { password: _, ...userWithoutPassword } = updatedUser;
 
