@@ -908,8 +908,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     
     const baseUrl = `https://nearbytraveler.org`;
     const imageUrl = `${baseUrl}/og-image.png`;
-    const width = 1200;
-    const height = 630;
+    const width = 2848;
+    const height = 1504;
     
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -1055,6 +1055,111 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       res.type('text/html').send(html);
     } catch (error) {
       console.error('OG meta tag error for event:', error);
+      next();
+    }
+  });
+
+  // Dynamic Open Graph meta tags for profile pages (for social media sharing)
+  app.get("/profile/:identifier", async (req, res, next) => {
+    const userAgent = req.headers['user-agent'] || '';
+    const isCrawler = /facebookexternalhit|Facebot|Twitterbot|WhatsApp|LinkedInBot|Slackbot|TelegramBot|Discordbot|PinterestBot|RedditBot/i.test(userAgent);
+    if (!isCrawler) return next();
+
+    try {
+      const identifier = req.params.identifier;
+      if (!identifier) return next();
+
+      // Try to find user by numeric ID or username
+      const asNum = parseInt(identifier, 10);
+      let profileUser: any = null;
+      if (!isNaN(asNum) && String(asNum) === identifier) {
+        const [u] = await db.select({
+          id: users.id, name: users.name, username: users.username,
+          bio: users.bio, profileImage: users.profileImage,
+          hometownCity: users.hometownCity, hometownCountry: users.hometownCountry,
+          userType: users.userType,
+        }).from(users).where(eq(users.id, asNum)).limit(1);
+        profileUser = u;
+      } else {
+        const cleanIdent = identifier.startsWith('@') ? identifier.slice(1) : identifier;
+        const [u] = await db.select({
+          id: users.id, name: users.name, username: users.username,
+          bio: users.bio, profileImage: users.profileImage,
+          hometownCity: users.hometownCity, hometownCountry: users.hometownCountry,
+          userType: users.userType,
+        }).from(users).where(eq(users.username, cleanIdent)).limit(1);
+        profileUser = u;
+      }
+
+      if (!profileUser) return next();
+
+      const baseUrl = `https://nearbytraveler.org`;
+      const fullUrl = `${baseUrl}/profile/${identifier}`;
+      const displayName = profileUser.name || profileUser.username || 'A Traveler';
+      const username = profileUser.username ? `@${profileUser.username}` : '';
+      const location = profileUser.hometownCity && profileUser.hometownCountry
+        ? `${profileUser.hometownCity}, ${profileUser.hometownCountry}`
+        : profileUser.hometownCity || '';
+      const userTypeLabel = profileUser.userType === 'business' ? 'Business' : profileUser.userType === 'local' ? 'Nearby Local' : 'Nearby Traveler';
+      const bio = profileUser.bio
+        ? profileUser.bio.substring(0, 120) + (profileUser.bio.length > 120 ? '...' : '')
+        : `${displayName} is on Nearby Traveler${location ? ` from ${location}` : ''}.`;
+      const titleStr = `${displayName} (${username}) • ${userTypeLabel} | Nearby Traveler`;
+      const descStr = `${bio}${location ? ` 📍 ${location}` : ''} — Join Nearby Traveler to connect with travelers & locals worldwide.`;
+
+      // Use profile photo if it's a real URL (not base64), else fallback to og-image.png
+      let imageUrl = `${baseUrl}/og-image.png`;
+      let imageW = 2848, imageH = 1504;
+      if (profileUser.profileImage && profileUser.profileImage.startsWith('http')) {
+        imageUrl = profileUser.profileImage;
+        imageW = 400; imageH = 400;
+      }
+
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${titleStr.replace(/</g, '&lt;')}</title>
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:type" content="profile" />
+  <meta property="og:url" content="${fullUrl}" />
+  <meta property="og:title" content="${titleStr.replace(/"/g, '&quot;')}" />
+  <meta property="og:description" content="${descStr.replace(/"/g, '&quot;')}" />
+  <meta property="og:image" content="${imageUrl}" />
+  <meta property="og:image:secure_url" content="${imageUrl}" />
+  <meta property="og:image:width" content="${imageW}" />
+  <meta property="og:image:height" content="${imageH}" />
+  <meta property="og:image:alt" content="${displayName} on Nearby Traveler" />
+  <meta property="og:site_name" content="Nearby Traveler" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="${imageW === imageH ? 'summary' : 'summary_large_image'}" />
+  <meta name="twitter:url" content="${fullUrl}" />
+  <meta name="twitter:title" content="${titleStr.replace(/"/g, '&quot;')}" />
+  <meta name="twitter:description" content="${descStr.replace(/"/g, '&quot;')}" />
+  <meta name="twitter:image" content="${imageUrl}" />
+
+  <!-- Redirect browsers to actual page -->
+  <meta http-equiv="refresh" content="0;url=${fullUrl}" />
+</head>
+<body>
+  <h1>${displayName.replace(/</g, '&lt;')}</h1>
+  <p>${bio.replace(/</g, '&lt;')}</p>
+  ${location ? `<p>📍 ${location.replace(/</g, '&lt;')}</p>` : ''}
+  <a href="${fullUrl}">View ${displayName.replace(/</g, '&lt;')}'s profile on Nearby Traveler</a>
+</body>
+</html>`;
+
+      res.set({
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Vary': 'User-Agent'
+      });
+      res.send(html);
+    } catch (error) {
+      console.error('OG meta tag error for profile:', error);
       next();
     }
   });
