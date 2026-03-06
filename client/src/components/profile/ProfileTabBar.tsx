@@ -126,11 +126,9 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         style={heroTextStyle}
       >
         Contacts
-        {!!(userConnections?.length) && (
-          <span className={badgeClass} style={badgeStyle}>
-            {userConnections.length}
-          </span>
-        )}
+        <span className={badgeClass} style={badgeStyle}>
+          {userConnections?.length || 0}
+        </span>
       </button>
 
       <button
@@ -143,11 +141,9 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         style={heroTextStyle}
       >
         Photos
-        {!!(photos?.length + (userTravelMemories?.length || 0)) && (
-          <span className={badgeClass} style={badgeStyle}>
-            {(photos?.length || 0) + (userTravelMemories?.length || 0)}
-          </span>
-        )}
+        <span className={badgeClass} style={badgeStyle}>
+          {(photos?.length || 0) + (userTravelMemories?.length || 0)}
+        </span>
       </button>
 
       <button
@@ -160,11 +156,9 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         style={heroTextStyle}
       >
         References
-        {(userReferences?.length || 0) > 0 && (
-          <span className={badgeClass} style={badgeStyle}>
-            {userReferences.length}
-          </span>
-        )}
+        <span className={badgeClass} style={badgeStyle}>
+          {userReferences?.length || 0}
+        </span>
       </button>
 
       {user?.userType !== "business" && (
@@ -178,11 +172,9 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           style={heroTextStyle}
         >
           Travel Plans
-          {!!(travelPlans?.length) && (
-            <span className={badgeClass} style={badgeStyle}>
-              {travelPlans.length}
-            </span>
-          )}
+          <span className={badgeClass} style={badgeStyle}>
+            {travelPlans?.length || 0}
+          </span>
         </button>
       )}
 
@@ -197,11 +189,9 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           style={heroTextStyle}
         >
           Countries
-          {!!(countriesVisited?.length) && (
-            <span className={badgeClass} style={badgeStyle}>
-              {countriesVisited.length}
-            </span>
-          )}
+          <span className={badgeClass} style={badgeStyle}>
+            {countriesVisited?.length || 0}
+          </span>
         </button>
       )}
 
@@ -216,11 +206,9 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           style={heroTextStyle}
         >
           Chatrooms
-          {!!(userChatrooms?.length) && (
-            <span className={badgeClass} style={badgeStyle}>
-              {userChatrooms.length}
-            </span>
-          )}
+          <span className={badgeClass} style={badgeStyle}>
+            {userChatrooms?.length || 0}
+          </span>
         </button>
       )}
 
