@@ -99,6 +99,13 @@ button, a, [role="button"], input[type="submit"] {
   }
 }
 
+/* Main scroll container — GPU-accelerated so fixed navbar stays painted during scroll */
+.nt-hide-scrollbar {
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
+  overscroll-behavior-y: contain;
+}
+
 /* Ensure fixed elements respect safe areas */
 .mobile-bottom-nav {
   padding-bottom: var(--sab);
@@ -288,6 +295,7 @@ body {
     /* GPU-composited layer — keeps the nav painted at all times during scroll */
     transform: translate3d(0, 0, 0) !important;
     -webkit-transform: translate3d(0, 0, 0) !important;
+    will-change: transform !important;
     backface-visibility: hidden !important;
     -webkit-backface-visibility: hidden !important;
     /* REMOVED: contain:paint — tells browser to skip rendering when "out of view",

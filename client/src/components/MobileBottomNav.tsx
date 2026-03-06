@@ -116,6 +116,11 @@ export function MobileBottomNav() {
         background: isDark ? '#1c1c1e' : '#f8f8f8',
         borderTop: `1px solid ${isDark ? '#38383a' : '#e5e5e5'}`,
         overflow: 'visible',
+        transform: 'translateZ(0)',
+        WebkitTransform: 'translateZ(0)',
+        willChange: 'transform',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
       }}
     >
       <div style={{ 
