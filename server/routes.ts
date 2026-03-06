@@ -6244,22 +6244,23 @@ Questions? Just reply to this message. Welcome aboard!
       let connectionDegree = null;
       
       if (viewerId && viewerId !== userId) {
-        // Check connection status
-        const existingConnection = await db.select().from(connections).where(
-          or(
-            and(eq(connections.requesterId, viewerId), eq(connections.receiverId, userId)),
-            and(eq(connections.requesterId, userId), eq(connections.receiverId, viewerId))
-          )
-        ).limit(1);
-        
-        if (existingConnection.length > 0) {
-          connectionStatus = { 
-            status: existingConnection[0].status, 
-            connectionId: existingConnection[0].id 
-          };
+        try {
+          const existingConnection = await db.select().from(connections).where(
+            or(
+              and(eq(connections.requesterId, viewerId), eq(connections.receiverId, userId)),
+              and(eq(connections.requesterId, userId), eq(connections.receiverId, viewerId))
+            )
+          ).limit(1);
+          if (existingConnection.length > 0) {
+            connectionStatus = { 
+              status: existingConnection[0].status, 
+              connectionId: existingConnection[0].id 
+            };
+          }
+        } catch (e) {
+          console.warn('Profile bundle: connection status check failed:', (e as any)?.message);
         }
-        
-        // Get compatibility score (matchCount = things in common, no point system)
+
         try {
           const viewer = await storage.getUser(viewerId);
           if (viewer) {
@@ -6279,7 +6280,11 @@ Questions? Just reply to this message. Welcome aboard!
       // Get business deals if business user
       let businessDeals: any[] = [];
       if (userData.userType === 'business') {
-        businessDeals = await db.select().from(businessOffers).where(eq(businessOffers.businessId, userId));
+        try {
+          businessDeals = await db.select().from(businessOffers).where(eq(businessOffers.businessId, userId));
+        } catch (e) {
+          console.warn('Profile bundle: business deals fetch failed:', (e as any)?.message);
+        }
       }
       
       const endTime = Date.now();
