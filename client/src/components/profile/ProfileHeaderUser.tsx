@@ -362,16 +362,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 const sharedContactsCount = Number.isFinite(commonStats?.sharedContactsCount as number)
                   ? (commonStats!.sharedContactsCount as number)
                   : (connectionDegreeData?.mutualCount ?? 0);
-                const sharedLanguagesCountForDisplay = nonEnglishSharedLanguages.length;
-                const totalCommon =
-                  (typeof commonStats?.totalCommon === "number" && Number.isFinite(commonStats.totalCommon) ? commonStats.totalCommon : null) ??
-                  (sharedContactsCount +
-                    sharedInterests.length +
-                    (Array.isArray(commonStats?.sharedActivities) ? (commonStats!.sharedActivities!.length) : (Array.isArray((compatibilityData as any)?.sharedActivities) ? (compatibilityData as any).sharedActivities.length : 0)) +
-                    (Array.isArray(commonStats?.sharedEvents) ? (commonStats!.sharedEvents!.length) : (Array.isArray((compatibilityData as any)?.sharedEvents) ? (compatibilityData as any).sharedEvents.length : 0)) +
-                    sharedCountries.length +
-                    sharedLanguagesCountForDisplay +
-                    otherCommonalities.length);
+                const totalCommon = commonStats?.totalCommon ?? 0;
 
                 // Build a flat list of all shared tags for the big card
                 const sharedActivitiesArr: string[] = Array.isArray(commonStats?.sharedActivities)
@@ -558,9 +549,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         </div>
                       </div>
 
-                      {/* RIGHT: Big "What You Have in Common" card — desktop only */}
-                      {!isMobileWeb && (
-                        <div className="common-radiate-widget hidden lg:flex flex-col flex-shrink-0 w-60 xl:w-72 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/40 p-4 gap-3 self-start mt-1">
+                    </div>
+
+                    {/* Centered "What You Have in Common" widget — desktop only, below bio row */}
+                    {!isMobileWeb && (
+                      <div className="hidden lg:flex justify-center mt-5">
+                        <div className="common-radiate-widget flex flex-col w-72 xl:w-80 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/40 p-4 gap-3">
                           {/* Header row */}
                           <div className="flex items-center gap-2">
                             <span className="text-xl">🤝</span>
@@ -629,9 +623,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             </p>
                           )}
                         </div>
-                      )}
-
-                    </div>
+                      </div>
+                    )}
 
                     {/* Tab bar (already text-only on web) */}
                     <div className="w-full mt-5 relative">
