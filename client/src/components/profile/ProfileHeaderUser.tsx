@@ -548,20 +548,18 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 {totalCommon} {totalCommon === 1 ? "thing" : "things"} in common
                               </div>
 
-                              {/* Line 2: up to 5 pills (interests → activities → events) */}
-                              <div className="flex flex-wrap gap-1 justify-center overflow-hidden max-h-14">
+                              {/* Lines 2–3: up to 10 pills (interests → activities → events), 2 rows of ~5 */}
+                              <div className="overflow-hidden">
                                 {(() => {
-                                  const hostelPill = hostelMatch?.hostelName
-                                    ? `🏨 ${hostelMatch.hostelName}`
-                                    : null;
+                                  const hostelPill = hostelMatch?.hostelName ? `🏨 ${hostelMatch.hostelName}` : null;
                                   const source =
                                     (Array.isArray(sharedInterests) && sharedInterests.length > 0)
                                       ? sharedInterests
                                       : (Array.isArray(sharedActivitiesArr) && sharedActivitiesArr.length > 0)
                                         ? sharedActivitiesArr
                                         : sharedEventsArr;
-                                  const pills: Array<{ key: string; label: string; variant?: "hostel" | "default" }> = [];
 
+                                  const pills: Array<{ key: string; label: string; variant?: "hostel" | "default" }> = [];
                                   if (hostelPill) pills.push({ key: `hostel:${hostelPill}`, label: hostelPill, variant: "hostel" });
 
                                   for (const raw of (source || [])) {
@@ -569,22 +567,36 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     if (!label) continue;
                                     if (hostelPill && label.toLowerCase() === hostelPill.toLowerCase()) continue;
                                     pills.push({ key: label, label, variant: "default" });
-                                    if (pills.length >= 5) break;
+                                    if (pills.length >= 10) break;
                                   }
 
-                                  return pills.slice(0, 5).map((pill) => (
-                                    <span
-                                      key={pill.key}
-                                      className={
-                                        pill.variant === "hostel"
-                                          ? "inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[11px] font-extrabold bg-emerald-600 text-white border border-emerald-300/30 leading-none max-w-full"
-                                          : "inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[11px] font-semibold bg-[#111827] text-white border border-white/10 leading-none max-w-full"
-                                      }
-                                      title={pill.label}
-                                    >
-                                      <span className="truncate max-w-[10rem]">{pill.label}</span>
-                                    </span>
-                                  ));
+                                  const row1 = pills.slice(0, 5);
+                                  const row2 = pills.slice(5, 10);
+                                  const renderRow = (row: typeof pills) => (
+                                    <div className="flex flex-wrap gap-1 justify-center overflow-hidden max-h-7">
+                                      {row.map((pill) => (
+                                        <span
+                                          key={pill.key}
+                                          className={
+                                            pill.variant === "hostel"
+                                              ? "inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[11px] font-extrabold bg-emerald-600 text-white border border-emerald-300/30 leading-none max-w-full"
+                                              : "inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[11px] font-semibold bg-[#111827] text-white border border-white/10 leading-none max-w-full"
+                                          }
+                                          title={pill.label}
+                                        >
+                                          <span className="truncate max-w-[10rem]">{pill.label}</span>
+                                        </span>
+                                      ))}
+                                      {row.length === 0 && <span className="invisible text-[11px]">—</span>}
+                                    </div>
+                                  );
+
+                                  return (
+                                    <div className="flex flex-col gap-1 max-h-16 overflow-hidden">
+                                      {renderRow(row1)}
+                                      {renderRow(row2)}
+                                    </div>
+                                  );
                                 })()}
                               </div>
 
