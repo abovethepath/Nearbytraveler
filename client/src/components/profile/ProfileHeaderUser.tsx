@@ -683,9 +683,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 <span className="font-extrabold text-gray-900 dark:text-white mr-1">{sharedCountries.length}</span>
                                 shared countries
                               </span>
-                              {sharedLanguagesCountForDisplay > 0 && (
+                              {nonEnglishSharedLanguages.length > 0 && (
                                 <span className="inline-flex items-center rounded-full px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                                  <span className="font-extrabold text-gray-900 dark:text-white mr-1">{sharedLanguagesCountForDisplay}</span>
+                                  <span className="font-extrabold text-gray-900 dark:text-white mr-1">{nonEnglishSharedLanguages.length}</span>
                                   shared languages
                                 </span>
                               )}
