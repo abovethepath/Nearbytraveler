@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon, Mail, ThumbsUp, Building2, Award } from "lucide-react";
+import { SkeletonProfile } from "@/components/ui/skeleton-loaders";
 
 type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries' | 'vouches' | 'chatrooms' | 'menu' | 'about';
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
@@ -3633,11 +3634,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   if (userLoading && !user) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-orange-500 dark:border-gray-600 dark:border-t-orange-500" />
-      </div>
-    );
+    return <SkeletonProfile />;
   }
 
   if (userError && !user) {
@@ -3679,11 +3676,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Show loading while waiting for authentication to load
   if (!effectiveUserId) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
+    return <SkeletonProfile />;
   }
 
   if (!user && !userLoading) {
@@ -3704,9 +3697,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Safety check to ensure user exists before rendering main content
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
+      <SkeletonProfile />
     );
   }
 

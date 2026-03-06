@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/App';
 import { authStorage } from '@/lib/auth';
 import { getApiBaseUrl } from '@/lib/queryClient';
+import { SkeletonMeetupList, SkeletonCard } from '@/components/ui/skeleton-loaders';
 import { QuickMeetupWidget } from '@/components/QuickMeetupWidget';
 import { UniversalBackButton } from '@/components/UniversalBackButton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -581,9 +582,9 @@ function QuickMeetupsPage() {
             // Show loading while meetups are being fetched
             if (isLoading || allMeetups.length === 0) {
               return (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-                  <span className="ml-3 text-gray-600 dark:text-gray-400">Loading meetup details...</span>
+                <div className="py-6 space-y-3">
+                  <SkeletonCard />
+                  <SkeletonCard />
                 </div>
               );
             }
@@ -986,10 +987,7 @@ function QuickMeetupsPage() {
         )}
 
         {isLoading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">Loading meetups...</p>
-          </div>
+          <SkeletonMeetupList count={4} />
         ) : (
           <div className="space-y-6">
             {/* Active Meetups */}

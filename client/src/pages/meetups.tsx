@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { SkeletonMeetupList } from "@/components/ui/skeleton-loaders";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Clock, Users, Zap, Calendar, Edit, MessageCircle, Map, Plus, Eye, Settings, Trash2, Coffee, User, ChevronDown, ChevronUp, Archive, RotateCcw } from "lucide-react";
@@ -294,10 +295,8 @@ export default function MeetupsPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
+      <div className="container mx-auto p-6 max-w-6xl">
+        <SkeletonMeetupList count={5} />
       </div>
     );
   }

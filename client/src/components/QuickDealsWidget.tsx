@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Zap, Clock, MapPin, Users, Coffee, Plus, DollarSign, Tag, Calendar, Percent, Gift, Package, Trash2, ChevronDown } from 'lucide-react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import { SkeletonCard } from '@/components/ui/skeleton-loaders';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/App';
 import { authStorage } from '@/lib/auth';
@@ -488,8 +489,9 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
         {/* Active Deals */}
         <div className="space-y-3">
           {isLoading && (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+            <div className="space-y-3 py-2">
+              <SkeletonCard />
+              <SkeletonCard />
             </div>
           )}
 

@@ -4,6 +4,7 @@ import { useRoute } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin, Clock, Users, MessageCircle, ArrowLeft } from 'lucide-react';
+import { SkeletonMeetupCard } from '@/components/ui/skeleton-loaders';
 import { useAuth } from '@/App';
 import { authStorage } from '@/lib/auth';
 import { UniversalBackButton } from '@/components/UniversalBackButton';
@@ -92,9 +93,9 @@ function MeetupManagePage() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="container mx-auto p-6 max-w-4xl">
           <UniversalBackButton />
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">Loading meetup details...</p>
+          <div className="mt-4 space-y-4">
+            <SkeletonMeetupCard />
+            <SkeletonMeetupCard />
           </div>
         </div>
       </div>

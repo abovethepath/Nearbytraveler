@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Users, MessageSquare, Send, Lock, Trash2, Clock, Heart, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { SkeletonList, SkeletonUserCard } from "@/components/ui/skeleton-loaders";
 
 function UserAvatar({ user, size = "sm" }: { user: any; size?: string }) {
   const sizeClass = size === "sm" ? "w-8 h-8 text-xs" : size === "md" ? "w-10 h-10 text-sm" : "w-12 h-12 text-base";
@@ -327,10 +328,7 @@ export default function CommunityDetail({ communityId }: { communityId: number }
             </Card>
 
             {loadingPosts ? (
-              <div className="text-center py-8">
-                <div className="w-6 h-6 border-3 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                <p className="text-gray-500 text-sm">Loading posts...</p>
-              </div>
+              <SkeletonList count={3} />
             ) : posts.length === 0 ? (
               <div className="text-center py-12">
                 <MessageSquare className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
@@ -408,9 +406,8 @@ export default function CommunityDetail({ communityId }: { communityId: number }
         {activeSection === "members" && (
           <div className="space-y-2">
             {loadingMembers ? (
-              <div className="text-center py-8">
-                <div className="w-6 h-6 border-3 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                <p className="text-gray-500 text-sm">Loading members...</p>
+              <div className="space-y-2 py-2">
+                {[...Array(4)].map((_, i) => <SkeletonUserCard key={i} />)}
               </div>
             ) : members.length === 0 ? (
               <div className="text-center py-12">

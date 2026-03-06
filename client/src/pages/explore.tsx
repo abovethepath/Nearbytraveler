@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Users, Zap, Globe, ArrowRight, Plus, Heart, ChevronRight, Flag, Lock, AlertTriangle } from "lucide-react";
+import { SkeletonCard } from "@/components/ui/skeleton-loaders";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getMetroAreaName } from "../../../shared/metro-areas";
@@ -507,9 +508,8 @@ export default function Explore() {
 
             {/* Live shares feed */}
             {loadingShares ? (
-              <div className="text-center py-12">
-                <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                <p className="text-gray-500 dark:text-gray-400 text-sm">Loading live shares...</p>
+              <div className="space-y-3 py-2">
+                {[...Array(3)].map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : errorShares ? (
               <div className="text-center py-12">

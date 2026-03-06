@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
+import { SkeletonList } from '@/components/ui/skeleton-loaders';
 import { TravelCrew } from './TravelCrew';
 import {
   Calendar,
@@ -475,8 +476,8 @@ export default function TripItineraryView({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full" />
+      <div className="bg-white dark:bg-gray-900 rounded-xl py-4">
+        <SkeletonList count={3} />
       </div>
     );
   }
