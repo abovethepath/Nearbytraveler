@@ -373,9 +373,26 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     sharedLanguagesCountForDisplay +
                     otherCommonalities.length);
 
-                // Compact hero card should never scroll: show a small preview and rely on "See all" for the full list.
-                const visibleInterestPills = sharedInterests.slice(0, 4);
-                const hasOverflow = sharedInterests.length > visibleInterestPills.length;
+                // Build a flat list of all shared tags for the big card
+                const sharedActivitiesArr: string[] = Array.isArray(commonStats?.sharedActivities)
+                  ? commonStats!.sharedActivities!
+                  : (Array.isArray((compatibilityData as any)?.sharedActivities) ? (compatibilityData as any).sharedActivities : []);
+                const sharedEventsArr: string[] = Array.isArray(commonStats?.sharedEvents)
+                  ? commonStats!.sharedEvents!
+                  : (Array.isArray((compatibilityData as any)?.sharedEvents) ? (compatibilityData as any).sharedEvents : []);
+
+                const allSharedTags: string[] = [
+                  ...sharedInterests,
+                  ...sharedActivitiesArr,
+                  ...sharedEventsArr,
+                  ...sharedCountries,
+                  ...nonEnglishSharedLanguages,
+                  ...otherCommonalities,
+                ];
+
+                const TAG_LIMIT = 8;
+                const visibleTags = allSharedTags.slice(0, TAG_LIMIT);
+                const hiddenTagCount = allSharedTags.length - visibleTags.length;
 
                 return (
                   <>
@@ -459,42 +476,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </div>
                         </div>
 
-                        {/* INLINE: What You Have in Common — level with city, near center */}
-                        {!isMobileWeb && (
-                          <div
-                            className="mt-3 mb-1"
-                            onClick={() => setSeeAllCommonOpen(true)}
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSeeAllCommonOpen(true); }}
-                            aria-label="What You Have in Common — click to expand"
-                          >
-                            <div className="common-radiate-widget inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/40 cursor-pointer select-none transition-all hover:bg-white/25">
-                              <span className="text-2xl flex-shrink-0">🤝</span>
-                              <div className="min-w-0">
-                                <div className="text-[10px] font-extrabold text-white/70 uppercase tracking-widest leading-none mb-1.5">
-                                  What You Have in Common
-                                </div>
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <span className="inline-flex items-center rounded-full px-3 py-0.5 text-[11px] font-extrabold bg-[#FF6B35] text-white shadow-md flex-shrink-0">
-                                    {totalCommon} in common
-                                  </span>
-                                  {sharedContactsCount > 0 && (
-                                    <span className="text-[11px] text-white/80 font-semibold flex-shrink-0">{sharedContactsCount} contacts</span>
-                                  )}
-                                  {sharedCountries.length > 0 && (
-                                    <span className="text-[11px] text-white/80 font-semibold flex-shrink-0">{sharedCountries.length} countries</span>
-                                  )}
-                                  {visibleInterestPills.slice(0, 3).map((interest) => (
-                                    <span key={interest} className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold bg-white/20 text-white border border-white/30">
-                                      {interest}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
 
                           <div className="mt-4">
                           <div className="flex flex-wrap items-center gap-2">
@@ -570,6 +551,79 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           )}
                         </div>
                       </div>
+
+                      {/* RIGHT: Big "What You Have in Common" card — desktop only */}
+                      {!isMobileWeb && (
+                        <div className="common-radiate-widget hidden lg:flex flex-col flex-shrink-0 w-60 xl:w-72 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/40 p-4 gap-3 self-start mt-1">
+                          {/* Header row */}
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl">🤝</span>
+                            <span className="text-[10px] font-extrabold text-white/80 uppercase tracking-widest leading-none">
+                              What You Have in Common
+                            </span>
+                          </div>
+
+                          {/* Count badge */}
+                          <div>
+                            <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-extrabold bg-[#FF6B35] text-white shadow-md">
+                              {totalCommon} in common
+                            </span>
+                          </div>
+
+                          {/* Stat pills (contacts, countries, languages) */}
+                          {(sharedContactsCount > 0 || sharedCountries.length > 0 || nonEnglishSharedLanguages.length > 0) && (
+                            <div className="flex flex-wrap gap-1.5">
+                              {sharedContactsCount > 0 && (
+                                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-white/20 text-white border border-white/30">
+                                  👥 {sharedContactsCount} mutual
+                                </span>
+                              )}
+                              {sharedCountries.length > 0 && (
+                                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-white/20 text-white border border-white/30">
+                                  🌍 {sharedCountries.length} countries
+                                </span>
+                              )}
+                              {nonEnglishSharedLanguages.length > 0 && (
+                                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-white/20 text-white border border-white/30">
+                                  💬 {nonEnglishSharedLanguages.length} languages
+                                </span>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Shared interest / activity / country tags */}
+                          {visibleTags.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5">
+                              {visibleTags.map((tag) => (
+                                <span
+                                  key={tag}
+                                  className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-white/25 text-white border border-white/40"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* See All button */}
+                          {hiddenTagCount > 0 && (
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}
+                              className="self-start text-[11px] font-bold text-white/90 underline underline-offset-2 hover:text-white transition-colors"
+                            >
+                              + {hiddenTagCount} more — See All
+                            </button>
+                          )}
+
+                          {/* If nothing at all */}
+                          {totalCommon === 0 && (
+                            <p className="text-[11px] text-white/60 leading-snug">
+                              Add more interests to your profile to find things in common.
+                            </p>
+                          )}
+                        </div>
+                      )}
 
                     </div>
 
