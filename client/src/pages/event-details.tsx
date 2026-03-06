@@ -576,6 +576,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
         {/* Sidebar - Going List on LEFT like Couchsurfing */}
         <div className="order-2 lg:order-1 space-y-6">
           {/* RSVP actions (keep directly above attendees list) */}
+          {/* DO NOT REMOVE: organizer guard — event creator should never see the Join/RSVP section */}
           {!!currentUser?.id && !isOrganizer && (
             <Card className="border border-gray-200 shadow-lg bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
               <CardHeader className="pb-2">

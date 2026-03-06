@@ -536,6 +536,7 @@ export function QuickMeetupWidget({
                         </span>
                       </div>
                       <div className="mt-2 flex items-center justify-between gap-2">
+                        {/* DO NOT REMOVE: creator guard — meetup organizer should never see Join button */}
                         {isOwn ? (
                           <Button
                             size="sm"
@@ -1052,6 +1053,7 @@ export function QuickMeetupWidget({
 
                     {/* Action - minimal padding on desktop web so all 3 buttons fit without cutoff */}
                     <div className={`border-t border-orange-200 dark:border-orange-700 ${!isNativeIOSApp() ? 'pt-0.5' : 'pt-2'}`}>
+                      {/* DO NOT REMOVE: creator should never see Join button — they created it and are already a member */}
                       {isOwn ? (
                         <div className={`flex flex-wrap items-center ${!isNativeIOSApp() ? 'gap-1' : 'gap-2'}`}>
                           <Button
@@ -1064,10 +1066,10 @@ export function QuickMeetupWidget({
                                        text-xs border-0 bg-gradient-to-r from-blue-500 to-cyan-500
                                        hover:from-blue-600 hover:to-cyan-600 text-white whitespace-nowrap
                                        ${!isNativeIOSApp() ? 'py-1.5 h-7 px-2 gap-1' : 'py-2 h-9 px-2.5 gap-2'}`}
-                            data-testid={`button-join-chat-${meetup.id}`}
+                            data-testid={`button-chat-${meetup.id}`}
                           >
                             <MessageSquare className="w-3 h-3 flex-shrink-0" />
-                            <span>Join Chat</span>
+                            <span>Chat</span>
                           </Button>
                           <Button
                             size="sm"

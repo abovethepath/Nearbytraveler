@@ -446,6 +446,7 @@ function QuickMeetupsPage() {
             </Button>
             
             
+            {/* DO NOT REMOVE: creator guard — meetup organizer should never see Join button */}
             {isOwn ? (
               isExpired ? (
                 <Button 
