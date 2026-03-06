@@ -1,0 +1,34 @@
+
+In server/services/matching.ts, update calculateCompatibilityScore to match on ALL of the following, and return each as a named array/field in the return object so the frontend can display them. The goal is every meaningful real-world connection shows up.
+What counts as a match (include ALL of these):
+
+Shared interests - already works, keep it
+Shared activities - already works, keep it
+Shared events - already works, keep it
+Shared city activities - Things I Want To Do in [City], already works, keep it
+Shared chatrooms - query chatroom_members table, find chatrooms both users are members of, return chatroom names
+Shared travel style - already works, return as named array
+Shared travel intent - why/how/budget they travel, return as named array
+Shared community tags - from user_community_tags table
+Same hometown city - hometownCity matches
+Same current city - destinationCity or city matches
+Shared travel plans - same destination + overlapping dates
+Same hostel/hotel - same destination + same hostel name + overlapping dates
+Shared languages - non-English only, counts as 1 thing total regardless of how many, return list for display
+Sexual preferences - match even if hidden from public profile
+Both have children - either travelingWithChildren OR hasChildren field is true on both users. If ages are similar (within 3 years) note that in the display but it's still 1 match
+Both veterans - isVeteran true on both
+Both active duty - isActiveDuty true on both
+Both new to town - newToTownUntil is a future date on both
+
+What does NOT count:
+
+Same gender
+Same age
+User type compatibility (traveler vs local)
+Bio keyword overlap
+Countries visited (too many false positives)
+
+Return all of these as named arrays in the CompatibilityScore return object so whatYouHaveInCommonStats.ts can pick them up and display them in the hero card and modal.
+Also update client/src/lib/whatYouHaveInCommonStats.ts to include all new fields in CompatibilityLike type and include them in arraySum so the count is accurate.
+Also update the profile bundle endpoint in server/routes.ts to pass all these new fields through in the compatibility response.

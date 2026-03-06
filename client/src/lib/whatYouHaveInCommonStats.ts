@@ -16,6 +16,18 @@ export type CompatibilityLike = {
   sharedDefaultInterests?: string[] | null;
   sharedSecretActivities?: string[] | null;
   sharedSexualPreferences?: string[] | null;
+  // New fields
+  sharedChatrooms?: string[] | null;
+  sharedCommunityTags?: string[] | null;
+  sharedTravelPlans?: string[] | null;
+  sameHostel?: string[] | null;
+  sameHometown?: boolean | null;
+  sameCurrentCity?: boolean | null;
+  bothHaveChildren?: boolean | null;
+  childrenAgesSimilar?: boolean | null;
+  bothNewToTown?: boolean | null;
+  bothVeterans?: boolean | null;
+  bothActiveDuty?: boolean | null;
 };
 
 export type ConnectionDegreeLike = {
@@ -82,7 +94,17 @@ export function computeCommonStats(
       : [],
   );
 
-  // Roll remaining breakdown arrays into otherCommonalities
+  // Boolean fields → label strings
+  const booleanLabels: string[] = [];
+  if (compatibilityData?.sameHometown) booleanLabels.push('Same hometown');
+  if (compatibilityData?.sameCurrentCity) booleanLabels.push('Both in same city');
+  if (compatibilityData?.bothHaveChildren) booleanLabels.push('Both traveling with kids');
+  if (compatibilityData?.childrenAgesSimilar) booleanLabels.push("Kids similar ages");
+  if (compatibilityData?.bothNewToTown) booleanLabels.push('Both new to town');
+  if (compatibilityData?.bothVeterans) booleanLabels.push('Both veterans');
+  if (compatibilityData?.bothActiveDuty) booleanLabels.push('Both active duty');
+
+  // Roll remaining breakdown arrays + new arrays + boolean labels into otherCommonalities
   const extraArrays: string[] = [
     ...(Array.isArray(compatibilityData?.otherCommonalities) ? compatibilityData!.otherCommonalities!.filter(Boolean) : []),
     ...(Array.isArray(compatibilityData?.sharedTravelStyle) ? compatibilityData!.sharedTravelStyle!.filter(Boolean) : []),
@@ -92,6 +114,11 @@ export function computeCommonStats(
     ...(Array.isArray(compatibilityData?.sharedCustomEvents) ? compatibilityData!.sharedCustomEvents!.filter(Boolean) : []),
     ...(Array.isArray(compatibilityData?.sharedDefaultInterests) ? compatibilityData!.sharedDefaultInterests!.filter(Boolean) : []),
     ...(Array.isArray(compatibilityData?.sharedSecretActivities) ? compatibilityData!.sharedSecretActivities!.filter(Boolean) : []),
+    ...(Array.isArray(compatibilityData?.sharedChatrooms) ? compatibilityData!.sharedChatrooms!.filter(Boolean) : []),
+    ...(Array.isArray(compatibilityData?.sharedCommunityTags) ? compatibilityData!.sharedCommunityTags!.filter(Boolean) : []),
+    ...(Array.isArray(compatibilityData?.sharedTravelPlans) ? compatibilityData!.sharedTravelPlans!.filter(Boolean) : []),
+    ...(Array.isArray(compatibilityData?.sameHostel) ? compatibilityData!.sameHostel!.filter(Boolean) : []),
+    ...booleanLabels,
   ];
   const alreadyShown = new Set([
     ...sharedInterests.map(v => v.toLowerCase()),
@@ -104,9 +131,7 @@ export function computeCommonStats(
 
   const sharedContactsCount = Math.max(0, Number(connectionDegreeData?.mutualCount || 0) || 0);
 
-  // The server's matchCount is authoritative — it includes ALL factors (hostel match,
-  // same gender, travel intent, travel style, etc.) that never appear as tagged arrays.
-  // Using only the array sums would show 0 even when there are real things in common.
+  // The server's matchCount is authoritative — it includes ALL factors.
   const serverMatchCount =
     typeof compatibilityData?.matchCount === "number" &&
     Number.isFinite(compatibilityData.matchCount) &&
@@ -119,9 +144,19 @@ export function computeCommonStats(
     sharedActivities.length +
     sharedEvents.length +
     sharedCountries.length +
-    sharedLanguagesNonEnglish.length +
+    (sharedLanguagesNonEnglish.length > 0 ? 1 : 0) +
     sharedCityActivities.length +
     sharedSexualPreferences.length +
+    (Array.isArray(compatibilityData?.sharedChatrooms) ? compatibilityData!.sharedChatrooms!.length : 0) +
+    (Array.isArray(compatibilityData?.sharedCommunityTags) ? compatibilityData!.sharedCommunityTags!.length : 0) +
+    (Array.isArray(compatibilityData?.sharedTravelPlans) ? compatibilityData!.sharedTravelPlans!.length : 0) +
+    (Array.isArray(compatibilityData?.sameHostel) && compatibilityData!.sameHostel!.length > 0 ? 1 : 0) +
+    (compatibilityData?.sameHometown ? 1 : 0) +
+    (compatibilityData?.sameCurrentCity ? 1 : 0) +
+    (compatibilityData?.bothHaveChildren ? 1 : 0) +
+    (compatibilityData?.bothNewToTown ? 1 : 0) +
+    (compatibilityData?.bothVeterans ? 1 : 0) +
+    (compatibilityData?.bothActiveDuty ? 1 : 0) +
     otherCommonalities.length;
 
   // Prefer the server's matchCount (comprehensive) + mutual contacts.
