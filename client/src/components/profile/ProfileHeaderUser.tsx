@@ -414,13 +414,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <h1 className="text-2xl sm:text-3xl font-extrabold text-white break-all leading-tight crisp-hero-text" style={{ color: '#ffffff' }}>
+                              <h1 className="text-xl sm:text-3xl font-extrabold text-white break-all leading-tight crisp-hero-text" style={{ color: '#ffffff' }}>
                                 @{user?.username}
                                 {!isOwnProfile && (() => {
                                   const deg = (connectionDegreeData as any)?.degree;
-                                  if (deg === 1) return <sup className="text-xs text-white/60 font-normal ml-0.5">1st</sup>;
-                                  if (deg === 2) return <sup className="text-xs text-white/60 font-normal ml-0.5">2nd</sup>;
-                                  if (deg === 3) return <sup className="text-xs text-white/60 font-normal ml-0.5">3rd</sup>;
+                                  if (deg === 1) return <sup className="text-sm text-white/60 font-normal ml-0.5">1st</sup>;
+                                  if (deg === 2) return <sup className="text-sm text-white/60 font-normal ml-0.5">2nd</sup>;
+                                  if (deg === 3) return <sup className="text-sm text-white/60 font-normal ml-0.5">3rd</sup>;
                                   return null;
                                 })()}
                               </h1>
@@ -556,14 +556,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           {totalCommon > 0 ? (
                             <div className="flex flex-row flex-wrap gap-1.5 overflow-hidden">
                               {nonEnglishSharedLanguages.length > 0 && (
-                                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30">
+                                <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-black/50 text-white border border-white/30">
                                   💬 {nonEnglishSharedLanguages.length} languages
                                 </span>
                               )}
                               {visibleTags.map((tag) => (
                                 <span
                                   key={tag}
-                                  className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30"
+                                  className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-black/50 text-white border border-white/30"
                                 >
                                   {tag}
                                 </span>
@@ -572,9 +572,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 <button
                                   type="button"
                                   onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}
-                                  className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold bg-black/50 text-white border border-white/30 underline underline-offset-2 hover:bg-black/70 transition-colors"
+                                  className="text-sm text-white/70 hover:text-white underline underline-offset-2 transition-colors"
                                 >
-                                  + {hiddenTagCount} more — See All
+                                  See All ({hiddenTagCount})
                                 </button>
                               )}
                               {sharedContactsCount > 0 && (
@@ -585,7 +585,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     const el = document.querySelector('[data-testid="mutual-connections"]') || document.querySelector('[data-testid="mutual-connections-desktop"]');
                                     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                   }}
-                                  className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30 hover:bg-black/70 transition-colors"
+                                  className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-black/50 text-white border border-white/30 hover:bg-black/70 transition-colors"
                                 >
                                   👥 {sharedContactsCount} contacts in common
                                 </button>
@@ -612,9 +612,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <button
                             type="button"
                             onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}
-                            className="text-[11px] font-bold text-white underline underline-offset-2 shrink-0"
+                            className="text-sm text-white/70 hover:text-white underline underline-offset-2 shrink-0"
                           >
-                            See all
+                            See All
                           </button>
                         </div>
                         <div className="mb-2">
@@ -627,7 +627,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             {allSharedTags.slice(0, 6).map((tag) => (
                               <span
                                 key={tag}
-                                className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30"
+                                className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-black/50 text-white border border-white/30"
                               >
                                 {tag}
                               </span>
@@ -636,9 +636,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               <button
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}
-                                className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30"
+                                className="text-sm text-white/70 hover:text-white underline underline-offset-2"
                               >
-                                +{allSharedTags.length - 6} more
+                                See All ({allSharedTags.length - 6})
                               </button>
                             )}
                           </div>
@@ -936,9 +936,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             @{user?.username}
                             {!isOwnProfile && (() => {
                               const deg = (connectionDegreeData as any)?.degree;
-                              if (deg === 1) return <sup className="text-xs text-white/60 font-normal ml-0.5">1st</sup>;
-                              if (deg === 2) return <sup className="text-xs text-white/60 font-normal ml-0.5">2nd</sup>;
-                              if (deg === 3) return <sup className="text-xs text-white/60 font-normal ml-0.5">3rd</sup>;
+                              if (deg === 1) return <sup className="text-sm text-white/60 font-normal ml-0.5">1st</sup>;
+                              if (deg === 2) return <sup className="text-sm text-white/60 font-normal ml-0.5">2nd</sup>;
+                              if (deg === 3) return <sup className="text-sm text-white/60 font-normal ml-0.5">3rd</sup>;
                               return null;
                             })()}
                           </h1>

@@ -128,14 +128,6 @@ export function computeCommonStats(
 
   const sharedContactsCount = Math.max(0, Number(connectionDegreeData?.mutualCount || 0) || 0);
 
-  // The server's matchCount is authoritative — it includes ALL factors.
-  const serverMatchCount =
-    typeof compatibilityData?.matchCount === "number" &&
-    Number.isFinite(compatibilityData.matchCount) &&
-    compatibilityData.matchCount >= 0
-      ? compatibilityData.matchCount
-      : null;
-
   const arraySum =
     sharedInterests.length +
     sharedActivities.length +
@@ -155,12 +147,8 @@ export function computeCommonStats(
     (compatibilityData?.bothActiveDuty ? 1 : 0) +
     otherCommonalities.length;
 
-  // Prefer the server's matchCount (comprehensive) + mutual contacts.
-  // Fall back to array sum if matchCount is not available.
-  const totalCommon =
-    serverMatchCount !== null
-      ? serverMatchCount + sharedContactsCount
-      : arraySum + sharedContactsCount;
+  // Use only arraySum so the count exactly matches the visible pills.
+  const totalCommon = arraySum + sharedContactsCount;
 
   return {
     sharedInterests,

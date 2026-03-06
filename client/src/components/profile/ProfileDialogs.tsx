@@ -1302,7 +1302,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
                       <FormItem>
                         <FormLabel>Sexual Preference (Select all that apply)</FormLabel>
                         <FormControl>
-                          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 border rounded-md p-3">
+                          <div className="flex flex-wrap gap-2 border rounded-md p-3">
                             {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
                               <div key={preference} className="flex items-center space-x-2">
                                 <Checkbox
@@ -1566,7 +1566,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
               </div>
 
               {/* Save/Cancel buttons - sticky at bottom on mobile for easy access */}
-              <div className="flex gap-2 pt-4 sticky bottom-0 bg-white dark:bg-gray-900 pb-4 border-t mt-4 -mx-6 px-6 md:relative md:border-t-0 md:mx-0 md:px-0 z-10">
+              <div className="flex gap-2 pt-4 sticky bottom-0 bg-white dark:bg-gray-900 pb-8 sm:pb-4 border-t mt-4 -mx-6 px-6 md:relative md:border-t-0 md:mx-0 md:px-0 z-10">
                 <Button 
                   type="button" 
                   variant="outline" 

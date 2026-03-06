@@ -107,12 +107,10 @@ export default function TravelIntentQuiz() {
   const handleCompleteQuiz = async () => {
     if (!user?.id) {
       toast({
-        title: "Login Required",
-        description: "You must be logged in to save travel preferences. Redirecting to login...",
+        title: "Error",
+        description: "Unable to save preferences. Please try again.",
         variant: "destructive",
       });
-      // Redirect to proper login endpoint
-      window.location.href = '/signin';
       return;
     }
 
@@ -125,6 +123,7 @@ export default function TravelIntentQuiz() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           travelWhy: answers.travelWhy,
           travelWhat: answers.travelWhat,

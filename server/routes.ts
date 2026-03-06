@@ -20822,6 +20822,50 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // POST seed ALL cities that have users but no activities (admin utility)
+  app.post("/api/admin/seed-missing-city-activities", async (req, res) => {
+    try {
+      const { ensureCityHasActivities } = await import('./auto-city-setup.js');
+
+      // Get all unique cities from users that have a hometown or destination
+      const userCityRows = await db.execute(sql`
+        SELECT DISTINCT city_name FROM (
+          SELECT hometown_city AS city_name FROM users WHERE hometown_city IS NOT NULL AND hometown_city != ''
+          UNION
+          SELECT destination_city AS city_name FROM users WHERE destination_city IS NOT NULL AND destination_city != ''
+          UNION
+          SELECT city AS city_name FROM users WHERE city IS NOT NULL AND city != ''
+        ) sub
+      `);
+
+      const allCities: string[] = (userCityRows.rows || []).map((r: any) => r.city_name).filter(Boolean);
+
+      // Get cities that already have activities
+      const seededRows = await db.execute(sql`
+        SELECT DISTINCT city_name FROM city_activities
+      `);
+      const seededSet = new Set((seededRows.rows || []).map((r: any) => r.city_name));
+
+      const missing = allCities.filter(c => !seededSet.has(c));
+      console.log(`🌱 ADMIN: Found ${missing.length} cities missing activities out of ${allCities.length} total`);
+
+      const results: string[] = [];
+      for (const cityName of missing) {
+        try {
+          await ensureCityHasActivities(cityName, '', 'United States', 1);
+          results.push(cityName);
+        } catch (err) {
+          console.error(`Failed to seed ${cityName}:`, err);
+        }
+      }
+
+      res.json({ seeded: results.length, cities: results, total: allCities.length, alreadyHad: allCities.length - missing.length });
+    } catch (error: any) {
+      console.error('Error seeding missing city activities:', error);
+      res.status(500).json({ error: 'Failed to seed missing city activities', detail: error.message });
+    }
+  });
+
   // POST refresh/update featured status for city activities (admin)
   app.post("/api/city-activities/:cityName/refresh-featured", async (req, res) => {
     try {

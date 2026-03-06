@@ -3307,7 +3307,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     title: "Plans Saved!",
                     description: `Your ${userActivities.filter(ua => ua.cityName === selectedCity).length} plans for ${selectedCity} are saved. You'll match with others who share these interests.`,
                   });
-                  setLocation('/discover');
+                  setLocation('/profile');
                 }}
                 className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-semibold"
               >
@@ -3327,10 +3327,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           <div className="max-w-2xl mx-auto flex justify-center">
             <Button
               onClick={() => {
-                fetchMatchingUsers();
-                toast({ title: "Plans saved!", description: `Finding matches in ${selectedCity}...` });
-                const matchSection = document.querySelector('[data-testid="matching-users-section"]');
-                if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                toast({ title: "Plans saved!", description: `Your city plans for ${selectedCity} have been saved.` });
+                setLocation('/profile');
               }}
               className="w-full md:w-auto md:min-w-[220px] bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg"
             >

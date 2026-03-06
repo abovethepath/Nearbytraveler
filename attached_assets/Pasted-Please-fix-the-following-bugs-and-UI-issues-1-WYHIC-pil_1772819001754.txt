@@ -1,0 +1,19 @@
+Please fix the following bugs and UI issues:
+1. WYHIC pill text — remove glow, make slightly bigger
+Remove all text-shadow, drop-shadow, filter, or glow effects from pills in the "What You Have in Common" hero card. Increase pill font size slightly to text-sm and add a bit more px-3 py-1 padding so text is easier to read.
+2. "+ 10 more — See All" button
+Change the wording from + 10 more — See All to just See All with the count in the badge. The current text is too long and too large. Make it a smaller subtle link: text-sm text-white/70 hover:text-white underline.
+3. Fix the "33 in common" count
+The count must only include real meaningful matches — shared interests, activities, events, city activities, shared languages (non-English, counts as 1), sexual preferences, both have children, both veterans, both active duty, both new to town, same hometown, same current city, shared travel plans. Do NOT count same gender, same age, user type compatibility, bio overlap, countries visited, or nearbytrav admin connections.
+4. "1st" superscript on mobile
+The 1st superscript next to the username may be too small on mobile. Increase to text-sm on mobile and make sure it stays on the same line as the username.
+5. Username cut off on mobile
+On mobile the username is being cut off at ~10 characters. Fix by allowing the username to wrap or shrink font size slightly on mobile: text-lg sm:text-xl and break-all or truncate with enough width.
+6. Sexual preference list in Edit Profile — horizontal not vertical
+In the edit profile page, the sexual preference options are listed vertically with lots of empty space on the right. Change to a horizontal wrapping layout: flex flex-wrap gap-2 so options flow left to right like interest pills.
+7. Save button hidden on mobile in Edit Bio
+In the edit bio/profile page on mobile, the Save button at the bottom is hidden behind the phone's bottom bar. Add pb-24 or mb-20 to the form container so the Save button is always scrollable into view above the bottom navigation.
+8. City Match — redirect after Save
+In the city match page, after the user hits Save, redirect them back to their profile page instead of staying on the same page. Add router.push('/profile') or equivalent after a successful save.
+9. Austin city plans missing
+Austin is showing no city plans in groups 1, 2, and 3. Every city should have the standard list of 12-20 activities seeded. Check why Austin's city activities are empty and re-seed them. This is critical for matching — if city activities are missing users can't match on "Things I Want To Do in Austin."
