@@ -589,11 +589,14 @@ export default function Home() {
           const aReferences = a.references?.length || 0;
           const bReferences = b.references?.length || 0;
           return bReferences - aReferences;
-        case 'compatibility':
-          // Sort by number of shared interests/activities
-          const aShared = (a.interests?.length || 0) + (a.activities?.length || 0);
-          const bShared = (b.interests?.length || 0) + (b.activities?.length || 0);
+        case 'compatibility': {
+          // Sort by actual shared things in common with the current user (not the user's own total)
+          const aCompat = buildFastCompatibilityData(a);
+          const bCompat = buildFastCompatibilityData(b);
+          const aShared = aCompat.sharedInterests.length + aCompat.sharedActivities.length + aCompat.sharedCountries.length + aCompat.sharedLanguages.length;
+          const bShared = bCompat.sharedInterests.length + bCompat.sharedActivities.length + bCompat.sharedCountries.length + bCompat.sharedLanguages.length;
           return bShared - aShared;
+        }
         case 'travel_experience':
           // Sort by travel experience (number of countries visited)
           const aCountries = a.countriesVisited?.length || 0;
