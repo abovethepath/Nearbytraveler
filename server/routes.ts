@@ -6244,7 +6244,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       let connectionStatus = { status: 'none' as string, connectionId: null as number | null };
       let compatibility = null;
-      const connectionDegree = null;
+      let connectionDegree: { degree: number; mutualCount: number; mutuals: any[] } | null = null;
 
       if (viewerId && viewerId !== userId) {
         try {
@@ -6264,17 +6264,50 @@ Questions? Just reply to this message. Welcome aboard!
           console.warn('Profile bundle: connection status check failed:', (e as any)?.message);
         }
 
-        try {
-          const viewer = await storage.getUser(viewerId);
-          if (viewer) {
+        // Run compatibility + connectionDegree in parallel — neither can crash the bundle
+        const EXCLUDED_SYSTEM_USERS = [1, 2];
+        const getBundleConnections = async (uid: number): Promise<number[]> => {
+          const result = await db.execute(sql`
+            SELECT CASE WHEN requester_id = ${uid} THEN receiver_id ELSE requester_id END AS cid
+            FROM connections
+            WHERE status = 'accepted' AND (requester_id = ${uid} OR receiver_id = ${uid})
+          `);
+          return (result.rows as any[])
+            .map((r) => parseInt(r.cid))
+            .filter((id) => !isNaN(id) && !EXCLUDED_SYSTEM_USERS.includes(id));
+        };
+
+        const [compatRes, degreeRes] = await Promise.allSettled([
+          (async () => {
+            const viewer = await storage.getUser(viewerId);
+            if (!viewer) return null;
             const viewerPlans = await storage.getUserTravelPlans(viewerId);
-            compatibility = await matchingService.calculateCompatibilityScore(
-              viewer, user, viewerPlans, travelPlansData
-            );
-          }
-        } catch (e) {
-          // compatibility is optional — swallow
-        }
+            return matchingService.calculateCompatibilityScore(viewer, user, viewerPlans, travelPlansData);
+          })(),
+          (async () => {
+            const [vConns, tConns] = await Promise.all([
+              getBundleConnections(viewerId),
+              getBundleConnections(userId),
+            ]);
+            const mutualIds = vConns.filter((id) => tConns.includes(id));
+            const degree = vConns.includes(userId) ? 1 : mutualIds.length > 0 ? 2 : 0;
+            const mutuals = mutualIds.length > 0
+              ? await db.select({
+                  id: users.id,
+                  username: users.username,
+                  name: users.name,
+                  profileImage: users.profileImage,
+                }).from(users).where(inArray(users.id, mutualIds.slice(0, 5)))
+              : [];
+            return { degree, mutualCount: mutualIds.length, mutuals };
+          })(),
+        ]);
+
+        if (compatRes.status === 'fulfilled') compatibility = compatRes.value;
+        else console.warn('Profile bundle: compatibility failed:', (compatRes as PromiseRejectedResult).reason?.message);
+
+        if (degreeRes.status === 'fulfilled') connectionDegree = degreeRes.value;
+        else console.warn('Profile bundle: connectionDegree failed:', (degreeRes as PromiseRejectedResult).reason?.message);
       }
 
       let businessDeals: any[] = [];
