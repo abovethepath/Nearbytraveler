@@ -120,7 +120,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
   return (
     <div
-      className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 relative isolate profile-hero-fixed after:content-[''] after:absolute after:inset-0 after:bg-black/30 ${isNativeIOSApp() ? 'py-6 sm:py-8 lg:py-12' : (isDesktopOwnProfile || isDesktopOtherUser) ? 'py-4 sm:py-5 lg:pt-6 lg:pb-16' : 'pt-12 sm:pt-14 lg:pt-20 pb-6 sm:pb-8 lg:pb-16'}`}
+      className={`bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 relative isolate profile-hero-fixed ${isNativeIOSApp() ? 'py-6 sm:py-8 lg:py-12' : (isDesktopOwnProfile || isDesktopOtherUser) ? 'py-4 sm:py-5 lg:pt-6 lg:pb-16' : 'pt-12 sm:pt-14 lg:pt-20 pb-6 sm:pb-8 lg:pb-16'}`}
       data-profile-hero-owner={isOwnProfile ? "own" : "other"}
       style={
         isMobileWeb
@@ -128,6 +128,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
           : { width: "100vw", marginLeft: "calc(50% - 50vw)" }
       }
     >
+      <div className="absolute inset-0 bg-black/30 z-0" />
       <div
         className={`mx-auto relative z-10 max-w-7xl ${isDesktopOwnProfile ? 'pl-4 sm:pl-6 lg:pl-8' : ''}`}
       >
