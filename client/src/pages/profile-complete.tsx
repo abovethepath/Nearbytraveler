@@ -1099,10 +1099,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     connectionDegree: any;
     businessDeals: any[];
   }>({
-    // STABLE key — does NOT include currentUser?.id so the query never re-fires
-    // when auth loads. The viewer is identified server-side via the session cookie
-    // (credentials: 'include'), with x-user-id as a legacy fallback for older iOS clients.
-    queryKey: [`/api/users/${effectiveUserId}/profile-bundle`],
+    // Include currentUser?.id in the key so the bundle re-fetches once the viewer's
+    // identity is known (needed to compute compatibility on the server side).
+    // Own-profile views (currentUser.id === effectiveUserId) still only fire once
+    // because the viewer ID will match and no second fetch is needed after auth loads.
+    queryKey: [`/api/users/${effectiveUserId}/profile-bundle`, currentUser?.id ?? null],
     queryFn: async () => {
       const url = `${getApiBaseUrl()}/api/users/${effectiveUserId}/profile-bundle`;
       const headers: Record<string, string> = {};
@@ -1301,7 +1302,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     connectingFriendCount?: number;
   } | undefined;
 
-  const commonStats = useMemo(() => computeCommonStats(compatibilityData as any, connectionDegreeData as any), [
+  const commonStats = useMemo(() => {
+    console.log("COMMON STATS INPUTS", {
+      compatibilityData,
+      connectionDegreeData,
+      matchCount: (compatibilityData as any)?.matchCount,
+      sharedInterests: (compatibilityData as any)?.sharedInterests,
+      sharedActivities: (compatibilityData as any)?.sharedActivities,
+      sharedCountries: (compatibilityData as any)?.sharedCountries,
+      sharedLanguages: (compatibilityData as any)?.sharedLanguages,
+      mutualCount: connectionDegreeData?.mutualCount,
+    });
+    return computeCommonStats(compatibilityData as any, connectionDegreeData as any);
+  }, [
     compatibilityData,
     connectionDegreeData,
   ]);
