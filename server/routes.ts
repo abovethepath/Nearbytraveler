@@ -23122,6 +23122,19 @@ Questions? Just reply to this message. Welcome aboard!
       const fromUid = Number(fromUserId);
       const toUid = Number(toUserId);
 
+      // Prevent duplicate pending requests to the same person
+      const [existing] = await db
+        .select({ id: availableNowRequests.id })
+        .from(availableNowRequests)
+        .where(and(
+          eq(availableNowRequests.fromUserId, fromUid),
+          eq(availableNowRequests.toUserId, toUid),
+          eq(availableNowRequests.status, "pending")
+        ));
+      if (existing) {
+        return res.status(409).json({ error: "Request already sent" });
+      }
+
       const [request] = await db.insert(availableNowRequests).values({
         fromUserId: fromUid,
         toUserId: toUid,
@@ -23196,6 +23209,27 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error("Error fetching requests:", error);
       res.status(500).json({ error: "Failed to fetch requests" });
+    }
+  });
+
+  // GET /api/available-now/sent-requests — returns toUserIds the current user has sent pending requests to
+  app.get("/api/available-now/sent-requests", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const sent = await db
+        .select({ toUserId: availableNowRequests.toUserId })
+        .from(availableNowRequests)
+        .where(and(
+          eq(availableNowRequests.fromUserId, Number(userId)),
+          eq(availableNowRequests.status, "pending")
+        ));
+
+      res.json({ sentToUserIds: sent.map(r => r.toUserId) });
+    } catch (error: any) {
+      console.error("Error fetching sent requests:", error);
+      res.status(500).json({ error: "Failed to fetch sent requests" });
     }
   });
 

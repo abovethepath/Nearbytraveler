@@ -83,6 +83,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const [showMeetRequest, setShowMeetRequest] = useState<number | null>(null);
   const [meetMessage, setMeetMessage] = useState("");
   const [showAllUsers, setShowAllUsers] = useState(false);
+  const [localPendingUserIds, setLocalPendingUserIds] = useState<Set<number>>(new Set());
   const [showGroupChat, setShowGroupChat] = useState(false);
   const [selectedGroupChat, setSelectedGroupChat] = useState<any>(null);
   const [groupChatMessage, setGroupChatMessage] = useState("");
@@ -115,6 +116,18 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     enabled: !!currentUser?.id,
     refetchInterval: 30000,
   });
+
+  const { data: sentRequestsData } = useQuery<{ sentToUserIds: number[] }>({
+    queryKey: ["/api/available-now/sent-requests"],
+    enabled: !!currentUser?.id,
+    refetchInterval: 60000,
+  });
+
+  // Merge DB-loaded sent requests with locally tracked ones for instant UI feedback
+  const pendingToUserIds: Set<number> = new Set([
+    ...(sentRequestsData?.sentToUserIds ?? []),
+    ...localPendingUserIds,
+  ]);
 
   const setAvailableMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -173,12 +186,23 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const sendRequestMutation = useMutation({
     mutationFn: async ({ toUserId, message }: { toUserId: number; message: string }) => {
       const res = await apiRequest("POST", "/api/available-now/request", { toUserId, message });
+      if (res.status === 409) {
+        // Already sent — treat as success so the button updates to Pending
+        return { alreadySent: true, toUserId };
+      }
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
+      // Immediately mark this user as pending in local state for instant UI feedback
+      setLocalPendingUserIds(prev => new Set([...prev, variables.toUserId]));
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/sent-requests"] });
       setShowMeetRequest(null);
       setMeetMessage("");
-      toast({ title: "Meet request sent!", description: "They'll be notified right away." });
+      const alreadySent = (_data as any)?.alreadySent;
+      toast({
+        title: alreadySent ? "Already requested" : "Meet request sent!",
+        description: alreadySent ? "You already sent a request to this person." : "They'll be notified right away.",
+      });
     },
   });
 
@@ -583,7 +607,15 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                         </div>
                       )}
                     </div>
-                    {showMeetRequest === entry.userId ? (
+                    {pendingToUserIds.has(entry.userId) ? (
+                      <Button
+                        size="sm"
+                        disabled
+                        className="h-7 text-xs bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-0 flex-shrink-0 cursor-not-allowed"
+                      >
+                        Pending ⏳
+                      </Button>
+                    ) : showMeetRequest === entry.userId ? (
                       <Button
                         size="sm"
                         variant="ghost"
@@ -602,7 +634,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                       </Button>
                     )}
                   </div>
-                  {showMeetRequest === entry.userId && (
+                  {showMeetRequest === entry.userId && !pendingToUserIds.has(entry.userId) && (
                     <div className="mt-3 w-full min-w-0 space-y-2">
                       <Textarea
                         placeholder="Say hi or suggest a place..."
