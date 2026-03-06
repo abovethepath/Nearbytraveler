@@ -24030,10 +24030,14 @@ Questions? Just reply to this message. Welcome aboard!
     { name: "foodies", displayName: "Foodies", category: "interest", icon: "🍳", color: "#EF4444", description: "Love food and local eats? Connect with fellow foodies." },
     { name: "veterans", displayName: "Veterans", category: "identity", icon: "🎖️", color: "#6366F1", description: "Veterans and military community. Connect with those who serve." },
   ];
+  // One-time backfill flag: ensures the expensive DB backfill only runs once per server boot.
+  let communityBackfillDone = false;
 
   // Get all community tags (site-wide; same list for every city)
   app.get("/api/community-tags", async (req: any, res) => {
     try {
+      if (!communityBackfillDone) {
+        communityBackfillDone = true;
       const systemUserId = 1; // for community chatrooms created by system
       // Ensure default communities exist (idempotent)
       for (const c of DEFAULT_COMMUNITIES) {
@@ -24114,6 +24118,7 @@ Questions? Just reply to this message. Welcome aboard!
           if (process.env.NODE_ENV === "development") console.error("Failed to backfill community chatroom:", tag?.id, e);
         }
       }
+      } // end if (!communityBackfillDone)
 
       const category = req.query.category as string;
       const includePrivate = req.query.includePrivate === "true";
