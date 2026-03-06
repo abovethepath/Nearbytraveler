@@ -2745,22 +2745,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         </div>
                       )}
                       
-                      {/* Save & Find Matches - Middle (between activity groups) */}
-                      <div className="my-8 text-center">
-                        <Button
-                          onClick={() => {
-                            fetchMatchingUsers();
-                            toast({ title: "Plans saved!", description: `Finding matches in ${selectedCity}...` });
-                            const matchSection = document.querySelector('[data-testid="matching-users-section"]');
-                            if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                          }}
-                          className="text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg bg-gradient-to-r from-blue-500 to-blue-300 hover:from-blue-600 hover:to-blue-400 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600"
-                        >
-                          <Check className="w-5 h-5 mr-2" />
-                          Save & Find Matches
-                        </Button>
-                      </div>
-                      
                       {/* GROUP 3: Generic (Connect On) */}
                       {group3Generic.length > 0 && (
                         <div className="mt-8">

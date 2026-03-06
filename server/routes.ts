@@ -20574,11 +20574,24 @@ Questions? Just reply to this message. Welcome aboard!
         );
       
       // Auto-seed launch cities: if we have curated data but DB is empty, seed so users see pre-populated activities
-      const { getFeaturedActivitiesForCity } = await import('./static-city-activities.js');
+      const { getFeaturedActivitiesForCity, getStaticActivitiesForCity } = await import('./static-city-activities.js');
       const featuredFromStatic = getFeaturedActivitiesForCity(cityName);
-      
-      if (activities.length === 0 && featuredFromStatic.length > 0) {
-        if (process.env.NODE_ENV === 'development') console.log(`🌱 CITY ACTIVITIES GET: Auto-seeding ${cityName} (${featuredFromStatic.length} featured) - DB was empty`);
+      const staticFromFile = getStaticActivitiesForCity(cityName);
+
+      const needsReseed = (() => {
+        if (activities.length === 0 && featuredFromStatic.length > 0) return true; // completely empty
+        if (activities.length > 0 && featuredFromStatic.length > 0) {
+          const featuredCount = activities.filter((a: any) => a.isFeatured || a.source === 'featured').length;
+          if (featuredCount === 0) return true; // has activities but none are featured
+          // Has featured but missing static activities that are defined in the static file
+          const staticCount = activities.filter((a: any) => a.source === 'static').length;
+          if (staticCount === 0 && staticFromFile.length > 0) return true;
+        }
+        return false;
+      })();
+
+      if (needsReseed) {
+        if (process.env.NODE_ENV === 'development') console.log(`🌱 CITY ACTIVITIES GET: Re-seeding ${cityName} (${featuredFromStatic.length} featured, ${staticFromFile.length} static in file)`);
         const { ensureCityHasActivities } = await import('./auto-city-setup.js');
         await ensureCityHasActivities(cityName, '', 'United States', 1);
         activities = await db
@@ -20596,29 +20609,6 @@ Questions? Just reply to this message. Welcome aboard!
             cityActivities.rank,
             desc(cityActivities.createdAt)
           );
-      } else if (activities.length > 0 && featuredFromStatic.length > 0) {
-        // DB has activities but may have 0 featured (e.g. old AI/generic rows from before featured rules)
-        const featuredCount = activities.filter((a: any) => a.isFeatured || a.source === 'featured').length;
-        if (featuredCount === 0) {
-          if (process.env.NODE_ENV === 'development') console.log(`🌱 CITY ACTIVITIES GET: ${cityName} has ${activities.length} activities but 0 featured - ensuring featured activities exist`);
-          const { ensureCityHasActivities } = await import('./auto-city-setup.js');
-          await ensureCityHasActivities(cityName, '', 'United States', 1);
-          activities = await db
-            .select()
-            .from(cityActivities)
-            .where(
-              and(
-                eq(cityActivities.cityName, cityName),
-                eq(cityActivities.isActive, true),
-                eq(cityActivities.isHidden, false)
-              )
-            )
-            .orderBy(
-              desc(cityActivities.isFeatured),
-              cityActivities.rank,
-              desc(cityActivities.createdAt)
-            );
-        }
       }
       
       // Filter out banned generic tags (Ice Cream Parlors, Dessert Shops, taylor swift july 1, etc.)
@@ -21051,7 +21041,7 @@ Questions? Just reply to this message. Welcome aboard!
       const existingActivities = await db
         .select({ activityName: cityActivities.activityName })
         .from(cityActivities)
-        .where(eq(cityActivities.city, cityName));
+        .where(eq(cityActivities.cityName, cityName));
 
       const { aiCityMatchService } = await import('./services/aiCityMatch');
       const result = await aiCityMatchService.generateActivitySuggestions(
@@ -21777,7 +21767,7 @@ Questions? Just reply to this message. Welcome aboard!
         .select({
           id: cityActivities.id,
           activityName: cityActivities.activityName,
-          city: cityActivities.city,
+          cityName: cityActivities.cityName,
           state: cityActivities.state,
           country: cityActivities.country,
           category: cityActivities.category,
