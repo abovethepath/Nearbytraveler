@@ -424,20 +424,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               <h1 className="text-2xl sm:text-3xl font-extrabold text-black break-all leading-tight crisp-hero-text" style={{ color: '#000000' }}>
                                 @{user?.username}
                               </h1>
-                              {!!(connectionDegreeData?.degree && connectionDegreeData.degree > 0) && (
-                                <Badge
-                                  className={`text-xs px-2 py-0.5 font-semibold ${
-                                    connectionDegreeData.degree === 1
-                                      ? "bg-green-100 text-green-800 border-green-300"
-                                      : connectionDegreeData.degree === 2
-                                        ? "bg-blue-100 text-blue-800 border-blue-300"
-                                        : "bg-purple-100 text-purple-800 border-purple-300"
-                                  }`}
-                                  data-testid="badge-connection-degree"
-                                >
-                                  {connectionDegreeData.degree === 1 ? "1st" : connectionDegreeData.degree === 2 ? "2nd" : "3rd"}
-                                </Badge>
-                              )}
                             </div>
 
                             <div className="mt-2 space-y-1">
@@ -962,20 +948,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </h1>
                         </div>
                       </div>
-                      {!isOwnProfile && connectionDegreeData?.degree && connectionDegreeData.degree > 0 && (
-                        <Badge
-                          className={`text-xs px-2 py-0.5 font-semibold ${
-                            connectionDegreeData.degree === 1
-                              ? 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-200 dark:border-green-600'
-                              : connectionDegreeData.degree === 2
-                                ? 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/50 dark:text-blue-200 dark:border-blue-600'
-                                : 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/50 dark:text-purple-200 dark:border-purple-600'
-                          }`}
-                          data-testid="badge-connection-degree"
-                        >
-                          {connectionDegreeData.degree === 1 ? '1st' : connectionDegreeData.degree === 2 ? '2nd' : '3rd'}
-                        </Badge>
-                      )}
                     </div>
 
                     {!isOwnProfile && (

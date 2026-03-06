@@ -1313,10 +1313,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       sharedLanguages: (compatibilityData as any)?.sharedLanguages,
       mutualCount: connectionDegreeData?.mutualCount,
     });
+    console.log("PROFILE HERO COMMONALITY DEBUG", {
+      currentUserId: currentUser?.id,
+      otherUserId: effectiveUserId,
+      compatibility: profileBundle?.compatibility,
+      connectionDegree: profileBundle?.connectionDegree,
+      totalFromProfile: computeCommonStats(profileBundle?.compatibility as any, profileBundle?.connectionDegree as any)?.totalCommon,
+    });
     return computeCommonStats(compatibilityData as any, connectionDegreeData as any);
   }, [
     compatibilityData,
     connectionDegreeData,
+    currentUser?.id,
+    effectiveUserId,
+    profileBundle,
   ]);
   
   // Add debug logging
