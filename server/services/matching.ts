@@ -735,7 +735,16 @@ export class TravelMatchingService {
       const rooms = await db.select({ name: citychatrooms.name })
         .from(citychatrooms)
         .where(inArray(citychatrooms.id, sharedIds));
-      return rooms.map(r => r.name);
+      // Filter out the main "Nearby Traveler" chatroom and any nearbytrav admin rooms
+      // — everyone is in those so they are not real matches
+      const EXCLUDED_ROOM_PATTERNS = [
+        /^nearby traveler$/i,
+        /^nearbytrav/i,
+        /nearbytraveler/i,
+      ];
+      return rooms
+        .map(r => r.name)
+        .filter(name => !EXCLUDED_ROOM_PATTERNS.some(re => re.test(name || '')));
     } catch {
       return [];
     }

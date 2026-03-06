@@ -3,7 +3,6 @@ export type CompatibilityLike = {
   sharedInterests?: string[] | null;
   sharedActivities?: string[] | null;
   sharedEvents?: string[] | null;
-  sharedCountries?: string[] | null;
   sharedLanguages?: string[] | null;
   otherCommonalities?: string[] | null;
   // Full breakdown arrays returned by the matching service
@@ -38,7 +37,6 @@ export interface CommonStats {
   sharedInterests: string[];
   sharedActivities: string[];
   sharedEvents: string[];
-  sharedCountries: string[];
   sharedLanguagesNonEnglish: string[];
   sharedCityActivities: string[];
   sharedSexualPreferences: string[];
@@ -69,7 +67,6 @@ export function computeCommonStats(
   const sharedInterests = dedupe(Array.isArray(compatibilityData?.sharedInterests) ? compatibilityData!.sharedInterests!.filter(Boolean) : []);
   const sharedActivities = dedupe(Array.isArray(compatibilityData?.sharedActivities) ? compatibilityData!.sharedActivities!.filter(Boolean) : []);
   const sharedEvents = dedupe(Array.isArray(compatibilityData?.sharedEvents) ? compatibilityData!.sharedEvents!.filter(Boolean) : []);
-  const sharedCountries = dedupe(Array.isArray(compatibilityData?.sharedCountries) ? compatibilityData!.sharedCountries!.filter(Boolean) : []);
   const sharedLanguagesRaw = dedupe(Array.isArray(compatibilityData?.sharedLanguages) ? compatibilityData!.sharedLanguages!.filter(Boolean) : []);
 
   const sharedLanguagesNonEnglish = sharedLanguagesRaw.filter((l) => {
@@ -143,7 +140,6 @@ export function computeCommonStats(
     sharedInterests.length +
     sharedActivities.length +
     sharedEvents.length +
-    sharedCountries.length +
     (sharedLanguagesNonEnglish.length > 0 ? 1 : 0) +
     sharedCityActivities.length +
     sharedSexualPreferences.length +
@@ -170,7 +166,6 @@ export function computeCommonStats(
     sharedInterests,
     sharedActivities,
     sharedEvents,
-    sharedCountries,
     sharedLanguagesNonEnglish,
     sharedCityActivities,
     sharedSexualPreferences,

@@ -62,7 +62,6 @@ export function ProfileTabs(props: ProfilePageProps) {
         sharedInterests?: string[];
         sharedActivities?: string[];
         sharedEvents?: string[];
-        sharedCountries?: string[];
         sharedLanguagesNonEnglish?: string[];
         sharedCityActivities?: string[];
         sharedSexualPreferences?: string[];
@@ -80,7 +79,6 @@ export function ProfileTabs(props: ProfilePageProps) {
     const sharedInterests = Array.isArray(commonStats.sharedInterests) ? commonStats.sharedInterests : [];
     const sharedActivities = Array.isArray(commonStats.sharedActivities) ? commonStats.sharedActivities : [];
     const sharedEvents = Array.isArray(commonStats.sharedEvents) ? commonStats.sharedEvents : [];
-    const sharedCountries = Array.isArray(commonStats.sharedCountries) ? commonStats.sharedCountries : [];
     const sharedLanguagesNonEnglish = Array.isArray(commonStats.sharedLanguagesNonEnglish) ? commonStats.sharedLanguagesNonEnglish : [];
     const sharedCityActivities = Array.isArray(commonStats.sharedCityActivities) ? commonStats.sharedCityActivities : [];
     const sharedSexualPreferences = Array.isArray(commonStats.sharedSexualPreferences) ? commonStats.sharedSexualPreferences : [];
@@ -92,7 +90,6 @@ export function ProfileTabs(props: ProfilePageProps) {
       { label: "Shared Activities", items: sharedActivities, color: "bg-blue-500 text-white border-blue-600/20" },
       { label: "Shared Events", items: sharedEvents, color: "bg-purple-500 text-white border-purple-600/20" },
       { label: "Shared City Activities", items: sharedCityActivities, color: "bg-teal-500 text-white border-teal-600/20" },
-      { label: "Shared Countries", items: sharedCountries, color: "bg-green-500 text-white border-green-600/20" },
       { label: "Shared Languages", items: sharedLanguagesNonEnglish, color: "bg-indigo-500 text-white border-indigo-600/20" },
       { label: "Shared Sexual Preferences", items: sharedSexualPreferences, color: "bg-pink-500 text-white border-pink-600/20" },
       { label: "Other Commonalities", items: otherCommonalities, color: "bg-white/20 text-white border-white/10" },
@@ -114,7 +111,7 @@ export function ProfileTabs(props: ProfilePageProps) {
         <div className="p-4 sm:p-5">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <div className="text-base sm:text-lg font-extrabold text-white">
+              <div className="text-lg sm:text-xl font-extrabold text-white">
                 <span className="inline-flex items-center gap-2">
                   <span aria-hidden>🤝</span>
                   <span>What You Have in Common</span>
@@ -140,25 +137,31 @@ export function ProfileTabs(props: ProfilePageProps) {
 
           <div className="mt-2 flex items-center justify-center">
             <div
-              className="inline-flex items-center justify-center rounded-2xl px-5 py-3 text-center bg-[#FF6B35] text-white border border-black/10 shadow-[0_14px_34px_rgba(255,107,53,0.32)]"
+              className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-center bg-[#FF6B35] text-white border border-black/10"
               data-testid="common-count-badge"
             >
-              <div className="text-lg sm:text-xl font-extrabold text-white leading-tight">
-                {commonStats.totalCommon} things in common
+              <div className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+                {commonStats.totalCommon}
+              </div>
+              <div className="ml-2 text-sm sm:text-base font-semibold text-white/90 leading-tight">
+                things in common
               </div>
             </div>
           </div>
 
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             {sharedContactsCount > 0 && (
-              <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white">
-                <span className="font-extrabold mr-1">{sharedContactsCount}</span> contacts
-              </span>
-            )}
-            {sharedCountries.length > 0 && (
-              <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white">
-                <span className="font-extrabold mr-1">{sharedCountries.length}</span> countries
-              </span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const el = document.querySelector('[data-testid="mutual-connections"]') || document.querySelector('[data-testid="mutual-connections-desktop"]');
+                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }}
+                className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white hover:bg-black/30 transition-colors"
+              >
+                👥 <span className="font-extrabold mx-1">{sharedContactsCount}</span> contacts in common
+              </button>
             )}
             {sharedLanguagesNonEnglish.length > 0 && (
               <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white">
@@ -494,7 +497,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                         size="sm"
                         showIcon={true}
                         showText={true}
-                        className="text-xs p-0 h-auto font-normal"
+                        className="text-xs p-0 h-auto font-normal text-red-500 hover:text-red-400"
                       />
                     </div>
                   )}

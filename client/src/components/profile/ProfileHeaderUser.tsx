@@ -328,7 +328,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       sharedInterests?: string[];
                       sharedActivities?: string[];
                       sharedEvents?: string[];
-                      sharedCountries?: string[];
                       sharedLanguagesNonEnglish?: string[];
                       sharedCityActivities?: string[];
                       sharedSexualPreferences?: string[];
@@ -345,9 +344,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 const sharedInterests: string[] = Array.isArray(commonStats?.sharedInterests)
                   ? commonStats!.sharedInterests!
                   : (Array.isArray((compatibilityData as any)?.sharedInterests) ? (compatibilityData as any).sharedInterests : []);
-                const sharedCountries: string[] = Array.isArray(commonStats?.sharedCountries)
-                  ? commonStats!.sharedCountries!
-                  : (Array.isArray((compatibilityData as any)?.sharedCountries) ? (compatibilityData as any).sharedCountries : []);
                 const otherCommonalities: string[] = Array.isArray(commonStats?.otherCommonalities)
                   ? commonStats!.otherCommonalities!
                   : (Array.isArray((compatibilityData as any)?.otherCommonalities) ? (compatibilityData as any).otherCommonalities : []);
@@ -389,7 +385,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   ...sharedActivitiesArr,
                   ...sharedEventsArr,
                   ...sharedCityActivitiesArr,
-                  ...sharedCountries,
                   ...nonEnglishSharedLanguages,
                   ...sharedSexualPreferencesArr,
                   ...otherCommonalities,
@@ -421,6 +416,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             <div className="flex items-center gap-2 flex-wrap">
                               <h1 className="text-2xl sm:text-3xl font-extrabold text-white break-all leading-tight crisp-hero-text" style={{ color: '#ffffff' }}>
                                 @{user?.username}
+                                {!isOwnProfile && (() => {
+                                  const deg = (connectionDegreeData as any)?.degree;
+                                  if (deg === 1) return <sup className="text-xs text-white/60 font-normal ml-0.5">1st</sup>;
+                                  if (deg === 2) return <sup className="text-xs text-white/60 font-normal ml-0.5">2nd</sup>;
+                                  if (deg === 3) return <sup className="text-xs text-white/60 font-normal ml-0.5">3rd</sup>;
+                                  return null;
+                                })()}
                               </h1>
                             </div>
 
@@ -539,13 +541,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                       {!isMobileWeb && (
                         <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-center max-h-48 overflow-hidden">
-                          {/* Header row: icon + label + count badge inline */}
+                          {/* Header row: bold readable headline + count badge */}
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-lg">🤝</span>
-                            <span className="text-[10px] font-extrabold text-white uppercase tracking-widest leading-none">
+                            <span className="text-sm font-bold text-white leading-none">
                               What You Have in Common
                             </span>
-                            <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-extrabold bg-[#FF6B35] text-white shadow-md">
+                            <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-extrabold bg-[#FF6B35] text-white">
                               {totalCommon} in common
                             </span>
                           </div>
@@ -553,16 +555,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           {/* All pills in one horizontal flex-wrap row */}
                           {totalCommon > 0 ? (
                             <div className="flex flex-row flex-wrap gap-1.5 overflow-hidden">
-                              {sharedContactsCount > 0 && (
-                                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30">
-                                  👥 {sharedContactsCount} mutual
-                                </span>
-                              )}
-                              {sharedCountries.length > 0 && (
-                                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30">
-                                  🌍 {sharedCountries.length} countries
-                                </span>
-                              )}
                               {nonEnglishSharedLanguages.length > 0 && (
                                 <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30">
                                   💬 {nonEnglishSharedLanguages.length} languages
@@ -583,6 +575,19 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold bg-black/50 text-white border border-white/30 underline underline-offset-2 hover:bg-black/70 transition-colors"
                                 >
                                   + {hiddenTagCount} more — See All
+                                </button>
+                              )}
+                              {sharedContactsCount > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const el = document.querySelector('[data-testid="mutual-connections"]') || document.querySelector('[data-testid="mutual-connections-desktop"]');
+                                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                  }}
+                                  className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30 hover:bg-black/70 transition-colors"
+                                >
+                                  👥 {sharedContactsCount} contacts in common
                                 </button>
                               )}
                             </div>
@@ -675,7 +680,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             { label: "Shared Activities", items: sharedActivitiesArr, color: "bg-blue-500 text-white border-blue-600/20" },
                             { label: "Shared Events", items: sharedEventsArr, color: "bg-purple-500 text-white border-purple-600/20" },
                             { label: "Shared City Activities", items: sharedCityActivitiesArr, color: "bg-teal-500 text-white border-teal-600/20" },
-                            { label: "Shared Countries", items: sharedCountries, color: "bg-green-500 text-white border-green-600/20" },
                             { label: "Shared Languages", items: nonEnglishSharedLanguages, color: "bg-indigo-500 text-white border-indigo-600/20" },
                             { label: "Shared Sexual Preferences", items: sharedSexualPreferencesArr, color: "bg-pink-500 text-white border-pink-600/20" },
                             { label: "Other Commonalities", items: otherCommonalities, color: "bg-gray-500 text-white border-gray-600/20" },
@@ -930,6 +934,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         <div className="lg:inline-flex lg:items-center lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm">
                           <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all !text-white crisp-hero-text" style={{ color: "#ffffff" }}>
                             @{user?.username}
+                            {!isOwnProfile && (() => {
+                              const deg = (connectionDegreeData as any)?.degree;
+                              if (deg === 1) return <sup className="text-xs text-white/60 font-normal ml-0.5">1st</sup>;
+                              if (deg === 2) return <sup className="text-xs text-white/60 font-normal ml-0.5">2nd</sup>;
+                              if (deg === 3) return <sup className="text-xs text-white/60 font-normal ml-0.5">3rd</sup>;
+                              return null;
+                            })()}
                           </h1>
                           {!isOwnProfile && connectionStatus?.status === 'accepted' && (
                             <span className="ml-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 shrink-0" title="Connected">

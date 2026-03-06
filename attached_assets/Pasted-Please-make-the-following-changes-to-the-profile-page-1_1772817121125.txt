@@ -1,0 +1,23 @@
+Please make the following changes to the profile page:
+1. Remove Shared Countries completely
+In whatYouHaveInCommonStats.ts remove sharedCountries from CompatibilityLike, CommonStats, arraySum and all display components. Countries visited is not a meaningful match.
+2. Remove meaningless chatroom matches
+In the compatibility/matching logic, filter out any chatroom matches that include the main "Nearby Traveler" chatroom or any connection to the nearbytrav admin account. Everyone is in those so they are not real matches.
+3. Connection degree as superscript
+In ProfileHeaderUser.tsx, show the connection degree as a superscript next to the username using the existing connectionDegreeData prop:
+tsx<sup className="text-xs text-white/60 font-normal ml-0.5">1st</sup>
+Show 1st, 2nd, or 3rd. If no connection show nothing. Do NOT use a big badge.
+4. Report button red
+In the About section, make the Report button text-red-500 hover:text-red-400.
+5. Remove glow effects from WYHIC card
+Remove any text-shadow, drop-shadow, or glow CSS from text inside the "What You Have in Common" hero card. Text should be clean and sharp.
+6. Stronger WYHIC card title
+Change the "WHAT YOU HAVE IN COMMON" small caps header to a bold readable headline. Make the count badge larger and more prominent — that number is the key hook for the feature.
+7. Contacts in Common pill
+Next to the "+ X more — See All" link in the WYHIC hero card, add a second pill that says "X contacts in common" (using existing mutual connections data). Clicking it scrolls down to the mutual contacts section on the profile page. If 0 mutual contacts don't show this pill.
+8. WYHIC card layout — go wide not tall
+The WYHIC card in the hero should expand horizontally into the available space on the right, not grow vertically. Pills should flow left to right in flex flex-wrap flex-row. Max 10 pills visible, then "+ X more — See All". Card should have max-h-48 overflow-hidden so it never grows taller than the left side content.
+9. Fix the count number
+The WYHIC count is showing 33 but the actual visible items don't add up. The count should only reflect real meaningful matches — shared interests, activities, events, city activities, shared chatrooms (excluding Nearby Traveler main room), shared travel style, shared travel intent, shared languages (non-English, counts as 1 total), sexual preferences, both have children, both veterans, both active duty, both new to town, same hometown city, same current city, shared travel plans to same destination. Do NOT count: same gender, same age, user type compatibility, bio overlap, countries visited, or the nearbytrav admin connection.
+10. "1 countries" pill fix
+This pill should not exist after removing shared countries. Make sure it's fully gone from the hero card display.
