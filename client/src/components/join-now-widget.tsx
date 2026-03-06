@@ -20,8 +20,7 @@ export default function JoinNowWidget() {
     username: "",
     email: "",
     confirmEmail: "",
-    password: "",
-    confirmPassword: ""
+    password: ""
   });
 
   const [usernameChecking, setUsernameChecking] = useState(false);
@@ -76,7 +75,7 @@ export default function JoinNowWidget() {
 
   const handleCreateAccount = () => {
     // Validate all fields
-    if (!formData.name || !formData.username || !formData.email || !formData.confirmEmail || !formData.password || !formData.confirmPassword) {
+    if (!formData.name || !formData.username || !formData.email || !formData.confirmEmail || !formData.password) {
       toast({
         title: "Missing information",
         description: "Please fill in all fields.",
@@ -108,15 +107,6 @@ export default function JoinNowWidget() {
       toast({
         title: "Email mismatch",
         description: "Email addresses don't match.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Password mismatch", 
-        description: "Passwords don't match.",
         variant: "destructive",
       });
       return;
@@ -279,40 +269,6 @@ export default function JoinNowWidget() {
                 />
                 {formData.password && formData.password.length < 6 && (
                   <p className="text-yellow-500 text-xs mt-1">Password should be at least 6 characters</p>
-                )}
-              </div>
-              
-              <div>
-                <Label htmlFor="confirmPassword" className="text-gray-900 dark:text-white">Confirm Password *</Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    placeholder="Confirm password"
-                    required
-                    className={`pr-10 ${
-                      formData.confirmPassword && formData.password ? (
-                        formData.password === formData.confirmPassword ? 'border-green-500' : 'border-red-500'
-                      ) : ''
-                    }`}
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                    {formData.confirmPassword && formData.password && (
-                      formData.password === formData.confirmPassword ? (
-                        <span className="text-green-500">✓</span>
-                      ) : (
-                        <span className="text-red-500">✗</span>
-                      )
-                    )}
-                  </div>
-                </div>
-                {formData.confirmPassword && formData.password && formData.password !== formData.confirmPassword && (
-                  <p className="text-red-500 text-xs mt-1">Passwords don't match</p>
-                )}
-                {formData.confirmPassword && formData.password && formData.password === formData.confirmPassword && (
-                  <p className="text-green-500 text-xs mt-1">Passwords match</p>
                 )}
               </div>
             </div>

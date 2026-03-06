@@ -685,17 +685,6 @@ export default function PlanTrip() {
       return;
     }
 
-    // Validate minimum selections (reduced to 1 total for easier trip planning)
-    const totalSelections = tripPlan.interests.length + tripPlan.activities.length + 0;
-    if (totalSelections < 1) {
-      toast({
-        title: "Selection Required",
-        description: `Please select at least 1 item total across interests, activities, and events. Currently selected: ${totalSelections}/1`,
-        variant: "destructive",
-      });
-      return;
-    }
-
     // Validate dates - Allow all future trips for regular trip planning
     if (tripPlan.startDate && tripPlan.endDate) {
       const startDate = new Date(tripPlan.startDate);

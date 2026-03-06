@@ -144,7 +144,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 {commonStats.totalCommon}
               </div>
               <div className="ml-2 text-sm sm:text-base font-semibold text-white/90 leading-tight">
-                things in common
+                {commonStats.totalCommon === 1 ? "thing" : "things"} in common
               </div>
             </div>
           </div>
@@ -2519,7 +2519,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
-                      <h4 className="font-medium text-sm text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
+                      <h4 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
                       <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
                         <Calendar className="w-3 h-3" />
                         {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -2562,7 +2562,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
-                      <h4 className="font-medium text-sm text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
+                      <h4 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
                       <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
                         <Calendar className="w-3 h-3" />
                         {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}

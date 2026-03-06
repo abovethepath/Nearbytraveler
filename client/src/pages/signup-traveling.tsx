@@ -26,7 +26,6 @@ export default function SignupTraveling() {
     username: "",
     email: "",
     password: "",
-    confirmPassword: "",
     phoneNumber: "",
 
     // Page 2 - Personal info  
@@ -97,7 +96,6 @@ export default function SignupTraveling() {
       ...prev,
       email: accountData.email || "",
       password: accountData.password || "",
-      confirmPassword: accountData.password || "", // Auto-fill confirm password
       username: accountData.username || "",
       name: accountData.name || "",
       phoneNumber: accountData.phoneNumber || ""
@@ -140,7 +138,6 @@ export default function SignupTraveling() {
         ...formData,
         email: accountData.email || formData.email,
         password: accountData.password || formData.password,
-        confirmPassword: accountData.password || formData.confirmPassword,
         username: accountData.username || formData.username,
         name: accountData.name || formData.name,
         phoneNumber: accountData.phoneNumber || '',
@@ -222,7 +219,6 @@ export default function SignupTraveling() {
       if (!registrationData.username) errors.push("Username is required.");
       if (!registrationData.email) errors.push("Email is required.");
       if (!registrationData.password) errors.push("Password is required.");
-      if (finalFormData.password !== finalFormData.confirmPassword) errors.push("Passwords do not match.");
       if (!registrationData.dateOfBirth) errors.push("Date of birth is required.");
       if (!registrationData.hometownCity || !registrationData.hometownCountry) {
         errors.push("Hometown city and country are required.");
@@ -602,7 +598,7 @@ export default function SignupTraveling() {
                     selected={formData.interests}
                     onChange={(selected) => setFormData(prev => ({ ...prev, interests: selected }))}
                     minRequired={7}
-                    placeholder="Search interests..."
+                    showSearch={false}
                     extraSelectedCount={getCustomInterestsCount()}
                   />
 

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, Heart, MapPin, Calendar, Plane, Shield, User } from "lucide-react";
+import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
 
 interface WhatYouHaveInCommonProps {
   currentUserId: number;
@@ -137,6 +138,12 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
 
   // Find the match data for the specific user
   const matchData = allMatches?.find(match => match.userId === otherUserId);
+
+  // ONE source of truth for the "things in common" total:
+  // always compute from the compatibility endpoint payload.
+  const mutualCountForStats = Array.isArray(mutualConnections) ? mutualConnections.length : 0;
+  const thingsInCommonTotal = computeCommonStats(compatibilityData as any, { mutualCount: mutualCountForStats }).totalCommon;
+  const thingsInCommonLabel = `${thingsInCommonTotal} ${thingsInCommonTotal === 1 ? "thing" : "things"} in common`;
 
   // Calculate comprehensive commonalities
   const calculateCommonalities = () => {
@@ -506,6 +513,12 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
 
     commonalities.compatibilityPercentage = Math.round(interestScore + activityScore + eventScore + cityActivityScore + personalScore);
 
+    // Remove non-signal "welcome" strings (not real matches)
+    commonalities.otherCommonalities = (commonalities.otherCommonalities || []).filter((v) => {
+      const n = String(v || "").trim().toLowerCase();
+      return n !== "welcome to los angeles metro" && n !== "welcome to nearby traveler";
+    });
+
     return commonalities;
   };
 
@@ -609,11 +622,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
               className="inline-flex items-center justify-center rounded-full bg-blue-600 dark:bg-blue-500 text-white shadow-md border border-blue-700 dark:border-blue-600 text-sm font-bold px-4 py-2.5 min-h-[2.5rem]"
               data-testid="common-count-badge"
             >
-              {(() => {
-                const visibleCount = (compatibilityData?.sharedInterests?.length || 0) + (compatibilityData?.sharedActivities?.length || 0) + (compatibilityData?.sharedEvents?.length || 0);
-                const count = compatibilityData ? visibleCount : commonalities.totalCount;
-                return `${count} things in common`;
-              })()}
+              {thingsInCommonLabel}
             </span>
           </div>
         </div>
