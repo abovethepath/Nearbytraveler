@@ -979,12 +979,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               {!isOwnProfile && (
                 <div>
                   {connectionDegreeData?.mutualCount && connectionDegreeData.mutualCount > 0 && (
-                    <div className="lg:hidden flex items-center gap-2 mt-3 p-2 bg-white/30 dark:bg-blue-900/30 backdrop-blur-sm rounded-xl border-2 border-blue-500/60 dark:border-blue-500/40 shadow-md" data-testid="mutual-connections">
+                    <div className="lg:hidden flex items-center gap-2 mt-3 p-2 bg-white/30 backdrop-blur-sm rounded-xl border-2 border-blue-500/60 shadow-md" data-testid="mutual-connections">
                       <div className="flex -space-x-2">
                         {connectionDegreeData.mutuals?.slice(0, 3).map((mutual: any) => (
                           <Avatar
                             key={mutual.id}
-                            className="w-6 h-6 border-2 border-white dark:border-gray-800 cursor-pointer hover:ring-2 hover:ring-blue-400"
+                            className="w-6 h-6 border-2 border-white cursor-pointer hover:ring-2 hover:ring-blue-400"
                             onClick={() => setLocation(`/profile/${mutual.id}`)}
                           >
                             <AvatarImage src={mutual.profileImage || undefined} />
