@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { openPrivateChatWithUser } from "@/lib/iosPrivateChat";
+import { Check } from "lucide-react";
 
 interface ConnectButtonProps {
   currentUserId: number;
@@ -195,7 +196,12 @@ export default function ConnectButton({
   const buttonState = getButtonState();
 
   if (connectionStatus?.status === 'accepted') {
-    return null;
+    return (
+      <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-600 text-white shrink-0 ${className}`}>
+        <Check className="w-3 h-3" />
+        Connected
+      </span>
+    );
   }
 
   return (
