@@ -1,0 +1,73 @@
+This is not resolved yet.
+
+There’s an obvious likely bug in what Replit gave you:
+
+const userData = settle(results[0], null);
+...
+res.json({ user, travelPlans, connections, ... });
+
+If the real code says userData but later returns user, then the route will crash with something like:
+
+ReferenceError: user is not defined
+
+That would produce exactly the kind of 500 you’re seeing.
+
+What to tell Replit right now
+
+Paste this:
+
+You did NOT fully fix it.
+
+In /api/users/:userId/profile-bundle, you create:
+
+const userData = settle(results[0], null);
+
+but later you return:
+
+res.json({ user, travelPlans, connections, ... });
+
+If the actual variable is userData, then user is undefined and the route will still 500.
+
+Fix this route so all returned fields use the exact variables that were assigned from the Promise.allSettled results.
+
+Specifically:
+1. Make sure the first settled result is assigned to a variable named user
+   OR change the response to use userData consistently.
+2. Add explicit variable assignments for every settled result, for example:
+   const user = settle(results[0], null);
+   const travelPlans = settle(results[1], []);
+   const connections = settle(results[2], []);
+   ...
+3. Before res.json, add:
+   console.log("PROFILE BUNDLE OK", {
+     userId,
+     viewerId,
+     hasUser: !!user,
+     travelPlansCount: Array.isArray(travelPlans) ? travelPlans.length : -1,
+     connectionsCount: Array.isArray(connections) ? connections.length : -1,
+   });
+4. In the catch block, log the full stack:
+   console.error("Profile bundle error:", error?.message, error?.stack);
+
+Return the exact final route code after fixing it.
+What I think happened
+
+They probably did one of these:
+
+renamed user to userData in one place but not another
+
+swallowed some query errors, but left a bad variable in the final res.json
+
+made it “safer” in theory, but the route still crashes at the end
+
+One more thing to check
+
+If they really used Promise.allSettled, the route should have a block like this:
+
+const user = settle(results[0], null);
+const travelPlans = settle(results[1], []);
+const connections = settle(results[2], []);
+
+If those explicit assignments are missing, the route is incomplete.
+
+Paste me the actual full route after Replit fixes the variable names, and I’ll check it line by line.

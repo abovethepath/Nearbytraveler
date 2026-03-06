@@ -6186,63 +6186,61 @@ Questions? Just reply to this message. Welcome aboard!
         storage.getUserParticipatedEventsWithDetails(userId, 'interested'),
       ]);
 
-      const settle = <T>(r: PromiseSettledResult<T>, fallback: T): T =>
-        r.status === 'fulfilled' ? r.value : (console.warn('Profile bundle partial failure:', (r as PromiseRejectedResult).reason?.message), fallback);
+      const settle = <T>(r: PromiseSettledResult<T>, fallback: T): T => {
+        if (r.status === 'fulfilled') return r.value;
+        console.warn('Profile bundle partial failure:', (r as PromiseRejectedResult).reason?.message);
+        return fallback;
+      };
 
-      const userData               = settle(results[0] as PromiseSettledResult<any>, null);
-      const travelPlansData        = settle(results[1] as PromiseSettledResult<any[]>, []);
-      const connectionsData        = settle(results[2] as PromiseSettledResult<any[]>, []);
-      const connectionRequestsData = settle(results[3] as PromiseSettledResult<any[]>, []);
-      const outgoingConnectionRequestsData = settle(results[4] as PromiseSettledResult<any[]>, []);
-      const referencesData         = settle(results[5] as PromiseSettledResult<any[]>, []);
-      const vouchesData            = settle(results[6] as PromiseSettledResult<any[]>, []);
-      const photosData             = settle(results[7] as PromiseSettledResult<any[]>, []);
-      const travelMemoriesData     = settle(results[8] as PromiseSettledResult<any[]>, []);
-      const platformStatsData      = settle(results[9] as PromiseSettledResult<any>, { totalUsers: 0, totalConnections: 0 });
-      const profileEventsData      = settle(results[10] as PromiseSettledResult<any[]>, []);
-      const eventsGoingData        = settle(results[11] as PromiseSettledResult<any[]>, []);
-      const eventsInterestedData   = settle(results[12] as PromiseSettledResult<any[]>, []);
-      
-      if (!userData) {
+      // NOTE: avoid shadowing imported Drizzle table names (connections, travelPlans,
+      // references, vouches) — use _data suffix for those four.
+      const user                       = settle(results[0]  as PromiseSettledResult<any>,    null);
+      const travelPlansData            = settle(results[1]  as PromiseSettledResult<any[]>,  []);
+      const connectionsData            = settle(results[2]  as PromiseSettledResult<any[]>,  []);
+      const connectionRequests         = settle(results[3]  as PromiseSettledResult<any[]>,  []);
+      const outgoingConnectionRequests = settle(results[4]  as PromiseSettledResult<any[]>,  []);
+      const referencesData             = settle(results[5]  as PromiseSettledResult<any[]>,  []);
+      const vouchesData                = settle(results[6]  as PromiseSettledResult<any[]>,  []);
+      const photos                     = settle(results[7]  as PromiseSettledResult<any[]>,  []);
+      const travelMemories             = settle(results[8]  as PromiseSettledResult<any[]>,  []);
+      const platformStats              = settle(results[9]  as PromiseSettledResult<any>,    { totalUsers: 0, totalConnections: 0 });
+      const profileEvents              = settle(results[10] as PromiseSettledResult<any[]>,  []);
+      const eventsGoing                = settle(results[11] as PromiseSettledResult<any[]>,  []);
+      const eventsInterested           = settle(results[12] as PromiseSettledResult<any[]>, []);
+
+      if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
-      // Remove password and format response
-      const { password: _, ...userWithoutPassword } = userData;
 
-      // Legacy backfill: some profiles have secret activities stored only in `secret_local_experiences`
-      // (older flows) and not in `users.secret_activities`. Keep UI behavior the same by ensuring the
-      // `secretActivities` field is populated when available.
+      // Remove password before sending
+      const { password: _, ...userOut } = user;
+
+      // Legacy backfill: some profiles stored secret activities only in secret_local_experiences
       try {
-        const existingSecretActivities = (userWithoutPassword as any)?.secretActivities;
         if (
-          userData.userType !== 'business' &&
-          (!existingSecretActivities || !String(existingSecretActivities).trim())
+          user.userType !== 'business' &&
+          (!userOut.secretActivities || !String(userOut.secretActivities).trim())
         ) {
           const [secretExp] = await db
             .select({ experience: secretLocalExperiences.experience })
             .from(secretLocalExperiences)
-            .where(
-              and(
-                eq(secretLocalExperiences.contributorId, userId),
-                eq(secretLocalExperiences.isActive, true),
-              )
-            )
+            .where(and(
+              eq(secretLocalExperiences.contributorId, userId),
+              eq(secretLocalExperiences.isActive, true),
+            ))
             .limit(1);
-
-          if (secretExp?.experience && secretExp.experience.trim()) {
-            (userWithoutPassword as any).secretActivities = secretExp.experience.trim();
+          if (secretExp?.experience?.trim()) {
+            (userOut as any).secretActivities = secretExp.experience.trim();
           }
         }
       } catch (e) {
-        // Do not fail profile bundle if this optional backfill query fails
+        // optional backfill — never crash the bundle
       }
-      
-      // Get connection status with viewer if viewing another profile
+
       let connectionStatus = { status: 'none' as string, connectionId: null as number | null };
       let compatibility = null;
-      let connectionDegree = null;
-      
+      const connectionDegree = null;
+
       if (viewerId && viewerId !== userId) {
         try {
           const existingConnection = await db.select().from(connections).where(
@@ -6252,9 +6250,9 @@ Questions? Just reply to this message. Welcome aboard!
             )
           ).limit(1);
           if (existingConnection.length > 0) {
-            connectionStatus = { 
-              status: existingConnection[0].status, 
-              connectionId: existingConnection[0].id 
+            connectionStatus = {
+              status: existingConnection[0].status,
+              connectionId: existingConnection[0].id,
             };
           }
         } catch (e) {
@@ -6266,54 +6264,56 @@ Questions? Just reply to this message. Welcome aboard!
           if (viewer) {
             const viewerPlans = await storage.getUserTravelPlans(viewerId);
             compatibility = await matchingService.calculateCompatibilityScore(
-              viewer,
-              userData,
-              viewerPlans,
-              travelPlansData
+              viewer, user, viewerPlans, travelPlansData
             );
           }
         } catch (e) {
-          // Compatibility calculation failed, continue without it
+          // compatibility is optional — swallow
         }
       }
-      
-      // Get business deals if business user
+
       let businessDeals: any[] = [];
-      if (userData.userType === 'business') {
+      if (user.userType === 'business') {
         try {
           businessDeals = await db.select().from(businessOffers).where(eq(businessOffers.businessId, userId));
         } catch (e) {
-          console.warn('Profile bundle: business deals fetch failed:', (e as any)?.message);
+          console.warn('Profile bundle: business deals failed:', (e as any)?.message);
         }
       }
-      
+
       const endTime = Date.now();
-      console.log(`📦 PROFILE-BUNDLE: Completed in ${endTime - startTime}ms`);
-      
-      // Return all data in one response
+      console.log('PROFILE BUNDLE OK', {
+        userId,
+        viewerId,
+        hasUser: !!userOut,
+        travelPlansCount: travelPlansData.length,
+        connectionsCount: connectionsData.length,
+        ms: endTime - startTime,
+      });
+
       res.json({
-        user: userWithoutPassword,
+        user: userOut,
         travelPlans: travelPlansData,
         connections: connectionsData,
-        connectionRequests: connectionRequestsData,
-        outgoingConnectionRequests: outgoingConnectionRequestsData,
+        connectionRequests,
+        outgoingConnectionRequests,
         references: referencesData,
         vouches: vouchesData,
-        photos: photosData,
-        travelMemories: travelMemoriesData,
+        photos,
+        travelMemories,
         passportStamps: [],
-        platformStats: platformStatsData,
-        profileEvents: profileEventsData,
-        eventsGoing: eventsGoingData,
-        eventsInterested: eventsInterestedData,
+        platformStats,
+        profileEvents,
+        eventsGoing,
+        eventsInterested,
         connectionStatus,
         compatibility,
         connectionDegree,
         businessDeals,
       });
     } catch (error: any) {
-      console.error("Profile bundle error:", error);
-      res.status(500).json({ message: "Failed to fetch profile bundle" });
+      console.error("Profile bundle error:", error?.message, error?.stack);
+      res.status(500).json({ message: "Profile bundle failed", error: error?.message });
     }
   });
 
