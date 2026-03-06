@@ -7,7 +7,7 @@ import { MapPin, Heart, Camera, Coffee, Utensils, Palette, Music, TreePine } fro
 import { useToast } from '@/hooks/use-toast';
 import { getApiBaseUrl } from '@/lib/queryClient';
 import { isNativeIOSApp } from '@/lib/nativeApp';
-// Removed useAuth import - will get user from localStorage instead
+import { useAuth } from '@/App';
 
 // Inspired by TangoTrips.com's "Intention-Driven" onboarding approach
 export default function TravelIntentQuiz() {
@@ -15,22 +15,7 @@ export default function TravelIntentQuiz() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  // Get user from localStorage - check both possible keys
-  const getUserFromStorage = () => {
-    try {
-      const userData = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-      if (!userData) return null;
-      try {
-        return JSON.parse(userData);
-      } catch {
-        return null;
-      }
-    } catch {
-      return null;
-    }
-  };
-  
-  const user = getUserFromStorage();
+  const { user } = useAuth();
   const [answers, setAnswers] = useState({
     travelWhy: '',
     travelWhat: [],
