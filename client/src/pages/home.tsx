@@ -1673,11 +1673,11 @@ export default function Home() {
 
 {/* HERO SECTION — Standardized Layout */}
 {!isNativeIOSApp() && isHeroVisible && (
-<section className="relative py-4 sm:py-6 lg:py-3 overflow-hidden bg-white">
+<section className="relative py-4 sm:py-6 lg:py-3 overflow-hidden bg-white dark:bg-gray-900">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
     <button
       onClick={toggleHeroVisibility}
-      className="absolute top-0 right-4 sm:right-6 lg:right-8 inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 z-10"
+      className="absolute top-0 right-4 sm:right-6 lg:right-8 inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 z-10"
       data-testid="button-hide-home-hero"
     >
       <X className="w-3 h-3" />
@@ -1691,7 +1691,7 @@ export default function Home() {
         <span className="text-sm font-bold bg-gradient-to-r from-blue-400 to-orange-400 bg-clip-text text-transparent">Connect • Discover • Experience</span>
       </div>
 
-      <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
+      <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6">
         {effectiveUser?.userType === "business" ? (
           <>
             <span
@@ -1701,7 +1701,7 @@ export default function Home() {
               Nearby Traveler
             </span>
             <br />
-            <span className="text-gray-900">Connect Your Business with Travelers & Locals</span>
+            <span className="text-gray-900 dark:text-white">Connect Your Business with Travelers & Locals</span>
           </>
         ) : (
           <>
@@ -1712,7 +1712,7 @@ export default function Home() {
               Nearby Traveler
             </span>
             <br />
-            <span className="text-gray-900">Connect with Travelers & Locals Worldwide</span>
+            <span className="text-gray-900 dark:text-white">Connect with Travelers & Locals Worldwide</span>
           </>
         )}
       </h1>
@@ -1732,7 +1732,7 @@ export default function Home() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 space-y-4">
-        <p className="text-xl lg:text-2xl text-gray-600 leading-relaxed font-medium travel-tagline">
+        <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium travel-tagline">
           Travel doesn't change you. The people you meet do.
         </p>
       </div>
@@ -1755,20 +1755,20 @@ export default function Home() {
                 Nearby Traveler
               </span>
               <br />
-              <span className="text-gray-900">
+              <span className="text-gray-900 dark:text-white">
                 Connect with Travelers
               </span>
               <br />
-              <span className="text-gray-900">
+              <span className="text-gray-900 dark:text-white">
                 & Locals Worldwide
               </span>
             </h1>
             
             <div className="max-w-2xl space-y-3 lg:space-y-2">
-              <p className="text-base lg:text-base text-gray-600 leading-relaxed font-medium travel-tagline">
+              <p className="text-base lg:text-base text-gray-600 dark:text-gray-300 leading-relaxed font-medium travel-tagline">
                 Travel doesn't change you. The people you meet do.
               </p>
-              <p className="text-sm lg:text-xs text-gray-500 leading-relaxed">
+              <p className="text-sm lg:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                 Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
               </p>
             </div>
