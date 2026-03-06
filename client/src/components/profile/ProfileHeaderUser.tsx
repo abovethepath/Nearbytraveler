@@ -535,11 +535,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       </div>
 
                       {!isMobileWeb && (
-                        <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/40 p-4 gap-2 self-center max-h-48 overflow-hidden">
+                        <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-center max-h-48 overflow-hidden">
                           {/* Header row: icon + label + count badge inline */}
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-lg">🤝</span>
-                            <span className="text-[10px] font-extrabold text-white/80 uppercase tracking-widest leading-none">
+                            <span className="text-[10px] font-extrabold text-white uppercase tracking-widest leading-none">
                               What You Have in Common
                             </span>
                             <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-extrabold bg-[#FF6B35] text-white shadow-md">
@@ -551,24 +551,24 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           {totalCommon > 0 ? (
                             <div className="flex flex-row flex-wrap gap-1.5 overflow-hidden">
                               {sharedContactsCount > 0 && (
-                                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-white/20 text-white border border-white/30">
+                                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30">
                                   👥 {sharedContactsCount} mutual
                                 </span>
                               )}
                               {sharedCountries.length > 0 && (
-                                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-white/20 text-white border border-white/30">
+                                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30">
                                   🌍 {sharedCountries.length} countries
                                 </span>
                               )}
                               {nonEnglishSharedLanguages.length > 0 && (
-                                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-white/20 text-white border border-white/30">
+                                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30">
                                   💬 {nonEnglishSharedLanguages.length} languages
                                 </span>
                               )}
                               {visibleTags.map((tag) => (
                                 <span
                                   key={tag}
-                                  className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-white/25 text-white border border-white/40"
+                                  className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30"
                                 >
                                   {tag}
                                 </span>
@@ -577,14 +577,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 <button
                                   type="button"
                                   onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}
-                                  className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold bg-white/10 text-white/90 border border-white/30 underline underline-offset-2 hover:bg-white/20 transition-colors"
+                                  className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold bg-black/50 text-white border border-white/30 underline underline-offset-2 hover:bg-black/70 transition-colors"
                                 >
                                   + {hiddenTagCount} more — See All
                                 </button>
                               )}
                             </div>
                           ) : (
-                            <p className="text-[11px] text-white/60 leading-snug">
+                            <p className="text-[11px] text-white leading-snug">
                               Add more interests to your profile to find things in common.
                             </p>
                           )}
@@ -595,16 +595,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                     {/* Mobile-only "What You Have in Common" hero card */}
                     {isMobileWeb && totalCommon > 0 && (
-                      <div className="mt-4 rounded-2xl border border-orange-400/40 bg-white/10 backdrop-blur-sm p-4">
+                      <div className="mt-4 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4">
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <div className="flex items-center gap-1.5">
                             <span className="text-lg">🤝</span>
-                            <span className="text-[11px] font-extrabold text-white/80 uppercase tracking-widest leading-none">What You Have in Common</span>
+                            <span className="text-[11px] font-extrabold text-white uppercase tracking-widest leading-none">What You Have in Common</span>
                           </div>
                           <button
                             type="button"
                             onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}
-                            className="text-[11px] font-bold text-white/90 underline underline-offset-2 shrink-0"
+                            className="text-[11px] font-bold text-white underline underline-offset-2 shrink-0"
                           >
                             See all
                           </button>
@@ -619,7 +619,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             {allSharedTags.slice(0, 6).map((tag) => (
                               <span
                                 key={tag}
-                                className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-white/20 text-white border border-white/30"
+                                className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30"
                               >
                                 {tag}
                               </span>
@@ -628,7 +628,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               <button
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}
-                                className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-white/10 text-white/80 border border-white/20"
+                                className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-black/50 text-white border border-white/30"
                               >
                                 +{allSharedTags.length - 6} more
                               </button>
