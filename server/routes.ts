@@ -439,9 +439,14 @@ const GLOBAL_METROPOLITAN_AREAS: MetropolitanArea[] = [
 
 // Metro consolidation: use shared/metro-areas as single source of truth (76 LA metro cities + NY, Chicago, SF).
 // Case-insensitive so "culver city" and "Culver City" both resolve to Los Angeles Metro.
-function consolidateToMetropolitanArea(city: string, _state?: string, _country?: string): string {
+function consolidateToMetropolitanArea(city: string, _state?: string, country?: string): string {
   const trimmed = (city || '').trim();
   if (!trimmed) return city;
+  // All defined metro areas (LA, NYC, SF Bay Area, Chicago) are US-only.
+  // Do NOT consolidate cities from other countries into US metro areas.
+  if (country && country !== 'United States' && country !== 'USA' && country !== 'US') {
+    return city;
+  }
   const metroName = getMetroAreaName(trimmed);
   // If city is a suburb/neighbourhood of a metro, return metro key (e.g. "Los Angeles Metro")
   if (metroName !== trimmed) return metroName;

@@ -371,12 +371,13 @@ export default function DiscoverPage() {
                     {city.city}
                   </h3>
                   <p className={`text-gray-600 dark:text-gray-300 leading-relaxed ${isNative ? 'text-[11px]' : 'text-xs sm:text-base'}`}>
-                    {city.country === 'United States' 
-                      ? `${city.city}, ${city.state || 'Unknown State'}, United States`
-                      : city.state 
-                        ? `${city.city}, ${city.state}, ${city.country}`
-                        : `${city.city}, ${city.country || 'Unknown Location'}`
-                    }
+                    {(() => {
+                      const state = city.state && city.state.toLowerCase() !== city.city.toLowerCase() ? city.state : null;
+                      if (city.country === 'United States') {
+                        return state ? `${city.city}, ${state}, United States` : `${city.city}, United States`;
+                      }
+                      return state ? `${city.city}, ${state}, ${city.country || 'Unknown Location'}` : `${city.city}, ${city.country || 'Unknown Location'}`;
+                    })()}
                   </p>
                 </CardContent>
               </Card>
