@@ -393,7 +393,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                 return (
                   <>
-                    <div className={`flex ${isMobileWeb ? "flex-row items-start" : "flex-col"} lg:flex-row lg:items-start gap-4 lg:gap-6`}>
+                    <div className={`flex ${isMobileWeb ? "flex-row items-start" : "flex-col"} lg:flex-row lg:items-center gap-4 lg:gap-6`}>
                       {/* LEFT: avatar + status */}
                       <div className="flex-shrink-0">
                         <div
@@ -407,7 +407,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       </div>
 
                       {/* MIDDLE: content (no extra card; sit directly on gradient) */}
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 min-w-0 lg:max-w-[400px]">
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
@@ -478,11 +478,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <div className="flex flex-wrap items-center gap-2">
                             <button
                               type="button"
-                              className={
-                                isMobileWeb
-                                  ? "inline-flex items-center justify-center rounded-lg transition-all font-bold cursor-pointer px-3 h-8 text-[13px] !bg-[#FF6B35] hover:!bg-[#F97316] !text-white !border-0 shadow-sm w-[10.5rem] sm:w-44"
-                                  : "inline-flex items-center justify-center rounded-lg transition-all font-bold cursor-pointer px-3 h-8 text-[13px] !bg-[#FF6B35] hover:!bg-[#F97316] !text-white !border-0 shadow-sm w-[10.5rem] sm:w-44"
-                              }
+                              className="inline-flex items-center justify-center rounded-lg transition-all font-bold cursor-pointer px-5 h-8 text-[13px] !bg-[#FF6B35] hover:!bg-[#F97316] !text-white !border-0 shadow-sm"
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -501,11 +497,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               targetUsername={user?.username}
                               targetName={user?.name}
                               appearance="default"
-                              className={
-                                isMobileWeb
-                                  ? "rounded-lg shadow-sm transition-all px-3 h-8 text-[13px] font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0 w-[10.5rem] sm:w-44"
-                                  : "rounded-lg shadow-sm transition-all px-3 h-8 text-[13px] font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0 w-[10.5rem] sm:w-44"
-                              }
+                              className="rounded-lg shadow-sm transition-all px-5 h-8 text-[13px] font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
                             />
                           </div>
 
@@ -550,7 +542,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       </div>
 
                       {!isMobileWeb && (
-                        <div className="common-radiate-widget hidden lg:flex flex-col flex-shrink-0 w-60 xl:w-72 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/40 p-4 gap-3 self-start mt-1">
+                        <div className="common-radiate-widget hidden lg:flex flex-col flex-shrink-0 w-60 xl:w-72 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/40 p-4 gap-3 self-center">
                           {/* Header row */}
                           <div className="flex items-center gap-2">
                             <span className="text-xl">🤝</span>
@@ -930,14 +922,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                     {!isOwnProfile && (
                       <div className={`flex mt-2 ${isDesktopOtherUser ? 'flex-row flex-wrap items-start gap-4 lg:gap-4 w-full lg:pr-2' : `flex-row flex-wrap items-center gap-2 ${!isNativeIOSApp() ? 'justify-start' : 'justify-center'}`}`}>
-                        <div className={isDesktopOtherUser ? 'flex flex-col flex-nowrap items-stretch gap-3 shrink-0' : 'flex flex-row flex-wrap items-center gap-2'}>
+                        <div className={isDesktopOtherUser ? 'flex flex-col flex-nowrap items-start gap-3 shrink-0' : 'flex flex-row flex-wrap items-center gap-2'}>
                           {/* Desktop (lg+): primary actions first, secondary actions below */}
                           {isDesktopOtherUser ? (
   <>
-    <div className="grid grid-cols-2 gap-2">
+    <div className="flex flex-row gap-2">
       <button
         type="button"
-        className="inline-flex items-center justify-center rounded-lg shadow-md transition-all font-bold cursor-pointer px-4 py-2 text-sm bg-[#FF6B35] hover:bg-[#F97316] text-white border-0"
+        className="inline-flex items-center justify-center rounded-lg shadow-md transition-all font-bold cursor-pointer px-5 h-8 text-[13px] bg-[#FF6B35] hover:bg-[#F97316] text-white border-0"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -955,7 +947,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
         targetUsername={user?.username}
         targetName={user?.name}
         appearance="default"
-        className="w-full rounded-lg shadow-md transition-all px-4 py-2 text-sm font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
+        className="rounded-lg shadow-md transition-all px-5 h-8 text-[13px] font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
       />
     </div>
   </>
