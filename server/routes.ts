@@ -6144,40 +6144,27 @@ Questions? Just reply to this message. Welcome aboard!
       console.log(`📦 PROFILE-BUNDLE: Fetching all data for user ${userId} (viewer: ${viewerId})`);
       const startTime = Date.now();
       
-      // Execute all queries in parallel for maximum speed
-      const [
-        userData,
-        travelPlansData,
-        connectionsData,
-        connectionRequestsData,
-        outgoingConnectionRequestsData,
-        referencesData,
-        vouchesData,
-        photosData,
-        travelMemoriesData,
-        platformStatsData,
-        profileEventsData,
-        eventsGoingData,
-        eventsInterestedData,
-      ] = await Promise.all([
-        // 1. User data
+      // Execute all queries in parallel — use allSettled so one bad query never
+      // crashes the entire bundle response.
+      const results = await Promise.allSettled([
+        // 0. User data
         storage.getUser(userId),
-        // 2. Travel plans with itineraries
+        // 1. Travel plans
         db.select().from(travelPlans).where(eq(travelPlans.userId, userId)),
-        // 3. User connections (accepted)
+        // 2. User connections (accepted)
         db.select().from(connections).where(
           and(
             or(eq(connections.requesterId, userId), eq(connections.receiverId, userId)),
             eq(connections.status, 'accepted')
           )
         ),
-        // 4. Connection requests (pending, incoming) - include requester user payload
+        // 3. Connection requests (pending, incoming)
         storage.getConnectionRequests(userId),
-        // 5. Connection requests (pending, outgoing) - include receiver user payload
+        // 4. Connection requests (pending, outgoing)
         storage.getOutgoingConnectionRequests(userId),
-        // 5. User references received by this user
+        // 5. User references
         db.select().from(userReferences).where(eq(userReferences.revieweeId, userId)),
-        // 6. User vouches received by this user (from actual vouches table)
+        // 6. User vouches
         db.select().from(vouches).where(eq(vouches.vouchedUserId, userId)),
         // 7. User photos
         db.select().from(userPhotos).where(eq(userPhotos.userId, userId)),
@@ -6185,19 +6172,36 @@ Questions? Just reply to this message. Welcome aboard!
         db.select().from(travelPlans).where(
           and(eq(travelPlans.userId, userId), eq(travelPlans.status, 'completed'))
         ),
-        // 9. Platform stats (cached globally)
+        // 9. Platform stats
         (async () => {
           const userCount = await db.select({ count: count() }).from(users).where(eq(users.isActive, true));
           const connectionCount = await db.select({ count: count() }).from(connections).where(eq(connections.status, 'accepted'));
           return { totalUsers: userCount[0]?.count || 0, totalConnections: connectionCount[0]?.count || 0 };
         })(),
-        // 11. Profile events (organized by user)
+        // 10. Profile events (organized by user)
         db.select().from(events).where(eq(events.organizerId, userId)),
-        // 12. Events user is going to (committed attendance)
+        // 11. Events user is going to
         storage.getUserParticipatedEventsWithDetails(userId, 'going'),
-        // 13. Events user is interested in (bookmarked)
+        // 12. Events user is interested in
         storage.getUserParticipatedEventsWithDetails(userId, 'interested'),
       ]);
+
+      const settle = <T>(r: PromiseSettledResult<T>, fallback: T): T =>
+        r.status === 'fulfilled' ? r.value : (console.warn('Profile bundle partial failure:', (r as PromiseRejectedResult).reason?.message), fallback);
+
+      const userData               = settle(results[0] as PromiseSettledResult<any>, null);
+      const travelPlansData        = settle(results[1] as PromiseSettledResult<any[]>, []);
+      const connectionsData        = settle(results[2] as PromiseSettledResult<any[]>, []);
+      const connectionRequestsData = settle(results[3] as PromiseSettledResult<any[]>, []);
+      const outgoingConnectionRequestsData = settle(results[4] as PromiseSettledResult<any[]>, []);
+      const referencesData         = settle(results[5] as PromiseSettledResult<any[]>, []);
+      const vouchesData            = settle(results[6] as PromiseSettledResult<any[]>, []);
+      const photosData             = settle(results[7] as PromiseSettledResult<any[]>, []);
+      const travelMemoriesData     = settle(results[8] as PromiseSettledResult<any[]>, []);
+      const platformStatsData      = settle(results[9] as PromiseSettledResult<any>, { totalUsers: 0, totalConnections: 0 });
+      const profileEventsData      = settle(results[10] as PromiseSettledResult<any[]>, []);
+      const eventsGoingData        = settle(results[11] as PromiseSettledResult<any[]>, []);
+      const eventsInterestedData   = settle(results[12] as PromiseSettledResult<any[]>, []);
       
       if (!userData) {
         return res.status(404).json({ message: "User not found" });

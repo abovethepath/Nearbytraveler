@@ -1123,17 +1123,30 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     enabled: !!effectiveUserId,
     staleTime: 30000,
     gcTime: 60000,
-    // Use cached data immediately if it's fresh (< 30s old) — 'always' was forcing
-    // a server round-trip on every navigation and showing the spinner every time.
     refetchOnMount: true,
     refetchOnWindowFocus: false,
-    retry: 2,
+    retry: 1,
+  });
+
+  // Fallback: if the bundle fails, load just the basic user record so the page
+  // doesn't show "Error Loading Profile" — partial data is better than nothing.
+  const { data: fallbackUser } = useQuery<User>({
+    queryKey: [`/api/users/${effectiveUserId}/basic`],
+    queryFn: async () => {
+      const url = `${getApiBaseUrl()}/api/users/${effectiveUserId}`;
+      const response = await fetch(url, { credentials: 'include' });
+      if (!response.ok) throw new Error('basic user fetch failed');
+      return response.json();
+    },
+    enabled: !!effectiveUserId && !!bundleError,
+    staleTime: 30000,
+    retry: 0,
   });
 
   // Extract data from bundle with fallbacks
-  const fetchedUser = profileBundle?.user;
-  const userLoading = bundleLoading;
-  const userError = bundleError;
+  const fetchedUser = profileBundle?.user ?? fallbackUser;
+  const userLoading = bundleLoading && !fallbackUser;
+  const userError = bundleError && !fallbackUser ? bundleError : null;
   const refetchUser = refetchBundle;
 
   // Keep a stable ref of the last successfully-fetched user so that a transient

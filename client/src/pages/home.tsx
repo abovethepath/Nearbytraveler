@@ -1026,9 +1026,9 @@ export default function Home() {
         throw error;
       }
     },
-    enabled: true, // Always enabled
-    staleTime: 60000, // Cache for 1 minute to prevent constant refetching
-    gcTime: 60000, // Keep in cache for 1 minute
+    enabled: true,
+    staleTime: 3 * 60 * 1000,  // fresh for 3 minutes
+    gcTime: 10 * 60 * 1000,    // keep in cache for 10 minutes
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
