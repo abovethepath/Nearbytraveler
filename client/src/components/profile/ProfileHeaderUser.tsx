@@ -1,10 +1,11 @@
 import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette } from "lucide-react";
+import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette, Check } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { ReportUserButton } from "@/components/report-user-button";
@@ -64,6 +65,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
   const [shareWithFriendsOpen, setShareWithFriendsOpen] = React.useState(false);
   const [seeAllCommonOpen, setSeeAllCommonOpen] = React.useState(false);
+
+  const { data: connectionStatus } = useQuery<{ status: 'pending' | 'accepted' | 'rejected' | 'none' }>({
+    queryKey: [`/api/connections/status/${currentUser?.id}/${user?.id}`],
+    enabled: !isOwnProfile && !!currentUser?.id && !!user?.id,
+    staleTime: 0,
+    gcTime: 0,
+  });
+  const isConnected = connectionStatus?.status === 'accepted';
   const origin = typeof window !== "undefined" ? window.location.origin : "https://nearbytraveler.org";
   const profileUrl = user?.username ? `${origin}/profile/${user.username}` : `${origin}/profile`;
   const shareText = `Check out this profile on NearbyTraveler: @${user?.username || "nearbytraveler"}\n\n${profileUrl}`;
@@ -948,6 +957,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </h1>
                         </div>
                       </div>
+                      {!isOwnProfile && isConnected && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-600 text-white shrink-0">
+                          <Check className="w-3 h-3" />
+                          Connected
+                        </span>
+                      )}
                     </div>
 
                     {!isOwnProfile && (
