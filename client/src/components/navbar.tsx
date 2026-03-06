@@ -473,7 +473,7 @@ function Navbar() {
             <div className="flex items-center space-x-3 md:space-x-6 ml-auto">
               {/* Desktop Navigation */}
               <nav className="hidden md:flex space-x-2 lg:space-x-4 items-center">
-                {navItems.map((item) =>
+                {navItems.filter((item) => item.path !== "/explore").map((item) =>
                   (item as { action?: string }).action === "search" ? (
                     directUser?.id && (
                       <button
