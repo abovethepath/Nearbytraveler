@@ -781,15 +781,17 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       <div className={isModal ? "" : "max-w-2xl mx-auto p-6"}>
         <Card className={isModal ? "border border-gray-200 shadow-none" : ""}>
           {!isModal && (
-          <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-2xl">
-            <Users className="w-6 h-6 text-blue-600" />
-            Create New Event
-          </CardTitle>
-          <p className="text-gray-600 dark:text-gray-300">
-            Create an event for your city where locals and travelers can connect and join
-          </p>
-        </CardHeader>
+            <div className="bg-gradient-to-br from-orange-500 via-pink-500 to-blue-600 rounded-t-xl px-6 py-8 text-white">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2.5 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <CalendarIcon className="w-6 h-6 text-white" />
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Create New Event</h1>
+              </div>
+              <p className="text-white/85 text-sm sm:text-base mt-1 pl-1">
+                Host an event in your city — open to locals, travelers, and anyone nearby
+              </p>
+            </div>
           )}
         
         <CardContent>
@@ -806,7 +808,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
             <div className="space-y-3">
               <button
                 type="button"
-                className="w-full rounded-xl border border-white/10 bg-gradient-to-br from-gray-900 to-gray-800 hover:from-gray-900 hover:to-gray-700 hover:border-white/20 text-white p-4 text-left shadow-sm hover:shadow-md transition-all"
+                className="w-full rounded-xl border border-blue-400/30 bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-600 hover:from-blue-600 hover:via-blue-500 hover:to-indigo-500 hover:border-blue-400/50 text-white p-4 text-left shadow-sm hover:shadow-md transition-all"
                 onClick={() => setOpenQuickPanel((prev) => (prev === "import" ? null : "import"))}
                 aria-expanded={openQuickPanel === "import"}
                 aria-controls="quick-import-panel"
@@ -1083,7 +1085,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
 
               <button
                 type="button"
-                className="w-full rounded-xl border border-white/10 bg-gradient-to-br from-gray-900 to-gray-800 hover:from-gray-900 hover:to-gray-700 hover:border-white/20 text-white p-4 text-left shadow-sm hover:shadow-md transition-all"
+                className="w-full rounded-xl border border-orange-400/30 bg-gradient-to-br from-orange-600 via-amber-500 to-yellow-500 hover:from-orange-500 hover:via-amber-400 hover:to-yellow-400 hover:border-orange-400/50 text-white p-4 text-left shadow-sm hover:shadow-md transition-all"
                 onClick={() => setOpenQuickPanel((prev) => (prev === "ai" ? null : "ai"))}
                 aria-expanded={openQuickPanel === "ai"}
                 aria-controls="quick-ai-panel"
