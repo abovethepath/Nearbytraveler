@@ -59,8 +59,12 @@ export function ProfileTabs(props: ProfilePageProps) {
   const commonStats = (props as any)?.commonStats as
     | {
         sharedInterests?: string[];
+        sharedActivities?: string[];
+        sharedEvents?: string[];
         sharedCountries?: string[];
         sharedLanguagesNonEnglish?: string[];
+        sharedCityActivities?: string[];
+        sharedSexualPreferences?: string[];
         otherCommonalities?: string[];
         sharedContactsCount?: number;
         totalCommon?: number;
@@ -73,13 +77,29 @@ export function ProfileTabs(props: ProfilePageProps) {
     const [expanded, setExpanded] = React.useState(false);
 
     const sharedInterests = Array.isArray(commonStats.sharedInterests) ? commonStats.sharedInterests : [];
+    const sharedActivities = Array.isArray(commonStats.sharedActivities) ? commonStats.sharedActivities : [];
+    const sharedEvents = Array.isArray(commonStats.sharedEvents) ? commonStats.sharedEvents : [];
     const sharedCountries = Array.isArray(commonStats.sharedCountries) ? commonStats.sharedCountries : [];
     const sharedLanguagesNonEnglish = Array.isArray(commonStats.sharedLanguagesNonEnglish) ? commonStats.sharedLanguagesNonEnglish : [];
+    const sharedCityActivities = Array.isArray(commonStats.sharedCityActivities) ? commonStats.sharedCityActivities : [];
+    const sharedSexualPreferences = Array.isArray(commonStats.sharedSexualPreferences) ? commonStats.sharedSexualPreferences : [];
+    const otherCommonalities = Array.isArray(commonStats.otherCommonalities) ? commonStats.otherCommonalities : [];
     const sharedContactsCount = Number.isFinite(commonStats.sharedContactsCount as number) ? (commonStats.sharedContactsCount as number) : 0;
+
+    const sections = [
+      { label: "Shared Interests", items: sharedInterests, color: "bg-[#FF6B35] text-white border-black/10" },
+      { label: "Shared Activities", items: sharedActivities, color: "bg-blue-500 text-white border-blue-600/20" },
+      { label: "Shared Events", items: sharedEvents, color: "bg-purple-500 text-white border-purple-600/20" },
+      { label: "Shared City Activities", items: sharedCityActivities, color: "bg-teal-500 text-white border-teal-600/20" },
+      { label: "Shared Countries", items: sharedCountries, color: "bg-green-500 text-white border-green-600/20" },
+      { label: "Shared Languages", items: sharedLanguagesNonEnglish, color: "bg-indigo-500 text-white border-indigo-600/20" },
+      { label: "Shared Sexual Preferences", items: sharedSexualPreferences, color: "bg-pink-500 text-white border-pink-600/20" },
+      { label: "Other Commonalities", items: otherCommonalities, color: "bg-white/20 text-white border-white/10" },
+    ].filter((s) => s.items.length > 0);
 
     return (
       <div
-        className="what-you-have-in-common-inline relative overflow-hidden rounded-2xl border-2 border-orange-500/30 shadow-lg bg-[#1e2139] min-h-[240px]"
+        className="what-you-have-in-common-inline relative overflow-hidden rounded-2xl border-2 border-orange-500/30 shadow-lg bg-[#1e2139]"
         role="button"
         tabIndex={0}
         onClick={() => setExpanded((v) => !v)}
@@ -129,12 +149,16 @@ export function ProfileTabs(props: ProfilePageProps) {
           </div>
 
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white">
-              <span className="font-extrabold mr-1">{sharedContactsCount}</span> contacts
-            </span>
-            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white">
-              <span className="font-extrabold mr-1">{sharedCountries.length}</span> countries
-            </span>
+            {sharedContactsCount > 0 && (
+              <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white">
+                <span className="font-extrabold mr-1">{sharedContactsCount}</span> contacts
+              </span>
+            )}
+            {sharedCountries.length > 0 && (
+              <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white">
+                <span className="font-extrabold mr-1">{sharedCountries.length}</span> countries
+              </span>
+            )}
             {sharedLanguagesNonEnglish.length > 0 && (
               <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white">
                 <span className="font-extrabold mr-1">{sharedLanguagesNonEnglish.length}</span> languages
@@ -142,63 +166,34 @@ export function ProfileTabs(props: ProfilePageProps) {
             )}
           </div>
 
-          <div className="mt-5">
-            <div className="text-sm font-extrabold text-white">
-              Shared Interests ({sharedInterests.length})
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2.5">
-              {sharedInterests.length > 0 ? (
-                sharedInterests.map((interest) => (
-                  <span
-                    key={interest}
-                    className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-[#FF6B35] text-white border border-black/10 shadow-[0_12px_26px_rgba(255,107,53,0.28)]"
-                  >
-                    {interest}
+          {/* Always show first section (interests) collapsed; expand shows all */}
+          {sections.slice(0, 1).map(({ label, items, color }) => (
+            <div key={label} className="mt-5">
+              <div className="text-sm font-extrabold text-white">{label} ({items.length})</div>
+              <div className="mt-3 flex flex-wrap gap-2.5">
+                {items.map((item) => (
+                  <span key={item} className={`inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold border ${color}`}>
+                    {item}
                   </span>
-                ))
-              ) : (
-                <span className="text-sm text-white/70">No shared interests yet</span>
-              )}
+                ))}
+              </div>
             </div>
-          </div>
+          ))}
 
           {expanded && (
             <div className="mt-5 space-y-4">
-              {sharedCountries.length > 0 && (
-                <div>
-                  <div className="text-sm font-extrabold text-white">
-                    Shared Countries ({sharedCountries.length})
-                  </div>
+              {sections.slice(1).map(({ label, items, color }) => (
+                <div key={label}>
+                  <div className="text-sm font-extrabold text-white">{label} ({items.length})</div>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {sharedCountries.map((c) => (
-                      <span
-                        key={c}
-                        className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white"
-                      >
-                        {c}
+                    {items.map((item) => (
+                      <span key={item} className={`inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold border ${color}`}>
+                        {item}
                       </span>
                     ))}
                   </div>
                 </div>
-              )}
-
-              {sharedLanguagesNonEnglish.length > 0 && (
-                <div>
-                  <div className="text-sm font-extrabold text-white">
-                    Shared Languages ({sharedLanguagesNonEnglish.length})
-                  </div>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {sharedLanguagesNonEnglish.map((l) => (
-                      <span
-                        key={l}
-                        className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white"
-                      >
-                        {l}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+              ))}
             </div>
           )}
         </div>

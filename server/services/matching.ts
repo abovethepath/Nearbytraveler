@@ -23,6 +23,15 @@ export interface MatchScore {
   sameGender: boolean;
   sharedLanguages: string[];
   sharedCountries: string[];
+  // Full breakdown arrays (all contribute to matchCount)
+  sharedCityActivities: { activity: string; city: string }[];
+  sharedTravelStyle: string[];
+  sharedTags: string[];
+  sharedExpertise: string[];
+  sharedCustomActivities: string[];
+  sharedCustomEvents: string[];
+  sharedDefaultInterests: string[];
+  sharedSecretActivities: string[];
 }
 
 export interface MatchingPreferences {
@@ -327,7 +336,7 @@ export class TravelMatchingService {
       sharedActivities: sharedActivities,
       sharedEvents: sharedEvents,
       sharedTravelIntent: this.getSharedTravelIntent(user1, user2),
-      sharedSexualPreferences: this.getSharedSexualPreferences(user1, user2),
+      sharedSexualPreferences: sharedSexualPrefs,
       locationOverlap: locationScore.hasOverlap,
       dateOverlap: false, // Simplified for now
       userTypeCompatibility: userTypeScore.isCompatible,
@@ -337,8 +346,16 @@ export class TravelMatchingService {
       sameFamilyStatus: !!(user1.travelingWithChildren && user2.travelingWithChildren),
       sameAge: ageScore.sameAge,
       sameGender: this.haveSameGender(user1, user2),
-      sharedLanguages: this.getSharedLanguages(user1, user2),
-      sharedCountries: this.getSharedCountries(user1, user2)
+      sharedLanguages: sharedLanguages,
+      sharedCountries: sharedCountries,
+      sharedCityActivities: sharedCityActivities,
+      sharedTravelStyle: sharedTravelStyle,
+      sharedTags: sharedTags,
+      sharedExpertise: sharedExpertise,
+      sharedCustomActivities: sharedCustomActivities,
+      sharedCustomEvents: sharedCustomEvents,
+      sharedDefaultInterests: sharedDefaultInterests,
+      sharedSecretActivities: sharedSecretActivities,
     };
   }
 

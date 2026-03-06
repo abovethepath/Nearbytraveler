@@ -332,6 +332,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       sharedEvents?: string[];
                       sharedCountries?: string[];
                       sharedLanguagesNonEnglish?: string[];
+                      sharedCityActivities?: string[];
+                      sharedSexualPreferences?: string[];
                       otherCommonalities?: string[];
                       sharedContactsCount?: number;
                       totalCommon?: number;
@@ -351,6 +353,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 const otherCommonalities: string[] = Array.isArray(commonStats?.otherCommonalities)
                   ? commonStats!.otherCommonalities!
                   : (Array.isArray((compatibilityData as any)?.otherCommonalities) ? (compatibilityData as any).otherCommonalities : []);
+                const sharedCityActivitiesArr: string[] = Array.isArray(commonStats?.sharedCityActivities)
+                  ? commonStats!.sharedCityActivities!
+                  : [];
+                const sharedSexualPreferencesArr: string[] = Array.isArray(commonStats?.sharedSexualPreferences)
+                  ? commonStats!.sharedSexualPreferences!
+                  : [];
 
                 const nonEnglishSharedLanguages = Array.isArray(commonStats?.sharedLanguagesNonEnglish)
                   ? commonStats!.sharedLanguagesNonEnglish!
@@ -382,8 +390,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   ...sharedInterests,
                   ...sharedActivitiesArr,
                   ...sharedEventsArr,
+                  ...sharedCityActivitiesArr,
                   ...sharedCountries,
                   ...nonEnglishSharedLanguages,
+                  ...sharedSexualPreferencesArr,
                   ...otherCommonalities,
                 ];
 
@@ -615,6 +625,51 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                     </div>
 
+                    {/* Mobile-only "What You Have in Common" hero card */}
+                    {isMobileWeb && totalCommon > 0 && (
+                      <div className="mt-4 rounded-2xl border border-orange-400/40 bg-white/10 backdrop-blur-sm p-4">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-lg">🤝</span>
+                            <span className="text-[11px] font-extrabold text-white/80 uppercase tracking-widest leading-none">What You Have in Common</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}
+                            className="text-[11px] font-bold text-white/90 underline underline-offset-2 shrink-0"
+                          >
+                            See all
+                          </button>
+                        </div>
+                        <div className="mb-2">
+                          <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-extrabold bg-[#FF6B35] text-white shadow-md">
+                            {totalCommon} in common
+                          </span>
+                        </div>
+                        {allSharedTags.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5">
+                            {allSharedTags.slice(0, 6).map((tag) => (
+                              <span
+                                key={tag}
+                                className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-white/20 text-white border border-white/30"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                            {allSharedTags.length > 6 && (
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}
+                                className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-white/10 text-white/80 border border-white/20"
+                              >
+                                +{allSharedTags.length - 6} more
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     {/* Tab bar (already text-only on web) */}
                     <div className="w-full mt-5 relative">
                       <ProfileTabBar {...props} variant="hero" />
@@ -637,52 +692,55 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <DialogTitle className="text-gray-900 dark:text-white">What You Have in Common</DialogTitle>
                         </DialogHeader>
 
-                        <div className="space-y-6">
+                        <div className="space-y-5 max-h-[70vh] overflow-y-auto">
                           <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 px-4 py-4">
                             <div className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white leading-tight">
                               {totalCommon} things in common
                             </div>
                           </div>
 
-                          <div>
-                            <div className="text-base font-extrabold text-gray-900 dark:text-white mb-3">
-                              Shared interests ({sharedInterests.length})
-                            </div>
-                            <div className="flex flex-wrap gap-2.5">
-                              {sharedInterests.length > 0 ? sharedInterests.map((interest) => (
-                                <span
-                                  key={interest}
-                                  className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-[#FF6B35] text-white border border-black/10 shadow-[0_12px_26px_rgba(255,107,53,0.28)]"
-                                >
-                                  {interest}
-                                </span>
-                              )) : (
-                                <span className="text-sm text-gray-600 dark:text-gray-300">None yet</span>
-                              )}
-                            </div>
-                          </div>
+                          {[
+                            { label: "Shared Interests", items: sharedInterests, color: "bg-[#FF6B35] text-white border-black/10" },
+                            { label: "Shared Activities", items: sharedActivitiesArr, color: "bg-blue-500 text-white border-blue-600/20" },
+                            { label: "Shared Events", items: sharedEventsArr, color: "bg-purple-500 text-white border-purple-600/20" },
+                            { label: "Shared City Activities", items: sharedCityActivitiesArr, color: "bg-teal-500 text-white border-teal-600/20" },
+                            { label: "Shared Countries", items: sharedCountries, color: "bg-green-500 text-white border-green-600/20" },
+                            { label: "Shared Languages", items: nonEnglishSharedLanguages, color: "bg-indigo-500 text-white border-indigo-600/20" },
+                            { label: "Shared Sexual Preferences", items: sharedSexualPreferencesArr, color: "bg-pink-500 text-white border-pink-600/20" },
+                            { label: "Other Commonalities", items: otherCommonalities, color: "bg-gray-500 text-white border-gray-600/20" },
+                          ].map(({ label, items, color }) =>
+                            items.length > 0 ? (
+                              <div key={label}>
+                                <div className="text-sm font-extrabold text-gray-900 dark:text-white mb-2">
+                                  {label} ({items.length})
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                  {items.map((item) => (
+                                    <span
+                                      key={item}
+                                      className={`inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold border ${color}`}
+                                    >
+                                      {item}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : null
+                          )}
 
-                          <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/40 px-4 py-4">
-                            <div className="text-base font-extrabold text-gray-900 dark:text-white mb-3">
-                              Also in Common
-                            </div>
-                            <div className="flex flex-wrap gap-2.5 text-sm text-gray-700 dark:text-gray-200">
-                              <span className="inline-flex items-center rounded-full px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                                <span className="font-extrabold text-gray-900 dark:text-white mr-1">{sharedContactsCount}</span>
-                                shared contacts
-                              </span>
-                              <span className="inline-flex items-center rounded-full px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                                <span className="font-extrabold text-gray-900 dark:text-white mr-1">{sharedCountries.length}</span>
-                                shared countries
-                              </span>
-                              {nonEnglishSharedLanguages.length > 0 && (
+                          {sharedContactsCount > 0 && (
+                            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/40 px-4 py-4">
+                              <div className="text-sm font-extrabold text-gray-900 dark:text-white mb-3">
+                                Connections
+                              </div>
+                              <div className="flex flex-wrap gap-2 text-sm text-gray-700 dark:text-gray-200">
                                 <span className="inline-flex items-center rounded-full px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                                  <span className="font-extrabold text-gray-900 dark:text-white mr-1">{nonEnglishSharedLanguages.length}</span>
-                                  shared languages
+                                  <span className="font-extrabold text-gray-900 dark:text-white mr-1">{sharedContactsCount}</span>
+                                  shared contacts
                                 </span>
-                              )}
+                              </div>
                             </div>
-                          </div>
+                          )}
                         </div>
                       </DialogContent>
                     </Dialog>

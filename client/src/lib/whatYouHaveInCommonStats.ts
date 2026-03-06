@@ -6,6 +6,16 @@ export type CompatibilityLike = {
   sharedCountries?: string[] | null;
   sharedLanguages?: string[] | null;
   otherCommonalities?: string[] | null;
+  // Full breakdown arrays returned by the matching service
+  sharedCityActivities?: { activity: string; city: string }[] | null;
+  sharedTravelStyle?: string[] | null;
+  sharedTags?: string[] | null;
+  sharedExpertise?: string[] | null;
+  sharedCustomActivities?: string[] | null;
+  sharedCustomEvents?: string[] | null;
+  sharedDefaultInterests?: string[] | null;
+  sharedSecretActivities?: string[] | null;
+  sharedSexualPreferences?: string[] | null;
 };
 
 export type ConnectionDegreeLike = {
@@ -18,6 +28,8 @@ export interface CommonStats {
   sharedEvents: string[];
   sharedCountries: string[];
   sharedLanguagesNonEnglish: string[];
+  sharedCityActivities: string[];
+  sharedSexualPreferences: string[];
   otherCommonalities: string[];
   sharedContactsCount: number;
   totalCommon: number;
@@ -47,12 +59,41 @@ export function computeCommonStats(
   const sharedEvents = dedupe(Array.isArray(compatibilityData?.sharedEvents) ? compatibilityData!.sharedEvents!.filter(Boolean) : []);
   const sharedCountries = dedupe(Array.isArray(compatibilityData?.sharedCountries) ? compatibilityData!.sharedCountries!.filter(Boolean) : []);
   const sharedLanguagesRaw = dedupe(Array.isArray(compatibilityData?.sharedLanguages) ? compatibilityData!.sharedLanguages!.filter(Boolean) : []);
-  const otherCommonalities = dedupe(Array.isArray(compatibilityData?.otherCommonalities) ? compatibilityData!.otherCommonalities!.filter(Boolean) : []);
 
   const sharedLanguagesNonEnglish = sharedLanguagesRaw.filter((l) => {
     const n = String(l || "").trim().toLowerCase();
     return !!n && n !== "english";
   });
+
+  // City activities: convert {activity, city} objects to "Activity (City)" strings
+  const rawCityActivities = Array.isArray(compatibilityData?.sharedCityActivities)
+    ? compatibilityData!.sharedCityActivities!
+    : [];
+  const sharedCityActivities = dedupe(
+    rawCityActivities
+      .filter((x) => x && x.activity)
+      .map((x) => x.city ? `${x.activity} (${x.city})` : x.activity),
+  );
+
+  // Sexual preferences
+  const sharedSexualPreferences = dedupe(
+    Array.isArray(compatibilityData?.sharedSexualPreferences)
+      ? compatibilityData!.sharedSexualPreferences!.filter(Boolean)
+      : [],
+  );
+
+  // Roll remaining breakdown arrays into otherCommonalities
+  const extraArrays: string[] = [
+    ...(Array.isArray(compatibilityData?.otherCommonalities) ? compatibilityData!.otherCommonalities!.filter(Boolean) : []),
+    ...(Array.isArray(compatibilityData?.sharedTravelStyle) ? compatibilityData!.sharedTravelStyle!.filter(Boolean) : []),
+    ...(Array.isArray(compatibilityData?.sharedTags) ? compatibilityData!.sharedTags!.filter(Boolean) : []),
+    ...(Array.isArray(compatibilityData?.sharedExpertise) ? compatibilityData!.sharedExpertise!.filter(Boolean) : []),
+    ...(Array.isArray(compatibilityData?.sharedCustomActivities) ? compatibilityData!.sharedCustomActivities!.filter(Boolean) : []),
+    ...(Array.isArray(compatibilityData?.sharedCustomEvents) ? compatibilityData!.sharedCustomEvents!.filter(Boolean) : []),
+    ...(Array.isArray(compatibilityData?.sharedDefaultInterests) ? compatibilityData!.sharedDefaultInterests!.filter(Boolean) : []),
+    ...(Array.isArray(compatibilityData?.sharedSecretActivities) ? compatibilityData!.sharedSecretActivities!.filter(Boolean) : []),
+  ];
+  const otherCommonalities = dedupe(extraArrays);
 
   const sharedContactsCount = Math.max(0, Number(connectionDegreeData?.mutualCount || 0) || 0);
 
@@ -72,6 +113,8 @@ export function computeCommonStats(
     sharedEvents.length +
     sharedCountries.length +
     sharedLanguagesNonEnglish.length +
+    sharedCityActivities.length +
+    sharedSexualPreferences.length +
     otherCommonalities.length;
 
   // Prefer the server's matchCount (comprehensive) + mutual contacts.
@@ -87,6 +130,8 @@ export function computeCommonStats(
     sharedEvents,
     sharedCountries,
     sharedLanguagesNonEnglish,
+    sharedCityActivities,
+    sharedSexualPreferences,
     otherCommonalities,
     sharedContactsCount,
     totalCommon,
