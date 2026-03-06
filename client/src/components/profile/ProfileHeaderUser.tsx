@@ -293,7 +293,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 mt-3">
+              <div className="flex flex-wrap items-center gap-2 mt-3 md:hidden">
                 <Button
                   type="button"
                   size="sm"
@@ -306,7 +306,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   }}
                   data-testid="button-lets-meet-now-hero"
                 >
-                  Let's Meet Now
+                  Create Quick Meetup
                 </Button>
               </div>
             </div>
@@ -573,14 +573,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   const row1 = pills.slice(0, 5);
                                   const row2 = pills.slice(5, 10);
                                   const renderRow = (row: typeof pills) => (
-                                    <div className="flex flex-wrap gap-1 justify-center overflow-hidden max-h-7">
+                                    <div className="flex flex-wrap gap-1 justify-start overflow-hidden max-h-7">
                                       {row.map((pill) => (
                                         <span
                                           key={pill.key}
                                           className={
                                             pill.variant === "hostel"
-                                              ? "inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[11px] font-extrabold bg-emerald-600 text-white border border-emerald-300/30 leading-none max-w-full"
-                                              : "inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[11px] font-semibold bg-[#111827] text-white border border-white/10 leading-none max-w-full"
+                                              ? "inline-flex items-center justify-center rounded-full px-3 py-1 text-sm font-extrabold bg-emerald-600 text-white border border-emerald-300/30 leading-none max-w-full"
+                                              : "inline-flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold bg-[#111827] text-white border border-white/10 leading-none max-w-full"
                                           }
                                           title={pill.label}
                                         >

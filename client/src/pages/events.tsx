@@ -917,7 +917,7 @@ export default function Events() {
                               </div>
                             )}
                             <div className="flex items-start justify-between">
-                              <CardTitle className="text-lg line-clamp-2 dark:text-white">{event.title}</CardTitle>
+                              <CardTitle className="text-base font-semibold line-clamp-2 dark:text-white">{event.title}</CardTitle>
                               <div className="flex flex-col gap-1 ml-2">
                                 <Badge variant="secondary" className={`shrink-0 ${
                                   createdEvents.some(e => e.id === event.id) 
@@ -1275,7 +1275,7 @@ export default function Events() {
                           />
                         )}
                         <div className="flex items-start justify-between">
-                          <CardTitle className="text-lg line-clamp-2 dark:text-white">{event.title}</CardTitle>
+                          <CardTitle className="text-base font-semibold line-clamp-2 dark:text-white">{event.title}</CardTitle>
                           <div className="flex flex-col gap-1 ml-2">
                             <Badge variant="outline" className="shrink-0 text-xs">
                               Ended

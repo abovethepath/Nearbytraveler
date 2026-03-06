@@ -217,7 +217,7 @@ export default function UserCard({
     <button 
       type="button"
       className={`user-card w-full min-w-0 max-w-none !p-0 block overflow-hidden shadow-sm hover:shadow-md transition-all ${
-        variant === "homeCity" ? "text-center" : "text-left"
+        "text-center"
       } flex flex-col items-stretch gap-0 leading-none ${
         compact ? 'rounded-lg' : 'rounded-[14px] lg:rounded-[14px]'
       } ${showAvailableNow && !isCurrentUser ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : ''} ${
@@ -261,37 +261,6 @@ export default function UserCard({
             <span className={`font-bold text-white/90 ${compact ? 'text-2xl' : 'text-4xl'}`}>
               {user.name?.charAt(0) || user.username?.charAt(0) || '?'}
             </span>
-
-            {isCurrentUser && variant === "homeCity" && isHomeRoute && (
-              <div
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setLocation(`/profile/${user.id}`);
-                }}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setLocation(`/profile/${user.id}`);
-                  }
-                }}
-                className="absolute inset-0 flex flex-col items-center justify-center"
-                style={{
-                  cursor: "pointer",
-                  backgroundColor: "rgba(0,0,0,0.22)",
-                  color: "#FFFFFF",
-                  textAlign: "center",
-                }}
-                aria-label="Add profile photo"
-                data-testid="add-photo-overlay"
-              >
-                <div style={{ fontSize: 18, lineHeight: "18px", marginBottom: 6 }}>📷</div>
-                <div style={{ fontSize: 13, fontWeight: 700, lineHeight: "16px" }}>Add Photo</div>
-              </div>
-            )}
           </div>
         )}
         

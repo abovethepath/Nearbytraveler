@@ -2519,7 +2519,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
-                      <h4 className="font-medium text-sm text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
+                      <h4 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
                       <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
                         <Calendar className="w-3 h-3" />
                         {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -2562,7 +2562,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
-                      <h4 className="font-medium text-sm text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
+                      <h4 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
                       <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
                         <Calendar className="w-3 h-3" />
                         {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -2646,7 +2646,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   <button
                     type="button"
                     className="flex items-center justify-between cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
-                    onClick={() => setLocation('/ambassador-program')}
+                    onClick={() => setLocation('/dashboard/ambassador')}
                   >
                     <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                       <Award className="w-4 h-4 text-blue-500" />

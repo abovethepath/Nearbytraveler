@@ -8,6 +8,7 @@ interface InterestSelectorProps {
   onChange: (selected: string[]) => void;
   minRequired?: number;
   maxAllowed?: number;
+  showSearch?: boolean;
   placeholder?: string;
   className?: string;
   extraSelectedCount?: number;
@@ -19,6 +20,7 @@ export function InterestSelector({
   onChange,
   minRequired = 0,
   maxAllowed = Infinity,
+  showSearch = true,
   placeholder = "Search interests...",
   className = "",
   extraSelectedCount = 0
@@ -52,34 +54,36 @@ export function InterestSelector({
   };
 
   const filteredOptions = useMemo(() => {
-    if (!searchQuery.trim()) return options;
+    if (!showSearch || !searchQuery.trim()) return options;
     const query = searchQuery.toLowerCase();
     return options.filter(opt => opt.toLowerCase().includes(query));
-  }, [options, searchQuery]);
+  }, [options, searchQuery, showSearch]);
 
   return (
     <div className={`space-y-3 ${className}`}>
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <Input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder={placeholder}
-          className="pl-10 pr-10 bg-white dark:bg-gray-800"
-        />
-        {searchQuery && (
-          <button
-            type="button"
-            onClick={() => setSearchQuery("")}
-            onTouchEnd={(e) => { e.preventDefault(); setSearchQuery(""); }}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            style={{ touchAction: 'manipulation' }}
-          >
-            <X className="w-4 h-4" />
-          </button>
-        )}
-      </div>
+      {showSearch && (
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={placeholder}
+            className="pl-10 pr-10 bg-white dark:bg-gray-800"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              onTouchEnd={(e) => { e.preventDefault(); setSearchQuery(""); }}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              style={{ touchAction: 'manipulation' }}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="text-sm text-gray-600 dark:text-gray-400 flex justify-between items-center">
         <span>

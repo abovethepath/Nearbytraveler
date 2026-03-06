@@ -160,6 +160,7 @@ import EventsListResponsive from "@/pages/EventsListResponsive";
 import About from "@/pages/about";
 import AmbassadorProgram from "@/pages/ambassador-program";
 import AmbassadorLanding from "@/pages/ambassador";
+import AmbassadorDashboardPage from "@/pages/dashboard-ambassador";
 import GettingStarted from "@/pages/getting-started";
 
 
@@ -1757,6 +1758,9 @@ function Router() {
         return <AmbassadorLanding />;
       case '/ambassador-program':
         return <AmbassadorProgram />;
+      case '/dashboard/ambassador':
+      case '/profile/ambassador':
+        return <AmbassadorDashboardPage />;
       case '/quick-login':
         return <QuickLogin />;
 

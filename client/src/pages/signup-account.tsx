@@ -24,15 +24,13 @@ export default function SignupAccount() {
     email: "",
     confirmEmail: "",
     phoneNumber: "",
-    password: "",
-    confirmPassword: ""
+    password: ""
   });
 
   const [usernameChecking, setUsernameChecking] = useState(false);
   const [usernameAvailable, setUsernameAvailable] = useState(null as boolean | null);
   const [currentError, setCurrentError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = useState(true);
   const [phoneChecking, setPhoneChecking] = useState(false);
   const [phoneInUse, setPhoneInUse] = useState(false);
@@ -177,18 +175,6 @@ export default function SignupAccount() {
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      const errorMsg = "Password and confirm password must match.";
-      setCurrentError(errorMsg);
-      toast({
-        title: "Password mismatch", 
-        description: errorMsg,
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
-
     if (formData.password.length < 8) {
       const errorMsg = "Password must be at least 8 characters.";
       setCurrentError(errorMsg);
@@ -280,7 +266,6 @@ export default function SignupAccount() {
     formData.phoneNumber.trim() !== "" &&
     formData.password.trim() !== "" &&
     formData.password.length >= 8 &&
-    formData.password === formData.confirmPassword &&
     usernameAvailable === true &&
     !phoneInUse;
 
@@ -479,50 +464,6 @@ export default function SignupAccount() {
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
-              </div>
-
-              <div>
-                <Label htmlFor="confirmPassword" className="text-base font-medium text-gray-900 dark:text-white">
-                  Confirm Password *
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    placeholder="Confirm your password"
-                    autoComplete="off"
-                    className={`text-base py-3 pr-20 text-gray-900 dark:text-white bg-white dark:bg-gray-800 placeholder:text-gray-500 dark:placeholder:text-gray-400 ${
-                      formData.confirmPassword && formData.password ? (
-                        formData.password === formData.confirmPassword ? 'border-green-500' : 'border-red-500'
-                      ) : ''
-                    }`}
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 space-x-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                      data-testid="toggle-confirm-password-visibility"
-                    >
-                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                    {formData.confirmPassword && formData.password && (
-                      formData.password === formData.confirmPassword ? (
-                        <span className="text-green-500 text-lg">✓</span>
-                      ) : (
-                        <span className="text-red-500 text-lg">✗</span>
-                      )
-                    )}
-                  </div>
-                </div>
-                {formData.confirmPassword && formData.password && formData.password !== formData.confirmPassword && (
-                  <p className="text-red-500 text-sm mt-1">Passwords don't match</p>
-                )}
-                {formData.confirmPassword && formData.password && formData.password === formData.confirmPassword && (
-                  <p className="text-green-500 text-sm mt-1">Passwords match ✓</p>
-                )}
               </div>
 
               <div className="flex items-center space-x-2 mt-4">

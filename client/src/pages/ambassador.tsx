@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
+import { useAuth } from "@/App";
 
 type PointItem = {
   title: string;
@@ -43,6 +44,7 @@ function useScrollReveal() {
 
 export default function AmbassadorLanding() {
   const [, setLocation] = useLocation();
+  const { user } = useAuth();
   useScrollReveal();
 
   const points: PointItem[] = [
@@ -85,6 +87,29 @@ export default function AmbassadorLanding() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <LandingHeader />
       <LandingHeaderSpacer />
+
+      {user?.id && (
+        <div className="px-4 sm:px-6 lg:px-8 pt-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="rounded-2xl border border-blue-200/60 dark:border-blue-700/40 bg-white/80 dark:bg-gray-900/60 backdrop-blur p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                  You’re logged in.
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">
+                  View your Ambassador status, points, referral link, and perks inside the app.
+                </div>
+              </div>
+              <Button
+                onClick={() => setLocation("/dashboard/ambassador")}
+                className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-bold"
+              >
+                Go to Ambassador dashboard
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 1) HERO */}
       <section className="py-14 sm:py-16 px-4 sm:px-6 lg:px-8">

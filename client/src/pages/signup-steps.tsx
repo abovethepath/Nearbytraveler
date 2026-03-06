@@ -22,7 +22,6 @@ interface SignupData {
   userType: string;
   email: string;
   password: string;
-  confirmPassword: string;
   username: string;
   name: string;
   
@@ -102,7 +101,6 @@ export default function SignupSteps() {
     userType: "",
     email: "",
     password: "",
-    confirmPassword: "",
     username: "",
     name: "",
     dateOfBirth: "",
@@ -167,19 +165,10 @@ export default function SignupSteps() {
   const handleNext = async () => {
     if (currentStep === 1) {
       // Validate step 1
-      if (!formData.userType || !formData.email || !formData.password || !formData.confirmPassword || !formData.username || !formData.name) {
+      if (!formData.userType || !formData.email || !formData.password || !formData.username || !formData.name) {
         toast({
           title: "Missing information",
           description: "Please fill in all required fields.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (formData.password !== formData.confirmPassword) {
-        toast({
-          title: "Password mismatch",
-          description: "Passwords do not match. Please try again.",
           variant: "destructive",
         });
         return;
@@ -476,16 +465,6 @@ export default function SignupSteps() {
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       placeholder="Create a password (min 8 characters)"
-                    />
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label htmlFor="confirmPassword">Confirm Password *</Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                      placeholder="Confirm your password"
                     />
                   </div>
                 </div>
