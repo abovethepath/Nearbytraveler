@@ -30,8 +30,6 @@ import {
   Sparkles,
   Zap,
   Mail,
-  Menu,
-  X,
   Moon,
   Sun,
 } from "lucide-react";
@@ -91,7 +89,6 @@ function Navbar() {
   const [location, setLocation] = useLocation();
   const { user, setUser } = useContext(AuthContext);
   const [showConnectModal, setShowConnectModal] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { toggleTheme } = useTheme();
@@ -213,8 +210,6 @@ function Navbar() {
     };
   }, []);
 
-  // close on route change
-  useEffect(() => setIsMobileMenuOpen(false), [location]);
 
   const openAdvancedFilters = React.useCallback(() => {
     // Always open the new filters UI on Home where `filters` state lives.
@@ -532,32 +527,6 @@ function Navbar() {
                   <AdaptiveThemeToggle />
                 </div>
 
-                {/* Mobile Menu Button - Simplified for Capacitor WebView */}
-                {directUser?.id && (
-                  <button
-                    type="button"
-                    className={`md:hidden p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer relative z-[1100] ${isNativeIOSApp() ? "h-14 w-14" : "h-12 w-12"}`}
-                    onClick={() => {
-                      console.log("🍔 Hamburger clicked");
-                      setIsMobileMenuOpen((o) => !o);
-                    }}
-                    aria-controls="mobile-menu"
-                    aria-expanded={isMobileMenuOpen}
-                    aria-label={
-                      isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"
-                    }
-                    style={{
-                      WebkitTapHighlightColor: "transparent",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {isMobileMenuOpen ? (
-                      <X className="h-7 w-7 pointer-events-none" />
-                    ) : (
-                      <Menu className="h-7 w-7 pointer-events-none" />
-                    )}
-                  </button>
-                )}
               </div>
               {directUser?.id && <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
@@ -765,24 +734,10 @@ function Navbar() {
 
       </header>
 
-      {/* 
-        DISABLED: Portal-based Mobile Menu - This was causing touch interference with MobileTopNav
-        Mobile navigation is now handled exclusively by MobileTopNav component.
-        Keeping this code commented for reference in case desktop hamburger menu is needed in future.
-      */}
-      {/* Desktop-only mobile menu - only render when NOT on mobile to avoid portal interference */}
       {false &&
         createPortal(
           <div
             id="mobile-menu"
-            className={`md:hidden fixed inset-x-0 transition-opacity duration-200 ${
-              isMobileMenuOpen
-                ? "opacity-100 pointer-events-auto"
-                : "opacity-0 pointer-events-none"
-            }`}
-            style={{ top: menuTop, zIndex: 9999 }}
-            role="dialog"
-            aria-modal="true"
           >
             <div className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
               <div className="px-4 py-6 space-y-4">
@@ -796,7 +751,7 @@ function Navbar() {
                         : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
                     }`}
                     onClick={() => {
-                      setIsMobileMenuOpen(false);
+                      
                       setLocation(item.path);
                     }}
                   >
@@ -816,7 +771,7 @@ function Navbar() {
                           : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
                       }`}
                       onClick={() => {
-                        setIsMobileMenuOpen(false);
+                        
                         setLocation("/discover");
                       }}
                     >
@@ -830,7 +785,7 @@ function Navbar() {
                           : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
                       }`}
                       onClick={() => {
-                        setIsMobileMenuOpen(false);
+                        
                         setLocation("/quick-meetups");
                       }}
                     >
@@ -844,7 +799,7 @@ function Navbar() {
                           : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
                       }`}
                       onClick={() => {
-                        setIsMobileMenuOpen(false);
+                        
                         setLocation("/city-chatrooms");
                       }}
                     >
@@ -863,7 +818,7 @@ function Navbar() {
                         : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
                     }`}
                     onClick={() => {
-                      setIsMobileMenuOpen(false);
+                      
                       setLocation("/deals");
                     }}
                   >
@@ -880,7 +835,7 @@ function Navbar() {
                       : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                   onClick={() => {
-                    setIsMobileMenuOpen(false);
+                    
                     setLocation("/settings");
                   }}
                 >
@@ -894,7 +849,7 @@ function Navbar() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    setIsMobileMenuOpen(false);
+                    
                     setTimeout(() => handleLogout(), 100); // Defer logout until after menu closes
                   }}
                 >
