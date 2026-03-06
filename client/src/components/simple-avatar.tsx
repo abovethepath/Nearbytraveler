@@ -76,7 +76,7 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
     if (!user?.username) {
       return { 
         letter: 'U', 
-        gradient: 'bg-gradient-to-br from-blue-500 to-purple-600',
+        gradient: 'bg-gradient-to-br from-blue-700 to-purple-700',
         hasImage: false,
         imageUrl: null,
         placeholderUrl: getPlaceholderAvatarUrl('User', 0)
@@ -87,14 +87,14 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
     
     // Nice gradients based on username
     const gradients = [
-      'bg-gradient-to-br from-blue-500 to-purple-600',
-      'bg-gradient-to-br from-red-500 to-pink-600',
-      'bg-gradient-to-br from-green-500 to-teal-600',
-      'bg-gradient-to-br from-orange-500 to-red-600',
-      'bg-gradient-to-br from-purple-500 to-indigo-600',
-      'bg-gradient-to-br from-pink-500 to-rose-600',
-      'bg-gradient-to-br from-cyan-500 to-blue-600',
-      'bg-gradient-to-br from-lime-500 to-green-600'
+      'bg-gradient-to-br from-blue-700 to-purple-700',
+      'bg-gradient-to-br from-red-700 to-pink-700',
+      'bg-gradient-to-br from-green-700 to-teal-700',
+      'bg-gradient-to-br from-orange-700 to-red-700',
+      'bg-gradient-to-br from-purple-700 to-indigo-700',
+      'bg-gradient-to-br from-pink-700 to-rose-700',
+      'bg-gradient-to-br from-cyan-700 to-blue-700',
+      'bg-gradient-to-br from-lime-700 to-green-700'
     ];
     const gradientIndex = user.username.charCodeAt(0) % gradients.length;
     const gradient = gradients[gradientIndex];
