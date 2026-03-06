@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Users, Zap, Globe, ArrowRight, Plus, Heart, ChevronRight, Flag, Lock, AlertTriangle, Compass } from "lucide-react";
+import { MapPin, Users, Zap, Globe, ArrowRight, Plus, Heart, ChevronRight, Flag, Lock, AlertTriangle } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getMetroAreaName } from "../../../shared/metro-areas";
@@ -111,8 +111,7 @@ export default function Explore() {
   const userCity = rawCity ? getMetroAreaName(rawCity) : "";
   const userCountry = resolved.country;
 
-  const [activeTab, setActiveTab] = useState("live");
-  const [topTab, setTopTab] = useState<"discover" | "activity">("discover");
+  const [activeTab, setActiveTab] = useState<"live" | "communities" | "activity">("live");
   const [showCreateLiveShare, setShowCreateLiveShare] = useState(false);
 
   // Live share form state
@@ -394,21 +393,21 @@ export default function Explore() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 text-white py-6 px-4">
+      {/* Hero Section — extra top padding on mobile to clear the fixed 44px top nav */}
+      <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 text-white px-4 pt-[calc(env(safe-area-inset-top,0px)+52px)] pb-4 md:pt-6 md:pb-6">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-2 mb-2">
-            <Zap className="w-6 h-6" />
-            <h1 className="text-2xl font-bold">Explore</h1>
+          <div className="flex items-center gap-2 mb-1">
+            <Zap className="w-5 h-5 md:w-6 md:h-6" />
+            <h1 className="text-xl md:text-2xl font-bold">Explore</h1>
           </div>
-          <p className="text-white/80 text-sm">Who's live right now, and communities to join — in {userCity || "your city"}</p>
+          <p className="text-white/80 text-xs md:text-sm">Who's live right now, and communities to join — in {userCity || "your city"}</p>
           {hasHometownCity && hasTravelCity && (
-            <div className="mt-3 flex items-center gap-2">
+            <div className="mt-2 flex items-center gap-2">
               <Button
                 size="sm"
                 variant="secondary"
                 onClick={() => setCityView("hometown")}
-                className={`${cityView === "hometown" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30`}
+                className={`${cityView === "hometown" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30 text-xs h-7`}
               >
                 🏠 Hometown
               </Button>
@@ -416,7 +415,7 @@ export default function Explore() {
                 size="sm"
                 variant="secondary"
                 onClick={() => setCityView("travel")}
-                className={`${cityView === "travel" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30`}
+                className={`${cityView === "travel" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30 text-xs h-7`}
               >
                 ✈️ Travel city
               </Button>
@@ -425,13 +424,17 @@ export default function Explore() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-4 min-w-0 overflow-x-hidden">
-        <Tabs value={topTab} onValueChange={(v) => setTopTab(v as any)}>
-          <TabsList className="grid grid-cols-2 gap-2 mb-4 w-full p-1.5 bg-white/70 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-xl">
-            <TabsTrigger value="discover" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap min-w-0">
-              <Compass className="w-3.5 h-3.5 shrink-0" /> <span>Discover</span>
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 md:py-4 min-w-0 overflow-x-hidden">
+        {/* Single flat 3-tab bar — no more nested tabs */}
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+          <TabsList className="grid grid-cols-3 mb-4 w-full p-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm">
+            <TabsTrigger value="live" className="flex items-center justify-center gap-1 py-2 text-xs sm:text-sm min-w-0">
+              <MapPin className="w-3.5 h-3.5 shrink-0" /> <span>Live</span>
             </TabsTrigger>
-            <TabsTrigger value="activity" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap min-w-0">
+            <TabsTrigger value="communities" className="flex items-center justify-center gap-1 py-2 text-xs sm:text-sm min-w-0">
+              <Globe className="w-3.5 h-3.5 shrink-0" /> <span className="hidden xs:inline">Communities</span><span className="xs:hidden">Groups</span>
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="flex items-center justify-center gap-1 py-2 text-xs sm:text-sm min-w-0">
               <Zap className="w-3.5 h-3.5 shrink-0" /> <span>Activity</span>
             </TabsTrigger>
           </TabsList>
@@ -439,18 +442,6 @@ export default function Explore() {
           <TabsContent value="activity" className="space-y-4">
             <ActivityFeed />
           </TabsContent>
-
-          <TabsContent value="discover" className="space-y-4">
-            {/* Tabs first: Live and Communities — before People in city */}
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 gap-2 mb-4 w-full p-1.5">
-            <TabsTrigger value="live" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap min-w-0">
-              <MapPin className="w-3.5 h-3.5 shrink-0" /> <span>Live</span>
-            </TabsTrigger>
-            <TabsTrigger value="communities" className="flex items-center justify-center gap-1.5 py-2.5 px-2 text-sm whitespace-nowrap shrink-0 lg:col-span-1">
-              <Globe className="w-3.5 h-3.5 shrink-0" /> <span>Communities</span>
-            </TabsTrigger>
-          </TabsList>
 
           {/* ===== LIVE LOCATION SHARES TAB ===== */}
           <TabsContent value="live" className="space-y-4">
@@ -841,8 +832,8 @@ export default function Explore() {
           </TabsContent>
         </Tabs>
 
-        {/* People in city — below Live / Communities */}
-        {userCity && (
+        {/* People in city — only for Live / Communities tabs, not Activity */}
+        {userCity && activeTab !== "activity" && (
           <div className="mt-8 mb-6">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
@@ -928,8 +919,6 @@ export default function Explore() {
             )}
           </div>
         )}
-          </TabsContent>
-        </Tabs>
       </div>
     </div>
   );
