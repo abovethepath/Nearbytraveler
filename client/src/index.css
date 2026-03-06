@@ -260,11 +260,17 @@ body {
    Avoid applying -webkit-overflow-scrolling to html/body (can cause fixed/sticky bars to disappear during momentum scroll).
    Force navbars onto their own composited layer so they stay visible while scrolling. */
 .desktop-navbar,
-.mobile-top-nav,
-.mobile-bottom-nav {
+.mobile-top-nav {
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   will-change: transform;
+  backface-visibility: hidden;
+}
+/* Bottom nav: GPU layer but NO will-change — having both will-change + transform simultaneously
+   can cause flicker on Android Chrome and iOS Safari during scroll */
+.mobile-bottom-nav {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
   backface-visibility: hidden;
 }
 
@@ -279,12 +285,18 @@ body {
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: auto !important;
+    /* GPU-composited layer — keeps the nav painted at all times during scroll */
     transform: translate3d(0, 0, 0) !important;
     -webkit-transform: translate3d(0, 0, 0) !important;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    contain: layout paint style;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    /* REMOVED: contain:paint — tells browser to skip rendering when "out of view",
+       which causes the nav to disappear during mobile scroll animations */
     transition: none !important;
+    /* Ensure nothing clips or hides this element */
+    clip: auto !important;
+    clip-path: none !important;
+    overflow: visible !important;
   }
 }
 
