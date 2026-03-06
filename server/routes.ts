@@ -1,4 +1,5 @@
 import type { Express, Request, Response } from "express";
+import bcrypt from "bcryptjs";
 import multer from "multer";
 
 // Extend session interface to include user property and Sign in with Apple pending data
@@ -1197,19 +1198,26 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const storedPassword = (user as any).password;
       console.log("🔍 Found user:", user.username, "userType:", (user as any).userType, "with password set:", !!storedPassword);
 
-      // Simple password check (in production, use bcrypt)
       if (!storedPassword) {
         console.error("❌ Login: User has no password set (id:", user.id, "). Business may have been created without password.");
         return res.status(401).json({ message: "Invalid credentials" });
       }
-      const isValidPassword = password === storedPassword;
+
+      // Support both bcrypt-hashed passwords (from password-reset flow) and
+      // legacy plain-text passwords. bcrypt hashes always start with "$2".
+      let isValidPassword: boolean;
+      if (storedPassword.startsWith("$2")) {
+        isValidPassword = await bcrypt.compare(password, storedPassword);
+      } else {
+        isValidPassword = password === storedPassword;
+      }
+
       if (!isValidPassword) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
       const isMobile = req.get('X-Client') === 'ReactNative';
       const body: { ok: boolean; user: { id: number; username: string }; sessionId?: string } = { ok: true, user: { id: user.id, username: user.username } };
-      if (isMobile && (req as any).sessionID) body.sessionId = (req as any).sessionID;
 
       // Create session - only mutate if express-session already created req.session
       const sess = (req as any).session;
@@ -1217,23 +1225,34 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         return res.status(500).json({ error: "Session save failed" });
       }
 
-      sess.user = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        profileImageUrl: (user as any).profileImage
-      };
-      console.log("🔐 Saving session for user:", user.id);
-
-      // IMPORTANT: only respond after session is confirmed saved.
-      return sess.save((err: any) => {
-        if (err) {
-          console.error("❌ Session save error:", err?.message || err);
-          return res.status(500).json({ error: "Session save failed" });
+      // Regenerate session ID on login to guarantee a clean, isolated session for
+      // this user — prevents any cross-session state bleed when multiple users
+      // log in from different browser contexts simultaneously.
+      return sess.regenerate((regenErr: any) => {
+        if (regenErr) {
+          console.error("❌ Session regenerate error:", regenErr?.message || regenErr);
+          return res.status(500).json({ error: "Session error" });
         }
-        console.log("✅ Session saved successfully");
-        console.log("✅ Login successful:", { email, userId: user.id });
-        return res.status(200).json(body);
+
+        const freshSess = (req as any).session;
+        freshSess.user = {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          profileImageUrl: (user as any).profileImage
+        };
+        if (isMobile && (req as any).sessionID) body.sessionId = (req as any).sessionID;
+        console.log("🔐 Saving session for user:", user.id);
+
+        return freshSess.save((err: any) => {
+          if (err) {
+            console.error("❌ Session save error:", err?.message || err);
+            return res.status(500).json({ error: "Session save failed" });
+          }
+          console.log("✅ Session saved successfully");
+          console.log("✅ Login successful:", { email, userId: user.id });
+          return res.status(200).json(body);
+        });
       });
     } catch (error: any) {
       const errMsg = error?.message || String(error);
