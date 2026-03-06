@@ -1743,7 +1743,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Main Chat Area */}
       <div className="flex flex-col flex-1 min-w-0">
       {/* Header - compact padding on desktop; smaller title with truncation; no header avatars on desktop (sidebar shows members) */}
-      <div className={`flex items-center flex-shrink-0 ${isMobileWeb ? 'gap-1.5' : 'gap-2'} px-2 bg-gray-800 border-b border-gray-700 min-w-0 ${isNativeIOSApp() ? 'py-1.5 md:py-2' : 'py-1 lg:py-1.5'}`}>
+      <div
+        className={`flex items-center flex-shrink-0 ${isMobileWeb ? 'gap-1.5' : 'gap-2'} px-2 bg-gray-800 border-b border-gray-700 min-w-0 pb-1 lg:py-1.5`}
+        style={isMobile ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 3.5rem)' } : undefined}
+      >
         <Button
           variant="ghost"
           size="icon"
