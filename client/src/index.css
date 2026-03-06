@@ -2339,39 +2339,6 @@ button[type="submit"],
     grid-template-columns: repeat(2, 1fr) !important;
   }
   
-  html {
-    font-size: 18px;
-  }
-  
-  body {
-    font-size: 18px;
-    line-height: 1.7;
-  }
-  
-  /* Exclude chat headers (text-base, text-lg, text-xl, text-2xl) from large desktop sizing */
-  h1:not(.text-sm):not(.text-base):not(.text-xs):not(.text-lg):not(.text-xl):not(.text-2xl) {
-    font-size: 3rem !important;
-  }
-  
-  h2:not(.text-sm):not(.text-base):not(.text-xs):not(.text-lg):not(.text-xl):not(.text-2xl) {
-    font-size: 2.5rem !important;
-  }
-  
-  h3:not(.text-sm):not(.text-base):not(.text-xs):not(.text-lg):not(.text-xl):not(.text-2xl) {
-    font-size: 2rem !important;
-  }
-  
-  button, 
-  [role="button"],
-  .btn {
-    min-height: 56px !important;
-    font-size: 1.125rem !important;
-  }
-  
-  input, select, textarea {
-    min-height: 56px !important;
-    font-size: 1.125rem !important;
-  }
 }
 
 /* STATUS BADGES - Protected from any pill override rules. Used for Available Now, Online status, etc. */
