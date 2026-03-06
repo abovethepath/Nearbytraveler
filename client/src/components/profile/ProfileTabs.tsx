@@ -239,15 +239,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                 data-testid="tab-contacts"
               >
                 Contacts
-                {!!(userConnections?.length) && (
-                  <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
-                    activeTab === 'contacts' 
-                      ? 'bg-white/20 text-white' 
-                      : 'bg-blue-500 text-white'
-                  }`}>
-                    {userConnections.length}
-                  </span>
-                )}
+                <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
+                  activeTab === 'contacts' 
+                    ? 'bg-white/20 text-white' 
+                    : 'bg-blue-500 text-white'
+                }`}>
+                  {userConnections?.length || 0}
+                </span>
               </button>
 
               <button
@@ -263,15 +261,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                 data-testid="tab-photos"
               >
                 Photos
-                {!!(photos.length + (userTravelMemories?.length || 0)) && (
-                  <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
-                    activeTab === 'photos' 
-                      ? 'bg-white/20 text-white' 
-                      : 'bg-purple-500 text-white'
-                  }`}>
-                    {photos.length + (userTravelMemories?.length || 0)}
-                  </span>
-                )}
+                <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
+                  activeTab === 'photos' 
+                    ? 'bg-white/20 text-white' 
+                    : 'bg-purple-500 text-white'
+                }`}>
+                  {photos.length + (userTravelMemories?.length || 0)}
+                </span>
               </button>
 
               <button
@@ -287,15 +283,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                 data-testid="tab-references"
               >
                 References
-                {userReferences.length > 0 && (
-                  <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
-                    activeTab === 'references' 
-                      ? 'bg-white/20 text-white' 
-                      : 'bg-orange-500 text-white'
-                  }`}>
-                    {userReferences.length}
-                  </span>
-                )}
+                <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
+                  activeTab === 'references' 
+                    ? 'bg-white/20 text-white' 
+                    : 'bg-orange-500 text-white'
+                }`}>
+                  {userReferences?.length || 0}
+                </span>
               </button>
 
               {user?.userType !== 'business' && (
@@ -312,15 +306,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                   data-testid="tab-travel"
                 >
                   Travel Plans
-                  {!!(travelPlans?.length) && (
-                    <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
-                      activeTab === 'travel' 
-                        ? 'bg-white/20 text-white' 
-                        : 'bg-orange-500 text-white'
-                    }`}>
-                      {travelPlans.length}
-                    </span>
-                  )}
+                  <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
+                    activeTab === 'travel' 
+                      ? 'bg-white/20 text-white' 
+                      : 'bg-orange-500 text-white'
+                  }`}>
+                    {travelPlans?.length || 0}
+                  </span>
                 </button>
               )}
 
@@ -338,15 +330,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                   data-testid="tab-countries"
                 >
                   Countries
-                  {!!(countriesVisited?.length) && (
-                    <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
-                      activeTab === 'countries' 
-                        ? 'bg-white/20 text-white' 
-                        : 'bg-orange-500 text-white hover:bg-orange-600'
-                    }`}>
-                      {countriesVisited.length}
-                    </span>
-                  )}
+                  <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
+                    activeTab === 'countries' 
+                      ? 'bg-white/20 text-white' 
+                      : 'bg-orange-500 text-white hover:bg-orange-600'
+                  }`}>
+                    {countriesVisited?.length || 0}
+                  </span>
                 </button>
               )}
 
@@ -364,15 +354,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                   data-testid="tab-chatrooms"
                 >
                   Chatrooms
-                  {!!(userChatrooms?.length) && (
-                    <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
-                      activeTab === 'chatrooms' 
-                        ? 'bg-white/20 text-white' 
-                        : 'bg-purple-500 text-white'
-                    }`}>
-                      {userChatrooms.length}
-                    </span>
-                  )}
+                  <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
+                    activeTab === 'chatrooms' 
+                      ? 'bg-white/20 text-white' 
+                      : 'bg-purple-500 text-white'
+                  }`}>
+                    {userChatrooms?.length || 0}
+                  </span>
                 </button>
               )}
 
