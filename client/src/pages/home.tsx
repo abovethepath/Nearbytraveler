@@ -1670,11 +1670,11 @@ export default function Home() {
 
 {/* HERO SECTION — Standardized Layout */}
 {!isNativeIOSApp() && isHeroVisible && (
-<section className="relative py-4 sm:py-6 lg:py-3 overflow-hidden bg-white dark:bg-gray-900">
+<section className="relative py-4 sm:py-6 lg:py-3 overflow-hidden bg-white">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
     <button
       onClick={toggleHeroVisibility}
-      className="absolute top-0 right-4 sm:right-6 lg:right-8 inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 z-10"
+      className="absolute top-0 right-4 sm:right-6 lg:right-8 inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 z-10"
       data-testid="button-hide-home-hero"
     >
       <X className="w-3 h-3" />
@@ -1683,33 +1683,33 @@ export default function Home() {
 
   {isMobile ? (
     <div className="text-center">
-      <div className="inline-flex items-center gap-2 bg-gray-900/70 dark:bg-gray-800/80 border border-gray-700 rounded-full px-6 py-2 mb-6">
+      <div className="inline-flex items-center gap-2 bg-gray-900/70 border border-gray-700 rounded-full px-6 py-2 mb-6">
         <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
         <span className="text-sm font-bold bg-gradient-to-r from-blue-400 to-orange-400 bg-clip-text text-transparent">Connect • Discover • Experience</span>
       </div>
 
-      <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6">
+      <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
         {effectiveUser?.userType === "business" ? (
           <>
             <span
-              className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent dark:from-blue-400 dark:to-orange-400"
+              className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent"
               style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: "transparent", backgroundClip: 'text' }}
             >
               Nearby Traveler
             </span>
             <br />
-            <span className="text-gray-900 dark:text-white">Connect Your Business with Travelers & Locals</span>
+            <span className="text-gray-900">Connect Your Business with Travelers & Locals</span>
           </>
         ) : (
           <>
             <span
-              className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent dark:from-blue-400 dark:to-orange-400"
+              className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent"
               style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: "transparent", backgroundClip: 'text' }}
             >
               Nearby Traveler
             </span>
             <br />
-            <span className="text-gray-900 dark:text-white">Connect with Travelers & Locals Worldwide</span>
+            <span className="text-gray-900">Connect with Travelers & Locals Worldwide</span>
           </>
         )}
       </h1>
@@ -1729,7 +1729,7 @@ export default function Home() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 space-y-4">
-        <p className="text-xl lg:text-2xl text-gray-600 dark:text-[#FF6B35] leading-relaxed font-medium travel-tagline">
+        <p className="text-xl lg:text-2xl text-gray-600 leading-relaxed font-medium travel-tagline">
           Travel doesn't change you. The people you meet do.
         </p>
       </div>
@@ -1738,7 +1738,7 @@ export default function Home() {
     <div className="relative py-6 lg:py-0">
       <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center lg:flex lg:items-center lg:justify-between lg:gap-10">
         <div className="md:col-span-3 md:relative md:pl-4 md:before:content-[''] md:before:absolute md:before:left-0 md:before:top-2 md:before:bottom-2 md:before:w-[4px] md:before:rounded-full md:before:bg-gradient-to-b md:before:from-[#FF6B35] md:before:to-[#A855F7] md:before:opacity-70">
-          <div className="inline-flex items-center gap-2 bg-gray-900/70 dark:bg-gray-800 border border-gray-700 rounded-full px-6 py-2.5 lg:px-5 lg:py-2 mb-5 lg:mb-3">
+          <div className="inline-flex items-center gap-2 bg-gray-900/70 border border-gray-700 rounded-full px-6 py-2.5 lg:px-5 lg:py-2 mb-5 lg:mb-3">
             <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
             <span className="text-sm font-bold bg-gradient-to-r from-blue-400 to-orange-400 bg-clip-text text-transparent">Connect • Discover • Experience</span>
           </div>
@@ -1746,26 +1746,26 @@ export default function Home() {
           <div className="space-y-4 lg:space-y-3">
             <h1 className="text-4xl md:text-5xl lg:text-[2.15rem] font-extrabold tracking-tight leading-tight">
               <span
-                className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent dark:from-blue-400 dark:to-orange-400"
+                className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent"
                 style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: "transparent", backgroundClip: 'text' }}
               >
                 Nearby Traveler
               </span>
               <br />
-              <span className="text-gray-900 dark:text-white">
+              <span className="text-gray-900">
                 Connect with Travelers
               </span>
               <br />
-              <span className="text-gray-900 dark:text-white">
+              <span className="text-gray-900">
                 & Locals Worldwide
               </span>
             </h1>
             
             <div className="max-w-2xl space-y-3 lg:space-y-2">
-              <p className="text-base lg:text-base text-gray-600 dark:text-[#FF6B35] leading-relaxed font-medium travel-tagline">
+              <p className="text-base lg:text-base text-gray-600 leading-relaxed font-medium travel-tagline">
                 Travel doesn't change you. The people you meet do.
               </p>
-              <p className="text-sm lg:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+              <p className="text-sm lg:text-xs text-gray-500 leading-relaxed">
                 Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
               </p>
             </div>
@@ -1775,7 +1775,7 @@ export default function Home() {
         <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last lg:hidden">
           <div className="relative group">
             <div className="relative">
-              <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-sm h-[220px] sm:h-[260px] md:h-[300px] lg:h-[190px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 ring-1 ring-orange-400/20 dark:ring-purple-400/20 shadow-[0_0_26px_rgba(255,107,53,0.14)] dark:shadow-[0_0_34px_rgba(168,85,247,0.18)]">
+              <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-sm h-[220px] sm:h-[260px] md:h-[300px] lg:h-[190px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 ring-1 ring-orange-400/20 shadow-[0_0_26px_rgba(255,107,53,0.14)]">
                 <img
                   src={staticHeroMedia}
                   alt="Travelers connecting"
