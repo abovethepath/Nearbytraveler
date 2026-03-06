@@ -6,6 +6,8 @@
 * {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 *::-webkit-scrollbar {

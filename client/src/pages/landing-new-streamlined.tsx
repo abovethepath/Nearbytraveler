@@ -197,18 +197,18 @@ export default function LandingStreamlined() {
               <div className="flex flex-col items-center justify-center text-center min-h-[500px] sm:min-h-[600px]">
                 
                 {/* Rotating Quote */}
-                <p className="landing-quote text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-orange-400 italic mb-8 sm:mb-10 leading-snug transition-opacity duration-500 drop-shadow-lg">
+                <p className="landing-quote text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-orange-400 italic mb-8 sm:mb-10 leading-snug transition-opacity duration-500">
                   {taglines[currentTagline].line1}<br />
                   {taglines[currentTagline].line2}
                 </p>
                 
                 {/* Main Headline */}
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-white mb-6 sm:mb-8 drop-shadow-2xl">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-white mb-6 sm:mb-8">
                   Connect with <span className="text-transparent dark:text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400 dark:from-blue-400 dark:to-orange-400">Locals & Travelers</span> Worldwide
                 </h1>
                 
                 {/* Subheadline */}
-                <p className="text-lg sm:text-xl md:text-2xl text-white mb-10 sm:mb-12 leading-relaxed max-w-4xl drop-shadow-lg">
+                <p className="text-lg sm:text-xl md:text-2xl text-white mb-10 sm:mb-12 leading-relaxed max-w-4xl">
                   Nearby Traveler connects travelers and locals through <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400 font-semibold">shared interests, activities, and events</span>. We also let you know when you cross paths with friends in another city — making it easy to meet people, reconnect, and build friendships that last a lifetime.
                 </p>
                 
@@ -287,7 +287,7 @@ export default function LandingStreamlined() {
                 </div>
                 
                 {/* Tagline */}
-                <p className="mt-8 sm:mt-10 text-base sm:text-lg md:text-xl italic text-orange-400 font-semibold drop-shadow-lg">
+                <p className="mt-8 sm:mt-10 text-base sm:text-lg md:text-xl italic text-orange-400 font-semibold">
                   Where Local Experiences Meet Worldwide Connections
                 </p>
               </div>

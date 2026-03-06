@@ -1999,8 +1999,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   
                   {/* Content - EXACTLY like original screenshots */}
                   <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
-                    <h3 className="text-xl font-bold mb-2 drop-shadow-lg">{city.city}</h3>
-                    <p className="text-sm opacity-90 drop-shadow-lg">
+                    <h3 className="text-xl font-bold mb-2">{city.city}</h3>
+                    <p className="text-sm opacity-90">
                       {city.state ? `${city.state}, ${city.country}` : city.country}
                     </p>
                     
@@ -2040,8 +2040,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       >
                         <div className={`absolute inset-0 bg-gradient-to-br ${city.gradient} backdrop-blur-[1px]`}></div>
                         <div className="absolute inset-0 p-4 flex flex-col justify-end text-white">
-                          <h3 className="text-lg font-bold drop-shadow-lg">{city.city}</h3>
-                          <p className="text-xs opacity-90 drop-shadow-lg">
+                          <h3 className="text-lg font-bold">{city.city}</h3>
+                          <p className="text-xs opacity-90">
                             {city.state ? `${city.state}, ${city.country}` : city.country}
                           </p>
                         </div>
