@@ -1,0 +1,136 @@
+The actual bug
+
+Your debug object shows:
+
+compatibilityData: null
+
+compatibility: null
+
+connectionDegreeData exists
+
+totalFromProfile: 0
+
+So the profile page is not receiving compatibility at all.
+
+That means the count is 0 not because the math is wrong, but because the most important input is missing.
+
+In plain English
+
+The profile page currently has:
+
+connection degree ✅
+
+no compatibility object ❌
+
+So it knows maybe “you’re connected,” but it does not know:
+
+shared interests
+
+shared activities
+
+shared events
+
+matchCount
+
+Without that, computeCommonStats(...) can only produce 0.
+
+What to tell Replit
+
+Paste this exactly:
+
+We found the real bug.
+
+From the browser debug log on the OTHER USER PROFILE PAGE:
+
+PROFILE HERO COMMONALITY DEBUG shows:
+- compatibility: null
+- connectionDegree: { degree: 1, mutualCount: 0, ... }
+- totalFromProfile: 0
+
+So the profile page is not receiving compatibility at all.
+This is why "What You Have in Common" shows 0.
+
+This is NOT a UI problem and NOT a computeCommonStats problem.
+It is a data plumbing bug.
+
+Fix required:
+1. In /api/users/:userId/profile-bundle, make sure the response includes a non-null compatibility object for the current viewer + target user.
+2. Trace where compatibility is supposed to be computed in the bundle route.
+3. Log it on the server before res.json(...), for example:
+
+```ts
+console.log("PROFILE BUNDLE COMPATIBILITY DEBUG", {
+  viewerId,
+  userId,
+  hasCompatibility: !!compatibility,
+  matchCount: compatibility?.matchCount,
+  sharedInterests: compatibility?.sharedInterests?.length,
+  sharedActivities: compatibility?.sharedActivities?.length,
+  sharedEvents: compatibility?.sharedEvents?.length,
+});
+
+Then confirm the final res.json includes:
+
+compatibility: compatibility
+
+On the client, confirm the profile bundle response actually contains compatibility before rendering the commonality card.
+
+Important:
+
+Do NOT touch user cards.
+
+Do NOT change computeCommonStats.
+
+Do NOT redesign the hero.
+
+Fix the missing compatibility object in the profile-bundle response.
+
+
+---
+
+## What likely happened
+One of these is almost certainly true:
+
+### 1. Server never computed compatibility
+Something like:
+```ts
+const compatibility = null;
+
+or a failed query path.
+
+2. Server computed it, but didn’t return it
+
+Like:
+
+res.json({
+  user,
+  connectionDegree,
+  // compatibility missing here
+});
+3. Client is reading the wrong property
+
+Maybe the server returns:
+
+compatibilityData
+
+but client expects:
+
+compatibility
+
+Your log strongly suggests the client expects compatibility, and it’s getting null.
+
+Fastest next thing
+
+Ask Replit for the exact res.json(...) block from:
+
+/api/users/:userId/profile-bundle
+
+That one block will probably expose the bug immediately.
+
+Bottom line
+
+This is good news because the problem is now very narrow:
+
+The profile page is missing the compatibility object.
+
+That is much easier to fix than all the random stuff Replit was changing before.

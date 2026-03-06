@@ -6134,7 +6134,7 @@ Questions? Just reply to this message. Welcome aboard!
       // authenticated session so the query key on the frontend can stay stable
       // (no longer needs currentUser?.id appended).
       const headerUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
-      const sessionUserId = (req as any).user?.id ?? null;
+      const sessionUserId = (req as any).session?.user?.id ?? (req as any).user?.id ?? null;
       const viewerId = headerUserId || sessionUserId;
       
       if (userIdParam === 'NaN' || userIdParam === 'undefined' || userIdParam === 'null') {
@@ -6279,8 +6279,17 @@ Questions? Just reply to this message. Welcome aboard!
 
         const [compatRes, degreeRes] = await Promise.allSettled([
           (async () => {
-            const viewer = await storage.getUser(viewerId);
-            if (!viewer) return null;
+            // Try storage.getUser first; fall back to direct DB query so system accounts
+            // (e.g. nearbytrav, ID 2) that may not pass storage-level checks are still found.
+            let viewer = await storage.getUser(viewerId);
+            if (!viewer) {
+              const [rawViewer] = await db.select().from(users).where(eq(users.id, viewerId));
+              viewer = rawViewer as any;
+            }
+            if (!viewer) {
+              console.warn(`Profile bundle: viewer ${viewerId} not found — skipping compatibility`);
+              return null;
+            }
             const viewerPlans = await storage.getUserTravelPlans(viewerId);
             return matchingService.calculateCompatibilityScore(viewer, user, viewerPlans, travelPlansData);
           })(),
@@ -6304,10 +6313,22 @@ Questions? Just reply to this message. Welcome aboard!
         ]);
 
         if (compatRes.status === 'fulfilled') compatibility = compatRes.value;
-        else console.warn('Profile bundle: compatibility failed:', (compatRes as PromiseRejectedResult).reason?.message);
+        else console.warn('Profile bundle: compatibility THREW:', (compatRes as PromiseRejectedResult).reason?.message, (compatRes as PromiseRejectedResult).reason?.stack?.split('\n')[1]);
 
         if (degreeRes.status === 'fulfilled') connectionDegree = degreeRes.value;
         else console.warn('Profile bundle: connectionDegree failed:', (degreeRes as PromiseRejectedResult).reason?.message);
+
+        console.log('PROFILE BUNDLE COMPATIBILITY DEBUG', {
+          viewerId,
+          userId,
+          hasCompatibility: !!compatibility,
+          matchCount: (compatibility as any)?.matchCount,
+          sharedInterests: (compatibility as any)?.sharedInterests?.length,
+          sharedActivities: (compatibility as any)?.sharedActivities?.length,
+          sharedEvents: (compatibility as any)?.sharedEvents?.length,
+          compatStatus: compatRes.status,
+          compatErr: compatRes.status === 'rejected' ? (compatRes as PromiseRejectedResult).reason?.message : undefined,
+        });
       }
 
       let businessDeals: any[] = [];
