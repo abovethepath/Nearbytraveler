@@ -750,7 +750,7 @@ export function QuickMeetupWidget({
                 {/* HOUR DROPDOWN - MOVED TO TOP FOR VISIBILITY */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-orange-700 dark:text-orange-400 px-1 flex items-center gap-1">
-                    ⏰ Choose time period:
+                    ⏰ How long is this meetup available? (tap to change)
                   </label>
                   <Select 
                     value={newMeetup.responseTime}
@@ -768,6 +768,7 @@ export function QuickMeetupWidget({
                       <SelectItem value="24hours">⏰ Today (24 hours)</SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-gray-400 px-1">Default is 24 hours — tap to set a shorter window</p>
                 </div>
 
                 <Select 
