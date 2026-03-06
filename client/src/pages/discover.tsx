@@ -40,14 +40,16 @@ export default function DiscoverPage() {
   // Fetch user profile for complete hometown/destination data
   const { data: userProfile } = useQuery<any>({
     queryKey: ['/api/users', user?.id],
-    enabled: !!user?.id
+    enabled: !!user?.id,
+    staleTime: 3 * 60 * 1000,
   });
 
   // Fetch user's travel plans for destination cities
   const { data: travelPlans } = useQuery<any[]>({
     queryKey: ['/api/travel-plans', user?.id],
     queryFn: () => fetch(`${getApiBaseUrl()}/api/travel-plans/${user?.id}`).then(res => res.json()),
-    enabled: !!user?.id
+    enabled: !!user?.id,
+    staleTime: 3 * 60 * 1000,
   });
 
   // Get user's relevant cities (hometown + travel destinations)
@@ -93,6 +95,8 @@ export default function DiscoverPage() {
   // Fetch city stats
   const { data: allCities = [], isLoading: statsLoading } = useQuery<CityStats[]>({
     queryKey: ["/api/city-stats"],
+    staleTime: 3 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
   // Get gradient class for cities with varied colors

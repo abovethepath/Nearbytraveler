@@ -203,8 +203,8 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 60 * 1000, // 1 minute - avoid refetching on every navigation
-      gcTime: 5 * 60 * 1000, // 5 minutes cache time
+      staleTime: 5 * 60 * 1000, // 5 minutes — stale-while-revalidate: cached data shows instantly
+      gcTime: 30 * 60 * 1000, // 30 minutes — keep cache in memory for return visits
       retry: (failureCount, error: any) => {
         // Don't retry on 4xx errors except 429 (rate limit)
         if (error?.message?.includes('4') && !error?.message?.includes('429')) {

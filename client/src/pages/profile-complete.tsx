@@ -1122,8 +1122,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     enabled: !!effectiveUserId,
-    staleTime: 30000,
-    gcTime: 60000,
+    staleTime: 2 * 60 * 1000, // 2 min — returning to a visited profile shows data instantly
+    gcTime: 30 * 60 * 1000,   // 30 min — keep in memory for the session
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     retry: 1,

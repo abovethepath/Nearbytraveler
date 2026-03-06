@@ -6148,7 +6148,15 @@ Questions? Just reply to this message. Welcome aboard!
       
       console.log(`📦 PROFILE-BUNDLE: Fetching all data for user ${userId} (viewer: ${viewerId})`);
       const startTime = Date.now();
-      
+
+      // Redis stale-while-revalidate cache — serve instantly on repeat visits
+      const bundleCacheKey = `profile-bundle:${userId}:viewer:${viewerId ?? 'anon'}`;
+      const bundleCached = await cache.get<any>(bundleCacheKey);
+      if (bundleCached) {
+        console.log(`⚡ PROFILE-BUNDLE CACHE HIT: ${userId} (viewer: ${viewerId}) in ${Date.now() - startTime}ms`);
+        return res.json(bundleCached);
+      }
+
       // Execute all queries in parallel — use allSettled so one bad query never
       // crashes the entire bundle response.
       const results = await Promise.allSettled([
@@ -6352,7 +6360,7 @@ Questions? Just reply to this message. Welcome aboard!
         ms: endTime - startTime,
       });
 
-      res.json({
+      const bundleResponse = {
         user: userOut,
         travelPlans: travelPlansData,
         connections: connectionsData,
@@ -6371,7 +6379,12 @@ Questions? Just reply to this message. Welcome aboard!
         compatibility,
         connectionDegree,
         businessDeals,
-      });
+      };
+
+      // Write to Redis cache with 5 minute TTL for stale-while-revalidate
+      cache.set(bundleCacheKey, bundleResponse, CACHE_TTL.MEDIUM).catch(() => {/* non-fatal */});
+
+      res.json(bundleResponse);
     } catch (error: any) {
       console.error("PROFILE-BUNDLE CRASH:", error?.message, error?.stack);
       return res.status(500).json({ message: "Failed to fetch user", error: error?.message });
@@ -6921,6 +6934,8 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Invalidate matches cache when profile changes (interests, location, etc. affect matching)
       await cache.delete(`matches:${userId}`);
+      // Invalidate all profile bundle cache entries for this user (all viewer permutations)
+      cache.deletePattern(`profile-bundle:${userId}:viewer:*`).catch(() => {/* non-fatal */});
 
       const { password: _, ...userWithoutPassword } = updatedUser;
 
