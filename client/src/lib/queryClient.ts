@@ -26,7 +26,8 @@ function hasVerifiedSession(): boolean {
 
 // Cache user data to avoid localStorage parsing on every request
 // CRITICAL: Check all auth storage keys - iOS/Expo may store in authUser/currentUser
-const USER_STORAGE_KEYS = ['user', 'authUser', 'currentUser', 'travelconnect_user'];
+// nt_cached_session is the primary key used by App.tsx (SESSION_CACHE_KEY)
+const USER_STORAGE_KEYS = ['nt_cached_session', 'user', 'authUser', 'currentUser', 'travelconnect_user'];
 let cachedUser: any = null;
 let cacheTimestamp = 0;
 const CACHE_DURATION = 30000; // 30 seconds
