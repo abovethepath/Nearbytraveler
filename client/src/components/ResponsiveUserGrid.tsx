@@ -186,27 +186,24 @@ export default function ResponsiveUserGrid({
         </div>
         
         {/* User Info - order: 1) @username 2) bio (higher for more space) 3) X things in common (hidden for own card) 4) Nearby Local 5) Nearby Traveler */}
-        <div className="min-h-[6.5rem] text-center">
-          <h3 className="font-bold text-lg text-gray-900 dark:text-white truncate text-center">
+        <div className="min-h-[6.5rem] text-left">
+          <h3 className="font-bold text-lg text-gray-900 dark:text-white truncate">
             @{user.username}
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 md:line-clamp-3 min-h-[2.75rem] mt-0.5 text-center" title={user.bio || undefined}>
+          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 md:line-clamp-3 min-h-[2.75rem] mt-0.5" title={user.bio || undefined}>
             {getBioSnippet(user) || '\u00A0'}
           </p>
           {!isCurrentUser && (
-            <p className="text-sm font-medium truncate mt-0.5 text-center" style={{ color: '#3b82f6' }}>
-              {(() => {
-                const count = getThingsInCommon(user);
-                return `${count} ${count === 1 ? 'thing' : 'things'} in common`;
-              })()}
+            <p className="text-sm font-medium truncate mt-0.5" style={{ color: '#3b82f6' }}>
+              {getThingsInCommon(user)} things in common
             </p>
           )}
-          <p className="text-sm text-gray-600 dark:text-gray-400 truncate mt-0.5 text-center" title={formatHometownForDisplay(user)}>
+          <p className="text-sm text-gray-600 dark:text-gray-400 truncate mt-0.5" title={formatHometownForDisplay(user)}>
             {user.userType === 'business' ? 'Business User' : formatHometownForDisplay(user)}
           </p>
           <div className="min-h-[1.25rem] mt-0.5">
             {travelDest && user.userType !== 'business' ? (
-              <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 truncate text-center">
+              <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 truncate">
                 Nearby Traveler → {travelDest}
               </p>
             ) : (
@@ -282,27 +279,24 @@ export default function ResponsiveUserGrid({
         </div>
         
         {/* User Info - order: 1) @username 2) bio (higher for more space) 3) X things in common (hidden for own card) 4) Nearby Local 5) Nearby Traveler */}
-        <div className="min-h-[6rem] text-center px-1">
-          <h3 className="font-bold text-sm text-gray-900 dark:text-white truncate text-center">
+        <div className="min-h-[6rem] text-left px-1">
+          <h3 className="font-bold text-sm text-gray-900 dark:text-white truncate">
             @{user.username}
           </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 md:line-clamp-3 min-h-[2.25rem] mt-0.5 text-center" title={user.bio || undefined}>
+          <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 md:line-clamp-3 min-h-[2.25rem] mt-0.5" title={user.bio || undefined}>
             {getBioSnippet(user) || '\u00A0'}
           </p>
           {!isCurrentUser && (
-            <p className="text-xs font-medium truncate mt-0.5 text-center" style={{ color: '#3b82f6' }}>
-              {(() => {
-                const count = getThingsInCommon(user);
-                return `${count} ${count === 1 ? 'thing' : 'things'} in common`;
-              })()}
+            <p className="text-xs font-medium truncate mt-0.5" style={{ color: '#3b82f6' }}>
+              {getThingsInCommon(user)} things in common
             </p>
           )}
-          <p className="text-xs text-gray-600 dark:text-gray-400 truncate mt-0.5 text-center" title={formatHometownForDisplay(user)}>
+          <p className="text-xs text-gray-600 dark:text-gray-400 truncate mt-0.5" title={formatHometownForDisplay(user)}>
             {user.userType === 'business' ? 'Business User' : formatHometownForDisplay(user)}
           </p>
           <div className="min-h-[1rem] mt-0.5">
             {travelDest && user.userType !== 'business' ? (
-              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 truncate text-center">
+              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 truncate">
                 Nearby Traveler → {travelDest}
               </p>
             ) : (

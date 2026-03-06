@@ -94,14 +94,14 @@ export default function UserCard({
   const getUserGradient = () => {
     if (user.avatarGradient) return user.avatarGradient;
     const gradients = [
-      'linear-gradient(135deg, #3B82F6 0%, #A855F7 50%, #F97316 100%)',
-      'linear-gradient(135deg, #10B981 0%, #059669 50%, #F97316 100%)',
-      'linear-gradient(135deg, #3B82F6 0%, #06B6D4 50%, #F97316 100%)',
-      'linear-gradient(135deg, #A855F7 0%, #EC4899 50%, #EF4444 100%)',
-      'linear-gradient(135deg, #6366F1 0%, #3B82F6 50%, #10B981 100%)',
-      'linear-gradient(135deg, #F97316 0%, #EF4444 50%, #EC4899 100%)',
-      'linear-gradient(135deg, #14B8A6 0%, #3B82F6 50%, #A855F7 100%)',
-      'linear-gradient(135deg, #EAB308 0%, #F97316 50%, #EF4444 100%)',
+      'linear-gradient(135deg, #1D4ED8 0%, #7E22CE 50%, #C2410C 100%)',
+      'linear-gradient(135deg, #15803D 0%, #047857 50%, #C2410C 100%)',
+      'linear-gradient(135deg, #1D4ED8 0%, #0E7490 50%, #C2410C 100%)',
+      'linear-gradient(135deg, #BE185D 0%, #BE185D 50%, #B91C1C 100%)',
+      'linear-gradient(135deg, #4338CA 0%, #1D4ED8 50%, #15803D 100%)',
+      'linear-gradient(135deg, #C2410C 0%, #B91C1C 50%, #BE185D 100%)',
+      'linear-gradient(135deg, #0F766E 0%, #1D4ED8 50%, #7E22CE 100%)',
+      'linear-gradient(135deg, #A16207 0%, #C2410C 50%, #B91C1C 100%)',
     ];
     return gradients[user.id % gradients.length];
   };
@@ -209,26 +209,15 @@ export default function UserCard({
     enabled: !!currentUserId && !isCurrentUser,
   });
   const effectiveCompatibilityData = (compatibilityFromApi as any) ?? compatibilityData;
-  const commonStats = computeCommonStats(effectiveCompatibilityData, connectionDegree);
-  const thingsInCommon = commonStats.totalCommon;
+  const thingsInCommon = computeCommonStats(effectiveCompatibilityData, connectionDegree).totalCommon;
   const contactsInCommon = connectionDegree?.mutualCount ?? 0;
-  const thingsInCommonLabel = `${thingsInCommon} ${thingsInCommon === 1 ? 'thing' : 'things'} in common`;
-  const pillItems = (
-    (commonStats.sharedInterests?.length ? commonStats.sharedInterests : []) ||
-    []
-  );
-  const fallbackPillItems =
-    pillItems.length > 0
-      ? pillItems
-      : (commonStats.sharedActivities?.length ? commonStats.sharedActivities : (commonStats.sharedEvents?.length ? commonStats.sharedEvents : []));
-  const pillsToShow = (fallbackPillItems || []).slice(0, 5);
   const bioText = truncateBioToSentences(user.bio, 3);
 
   return (
     <button 
       type="button"
       className={`user-card w-full min-w-0 max-w-none !p-0 block overflow-hidden shadow-sm hover:shadow-md transition-all ${
-        variant === "homeCity" ? "text-center" : "text-center"
+        variant === "homeCity" ? "text-center" : "text-left"
       } flex flex-col items-stretch gap-0 leading-none ${
         compact ? 'rounded-lg' : 'rounded-[14px] lg:rounded-[14px]'
       } ${showAvailableNow && !isCurrentUser ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : ''} ${
@@ -404,55 +393,30 @@ export default function UserCard({
                   {bioText || '\u00A0'}
                 </span>
               </div>
-              <div className={`mt-1 w-full flex flex-col items-center text-center ${isCurrentUser ? "invisible" : ""}`}>
-                {/* Line 1: count */}
-                <div data-role="user-card-things-pill" className="w-full text-center text-[12px] font-bold" style={{ color: pickTextColor("#3b82f6", "#FF6B35") }}>
-                  {thingsInCommonLabel}
-                </div>
-
-                {/* Line 2: up to 5 shared pills (interests → activities → events) */}
-                <div className="mt-1 w-full h-[34px] overflow-hidden">
-                  <div className="flex flex-wrap gap-1 justify-center">
-                    {pillsToShow.length > 0 ? (
-                      pillsToShow.map((item, idx) => (
-                        <span
-                          key={`${item}-${idx}`}
-                          className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-800 text-white max-w-[7.5rem] truncate"
-                          title={item}
-                        >
-                          {item}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="invisible text-[10px]">—</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Line 4: contacts + see all */}
-                <div data-role="user-card-contacts" className="mt-1 w-full flex items-center justify-between text-[11px] text-gray-400">
-                  <button
-                    type="button"
-                    className="text-left hover:text-gray-500"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setLocation(`/profile/${user.id}?tab=contacts`);
+              <div
+                className={`mt-1 w-full flex flex-col items-center text-center ${isCurrentUser ? "invisible" : ""}`}
+              >
+                <div className="!w-full !flex !justify-center">
+                  <span
+                    data-role="user-card-things-pill"
+                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border !mx-auto"
+                    style={{
+                      color: pickTextColor("#3b82f6", "#FF6B35"),
+                      backgroundColor: 'rgba(59,130,246,0.12)',
+                      borderColor: 'rgba(59,130,246,0.25)',
                     }}
                   >
-                    Contacts in Common · {contactsInCommon}
-                  </button>
-                  <button
-                    type="button"
-                    className="text-right hover:text-gray-500"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setLocation(`/profile/${user.id}?tab=contacts`);
-                    }}
-                  >
-                    See All →
-                  </button>
+                    {thingsInCommon} things in common
+                  </span>
+                </div>
+                <div
+                  data-role="user-card-contacts"
+                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium truncate"
+                  style={{ width: "100%", textAlign: "center" }}
+                >
+                  <span style={{ color: pickTextColor("#FF6B35", "#3b82f6") }}>
+                  {contactsInCommon} contacts in common
+                  </span>
                 </div>
               </div>
             </div>
@@ -460,11 +424,11 @@ export default function UserCard({
             <>
               <div
                 data-role="user-card-username"
-                className="truncate w-full text-center"
+                className="w-full text-center truncate"
                 style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500 }}
               >
                 <span style={{ color: pickTextColor("#3b82f6", "#FF6B35") }}>
-                  {handle}
+                {handle}
                 </span>
               </div>
               <div
@@ -474,7 +438,7 @@ export default function UserCard({
                 <span data-role="user-card-city" className="truncate w-full text-center">{hometownLine}</span>
               </div>
               <div
-                className="user-card-bio"
+                className="user-card-bio text-center"
                 data-role="user-card-bio"
                 title={user.bio || undefined}
                 style={{
@@ -492,14 +456,14 @@ export default function UserCard({
               {!isCurrentUser && (
                 <>
                   <div
-                    className="mt-1 w-full truncate text-center"
+                    className="w-full text-center mt-1"
                     style={{ fontSize: 12, fontWeight: 700, color: pickTextColor("#3b82f6", "#FF6B35") }}
                     data-role="user-card-things"
                   >
-                    {thingsInCommonLabel}
+                    {thingsInCommon} things in common
                   </div>
                   <div
-                    className="mt-0.5 w-full truncate text-center"
+                    className="w-full text-center mt-0.5"
                     style={{ fontSize: 12, fontWeight: 500, color: pickTextColor("#9ca3af", "#3b82f6") }}
                     data-role="user-card-contacts"
                   >
@@ -571,55 +535,30 @@ export default function UserCard({
                   {bioText || '\u00A0'}
                 </span>
               </div>
-              <div className={`mt-1 w-full flex flex-col items-center text-center ${isCurrentUser ? "invisible" : ""}`}>
-                {/* Line 1: count */}
-                <div data-role="user-card-things-pill" className="w-full text-center text-[12px] font-bold" style={{ color: pickTextColor("#3b82f6", "#FF6B35") }}>
-                  {thingsInCommonLabel}
-                </div>
-
-                {/* Line 2: up to 5 shared pills (interests → activities → events) */}
-                <div className="mt-1 w-full h-[34px] overflow-hidden">
-                  <div className="flex flex-wrap gap-1 justify-center">
-                    {pillsToShow.length > 0 ? (
-                      pillsToShow.map((item, idx) => (
-                        <span
-                          key={`${item}-${idx}`}
-                          className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-800 text-white max-w-[7.5rem] truncate"
-                          title={item}
-                        >
-                          {item}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="invisible text-[10px]">—</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Line 4: contacts + see all */}
-                <div data-role="user-card-contacts" className="mt-1 w-full flex items-center justify-between text-[11px] text-gray-400">
-                  <button
-                    type="button"
-                    className="text-left hover:text-gray-500"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setLocation(`/profile/${user.id}?tab=contacts`);
+              <div
+                className={`mt-1 w-full flex flex-col items-center text-center ${isCurrentUser ? "invisible" : ""}`}
+              >
+                <div className="!w-full !flex !justify-center">
+                  <span
+                    data-role="user-card-things-pill"
+                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border !mx-auto"
+                    style={{
+                      color: pickTextColor("#3b82f6", "#FF6B35"),
+                      backgroundColor: 'rgba(59,130,246,0.12)',
+                      borderColor: 'rgba(59,130,246,0.25)',
                     }}
                   >
-                    Contacts in Common · {contactsInCommon}
-                  </button>
-                  <button
-                    type="button"
-                    className="text-right hover:text-gray-500"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setLocation(`/profile/${user.id}?tab=contacts`);
-                    }}
-                  >
-                    See All →
-                  </button>
+                    {thingsInCommon} things in common
+                  </span>
+                </div>
+                <div
+                  data-role="user-card-contacts"
+                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium truncate"
+                  style={{ width: "100%", textAlign: "center" }}
+                >
+                  <span style={{ color: pickTextColor("#FF6B35", "#3b82f6") }}>
+                  {contactsInCommon} contacts in common
+                  </span>
                 </div>
               </div>
             </div>
@@ -627,7 +566,7 @@ export default function UserCard({
             <>
               <div
                 data-role="user-card-username"
-                className="truncate"
+                className="w-full text-center truncate"
                 style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 500 }}
               >
                 <span style={{ color: pickTextColor("#3b82f6", "#FF6B35") }}>
@@ -635,13 +574,13 @@ export default function UserCard({
                 </span>
               </div>
               <div
-                className="mt-1 flex items-center gap-1 min-w-0 dark:justify-center dark:w-full dark:text-center"
+                className="mt-1 flex items-center justify-center gap-1 min-w-0 w-full text-center"
                 style={{ fontSize: 11.5, color: pickTextColor("#e8834a", "#3b82f6") }}
               >
-                <span data-role="user-card-city" className="truncate dark:w-full dark:text-center">{hometownLine}</span>
+                <span data-role="user-card-city" className="truncate w-full text-center">{hometownLine}</span>
               </div>
               <div
-                className="user-card-bio"
+                className="user-card-bio text-center"
                 data-role="user-card-bio"
                 title={user.bio || undefined}
                 style={{
@@ -659,14 +598,14 @@ export default function UserCard({
               {!isCurrentUser && (
                 <>
                   <div
-                    className="truncate mt-1"
+                    className="w-full text-center mt-1"
                     style={{ fontSize: 12, fontWeight: 700, color: pickTextColor("#3b82f6", "#FF6B35") }}
                     data-role="user-card-things"
                   >
-                    {thingsInCommonLabel}
+                    {thingsInCommon} things in common
                   </div>
                   <div
-                    className="truncate mt-0.5"
+                    className="w-full text-center mt-0.5"
                     style={{ fontSize: 12, fontWeight: 500, color: pickTextColor("#9ca3af", "#3b82f6") }}
                     data-role="user-card-contacts"
                   >
