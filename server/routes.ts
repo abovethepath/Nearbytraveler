@@ -6326,6 +6326,8 @@ Questions? Just reply to this message. Welcome aboard!
           sharedInterests: (compatibility as any)?.sharedInterests?.length,
           sharedActivities: (compatibility as any)?.sharedActivities?.length,
           sharedEvents: (compatibility as any)?.sharedEvents?.length,
+          sharedCityActivities: (compatibility as any)?.sharedCityActivities?.length,
+          sharedCityActivitiesItems: (compatibility as any)?.sharedCityActivities?.slice(0, 3),
           compatStatus: compatRes.status,
           compatErr: compatRes.status === 'rejected' ? (compatRes as PromiseRejectedResult).reason?.message : undefined,
         });

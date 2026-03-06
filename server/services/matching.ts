@@ -1,7 +1,7 @@
 import { storage } from "../storage";
 import { db } from "../db";
 import { chatroomMembers, citychatrooms, communityTags, userCommunityTags } from "@shared/schema";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, inArray, sql } from "drizzle-orm";
 import type { User, TravelPlan } from "@shared/schema";
 
 export interface MatchScore {
@@ -1240,27 +1240,51 @@ export class TravelMatchingService {
    * Get shared city-specific activities (Things I Want To Do) with city context
    */
   private async getSharedCityActivities(user1: User, user2: User): Promise<{activity: string, city: string}[]> {
-    // Get city-specific activities from userCityInterests table
-    const user1CityInterests = await storage.getUserActivityMatches(user1.id);
-    const user2CityInterests = await storage.getUserActivityMatches(user2.id);
-    
-    const sharedActivities: {activity: string, city: string}[] = [];
-    
-    // Find activities they both have in the same cities
-    for (const interest1 of user1CityInterests) {
-      for (const interest2 of user2CityInterests) {
-        // Check if it's the same city and same or similar activity
-        if (interest1.cityName === interest2.cityName && 
-            this.areInterestsSimilar(interest1.activityName, interest2.activityName)) {
-          sharedActivities.push({
-            activity: interest1.activityName,
-            city: interest1.cityName
-          });
+    try {
+      // Primary: JOIN on activity_id (reliable — same activity selected by both users)
+      const byId = await db.execute(sql`
+        SELECT DISTINCT uci1.activity_name AS activity, uci1.city_name AS city
+        FROM user_city_interests uci1
+        JOIN user_city_interests uci2
+          ON uci1.activity_id = uci2.activity_id
+          AND uci1.city_name = uci2.city_name
+        WHERE uci1.user_id = ${user1.id}
+          AND uci2.user_id = ${user2.id}
+          AND uci1.is_active = true
+          AND uci2.is_active = true
+          AND uci1.activity_id IS NOT NULL
+      `);
+
+      const result: {activity: string, city: string}[] = (byId.rows || []).map((r: any) => ({
+        activity: r.activity,
+        city: r.city,
+      }));
+
+      // Fallback: text match for custom activities (activity_id IS NULL on one or both sides)
+      const user1Custom = (await storage.getUserActivityMatches(user1.id)).filter((x: any) => !x.activityId);
+      const user2Custom = (await storage.getUserActivityMatches(user2.id)).filter((x: any) => !x.activityId);
+      const resultSet = new Set(result.map(r => `${r.city}||${r.activity.toLowerCase()}`));
+
+      for (const i1 of user1Custom) {
+        for (const i2 of user2Custom) {
+          if (
+            i1.cityName === i2.cityName &&
+            this.areInterestsSimilar(i1.activityName, i2.activityName)
+          ) {
+            const key = `${i1.cityName}||${i1.activityName.toLowerCase()}`;
+            if (!resultSet.has(key)) {
+              result.push({ activity: i1.activityName, city: i1.cityName });
+              resultSet.add(key);
+            }
+          }
         }
       }
+
+      return result;
+    } catch (error) {
+      console.error('getSharedCityActivities error:', error);
+      return [];
     }
-    
-    return sharedActivities;
   }
 
   private getCompatibilityLevel(score: number): 'high' | 'medium' | 'low' {
