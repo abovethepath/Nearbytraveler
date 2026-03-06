@@ -421,7 +421,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <h1 className="text-2xl sm:text-3xl font-extrabold text-black break-all leading-tight crisp-hero-text">
+                              <h1 className="text-2xl sm:text-3xl font-extrabold text-black break-all leading-tight crisp-hero-text" style={{ color: '#000000' }}>
                                 @{user?.username}
                               </h1>
                               {!!(connectionDegreeData?.degree && connectionDegreeData.degree > 0) && (
@@ -443,15 +443,15 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             <div className="mt-2 space-y-1">
                               {isMobileWeb ? (
                                 <>
-                                  <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text leading-tight">
-                                    <div>Nearby Local</div>
-                                    <div className="font-medium">{hometown}</div>
+                                  <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text leading-tight" style={{ color: '#000000' }}>
+                                    <div style={{ color: '#000000' }}>Nearby Local</div>
+                                    <div className="font-medium" style={{ color: '#000000' }}>{hometown}</div>
                                   </div>
 
                                   {hasValidTravelDestination && (
-                                    <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text leading-tight" title={currentTravelPlan!}>
-                                      <div>Nearby Traveler</div>
-                                      <div className="font-medium">
+                                    <div className="text-sm sm:text-base font-semibold text-black crisp-hero-text leading-tight" title={currentTravelPlan!} style={{ color: '#000000' }}>
+                                      <div style={{ color: '#000000' }}>Nearby Traveler</div>
+                                      <div className="font-medium" style={{ color: '#000000' }}>
                                         {formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
                                       </div>
                                     </div>
