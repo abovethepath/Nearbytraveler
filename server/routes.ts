@@ -6371,8 +6371,8 @@ Questions? Just reply to this message. Welcome aboard!
         businessDeals,
       });
     } catch (error: any) {
-      console.error("Profile bundle error:", error?.message, error?.stack);
-      res.status(500).json({ message: "Profile bundle failed", error: error?.message });
+      console.error("PROFILE-BUNDLE CRASH:", error?.message, error?.stack);
+      return res.status(500).json({ message: "Failed to fetch user", error: error?.message });
     }
   });
 
