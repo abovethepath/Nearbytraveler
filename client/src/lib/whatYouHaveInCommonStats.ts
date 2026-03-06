@@ -56,16 +56,30 @@ export function computeCommonStats(
 
   const sharedContactsCount = Math.max(0, Number(connectionDegreeData?.mutualCount || 0) || 0);
 
-  // Single source of truth: derive total from the actual shared arrays + mutual contacts count.
-  // Do NOT trust matchCount because it can diverge from arrays (and causes UI inconsistencies).
-  const computedTotal =
-    sharedContactsCount +
+  // The server's matchCount is authoritative — it includes ALL factors (hostel match,
+  // same gender, travel intent, travel style, etc.) that never appear as tagged arrays.
+  // Using only the array sums would show 0 even when there are real things in common.
+  const serverMatchCount =
+    typeof compatibilityData?.matchCount === "number" &&
+    Number.isFinite(compatibilityData.matchCount) &&
+    compatibilityData.matchCount >= 0
+      ? compatibilityData.matchCount
+      : null;
+
+  const arraySum =
     sharedInterests.length +
     sharedActivities.length +
     sharedEvents.length +
     sharedCountries.length +
     sharedLanguagesNonEnglish.length +
     otherCommonalities.length;
+
+  // Prefer the server's matchCount (comprehensive) + mutual contacts.
+  // Fall back to array sum if matchCount is not available.
+  const totalCommon =
+    serverMatchCount !== null
+      ? serverMatchCount + sharedContactsCount
+      : arraySum + sharedContactsCount;
 
   return {
     sharedInterests,
@@ -75,7 +89,6 @@ export function computeCommonStats(
     sharedLanguagesNonEnglish,
     otherCommonalities,
     sharedContactsCount,
-    totalCommon: computedTotal,
+    totalCommon,
   };
 }
-

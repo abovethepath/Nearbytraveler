@@ -381,7 +381,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   ? commonStats!.sharedEvents!
                   : (Array.isArray((compatibilityData as any)?.sharedEvents) ? (compatibilityData as any).sharedEvents : []);
 
+                // Hostel match is highest priority — show it first in the tag list
+                const hostelTag = hostelMatch?.hostelName
+                  ? [`🏨 ${hostelMatch.hostelName}`]
+                  : [];
+
                 const allSharedTags: string[] = [
+                  ...hostelTag,
                   ...sharedInterests,
                   ...sharedActivitiesArr,
                   ...sharedEventsArr,
@@ -390,7 +396,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   ...otherCommonalities,
                 ];
 
-                const TAG_LIMIT = 8;
+                const TAG_LIMIT = 10;
                 const visibleTags = allSharedTags.slice(0, TAG_LIMIT);
                 const hiddenTagCount = allSharedTags.length - visibleTags.length;
 
