@@ -154,8 +154,8 @@ Extract the event details and return ONLY valid JSON. Use today's date to calcul
       });
 
       const textBlock = response.content.find((b): b is { type: "text"; text: string } => b.type === "text");
-      const content = textBlock?.text?.trim();
-      if (!content) {
+      const rawContent = textBlock?.text?.trim();
+      if (!rawContent) {
         return {
           draft: null,
           success: false,
@@ -163,7 +163,26 @@ Extract the event details and return ONLY valid JSON. Use today's date to calcul
         };
       }
 
-      const parsed = JSON.parse(content) as AiEventDraft;
+      // Strip markdown code fences if present (Claude sometimes wraps JSON in ```json ... ```)
+      let content = rawContent;
+      const fenceMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (fenceMatch) {
+        content = fenceMatch[1].trim();
+      }
+
+      console.log('[AI Event Draft] Raw AI response:', rawContent.slice(0, 500));
+
+      let parsed: AiEventDraft;
+      try {
+        parsed = JSON.parse(content) as AiEventDraft;
+      } catch (parseErr: any) {
+        console.error('[AI Event Draft] JSON parse failed. Raw content was:', rawContent);
+        return {
+          draft: null,
+          success: false,
+          error: "AI returned a response that couldn't be understood. Please try rephrasing your event description."
+        };
+      }
 
       // FIX OVERNIGHT EVENTS: If end time is earlier than start time on same day, add 1 day to end date
       if (parsed.startDateTime && parsed.endDateTime) {

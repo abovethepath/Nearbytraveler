@@ -127,11 +127,26 @@ Extract the meetup details and return ONLY valid JSON.`;
 
       // Parse JSON from response (handle markdown code blocks)
       let jsonStr = content.trim();
-      if (jsonStr.startsWith("```")) {
+      const fenceMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (fenceMatch) {
+        jsonStr = fenceMatch[1].trim();
+      } else if (jsonStr.startsWith("```")) {
         jsonStr = jsonStr.replace(/```json?\n?/g, "").replace(/```$/g, "").trim();
       }
 
-      const parsed = JSON.parse(jsonStr) as AiMeetupDraft;
+      console.log('[AI Meetup Draft] Raw AI response:', content.slice(0, 500));
+
+      let parsed: AiMeetupDraft;
+      try {
+        parsed = JSON.parse(jsonStr) as AiMeetupDraft;
+      } catch (parseErr: any) {
+        console.error('[AI Meetup Draft] JSON parse failed. Raw content was:', content);
+        return {
+          draft: null,
+          success: false,
+          error: "AI returned a response that couldn't be understood. Please try rephrasing your meetup description."
+        };
+      }
 
       // Validate required fields
       if (!parsed.title) {
