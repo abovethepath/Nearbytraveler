@@ -41,6 +41,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     setTriggerQuickMeetup,
     userChatrooms = [],
     compatibilityData,
+    connectionStatus,
   } = props as Record<string, any>;
 
   const isDesktop = useIsDesktop();
@@ -484,14 +485,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               <span>Message</span>
                             </button>
 
-                            <ConnectButton
-                              currentUserId={currentUser?.id || 0}
-                              targetUserId={user?.id || 0}
-                              targetUsername={user?.username}
-                              targetName={user?.name}
-                              appearance="default"
-                              className="rounded-lg shadow-sm transition-all px-5 h-8 text-[13px] font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
-                            />
+                            {connectionStatus?.status !== 'accepted' && (
+                              <ConnectButton
+                                currentUserId={currentUser?.id || 0}
+                                targetUserId={user?.id || 0}
+                                targetUsername={user?.username}
+                                targetName={user?.name}
+                                appearance="default"
+                                className="rounded-lg shadow-sm transition-all px-5 h-8 text-[13px] font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
+                              />
+                            )}
                           </div>
 
                           {isMobileWeb && (
@@ -928,6 +931,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all !text-black crisp-hero-text" style={{ color: "#000000" }}>
                             @{user?.username}
                           </h1>
+                          {!isOwnProfile && connectionStatus?.status === 'accepted' && (
+                            <span className="ml-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 shrink-0" title="Connected">
+                              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M2 6l3 3 5-5" />
+                              </svg>
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -953,14 +963,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
       >
         <span>Message</span>
       </button>
-      <ConnectButton
-        currentUserId={currentUser?.id || 0}
-        targetUserId={user?.id || 0}
-        targetUsername={user?.username}
-        targetName={user?.name}
-        appearance="default"
-        className="rounded-lg shadow-md transition-all px-5 h-8 text-[13px] font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
-      />
+      {connectionStatus?.status !== 'accepted' && (
+        <ConnectButton
+          currentUserId={currentUser?.id || 0}
+          targetUserId={user?.id || 0}
+          targetUsername={user?.username}
+          targetName={user?.name}
+          appearance="default"
+          className="rounded-lg shadow-md transition-all px-5 h-8 text-[13px] font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
+        />
+      )}
     </div>
   </>
                           ) : (
@@ -983,14 +995,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               >
                                 <span>Message</span>
                               </button>
-                              <ConnectButton
-                                currentUserId={currentUser?.id || 0}
-                                targetUserId={user?.id || 0}
-                                targetUsername={user?.username}
-                                targetName={user?.name}
-                                appearance="default"
-                                className="rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
-                              />
+                              {connectionStatus?.status !== 'accepted' && (
+                                <ConnectButton
+                                  currentUserId={currentUser?.id || 0}
+                                  targetUserId={user?.id || 0}
+                                  targetUsername={user?.username}
+                                  targetName={user?.name}
+                                  appearance="default"
+                                  className="rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
+                                />
+                              )}
                               {/* Other user's profile: share button near action buttons (not beside username) */}
                               {shareButton(true)}
                               {user && (

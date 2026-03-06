@@ -3814,6 +3814,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     triggerQuickMeetup, showCreateDeal, setShowCreateDeal, quickDeals, setShowFullGallery, EventOrganizerHubSection,
     editingLanguages, handleEditLanguages, LANGUAGES_OPTIONS, tempLanguages, setTempLanguages, customLanguageInput, setCustomLanguageInput,
     handleSaveLanguages, handleCancelLanguages, updateLanguages,
+    connectionStatus,
   };
   return (
     <div>

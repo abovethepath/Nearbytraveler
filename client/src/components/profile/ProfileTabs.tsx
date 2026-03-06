@@ -30,6 +30,7 @@ import BusinessEventsWidget from "@/components/business-events-widget";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
 import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS } from "@shared/base-options";
+import { ReportUserButton } from "@/components/report-user-button";
 import type { ProfilePageProps } from "./profile-complete-types";
 import { profileEditButtonClass } from "@/components/profile/editButtonClass";
 
@@ -467,6 +468,36 @@ export function ProfileTabs(props: ProfilePageProps) {
                       ? `About our business`
                       : `About ${user?.username || 'User'}`}
                   </CardTitle>
+
+                  {!isOwnProfile && user && currentUser && (
+                    <div className="flex items-center gap-3 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const url = `${window.location.origin}/profile/${user.username}`;
+                          if (navigator.share) {
+                            navigator.share({ title: `@${user.username} on NearbyTraveler`, url });
+                          } else {
+                            navigator.clipboard?.writeText(url);
+                          }
+                        }}
+                        className="text-xs text-gray-400 hover:text-gray-200 flex items-center gap-1 transition-colors"
+                      >
+                        <Share2 className="w-3.5 h-3.5" />
+                        Share
+                      </button>
+                      <ReportUserButton
+                        userId={currentUser.id}
+                        targetUserId={user.id}
+                        targetUsername={user.username}
+                        appearance="link"
+                        size="sm"
+                        showIcon={true}
+                        showText={true}
+                        className="text-xs p-0 h-auto font-normal"
+                      />
+                    </div>
+                  )}
 
                   {isOwnProfile && (
                     <div className="relative flex items-center gap-2">
