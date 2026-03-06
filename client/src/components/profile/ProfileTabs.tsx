@@ -51,7 +51,7 @@ export function ProfileTabs(props: ProfilePageProps) {
   const showWhatYouHaveInCommon = !isOwnProfile && !!currentUser?.id && !!user?.id && user?.userType !== 'business';
   // Mobile web: About should always be visible directly below the hero (requested ordering),
   // even if tab panels are lazily mounted.
-  const forceMobileWebAboutPanel = isMobileWeb && !isOwnProfile;
+  const forceMobileWebAboutPanel = (isMobileWeb || isNativeIOSApp()) && !isOwnProfile;
   /* Back-compat: avoid rendering the same card twice; only show this fallback when About panel isn't mounted yet. */
   const showWhatYouHaveInCommonInTabs = showWhatYouHaveInCommon && !(loadedTabs as any)?.has?.('about');
   const editButtonClass = profileEditButtonClass;
@@ -441,8 +441,9 @@ export function ProfileTabs(props: ProfilePageProps) {
           {/* Main Content Column */}
           <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6 profile-sections-column">
 
-            {/* MOBILE WEB (other-user): show What You Have in Common directly below hero (before About) */}
-            {isMobileWeb && showWhatYouHaveInCommon && (
+            {/* MOBILE (other-user): show What You Have in Common directly below hero (before About) */}
+            {/* Shows on mobile web AND native iOS app — this is the most important section */}
+            {(isMobileWeb || isNativeIOSApp()) && showWhatYouHaveInCommon && (
               <div>
                 <WhatYouHaveInCommonInline />
               </div>
