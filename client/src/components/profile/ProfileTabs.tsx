@@ -2646,7 +2646,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   <button
                     type="button"
                     className="flex items-center justify-between cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
-                    onClick={() => setLocation('/ambassador-program')}
+                    onClick={() => setLocation('/dashboard/ambassador')}
                   >
                     <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                       <Award className="w-4 h-4 text-blue-500" />

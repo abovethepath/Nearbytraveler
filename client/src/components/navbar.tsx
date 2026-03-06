@@ -663,7 +663,7 @@ function Navbar() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => {
-                          setLocation("/ambassador-program");
+                          setLocation("/dashboard/ambassador");
                           setTimeout(
                             () =>
                               window.scrollTo({ top: 0, behavior: "smooth" }),
