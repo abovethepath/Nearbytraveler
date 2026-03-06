@@ -11410,18 +11410,29 @@ Questions? Just reply to this message. Welcome aboard!
         const { inArray, arrayContains } = await import('drizzle-orm');
         
         if (searchCities.length === 1) {
-          // Single city - check both primary city and additionalCities
-          eventsQuery = await db.select().from(events)
-            .where(and(
-              or(
+          // Single city - try query with additionalCities, fall back to city-only if column missing
+          try {
+            eventsQuery = await db.select().from(events)
+              .where(and(
+                or(
+                  eq(events.city, searchCities[0]),
+                  arrayContains(events.additionalCities, [searchCities[0]])
+                ),
+                gte(events.date, now),
+                lte(events.date, sixWeeksFromNow)
+              ))
+              .orderBy(asc(events.date));
+          } catch (colErr: any) {
+            console.error(`⚠️ EVENTS: additionalCities query failed (column may not exist), falling back:`, colErr?.message);
+            eventsQuery = await db.select().from(events)
+              .where(and(
                 eq(events.city, searchCities[0]),
-                arrayContains(events.additionalCities, [searchCities[0]])
-              ),
-              gte(events.date, now),
-              lte(events.date, sixWeeksFromNow)
-            ))
-            .orderBy(asc(events.date));
-          if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS: Found ${eventsQuery.length} events in "${searchCities[0]}" (including additionalCities)`);
+                gte(events.date, now),
+                lte(events.date, sixWeeksFromNow)
+              ))
+              .orderBy(asc(events.date));
+          }
+          console.log(`🔍 EVENTS: Found ${eventsQuery.length} events in "${searchCities[0]}"`);
         } else {
           // Multiple cities - check both primary city (IN) and additionalCities (overlaps any)
           // First get events where city is in searchCities
@@ -11617,7 +11628,7 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Enhanced ${filteredEvents.length} events with participant counts and organizer info`);
       return res.json(filteredEvents);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error fetching events:", error);
+      console.error("❌ Error fetching events:", error?.message || error);
       return res.status(500).json({ message: "Failed to fetch events" });
     }
   });

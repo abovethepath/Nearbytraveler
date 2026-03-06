@@ -532,25 +532,8 @@ export default function Events() {
   }
 
   // Handle error state
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex items-center justify-between">
-              <BackButton fallbackRoute="/events-landing" />
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Events</h1>
-            </div>
-          </div>
-        </div>
-        <div className="container mx-auto p-6">
-          <div className="text-center py-8">
-            <p className="text-red-500">Failed to load events. Please try again.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Don't block the whole page on error — show inline message instead
+  const eventsLoadError = !!error;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 w-full max-w-[100vw] overflow-x-hidden box-border">
@@ -1133,7 +1116,16 @@ export default function Events() {
                   <span>Past Events</span>
                 </Button>
               </div>
-              {filteredUpcomingEvents.length === 0 ? (
+              {eventsLoadError ? (
+                <div className="text-center py-10 sm:py-14 bg-red-50 dark:bg-red-950/30 rounded-2xl border border-dashed border-red-200 dark:border-red-800">
+                  <div className="text-5xl mb-4">⚠️</div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">Couldn't load events</h3>
+                  <p className="text-base text-gray-600 dark:text-gray-300 px-6 mb-6 max-w-md mx-auto">There was a problem fetching events for this city. Please try selecting a different city or try again.</p>
+                  <Button onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/events"] })} className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-xl">
+                    Try Again
+                  </Button>
+                </div>
+              ) : filteredUpcomingEvents.length === 0 ? (
                 <div className="text-center py-10 sm:py-14 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl border border-dashed border-orange-200 dark:border-gray-700">
                   <div className="text-5xl mb-4">🎉</div>
                   <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
