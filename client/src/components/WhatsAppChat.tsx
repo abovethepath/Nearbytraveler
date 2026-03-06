@@ -2228,7 +2228,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                     {editingMessageId === message.id ? (
                       <div 
                         className={`px-3 py-2 rounded-2xl chat-message-bubble ${message.replyToId ? 'rounded-tl-none' : ''}`}
-                        style={{ backgroundColor: isOwnMessage ? '#10b981' : '#374151', border: 'none' }}
+                        style={{ backgroundColor: isOwnMessage ? '#005c4b' : '#374151', border: 'none' }}
                       >
                         <Textarea
                           value={editText}
@@ -2274,7 +2274,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                       <div 
                         className={`px-3 py-1.5 rounded-2xl chat-message-bubble ${message.replyToId ? 'rounded-tl-none' : ''}`}
                         style={{ 
-                          backgroundColor: isOwnMessage ? '#10b981' : '#374151', 
+                          backgroundColor: isOwnMessage ? '#005c4b' : '#202c33', 
                           color: '#ffffff',
                           border: 'none'
                         }}
