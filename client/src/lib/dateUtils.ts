@@ -386,9 +386,12 @@ export function formatLocationCompact(
   
   if (city) parts.push(city);
   
-  if (state) {
+  if (state && state.toLowerCase() !== (city || '').toLowerCase()) {
     const abbrevState = abbreviateState(state);
-    parts.push(abbrevState);
+    // Also skip if the abbreviated state equals the city (e.g. "Berlin" → "Berlin")
+    if (abbrevState.toLowerCase() !== (city || '').toLowerCase()) {
+      parts.push(abbrevState);
+    }
   }
   
   if (country) {
