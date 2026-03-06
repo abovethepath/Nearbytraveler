@@ -871,14 +871,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   
   const gradientOptions = [
-    "from-blue-500 via-purple-500 to-orange-500", // Original
-    "from-green-500 via-emerald-500 to-orange-500", // Green to Orange (available to meet)
-    "from-blue-500 via-cyan-500 to-orange-500", // Blue to Orange
-    "from-purple-500 via-pink-500 to-red-500", // Purple to Red
-    "from-indigo-500 via-blue-500 to-green-500", // Indigo to Green
-    "from-orange-500 via-red-500 to-pink-500", // Orange to Pink
-    "from-teal-500 via-blue-500 to-purple-500", // Teal to Purple
-    "from-yellow-500 via-orange-500 to-red-500", // Yellow to Red
+    "from-blue-700 via-purple-700 to-orange-700",
+    "from-green-700 via-emerald-700 to-orange-700",
+    "from-blue-700 via-cyan-700 to-orange-700",
+    "from-pink-700 via-pink-700 to-red-700",
+    "from-indigo-700 via-blue-700 to-green-700",
+    "from-orange-700 via-red-700 to-pink-700",
+    "from-teal-700 via-blue-700 to-purple-700",
+    "from-yellow-700 via-orange-700 to-red-700",
   ];
 
   // CSS gradient mapping for database storage and user cards
