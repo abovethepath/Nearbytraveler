@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
 import { MapPin, Calendar, Heart, Activity, CalendarDays } from "lucide-react";
 import { getTodayForInput } from "@/lib/dateUtils";
 import { getApiBaseUrl } from "@/lib/queryClient";
@@ -307,21 +306,20 @@ export default function DestinationModal({ isOpen, onComplete, onClose, user }: 
             <div>
               <Label className="text-base font-medium">What interests you most?</Label>
               <p className="text-sm text-muted-foreground mb-3">Select all that apply</p>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-wrap gap-2">
                 {travelInterests.map((interest) => (
-                  <div key={interest} className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={`interest-${interest}`}
-                      checked={selectedInterests.includes(interest)}
-                      onCheckedChange={() => toggleInterest(interest)}
-                    />
-                    <Label 
-                      htmlFor={`interest-${interest}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {interest}
-                    </Label>
-                  </div>
+                  <button
+                    key={interest}
+                    type="button"
+                    onClick={() => toggleInterest(interest)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                      selectedInterests.includes(interest)
+                        ? "bg-orange-500 text-white border-orange-500"
+                        : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                    }`}
+                  >
+                    {interest}
+                  </button>
                 ))}
               </div>
               <div className="mt-4">
@@ -367,21 +365,20 @@ export default function DestinationModal({ isOpen, onComplete, onClose, user }: 
             <div>
               <Label className="text-base font-medium">Preferred Activities</Label>
               <p className="text-sm text-muted-foreground mb-3">Choose activities you'd like to do</p>
-              <div className="grid grid-cols-1 gap-3">
+              <div className="flex flex-wrap gap-2">
                 {preferredActivities.map((activity) => (
-                  <div key={activity} className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={`activity-${activity}`}
-                      checked={selectedActivities.includes(activity)}
-                      onCheckedChange={() => toggleActivity(activity)}
-                    />
-                    <Label 
-                      htmlFor={`activity-${activity}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {activity}
-                    </Label>
-                  </div>
+                  <button
+                    key={activity}
+                    type="button"
+                    onClick={() => toggleActivity(activity)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                      selectedActivities.includes(activity)
+                        ? "bg-orange-500 text-white border-orange-500"
+                        : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                    }`}
+                  >
+                    {activity}
+                  </button>
                 ))}
               </div>
               <div className="mt-4">

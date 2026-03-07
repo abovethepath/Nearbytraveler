@@ -9,7 +9,6 @@ import { useAuth } from '@/App';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { Checkbox } from '@/components/ui/checkbox';
 
 interface EmergencyContact {
   id: number;
@@ -217,16 +216,18 @@ export function SafetyFeatures({ isOwnProfile = false }: { isOwnProfile?: boolea
                   />
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="isPrimary"
-                    checked={!!newContact.isPrimary}
-                    onCheckedChange={(checked) => setNewContact(prev => ({ ...prev, isPrimary: !!checked }))}
-                    className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                  />
-                  <label htmlFor="isPrimary" className="text-sm">
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setNewContact(prev => ({ ...prev, isPrimary: !prev.isPrimary }))}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                      !!newContact.isPrimary
+                        ? "bg-orange-500 text-white border-orange-500"
+                        : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                    }`}
+                  >
                     Primary emergency contact
-                  </label>
+                  </button>
                 </div>
 
                 <div className="flex gap-2">

@@ -1197,14 +1197,18 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="isPublic"
-                  checked={!!formData.isPublic}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isPublic: !!checked }))}
-                  className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                />
-                <Label htmlFor="isPublic">Make this event public</Label>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, isPublic: !prev.isPublic }))}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                    !!formData.isPublic
+                      ? "bg-orange-500 text-white border-orange-500"
+                      : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                  }`}
+                >
+                  Make this event public
+                </button>
               </div>
             </CardContent>
           </Card>
@@ -1302,16 +1306,18 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                     <h4 className="font-medium">Facebook</h4>
                   </div>
                   <div className="space-y-2">
-                    <div className="flex items-center space-x-2 text-sm">
-                      <Checkbox
-                        id="postToNearbytravelerFacebook"
-                        checked={!!postToNearbytravelerFacebook}
-                        onCheckedChange={(checked) => setPostToNearbytravelerFacebook(!!checked)}
-                        className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                      />
-                      <label htmlFor="postToNearbytravelerFacebook" className="text-gray-600 dark:text-gray-400">
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setPostToNearbytravelerFacebook(!postToNearbytravelerFacebook)}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                          !!postToNearbytravelerFacebook
+                            ? "bg-orange-500 text-white border-orange-500"
+                            : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                        }`}
+                      >
                         Also post to @nearbytraveler Facebook page
-                      </label>
+                      </button>
                     </div>
                     <Button
                       type="button"

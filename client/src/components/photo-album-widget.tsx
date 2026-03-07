@@ -698,16 +698,18 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
           </div>
 
           {/* Privacy Setting */}
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="albumIsPublic"
-              checked={!!newMemory.isPublic}
-              onCheckedChange={(checked) => setNewMemory(prev => ({ ...prev, isPublic: !!checked }))}
-              className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-            />
-            <label htmlFor="albumIsPublic" className="text-sm text-gray-700 dark:text-gray-300">
-              Make this album public (visible to other travelers)
-            </label>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setNewMemory(prev => ({ ...prev, isPublic: !prev.isPublic }))}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                !!newMemory.isPublic
+                  ? "bg-orange-500 text-white border-orange-500"
+                  : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+              }`}
+            >
+              Make this album public
+            </button>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
@@ -1306,16 +1308,18 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="editAlbumIsPublic"
-                  checked={!!editingAlbum.isPublic}
-                  onCheckedChange={(checked) => setEditingAlbum({...editingAlbum, isPublic: !!checked})}
-                  className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                />
-                <label htmlFor="editAlbumIsPublic" className="text-sm text-gray-700 dark:text-gray-300">
-                  Make this album public (visible to other travelers)
-                </label>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingAlbum({...editingAlbum, isPublic: !editingAlbum.isPublic})}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                    !!editingAlbum.isPublic
+                      ? "bg-orange-500 text-white border-orange-500"
+                      : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                  }`}
+                >
+                  Make this album public
+                </button>
               </div>
 
               <div className="flex gap-4 pt-4">

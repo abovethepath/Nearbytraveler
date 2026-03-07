@@ -9,7 +9,6 @@ import { useAuth } from '@/App';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { Checkbox } from '@/components/ui/checkbox';
 
 interface HostingOffer {
   id: number;
@@ -246,17 +245,20 @@ export function HostingOffers({ isOwnProfile = false, userId }: { isOwnProfile?:
 
             <div>
               <label className="text-sm font-medium mb-2 block">Amenities & Services</label>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="flex flex-wrap gap-2">
                 {amenityOptions.map((amenity) => (
-                  <label key={amenity} className="flex items-center space-x-2 text-sm cursor-pointer">
-                    <Checkbox
-                      id={`amenity-${amenity.replace(/\s+/g, '-').toLowerCase()}`}
-                      checked={newOffer.amenities.includes(amenity)}
-                      onCheckedChange={() => toggleAmenity(amenity)}
-                      className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                    />
-                    <span>{amenity}</span>
-                  </label>
+                  <button
+                    key={amenity}
+                    type="button"
+                    onClick={() => toggleAmenity(amenity)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                      newOffer.amenities.includes(amenity)
+                        ? "bg-orange-500 text-white border-orange-500"
+                        : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                    }`}
+                  >
+                    {amenity}
+                  </button>
                 ))}
               </div>
             </div>

@@ -395,71 +395,76 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   <strong>Note:</strong> These are interests specific to this travel plan only, separate from your main profile interests.
                 </div>
                 
-                {/* I am a Veteran checkbox */}
+                {/* I am a Veteran toggle */}
                 <div className="mb-4">
                   <FormField
                     control={form.control}
                     name="isVeteran"
                     render={({ field }) => (
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="profile-veteran-checkbox"
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                        <Label htmlFor="profile-veteran-checkbox" className="text-sm font-bold cursor-pointer">I am a Veteran</Label>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => field.onChange(!field.value)}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                          field.value
+                            ? "bg-orange-500 text-white border-orange-500"
+                            : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                        }`}
+                      >
+                        I am a Veteran
+                      </button>
                     )}
                   />
                 </div>
 
-                {/* I am active duty checkbox */}
+                {/* I am active duty toggle */}
                 <div className="mb-4">
                   <FormField
                     control={form.control}
                     name="isActiveDuty"
                     render={({ field }) => (
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="profile-active-duty-checkbox"
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                        <Label htmlFor="profile-active-duty-checkbox" className="text-sm font-bold cursor-pointer">I am active duty</Label>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => field.onChange(!field.value)}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                          field.value
+                            ? "bg-orange-500 text-white border-orange-500"
+                            : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                        }`}
+                      >
+                        I am active duty
+                      </button>
                     )}
                   />
                 </div>
                 
-                <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50">
-                  {[...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].map((interest, index) => (
-                    <div key={`interest-edit-${index}`} className="flex items-center space-x-1">
-                      <FormField
-                        control={form.control}
-                        name="interests"
-                        render={({ field }) => (
-                          <Checkbox
-                            id={`interest-edit-${interest}`}
-                            checked={field.value?.includes(interest) || false}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                field.onChange([...(field.value || []), interest]);
-                              } else {
-                                field.onChange(field.value?.filter(i => i !== interest));
-                              }
-                            }}
-                          />
-                        )}
-                      />
-                      <Label 
-                        htmlFor={`interest-edit-${interest}`} 
-                        className="text-xs cursor-pointer leading-tight font-medium"
-                      >
-                        {interest}
-                      </Label>
+                <FormField
+                  control={form.control}
+                  name="interests"
+                  render={({ field }) => (
+                    <div className="flex flex-wrap gap-2 border rounded-lg p-3 bg-orange-50">
+                      {[...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].map((interest, index) => (
+                        <button
+                          key={`interest-edit-${index}`}
+                          type="button"
+                          onClick={() => {
+                            if (field.value?.includes(interest)) {
+                              field.onChange(field.value.filter((i: string) => i !== interest));
+                            } else {
+                              field.onChange([...(field.value || []), interest]);
+                            }
+                          }}
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                            field.value?.includes(interest)
+                              ? "bg-orange-500 text-white border-orange-500"
+                              : "bg-transparent border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                          }`}
+                        >
+                          {interest}
+                        </button>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  )}
+                />
                 
                 {/* Custom Interests Input */}
                 <div className="mt-3">
@@ -506,39 +511,38 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   Activities on This Trip
                 </Label>
                 
-                <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-green-50">
-                  {safeGetAllActivities().map((activity, index) => {
-                    const displayText = activity.startsWith("**") && activity.endsWith("**") ? 
-                      activity.slice(2, -2) : activity;
-                    return (
-                      <div key={`activity-edit-${index}`} className="flex items-center space-x-1">
-                        <FormField
-                          control={form.control}
-                          name="activities"
-                          render={({ field }) => (
-                            <Checkbox
-                              id={`activity-edit-${activity}`}
-                              checked={field.value?.includes(activity) || false}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  field.onChange([...(field.value || []), activity]);
-                                } else {
-                                  field.onChange(field.value?.filter(a => a !== activity));
-                                }
-                              }}
-                            />
-                          )}
-                        />
-                        <Label 
-                          htmlFor={`activity-edit-${activity}`} 
-                          className="text-xs cursor-pointer leading-tight font-medium"
-                        >
-                          {displayText}
-                        </Label>
-                      </div>
-                    );
-                  })}
-                </div>
+                <FormField
+                  control={form.control}
+                  name="activities"
+                  render={({ field }) => (
+                    <div className="flex flex-wrap gap-2 border rounded-lg p-3 bg-green-50">
+                      {safeGetAllActivities().map((activity, index) => {
+                        const displayText = activity.startsWith("**") && activity.endsWith("**") ?
+                          activity.slice(2, -2) : activity;
+                        return (
+                          <button
+                            key={`activity-edit-${index}`}
+                            type="button"
+                            onClick={() => {
+                              if (field.value?.includes(activity)) {
+                                field.onChange(field.value.filter((a: string) => a !== activity));
+                              } else {
+                                field.onChange([...(field.value || []), activity]);
+                              }
+                            }}
+                            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                              field.value?.includes(activity)
+                                ? "bg-orange-500 text-white border-orange-500"
+                                : "bg-transparent border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                            }`}
+                          >
+                            {displayText}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                />
                 
                 {/* Custom Activities Input */}
                 <div className="mt-3">
@@ -903,17 +907,20 @@ export function ProfileDialogs(props: ProfilePageProps) {
                     control={profileForm.control}
                     name="isVeteran"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                      <FormItem className="space-y-0">
                         <FormControl>
-                          <Checkbox
-                            checked={!!field.value}
-                            onCheckedChange={field.onChange}
-                            className="border-blue-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                          />
+                          <button
+                            type="button"
+                            onClick={() => field.onChange(!field.value)}
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                              !!field.value
+                                ? "bg-orange-500 text-white border-orange-500"
+                                : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                            }`}
+                          >
+                            Military Veteran
+                          </button>
                         </FormControl>
-                        <FormLabel className="text-blue-900 dark:text-blue-100 font-medium cursor-pointer">
-                          Military Veteran
-                        </FormLabel>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -924,17 +931,20 @@ export function ProfileDialogs(props: ProfilePageProps) {
                     control={profileForm.control}
                     name="isActiveDuty"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                      <FormItem className="space-y-0">
                         <FormControl>
-                          <Checkbox
-                            checked={!!field.value}
-                            onCheckedChange={field.onChange}
-                            className="border-blue-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                          />
+                          <button
+                            type="button"
+                            onClick={() => field.onChange(!field.value)}
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                              !!field.value
+                                ? "bg-orange-500 text-white border-orange-500"
+                                : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                            }`}
+                          >
+                            Active Duty Military
+                          </button>
                         </FormControl>
-                        <FormLabel className="text-blue-900 dark:text-blue-100 font-medium cursor-pointer">
-                          Active Duty Military
-                        </FormLabel>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -1137,22 +1147,19 @@ export function ProfileDialogs(props: ProfilePageProps) {
                         <FormItem>
                           <FormLabel>Do you have children?</FormLabel>
                           <FormControl>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                id="have-children"
-                                checked={!!field.value}
-                                onCheckedChange={(checked) => {
-                                  field.onChange(!!checked);
-                                }}
-                                className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                type="button"
                                 data-testid="checkbox-have-children"
-                              />
-                              <label 
-                                htmlFor="have-children" 
-                                className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
+                                onClick={() => field.onChange(!field.value)}
+                                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                                  !!field.value
+                                    ? "bg-orange-500 text-white border-orange-500"
+                                    : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                                }`}
                               >
                                 Yes, I have children
-                              </label>
+                              </button>
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -1304,27 +1311,25 @@ export function ProfileDialogs(props: ProfilePageProps) {
                         <FormControl>
                           <div className="flex flex-wrap gap-2 border rounded-md p-3">
                             {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
-                              <div key={preference} className="flex items-center space-x-2">
-                                <Checkbox
-                                  id={`preference-${preference}`}
-                                  checked={field.value?.includes(preference) || false}
-                                  onCheckedChange={(checked) => {
-                                    const currentValue = field.value || [];
-                                    if (checked) {
-                                      field.onChange([...currentValue, preference]);
-                                    } else {
-                                      field.onChange(currentValue.filter((p: string) => p !== preference));
-                                    }
-                                  }}
-                                  className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
-                                />
-                                <label 
-                                  htmlFor={`preference-${preference}`} 
-                                  className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
-                                >
-                                  {preference}
-                                </label>
-                              </div>
+                              <button
+                                key={preference}
+                                type="button"
+                                onClick={() => {
+                                  const currentValue = field.value || [];
+                                  if (currentValue.includes(preference)) {
+                                    field.onChange(currentValue.filter((p: string) => p !== preference));
+                                  } else {
+                                    field.onChange([...currentValue, preference]);
+                                  }
+                                }}
+                                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                                  field.value?.includes(preference)
+                                    ? "bg-orange-500 text-white border-orange-500"
+                                    : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                                }`}
+                              >
+                                {preference}
+                              </button>
                             ))}
                           </div>
                         </FormControl>
@@ -1389,15 +1394,19 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   render={({ field }) => (
                     <FormItem className="rounded-lg border px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="flex flex-row items-center justify-between">
-                        <div>
-                          <FormLabel className="text-gray-900 dark:text-white">Minority Owned Business</FormLabel>
-                        </div>
+                        <FormLabel className="text-gray-900 dark:text-white">Minority Owned Business</FormLabel>
                         <FormControl>
-                          <Checkbox
-                            checked={!!field.value}
-                            onCheckedChange={(checked) => field.onChange(!!checked)}
-                            className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
-                          />
+                          <button
+                            type="button"
+                            onClick={() => field.onChange(!field.value)}
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                              !!field.value
+                                ? "bg-orange-500 text-white border-orange-500"
+                                : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                            }`}
+                          >
+                            {!!field.value ? "Yes" : "No"}
+                          </button>
                         </FormControl>
                       </div>
                       {field.value && (
@@ -1405,19 +1414,20 @@ export function ProfileDialogs(props: ProfilePageProps) {
                           control={profileForm.control}
                           name="showMinorityOwned"
                           render={({ field: publicField }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6 mt-2">
                               <FormControl>
-                                <Checkbox
-                                  checked={!!publicField.value}
-                                  onCheckedChange={(checked) => publicField.onChange(!!checked)}
-                                  className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                                />
+                                <button
+                                  type="button"
+                                  onClick={() => publicField.onChange(!publicField.value)}
+                                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                                    !!publicField.value
+                                      ? "bg-orange-500 text-white border-orange-500"
+                                      : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                                  }`}
+                                >
+                                  {!!publicField.value ? "Shown publicly" : "Hidden (still searchable)"}
+                                </button>
                               </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
-                                  Show publicly (uncheck to hide but keep searchable)
-                                </FormLabel>
-                              </div>
                             </FormItem>
                           )}
                         />
@@ -1433,15 +1443,19 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   render={({ field }) => (
                     <FormItem className="rounded-lg border px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="flex flex-row items-center justify-between">
-                        <div>
-                          <FormLabel className="text-gray-900 dark:text-white">Female Owned Business</FormLabel>
-                        </div>
+                        <FormLabel className="text-gray-900 dark:text-white">Female Owned Business</FormLabel>
                         <FormControl>
-                          <Checkbox
-                            checked={!!field.value}
-                            onCheckedChange={(checked) => field.onChange(!!checked)}
-                            className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-pink-600 data-[state=checked]:border-pink-600"
-                          />
+                          <button
+                            type="button"
+                            onClick={() => field.onChange(!field.value)}
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                              !!field.value
+                                ? "bg-orange-500 text-white border-orange-500"
+                                : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                            }`}
+                          >
+                            {!!field.value ? "Yes" : "No"}
+                          </button>
                         </FormControl>
                       </div>
                       {field.value && (
@@ -1449,19 +1463,20 @@ export function ProfileDialogs(props: ProfilePageProps) {
                           control={profileForm.control}
                           name="showFemaleOwned"
                           render={({ field: publicField }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6 mt-2">
                               <FormControl>
-                                <Checkbox
-                                  checked={!!publicField.value}
-                                  onCheckedChange={(checked) => publicField.onChange(!!checked)}
-                                  className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                                />
+                                <button
+                                  type="button"
+                                  onClick={() => publicField.onChange(!publicField.value)}
+                                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                                    !!publicField.value
+                                      ? "bg-orange-500 text-white border-orange-500"
+                                      : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                                  }`}
+                                >
+                                  {!!publicField.value ? "Shown publicly" : "Hidden (still searchable)"}
+                                </button>
                               </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
-                                  Show publicly (uncheck to hide but keep searchable)
-                                </FormLabel>
-                              </div>
                             </FormItem>
                           )}
                         />
@@ -1477,15 +1492,19 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   render={({ field }) => (
                     <FormItem className="rounded-lg border px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       <div className="flex flex-row items-center justify-between">
-                        <div>
-                          <FormLabel className="text-gray-900 dark:text-white">LGBTQIA+ Owned Business</FormLabel>
-                        </div>
+                        <FormLabel className="text-gray-900 dark:text-white">LGBTQIA+ Owned Business</FormLabel>
                         <FormControl>
-                          <Checkbox
-                            checked={!!field.value}
-                            onCheckedChange={(checked) => field.onChange(!!checked)}
-                            className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
-                          />
+                          <button
+                            type="button"
+                            onClick={() => field.onChange(!field.value)}
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                              !!field.value
+                                ? "bg-orange-500 text-white border-orange-500"
+                                : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                            }`}
+                          >
+                            {!!field.value ? "Yes" : "No"}
+                          </button>
                         </FormControl>
                       </div>
                       {field.value && (
@@ -1493,19 +1512,20 @@ export function ProfileDialogs(props: ProfilePageProps) {
                           control={profileForm.control}
                           name="showLGBTQIAOwned"
                           render={({ field: publicField }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6 mt-2">
                               <FormControl>
-                                <Checkbox
-                                  checked={!!publicField.value}
-                                  onCheckedChange={(checked) => publicField.onChange(!!checked)}
-                                  className="border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                                />
+                                <button
+                                  type="button"
+                                  onClick={() => publicField.onChange(!publicField.value)}
+                                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                                    !!publicField.value
+                                      ? "bg-orange-500 text-white border-orange-500"
+                                      : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                                  }`}
+                                >
+                                  {!!publicField.value ? "Shown publicly" : "Hidden (still searchable)"}
+                                </button>
                               </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
-                                  Show publicly (uncheck to hide but keep searchable)
-                                </FormLabel>
-                              </div>
                             </FormItem>
                           )}
                         />

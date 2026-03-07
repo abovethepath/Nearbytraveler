@@ -608,12 +608,19 @@ export default function Explore() {
                       </Select>
                       <Input placeholder="Icon emoji" value={ccIcon} onChange={(e) => setCcIcon(e.target.value)} className="text-center text-xl" maxLength={4} />
                     </div>
-                    <div className="flex items-center gap-3">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <Checkbox checked={!!ccIsPrivate} onCheckedChange={(checked) => setCcIsPrivate(!!checked)} className="h-4 w-4 border-gray-300 dark:border-gray-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
-                        <Lock className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm">Private (password required to join)</span>
-                      </label>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setCcIsPrivate(!ccIsPrivate)}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-2 ${
+                          !!ccIsPrivate
+                            ? "bg-orange-500 text-white border-orange-500"
+                            : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                        }`}
+                      >
+                        <Lock className="w-3 h-3" />
+                        Private (password required)
+                      </button>
                     </div>
                     {ccIsPrivate && (
                       <Input placeholder="Set a password for this community" type="password" value={ccPassword} onChange={(e) => setCcPassword(e.target.value)} />

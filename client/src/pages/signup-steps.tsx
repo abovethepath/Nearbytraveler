@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "../App";
@@ -669,83 +668,81 @@ export default function SignupSteps() {
                       </Button>
                     </div>
                   </div>
-                  <div className="grid grid-cols-4 gap-1">
+                  <div className="flex flex-wrap gap-2">
                     {TOP_CHOICES.map((interest) => (
-                      <div key={interest} className="flex items-center space-x-1">
-                        <Checkbox
-                          id={`top-interest-${interest}`}
-                          checked={formData.interests.includes(interest)}
-                          onCheckedChange={() => 
-                            toggleArrayValue(formData.interests, interest, (newInterests) => 
-                              setFormData({ ...formData, interests: newInterests })
-                            )
-                          }
-                          data-testid={`checkbox-top-choice-${interest.toLowerCase().replace(/\s+/g, '-')}`}
-                        />
-                        <Label htmlFor={`top-interest-${interest}`} className="text-xs font-semibold text-black dark:text-white">
-                          {interest}
-                        </Label>
-                      </div>
+                      <button
+                        key={interest}
+                        type="button"
+                        data-testid={`checkbox-top-choice-${interest.toLowerCase().replace(/\s+/g, '-')}`}
+                        onClick={() => toggleArrayValue(formData.interests, interest, (newInterests) => setFormData({ ...formData, interests: newInterests }))}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                          formData.interests.includes(interest)
+                            ? "bg-orange-500 text-white border-orange-500"
+                            : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                        }`}
+                      >
+                        {interest}
+                      </button>
                     ))}
                   </div>
                 </div>
 
                 <div>
                   <h4 className="text-lg font-medium mb-3 text-gray-900">Additional Interests</h4>
-                  <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-blue-50 mb-4">
+                  <div className="flex flex-wrap gap-2 border rounded-lg p-3 bg-blue-50 mb-4">
                     {ADDITIONAL_INTERESTS.filter(interest => !interest.startsWith("**")).map((interest) => (
-                      <div key={interest} className="flex items-center space-x-1">
-                        <Checkbox
-                          id={`interest-${interest}`}
-                          checked={formData.interests.includes(interest)}
-                          onCheckedChange={() => 
-                            toggleArrayValue(formData.interests, interest, (newInterests) => 
-                              setFormData({ ...formData, interests: newInterests })
-                            )
-                          }
-                        />
-                        <Label htmlFor={`interest-${interest}`} className="text-xs">{interest}</Label>
-                      </div>
+                      <button
+                        key={interest}
+                        type="button"
+                        onClick={() => toggleArrayValue(formData.interests, interest, (newInterests) => setFormData({ ...formData, interests: newInterests }))}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                          formData.interests.includes(interest)
+                            ? "bg-orange-500 text-white border-orange-500"
+                            : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                        }`}
+                      >
+                        {interest}
+                      </button>
                     ))}
                   </div>
                 </div>
 
                 <div>
                   <h4 className="text-lg font-medium mb-3 text-gray-900">Activities</h4>
-                  <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-green-50 mb-4">
+                  <div className="flex flex-wrap gap-2 border rounded-lg p-3 bg-green-50 mb-4">
                     {getAllActivities().map((activity) => (
-                      <div key={activity} className="flex items-center space-x-1">
-                        <Checkbox
-                          id={`activity-${activity}`}
-                          checked={formData.activities.includes(activity)}
-                          onCheckedChange={() => 
-                            toggleArrayValue(formData.activities, activity, (newActivities) => 
-                              setFormData({ ...formData, activities: newActivities })
-                            )
-                          }
-                        />
-                        <Label htmlFor={`activity-${activity}`} className="text-xs">{activity}</Label>
-                      </div>
+                      <button
+                        key={activity}
+                        type="button"
+                        onClick={() => toggleArrayValue(formData.activities, activity, (newActivities) => setFormData({ ...formData, activities: newActivities }))}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                          formData.activities.includes(activity)
+                            ? "bg-orange-500 text-white border-orange-500"
+                            : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                        }`}
+                      >
+                        {activity}
+                      </button>
                     ))}
                   </div>
                 </div>
 
                 <div>
                   <h3 className="text-lg font-medium mb-4 text-teal-700">Languages Spoken</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {BASE_LANGUAGES.map((language) => (
-                      <div key={language} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`language-${language}`}
-                          checked={formData.languagesSpoken.includes(language)}
-                          onCheckedChange={() => 
-                            toggleArrayValue(formData.languagesSpoken, language, (newLanguages) => 
-                              setFormData({ ...formData, languagesSpoken: newLanguages })
-                            )
-                          }
-                        />
-                        <Label htmlFor={`language-${language}`} className="text-xs">{language}</Label>
-                      </div>
+                      <button
+                        key={language}
+                        type="button"
+                        onClick={() => toggleArrayValue(formData.languagesSpoken, language, (newLanguages) => setFormData({ ...formData, languagesSpoken: newLanguages }))}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                          formData.languagesSpoken.includes(language)
+                            ? "bg-orange-500 text-white border-orange-500"
+                            : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                        }`}
+                      >
+                        {language}
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -759,33 +756,38 @@ export default function SignupSteps() {
                   <div>
                     <h3 className="text-lg font-medium mb-4 text-teal-700">Currently Traveling?</h3>
                     <div className="mb-4">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="isCurrentlyTraveling"
-                          checked={formData.isCurrentlyTraveling}
-                          onCheckedChange={(checked) => setFormData({ ...formData, isCurrentlyTraveling: !!checked })}
-                        />
-                        <Label htmlFor="isCurrentlyTraveling">Yes, I am currently traveling</Label>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setFormData({ ...formData, isCurrentlyTraveling: !formData.isCurrentlyTraveling })}
+                          className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                            formData.isCurrentlyTraveling
+                              ? "bg-orange-500 text-white border-orange-500"
+                              : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                          }`}
+                        >
+                          Yes, I am currently traveling
+                        </button>
                       </div>
                     </div>
                     
                     {formData.isCurrentlyTraveling && (
                       <div>
                         <h4 className="text-md font-medium mb-2 text-teal-600">Traveler Type</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    <div className="flex flex-wrap gap-2">
                       {BASE_TRAVELER_TYPES.map((type) => (
-                        <div key={type} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`traveler-${type}`}
-                            checked={formData.travelerTypes.includes(type)}
-                            onCheckedChange={() => 
-                              toggleArrayValue(formData.travelerTypes, type, (newTypes) => 
-                                setFormData({ ...formData, travelerTypes: newTypes })
-                              )
-                            }
-                          />
-                          <Label htmlFor={`traveler-${type}`} className="text-xs">{type}</Label>
-                        </div>
+                        <button
+                          key={type}
+                          type="button"
+                          onClick={() => toggleArrayValue(formData.travelerTypes, type, (newTypes) => setFormData({ ...formData, travelerTypes: newTypes }))}
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                            formData.travelerTypes.includes(type)
+                              ? "bg-orange-500 text-white border-orange-500"
+                              : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                          }`}
+                        >
+                          {type}
+                        </button>
                       ))}
                         </div>
                       </div>

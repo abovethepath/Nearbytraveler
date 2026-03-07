@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, Search, X, Users, Filter, MapPin, Building2, Zap } from "lucide-react";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
@@ -373,25 +372,25 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-2 pt-2">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="flex flex-wrap gap-2">
                   {topChoicesOptions.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`topChoice-${option}`}
-                        checked={advancedFilters.topChoices.includes(option)}
-                        onCheckedChange={(checked) => {
-                          setAdvancedFilters(prev => ({
-                            ...prev,
-                            topChoices: checked 
-                              ? [...prev.topChoices, option]
-                              : prev.topChoices.filter(t => t !== option)
-                          }));
-                        }}
-                      />
-                      <Label htmlFor={`topChoice-${option}`} className="text-sm font-medium cursor-pointer">
-                        {option}
-                      </Label>
-                    </div>
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setAdvancedFilters(prev => ({
+                        ...prev,
+                        topChoices: prev.topChoices.includes(option)
+                          ? prev.topChoices.filter(t => t !== option)
+                          : [...prev.topChoices, option]
+                      }))}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                        advancedFilters.topChoices.includes(option)
+                          ? "bg-orange-500 text-white border-orange-500"
+                          : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                      }`}
+                    >
+                      {option}
+                    </button>
                   ))}
                 </div>
               </CollapsibleContent>
@@ -406,23 +405,27 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-2 pt-2">
-                {genderOptions.map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`gender-${option}`}
-                      checked={advancedFilters.gender.includes(option)}
-                      onCheckedChange={(checked) => {
-                        setAdvancedFilters(prev => ({
-                          ...prev,
-                          gender: checked 
-                            ? [...prev.gender, option]
-                            : prev.gender.filter(g => g !== option)
-                        }));
-                      }}
-                    />
-                    <Label htmlFor={`gender-${option}`} className="text-sm">{option}</Label>
-                  </div>
-                ))}
+                <div className="flex flex-wrap gap-2">
+                  {genderOptions.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setAdvancedFilters(prev => ({
+                        ...prev,
+                        gender: prev.gender.includes(option)
+                          ? prev.gender.filter(g => g !== option)
+                          : [...prev.gender, option]
+                      }))}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                        advancedFilters.gender.includes(option)
+                          ? "bg-orange-500 text-white border-orange-500"
+                          : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
               </CollapsibleContent>
             </Collapsible>
 
@@ -435,26 +438,29 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-2 pt-2">
-                {sexualPreferenceOptions.map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`sexPref-${option}`}
-                      checked={advancedFilters.sexualPreference.includes(option)}
-                      onCheckedChange={(checked) => {
-                        setAdvancedFilters(prev => ({
-                          ...prev,
-                          sexualPreference: checked 
-                            ? [...prev.sexualPreference, option]
-                            : prev.sexualPreference.filter(sp => sp !== option)
-                        }));
-                      }}
-                    />
-                    <Label htmlFor={`sexPref-${option}`} className="text-sm">{option}</Label>
-                  </div>
-                ))}
+                <div className="flex flex-wrap gap-2">
+                  {sexualPreferenceOptions.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setAdvancedFilters(prev => ({
+                        ...prev,
+                        sexualPreference: prev.sexualPreference.includes(option)
+                          ? prev.sexualPreference.filter(sp => sp !== option)
+                          : [...prev.sexualPreference, option]
+                      }))}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                        advancedFilters.sexualPreference.includes(option)
+                          ? "bg-orange-500 text-white border-orange-500"
+                          : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
               </CollapsibleContent>
             </Collapsible>
-
 
             {/* Military Status Filter */}
             <Collapsible open={expandedSections.militaryStatus} onOpenChange={() => toggleSection('militaryStatus')}>
@@ -465,23 +471,27 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-2 pt-2">
-                {militaryStatusOptions.map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`military-${option}`}
-                      checked={advancedFilters.militaryStatus.includes(option)}
-                      onCheckedChange={(checked) => {
-                        setAdvancedFilters(prev => ({
-                          ...prev,
-                          militaryStatus: checked 
-                            ? [...prev.militaryStatus, option]
-                            : prev.militaryStatus.filter(m => m !== option)
-                        }));
-                      }}
-                    />
-                    <Label htmlFor={`military-${option}`} className="text-sm">{option}</Label>
-                  </div>
-                ))}
+                <div className="flex flex-wrap gap-2">
+                  {militaryStatusOptions.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setAdvancedFilters(prev => ({
+                        ...prev,
+                        militaryStatus: prev.militaryStatus.includes(option)
+                          ? prev.militaryStatus.filter(m => m !== option)
+                          : [...prev.militaryStatus, option]
+                      }))}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                        advancedFilters.militaryStatus.includes(option)
+                          ? "bg-orange-500 text-white border-orange-500"
+                          : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
               </CollapsibleContent>
             </Collapsible>
 
@@ -570,23 +580,27 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-2 pt-2">
-                {userTypeOptions.map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`userType-${option}`}
-                      checked={advancedFilters.userType.includes(option)}
-                      onCheckedChange={(checked) => {
-                        setAdvancedFilters(prev => ({
-                          ...prev,
-                          userType: checked 
-                            ? [...prev.userType, option]
-                            : prev.userType.filter(ut => ut !== option)
-                        }));
-                      }}
-                    />
-                    <Label htmlFor={`userType-${option}`} className="text-sm">{option}</Label>
-                  </div>
-                ))}
+                <div className="flex flex-wrap gap-2">
+                  {userTypeOptions.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setAdvancedFilters(prev => ({
+                        ...prev,
+                        userType: prev.userType.includes(option)
+                          ? prev.userType.filter(ut => ut !== option)
+                          : [...prev.userType, option]
+                      }))}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                        advancedFilters.userType.includes(option)
+                          ? "bg-orange-500 text-white border-orange-500"
+                          : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
               </CollapsibleContent>
             </Collapsible>
 
@@ -599,85 +613,77 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-2 pt-2">
-                {travelerTypeOptions.map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`travelerType-${option}`}
-                      checked={advancedFilters.travelerTypes.includes(option)}
-                      onCheckedChange={(checked) => {
-                        setAdvancedFilters(prev => ({
-                          ...prev,
-                          travelerTypes: checked 
-                            ? [...prev.travelerTypes, option]
-                            : prev.travelerTypes.filter(tt => tt !== option)
-                        }));
-                      }}
-                    />
-                    <Label htmlFor={`travelerType-${option}`} className="text-sm">{option}</Label>
-                  </div>
-                ))}
+                <div className="flex flex-wrap gap-2">
+                  {travelerTypeOptions.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setAdvancedFilters(prev => ({
+                        ...prev,
+                        travelerTypes: prev.travelerTypes.includes(option)
+                          ? prev.travelerTypes.filter(tt => tt !== option)
+                          : [...prev.travelerTypes, option]
+                      }))}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                        advancedFilters.travelerTypes.includes(option)
+                          ? "bg-orange-500 text-white border-orange-500"
+                          : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
               </CollapsibleContent>
             </Collapsible>
 
             {/* New to Town Filter */}
-            <div className="flex items-center space-x-2 p-3 border rounded-lg bg-green-50 dark:bg-green-900/20">
-              <Checkbox
-                id="newToTown"
-                checked={advancedFilters.newToTown}
-                onCheckedChange={(checked) => {
-                  setAdvancedFilters(prev => ({
-                    ...prev,
-                    newToTown: checked as boolean
-                  }));
-                }}
+            <div className="p-3 border rounded-lg bg-green-50 dark:bg-green-900/20">
+              <button
+                type="button"
                 data-testid="checkbox-new-to-town"
-              />
-              <Label htmlFor="newToTown" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100 border border-green-300 dark:border-green-600">
-                  New to Town
-                </span>
-                <span className="text-gray-600 dark:text-gray-400">Show only people new to town</span>
-              </Label>
+                onClick={() => setAdvancedFilters(prev => ({ ...prev, newToTown: !prev.newToTown }))}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-2 ${
+                  advancedFilters.newToTown
+                    ? "bg-orange-500 text-white border-orange-500"
+                    : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                }`}
+              >
+                <span>New to Town</span>
+                <span className={`text-xs ${advancedFilters.newToTown ? "text-white/80" : "text-gray-500"}`}>only</span>
+              </button>
             </div>
 
             {/* Traveling with Children Filter */}
-            <div className="flex items-center space-x-2 p-3 border rounded-lg bg-amber-50 dark:bg-amber-900/20">
-              <Checkbox
-                id="travelingWithChildren"
-                checked={advancedFilters.travelingWithChildren}
-                onCheckedChange={(checked) => {
-                  setAdvancedFilters(prev => ({
-                    ...prev,
-                    travelingWithChildren: checked as boolean
-                  }));
-                }}
-              />
-              <Label htmlFor="travelingWithChildren" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-100 border border-amber-300 dark:border-amber-600">
-                  Traveling with Kids
-                </span>
-                <span className="text-gray-600 dark:text-gray-400">Show only people traveling with children</span>
-              </Label>
+            <div className="p-3 border rounded-lg bg-amber-50 dark:bg-amber-900/20">
+              <button
+                type="button"
+                onClick={() => setAdvancedFilters(prev => ({ ...prev, travelingWithChildren: !prev.travelingWithChildren }))}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-2 ${
+                  advancedFilters.travelingWithChildren
+                    ? "bg-orange-500 text-white border-orange-500"
+                    : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                }`}
+              >
+                <span>Traveling with Kids</span>
+                <span className={`text-xs ${advancedFilters.travelingWithChildren ? "text-white/80" : "text-gray-500"}`}>only</span>
+              </button>
             </div>
 
             {/* Common Friends Filter */}
-            <div className="flex items-center space-x-2 p-3 border rounded-lg bg-blue-50 dark:bg-blue-900/20">
-              <Checkbox
-                id="commonFriends"
-                checked={advancedFilters.commonFriends}
-                onCheckedChange={(checked) => {
-                  setAdvancedFilters(prev => ({
-                    ...prev,
-                    commonFriends: checked as boolean
-                  }));
-                }}
-              />
-              <Label htmlFor="commonFriends" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100 border border-blue-300 dark:border-blue-600">
-                  Mutual Connections
-                </span>
-                <span className="text-gray-600 dark:text-gray-400">Show only people with mutual friends</span>
-              </Label>
+            <div className="p-3 border rounded-lg bg-blue-50 dark:bg-blue-900/20">
+              <button
+                type="button"
+                onClick={() => setAdvancedFilters(prev => ({ ...prev, commonFriends: !prev.commonFriends }))}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-2 ${
+                  advancedFilters.commonFriends
+                    ? "bg-orange-500 text-white border-orange-500"
+                    : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                }`}
+              >
+                <span>Mutual Connections</span>
+                <span className={`text-xs ${advancedFilters.commonFriends ? "text-white/80" : "text-gray-500"}`}>only</span>
+              </button>
             </div>
           </div>
 
