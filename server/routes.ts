@@ -12183,7 +12183,10 @@ Questions? Just reply to this message. Welcome aboard!
   // CRITICAL: Get event details by ID
   app.get("/api/events/:id", async (req, res) => {
     try {
-      const eventId = parseInt(req.params.id || '0');
+      const eventId = parseInt(req.params.id, 10);
+      if (isNaN(eventId) || eventId <= 0) {
+        return res.status(404).json({ message: "Event not found" });
+      }
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT DETAILS: Getting event ${eventId}`);
       
       const event = await storage.getEvent(eventId);
@@ -12228,7 +12231,10 @@ Questions? Just reply to this message. Welcome aboard!
   // CRITICAL: Get event participants
   app.get("/api/events/:id/participants", async (req, res) => {
     try {
-      const eventId = parseInt(req.params.id || '0');
+      const eventId = parseInt(req.params.id, 10);
+      if (isNaN(eventId) || eventId <= 0) {
+        return res.json([]);
+      }
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT PARTICIPANTS: Getting participants for event ${eventId}`);
       
       const participants = await storage.getEventParticipants(eventId);

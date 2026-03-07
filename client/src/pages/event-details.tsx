@@ -225,7 +225,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   // Fetch event details - allow access without authentication for viral sharing
   const { data: event, isLoading: eventLoading, error: eventError } = useQuery<Event>({
     queryKey: [`/api/events/${eventId}`],
-    enabled: !!eventId && !isNaN(parseInt(eventId)),
+    enabled: !!eventId,
     retry: 1, // Reduce retries for faster loading
     queryFn: async () => {
       console.log(`🎪 Fetching event details for ID: ${eventId}`);
