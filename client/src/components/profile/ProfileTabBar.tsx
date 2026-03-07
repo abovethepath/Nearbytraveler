@@ -229,6 +229,20 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         </button>
       )}
 
+      {(user as any)?.ambassadorStatus === 'active' && user?.userType !== "business" && (
+        <button
+          role="tab"
+          aria-selected={activeTab === "ambassador"}
+          aria-controls="panel-ambassador"
+          onClick={() => openTab("ambassador")}
+          className={`${btn(activeTab === "ambassador")} inline-flex items-center gap-1`}
+          data-testid="tab-ambassador"
+          style={activeTab === "ambassador" ? undefined : heroTextStyle}
+        >
+          ⭐ Ambassador
+        </button>
+      )}
+
       {!isDesktopWeb && isOwnProfile && user?.userType !== "business" && (
         <Button
           onClick={() => {

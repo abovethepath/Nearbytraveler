@@ -33,6 +33,63 @@ import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTER
 import { ReportUserButton } from "@/components/report-user-button";
 import type { ProfilePageProps } from "./profile-complete-types";
 import { profileEditButtonClass } from "@/components/profile/editButtonClass";
+import { useQuery as useTanstackQuery } from "@tanstack/react-query";
+
+function AmbassadorTabPanel({ userId, username, enrolledAt }: { userId: number; username: string; enrolledAt?: string | Date | null }) {
+  const { data: info, isLoading } = useTanstackQuery<{ ambassadorStatus: string; ambassadorEnrolledAt: string | null; referralCount: number }>({
+    queryKey: [`/api/users/${userId}/ambassador-info`],
+    enabled: userId > 0,
+    staleTime: 60 * 1000,
+  });
+
+  const enrolledDate = info?.ambassadorEnrolledAt
+    ? new Date(info.ambassadorEnrolledAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+    : enrolledAt
+      ? new Date(enrolledAt as string).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+      : null;
+
+  return (
+    <div role="tabpanel" id="panel-ambassador" aria-labelledby="tab-ambassador" className="space-y-4 mt-6" style={{ zIndex: 10, position: 'relative' }} data-testid="ambassador-content">
+      <div className="rounded-2xl border border-amber-300 dark:border-amber-600 bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/40 dark:to-yellow-950/30 shadow-lg overflow-hidden">
+        {/* Gold header bar */}
+        <div className="bg-gradient-to-r from-amber-400 to-yellow-400 px-6 py-4 flex items-center gap-3">
+          <span className="text-3xl">⭐</span>
+          <div>
+            <h3 className="text-lg font-bold text-amber-900">NearbyTraveler Ambassador</h3>
+            <p className="text-sm text-amber-800 font-medium">@{username}</p>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="px-6 py-5 space-y-4">
+          {isLoading ? (
+            <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
+              <div className="w-4 h-4 rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
+              <span className="text-sm">Loading...</span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-amber-200 dark:border-amber-700 shadow-sm">
+                <div className="text-3xl font-extrabold text-amber-500">{info?.referralCount ?? 0}</div>
+                <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 mt-1 uppercase tracking-wide">Members Referred</div>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-amber-200 dark:border-amber-700 shadow-sm">
+                <div className="text-sm font-bold text-amber-600 dark:text-amber-400 leading-tight">{enrolledDate || '—'}</div>
+                <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 mt-1 uppercase tracking-wide">Member Since</div>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-amber-100/70 dark:bg-amber-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-700">
+            <p className="text-sm text-amber-800 dark:text-amber-200 font-medium leading-relaxed">
+              As a NearbyTraveler Ambassador, you help grow our global community of travelers and locals. Thank you for spreading the spirit of authentic travel connections.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function ProfileTabs(props: ProfilePageProps) {
   const {
@@ -408,6 +465,24 @@ export function ProfileTabs(props: ProfilePageProps) {
                   }`}>
                     {userVouches?.length || 0}
                   </span>
+                </button>
+              )}
+
+              {/* Ambassador Tab - Only visible for active ambassadors */}
+              {user?.ambassadorStatus === 'active' && user?.userType !== 'business' && (
+                <button
+                  role="tab"
+                  aria-selected={activeTab === 'ambassador'}
+                  aria-controls="panel-ambassador"
+                  onClick={() => openTab('ambassador')}
+                  className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
+                    activeTab === 'ambassador'
+                      ? 'bg-amber-500 text-white border border-amber-500 shadow-md'
+                      : 'bg-white border border-amber-300 text-amber-700 hover:bg-amber-50 hover:border-amber-400 dark:bg-gray-700 dark:border-amber-600 dark:text-amber-300 dark:hover:bg-gray-600'
+                  }`}
+                  data-testid="tab-ambassador"
+                >
+                  ⭐ Ambassador
                 </button>
               )}
             </div>
@@ -2464,6 +2539,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                   </Card>
                 )}
               </div>
+            )}
+
+            {/* Ambassador Tab Panel */}
+            {activeTab === 'ambassador' && loadedTabs.has('ambassador') && user?.ambassadorStatus === 'active' && (
+              <AmbassadorTabPanel userId={effectiveUserId || 0} username={user?.username || ''} enrolledAt={user?.ambassadorEnrolledAt} />
             )}
 
             {/* Event Organizer Hub - for ALL users who want to organize events */}

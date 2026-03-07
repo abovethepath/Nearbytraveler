@@ -35,6 +35,7 @@ export interface User {
   state?: string;
   country?: string;
   secretActivities?: string;
+  ambassadorStatus?: string;
 }
 
 interface UserCardProps {
@@ -264,6 +265,11 @@ export default function UserCard({
           </div>
         )}
         
+        {/* Ambassador gold ring overlay */}
+        {user.ambassadorStatus === 'active' && (
+          <div className="absolute inset-0 pointer-events-none z-10" style={{ border: '3px solid #FFD700', borderRadius: 'inherit', boxShadow: 'inset 0 0 0 2px rgba(255,215,0,0.3)' }} />
+        )}
+
         {/* Travel destination tag - top-left on photo/avatar area */}
         {travelCityFinal && user.userType !== 'business' && (
           <div className="absolute top-1.5 left-1.5 z-10 flex items-center gap-1">

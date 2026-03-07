@@ -2169,18 +2169,20 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               return (
                 <div key={message.id} className={`flex gap-1.5 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
                   {!isOwnMessage && (
-                    <Avatar 
-                      className={`w-7 h-7 ${showAvatar ? 'visible' : 'invisible'} cursor-pointer hover:ring-2 hover:ring-green-400 transition-all`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (message.sender?.id) {
-                          navigate(`/profile/${message.sender.id}`);
-                        }
-                      }}
-                    >
-                      <AvatarImage src={getProfileImageUrl(message.sender) || undefined} />
-                      <AvatarFallback className="text-xs">{message.sender?.name?.[0] || '?'}</AvatarFallback>
-                    </Avatar>
+                    <div className={`flex-shrink-0 rounded-full ${(message.sender as any)?.ambassadorStatus === 'active' ? 'ring-2 ring-amber-400 ring-offset-1' : ''}`}>
+                      <Avatar 
+                        className={`w-7 h-7 ${showAvatar ? 'visible' : 'invisible'} cursor-pointer hover:ring-2 hover:ring-green-400 transition-all`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (message.sender?.id) {
+                            navigate(`/profile/${message.sender.id}`);
+                          }
+                        }}
+                      >
+                        <AvatarImage src={getProfileImageUrl(message.sender) || undefined} />
+                        <AvatarFallback className="text-xs">{message.sender?.name?.[0] || '?'}</AvatarFallback>
+                      </Avatar>
+                    </div>
                   )}
 
                   <div 

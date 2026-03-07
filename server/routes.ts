@@ -7716,6 +7716,21 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // GET /api/users/:userId/ambassador-info - Returns ambassador status, enrollment date, and referral count
+  app.get("/api/users/:userId/ambassador-info", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      if (isNaN(userId) || userId <= 0) return res.status(400).json({ error: "Invalid user ID" });
+      const [userData] = await db.select({ ambassadorStatus: users.ambassadorStatus, ambassadorEnrolledAt: users.ambassadorEnrolledAt }).from(users).where(eq(users.id, userId));
+      if (!userData) return res.status(404).json({ error: "User not found" });
+      const [countRow] = await db.select({ count: sql<number>`count(*)` }).from(users).where(eq(users.referredBy, userId));
+      return res.json({ ambassadorStatus: userData.ambassadorStatus, ambassadorEnrolledAt: userData.ambassadorEnrolledAt, referralCount: Number(countRow?.count ?? 0) });
+    } catch (error: any) {
+      console.error("Ambassador info error:", error);
+      return res.status(500).json({ error: "Failed to fetch ambassador info" });
+    }
+  });
+
   // ALTERNATIVE ROUTE: Get travel plans for user via /api/users/{id}/travel-plans
   app.get("/api/users/:userId/travel-plans", async (req, res) => {
     try {
@@ -19307,6 +19322,7 @@ Questions? Just reply to this message. Welcome aboard!
                 username: true,
                 name: true,
                 profileImage: true,
+                ambassadorStatus: true,
               }
             });
             
@@ -19372,6 +19388,7 @@ Questions? Just reply to this message. Welcome aboard!
                 username: true,
                 name: true,
                 profileImage: true,
+                ambassadorStatus: true,
               }
             });
             
@@ -19434,6 +19451,7 @@ Questions? Just reply to this message. Welcome aboard!
                 username: true,
                 name: true,
                 profileImage: true,
+                ambassadorStatus: true,
               }
             });
             
