@@ -169,6 +169,7 @@ export default function Messages() {
     enabled: !!userId,
     staleTime: 60000,
     gcTime: 300000,
+    placeholderData: (previousData: any) => previousData,
   });
 
   const { data: messages = [], isLoading: messagesLoading, refetch: refetchMessages } = useQuery({
@@ -187,6 +188,7 @@ export default function Messages() {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchInterval: 10000,
+    placeholderData: (previousData: any) => previousData,
   });
 
   // When the user opens the Messages page, mark ALL received messages as read on the server
@@ -195,12 +197,9 @@ export default function Messages() {
     if (!userId) return;
     apiRequest("POST", `/api/messages/${userId}/mark-all-read`)
       .then(() => {
-        // Mobile bottom nav unread badge
+        // Only invalidate unread-count badge — do NOT invalidate the full messages list
+        // (invalidating it triggers a refetch that shows the spinner every time Messages opens)
         queryClient.invalidateQueries({ queryKey: ["/api/messages", userId, "unread-count"] });
-        // Messages page list
-        queryClient.invalidateQueries({ queryKey: ["/api/messages", userId] });
-        // Other screens use the string-key form
-        queryClient.invalidateQueries({ queryKey: [`/api/messages/${userId}`] });
       })
       .catch(() => {
         // Non-fatal: badges will still clear once individual threads are marked read

@@ -7478,6 +7478,16 @@ Questions? Just reply to this message. Welcome aboard!
     const _usersStart = Date.now();
     try {
       const { location, interests, userType, minAge, maxAge, gender, search } = req.query;
+
+      // Serve from 60-second server-side cache when no filters are applied
+      const hasFilters = !!(location || interests || userType || minAge || maxAge || gender || search);
+      if (!hasFilters) {
+        const cached = await cache.get<any[]>('users:all:enriched');
+        if (cached) {
+          console.log(`⚡ /api/users cache HIT — ${cached.length} users in ${Date.now() - _usersStart}ms`);
+          return res.json(cached);
+        }
+      }
       
       // Build query with filters
       let query = db.select().from(users);
@@ -7615,20 +7625,31 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json([]);
       }
       
-      // Fetch active Available Now user IDs for badge display
+      // Batch fetch travel plans and available-now in parallel (eliminates N+1 query problem)
       const now = new Date();
-      const availableNowResults = await db.select({ userId: availableNow.userId })
-        .from(availableNow)
-        .where(and(
-          eq(availableNow.isAvailable, true),
-          gte(availableNow.expiresAt, now)
-        ));
+      const allUserIds = filteredUsers.map(u => u.id).filter((id): id is number => id != null);
+      const [availableNowResults, allTravelPlansRaw] = await Promise.all([
+        db.select({ userId: availableNow.userId })
+          .from(availableNow)
+          .where(and(eq(availableNow.isAvailable, true), gte(availableNow.expiresAt, now))),
+        allUserIds.length > 0
+          ? db.select().from(travelPlans).where(inArray(travelPlans.userId, allUserIds))
+          : Promise.resolve([])
+      ]);
       const availableNowUserIds = new Set(availableNowResults.map(r => r.userId));
-      
-      // Enrich filtered users with their travel plans for frontend travel detection
-      const enrichedUsers = await Promise.all(filteredUsers.map(async (user) => {
-        const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
-        
+      // Group travel plans by userId in memory (O(n), no extra DB calls)
+      const travelPlansByUser = new Map<number, typeof allTravelPlansRaw>();
+      for (const plan of allTravelPlansRaw) {
+        if (plan.userId != null) {
+          if (!travelPlansByUser.has(plan.userId)) travelPlansByUser.set(plan.userId, []);
+          travelPlansByUser.get(plan.userId)!.push(plan);
+        }
+      }
+
+      // Enrich users synchronously — no more per-user DB calls
+      const enrichedUsers = filteredUsers.map((user) => {
+        const userTravelPlans = travelPlansByUser.get(user.id) ?? [];
+
         // Format travel plans to match frontend expectations (preserve plan.destination when destinationCity is null)
         const formattedTravelPlans = userTravelPlans.map(plan => {
           const built = plan.destinationCity
@@ -7636,14 +7657,14 @@ Questions? Just reply to this message. Welcome aboard!
             : null;
           return { ...plan, destination: built || plan.destination };
         });
-        
+
         // Find active travel plan (currently traveling)
         const activePlan = userTravelPlans.find(plan => {
           const start = new Date(plan.startDate);
           const end = new Date(plan.endDate);
           return now >= start && now <= end;
         });
-        
+
         // Remove password and add travel plans + travel status
         const { password: _, ...userWithoutPassword } = user;
         // CRITICAL: Only set travel fields when user has ACTIVE trip (today within dates), not future travel
@@ -7669,8 +7690,12 @@ Questions? Just reply to this message. Welcome aboard!
           available_now: isAvail,
           availableNow: isAvail
         };
-      }));
+      });
       
+      // Store in cache for 60 seconds when no filters were applied
+      if (!hasFilters) {
+        cache.set('users:all:enriched', enrichedUsers, 60).catch(() => {});
+      }
       console.log(`⏱️ /api/users took ${Date.now() - _usersStart}ms — location="${location}", returned ${enrichedUsers.length} users`);
       return res.json(enrichedUsers);
     } catch (error: any) {

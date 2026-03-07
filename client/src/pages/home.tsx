@@ -140,13 +140,37 @@ export default function Home() {
   const { data: currentUserProfile, isLoading: isLoadingCurrentUser } = useQuery<User>({
     queryKey: [`/api/users/${currentUserId}`],
     enabled: !!currentUserId,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: travelPlans = [], isLoading: isLoadingTravelPlans } = useQuery<any[]>({
     queryKey: [`/api/travel-plans/${currentUserId}`],
     enabled: !!currentUserId,
-    staleTime: 60000, // 1 minute to reduce flickering
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
+
+  // Prefetch messages list so clicking Messages feels instant
+  useEffect(() => {
+    if (!currentUserId) return;
+    queryClient.prefetchQuery({
+      queryKey: ['/api/messages', currentUserId],
+      queryFn: async () => {
+        const res = await fetch(`${getApiBaseUrl()}/api/messages/${currentUserId}`, {
+          credentials: 'include',
+          headers: { 'x-user-id': String(currentUserId) },
+        });
+        if (!res.ok) return [];
+        return res.json();
+      },
+      staleTime: 60000,
+    });
+  }, [currentUserId]);
 
   const matchedUsersUserId = currentUserId;
 
