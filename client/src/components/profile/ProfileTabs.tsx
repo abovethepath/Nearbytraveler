@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { MapPin, Camera, Globe, Languages, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2, ChevronsUpDown, Check, Pencil } from "lucide-react";
+import { MapPin, Camera, Globe, Languages, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2, ChevronsUpDown, Check, Pencil, Copy, Link } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { calculateAge } from "@/lib/ageUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { useIsDesktop } from "@/hooks/useDeviceType";
@@ -35,58 +36,207 @@ import type { ProfilePageProps } from "./profile-complete-types";
 import { profileEditButtonClass } from "@/components/profile/editButtonClass";
 import { useQuery as useTanstackQuery } from "@tanstack/react-query";
 
-function AmbassadorTabPanel({ userId, username, enrolledAt }: { userId: number; username: string; enrolledAt?: string | Date | null }) {
-  const { data: info, isLoading } = useTanstackQuery<{ ambassadorStatus: string; ambassadorEnrolledAt: string | null; referralCount: number }>({
+function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profileImage }: {
+  userId: number;
+  username: string;
+  enrolledAt?: string | Date | null;
+  isOwnProfile?: boolean;
+  profileImage?: string | null;
+}) {
+  const [isEditingBio, setIsEditingBio] = React.useState(false);
+  const [bioText, setBioText] = React.useState('');
+  const [copied, setCopied] = React.useState(false);
+
+  const { data: info, isLoading, refetch } = useTanstackQuery<{
+    ambassadorStatus: string;
+    ambassadorEnrolledAt: string | null;
+    ambassadorBio: string | null;
+    createdAt: string | null;
+    referralCount: number;
+    meetupsHosted: number;
+    eventsAttended: number;
+    hangoutsJoined: number;
+  }>({
     queryKey: [`/api/users/${userId}/ambassador-info`],
     enabled: userId > 0,
     staleTime: 60 * 1000,
   });
 
-  const enrolledDate = info?.ambassadorEnrolledAt
-    ? new Date(info.ambassadorEnrolledAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
-    : enrolledAt
-      ? new Date(enrolledAt as string).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
-      : null;
+  const { data: qrData } = useTanstackQuery<{ referralCode?: string; signupUrl?: string }>({
+    queryKey: ['/api/user/qr-code'],
+    enabled: !!isOwnProfile,
+    staleTime: 1000 * 60 * 60,
+  });
+
+  const referralCode = qrData?.referralCode || '';
+  const referralUrl = referralCode ? `https://nearbytraveler.org/qr-signup?code=${referralCode}` : 'https://nearbytraveler.org';
+
+  const sinceDate = info?.ambassadorEnrolledAt || info?.createdAt || enrolledAt;
+  const sinceDateFormatted = sinceDate
+    ? new Date(sinceDate as string).toLocaleDateString(undefined, { year: 'numeric', month: 'long' })
+    : null;
+
+  const handleCopy = () => {
+    if (referralUrl) {
+      navigator.clipboard.writeText(referralUrl).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      });
+    }
+  };
+
+  const handleSaveBio = async () => {
+    try {
+      const res = await apiRequest('PUT', `/api/users/${userId}/ambassador-bio`, { bio: bioText });
+      if (res.ok) {
+        refetch();
+        setIsEditingBio(false);
+      }
+    } catch {}
+  };
+
+  const startEditBio = () => {
+    setBioText(info?.ambassadorBio || '');
+    setIsEditingBio(true);
+  };
+
+  const stats = [
+    { emoji: '👥', value: info?.referralCount ?? 0, label: 'People', sublabel: 'Referred' },
+    { emoji: '🎉', value: info?.meetupsHosted ?? 0, label: 'Meetups', sublabel: 'Hosted' },
+    { emoji: '📅', value: info?.eventsAttended ?? 0, label: 'Events', sublabel: 'Attended' },
+    { emoji: '🤝', value: info?.hangoutsJoined ?? 0, label: 'Hangouts', sublabel: 'Joined' },
+  ];
 
   return (
-    <div role="tabpanel" id="panel-ambassador" aria-labelledby="tab-ambassador" className="space-y-4 mt-6" style={{ zIndex: 10, position: 'relative' }} data-testid="ambassador-content">
-      <div className="rounded-2xl border border-amber-300 dark:border-amber-600 bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/40 dark:to-yellow-950/30 shadow-lg overflow-hidden">
-        {/* Gold header bar */}
-        <div className="bg-gradient-to-r from-amber-400 to-yellow-400 px-6 py-4 flex items-center gap-3">
-          <span className="text-3xl">⭐</span>
+    <div role="tabpanel" id="panel-ambassador" aria-labelledby="tab-ambassador" className="space-y-5 mt-4" data-testid="ambassador-content">
+
+      {/* ── SECTION 1: Ambassador Header ── */}
+      <div className="rounded-2xl overflow-hidden shadow-lg border border-amber-300 dark:border-amber-600">
+        {/* Gold gradient bar */}
+        <div className="bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 px-6 pt-7 pb-5 flex flex-col items-center text-center gap-3">
+          {/* Avatar with gold ring */}
+          <div className="rounded-full ring-4 ring-white ring-offset-2 ring-offset-amber-400 shadow-xl">
+            <SimpleAvatar
+              src={profileImage || undefined}
+              username={username}
+              size={80}
+              className="rounded-full"
+            />
+          </div>
           <div>
-            <h3 className="text-lg font-bold text-amber-900">NearbyTraveler Ambassador</h3>
-            <p className="text-sm text-amber-800 font-medium">@{username}</p>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-2xl">⭐</span>
+              <h2 className="text-xl font-extrabold text-amber-900 tracking-tight">NearbyTraveler Ambassador</h2>
+            </div>
+            <p className="text-amber-800 font-semibold mt-0.5">@{username}</p>
+            {sinceDateFormatted && (
+              <p className="text-amber-700 text-sm mt-1 font-medium">Ambassador since {sinceDateFormatted}</p>
+            )}
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="px-6 py-5 space-y-4">
+        {/* ── SECTION 2: Impact Stats ── */}
+        <div className="bg-white dark:bg-gray-900 px-4 py-5">
           {isLoading ? (
-            <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
-              <div className="w-4 h-4 rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
-              <span className="text-sm">Loading...</span>
+            <div className="flex items-center justify-center gap-2 py-6 text-amber-600 dark:text-amber-400">
+              <div className="w-5 h-5 rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
+              <span className="text-sm font-medium">Loading stats...</span>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-amber-200 dark:border-amber-700 shadow-sm">
-                <div className="text-3xl font-extrabold text-amber-500">{info?.referralCount ?? 0}</div>
-                <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 mt-1 uppercase tracking-wide">Members Referred</div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-amber-200 dark:border-amber-700 shadow-sm">
-                <div className="text-sm font-bold text-amber-600 dark:text-amber-400 leading-tight">{enrolledDate || '—'}</div>
-                <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 mt-1 uppercase tracking-wide">Member Since</div>
-              </div>
+            <div className="grid grid-cols-4 divide-x divide-amber-100 dark:divide-amber-800">
+              {stats.map((s) => (
+                <div key={s.label} className="flex flex-col items-center justify-center px-2 py-2 text-center">
+                  <div className="text-xl mb-0.5">{s.emoji}</div>
+                  <div className="text-3xl font-black text-gray-900 dark:text-white leading-none tabular-nums">{s.value}</div>
+                  <div className="text-xs font-bold text-gray-700 dark:text-gray-300 mt-1 leading-tight">{s.label}</div>
+                  <div className="text-xs text-gray-400 dark:text-gray-500 leading-tight">{s.sublabel}</div>
+                </div>
+              ))}
             </div>
           )}
-
-          <div className="bg-amber-100/70 dark:bg-amber-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-700">
-            <p className="text-sm text-amber-800 dark:text-amber-200 font-medium leading-relaxed">
-              As a NearbyTraveler Ambassador, you help grow our global community of travelers and locals. Thank you for spreading the spirit of authentic travel connections.
-            </p>
-          </div>
         </div>
       </div>
+
+      {/* ── SECTION 3: Ambassador Bio ── */}
+      <div className="rounded-2xl border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30 p-5 shadow-sm">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-bold text-amber-900 dark:text-amber-200 text-sm uppercase tracking-wider">In Their Own Words</h3>
+          {isOwnProfile && !isEditingBio && (
+            <button
+              onClick={startEditBio}
+              className="flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-200 font-medium transition-colors"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              Edit
+            </button>
+          )}
+        </div>
+        {isEditingBio ? (
+          <div className="space-y-3">
+            <Textarea
+              value={bioText}
+              onChange={(e) => setBioText(e.target.value)}
+              maxLength={500}
+              rows={4}
+              className="bg-white dark:bg-gray-800 border-amber-300 dark:border-amber-600 resize-none text-sm"
+              placeholder="Write something about your ambassador journey..."
+            />
+            <div className="flex items-center gap-2 justify-end">
+              <span className="text-xs text-gray-400">{bioText.length}/500</span>
+              <button
+                onClick={() => setIsEditingBio(false)}
+                className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveBio}
+                className="px-3 py-1.5 text-xs rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold transition-colors"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-amber-800 dark:text-amber-200 leading-relaxed italic">
+            "{info?.ambassadorBio || 'No bio yet.'}"
+          </p>
+        )}
+      </div>
+
+      {/* ── SECTION 4: Referral Link (own profile only) ── */}
+      {isOwnProfile && (
+        <div className="rounded-2xl border-2 border-orange-400 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 p-5 shadow-md">
+          <div className="flex items-center gap-2 mb-2">
+            <Link className="w-5 h-5 text-orange-500" />
+            <h3 className="font-extrabold text-orange-700 dark:text-orange-300 text-base">Your Invite Link</h3>
+          </div>
+          <p className="text-xs text-orange-600 dark:text-orange-400 mb-4 font-medium">
+            Share this link to invite friends — every sign-up counts toward your impact stats.
+          </p>
+          <div className="flex items-stretch gap-2">
+            <div className="flex-1 bg-white dark:bg-gray-800 border-2 border-orange-300 dark:border-orange-600 rounded-xl px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 font-mono truncate select-all flex items-center">
+              {referralCode ? referralUrl : <span className="text-gray-400">Generating your link...</span>}
+            </div>
+          </div>
+          <button
+            onClick={handleCopy}
+            disabled={!referralCode}
+            className={`mt-3 w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-base transition-all shadow-md ${
+              copied
+                ? 'bg-green-500 text-white'
+                : 'bg-orange-500 hover:bg-orange-600 text-white active:scale-95'
+            } ${!referralCode ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {copied ? (
+              <><Check className="w-5 h-5" /> Copied!</>
+            ) : (
+              <><Copy className="w-5 h-5" /> Copy Your Invite Link</>
+            )}
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }
@@ -2543,7 +2693,7 @@ export function ProfileTabs(props: ProfilePageProps) {
 
             {/* Ambassador Tab Panel */}
             {activeTab === 'ambassador' && loadedTabs.has('ambassador') && user?.ambassadorStatus === 'active' && (
-              <AmbassadorTabPanel userId={effectiveUserId || 0} username={user?.username || ''} enrolledAt={user?.ambassadorEnrolledAt} />
+              <AmbassadorTabPanel userId={effectiveUserId || 0} username={user?.username || ''} enrolledAt={user?.ambassadorEnrolledAt} isOwnProfile={isOwnProfile} profileImage={user?.profileImage} />
             )}
 
             {/* Event Organizer Hub - for ALL users who want to organize events */}

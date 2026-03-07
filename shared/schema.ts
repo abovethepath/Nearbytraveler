@@ -160,6 +160,8 @@ export const users = pgTable("users", {
   ambassadorPeriodStartAt: timestamp("ambassador_period_start_at"), // Start of current 6-month activity window
   ambassadorPointsInPeriod: integer("ambassador_points_in_period").default(0), // Points earned in current 6-month window
   ambassadorStatusSetByAdmin: boolean("ambassador_status_set_by_admin").default(false), // When true, auto-activity logic does not override status
+  ambassadorBio: text("ambassador_bio"), // Ambassador's personal bio shown on their profile
+  ambassadorReferralCountOverride: integer("ambassador_referral_count_override"), // Admin-set override for referral display count
   
   // Enhanced Status & Presence System
   onlineStatus: text("online_status").default("offline"), // 'online', 'away', 'busy', 'invisible', 'offline'

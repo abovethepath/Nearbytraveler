@@ -7716,18 +7716,56 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // GET /api/users/:userId/ambassador-info - Returns ambassador status, enrollment date, and referral count
+  // GET /api/users/:userId/ambassador-info - Returns full ambassador stats
   app.get("/api/users/:userId/ambassador-info", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
       if (isNaN(userId) || userId <= 0) return res.status(400).json({ error: "Invalid user ID" });
-      const [userData] = await db.select({ ambassadorStatus: users.ambassadorStatus, ambassadorEnrolledAt: users.ambassadorEnrolledAt }).from(users).where(eq(users.id, userId));
+      const [userData] = await db.select({
+        ambassadorStatus: users.ambassadorStatus,
+        ambassadorEnrolledAt: users.ambassadorEnrolledAt,
+        ambassadorBio: (users as any).ambassadorBio,
+        ambassadorReferralCountOverride: (users as any).ambassadorReferralCountOverride,
+        createdAt: users.createdAt,
+      }).from(users).where(eq(users.id, userId));
       if (!userData) return res.status(404).json({ error: "User not found" });
-      const [countRow] = await db.select({ count: sql<number>`count(*)` }).from(users).where(eq(users.referredBy, userId));
-      return res.json({ ambassadorStatus: userData.ambassadorStatus, ambassadorEnrolledAt: userData.ambassadorEnrolledAt, referralCount: Number(countRow?.count ?? 0) });
+      const [refRow] = await db.select({ count: sql<number>`count(*)` }).from(users).where(eq(users.referredBy, userId));
+      const [meetupsRow] = await db.select({ count: sql<number>`count(*)` }).from(quickMeetups).where(eq(quickMeetups.organizerId, userId));
+      const [eventsRow] = await db.select({ count: sql<number>`count(*)` }).from(eventParticipants).where(eq(eventParticipants.userId, userId));
+      const [hangoutsRow] = await db.select({ count: sql<number>`count(*)` }).from(availableNowRequests).where(sql`${availableNowRequests.toUserId} = ${userId} AND ${availableNowRequests.status} = 'accepted'`);
+      const dbReferralCount = Number(refRow?.count ?? 0);
+      const referralCount = userData.ambassadorReferralCountOverride != null ? userData.ambassadorReferralCountOverride : dbReferralCount;
+      return res.json({
+        ambassadorStatus: userData.ambassadorStatus,
+        ambassadorEnrolledAt: userData.ambassadorEnrolledAt,
+        ambassadorBio: userData.ambassadorBio,
+        createdAt: userData.createdAt,
+        referralCount,
+        meetupsHosted: Number(meetupsRow?.count ?? 0),
+        eventsAttended: Number(eventsRow?.count ?? 0),
+        hangoutsJoined: Number(hangoutsRow?.count ?? 0),
+      });
     } catch (error: any) {
       console.error("Ambassador info error:", error);
       return res.status(500).json({ error: "Failed to fetch ambassador info" });
+    }
+  });
+
+  // PUT /api/users/:userId/ambassador-bio - Update ambassador bio (own profile only)
+  app.put("/api/users/:userId/ambassador-bio", async (req: any, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      if (isNaN(userId) || userId <= 0) return res.status(400).json({ error: "Invalid user ID" });
+      const sessionUserId = req.headers['x-user-id'] ? parseInt(String(req.headers['x-user-id'])) : null;
+      if (!sessionUserId || sessionUserId !== userId) return res.status(403).json({ error: "You can only edit your own ambassador bio" });
+      const { bio } = req.body;
+      if (typeof bio !== 'string') return res.status(400).json({ error: "Bio must be a string" });
+      if (bio.length > 500) return res.status(400).json({ error: "Bio must be 500 characters or less" });
+      await db.execute(sql`UPDATE users SET ambassador_bio = ${bio} WHERE id = ${userId}`);
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Ambassador bio update error:", error);
+      return res.status(500).json({ error: "Failed to update ambassador bio" });
     }
   });
 
