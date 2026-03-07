@@ -1,6 +1,9 @@
 import { storage } from '../storage';
 import { sendBrevoEmail } from '../email/brevoSend';
 import { Redis } from 'ioredis';
+import { db } from '../db';
+import { userNotificationSettings } from '@shared/schema';
+import { eq } from 'drizzle-orm';
 
 interface EventReminder {
   eventId: number;
@@ -111,6 +114,20 @@ export class EventReminderService {
       if (event.participants && Array.isArray(event.participants)) {
         for (const participant of event.participants) {
           if (participant.status === 'confirmed' && participant.userEmail) {
+            // Check user's granular preference for this reminder type
+            const settings = await db
+              .select()
+              .from(userNotificationSettings)
+              .where(eq(userNotificationSettings.userId, participant.userId))
+              .then(rows => rows[0]);
+
+            const masterOn = settings?.emailNotifications ?? true;
+            const typeOn = reminderType === '24h'
+              ? (settings?.eventReminder24h ?? true)
+              : (settings?.eventReminder1h ?? true);
+
+            if (!masterOn || !typeOn) continue;
+
             const alreadySent = await wasReminderSent(event.id, participant.userId, reminderType);
             if (alreadySent) continue;
 

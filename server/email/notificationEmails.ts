@@ -29,6 +29,10 @@ async function getUserEmailPreferences(userId: number) {
     marketingEmails: settings?.marketingEmails ?? false,
     tripApproachingReminders: settings?.tripApproachingReminders ?? true,
     cityActivityAlerts: settings?.cityActivityAlerts ?? true,
+    connectionAcceptedAlerts: settings?.connectionAcceptedAlerts ?? true,
+    eventReminder24h: settings?.eventReminder24h ?? true,
+    eventReminder1h: settings?.eventReminder1h ?? true,
+    meetupActivityAlerts: settings?.meetupActivityAlerts ?? true,
   };
 }
 
@@ -849,8 +853,8 @@ export async function sendReportConfirmationEmail(
 export async function sendConnectionAcceptedEmail(requesterId: number, acceptorName: string, acceptorUsername: string): Promise<EmailResult> {
   try {
     const prefs = await getUserEmailPreferences(requesterId);
-    if (!prefs.emailNotifications || !prefs.connectionAlerts) {
-      return { success: true, skipped: true, reason: "User disabled connection alerts" };
+    if (!prefs.emailNotifications || !prefs.connectionAcceptedAlerts) {
+      return { success: true, skipped: true, reason: "User disabled connection accepted alerts" };
     }
 
     const requester = await db.select().from(users).where(eq(users.id, requesterId)).then(rows => rows[0]);
@@ -922,8 +926,8 @@ export async function sendConnectionAcceptedEmail(requesterId: number, acceptorN
 export async function sendMeetupJoinEmail(organizerId: number, joinerName: string, joinerUsername: string, meetupTitle: string, meetingPoint: string): Promise<EmailResult> {
   try {
     const prefs = await getUserEmailPreferences(organizerId);
-    if (!prefs.emailNotifications || !prefs.eventReminders) {
-      return { success: true, skipped: true, reason: "Organizer disabled event emails" };
+    if (!prefs.emailNotifications || !prefs.meetupActivityAlerts) {
+      return { success: true, skipped: true, reason: "Organizer disabled meetup activity emails" };
     }
 
     const organizer = await db.select().from(users).where(eq(users.id, organizerId)).then(rows => rows[0]);

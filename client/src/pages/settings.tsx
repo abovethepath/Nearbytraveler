@@ -408,180 +408,233 @@ export default function SettingsPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Bell className="w-5 h-5" />
-                    Notification Preferences
+                    Email Notifications
                   </CardTitle>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Choose how you want to receive notifications for each category
+                    Control which emails you receive from Nearby Traveler
                   </p>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  
-                  {/* Messages Category */}
-                  <div className="space-y-2">
-                    <h3 className="text-base font-semibold text-orange-500">Messages</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">New messages from other members</p>
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handlePrivacyToggle("messageNotifications", !(notificationSettings?.messageNotifications !== false))}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-1 ${notificationSettings?.messageNotifications !== false ? "bg-orange-500 text-white border-orange-500" : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"}`}
-                      >
-                        <Mail className="h-3 w-3" /> Email
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handlePrivacyToggle("pushNotifications", !(notificationSettings?.pushNotifications !== false))}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-1 ${notificationSettings?.pushNotifications !== false ? "bg-orange-500 text-white border-orange-500" : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"}`}
-                      >
-                        <Bell className="h-3 w-3" /> Push
-                      </button>
-                      <span className="px-3 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-white/10 text-gray-400 flex items-center gap-1 cursor-not-allowed">
-                        <Smartphone className="h-3 w-3" /> SMS (soon)
-                      </span>
-                    </div>
-                  </div>
+                <CardContent className="space-y-1">
 
-                  {/* Connections Category */}
-                  <div className="space-y-2 pt-3 border-t border-gray-200 dark:border-gray-800">
-                    <h3 className="text-base font-semibold text-orange-500">Connections</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Connection requests and friend recommendations</p>
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handlePrivacyToggle("connectionAlerts", !(notificationSettings?.connectionAlerts !== false))}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-1 ${notificationSettings?.connectionAlerts !== false ? "bg-orange-500 text-white border-orange-500" : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"}`}
-                      >
-                        <Mail className="h-3 w-3" /> Email
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handlePrivacyToggle("pushNotifications", !(notificationSettings?.pushNotifications !== false))}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-1 ${notificationSettings?.pushNotifications !== false ? "bg-orange-500 text-white border-orange-500" : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"}`}
-                      >
-                        <Bell className="h-3 w-3" /> Push
-                      </button>
-                      <span className="px-3 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-white/10 text-gray-400 flex items-center gap-1 cursor-not-allowed">
-                        <Smartphone className="h-3 w-3" /> SMS (soon)
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Events Category */}
-                  <div className="space-y-2 pt-3 border-t border-gray-200 dark:border-gray-800">
-                    <h3 className="text-base font-semibold text-orange-500">Events</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Event reminders and invitations</p>
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handlePrivacyToggle("eventReminders", !(notificationSettings?.eventReminders !== false))}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-1 ${notificationSettings?.eventReminders !== false ? "bg-orange-500 text-white border-orange-500" : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"}`}
-                      >
-                        <Mail className="h-3 w-3" /> Email
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handlePrivacyToggle("pushNotifications", !(notificationSettings?.pushNotifications !== false))}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-1 ${notificationSettings?.pushNotifications !== false ? "bg-orange-500 text-white border-orange-500" : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"}`}
-                      >
-                        <Bell className="h-3 w-3" /> Push
-                      </button>
-                      <span className="px-3 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-white/10 text-gray-400 flex items-center gap-1 cursor-not-allowed">
-                        <Smartphone className="h-3 w-3" /> SMS (soon)
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Travel Category */}
-                  <div className="space-y-2 pt-3 border-t border-gray-200 dark:border-gray-800">
-                    <h3 className="text-base font-semibold text-orange-500">Travel</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Trip reminders and city activity alerts</p>
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handlePrivacyToggle("tripApproachingReminders", !(notificationSettings?.tripApproachingReminders !== false))}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-1 ${notificationSettings?.tripApproachingReminders !== false ? "bg-orange-500 text-white border-orange-500" : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"}`}
-                      >
-                        <Mail className="h-3 w-3" /> Email
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handlePrivacyToggle("pushNotifications", !(notificationSettings?.pushNotifications !== false))}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-1 ${notificationSettings?.pushNotifications !== false ? "bg-orange-500 text-white border-orange-500" : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"}`}
-                      >
-                        <Bell className="h-3 w-3" /> Push
-                      </button>
-                      <span className="px-3 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-white/10 text-gray-400 flex items-center gap-1 cursor-not-allowed">
-                        <Smartphone className="h-3 w-3" /> SMS (soon)
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Nearby Alerts Category */}
-                  <div className="space-y-2 pt-3 border-t border-gray-200 dark:border-gray-800">
-                    <h3 className="text-base font-semibold text-orange-500">Nearby Alerts</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Nearby travelers, business deals, and city activity</p>
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handlePrivacyToggle("cityActivityAlerts", !(notificationSettings?.cityActivityAlerts !== false))}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-1 ${notificationSettings?.cityActivityAlerts !== false ? "bg-orange-500 text-white border-orange-500" : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"}`}
-                      >
-                        <Mail className="h-3 w-3" /> Email
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handlePrivacyToggle("pushNotifications", !(notificationSettings?.pushNotifications !== false))}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-1 ${notificationSettings?.pushNotifications !== false ? "bg-orange-500 text-white border-orange-500" : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"}`}
-                      >
-                        <Bell className="h-3 w-3" /> Push
-                      </button>
-                      <span className="px-3 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-white/10 text-gray-400 flex items-center gap-1 cursor-not-allowed">
-                        <Smartphone className="h-3 w-3" /> SMS (soon)
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Digest & Marketing Category */}
-                  <div className="space-y-2 pt-3 border-t border-gray-200 dark:border-gray-800">
-                    <h3 className="text-base font-semibold text-orange-500">Digest & Updates</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Weekly digest and promotional content</p>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Weekly Travel Digest</p>
-                        <div className="flex flex-wrap gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handlePrivacyToggle("weeklyDigest", !(notificationSettings?.weeklyDigest !== false))}
-                            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-1 ${notificationSettings?.weeklyDigest !== false ? "bg-orange-500 text-white border-orange-500" : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"}`}
-                          >
-                            <Mail className="h-3 w-3" /> Email
-                          </button>
-                          <span className="px-3 py-1.5 rounded-full text-sm font-medium border border-gray-200 dark:border-white/10 text-gray-400 flex items-center gap-1 cursor-not-allowed">
-                            <Bell className="h-3 w-3" /> Push (soon)
-                          </span>
-                        </div>
+                  {/* Master toggle */}
+                  <div className="flex items-center justify-between py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
+                        <Mail className="w-4 h-4 text-orange-500" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Marketing & Promotions</p>
-                        <div className="flex flex-wrap gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handlePrivacyToggle("marketingEmails", !(notificationSettings?.marketingEmails === true))}
-                            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-1 ${notificationSettings?.marketingEmails === true ? "bg-orange-500 text-white border-orange-500" : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"}`}
-                          >
-                            <Mail className="h-3 w-3" /> Email
-                          </button>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">All Email Notifications</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Master switch — turns off all emails at once</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={notificationSettings?.emailNotifications !== false}
+                      onCheckedChange={(val) => handlePrivacyToggle("emailNotifications", val)}
+                    />
+                  </div>
+
+                  <div className="border-t border-gray-100 dark:border-gray-800 pt-1">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 px-0 py-2">Messages</p>
+
+                    <div className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
+                          <MessageSquare className="w-4 h-4 text-blue-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">New Messages</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Email when someone messages you (10 min inactivity)</p>
                         </div>
                       </div>
+                      <Switch
+                        checked={notificationSettings?.messageNotifications !== false}
+                        onCheckedChange={(val) => handlePrivacyToggle("messageNotifications", val)}
+                        disabled={notificationSettings?.emailNotifications === false}
+                      />
                     </div>
                   </div>
 
-                  <Button 
-                    onClick={handleSaveNotificationSettings}
-                    className="w-full bg-gradient-to-r from-blue-500 to-orange-500 text-white"
-                  >
-                    Save Notification Settings
-                  </Button>
+                  <div className="border-t border-gray-100 dark:border-gray-800 pt-1">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 px-0 py-2">Connections</p>
+
+                    <div className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
+                          <Users className="w-4 h-4 text-blue-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">Connection Requests</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">When someone sends you a connection request</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notificationSettings?.connectionAlerts !== false}
+                        onCheckedChange={(val) => handlePrivacyToggle("connectionAlerts", val)}
+                        disabled={notificationSettings?.emailNotifications === false}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
+                          <Users className="w-4 h-4 text-blue-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">Connection Accepted</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">When someone accepts your connection request</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notificationSettings?.connectionAcceptedAlerts !== false}
+                        onCheckedChange={(val) => handlePrivacyToggle("connectionAcceptedAlerts", val)}
+                        disabled={notificationSettings?.emailNotifications === false}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-100 dark:border-gray-800 pt-1">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 px-0 py-2">Events</p>
+
+                    <div className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
+                          <Bell className="w-4 h-4 text-green-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">24-Hour Reminder</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Email the day before events you're attending</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notificationSettings?.eventReminder24h !== false}
+                        onCheckedChange={(val) => handlePrivacyToggle("eventReminder24h", val)}
+                        disabled={notificationSettings?.emailNotifications === false}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
+                          <Bell className="w-4 h-4 text-green-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">1-Hour Reminder</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Email one hour before events you're attending</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notificationSettings?.eventReminder1h !== false}
+                        onCheckedChange={(val) => handlePrivacyToggle("eventReminder1h", val)}
+                        disabled={notificationSettings?.emailNotifications === false}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-100 dark:border-gray-800 pt-1">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 px-0 py-2">Meetups</p>
+
+                    <div className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center flex-shrink-0">
+                          <MapPin className="w-4 h-4 text-purple-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">Meetup Activity</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">When someone joins a meetup you're organizing</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notificationSettings?.meetupActivityAlerts !== false}
+                        onCheckedChange={(val) => handlePrivacyToggle("meetupActivityAlerts", val)}
+                        disabled={notificationSettings?.emailNotifications === false}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-100 dark:border-gray-800 pt-1">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 px-0 py-2">Travel</p>
+
+                    <div className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center flex-shrink-0">
+                          <MapPin className="w-4 h-4 text-orange-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">Trip Reminders</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Reminders as your trip dates approach</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notificationSettings?.tripApproachingReminders !== false}
+                        onCheckedChange={(val) => handlePrivacyToggle("tripApproachingReminders", val)}
+                        disabled={notificationSettings?.emailNotifications === false}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center flex-shrink-0">
+                          <MapPin className="w-4 h-4 text-orange-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">City Activity Alerts</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Nearby travelers and local activity in your city</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notificationSettings?.cityActivityAlerts !== false}
+                        onCheckedChange={(val) => handlePrivacyToggle("cityActivityAlerts", val)}
+                        disabled={notificationSettings?.emailNotifications === false}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-100 dark:border-gray-800 pt-1">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 px-0 py-2">Digest & Updates</p>
+
+                    <div className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
+                          <FileText className="w-4 h-4 text-gray-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">Weekly Travel Digest</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">A weekly roundup of activity in your cities</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notificationSettings?.weeklyDigest !== false}
+                        onCheckedChange={(val) => handlePrivacyToggle("weeklyDigest", val)}
+                        disabled={notificationSettings?.emailNotifications === false}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
+                          <Mail className="w-4 h-4 text-gray-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">Marketing & Promotions</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Special offers and platform announcements</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notificationSettings?.marketingEmails === true}
+                        onCheckedChange={(val) => handlePrivacyToggle("marketingEmails", val)}
+                        disabled={notificationSettings?.emailNotifications === false}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-4">
+                    <Button 
+                      onClick={handleSaveNotificationSettings}
+                      className="w-full bg-gradient-to-r from-blue-500 to-orange-500 text-white"
+                    >
+                      Save Notification Settings
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

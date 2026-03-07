@@ -2553,6 +2553,12 @@ export const userNotificationSettings = pgTable("user_notification_settings", {
   marketingEmails: boolean("marketing_emails").default(false),
   tripApproachingReminders: boolean("trip_approaching_reminders").default(true),
   cityActivityAlerts: boolean("city_activity_alerts").default(true),
+
+  // Granular email notification controls
+  connectionAcceptedAlerts: boolean("connection_accepted_alerts").default(true),
+  eventReminder24h: boolean("event_reminder_24h").default(true),
+  eventReminder1h: boolean("event_reminder_1h").default(true),
+  meetupActivityAlerts: boolean("meetup_activity_alerts").default(true),
   
   // Mobile & Push Notifications
   pushNotifications: boolean("push_notifications").default(true),
