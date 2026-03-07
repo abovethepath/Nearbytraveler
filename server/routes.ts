@@ -9971,8 +9971,7 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       // System/admin users to exclude from degree calculations
-      // These are hub accounts that everyone connects with, which would make degrees meaningless
-      const EXCLUDED_SYSTEM_USERS = [1, 2]; // nearbytravlr (1) and nearbytrav (2)
+      const EXCLUDED_SYSTEM_USERS = [1]; // nearbytravlr (1) only
 
       // Helper function to get accepted connections for a user (excluding system users)
       const getAcceptedConnections = async (uid: number): Promise<number[]> => {
