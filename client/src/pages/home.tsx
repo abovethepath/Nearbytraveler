@@ -1732,7 +1732,7 @@ export default function Home() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 space-y-4">
-        <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium travel-tagline">
+        <p className="text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 leading-relaxed font-semibold travel-tagline">
           Travel doesn't change you. The people you meet do.
         </p>
       </div>
@@ -1764,12 +1764,9 @@ export default function Home() {
               </span>
             </h1>
             
-            <div className="max-w-2xl space-y-3 lg:space-y-2">
-              <p className="text-base lg:text-base text-gray-600 dark:text-gray-300 leading-relaxed font-medium travel-tagline">
+            <div className="max-w-2xl">
+              <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-semibold travel-tagline">
                 Travel doesn't change you. The people you meet do.
-              </p>
-              <p className="text-sm lg:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
               </p>
             </div>
           </div>
