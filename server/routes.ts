@@ -7401,6 +7401,87 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Activity feed — combines notifications into a unified feed for the Explore > Activity tab
+  app.get("/api/activity-feed/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      if (isNaN(userId) || !userId) {
+        return res.json({ items: [], unreadCount: 0 });
+      }
+
+      const notifRows = await db
+        .select()
+        .from(notifications)
+        .where(eq(notifications.userId, userId))
+        .orderBy(desc(notifications.createdAt))
+        .limit(50);
+
+      if (notifRows.length === 0) {
+        return res.json({ items: [], unreadCount: 0 });
+      }
+
+      // Collect actor IDs to fetch in one query
+      const actorIds = [...new Set(notifRows.map(n => n.fromUserId).filter((id): id is number => !!id))];
+      const actorMap: Record<number, { id: number; username: string | null; name: string | null; profileImage: string | null }> = {};
+      if (actorIds.length > 0) {
+        const actorRows = await db
+          .select({ id: users.id, username: users.username, name: users.name, profileImage: users.profileImage })
+          .from(users)
+          .where(inArray(users.id, actorIds));
+        for (const a of actorRows) actorMap[a.id] = a;
+      }
+
+      // For connection_request notifications, look up the pending connection
+      const connRequestNotifs = notifRows.filter(n => n.type === 'connection_request' && n.fromUserId);
+      const pendingConnMap: Record<number, any> = {};
+      if (connRequestNotifs.length > 0) {
+        const requesterIds = connRequestNotifs.map(n => n.fromUserId as number);
+        const pendingConns = await db
+          .select()
+          .from(connections)
+          .where(
+            and(
+              eq(connections.receiverId, userId),
+              eq(connections.status, 'pending'),
+              inArray(connections.requesterId, requesterIds)
+            )
+          );
+        for (const c of pendingConns) pendingConnMap[c.requesterId] = c;
+      }
+
+      const typeToCategory = (type: string): "all" | "events" | "connections" | "messages" => {
+        if (type.startsWith('connection')) return 'connections';
+        if (type.startsWith('event') || type.includes('event')) return 'events';
+        if (type.startsWith('message') || type.includes('message') || type.includes('chat')) return 'messages';
+        return 'all';
+      };
+
+      const items = notifRows.map(n => {
+        const actor = n.fromUserId ? (actorMap[n.fromUserId] || null) : null;
+        const conn = n.type === 'connection_request' && n.fromUserId ? (pendingConnMap[n.fromUserId] || null) : null;
+        return {
+          id: n.id,
+          kind: 'notification',
+          type: n.type,
+          category: typeToCategory(n.type),
+          title: n.title,
+          preview: n.message,
+          timestamp: n.createdAt,
+          unread: !n.isRead,
+          actor,
+          data: n.data ? (() => { try { return JSON.parse(n.data as string); } catch { return null; } })() : null,
+          connection: conn,
+        };
+      });
+
+      const unreadCount = items.filter(i => i.unread).length;
+      return res.json({ items, unreadCount });
+    } catch (error: any) {
+      console.error("Error fetching activity feed:", error);
+      return res.status(500).json({ message: "Failed to fetch activity feed" });
+    }
+  });
+
 
 
   // CRITICAL: Get all users endpoint with FULL SEARCH FILTERING and LA Metro consolidation
