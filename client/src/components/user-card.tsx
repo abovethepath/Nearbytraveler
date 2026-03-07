@@ -5,6 +5,7 @@ import { getCurrentTravelDestination } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { truncateBioToSentences } from "@/lib/bioPreview";
 import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
+import { prefetchedNav } from "@/lib/navigation";
 import { US_STATES } from "@shared/locationData";
 import { useQuery } from "@tanstack/react-query";
 
@@ -76,6 +77,11 @@ export default function UserCard({
   const [currentPath, setLocation] = useLocation();
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    prefetchedNav.userId = user.id;
+    prefetchedNav.profileImage = user.profileImage ?? null;
+    prefetchedNav.username = user.username;
+    prefetchedNav.avatarGradient = user.avatarGradient ?? null;
+    prefetchedNav.avatarColor = user.avatarColor ?? null;
     setLocation(`/profile/${user.id}`);
   };
 

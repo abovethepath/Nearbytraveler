@@ -45,6 +45,7 @@ import { VouchButton } from "@/components/VouchButton";
 
 import { formatDateForDisplay, getCurrentTravelDestination, formatLocationCompact } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { prefetchedNav } from "@/lib/navigation";
 import { openPrivateChatWithUser } from "@/lib/iosPrivateChat";
 import { NativeAppProfileMenu } from "@/components/NativeAppProfileMenu";
 import { METRO_AREAS } from "@shared/constants";
@@ -3649,7 +3650,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   if (userLoading && !user) {
-    return <SkeletonProfile />;
+    const nav = (propUserId && prefetchedNav.userId === propUserId) ? prefetchedNav : null;
+    return <SkeletonProfile prefetched={nav} />;
   }
 
   if (userError && !user) {
@@ -3691,7 +3693,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Show loading while waiting for authentication to load
   if (!effectiveUserId) {
-    return <SkeletonProfile />;
+    const nav = (propUserId && prefetchedNav.userId === propUserId) ? prefetchedNav : null;
+    return <SkeletonProfile prefetched={nav} />;
   }
 
   if (!user && !userLoading) {
@@ -3711,9 +3714,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Safety check to ensure user exists before rendering main content
   if (!user) {
-    return (
-      <SkeletonProfile />
-    );
+    const nav = (propUserId && prefetchedNav.userId === propUserId) ? prefetchedNav : null;
+    return <SkeletonProfile prefetched={nav} />;
   }
 
   // Clean gradient background when no cover photo exists

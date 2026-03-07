@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { SimpleAvatar } from "@/components/simple-avatar";
 
 // ─── Generic primitives ───────────────────────────────────────────────────────
 
@@ -39,29 +40,68 @@ export function SkeletonUserCardGrid({ count = 6 }: { count?: number }) {
 
 // ─── Full profile page ────────────────────────────────────────────────────────
 
+interface SkeletonProfileProps {
+  prefetched?: {
+    profileImage?: string | null;
+    username?: string;
+    avatarGradient?: string | null;
+    avatarColor?: string | null;
+  } | null;
+}
+
 /**
- * Mimics the profile hero: banner → avatar → username → location lines → tabs.
+ * Mimics the profile hero: banner with avatar inside → tabs → card rows.
+ * Avatar is placed INSIDE the banner (matching ProfileHeaderUser's actual layout)
+ * to avoid the black-circle flash that occurs when it appears below the banner.
+ * When prefetched card data is available, the real avatar is shown immediately.
  */
-export function SkeletonProfile() {
+export function SkeletonProfile({ prefetched }: SkeletonProfileProps = {}) {
+  const hasPrefetch = !!(prefetched?.profileImage || prefetched?.avatarGradient || prefetched?.username);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Banner */}
-      <Skeleton className="w-full h-48 sm:h-56 rounded-none" />
+      {/* Banner — avatar lives INSIDE here, matching the real ProfileHeaderUser layout */}
+      <div
+        className="w-full px-3 sm:px-6 pt-12 sm:pt-14 pb-6 sm:pb-8 relative"
+        style={{
+          background: hasPrefetch && prefetched?.avatarGradient
+            ? prefetched.avatarGradient
+            : 'linear-gradient(135deg, #374151 0%, #1f2937 100%)',
+        }}
+      >
+        <div className="max-w-2xl mx-auto flex items-end gap-4">
+          {/* Avatar circle inside the banner — no negative margin, no flash */}
+          <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden ring-4 ring-white/30 flex-shrink-0 bg-black/20">
+            {hasPrefetch ? (
+              <SimpleAvatar
+                user={{
+                  id: 0,
+                  username: prefetched?.username || '',
+                  profileImage: prefetched?.profileImage ?? undefined,
+                  avatarGradient: prefetched?.avatarGradient ?? undefined,
+                  avatarColor: prefetched?.avatarColor ?? undefined,
+                } as any}
+                size="xl"
+                className="w-full h-full block object-cover"
+              />
+            ) : (
+              <div className="w-full h-full animate-pulse bg-white/20" />
+            )}
+          </div>
 
-      <div className="max-w-2xl mx-auto px-4">
-        {/* Avatar floated up from banner */}
-        <div className="-mt-14 mb-4 flex items-end justify-between">
-          <Skeleton className="h-24 w-24 rounded-full border-4 border-white dark:border-gray-900" />
-          <Skeleton className="h-9 w-24 rounded-xl" />
+          {/* Username / name placeholder */}
+          <div className="flex-1 pb-2 space-y-2">
+            {hasPrefetch && prefetched?.username ? (
+              <div className="text-white font-semibold text-lg opacity-80">@{prefetched.username}</div>
+            ) : (
+              <div className="h-5 w-36 bg-white/20 rounded-md animate-pulse" />
+            )}
+            <div className="h-3 w-24 bg-white/20 rounded-md animate-pulse" />
+          </div>
         </div>
+      </div>
 
-        {/* Name + badges */}
-        <div className="space-y-2 mb-4">
-          <Skeleton className="h-6 w-48 rounded-md" />
-          <Skeleton className="h-4 w-36 rounded-md" />
-          <Skeleton className="h-4 w-56 rounded-md" />
-        </div>
-
+      <div className="max-w-2xl mx-auto px-4 mt-4">
         {/* Bio */}
         <div className="space-y-2 mb-6">
           <Skeleton className="h-3 w-full rounded-md" />
@@ -72,7 +112,7 @@ export function SkeletonProfile() {
         {/* Tabs */}
         <div className="flex gap-2 mb-6">
           {[80, 96, 72, 88].map((w, i) => (
-            <Skeleton key={i} className={`h-9 w-${w < 80 ? 16 : w < 90 ? 20 : 24} rounded-lg`} style={{ width: w }} />
+            <Skeleton key={i} className="h-9 rounded-lg" style={{ width: w }} />
           ))}
         </div>
 
