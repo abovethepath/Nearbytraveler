@@ -992,27 +992,26 @@ function QuickMeetupsPage() {
           </div>
         </div>
 
-        {/* Create New Meetup Button */}
+        {/* Create New Meetup Button — opens a Dialog directly */}
         <div className="mb-6">
           <Button
-            onClick={() => setShowCreateForm(!showCreateForm)}
+            onClick={() => setShowCreateForm(true)}
             className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
-            {showCreateForm ? 'Cancel' : 'Create Quick Meet'}
+            Create Quick Meet
           </Button>
         </div>
 
-        {/* Create Form */}
-        {showCreateForm && (
-          <div className="mb-6">
-            <Card className="border-blue-200 dark:border-blue-700">
-              <CardContent className="p-4">
-                <QuickMeetupWidget city={actualUser?.hometownCity || ''} />
-              </CardContent>
-            </Card>
-          </div>
-        )}
+        {/* Create Dialog */}
+        <Dialog open={showCreateForm} onOpenChange={(open) => setShowCreateForm(open)}>
+          <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-900 max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Create Quick Meet</DialogTitle>
+            </DialogHeader>
+            <QuickMeetupWidget city={actualUser?.hometownCity || ''} initialShowCreateForm={true} />
+          </DialogContent>
+        </Dialog>
 
         {isLoading ? (
           <SkeletonMeetupList count={4} />

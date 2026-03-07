@@ -38,19 +38,24 @@ export function QuickMeetupWidget({
   triggerCreate,
   currentUser,
   compactOnly = false,
+  initialShowCreateForm = false,
 }: {
   city?: string;
   profileUserId?: number;
   triggerCreate?: boolean;
   currentUser?: any;
   compactOnly?: boolean;
+  initialShowCreateForm?: boolean;
 }) {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(initialShowCreateForm);
   const [expandedMeetup, setExpandedMeetup] = useState<number | null>(null);
   const [isCustomActivity, setIsCustomActivity] = useState(false);
   const [editingMeetupId, setEditingMeetupId] = useState<number | null>(null);
+  const [managingMeetupId, setManagingMeetupId] = useState<number | null>(null);
+  const [manageEditForm, setManageEditForm] = useState({ title: '', description: '', meetingPoint: '', city: '', state: '' });
+  const [isManageEditing, setIsManageEditing] = useState(false);
   const [useAiVoice, setUseAiVoice] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailsMeetup, setDetailsMeetup] = useState<any | null>(null);
@@ -477,7 +482,130 @@ export function QuickMeetupWidget({
 
   const isDetailsJoined = isJoinedBy(detailsMeetup, actualUserId);
 
+  // Derive the meetup being managed
+  const managingMeetup = quickMeetups?.find((m: any) => m.id === managingMeetupId) ?? null;
+
   return (
+    <>
+    {/* Inline Manage Dialog — opens without page navigation */}
+    <Dialog
+      open={!!managingMeetupId}
+      onOpenChange={(open) => {
+        if (!open) {
+          setManagingMeetupId(null);
+          setIsManageEditing(false);
+        }
+      }}
+    >
+      <DialogContent className="sm:max-w-md bg-white dark:bg-gray-900">
+        <DialogHeader>
+          <DialogTitle>Manage Quick Meet</DialogTitle>
+        </DialogHeader>
+        {managingMeetup ? (
+          <div className="space-y-4">
+            {!isManageEditing ? (
+              <>
+                <div className="space-y-1">
+                  <p className="font-semibold text-gray-900 dark:text-white">{managingMeetup.title}</p>
+                  {managingMeetup.description && <p className="text-sm text-gray-600 dark:text-gray-400">{managingMeetup.description}</p>}
+                  <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />{managingMeetup.meetingPoint}
+                    {managingMeetup.city && `, ${managingMeetup.city}`}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                    <Users className="w-3 h-3" />{managingMeetup.participantCount || 0} joined
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      setManageEditForm({
+                        title: managingMeetup.title ?? '',
+                        description: managingMeetup.description ?? '',
+                        meetingPoint: managingMeetup.meetingPoint ?? '',
+                        city: managingMeetup.city ?? '',
+                        state: managingMeetup.state ?? '',
+                      });
+                      setIsManageEditing(true);
+                    }}
+                  >
+                    <Edit3 className="w-3 h-3 mr-2" />
+                    Edit Details
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={() => {
+                      setManagingMeetupId(null);
+                      window.location.href = `/quick-meetup-chat/${managingMeetup.id}`;
+                    }}
+                  >
+                    <MessageSquare className="w-3 h-3 mr-2" />
+                    Go to Chat
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    onClick={() => {
+                      if (confirm('Cancel this quick meet? This action cannot be undone.')) {
+                        deleteMeetup(managingMeetup.id);
+                        setManagingMeetupId(null);
+                      }
+                    }}
+                  >
+                    <Trash2 className="w-3 h-3 mr-2" />
+                    Cancel Meetup
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-3">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+                  <Input value={manageEditForm.title} onChange={(e) => setManageEditForm({ ...manageEditForm, title: e.target.value })} className="mt-1" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+                  <Textarea value={manageEditForm.description} onChange={(e) => setManageEditForm({ ...manageEditForm, description: e.target.value })} className="mt-1" rows={2} />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Meeting Point</label>
+                  <Input value={manageEditForm.meetingPoint} onChange={(e) => setManageEditForm({ ...manageEditForm, meetingPoint: e.target.value })} className="mt-1" />
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="flex-1" onClick={() => setIsManageEditing(false)}>Cancel</Button>
+                  <Button
+                    size="sm"
+                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
+                    disabled={updateMutation.isPending || !manageEditForm.title.trim()}
+                    onClick={() => {
+                      updateMutation.mutate({
+                        meetupId: managingMeetup.id,
+                        updates: {
+                          title: manageEditForm.title,
+                          description: manageEditForm.description,
+                          meetingPoint: manageEditForm.meetingPoint,
+                        }
+                      });
+                      setIsManageEditing(false);
+                    }}
+                  >
+                    {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">Meetup not found.</p>
+        )}
+      </DialogContent>
+    </Dialog>
+
     <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="quick-meetup-widget">
       {/* ACTIVE MEETUPS - Show ALL active hangouts prominently at top for everyone to see */}
       {false && allActiveMeetups.length > 0 && (
@@ -542,7 +670,7 @@ export function QuickMeetupWidget({
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setLocation(`/quick-meetups?id=${meetup.id}`);
+                              setManagingMeetupId(meetup.id);
                             }}
                             className="flex-1 text-xs h-8 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
                           >
@@ -922,7 +1050,7 @@ export function QuickMeetupWidget({
                   key={meetup.id} 
                   className="backdrop-blur-sm bg-white/70 dark:bg-gray-800/70 border border-orange-300/50 dark:border-orange-700/50 overflow-visible cursor-pointer hover:shadow-xl hover:border-orange-400/60 dark:hover:border-orange-600/60 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300"
                   onClick={() => {
-                    if (isOwn) setLocation(`/quick-meetups?id=${meetup.id}`);
+                    if (isOwn) setManagingMeetupId(meetup.id);
                     else handleJoinMeetup(meetup.id);
                   }}
                   data-testid={`quick-meetup-card-${meetup.id}`}
@@ -958,7 +1086,7 @@ export function QuickMeetupWidget({
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      setLocation(`/quick-meetups?id=${meetup.id}`);
+                                      setManagingMeetupId(meetup.id);
                                     }}
                                     className="p-1 rounded-full hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
                                     title="Edit quick meet"
@@ -1075,7 +1203,7 @@ export function QuickMeetupWidget({
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setLocation(`/quick-meetups?id=${meetup.id}`);
+                              setManagingMeetupId(meetup.id);
                             }}
                             variant="outline"
                             className={`flex-1 sm:flex-initial min-w-0 sm:min-w-[4.5rem] inline-flex items-center justify-center rounded-full
@@ -1277,5 +1405,6 @@ export function QuickMeetupWidget({
         </div>
       )}
     </div>
+    </>
   );
 }

@@ -16470,8 +16470,9 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       // BUG FIX: Add country filtering to prevent cross-border meetups from appearing
+      // Also include meetups with null country (created before country field was added)
       if (userCountry) {
-        conditions.push(eq(quickMeetups.country, userCountry));
+        conditions.push(or(eq(quickMeetups.country, userCountry), isNull(quickMeetups.country)));
         if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETS: Added country filter: ${userCountry}`);
       }
 
