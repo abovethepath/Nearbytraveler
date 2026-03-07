@@ -3,12 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import WhatsAppChat from "@/components/WhatsAppChat";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MapPin, User, Zap } from "lucide-react";
+import { ArrowLeft, MapPin, User, Plane, Users, Star } from "lucide-react";
 import { AuthContext } from "@/App";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { ChatPageSkeleton } from "@/components/ui/chat-page-skeleton";
-import { WhatYouHaveInCommon } from "@/components/what-you-have-in-common";
 import { getProfileImageUrl, SimpleAvatar } from "@/components/simple-avatar";
+import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
 
 interface UserDetails {
   id: number;
@@ -84,6 +84,16 @@ export default function DMChat() {
     retryDelay: 1000
   });
 
+  const { data: compatibilityData } = useQuery<any>({
+    queryKey: [`/api/compatibility/${user?.id}/${otherUserId}`],
+    enabled: !!user?.id && !!otherUserId,
+  });
+
+  const { data: mutualConnections = [] } = useQuery<any[]>({
+    queryKey: [`/api/mutual-connections/${user?.id}/${otherUserId}`],
+    enabled: !!user?.id && !!otherUserId,
+  });
+
   if (!otherUserId) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
@@ -132,8 +142,24 @@ export default function DMChat() {
 
   const displayName = otherUser.username || getFirstName(otherUser.name) || 'User';
   const avatarUrl = getProfileImageUrl(otherUser);
-  const cityDisplay = otherUser.currentCity || otherUser.hometownCity || otherUser.hometown || null;
-  const isOnline = otherUser.isOnline ?? false;
+
+  // Hometown — the permanent base city
+  const hometownDisplay = otherUser.hometownCity || otherUser.hometown || null;
+
+  // Travel destination — only show if currentCity differs from hometown (they are traveling)
+  const travelDestination = (() => {
+    const current = otherUser.currentCity?.trim();
+    const home = hometownDisplay?.trim();
+    if (!current || !home) return null;
+    return current.toLowerCase() !== home.toLowerCase() ? current : null;
+  })();
+
+  // Counts for the stat pills
+  const commonStats = computeCommonStats(compatibilityData ?? null, {
+    mutualCount: Array.isArray(mutualConnections) ? mutualConnections.length : 0
+  });
+  const thingsInCommonCount = commonStats.totalCommon;
+  const contactsInCommonCount = Array.isArray(mutualConnections) ? mutualConnections.length : 0;
 
   const chatComponent = (
     <WhatsAppChat
@@ -149,86 +175,80 @@ export default function DMChat() {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* LEFT PANEL — desktop only, 30% width */}
-      <aside className="hidden md:flex flex-col w-[300px] lg:w-[340px] xl:w-[380px] shrink-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
-
-        {/* Profile section */}
-        <div className="flex flex-col items-center gap-3 px-6 pt-8 pb-6 border-b border-gray-100 dark:border-gray-800">
+      {/* LEFT PANEL — desktop only */}
+      <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
+        <div className="flex flex-col items-center gap-4 px-6 pt-8 pb-8">
 
           {/* Back to messages */}
           <button
             onClick={() => setLocation('/messages')}
-            className="self-start flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mb-2 transition-colors"
+            className="self-start flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mb-1 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Messages
           </button>
 
-          {/* Avatar with online indicator */}
-          <div className="relative">
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt={displayName}
-                className="w-24 h-24 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700"
-              />
-            ) : (
-              <SimpleAvatar user={otherUser} size="xl" className="w-24 h-24 text-2xl" />
-            )}
-            {isOnline && (
-              <span className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-gray-900" />
-            )}
-          </div>
+          {/* Avatar */}
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={displayName}
+              className="w-28 h-28 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700"
+            />
+          ) : (
+            <SimpleAvatar user={otherUser} size="xl" className="w-28 h-28 text-3xl" />
+          )}
 
-          {/* Username + status */}
-          <div className="text-center">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white leading-tight">
-              @{displayName}
-            </h2>
-            {isOnline ? (
-              <p className="text-green-500 text-sm font-medium mt-0.5">Online</p>
-            ) : (
-              <p className="text-gray-400 text-sm mt-0.5">Offline</p>
-            )}
-          </div>
+          {/* Username */}
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white leading-tight text-center">
+            @{displayName}
+          </h2>
 
-          {/* City */}
-          {cityDisplay && (
+          {/* Hometown */}
+          {hometownDisplay && (
             <p className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
               <MapPin className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-              {cityDisplay}
+              {hometownDisplay}
             </p>
           )}
 
-          {/* Action buttons */}
-          <div className="flex flex-col gap-2 w-full mt-1">
-            <Button
-              onClick={() => setLocation(`/profile/${otherUserId}`)}
-              variant="outline"
-              className="w-full gap-2 text-sm border-gray-200 dark:border-gray-700 hover:border-orange-300 dark:hover:border-orange-600 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
-            >
-              <User className="w-4 h-4" />
-              View Full Profile
-            </Button>
-            <Button
-              onClick={() => setLocation('/quick-meetups')}
-              className="w-full gap-2 text-sm bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0"
-            >
-              <Zap className="w-4 h-4" />
-              Quick Meetup
-            </Button>
-          </div>
-        </div>
+          {/* Travel destination — only when actively traveling */}
+          {travelDestination && (
+            <p className="flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 font-medium">
+              <Plane className="w-3.5 h-3.5 shrink-0" />
+              Traveling to {travelDestination}
+            </p>
+          )}
 
-        {/* What You Have In Common */}
-        {user?.id && otherUserId && (
-          <div className="px-4 py-4">
-            <WhatYouHaveInCommon
-              currentUserId={user.id}
-              otherUserId={otherUserId}
-            />
+          {/* View Full Profile button */}
+          <Button
+            onClick={() => setLocation(`/profile/${otherUserId}`)}
+            variant="outline"
+            className="w-full gap-2 text-sm border-gray-200 dark:border-gray-700 hover:border-orange-300 dark:hover:border-orange-600 hover:text-orange-600 dark:hover:text-orange-400 transition-colors mt-1"
+          >
+            <User className="w-4 h-4" />
+            View Full Profile
+          </Button>
+
+          {/* Stats row */}
+          <div className="flex gap-3 w-full mt-1">
+            <div className="flex-1 flex flex-col items-center gap-1 rounded-xl bg-gray-50 dark:bg-gray-800 py-3 px-2">
+              <div className="flex items-center gap-1.5 text-orange-500">
+                <Star className="w-4 h-4" />
+                <span className="text-lg font-bold text-gray-900 dark:text-white">{thingsInCommonCount}</span>
+              </div>
+              <span className="text-xs text-gray-500 dark:text-gray-400 text-center leading-tight">Things in Common</span>
+            </div>
+            <div className="flex-1 flex flex-col items-center gap-1 rounded-xl bg-gray-50 dark:bg-gray-800 py-3 px-2">
+              <div className="flex items-center gap-1.5 text-blue-500">
+                <Users className="w-4 h-4" />
+                <span className="text-lg font-bold text-gray-900 dark:text-white">{contactsInCommonCount}</span>
+              </div>
+              <span className="text-xs text-gray-500 dark:text-gray-400 text-center leading-tight">Contacts in Common</span>
+            </div>
           </div>
-        )}
+
+        </div>
       </aside>
 
       {/* RIGHT PANEL — chat (full width on mobile, 70% on desktop) */}
