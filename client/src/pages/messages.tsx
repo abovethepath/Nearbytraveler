@@ -319,7 +319,7 @@ export default function Messages() {
           userId: connectedUserId,
           username: connectedUser?.username || connectedUser?.name || `User ${connectedUserId}`,
           profileImage: connectedUser?.profileImage,
-          location: connectedUser?.hometownCity || connectedUser?.location || 'Unknown',
+          location: connectedUser?.currentCity || connectedUser?.destinationCity || connectedUser?.city || connectedUser?.hometownCity || connectedUser?.location || '',
           lastMessage: '', // Don't show message preview in connections list
           lastMessageTime: connection.createdAt,
           unreadCount: 0, // Initialize unread count
@@ -335,7 +335,7 @@ export default function Messages() {
           userId: parseInt(targetUserId),
           username: targetUser?.username || targetUser?.name || `User ${targetUserId}`,
           profileImage: targetUser?.profileImage,
-          location: targetUser?.hometownCity || targetUser?.location || 'Unknown',
+          location: targetUser?.currentCity || targetUser?.destinationCity || targetUser?.city || targetUser?.hometownCity || targetUser?.location || '',
           lastMessage: 'Start a conversation...',
           lastMessageTime: new Date().toISOString(),
         });
@@ -371,7 +371,7 @@ export default function Messages() {
             userId: otherUserId,
             username: otherUser?.username || otherUser?.name || `User ${otherUserId}`,
             profileImage: otherUser?.profileImage,
-            location: otherUser?.hometownCity || otherUser?.location || 'Unknown',
+            location: otherUser?.currentCity || otherUser?.destinationCity || otherUser?.city || otherUser?.hometownCity || otherUser?.location || '',
             lastMessage: message.content,
             lastMessageTime: message.createdAt,
             unreadCount: unreadCount,
@@ -724,7 +724,7 @@ export default function Messages() {
                             ? 'text-gray-700 dark:text-gray-300 font-medium'
                             : 'text-gray-600 dark:text-gray-500'
                       }`}>
-                        {conv.location}
+                        {conv.location || ''}
                       </div>
                     </div>
                     {selectedConversation === conv.userId && (
@@ -770,7 +770,7 @@ export default function Messages() {
                 </div>
                 <div className="flex-1 min-w-0 overflow-hidden max-w-[140px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[260px]">
                   <h2 className="text-sm font-semibold text-gray-900 dark:text-white truncate" title={`@${selectedUser.username}`}>@{selectedUser.username}</h2>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 truncate min-w-0">{selectedUser.location}</p>
+                  {selectedUser.location && <p className="text-xs text-gray-600 dark:text-gray-400 truncate min-w-0">{selectedUser.location}</p>}
                 </div>
               </div>
             </div>

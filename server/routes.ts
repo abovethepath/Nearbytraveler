@@ -9928,7 +9928,19 @@ Questions? Just reply to this message. Welcome aboard!
           CASE 
             WHEN c.requester_id = ${userId} THEN receiver.location
             ELSE requester.location
-          END as location
+          END as location,
+          CASE 
+            WHEN c.requester_id = ${userId} THEN receiver.current_city
+            ELSE requester.current_city
+          END as "currentCity",
+          CASE 
+            WHEN c.requester_id = ${userId} THEN receiver.city
+            ELSE requester.city
+          END as city,
+          CASE 
+            WHEN c.requester_id = ${userId} THEN receiver.hometown_city
+            ELSE requester.hometown_city
+          END as "hometownCity"
         FROM connections c
         LEFT JOIN users receiver ON c.receiver_id = receiver.id
         LEFT JOIN users requester ON c.requester_id = requester.id
@@ -9948,7 +9960,9 @@ Questions? Just reply to this message. Welcome aboard!
           name: conn.name || conn.username || `User ${conn.userId}`,
           profileImage: conn.profileImage,
           location: conn.location,
-          hometownCity: conn.location?.split(',')[0]?.trim() || 'Unknown'
+          currentCity: conn.currentCity,
+          city: conn.city,
+          hometownCity: conn.hometownCity || conn.location?.split(',')[0]?.trim() || ''
         }
       }));
 
@@ -10680,14 +10694,22 @@ Questions? Just reply to this message. Welcome aboard!
             id: senderData?.id,
             username: senderData?.username,
             name: senderData?.name,
-            profileImage: senderData?.profileImage
+            profileImage: senderData?.profileImage,
+            currentCity: senderData?.currentCity,
+            city: senderData?.city,
+            hometownCity: senderData?.hometownCity,
+            location: senderData?.location
           },
           // Include embedded receiver user data
           receiverUser: {
             id: receiverData?.id,
             username: receiverData?.username,
             name: receiverData?.name,
-            profileImage: receiverData?.profileImage
+            profileImage: receiverData?.profileImage,
+            currentCity: receiverData?.currentCity,
+            city: receiverData?.city,
+            hometownCity: receiverData?.hometownCity,
+            location: receiverData?.location
           }
         };
       });
