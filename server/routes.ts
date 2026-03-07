@@ -7484,9 +7484,10 @@ Questions? Just reply to this message. Welcome aboard!
       if (!hasFilters) {
         const cached = await cache.get<any[]>('users:all:enriched');
         if (cached) {
-          console.log(`⚡ /api/users cache HIT — ${cached.length} users in ${Date.now() - _usersStart}ms`);
+          console.log(`⚡ CACHE HIT /api/users — ${cached.length} users in ${Date.now() - _usersStart}ms`);
           return res.json(cached);
         }
+        console.log(`💨 CACHE MISS /api/users — fetching from DB`);
       }
       
       // Build query with filters
@@ -11766,6 +11767,15 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const { city, state, country, userId } = req.query;
 
+      // 60-second server-side cache keyed by city + userId
+      const cacheKey = `events:v2:${city || 'all'}:${userId || 'anon'}`;
+      const cachedEvents = await cache.get<any[]>(cacheKey);
+      if (cachedEvents) {
+        console.log(`⚡ CACHE HIT /api/events city="${city || 'all'}" — ${cachedEvents.length} events in ${Date.now() - _eventsStart}ms`);
+        return res.json(cachedEvents);
+      }
+      console.log(`💨 CACHE MISS /api/events city="${city || 'all'}" — fetching from DB`);
+
       let eventsQuery = [];
       
       if (city && typeof city === 'string' && city.trim() !== '') {
@@ -11911,45 +11921,42 @@ Questions? Just reply to this message. Welcome aboard!
         if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Returning ${eventsQuery.length} USER-CREATED events in next 6 weeks (filtered out AI events)`);
       }
 
-      // CRITICAL: Add participant counts to all events
-      const participantCounts = await Promise.all(
-        eventsQuery.map(async (event) => {
-          const result = await db
-            .select({ count: sql<number>`count(*)` })
-            .from(eventParticipants)
-            .where(eq(eventParticipants.eventId, event.id));
-          return { eventId: event.id, count: result[0]?.count || 0 };
-        })
-      );
+      // BATCH: Single query for ALL participant counts (replaces N individual queries)
+      const eventIds = eventsQuery.map(e => e.id).filter(Boolean);
+      const participantCountMap = new Map<number, number>();
+      if (eventIds.length > 0) {
+        const batchCounts = await db
+          .select({ eventId: eventParticipants.eventId, count: sql<number>`count(*)` })
+          .from(eventParticipants)
+          .where(inArray(eventParticipants.eventId, eventIds))
+          .groupBy(eventParticipants.eventId);
+        batchCounts.forEach(row => participantCountMap.set(row.eventId, Number(row.count)));
+      }
 
-      // Create participant count lookup
-      const participantCountMap = new Map(participantCounts.map(pc => [pc.eventId, pc.count]));
+      // BATCH: Single query for ALL organizer usernames (replaces N individual queries)
+      const organizerIds = eventsQuery
+        .map(e => e.organizerId)
+        .filter((id): id is number => !!id && id > 0);
+      const organizerMap = new Map<number, string>();
+      if (organizerIds.length > 0) {
+        const organizerRows = await db
+          .select({ id: users.id, username: users.username })
+          .from(users)
+          .where(inArray(users.id, organizerIds));
+        organizerRows.forEach(u => {
+          const label = (u.username === 'nearbytravlr' || u.username === 'api_events' || u.username === 'ai_events')
+            ? "Outside of the Website"
+            : u.username;
+          organizerMap.set(u.id, label);
+        });
+      }
 
-      // ENHANCED: Add participant counts AND organizer information to events
-      const eventsWithCountsAndOrganizers = await Promise.all(
-        eventsQuery.map(async (event) => {
-          let organizer = null;
-          
-          // Only fetch organizer info for user-created events (organizerId > 0)
-          if (event.organizerId && event.organizerId > 0) {
-            const organizerUser = await storage.getUser(event.organizerId);
-            if (organizerUser) {
-              // Check if this is an API-generated event by specific organizer usernames
-              if (organizerUser.username === 'nearbytravlr' || organizerUser.username === 'api_events' || organizerUser.username === 'ai_events') {
-                organizer = "Outside of the Website";
-              } else {
-                organizer = organizerUser.username; // Use username for real member-created events
-              }
-            }
-          }
-          
-          return {
-            ...event,
-            participantCount: participantCountMap.get(event.id) || 0,
-            organizer: organizer // Add organizer username for display
-          };
-        })
-      );
+      // Combine counts + organizer info without any additional DB calls
+      const eventsWithCountsAndOrganizers = eventsQuery.map(event => ({
+        ...event,
+        participantCount: participantCountMap.get(event.id) || 0,
+        organizer: (event.organizerId && event.organizerId > 0) ? (organizerMap.get(event.organizerId) || null) : null,
+      }));
 
       // PRIVATE EVENT FILTERING: Filter events based on user demographics
       let filteredEvents = eventsWithCountsAndOrganizers;
@@ -11989,6 +11996,10 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
+      // Store in 60-second cache (skip for user-specific filtering since it differs per user)
+      if (!userId) {
+        cache.set(cacheKey, filteredEvents, 60).catch(() => {});
+      }
       console.log(`⏱️ /api/events took ${Date.now() - _eventsStart}ms — city="${city}", returned ${filteredEvents.length} events`);
       return res.json(filteredEvents);
     } catch (error: any) {

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { AuthContext } from "@/App";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
@@ -1018,6 +1018,7 @@ export default function Home() {
     gcTime: 10 * 60 * 1000,    // keep in cache for 10 minutes
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData, // show previous results instantly on return visits — no skeleton
   });
 
   // Enrich ALL users with travel data and apply prioritization

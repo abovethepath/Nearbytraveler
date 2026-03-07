@@ -1,6 +1,6 @@
 // Events page - v2.2 - Complete location fix
 import React, { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -248,25 +248,26 @@ export default function Events() {
     },
     enabled: !(selectedLocation === "custom" && showCustomInput) && effectiveCitiesToQuery.length > 0,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    gcTime: 15 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData, // show previous events instantly — no loading spinner on return visits
   });
 
   // Fetch all events to identify user's events - ALWAYS load when user is logged in
   const { data: allEvents = [], isLoading: allEventsLoading } = useQuery<Event[]>({
     queryKey: ["/api/events", "all"],
     queryFn: async () => {
-      console.log('🔍 Fetching ALL events for user events detection...');
       const response = await fetch(`${getApiBaseUrl()}/api/events`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch events');
-      }
-      const data = await response.json();
-      console.log('🔍 ALL EVENTS RESPONSE:', data.length, 'events');
-      console.log('🔍 Events with organizerId 22 (brunchbig):', data.filter((e: any) => e.organizerId === 22));
-      console.log('🔍 All Santa Monica events:', data.filter((e: any) => e.city?.toLowerCase().includes('santa monica')));
-      return data;
+      if (!response.ok) throw new Error('Failed to fetch events');
+      return response.json();
     },
-    enabled: !!currentUser, // Always fetch when user is logged in to show user events
-    staleTime: 60000,
+    enabled: !!currentUser,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
   });
 
   // Optimized participants fetch - only fetch for visible events and cache results
@@ -300,7 +301,11 @@ export default function Events() {
       return allParticipants;
     },
     enabled: events.length > 0,
-    staleTime: 60000, // Cache participants for 1 minute
+    staleTime: 60000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
   });
 
   // Fetch users only when needed and cache aggressively

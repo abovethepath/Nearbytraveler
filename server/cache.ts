@@ -34,11 +34,27 @@ class CacheService {
   async get<T>(key: string): Promise<T | null> {
     const fullKey = this.getKey(key);
 
+    // L1: In-memory cache (instantaneous — checked first regardless of Redis)
+    const memCached = this.memoryCache.get(fullKey);
+    if (memCached && memCached.expires > Date.now()) {
+      return memCached.data as T;
+    }
+    if (memCached) {
+      this.memoryCache.delete(fullKey);
+    }
+
+    // L2: Redis (for persistence across restarts, only for small/medium payloads)
     if (this.redis && this.isConnected) {
       try {
         const data = await this.redis.get(fullKey);
         if (data) {
-          return JSON.parse(data) as T;
+          const parsed = JSON.parse(data) as T;
+          // Warm in-memory cache from Redis
+          const ttlSeconds = await this.redis.ttl(fullKey);
+          if (ttlSeconds > 0) {
+            this.memoryCache.set(fullKey, { data: parsed, expires: Date.now() + ttlSeconds * 1000 });
+          }
+          return parsed;
         }
         return null;
       } catch (error) {
@@ -46,36 +62,30 @@ class CacheService {
       }
     }
 
-    const cached = this.memoryCache.get(fullKey);
-    if (cached && cached.expires > Date.now()) {
-      return cached.data as T;
-    }
-    if (cached) {
-      this.memoryCache.delete(fullKey);
-    }
     return null;
   }
 
   async set(key: string, data: any, ttlSeconds: number = 300): Promise<void> {
     const fullKey = this.getKey(key);
 
-    if (this.redis && this.isConnected) {
-      try {
-        await this.redis.setex(fullKey, ttlSeconds, JSON.stringify(data));
-        return;
-      } catch (error) {
-        console.error("Cache set error:", error);
-      }
-    }
-
+    // Always write to in-memory cache first (instant reads on the same instance)
     this.memoryCache.set(fullKey, {
       data,
       expires: Date.now() + ttlSeconds * 1000,
     });
+
+    // Also write to Redis for cross-instance consistency (non-blocking)
+    if (this.redis && this.isConnected) {
+      this.redis.setex(fullKey, ttlSeconds, JSON.stringify(data)).catch((error) => {
+        console.error("Cache set error:", error);
+      });
+    }
   }
 
   async delete(key: string): Promise<void> {
     const fullKey = this.getKey(key);
+
+    this.memoryCache.delete(fullKey);
 
     if (this.redis && this.isConnected) {
       try {
@@ -84,12 +94,16 @@ class CacheService {
         console.error("Cache delete error:", error);
       }
     }
-
-    this.memoryCache.delete(fullKey);
   }
 
   async deletePattern(pattern: string): Promise<void> {
     const fullPattern = this.getKey(pattern);
+
+    for (const key of this.memoryCache.keys()) {
+      if (key.startsWith(fullPattern.replace("*", ""))) {
+        this.memoryCache.delete(key);
+      }
+    }
 
     if (this.redis && this.isConnected) {
       try {
@@ -99,12 +113,6 @@ class CacheService {
         }
       } catch (error) {
         console.error("Cache deletePattern error:", error);
-      }
-    }
-
-    for (const key of this.memoryCache.keys()) {
-      if (key.startsWith(fullPattern.replace("*", ""))) {
-        this.memoryCache.delete(key);
       }
     }
   }
