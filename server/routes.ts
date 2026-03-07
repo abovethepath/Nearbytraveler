@@ -16866,7 +16866,7 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(403).json({ message: "Only the organizer can edit this quick meet" });
       }
 
-      const { title, description, meetingPoint, street, city, state, zipcode, duration } = req.body;
+      const { title, description, meetingPoint, street, city, state, country, zipcode, organizerNotes, responseTime, duration } = req.body;
       const updates: any = {};
 
       if (title !== undefined) updates.title = title;
@@ -16875,10 +16875,30 @@ Questions? Just reply to this message. Welcome aboard!
       if (street !== undefined) updates.street = street;
       if (city !== undefined) updates.city = city;
       if (state !== undefined) updates.state = state;
+      if (country !== undefined) updates.country = country;
       if (zipcode !== undefined) updates.zipcode = zipcode;
-      
-      // Handle duration extension
-      if (duration) {
+      if (organizerNotes !== undefined) updates.organizerNotes = organizerNotes;
+
+      // Update computed location field when city/state changes
+      if (city !== undefined || state !== undefined) {
+        const newCity = city ?? existingMeetup.city;
+        const newState = state ?? existingMeetup.state;
+        updates.location = newState ? `${newCity}, ${newState}` : newCity;
+      }
+
+      // Handle responseTime: sets a fresh expiry window from NOW
+      if (responseTime) {
+        const durationHours: Record<string, number> = {
+          '1hour': 1, '2hours': 2, '3hours': 3, '6hours': 6, '12hours': 12, '24hours': 24
+        };
+        const hours = durationHours[responseTime] ?? 1;
+        updates.expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000);
+        updates.responseTime = responseTime;
+        updates.isActive = true;
+      }
+
+      // Handle duration extension (legacy — extends from current expiry)
+      if (duration && !responseTime) {
         const durationMs = {
           '1hour': 1 * 60 * 60 * 1000,
           '2hours': 2 * 60 * 60 * 1000,

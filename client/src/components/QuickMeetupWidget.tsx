@@ -67,7 +67,19 @@ export function QuickMeetupWidget({
   const [isCustomActivity, setIsCustomActivity] = useState(false);
   const [editingMeetupId, setEditingMeetupId] = useState<number | null>(null);
   const [managingMeetupId, setManagingMeetupId] = useState<number | null>(null);
-  const [manageEditForm, setManageEditForm] = useState({ title: '', description: '', meetingPoint: '', city: '', state: '' });
+  const [manageEditForm, setManageEditForm] = useState({
+    title: '',
+    description: '',
+    meetingPoint: '',
+    street: '',
+    city: '',
+    state: '',
+    country: 'United States',
+    zipcode: '',
+    organizerNotes: '',
+    responseTime: '24hours',
+  });
+  const [isManageCustomTitle, setIsManageCustomTitle] = useState(false);
   const [isManageEditing, setIsManageEditing] = useState(false);
   const [useAiVoice, setUseAiVoice] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -395,6 +407,8 @@ export function QuickMeetupWidget({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
       setEditingMeetupId(null);
+      setIsManageEditing(false);
+      setManagingMeetupId(null);
       toast({
         title: "Updated!",
         description: "Your quick meet has been updated.",
@@ -531,9 +545,9 @@ export function QuickMeetupWidget({
         }
       }}
     >
-      <DialogContent className="sm:max-w-md bg-white dark:bg-gray-900">
+      <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-900 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Manage Quick Meet</DialogTitle>
+          <DialogTitle>{isManageEditing ? 'Edit Quick Meet' : 'Manage Quick Meet'}</DialogTitle>
         </DialogHeader>
         {managingMeetup ? (
           <div className="space-y-4">
@@ -556,12 +570,20 @@ export function QuickMeetupWidget({
                     variant="outline"
                     className="w-full"
                     onClick={() => {
+                      const PRESET_ACTIVITIES = ['Coffee Chat', 'Quick Walk', 'Lunch', 'Drinks', 'Bike Ride', 'Go out and Party', 'Beach Day', 'Food Tour', 'Sunset Viewing', 'Local Sightseeing', 'Workout', 'Explore Area'];
+                      const isPreset = PRESET_ACTIVITIES.includes(managingMeetup.title ?? '');
+                      setIsManageCustomTitle(!isPreset);
                       setManageEditForm({
                         title: managingMeetup.title ?? '',
                         description: managingMeetup.description ?? '',
                         meetingPoint: managingMeetup.meetingPoint ?? '',
+                        street: managingMeetup.street ?? '',
                         city: managingMeetup.city ?? '',
                         state: managingMeetup.state ?? '',
+                        country: managingMeetup.country ?? 'United States',
+                        zipcode: managingMeetup.zipcode ?? '',
+                        organizerNotes: managingMeetup.organizerNotes ?? '',
+                        responseTime: managingMeetup.responseTime ?? '24hours',
                       });
                       setIsManageEditing(true);
                     }}
@@ -598,24 +620,138 @@ export function QuickMeetupWidget({
               </>
             ) : (
               <div className="space-y-3">
-                <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
-                  <Input value={manageEditForm.title} onChange={(e) => setManageEditForm({ ...manageEditForm, title: e.target.value })} className="mt-1" />
+                {/* Duration */}
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-orange-700 dark:text-orange-400 flex items-center gap-1">
+                    ⏰ Available for how long? (resets from now)
+                  </label>
+                  <Select
+                    value={manageEditForm.responseTime}
+                    onValueChange={(v) => setManageEditForm(p => ({ ...p, responseTime: v }))}
+                  >
+                    <SelectTrigger className="h-10 text-sm bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
+                      <SelectValue placeholder="Available for how long?" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                      <SelectItem value="1hour">⏰ 1 hour</SelectItem>
+                      <SelectItem value="2hours">⏰ 2 hours</SelectItem>
+                      <SelectItem value="3hours">⏰ 3 hours</SelectItem>
+                      <SelectItem value="6hours">⏰ 6 hours</SelectItem>
+                      <SelectItem value="12hours">⏰ 12 hours</SelectItem>
+                      <SelectItem value="24hours">⏰ Today (24 hours)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+
+                {/* Activity / Title */}
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Activity *</label>
+                  <Select
+                    value={isManageCustomTitle ? 'custom' : (manageEditForm.title || 'custom')}
+                    onValueChange={(v) => {
+                      if (v === 'custom') {
+                        setIsManageCustomTitle(true);
+                        setManageEditForm(p => ({ ...p, title: '' }));
+                      } else {
+                        setIsManageCustomTitle(false);
+                        setManageEditForm(p => ({ ...p, title: v }));
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="h-10 text-sm bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
+                      <SelectValue placeholder="What activity?" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                      <SelectItem value="Coffee Chat">☕ Coffee Chat</SelectItem>
+                      <SelectItem value="Quick Walk">🚶 Quick Walk</SelectItem>
+                      <SelectItem value="Lunch">🍽️ Lunch</SelectItem>
+                      <SelectItem value="Drinks">🍻 Drinks</SelectItem>
+                      <SelectItem value="Bike Ride">🚴 Bike Ride</SelectItem>
+                      <SelectItem value="Go out and Party">🎉 Go out and Party</SelectItem>
+                      <SelectItem value="Beach Day">🏖️ Beach Day</SelectItem>
+                      <SelectItem value="Food Tour">🍕 Food Tour</SelectItem>
+                      <SelectItem value="Sunset Viewing">🌅 Sunset Viewing</SelectItem>
+                      <SelectItem value="Local Sightseeing">📸 Local Sightseeing</SelectItem>
+                      <SelectItem value="Workout">💪 Workout</SelectItem>
+                      <SelectItem value="Explore Area">🗺️ Explore Area</SelectItem>
+                      <SelectItem value="custom">✏️ Custom Activity</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {isManageCustomTitle && (
+                    <Input
+                      placeholder="Enter custom activity..."
+                      value={manageEditForm.title}
+                      onChange={(e) => setManageEditForm(p => ({ ...p, title: e.target.value }))}
+                      className="mt-1 text-sm"
+                    />
+                  )}
+                </div>
+
+                {/* Description */}
                 <div>
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-                  <Textarea value={manageEditForm.description} onChange={(e) => setManageEditForm({ ...manageEditForm, description: e.target.value })} className="mt-1" rows={2} />
+                  <Textarea
+                    value={manageEditForm.description}
+                    onChange={(e) => setManageEditForm(p => ({ ...p, description: e.target.value }))}
+                    className="mt-1 text-sm resize-none"
+                    rows={2}
+                    placeholder="Brief description (optional)"
+                  />
                 </div>
+
+                {/* Meeting Point */}
                 <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Meeting Point</label>
-                  <Input value={manageEditForm.meetingPoint} onChange={(e) => setManageEditForm({ ...manageEditForm, meetingPoint: e.target.value })} className="mt-1" />
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Meeting Point *</label>
+                  <Input
+                    value={manageEditForm.meetingPoint}
+                    onChange={(e) => setManageEditForm(p => ({ ...p, meetingPoint: e.target.value }))}
+                    className="mt-1 text-sm"
+                    placeholder="e.g., Starbucks on Main St"
+                  />
                 </div>
-                <div className="flex gap-2">
+
+                {/* Street Address */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Street Address <span className="text-gray-400 font-normal">(optional)</span></label>
+                  <Input
+                    value={manageEditForm.street}
+                    onChange={(e) => setManageEditForm(p => ({ ...p, street: e.target.value }))}
+                    className="mt-1 text-sm"
+                    placeholder="Street address"
+                  />
+                </div>
+
+                {/* Organizer Notes */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Notes <span className="text-gray-400 font-normal">(optional)</span></label>
+                  <Textarea
+                    value={manageEditForm.organizerNotes}
+                    onChange={(e) => setManageEditForm(p => ({ ...p, organizerNotes: e.target.value }))}
+                    className="mt-1 text-sm resize-none"
+                    rows={2}
+                    placeholder="e.g., 'Text me if lost: 555-1234'"
+                  />
+                </div>
+
+                {/* Location */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Location *</label>
+                  <SmartLocationInput
+                    city={manageEditForm.city}
+                    state={manageEditForm.state}
+                    country={manageEditForm.country}
+                    onLocationChange={(loc) => setManageEditForm(p => ({ ...p, city: loc.city, state: loc.state, country: loc.country }))}
+                    required={true}
+                    placeholder={{ country: 'Country', state: 'State', city: 'City' }}
+                  />
+                </div>
+
+                <div className="flex gap-2 pt-1">
                   <Button size="sm" variant="outline" className="flex-1" onClick={() => setIsManageEditing(false)}>Cancel</Button>
                   <Button
                     size="sm"
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
-                    disabled={updateMutation.isPending || !manageEditForm.title.trim()}
+                    className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white"
+                    disabled={updateMutation.isPending || !manageEditForm.title.trim() || !manageEditForm.meetingPoint.trim()}
                     onClick={() => {
                       updateMutation.mutate({
                         meetupId: managingMeetup.id,
@@ -623,9 +759,15 @@ export function QuickMeetupWidget({
                           title: manageEditForm.title,
                           description: manageEditForm.description,
                           meetingPoint: manageEditForm.meetingPoint,
+                          street: manageEditForm.street,
+                          city: manageEditForm.city,
+                          state: manageEditForm.state,
+                          country: manageEditForm.country,
+                          zipcode: manageEditForm.zipcode,
+                          organizerNotes: manageEditForm.organizerNotes,
+                          responseTime: manageEditForm.responseTime,
                         }
                       });
-                      setIsManageEditing(false);
                     }}
                   >
                     {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
