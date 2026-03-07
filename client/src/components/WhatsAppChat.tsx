@@ -2159,8 +2159,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           WebkitOverflowScrolling: 'touch',
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23999999' stroke-width='2' opacity='0.18'%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Ccircle cx='150' cy='300' r='30'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Ccircle cx='100' cy='500' r='40'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Ccircle cx='150' cy='700' r='35'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3C/svg%3E")`
         }}>
-          <div className="flex flex-col">
-            <div className="space-y-2">
+          <div className="flex flex-col lg:max-w-[800px] lg:mx-auto lg:w-full">
+            <div className="space-y-1">
             {messages.map((message, index) => {
               // Use == for type-coerced comparison since currentUserId from localStorage may be string
               const isOwnMessage = message.senderId == currentUserId;
@@ -2351,13 +2351,15 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         {/* Fixed footer area - outside scrollable div */}
         {typingUsers.size > 0 && (
           <div className="px-3 py-1 text-xs text-gray-400 bg-gray-800">
-            {Array.from(typingUsers).join(', ')} {typingUsers.size === 1 ? 'is' : 'are'} typing...
+            <div className="lg:max-w-[800px] lg:mx-auto">
+              {Array.from(typingUsers).join(', ')} {typingUsers.size === 1 ? 'is' : 'are'} typing...
+            </div>
           </div>
         )}
 
         {replyingTo && (
           <div className="px-3 py-1.5 bg-gray-800 border-t border-gray-700">
-            <div className="flex items-center justify-between">
+            <div className="lg:max-w-[800px] lg:mx-auto flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-xs text-green-400 font-semibold">Replying to {getFirstName(replyingTo.sender?.name, replyingTo.sender?.username)}</p>
                 <p className="text-xs text-gray-300 truncate">{replyingTo.content}</p>
@@ -2369,6 +2371,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
         {/* Input box — native app: no bottom nav; mobile web: pb for bottom nav + safe area; desktop: pb-4 mb-4 for lift from edge */}
         <div className={`chat-input-area px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-4' : 'pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))] md:pb-4 md:mb-4 lg:pb-6 lg:mb-4'}`}>
+          <div className="lg:max-w-[800px] lg:mx-auto">
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
           {!messagesLoaded && !isWsConnected && !loadError && (
             <div className="text-center text-yellow-400 text-xs mb-2 animate-pulse">Loading...</div>
@@ -2433,6 +2436,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             >
               <Send className="w-4 h-4" />
             </Button>
+          </div>
           </div>
         </div>
       </div>
