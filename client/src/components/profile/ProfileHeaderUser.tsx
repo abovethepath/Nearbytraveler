@@ -614,10 +614,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     }}
                                     className="text-xs text-gray-400 hover:text-gray-200 underline underline-offset-2"
                                   >
-                                    Contacts in Common · {sharedContactsCount}
+                                    Connections in Common · {sharedContactsCount}
                                   </button>
                                 ) : (
-                                  <span className="text-xs text-gray-400">Contacts in Common · 0</span>
+                                  <span className="text-xs text-gray-400">Connections in Common · 0</span>
                                 )}
                                 <button
                                   type="button"
@@ -751,7 +751,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               <div className="flex flex-wrap gap-2 text-sm text-gray-700 dark:text-gray-200">
                                 <span className="inline-flex items-center rounded-full px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                                   <span className="font-extrabold text-gray-900 dark:text-white mr-1">{sharedContactsCount}</span>
-                                  shared contacts
+                                  shared connections
                                 </span>
                               </div>
                             </div>

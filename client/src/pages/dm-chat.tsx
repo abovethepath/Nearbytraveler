@@ -272,7 +272,7 @@ export default function DMChat() {
                 <Users className="w-4 h-4" />
                 <span className="text-lg font-bold text-gray-900 dark:text-white">{contactsInCommonCount}</span>
               </div>
-              <span className="text-xs text-gray-500 dark:text-gray-400 text-center leading-tight">Contacts in Common</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 text-center leading-tight">Connections in Common</span>
             </button>
           </div>
 
@@ -303,7 +303,7 @@ export default function DMChat() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
               <Users className="w-5 h-5 text-blue-500" />
-              Contacts in Common
+              Connections in Common
             </DialogTitle>
           </DialogHeader>
           {Array.isArray(mutualConnections) && mutualConnections.length > 0 ? (
@@ -331,7 +331,7 @@ export default function DMChat() {
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">No contacts in common yet.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">No connections in common yet.</p>
           )}
         </DialogContent>
       </Dialog>

@@ -978,7 +978,7 @@ export default function Messages() {
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-[#f0f2f5] dark:bg-gray-800">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
             <Users className="w-4 h-4" />
-            Contacts
+            Connections
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             {(connections as any[]).length} connection{(connections as any[]).length !== 1 ? 's' : ''}

@@ -367,7 +367,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 }}
                 className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white hover:bg-black/30 transition-colors"
               >
-                👥 <span className="font-extrabold mx-1">{sharedContactsCount}</span> contacts in common
+                👥 <span className="font-extrabold mx-1">{sharedContactsCount}</span> connections in common
               </button>
             )}
             {sharedLanguagesNonEnglish.length > 0 && (
