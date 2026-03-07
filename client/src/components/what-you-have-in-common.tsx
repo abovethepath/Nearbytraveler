@@ -142,7 +142,8 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
   // ONE source of truth for the "things in common" total:
   // always compute from the compatibility endpoint payload.
   const mutualCountForStats = Array.isArray(mutualConnections) ? mutualConnections.length : 0;
-  const thingsInCommonTotal = computeCommonStats(compatibilityData as any, { mutualCount: mutualCountForStats }).totalCommon;
+  const commonStats = computeCommonStats(compatibilityData as any, { mutualCount: mutualCountForStats });
+  const thingsInCommonTotal = commonStats.totalCommon;
   const thingsInCommonLabel = `${thingsInCommonTotal} ${thingsInCommonTotal === 1 ? "thing" : "things"} in common`;
 
   // Calculate comprehensive commonalities
@@ -609,6 +610,45 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
     );
   }
 
+  // Merge local-calc otherCommonalities with API-computed otherCommonalities.
+  // The API stats count all of these in the badge total — every counted item must render as a pill.
+  const localOther = commonalities.otherCommonalities ?? [];
+  const localOtherSet = new Set(localOther.map((v) => v.toLowerCase()));
+  const extraFromStats = commonStats.otherCommonalities.filter(
+    (item) => !localOtherSet.has(item.toLowerCase())
+  );
+  const allOtherCommonalities = [...localOther, ...extraFromStats];
+
+  // Debug: log every category and its values before render so mismatches are visible in console
+  console.log('[WhatYouHaveInCommon] Category breakdown before render:', {
+    'sharedInterests': commonalities.sharedInterests,
+    'sharedActivities': commonalities.sharedActivities,
+    'sharedEvents': commonalities.sharedEvents,
+    'sharedLanguages (pills, local)': commonalities.sharedLanguages,
+    'sharedCountries (pills, not counted)': commonalities.sharedCountries,
+    'sharedSexualPreferences': commonalities.sharedSexualPreferences,
+    'sharedCityActivities': commonalities.sharedCityActivities,
+    'sharedTravelIntent': commonalities.sharedTravelIntent,
+    'sharedTravelDestinations': commonalities.sharedTravelDestinations,
+    'overlappingTravelDates': commonalities.overlappingTravelDates,
+    'otherCommonalities (local only)': localOther,
+    'extraFromStats (previously missing pills)': extraFromStats,
+    'allOtherCommonalities (merged)': allOtherCommonalities,
+    'mutualConnections count': mutualConnections?.length ?? 0,
+    '--- RAW API fields that feed the count ---': '',
+    'sharedChatrooms': (compatibilityData as any)?.sharedChatrooms,
+    'sharedCommunityTags': (compatibilityData as any)?.sharedCommunityTags,
+    'sharedTravelPlans': (compatibilityData as any)?.sharedTravelPlans,
+    'sameHostel': (compatibilityData as any)?.sameHostel,
+    'sameCurrentCity': (compatibilityData as any)?.sameCurrentCity,
+    'bothNewToTown': (compatibilityData as any)?.bothNewToTown,
+    'sharedTravelStyle': (compatibilityData as any)?.sharedTravelStyle,
+    'sharedCustomActivities': (compatibilityData as any)?.sharedCustomActivities,
+    'sharedCustomEvents': (compatibilityData as any)?.sharedCustomEvents,
+    'sharedDefaultInterests': (compatibilityData as any)?.sharedDefaultInterests,
+    'badge totalCommon': commonStats.totalCommon,
+  });
+
   return (
     <Card className="what-you-have-in-common-card border-2 border-orange-300 bg-gradient-to-br from-orange-50 via-blue-50 to-orange-100 dark:border-orange-600 dark:from-orange-900/20 dark:via-blue-900/20 dark:to-orange-900/30 shadow-lg hover:shadow-xl transition-all duration-300 ring-2 ring-orange-200 dark:ring-orange-700">
       <CardHeader className="pb-3">
@@ -666,11 +706,11 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
           {(commonalities.sharedSexualPreferences.length > 0 || 
             commonalities.sharedCountries.length > 0 || 
             commonalities.sharedLanguages.length > 0 || 
-            commonalities.otherCommonalities.length > 0) && (
+            allOtherCommonalities.length > 0) && (
             <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-800 rounded-lg p-3 border border-blue-200 dark:border-slate-600">
               <h5 className="font-bold text-gray-900 dark:text-slate-100 mb-3 lg:mb-2 flex items-center gap-1 text-base">
                 <User className="w-5 h-5 text-gray-600 dark:text-slate-300" />
-                Other Things in Common ({commonalities.sharedSexualPreferences.length + commonalities.sharedCountries.length + commonalities.sharedLanguages.length + commonalities.otherCommonalities.length})
+                Other Things in Common ({commonalities.sharedSexualPreferences.length + commonalities.sharedCountries.length + commonalities.sharedLanguages.length + allOtherCommonalities.length})
               </h5>
               <div className="space-y-3 lg:space-y-2">
                 {/* Sexual Preferences */}
@@ -715,18 +755,18 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                   </div>
                 )}
                 
-                {/* Military/Other Status */}
-                {commonalities.otherCommonalities.length > 0 && (
+                {/* All other commonalities — merged from local calc + API stats so every counted item has a pill */}
+                {allOtherCommonalities.length > 0 && (
                   <div>
                     <h6 className="text-sm font-medium text-gray-800 dark:text-slate-200 mb-2">Other Things In Common</h6>
                     <div className="flex flex-wrap gap-2 lg:gap-1.5">
-                      {(showAllOtherCommon ? commonalities.otherCommonalities : commonalities.otherCommonalities.slice(0, 3)).map((commonality, index) => (
+                      {(showAllOtherCommon ? allOtherCommonalities : allOtherCommonalities.slice(0, 3)).map((commonality, index) => (
                         <Badge key={`other-commonality-${commonality}-${index}`} className="bg-transparent text-gray-700 border-gray-300 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600 font-medium">
                           🎖️ {commonality}
                         </Badge>
                       ))}
                     </div>
-                    {commonalities.otherCommonalities.length > 3 && (
+                    {allOtherCommonalities.length > 3 && (
                       <button
                         type="button"
                         onClick={() => setShowAllOtherCommon((v) => !v)}
