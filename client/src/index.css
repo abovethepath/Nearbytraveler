@@ -252,6 +252,43 @@ main,
   }
 }
 
+/* User card homeCity variant: center @username, city, things in common, contacts in common */
+/* Does NOT target data-role="user-card-bio" — bio stays left-aligned */
+button.user-card [data-role="user-card-username"] {
+  text-align: center !important;
+  width: 100% !important;
+  display: block !important;
+}
+/* City text: the location wrapper div and city span both get centered */
+button.user-card [data-role="user-card-location"] {
+  text-align: center !important;
+  width: 100% !important;
+  justify-content: center !important;
+}
+button.user-card [data-role="user-card-city"] {
+  text-align: center !important;
+  width: 100% !important;
+  display: block !important;
+}
+/* "X things in common" — the pill badge wrapper centers it, text is centered within */
+button.user-card [data-role="user-card-things"] {
+  text-align: center !important;
+  width: 100% !important;
+}
+/* "X contacts in common" */
+button.user-card [data-role="user-card-contacts"] {
+  text-align: center !important;
+  width: 100% !important;
+  display: block !important;
+}
+/* Ensure the info box and text container fill full card width */
+button.user-card > div:last-of-type {
+  width: 100% !important;
+}
+button.user-card [data-role="user-card-text-container"] {
+  width: 100% !important;
+}
+
 /* CRITICAL: Prevent ALL horizontal scrolling on mobile */
 html {
   overflow-x: hidden !important;
