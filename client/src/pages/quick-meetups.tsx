@@ -1028,6 +1028,7 @@ function QuickMeetupsPage() {
               city={actualUser?.hometownCity || ''}
               initialShowCreateForm={true}
               preFillData={createSimilarData}
+              onCreateSuccess={() => { setShowCreateForm(false); setCreateSimilarData(null); }}
             />
           </DialogContent>
         </Dialog>

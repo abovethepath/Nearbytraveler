@@ -950,47 +950,6 @@ export default function Home() {
 
   // Business deals functionality removed - focusing on travelers and locals
 
-  // Fetch active quick meetups from ALL locations (hometown + all travel destinations) - LAZY LOADED
-  const { data: allQuickMeets = [], isLoading: quickMeetsLoading } = useQuery<any[]>({
-    queryKey: [`/api/quick-meets/all-locations`, discoveryLocations.allCities.map(loc => loc.city)],
-    queryFn: async () => {
-      if (!discoveryLocations.allCities.length) return [];
-
-      console.log('Fetching active quick meetups from ALL locations:', discoveryLocations.allCities);
-
-      // Fetch meetups from all cities in parallel
-      const quickMeetPromises = discoveryLocations.allCities.map(async (location) => {
-        const cityName = location.city.split(',')[0].trim();
-        console.log(`Fetching quick meetups for ${location.type}:`, cityName);
-
-        try {
-          const response = await fetch(`${getApiBaseUrl()}/api/quick-meets?city=${encodeURIComponent(cityName)}`);
-          if (!response.ok) throw new Error(`Failed to fetch quick meets for ${cityName}`);
-          const data = await response.json();
-          console.log(`${location.type} Quick Meets API response:`, data.length, 'meets for', cityName);
-          return data.map((meetup: any) => ({ ...meetup, sourceLocation: location }));
-        } catch (error) {
-          console.error(`Error fetching quick meets for ${cityName}:`, error);
-          return [];
-        }
-      });
-
-      const allQuickMeetsArrays = await Promise.all(quickMeetPromises);
-      const combined = allQuickMeetsArrays.flat();
-
-      // Remove duplicates by meetup ID
-      const unique = combined.filter((quickMeet, index, self) => 
-        index === self.findIndex((m) => m.id === quickMeet.id)
-      );
-
-      console.log('Combined quick meets:', unique.length, 'meets from ALL', discoveryLocations.allCities.length, 'locations');
-      return unique;
-    },
-    staleTime: 60 * 1000, // 1-minute cache
-  });
-
-  const quickMeets = allQuickMeets;
-
   // Query users - prioritize specific location filter, otherwise show ALL users
   const { data: rawUsers = [], isLoading: usersLoading, error: usersError } = useQuery<User[]>({
     queryKey: ["/api/users/discover-people", { location: filters.location }],

@@ -40,6 +40,7 @@ export function QuickMeetupWidget({
   compactOnly = false,
   initialShowCreateForm = false,
   preFillData,
+  onCreateSuccess,
 }: {
   city?: string;
   profileUserId?: number;
@@ -47,6 +48,7 @@ export function QuickMeetupWidget({
   currentUser?: any;
   compactOnly?: boolean;
   initialShowCreateForm?: boolean;
+  onCreateSuccess?: () => void;
   preFillData?: {
     title?: string;
     description?: string;
@@ -373,6 +375,7 @@ export function QuickMeetupWidget({
         title: "Quick Meet Posted!",
         description: "Your availability is now live for others to join.",
       });
+      onCreateSuccess?.();
     },
     onError: (error: any) => {
       console.error('❌ CREATE MEETUP ERROR:', error);
@@ -638,8 +641,8 @@ export function QuickMeetupWidget({
     </Dialog>
 
     <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="quick-meetup-widget">
-      {/* ACTIVE MEETUPS - Show ALL active hangouts prominently at top for everyone to see */}
-      {false && allActiveMeetups.length > 0 && (
+      {/* ACTIVE MEETUPS - Show active meetups in compact mode (home page) */}
+      {compactOnly && allActiveMeetups.length > 0 && (
         <div className="mb-4 relative">
           <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl blur-md opacity-40 animate-pulse"></div>
           <Card className="relative bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 border-2 border-green-400 dark:border-green-500 shadow-xl">
