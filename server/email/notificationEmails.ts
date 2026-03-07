@@ -95,7 +95,7 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
                 <li>Explore city chatrooms to meet the community</li>
               </ul>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${APP_URL}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">Explore Now</a>
+                <a href="${APP_URL}/home" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">Explore Now</a>
               </div>
               <p style="font-size: 14px; color: #888888; margin: 30px 0 0; text-align: center;">
                 Have questions? Just reply to this email — we're here to help!
@@ -332,7 +332,7 @@ export async function sendNewMessageEmail(recipientId: number, senderId: number,
                 <p style="font-size: 15px; color: #555555; margin: 0; font-style: italic;">"${truncatedMessage}"</p>
               </div>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${APP_URL}/messages" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">View Message</a>
+                <a href="${APP_URL}/messages/${senderId}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">View Message</a>
               </div>
             </td>
           </tr>
@@ -353,7 +353,7 @@ export async function sendNewMessageEmail(recipientId: number, senderId: number,
     const result = await sendBrevoEmail({
       toEmail: recipient.email,
       subject: `New message from ${senderName}`,
-      textContent: `Hi ${displayName}! You have a new message from ${senderName}: "${truncatedMessage}" View it at ${APP_URL}/messages`,
+      textContent: `Hi ${displayName}! You have a new message from ${senderName}: "${truncatedMessage}" View it at ${APP_URL}/messages/${senderId}`,
       htmlContent,
     });
 
@@ -855,7 +855,7 @@ export async function sendReportConfirmationEmail(
   }
 }
 
-export async function sendConnectionAcceptedEmail(requesterId: number, acceptorName: string, acceptorUsername: string): Promise<EmailResult> {
+export async function sendConnectionAcceptedEmail(requesterId: number, acceptorName: string, acceptorUsername: string, acceptorId?: number): Promise<EmailResult> {
   try {
     const prefs = await getUserEmailPreferences(requesterId);
     if (!prefs.emailNotifications || !prefs.connectionAcceptedAlerts) {
@@ -896,7 +896,7 @@ export async function sendConnectionAcceptedEmail(requesterId: number, acceptorN
                 Say hello and see what you have in common — you might end up grabbing coffee or exploring the city together.
               </p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${APP_URL}/messages" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">Send a Message</a>
+                <a href="${acceptorId ? `${APP_URL}/messages/${acceptorId}` : `${APP_URL}/profile/${acceptorUsername}`}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">Send a Message</a>
               </div>
             </td>
           </tr>
@@ -917,7 +917,7 @@ export async function sendConnectionAcceptedEmail(requesterId: number, acceptorN
     const result = await sendBrevoEmail({
       toEmail: requester.email,
       subject: `You're now connected with ${acceptorName}! 🎉`,
-      textContent: `Hi ${displayName}! ${acceptorName} (@${acceptorUsername}) accepted your connection request. Say hello and see what you have in common — you might end up grabbing coffee or exploring the city together. Send them a message at ${APP_URL}/messages`,
+      textContent: `Hi ${displayName}! ${acceptorName} (@${acceptorUsername}) accepted your connection request. Say hello and see what you have in common — you might end up grabbing coffee or exploring the city together. Send them a message at ${acceptorId ? `${APP_URL}/messages/${acceptorId}` : `${APP_URL}/profile/${acceptorUsername}`}`,
       htmlContent,
     });
 
@@ -928,7 +928,7 @@ export async function sendConnectionAcceptedEmail(requesterId: number, acceptorN
   }
 }
 
-export async function sendMeetupJoinEmail(organizerId: number, joinerName: string, joinerUsername: string, meetupTitle: string, meetingPoint: string): Promise<EmailResult> {
+export async function sendMeetupJoinEmail(organizerId: number, joinerName: string, joinerUsername: string, meetupTitle: string, meetingPoint: string, meetupId?: number): Promise<EmailResult> {
   try {
     const prefs = await getUserEmailPreferences(organizerId);
     if (!prefs.emailNotifications || !prefs.meetupActivityAlerts) {
@@ -973,7 +973,7 @@ export async function sendMeetupJoinEmail(organizerId: number, joinerName: strin
                 Head to the app to coordinate and send them a message!
               </p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${APP_URL}/profile/${joinerUsername}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">View Their Profile</a>
+                <a href="${meetupId ? `${APP_URL}/quick-meetups/${meetupId}` : `${APP_URL}/profile/${joinerUsername}`}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">View Meetup</a>
               </div>
             </td>
           </tr>
@@ -994,7 +994,7 @@ export async function sendMeetupJoinEmail(organizerId: number, joinerName: strin
     const result = await sendBrevoEmail({
       toEmail: organizer.email,
       subject: `${joinerName} joined your meetup: ${meetupTitle}`,
-      textContent: `Hi ${displayName}! ${joinerName} (@${joinerUsername}) just joined your Quick Meetup "${meetupTitle}" at ${meetingPoint}. View their profile at ${APP_URL}/profile/${joinerUsername}`,
+      textContent: `Hi ${displayName}! ${joinerName} (@${joinerUsername}) just joined your Quick Meetup "${meetupTitle}" at ${meetingPoint}. View the meetup at ${meetupId ? `${APP_URL}/quick-meetups/${meetupId}` : `${APP_URL}/profile/${joinerUsername}`}`,
       htmlContent,
     });
 

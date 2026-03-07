@@ -177,7 +177,8 @@ export class EventReminderService {
         eventTimeFormatted,
         eventLocation,
         timeText,
-        reminderType
+        reminderType,
+        eventId: reminder.eventId,
       });
 
       const textContent = `
@@ -191,10 +192,10 @@ Event Details:
 
 Don't forget to bring everything you need and arrive on time. We're excited to see you there!
 
+View event: https://nearbytraveler.org/events/${reminder.eventId}
+
 Best regards,
 The Nearby Traveler Team
-
-Visit: https://nearbytraveler.org
       `.trim();
 
 
@@ -231,8 +232,9 @@ Visit: https://nearbytraveler.org
     eventLocation: string;
     timeText: string;
     reminderType: string;
+    eventId: number;
   }): string {
-    const { userName, eventTitle, eventTimeFormatted, eventLocation, timeText, reminderType } = data;
+    const { userName, eventTitle, eventTimeFormatted, eventLocation, timeText, reminderType, eventId } = data;
     
     const urgencyColor = reminderType === '1h' ? '#f59e0b' : '#3b82f6';
     const urgencyEmoji = reminderType === '1h' ? '⏰' : '📅';
@@ -288,7 +290,7 @@ Visit: https://nearbytraveler.org
 
             <!-- Call to Action -->
             <div style="text-align: center; margin: 30px 0;">
-                <a href="https://nearbytraveler.org/event-details/${data.eventTitle.toLowerCase().replace(/\s+/g, '-')}" 
+                <a href="https://nearbytraveler.org/events/${data.eventId}" 
                    style="background: linear-gradient(135deg, #3b82f6 0%, #f97316 100%); 
                           color: white; 
                           padding: 15px 30px; 

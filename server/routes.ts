@@ -10682,7 +10682,7 @@ Questions? Just reply to this message. Welcome aboard!
           setImmediate(async () => {
             try {
               const { sendConnectionAcceptedEmail } = await import('./email/notificationEmails');
-              const result = await sendConnectionAcceptedEmail(requesterId, receiverName, receiverUsername);
+              const result = await sendConnectionAcceptedEmail(requesterId, receiverName, receiverUsername, receiverId);
               if (result.success && !result.skipped) {
                 console.log(`✅ CONNECTION ACCEPTED EMAIL: Sent to user ${requesterId}`);
               } else if (result.skipped) {
@@ -15947,7 +15947,7 @@ Questions? Just reply to this message. Welcome aboard!
             const joiner = await storage.getUser(joiningUserId);
             if (joiner) {
               const { sendMeetupJoinEmail } = await import('./email/notificationEmails');
-              await sendMeetupJoinEmail(meetup.organizerId, joiner.name || joiner.username, joiner.username, meetup.title, meetup.meetingPoint);
+              await sendMeetupJoinEmail(meetup.organizerId, joiner.name || joiner.username, joiner.username, meetup.title, meetup.meetingPoint, meetup.id);
             }
           }
         } catch (err) {
@@ -16890,7 +16890,7 @@ Questions? Just reply to this message. Welcome aboard!
             // Send email to organizer
             try {
               const { sendMeetupJoinEmail } = await import('./email/notificationEmails');
-              const result = await sendMeetupJoinEmail(meetup.organizerId, joiningUser.name || joiningUser.username, joiningUser.username, meetup.title, meetup.meetingPoint);
+              const result = await sendMeetupJoinEmail(meetup.organizerId, joiningUser.name || joiningUser.username, joiningUser.username, meetup.title, meetup.meetingPoint, meetup.id);
               if (result.success && !result.skipped) {
                 console.log(`✅ MEETUP JOIN EMAIL: Sent to organizer ${meetup.organizerId}`);
               } else if (result.skipped) {
