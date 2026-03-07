@@ -309,7 +309,7 @@ export default function UserCard({
       
       {/* Info box - structure is intentionally consistent for mobile + desktop */}
       <div
-        className={`${compact ? 'p-1 min-h-[6.5rem]' : 'p-1 lg:p-1.5 min-h-[7.5rem]'} flex flex-col justify-start ${
+        className={`w-full ${compact ? 'p-1 min-h-[6.5rem]' : 'p-1 lg:p-1.5 min-h-[7.5rem]'} flex flex-col justify-start ${
           variant === "homeCity" ? "bg-transparent" : ""
         }`}
         style={variant === "homeCity" ? undefined : { backgroundColor: '#1a1d27' }}
@@ -317,22 +317,22 @@ export default function UserCard({
         {/* Mobile / compact */}
         <div className={compact ? '' : 'lg:hidden'}>
           {variant === "homeCity" ? (
-            <div className="!flex !flex-col !items-center !w-full !text-center" data-role="user-card-text-container">
+            <div className="!flex !flex-col !items-center !w-full" data-role="user-card-text-container" style={{ textAlign: 'center' }}>
               <div
                 data-role="user-card-username"
-                className="truncate !w-full !text-center !block font-extrabold text-[14px]"
-                style={{ color: pickTextColor("#FF6B35", "#FF6B35") }}
+                className="truncate !w-full !block font-extrabold text-[14px]"
+                style={{ color: pickTextColor("#FF6B35", "#FF6B35"), textAlign: 'center' }}
               >
                 {handle}
               </div>
               <div
-                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 !w-full !text-center text-[11.5px]"
+                className="mt-0.5 flex items-center justify-center gap-1 min-w-0 !w-full text-[11.5px]"
                 data-role="user-card-location"
                 style={{ width: "100%", textAlign: "center" }}
               >
                 <span
                   data-role="user-card-city"
-                  className="truncate !text-center !w-full !block"
+                  className="truncate !w-full !block"
                   style={{
                     color: pickTextColor("#3b82f6", "#3b82f6"),
                     whiteSpace: 'nowrap',
@@ -340,13 +340,14 @@ export default function UserCard({
                     textOverflow: 'ellipsis',
                     maxWidth: '100%',
                     display: 'block',
+                    textAlign: 'center',
                   }}
                 >
                   {hometownLine}
                 </span>
               </div>
               <div
-                className="user-card-bio mt-1.5 w-full text-center"
+                className="user-card-bio mt-1.5 w-full"
                 data-role="user-card-bio"
                 title={user.bio || undefined}
                 style={{
@@ -359,26 +360,28 @@ export default function UserCard({
                   display: "-webkit-box",
                   WebkitBoxOrient: "vertical" as any,
                   WebkitLineClamp: 3 as any,
+                  textAlign: "left",
                 }}
               >
                 <span
-                  className="text-center"
-                  style={{ color: pickTextColor("#1f2937", "#e5e7eb") }}
+                  style={{ color: pickTextColor("#1f2937", "#e5e7eb"), textAlign: "left" }}
                 >
                   {bioText || '\u00A0'}
                 </span>
               </div>
               <div
-                className={`mt-1 w-full flex flex-col items-center text-center ${isCurrentUser ? "invisible" : ""}`}
+                className={`mt-1 w-full flex flex-col items-center ${isCurrentUser ? "invisible" : ""}`}
+                style={{ textAlign: 'center' }}
               >
-                <div className="!w-full !flex !justify-center">
+                <div className="w-full flex justify-center">
                   <span
                     data-role="user-card-things-pill"
-                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border !mx-auto"
+                    className="inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border"
                     style={{
                       color: pickTextColor("#3b82f6", "#FF6B35"),
                       backgroundColor: 'rgba(59,130,246,0.12)',
                       borderColor: 'rgba(59,130,246,0.25)',
+                      textAlign: 'center',
                     }}
                   >
                     {thingsInCommon} things in common
@@ -386,10 +389,10 @@ export default function UserCard({
                 </div>
                 <div
                   data-role="user-card-contacts"
-                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium truncate"
+                  className="mt-0.5 w-full block text-[11px] font-medium truncate"
                   style={{ width: "100%", textAlign: "center" }}
                 >
-                  <span style={{ color: pickTextColor("#FF6B35", "#3b82f6") }}>
+                  <span style={{ color: pickTextColor("#FF6B35", "#3b82f6"), textAlign: "center" }}>
                   {contactsInCommon} contacts in common
                   </span>
                 </div>
@@ -463,7 +466,7 @@ export default function UserCard({
               <div
                 data-role="user-card-username"
                 className="truncate !w-full !text-center !block font-extrabold text-[14px]"
-                style={{ color: pickTextColor("#FF6B35", "#FF6B35") }}
+                style={{ color: pickTextColor("#FF6B35", "#FF6B35"), textAlign: "center" }}
               >
                 {handle}
               </div>
@@ -482,13 +485,14 @@ export default function UserCard({
                     textOverflow: 'ellipsis',
                     maxWidth: '100%',
                     display: 'block',
+                    textAlign: 'center',
                   }}
                 >
                   {hometownLine}
                 </span>
               </div>
               <div
-                className="user-card-bio mt-1.5 w-full text-center"
+                className="user-card-bio mt-1.5 w-full"
                 data-role="user-card-bio"
                 title={user.bio || undefined}
                 style={{
@@ -501,11 +505,11 @@ export default function UserCard({
                   display: "-webkit-box",
                   WebkitBoxOrient: "vertical" as any,
                   WebkitLineClamp: 3 as any,
+                  textAlign: "left",
                 }}
               >
                 <span
-                  className="text-center"
-                  style={{ color: pickTextColor("#1f2937", "#e5e7eb") }}
+                  style={{ color: pickTextColor("#1f2937", "#e5e7eb"), textAlign: "left" }}
                 >
                   {bioText || '\u00A0'}
                 </span>
@@ -513,10 +517,10 @@ export default function UserCard({
               <div
                 className={`mt-1 w-full flex flex-col items-center text-center ${isCurrentUser ? "invisible" : ""}`}
               >
-                <div className="!w-full !flex !justify-center">
+                <div className="w-full flex justify-center">
                   <span
                     data-role="user-card-things-pill"
-                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border !mx-auto"
+                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border"
                     style={{
                       color: pickTextColor("#3b82f6", "#FF6B35"),
                       backgroundColor: 'rgba(59,130,246,0.12)',
@@ -528,7 +532,7 @@ export default function UserCard({
                 </div>
                 <div
                   data-role="user-card-contacts"
-                  className="mt-0.5 !w-full !text-center !block text-[11px] font-medium truncate"
+                  className="mt-0.5 w-full text-center block text-[11px] font-medium truncate"
                   style={{ width: "100%", textAlign: "center" }}
                 >
                   <span style={{ color: pickTextColor("#FF6B35", "#3b82f6") }}>
