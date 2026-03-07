@@ -631,7 +631,7 @@ export default function SignupSteps() {
                 <div className="text-center mb-6">
                   <h3 className="text-xl font-semibold text-gray-900">Your Travel Preferences</h3>
                   <div className="text-lg font-medium text-gray-700 mt-2">
-                    Minimum: To better match others on this site, choose at least 7 from the following next 4 lists (top choices, interests, activities, events)
+                    The more you choose, the better your matches — select at least 7 across the lists below (top choices, interests, activities, events)
                   </div>
                   <div className="text-sm text-gray-600 mt-1">
                     Current selections: {formData.interests.length + formData.activities.length + formData.events.length}/7

@@ -581,7 +581,7 @@ export default function SignupTraveling() {
                 
                 <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/30 rounded-lg p-3 border border-blue-200 dark:border-blue-700">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                    Select at least 7 to help us match you
+                    Pick at least 7 — the more you choose, the better your matches
                   </span>
                   <span className={`text-sm font-bold px-3 py-1 rounded-full ${
                     getTotalInterestsCount() >= 7 

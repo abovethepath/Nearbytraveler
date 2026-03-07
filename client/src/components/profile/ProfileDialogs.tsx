@@ -382,7 +382,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   <strong>Connection Preferences for This Trip</strong> - Choose interests, activities, and events to find the right travel matches
                 </div>
                 <div className="text-sm text-orange-600 bg-orange-50 border border-orange-400 rounded-md p-3 dark:bg-orange-900/20 dark:border-orange-500 dark:text-orange-300">
-                  <strong>Minimum: To better match others on this site, choose at least 7 from the following lists (top choices, activities, events)</strong>
+                  <strong>The more you choose, the better your matches — select at least 7 from the lists below (top choices, activities, events)</strong>
                 </div>
               </div>
 
