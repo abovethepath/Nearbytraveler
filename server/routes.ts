@@ -24712,7 +24712,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Update member count
       await db.update(communityTags)
-        .set({ memberCount: sql`${communityTags.memberCount} + 1` })
+        .set({ memberCount: sql`COALESCE(${communityTags.memberCount}, 0) + 1` })
         .where(eq(communityTags.id, tagId));
 
       // Add user to community chatroom if one exists

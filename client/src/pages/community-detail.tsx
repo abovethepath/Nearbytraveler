@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { FullPageSkeleton } from "@/components/FullPageSkeleton";
 import { Button } from "@/components/ui/button";
@@ -122,13 +122,137 @@ function PostReplies({ postId, currentUser }: { postId: number; currentUser: any
   );
 }
 
+function CommunityChat({ chatroomId, currentUser, isMember }: { chatroomId: number; currentUser: any; isMember: boolean }) {
+  const [, setLocation] = useLocation();
+  const [chatMsg, setChatMsg] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const { data: chatData, isLoading: loadingChat } = useQuery<{ messages: any[] }>({
+    queryKey: ["/api/chatrooms", chatroomId, "messages"],
+    queryFn: async () => {
+      if (!currentUser?.id) return { messages: [] };
+      const base = getApiBaseUrl();
+      const res = await fetch(`${base}/api/chatrooms/${chatroomId}/messages?chatType=city&format=whatsapp`, {
+        credentials: "include",
+        headers: { "x-user-id": currentUser.id.toString() },
+      });
+      if (!res.ok) return { messages: [] };
+      return res.json();
+    },
+    refetchInterval: 5000,
+    enabled: !!currentUser?.id && !!chatroomId,
+  });
+
+  const chatMessages = (chatData?.messages || []).slice().reverse();
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages.length]);
+
+  const sendMutation = useMutation({
+    mutationFn: async (content: string) => {
+      const res = await apiRequest("POST", `/api/chatrooms/${chatroomId}/messages`, { content, messageType: "text" });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.message || "Failed to send message");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      setChatMsg("");
+    },
+    onError: () => {},
+  });
+
+  if (!isMember) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 gap-3">
+        <MessageSquare className="w-12 h-12 text-gray-300 dark:text-gray-600" />
+        <p className="text-gray-500 dark:text-gray-400 font-medium text-center">Join this community to participate in the chat</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-[calc(100vh-320px)] min-h-[300px]">
+      <div className="flex-1 overflow-y-auto space-y-3 pr-1 pb-2">
+        {loadingChat ? (
+          <div className="space-y-2 py-2">
+            {[...Array(3)].map((_, i) => <SkeletonUserCard key={i} />)}
+          </div>
+        ) : chatMessages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full gap-2 py-12">
+            <MessageSquare className="w-10 h-10 text-gray-300 dark:text-gray-600" />
+            <p className="text-gray-500 dark:text-gray-400 font-medium">No messages yet</p>
+            <p className="text-gray-400 text-sm">Start the conversation!</p>
+          </div>
+        ) : (
+          chatMessages.map((msg: any) => {
+            const isOwn = msg.senderId === currentUser?.id;
+            const sender = msg.sender;
+            return (
+              <div key={msg.id} className={`flex items-end gap-2 ${isOwn ? "flex-row-reverse" : "flex-row"}`}>
+                {!isOwn && (
+                  <div className="cursor-pointer flex-shrink-0" onClick={() => setLocation(`/profile/${msg.senderId}`)}>
+                    <UserAvatar user={sender} size="sm" />
+                  </div>
+                )}
+                <div className={`max-w-[70%] flex flex-col gap-0.5 ${isOwn ? "items-end" : "items-start"}`}>
+                  {!isOwn && (
+                    <span className="text-xs text-gray-400 font-medium px-1 cursor-pointer hover:underline"
+                      onClick={() => setLocation(`/profile/${msg.senderId}`)}>
+                      {sender?.username || "Unknown"}
+                    </span>
+                  )}
+                  <div className={`rounded-2xl px-3 py-2 text-sm break-words ${
+                    isOwn
+                      ? "bg-orange-500 text-white rounded-br-sm"
+                      : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-sm"
+                  }`}>
+                    {msg.content}
+                  </div>
+                  <span className="text-xs text-gray-400 px-1">{timeAgo(msg.createdAt)}</span>
+                </div>
+              </div>
+            );
+          })
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-2">
+        <div className="flex gap-2 items-end">
+          <Textarea
+            placeholder="Send a message..."
+            value={chatMsg}
+            onChange={(e) => setChatMsg(e.target.value)}
+            className="min-h-[40px] max-h-[100px] resize-none text-sm"
+            rows={1}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey && chatMsg.trim()) {
+                e.preventDefault();
+                sendMutation.mutate(chatMsg.trim());
+              }
+            }}
+          />
+          <Button size="sm" className="bg-orange-500 hover:bg-orange-600 h-10 px-3 flex-shrink-0"
+            onClick={() => { if (chatMsg.trim()) sendMutation.mutate(chatMsg.trim()); }}
+            disabled={!chatMsg.trim() || sendMutation.isPending}>
+            <Send className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CommunityDetail({ communityId }: { communityId: number }) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const storedUser = localStorage.getItem("user");
   const currentUser = storedUser ? JSON.parse(storedUser) : null;
-  const [activeSection, setActiveSection] = useState<"feed" | "members">("feed");
+  const [activeSection, setActiveSection] = useState<"feed" | "members" | "chat">("feed");
   const [newPost, setNewPost] = useState("");
   const [expandedReplies, setExpandedReplies] = useState<Set<number>>(new Set());
 
@@ -159,6 +283,8 @@ export default function CommunityDetail({ communityId }: { communityId: number }
     },
     refetchInterval: 15000,
   });
+
+  const isMember = members.some((m: any) => m.id === currentUser?.id);
 
   const postIds = posts.map((p: any) => p.id);
 
@@ -294,6 +420,11 @@ export default function CommunityDetail({ communityId }: { communityId: number }
             className={activeSection === "feed" ? "bg-orange-500 hover:bg-orange-600" : ""}>
             <MessageSquare className="w-4 h-4 mr-1" /> Feed
           </Button>
+          <Button variant={activeSection === "chat" ? "default" : "outline"} size="sm"
+            onClick={() => setActiveSection("chat")}
+            className={activeSection === "chat" ? "bg-orange-500 hover:bg-orange-600" : ""}>
+            <MessageCircle className="w-4 h-4 mr-1" /> Chat
+          </Button>
           <Button variant={activeSection === "members" ? "default" : "outline"} size="sm"
             onClick={() => setActiveSection("members")}
             className={activeSection === "members" ? "bg-orange-500 hover:bg-orange-600" : ""}>
@@ -400,6 +531,21 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                 })}
               </div>
             )}
+          </div>
+        )}
+
+        {activeSection === "chat" && community.chatroomId && (
+          <CommunityChat
+            chatroomId={community.chatroomId}
+            currentUser={currentUser}
+            isMember={isMember}
+          />
+        )}
+
+        {activeSection === "chat" && !community.chatroomId && (
+          <div className="text-center py-12">
+            <MessageCircle className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+            <p className="text-gray-500 dark:text-gray-400">Chat not available for this community</p>
           </div>
         )}
 
