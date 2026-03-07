@@ -2656,6 +2656,43 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           );
                         })}
                       </div>
+
+                      {/* ✨ Suggest more ideas — sits right below Group 1 so it's obvious it adds to that group */}
+                      <div className="flex items-center justify-center gap-3 mt-4">
+                        <Button
+                          onClick={async () => {
+                            try {
+                              setIsLoading(true);
+                              toast({ title: "Generating Ideas", description: `Finding unique ${selectedCity} experiences...` });
+                              const apiBase = getApiBaseUrl();
+                              const response = await fetch(`${apiBase}/api/city-activities/${selectedCity}/enhance`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                              });
+                              if (response.ok) {
+                                const data = await response.json();
+                                if (data.cached) {
+                                  toast({ title: "Already loaded!", description: `${selectedCity} ideas are already saved` });
+                                } else {
+                                  toast({ title: "New Ideas Added!", description: `Found unique ${selectedCity} experiences` });
+                                }
+                                fetchCityActivities();
+                              } else {
+                                throw new Error('Failed');
+                              }
+                            } catch (error) {
+                              toast({ title: "Error", description: "Failed to generate ideas", variant: "destructive" });
+                            } finally {
+                              setIsLoading(false);
+                            }
+                          }}
+                          size="sm"
+                          className="text-white bg-gradient-to-r from-purple-500 to-pink-300 hover:from-purple-600 hover:to-pink-400 dark:from-purple-500 dark:to-pink-500 dark:hover:from-purple-600 dark:hover:to-pink-600"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? 'Finding ideas...' : '✨ Suggest more ideas'}
+                        </Button>
+                      </div>
                       
                       {/* GROUP 2: Static + AI/user-created (More Things to Do) */}
                       {displayedGroup2.length > 0 && (
@@ -2786,36 +2823,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         </div>
                       )}
                       
-                      <div className="flex items-center justify-center gap-3 mt-4">
-                        <Button
-                          onClick={async () => {
-                            try {
-                              setIsLoading(true);
-                              toast({ title: "Generating Ideas", description: `Finding unique ${selectedCity} experiences...` });
-                              const apiBase = getApiBaseUrl();
-                              const response = await fetch(`${apiBase}/api/city-activities/${selectedCity}/enhance`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                              });
-                              if (response.ok) {
-                                toast({ title: "New Ideas Added!", description: `Found unique ${selectedCity} experiences` });
-                                fetchCityActivities();
-                              } else {
-                                throw new Error('Failed');
-                              }
-                            } catch (error) {
-                              toast({ title: "Error", description: "Failed to generate ideas", variant: "destructive" });
-                            } finally {
-                              setIsLoading(false);
-                            }
-                          }}
-                          size="sm"
-                          className="text-white bg-gradient-to-r from-purple-500 to-pink-300 hover:from-purple-600 hover:to-pink-400 dark:from-purple-500 dark:to-pink-500 dark:hover:from-purple-600 dark:hover:to-pink-600"
-                          disabled={isLoading}
-                        >
-                          {isLoading ? 'Finding ideas...' : '✨ Suggest more ideas'}
-                        </Button>
-                      </div>
                     </div>
                   );
                 })()}

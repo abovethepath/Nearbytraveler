@@ -12,20 +12,84 @@ import { getStaticActivitiesForCity, getFeaturedActivitiesForCity } from './stat
 // Group 2  — City-Specific Static: source = 'static'     (extra city attractions beyond top 12)
 // Group 3  — Generic (all cities): source = 'generic'    (40 universal activities, same for every city)
 // Group 4  — [COMING SOON]:        source = 'group4'     (placeholder — add logic below when ready)
-// AI-enhanced city activities:     source = 'ai'         (Anthropic-generated city-specific, added asynchronously)
+// AI-enhanced city activities:     source = 'static'     (Anthropic-generated, saved permanently as static so they never disappear)
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// DEDUPLICATION HELPER
+// Normalize an activity name for fuzzy comparison:
+// lowercase, remove punctuation, strip common filler words.
+// ---------------------------------------------------------------------------
+function normalizeActivityName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\b(the|a|an|at|in|of|and|or|de|van|het)\b/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Returns true if the candidate name is too similar to any name in existingNames.
+// Catches: exact matches, one name being a substring of the other, and high word overlap.
+function isTooSimilarToExisting(candidate: string, existingNames: string[]): boolean {
+  const normCandidate = normalizeActivityName(candidate);
+  for (const existing of existingNames) {
+    const normExisting = normalizeActivityName(existing);
+    if (normCandidate === normExisting) return true;
+    if (normCandidate.length > 5 && normExisting.includes(normCandidate)) return true;
+    if (normExisting.length > 5 && normCandidate.includes(normExisting)) return true;
+    // Word overlap > 70%
+    const wordsA = new Set(normCandidate.split(' ').filter(w => w.length > 2));
+    const wordsB = new Set(normExisting.split(' ').filter(w => w.length > 2));
+    if (wordsA.size > 0 && wordsB.size > 0) {
+      const intersection = [...wordsA].filter(w => wordsB.has(w)).length;
+      const union = new Set([...wordsA, ...wordsB]).size;
+      if (intersection / union > 0.7) return true;
+    }
+  }
+  return false;
+}
+
+// Check whether this city already has a sufficient number of AI-generated (source='static' from AI)
+// or any 'static' activities to skip re-running AI generation.
+async function cityAlreadyHasAIActivities(cityName: string): Promise<boolean> {
+  const rows = await db
+    .select({ id: cityActivities.id, activityName: cityActivities.activityName })
+    .from(cityActivities)
+    .where(and(
+      eq(cityActivities.cityName, cityName),
+      eq(cityActivities.source, 'ai')
+    ))
+    .limit(1);
+  return rows.length > 0;
+}
 
 // Run AI enhancement as a non-blocking background task after basic seeding.
 // This avoids slowing down user signup / profile updates.
+// Skips if city already has AI-generated activities (permanent cache).
 function triggerAIEnhancementAsync(cityName: string, state?: string, country?: string, userId: number = 1): void {
   setImmediate(async () => {
     try {
+      // Skip if city already has AI activities (never regenerate)
+      const alreadyHasAI = await cityAlreadyHasAIActivities(cityName);
+      if (alreadyHasAI) return;
+
       const generatedActivities = await generateCityActivities(cityName);
       if (!generatedActivities || generatedActivities.length === 0) return;
+
+      // Fetch all existing activity names for this city for fuzzy dedup
+      const existingRows = await db
+        .select({ activityName: cityActivities.activityName })
+        .from(cityActivities)
+        .where(eq(cityActivities.cityName, cityName));
+      const existingNames = existingRows.map(r => r.activityName);
 
       let added = 0;
       for (const activity of generatedActivities) {
         try {
+          // Fuzzy dedup: skip if too similar to any existing activity
+          if (isTooSimilarToExisting(activity.name, existingNames)) continue;
+
           const existing = await db
             .select({ id: cityActivities.id })
             .from(cityActivities)
@@ -242,25 +306,47 @@ export async function ensureCityHasActivities(
 
 // ---------------------------------------------------------------------------
 // Manual enhancement endpoint helper — called from /api/city-activities/:city/enhance
+// Permanently saves AI-generated activities to the database as source='ai'.
+// Once a city has any AI activities saved, never calls the AI again (permanent cache).
 // ---------------------------------------------------------------------------
 export async function enhanceExistingCityWithMoreActivities(
   cityName: string,
   state?: string,
   country?: string,
   userId: number = 1
-): Promise<{ success: boolean; activitiesAdded: number; error?: string }> {
+): Promise<{ success: boolean; activitiesAdded: number; cached?: boolean; error?: string }> {
   try {
-    console.log(`🚀 ENHANCE: Adding AI activities to ${cityName}...`);
+    // Permanent cache: if city already has AI-generated activities, skip AI call entirely
+    const alreadyHasAI = await cityAlreadyHasAIActivities(cityName);
+    if (alreadyHasAI) {
+      console.log(`⚡ ENHANCE: ${cityName} already has AI activities — serving from DB cache`);
+      return { success: true, activitiesAdded: 0, cached: true };
+    }
+
+    console.log(`🚀 ENHANCE: Generating AI activities for ${cityName} (first time)...`);
 
     const generatedActivities = await generateCityActivities(cityName);
     if (!generatedActivities || generatedActivities.length === 0) {
       return { success: false, activitiesAdded: 0, error: 'No activities generated' };
     }
 
+    // Fetch ALL existing activity names for this city before inserting (for fuzzy dedup)
+    const existingRows = await db
+      .select({ activityName: cityActivities.activityName })
+      .from(cityActivities)
+      .where(eq(cityActivities.cityName, cityName));
+    const existingNames = existingRows.map(r => r.activityName);
+
     let addedCount = 0;
     for (const activity of generatedActivities) {
       try {
-        const existing = await db
+        // Fuzzy dedup: skip if too similar to any existing activity name
+        if (isTooSimilarToExisting(activity.name, existingNames)) {
+          console.log(`  ↳ Skipping duplicate: "${activity.name}"`);
+          continue;
+        }
+
+        const exactMatch = await db
           .select({ id: cityActivities.id })
           .from(cityActivities)
           .where(and(
@@ -269,7 +355,7 @@ export async function enhanceExistingCityWithMoreActivities(
           ))
           .limit(1);
 
-        if (existing.length === 0) {
+        if (exactMatch.length === 0) {
           await db.insert(cityActivities).values({
             cityName,
             activityName: activity.name,
@@ -283,6 +369,8 @@ export async function enhanceExistingCityWithMoreActivities(
             isFeatured: false,
             rank: 0
           });
+          // Track newly added name for dedup within this same batch
+          existingNames.push(activity.name);
           addedCount++;
         }
       } catch {
@@ -290,7 +378,7 @@ export async function enhanceExistingCityWithMoreActivities(
       }
     }
 
-    console.log(`✅ ENHANCE: Added ${addedCount} AI activities to ${cityName}`);
+    console.log(`✅ ENHANCE: Saved ${addedCount} new AI activities for ${cityName} (permanent)`);
     return { success: true, activitiesAdded: addedCount };
 
   } catch (error: any) {

@@ -20785,6 +20785,16 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(403).json({ error: 'Cannot delete static city activities' });
       }
 
+      // Protect activities that any user has selected — they must never disappear
+      const hasSelections = await db
+        .select({ id: userCityInterests.id })
+        .from(userCityInterests)
+        .where(eq(userCityInterests.activityId, activityId))
+        .limit(1);
+      if (hasSelections.length > 0) {
+        return res.status(403).json({ error: 'Cannot delete an activity that users have selected' });
+      }
+
       await db.delete(cityActivities).where(eq(cityActivities.id, activityId));
       
       if (process.env.NODE_ENV === 'development') console.log(`🗑️ DELETED CITY ACTIVITY: ID ${activityId}`);
