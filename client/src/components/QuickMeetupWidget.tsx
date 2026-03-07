@@ -39,6 +39,7 @@ export function QuickMeetupWidget({
   currentUser,
   compactOnly = false,
   initialShowCreateForm = false,
+  preFillData,
 }: {
   city?: string;
   profileUserId?: number;
@@ -46,6 +47,16 @@ export function QuickMeetupWidget({
   currentUser?: any;
   compactOnly?: boolean;
   initialShowCreateForm?: boolean;
+  preFillData?: {
+    title?: string;
+    description?: string;
+    meetingPoint?: string;
+    streetAddress?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    zipcode?: string;
+  } | null;
 }) {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
@@ -179,6 +190,26 @@ export function QuickMeetupWidget({
       setShowCreateForm(true);
     }
   }, [triggerCreate]);
+
+  // Pre-fill the create form when preFillData is provided (Create Similar flow)
+  useEffect(() => {
+    if (preFillData) {
+      setNewMeetup((prev) => ({
+        ...prev,
+        title: preFillData.title || '',
+        description: preFillData.description || '',
+        meetingPoint: preFillData.meetingPoint || '',
+        streetAddress: preFillData.streetAddress || '',
+        city: preFillData.city || prev.city,
+        state: preFillData.state || prev.state,
+        country: preFillData.country || prev.country,
+        zipcode: preFillData.zipcode || '',
+        responseTime: '24hours',
+        organizerNotes: '',
+      }));
+      setShowCreateForm(true);
+    }
+  }, [preFillData]);
 
   // Debug logging - check authentication (REMOVED - using actualUser now)
 

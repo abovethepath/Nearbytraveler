@@ -67,6 +67,11 @@ function QuickMeetupsPage() {
   const [, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [createSimilarData, setCreateSimilarData] = useState<{
+    title?: string; description?: string; meetingPoint?: string;
+    streetAddress?: string; city?: string; state?: string;
+    country?: string; zipcode?: string;
+  } | null>(null);
   const [selectedMeetupId, setSelectedMeetupId] = useState<number | null>(null);
   const [isEditingMeetup, setIsEditingMeetup] = useState(false);
   const [restartDuration, setRestartDuration] = useState<string>('1hour');
@@ -553,6 +558,16 @@ function QuickMeetupsPage() {
                 className={`flex-1 text-xs h-7 ${isExpired ? 'bg-gray-500 hover:bg-gray-600' : 'bg-orange-500 hover:bg-orange-600'} text-white`}
                 onClick={async () => {
                   if (isExpired) {
+                    setCreateSimilarData({
+                      title: meetup.title,
+                      description: meetup.description,
+                      meetingPoint: meetup.meetingPoint,
+                      streetAddress: meetup.street,
+                      city: meetup.city,
+                      state: meetup.state,
+                      country: meetup.country,
+                      zipcode: meetup.zipcode,
+                    });
                     setShowCreateForm(true);
                   } else {
                     try {
@@ -1004,12 +1019,16 @@ function QuickMeetupsPage() {
         </div>
 
         {/* Create Dialog */}
-        <Dialog open={showCreateForm} onOpenChange={(open) => setShowCreateForm(open)}>
+        <Dialog open={showCreateForm} onOpenChange={(open) => { setShowCreateForm(open); if (!open) setCreateSimilarData(null); }}>
           <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-900 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Create Quick Meet</DialogTitle>
+              <DialogTitle>{createSimilarData ? 'Create Similar Quick Meet' : 'Create Quick Meet'}</DialogTitle>
             </DialogHeader>
-            <QuickMeetupWidget city={actualUser?.hometownCity || ''} initialShowCreateForm={true} />
+            <QuickMeetupWidget
+              city={actualUser?.hometownCity || ''}
+              initialShowCreateForm={true}
+              preFillData={createSimilarData}
+            />
           </DialogContent>
         </Dialog>
 
