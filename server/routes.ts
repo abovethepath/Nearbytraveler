@@ -1406,23 +1406,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
   // Auth check route
   app.get("/api/auth/user", async (req, res) => {
-    // Debug session state
-    console.log("🔍 Auth check debug:", {
-      hasSession: !!(req as any).session,
-      sessionID: (req as any).sessionID?.substring(0, 10) + '...',
-      hasCookie: !!req.headers.cookie,
-      cookiePreview: req.headers.cookie?.substring(0, 50) + '...',
-      hasUser: !!(req as any).session?.user,
-      userId: (req as any).session?.user?.id
-    });
-    
     const sessionUser = (req as any).session?.user;
     if (sessionUser) {
-      // Return real user data from database
       try {
         const user = await storage.getUser(sessionUser.id);
         if (user) {
-          console.log("✅ Auth check: User authenticated:", user.username);
           res.json(user);
         } else {
           res.status(401).json({ message: "User not found" });
@@ -1432,7 +1420,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         res.status(500).json({ message: "Auth check failed" });
       }
     } else {
-      console.log("❌ Auth check: No session user");
       res.status(401).json({ message: "Not authenticated" });
     }
   });
@@ -6204,12 +6191,14 @@ Questions? Just reply to this message. Welcome aboard!
         db.select().from(travelPlans).where(
           and(eq(travelPlans.userId, userId), eq(travelPlans.status, 'completed'))
         ),
-        // 9. Platform stats
-        (async () => {
-          const userCount = await db.select({ count: count() }).from(users).where(eq(users.isActive, true));
-          const connectionCount = await db.select({ count: count() }).from(connections).where(eq(connections.status, 'accepted'));
-          return { totalUsers: userCount[0]?.count || 0, totalConnections: connectionCount[0]?.count || 0 };
-        })(),
+        // 9. Platform stats (parallel — was sequential, now concurrent)
+        Promise.all([
+          db.select({ count: count() }).from(users).where(eq(users.isActive, true)),
+          db.select({ count: count() }).from(connections).where(eq(connections.status, 'accepted')),
+        ]).then(([userCount, connectionCount]) => ({
+          totalUsers: userCount[0]?.count || 0,
+          totalConnections: connectionCount[0]?.count || 0,
+        })),
         // 10. Profile events (organized by user)
         db.select().from(events).where(eq(events.organizerId, userId)),
         // 11. Events user is going to
@@ -7486,10 +7475,9 @@ Questions? Just reply to this message. Welcome aboard!
 
   // CRITICAL: Get all users endpoint with FULL SEARCH FILTERING and LA Metro consolidation
   app.get("/api/users", async (req, res) => {
+    const _usersStart = Date.now();
     try {
       const { location, interests, userType, minAge, maxAge, gender, search } = req.query;
-      
-      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: Getting users with filters:`, { location, interests, userType, minAge, maxAge, gender, search });
       
       // Build query with filters
       let query = db.select().from(users);
@@ -7683,7 +7671,7 @@ Questions? Just reply to this message. Welcome aboard!
         };
       }));
       
-      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH RESULT: ${enrichedUsers.length} users found with filters`);
+      console.log(`⏱️ /api/users took ${Date.now() - _usersStart}ms — location="${location}", returned ${enrichedUsers.length} users`);
       return res.json(enrichedUsers);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching filtered users:", error);
@@ -9899,6 +9887,7 @@ Questions? Just reply to this message. Welcome aboard!
 
   // CRITICAL: Get connections for user  
   app.get("/api/connections/:userId", async (req, res) => {
+    const _connStart = Date.now();
     try {
       const userId = parseInt(req.params.userId || '0');
       
@@ -9966,9 +9955,10 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }));
 
+      console.log(`⏱️ /api/connections/${userId} took ${Date.now() - _connStart}ms — returned ${transformedConnections.length} connections`);
       return res.json(transformedConnections);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error fetching connections:", error);
+      console.error("Error fetching connections:", error);
       return res.status(500).json({ message: "Failed to fetch connections" });
     }
   });
@@ -11694,24 +11684,17 @@ Questions? Just reply to this message. Welcome aboard!
 
   // FIXED: Get events filtered by city with proper location filtering - NO CROSS-CITY BLEEDING
   app.get("/api/events", async (req, res) => {
-    console.log("🟢 EVENTS ENDPOINT HIT! Query:", req.query, "URL:", req.url);
+    const _eventsStart = Date.now();
     try {
-      console.log(`📅 EVENTS DEBUG: Full query parameters:`, req.query);
       const { city, state, country, userId } = req.query;
-      console.log(`📅 EVENTS DEBUG: Extracted city="${city}" state="${state}" country="${country}"`);
-      console.log(`📅 EVENTS DEBUG: City type: ${typeof city}, truthy: ${!!city}, trimmed: "${typeof city === 'string' ? city.trim() : 'N/A'}"`);
-      if (process.env.NODE_ENV === 'development') console.log(`📅 DIRECT API: Fetching events with query:`, req.query);
 
       let eventsQuery = [];
-      console.log(`📅 EVENTS DEBUG: City parameter received: "${city}", type: ${typeof city}`);
       
       if (city && typeof city === 'string' && city.trim() !== '') {
         const cityName = city.toString();
-        console.log(`🎪 EVENTS: Getting events for city: ${cityName}`);
         
         // Apply metro-aware city expansion
         let searchCities = getExpandedCityList(cityName);
-        console.log(`🌍 EVENTS: City "${cityName}" → Searching ${searchCities.length} cities`);
         
         if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Final searchCities array:`, searchCities);
         
@@ -11746,7 +11729,6 @@ Questions? Just reply to this message. Welcome aboard!
               ))
               .orderBy(asc(events.date));
           }
-          console.log(`🔍 EVENTS: Found ${eventsQuery.length} events in "${searchCities[0]}"`);
         } else {
           // Multiple cities - check both primary city (IN) and additionalCities (overlaps any)
           // First get events where city is in searchCities
@@ -11808,15 +11790,12 @@ Questions? Just reply to this message. Welcome aboard!
         // 🤖 AI EVENT GENERATION: If city has very few events, generate more with Anthropic
         // DISABLED: Don't generate Austin/Vegas events for LA metro areas
         if (eventsQuery.length <= 3 && !cityName.toLowerCase().includes('austin') && !cityName.toLowerCase().includes('vegas')) {
-          console.log(`🤖 AI TRIGGER: ${cityName} has only ${eventsQuery.length} events - generating AI events with Anthropic`);
           try {
-            // Generate AI events for this city in the background (don't wait for completion)
             setImmediate(async () => {
               try {
                 // DISABLED: Do not generate fake events
                 // const { createAIEventsInDatabase } = await import('./openaiEventGenerator');
                 // await createAIEventsInDatabase(cityName, state || 'CA', country || 'USA');
-                console.log(`⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for ${cityName}`);
               } catch (aiError) {
                 console.error(`🚫 AI EVENT GENERATION FAILED for ${cityName}:`, aiError);
               }
@@ -11901,20 +11880,14 @@ Questions? Just reply to this message. Welcome aboard!
         if (!isNaN(userIdNum)) {
           const user = await storage.getUser(userIdNum);
           if (user) {
-            console.log(`🔒 PRIVATE EVENTS: Filtering events for user ${user.username} with demographics`);
             filteredEvents = [];
             
             for (const event of eventsWithCountsAndOrganizers) {
-              // Check if user can see this event based on demographics
               const canSee = await storage.canUserSeeEvent(event, userIdNum);
               if (canSee) {
                 filteredEvents.push(event);
-              } else {
-                console.log(`🔒 PRIVATE EVENTS: Hidden event "${event.title}" from user ${user.username} due to demographic restrictions`);
               }
             }
-            
-            console.log(`🔒 PRIVATE EVENTS: Filtered ${eventsWithCountsAndOrganizers.length} events down to ${filteredEvents.length} visible events`);
           }
         }
       } else {
@@ -11936,10 +11909,9 @@ Questions? Just reply to this message. Welcome aboard!
             filteredEvents.push(event);
           }
         }
-        console.log(`🔒 PRIVATE EVENTS: No user provided - filtered ${eventsWithCountsAndOrganizers.length} events down to ${filteredEvents.length} public events`);
       }
 
-      if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENTS: Enhanced ${filteredEvents.length} events with participant counts and organizer info`);
+      console.log(`⏱️ /api/events took ${Date.now() - _eventsStart}ms — city="${city}", returned ${filteredEvents.length} events`);
       return res.json(filteredEvents);
     } catch (error: any) {
       console.error("❌ Error fetching events:", error?.message || error);
@@ -18669,6 +18641,7 @@ Questions? Just reply to this message. Welcome aboard!
 
   // Get compatibility between two specific users
   app.get("/api/compatibility/:userId1/:userId2", async (req, res) => {
+    const _compatStart = Date.now();
     try {
       const userId1 = parseInt(req.params.userId1);
       const userId2 = parseInt(req.params.userId2);
@@ -18676,8 +18649,6 @@ Questions? Just reply to this message. Welcome aboard!
       if (!userId1 || !userId2) {
         return res.status(400).json({ message: "Invalid user IDs" });
       }
-
-      if (process.env.NODE_ENV === 'development') console.log(`🔮 COMPATIBILITY: Getting compatibility between users ${userId1} and ${userId2}`);
 
       // Get both users
       const user1 = await storage.getUser(userId1);
@@ -18723,9 +18694,10 @@ Questions? Just reply to this message. Welcome aboard!
         travelIntentCompatibility: false
       };
 
+      console.log(`⏱️ /api/compatibility took ${Date.now() - _compatStart}ms — users ${userId1}↔${userId2}`);
       res.json(response);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error calculating compatibility:", error);
+      console.error("Error calculating compatibility:", error);
       res.status(500).json({ message: "Failed to calculate compatibility" });
     }
   });

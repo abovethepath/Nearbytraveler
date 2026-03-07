@@ -174,13 +174,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS: simplified for development and production
-app.use((req, _res, next) => {
-  if (process.env.NODE_ENV !== "production") {
-    console.log("Origin:", req.headers.origin);
-  }
-  next();
-});
 
 // Allow Expo/React Native app: origin can be null, exp://..., or localhost
 const allowedOrigins = [
@@ -230,7 +223,6 @@ console.log(
 
 app.get("/api/quick-meetups", async (req, res) => {
   try {
-    console.log("⚡ DIRECT API: Fetching quick meetups");
     const now = new Date();
 
     const meetupsQuery = await db
@@ -279,7 +271,6 @@ app.get("/api/quick-meetups", async (req, res) => {
 
 app.get("/api/businesses", async (req, res) => {
   try {
-    console.log("🏢 DIRECT API: Fetching businesses");
     const businessesQuery = await db
       .select({
         id: users.id,
@@ -301,7 +292,6 @@ app.get("/api/businesses", async (req, res) => {
       .from(users)
       .where(eq(users.userType, "business"));
 
-    console.log("🏢 DIRECT API: Found", businessesQuery.length, "businesses");
     res.json(businessesQuery);
   } catch (error: any) {
     console.error("🔥 Error in businesses API:", error);
@@ -313,7 +303,6 @@ app.get("/api/businesses", async (req, res) => {
 
 app.get("/api/quick-deals", async (req, res) => {
   try {
-    console.log("🎯 DIRECT API: Fetching quick deals");
 
     // Import metro consolidation helpers
     const { isLAMetroCity, getMetroArea } = await import(
@@ -364,16 +353,6 @@ app.get("/api/quick-deals", async (req, res) => {
       };
     });
 
-    console.log(
-      "🎯 DIRECT API: Found",
-      dealsWithMetroInfo.length,
-      "active quick deals",
-    );
-    console.log(
-      "🌍 LA METRO QUICK DEALS:",
-      dealsWithMetroInfo.filter((d) => d.isLAMetro).length,
-      "deals in LA metro area",
-    );
     res.json(dealsWithMetroInfo);
   } catch (error: any) {
     console.error("🔥 Error in quick deals API:", error);
@@ -407,9 +386,6 @@ app.get("/api/users-by-location/:city/:userType", async (req, res) => {
         expandedCities = [searchCity];
       }
     }
-    console.log(
-      `🌍 users-by-location [CRITICAL]: searching ${expandedCities.length} cities for "${searchCity}" (type: ${userType})`,
-    );
 
     // 1) Locals by hometown (and current location as best-effort legacy signal)
     const localCityConditions = expandedCities.map((c) =>
@@ -468,9 +444,6 @@ app.get("/api/users-by-location/:city/:userType", async (req, res) => {
       merged.push({ ...rest, cityMatchType: "travel" });
     }
 
-    console.log(
-      `🌍 users-by-location [CRITICAL]: found ${merged.length} ${userType} users for "${searchCity}" (locals=${localResults.length}, travelers=${travelerResults.length})`,
-    );
     res.json(merged);
   } catch (error: any) {
     console.error("Error in users-by-location endpoint:", error);
