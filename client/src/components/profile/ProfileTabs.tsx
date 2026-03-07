@@ -759,12 +759,39 @@ export function ProfileTabs(props: ProfilePageProps) {
               <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4 lg:pb-6 min-w-0 break-words overflow-visible text-gray-700 dark:text-gray-300">
                 {/* Bio / Business Description */}
                 <div>
-                  <p className="text-gray-900 dark:text-gray-100 leading-relaxed whitespace-pre-wrap break-words text-left">
-                    {user?.userType === 'business'
-                      ? (user?.businessDescription || "No business description available yet.")
-                      : (user?.bio || "No bio available yet.")
-                    }
-                  </p>
+                  {user?.userType === 'business' ? (
+                    <p className="text-gray-900 dark:text-gray-100 leading-relaxed whitespace-pre-wrap break-words text-left">
+                      {user?.businessDescription || "No business description available yet."}
+                    </p>
+                  ) : user?.bio ? (
+                    <p className="text-gray-900 dark:text-gray-100 leading-relaxed whitespace-pre-wrap break-words text-left">
+                      {user.bio}
+                    </p>
+                  ) : isOwnProfile ? (
+                    <button
+                      onClick={() => { setIsEditMode(true); setActiveEditSection('bio'); }}
+                      className="text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 font-medium transition-colors text-left"
+                    >
+                      Tell travelers about yourself → Add Bio
+                    </button>
+                  ) : (
+                    <div className="text-gray-500 dark:text-gray-400 text-left leading-relaxed space-y-2">
+                      <p className="italic">@{user?.username} hasn't written a bio yet.</p>
+                      {((commonStats?.sharedInterests?.length ?? 0) > 0 || (commonStats?.sharedContactsCount ?? 0) > 0) && (
+                        <div>
+                          <p className="text-gray-700 dark:text-gray-300 font-medium not-italic">But you have:</p>
+                          <ul className="mt-1 space-y-0.5">
+                            {(commonStats?.sharedInterests?.length ?? 0) > 0 && (
+                              <li>• {commonStats!.sharedInterests!.length} shared interest{commonStats!.sharedInterests!.length === 1 ? '' : 's'}</li>
+                            )}
+                            {(commonStats?.sharedContactsCount ?? 0) > 0 && (
+                              <li>• {commonStats!.sharedContactsCount} mutual connection{(commonStats!.sharedContactsCount as number) === 1 ? '' : 's'}</li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {user?.userType !== 'business' && (
