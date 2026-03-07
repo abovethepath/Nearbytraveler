@@ -101,6 +101,31 @@ function QuickMeetupsPage() {
     }
   }, []);
 
+  // Direct lookup for a specific meetup when navigated via ?id= — bypasses country filter
+  const { data: directMeetup, isLoading: directMeetupLoading } = useQuery<QuickMeetup | null>({
+    queryKey: ['/api/quick-meets', selectedMeetupId, 'direct'],
+    queryFn: async () => {
+      if (!selectedMeetupId) return null;
+      const response = await fetch(`${getApiBaseUrl()}/api/quick-meets/${selectedMeetupId}`, {
+        credentials: 'include',
+        headers: actualUser?.id ? { 'x-user-id': actualUser.id.toString() } : {}
+      });
+      if (!response.ok) return null;
+      const row = await response.json();
+      // Normalize to match QuickMeetup interface
+      return {
+        ...row,
+        creator: {
+          id: row.organizerId,
+          username: row.organizerUsername || 'unknown',
+          name: row.organizerPublicName || row.organizerUsername || 'Unknown User',
+          profileImage: row.organizerProfileImage || ''
+        }
+      } as QuickMeetup;
+    },
+    enabled: !!selectedMeetupId,
+  });
+
   const { data: allMeetups = [], isLoading } = useQuery<QuickMeetup[]>({
     queryKey: ['/api/quick-meets'],
     queryFn: async () => {
@@ -134,16 +159,17 @@ function QuickMeetupsPage() {
     enabled: !!selectedMeetupId,
   });
 
-  // Auto-close dialog if selected meetup no longer exists
+  // Auto-close dialog only if BOTH the general list and direct lookup confirm meetup is gone
   useEffect(() => {
-    if (selectedMeetupId && !isLoading && allMeetups.length > 0) {
-      const meetupExists = allMeetups.some(m => m.id === selectedMeetupId);
-      if (!meetupExists) {
+    if (selectedMeetupId && !isLoading && !directMeetupLoading) {
+      const inList = allMeetups.some(m => m.id === selectedMeetupId);
+      const hasDirect = !!directMeetup;
+      if (!inList && !hasDirect && allMeetups.length > 0) {
         setSelectedMeetupId(null);
         setIsEditingMeetup(false);
       }
     }
-  }, [selectedMeetupId, allMeetups, isLoading]);
+  }, [selectedMeetupId, allMeetups, isLoading, directMeetup, directMeetupLoading]);
 
   // Restart meetup mutation
   const restartMeetupMutation = useMutation({
@@ -580,8 +606,8 @@ function QuickMeetupsPage() {
             <DialogTitle>Manage Quick Meet</DialogTitle>
           </DialogHeader>
           {selectedMeetupId && (() => {
-            // Show loading while meetups are being fetched
-            if (isLoading || allMeetups.length === 0) {
+            // Show loading while both the general list and direct lookup are in flight
+            if ((isLoading && directMeetupLoading) || (isLoading && !directMeetup)) {
               return (
                 <div className="py-6 space-y-3">
                   <SkeletonCard />
@@ -589,7 +615,8 @@ function QuickMeetupsPage() {
                 </div>
               );
             }
-            const selectedMeetup = allMeetups.find(m => m.id === selectedMeetupId);
+            // Prefer meetup from the general list; fall back to direct lookup (bypasses country filter)
+            const selectedMeetup = allMeetups.find(m => m.id === selectedMeetupId) ?? directMeetup ?? null;
             if (!selectedMeetup) return <div className="text-center py-4 text-red-600">Meetup not found or has expired</div>;
             
             const isOrganizer = selectedMeetup.organizerId === actualUser?.id;

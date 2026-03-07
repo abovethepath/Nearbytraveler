@@ -480,7 +480,7 @@ export function QuickMeetupWidget({
   return (
     <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="quick-meetup-widget">
       {/* ACTIVE MEETUPS - Show ALL active hangouts prominently at top for everyone to see */}
-      {allActiveMeetups.length > 0 && (
+      {false && allActiveMeetups.length > 0 && (
         <div className="mb-4 relative">
           <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl blur-md opacity-40 animate-pulse"></div>
           <Card className="relative bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 border-2 border-green-400 dark:border-green-500 shadow-xl">
