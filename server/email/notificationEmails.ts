@@ -73,37 +73,39 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
           <tr>
             <td style="background: linear-gradient(135deg, #f97316 0%, #3b82f6 100%); padding: 40px; text-align: center;">
-              <h1 style="color: #ffffff; margin: 0; font-size: 28px;">Welcome to Nearby Traveler!</h1>
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px;">Welcome to NearbyTraveler!</h1>
             </td>
           </tr>
           <tr>
             <td style="padding: 40px;">
-              <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}! 👋</p>
+              <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
               <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
-                Welcome to the Nearby Traveler community! You've joined as a <strong>${userTypeLabel}</strong>, 
-                and we're excited to help you make authentic connections wherever you go.
+                You just joined a community of travelers and locals who believe every city is better when strangers become friends.
               </p>
-              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 30px;">
-                Here's what you can do now:
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
+                Complete your profile, find people near you, and jump into a Quick Meetup — your next adventure starts now.
+              </p>
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 10px;">
+                Here's what to do first:
               </p>
               <ul style="font-size: 16px; color: #555555; line-height: 1.8; margin: 0 0 30px; padding-left: 20px;">
                 <li>Complete your profile to attract like-minded travelers</li>
-                <li>Browse nearby locals and travelers in your area</li>
-                <li>Join Quick Meetups happening near you</li>
+                <li>Browse locals and travelers near you</li>
+                <li>Join a Quick Meetup happening nearby</li>
                 <li>Explore city chatrooms to meet the community</li>
               </ul>
               <div style="text-align: center; margin: 30px 0;">
                 <a href="${APP_URL}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">Explore Now</a>
               </div>
               <p style="font-size: 14px; color: #888888; margin: 30px 0 0; text-align: center;">
-                Have questions? Just reply to this email - we're here to help!
+                Have questions? Just reply to this email — we're here to help!
               </p>
             </td>
           </tr>
           <tr>
             <td style="background-color: #f8f9fa; padding: 20px; text-align: center;">
               <p style="font-size: 12px; color: #888888; margin: 0;">
-                Nearby Traveler - Connect with travelers and locals worldwide<br>
+                NearbyTraveler - Connect with travelers and locals worldwide<br>
                 <a href="${APP_URL}/settings" style="color: #f97316;">Manage email preferences</a>
               </p>
             </td>
@@ -117,8 +119,8 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
 
     const result = await sendBrevoEmail({
       toEmail: user.email,
-      subject: `Welcome to Nearby Traveler, ${displayName}! 🌍`,
-      textContent: `Hi ${displayName}! Welcome to the Nearby Traveler community! You've joined as a ${userTypeLabel}. Complete your profile, browse nearby users, and start making authentic connections today. Visit ${APP_URL} to get started.`,
+      subject: `You're in! Welcome to NearbyTraveler 🌍`,
+      textContent: `Hi ${displayName}! You just joined a community of travelers and locals who believe every city is better when strangers become friends. Complete your profile, find people near you, and jump into a Quick Meetup — your next adventure starts now. Visit ${APP_URL} to get started.`,
       htmlContent,
     });
 
@@ -171,8 +173,11 @@ export async function sendConnectionRequestEmail(recipientId: number, senderName
           <tr>
             <td style="padding: 40px;">
               <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
+                <strong>${senderName}</strong> (@${senderUsername}) saw your profile and wants to connect.
+              </p>
               <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 30px;">
-                <strong>${senderName}</strong> (@${senderUsername}) wants to connect with you on Nearby Traveler!
+                Check out what you have in common and send them a message — you might end up grabbing coffee or exploring the city together.
               </p>
               <div style="text-align: center; margin: 30px 0;">
                 <a href="${APP_URL}/profile/${senderUsername}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">View Profile</a>
@@ -195,8 +200,8 @@ export async function sendConnectionRequestEmail(recipientId: number, senderName
 
     const result = await sendBrevoEmail({
       toEmail: recipient.email,
-      subject: `${senderName} wants to connect with you!`,
-      textContent: `Hi ${displayName}! ${senderName} (@${senderUsername}) wants to connect with you on Nearby Traveler. View their profile at ${APP_URL}/profile/${senderUsername}`,
+      subject: `${senderName} wants to connect with you on NearbyTraveler`,
+      textContent: `Hi ${displayName}! ${senderName} (@${senderUsername}) saw your profile and wants to connect. Check out what you have in common and send them a message — you might end up grabbing coffee or exploring the city together. View their profile at ${APP_URL}/profile/${senderUsername}`,
       htmlContent,
     });
 
@@ -878,20 +883,20 @@ export async function sendConnectionAcceptedEmail(requesterId: number, acceptorN
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
           <tr>
             <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center;">
-              <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Connection Accepted! 🎉</h1>
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px;">You're now connected! 🎉</h1>
             </td>
           </tr>
           <tr>
             <td style="padding: 40px;">
               <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
-              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 30px;">
-                Great news — <strong>${acceptorName}</strong> (@${acceptorUsername}) accepted your connection request on Nearby Traveler!
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
+                <strong>${acceptorName}</strong> (@${acceptorUsername}) accepted your connection request.
               </p>
               <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 30px;">
-                You can now send them a direct message and explore what you have in common.
+                Say hello and see what you have in common — you might end up grabbing coffee or exploring the city together.
               </p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${APP_URL}/profile/${acceptorUsername}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">View Their Profile</a>
+                <a href="${APP_URL}/messages" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">Send a Message</a>
               </div>
             </td>
           </tr>
@@ -911,8 +916,8 @@ export async function sendConnectionAcceptedEmail(requesterId: number, acceptorN
 
     const result = await sendBrevoEmail({
       toEmail: requester.email,
-      subject: `${acceptorName} accepted your connection request! 🎉`,
-      textContent: `Hi ${displayName}! ${acceptorName} (@${acceptorUsername}) accepted your connection request on Nearby Traveler. View their profile at ${APP_URL}/profile/${acceptorUsername}`,
+      subject: `You're now connected with ${acceptorName}! 🎉`,
+      textContent: `Hi ${displayName}! ${acceptorName} (@${acceptorUsername}) accepted your connection request. Say hello and see what you have in common — you might end up grabbing coffee or exploring the city together. Send them a message at ${APP_URL}/messages`,
       htmlContent,
     });
 

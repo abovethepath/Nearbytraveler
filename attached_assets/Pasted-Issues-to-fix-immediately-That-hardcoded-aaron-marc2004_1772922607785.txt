@@ -1,0 +1,128 @@
+Issues to fix immediately:
+
+That hardcoded aaron_marc2004@yahoo.com in the footer — needs to be replaced with a real support email like support@nearbytraveler.org right now before launch
+"Nearby Traveler / Nearby Local / Business Partner" in the welcome email is clunky — needs to feel warmer
+
+My suggested rewrites:
+Welcome:
+
+Subject: You're in! Welcome to NearbyTraveler 🌍
+Hi [FirstName]! You just joined a community of travelers and locals who believe every city is better when strangers become friends. Complete your profile, find people near you, and jump into a Quick Meetup — your next adventure starts now.
+
+Connection Request:
+
+Subject: [SenderName] wants to connect with you on NearbyTraveler
+Hi [FirstName]! [SenderName] saw your profile and wants to connect. Check out what you have in common and send them a message.
+
+Connection Accepted:
+
+Subject: You're now connected with [AcceptorName]! 🎉
+Hi [FirstName]! [AcceptorName] accepted your connection. Say hello and see what you have in common — you might end up grabbing coffee or exploring the city together.
+
+DM — keep as is, it's clean.
+Event reminders — keep as is, they work.
+Quick Meetup — keep as is, it's perfect.
+Password reset — keep as is, it's professional.
+Want me to write the full Replit prompt to update all of these at once?yes2:27 PMUpdate the email templates with the new 
+copy below. Also fix the hardcoded personal 
+email address in the footer — replace 
+aaron_marc2004@yahoo.com everywhere it 
+appears in email templates with 
+support@nearbytraveler.org
+
+Do not change any logic, triggers, or 
+template structure — only update the 
+text content listed below.
+
+---
+
+WELCOME EMAIL
+Subject: You're in! Welcome to NearbyTraveler 🌍
+
+Body:
+Hi [FirstName]!
+
+You just joined a community of travelers 
+and locals who believe every city is better 
+when strangers become friends.
+
+Complete your profile, find people near you, 
+and jump into a Quick Meetup — your next 
+adventure starts now.
+
+Here's what to do first:
+- Complete your profile to attract 
+  like-minded travelers
+- Browse locals and travelers near you
+- Join a Quick Meetup happening nearby
+- Explore city chatrooms to meet the community
+
+---
+
+CONNECTION REQUEST EMAIL
+Subject: [SenderName] wants to connect with you on NearbyTraveler
+
+Body:
+Hi [FirstName]!
+
+[SenderName] (@username) saw your profile 
+and wants to connect.
+
+Check out what you have in common and 
+send them a message — you might end up 
+grabbing coffee or exploring the city together.
+
+[View Profile button]
+
+---
+
+CONNECTION ACCEPTED EMAIL
+Subject: You're now connected with [AcceptorName]! 🎉
+
+Body:
+Hi [FirstName]!
+
+[AcceptorName] (@username) accepted your 
+connection request.
+
+Say hello and see what you have in common — 
+you might end up grabbing coffee or 
+exploring the city together.
+
+[Send a Message button]
+
+---
+
+DM NOTIFICATION EMAIL
+No changes — keep exactly as is.
+
+---
+
+EVENT REMINDER 24HR EMAIL
+No changes to copy — only replace 
+aaron_marc2004@yahoo.com with 
+support@nearbytraveler.org in footer.
+
+---
+
+EVENT REMINDER 1HR EMAIL
+No changes to copy — only replace 
+aaron_marc2004@yahoo.com with 
+support@nearbytraveler.org in footer.
+
+---
+
+QUICK MEETUP JOIN EMAIL
+No changes — keep exactly as is.
+
+---
+
+PASSWORD RESET EMAIL
+No changes — keep exactly as is.
+
+---
+
+After making all changes do a final 
+search across all email template files 
+for aaron_marc2004@yahoo.com and confirm 
+zero results remain.

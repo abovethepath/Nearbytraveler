@@ -320,7 +320,7 @@ Visit: https://nearbytraveler.org
         <div style="background-color: #f8fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e2e8f0;">
             <p style="color: #666; margin: 0; font-size: 14px;">
                 <a href="https://nearbytraveler.org" style="color: #3b82f6; text-decoration: none;">Visit The Nearby Traveler</a> |
-                <a href="mailto:aaron_marc2004@yahoo.com" style="color: #3b82f6; text-decoration: none;">Contact Support</a>
+                <a href="mailto:support@nearbytraveler.org" style="color: #3b82f6; text-decoration: none;">Contact Support</a>
             </p>
             <p style="color: #999; margin: 10px 0 0 0; font-size: 12px;">
                 Connecting Travelers Around The World

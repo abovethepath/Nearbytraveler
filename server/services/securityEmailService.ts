@@ -103,7 +103,7 @@ This is an automated security notification.
 
     const result = await sendBrevoDirectEmail(
       'security@nearbytraveler.org',
-      'aaron_marc2004@yahoo.com',
+      'support@nearbytraveler.org',
       'NearbyTraveler Security',
       `🚨 User Blocking Alert: @${data.blockerUsername} blocked @${data.blockedUsername}`,
       emailHtml,
@@ -181,7 +181,7 @@ Generated: ${new Date().toISOString()}
 
     const result = await sendBrevoDirectEmail(
       'security@nearbytraveler.org',
-      'aaron_marc2004@yahoo.com',
+      'support@nearbytraveler.org',
       'NearbyTraveler Security',
       `🚨 CRITICAL: @${username} has ${blockCount} blocks - Review Required`,
       emailHtml,
