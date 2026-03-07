@@ -210,8 +210,19 @@ export async function generateCityActivities(cityName: string): Promise<Generate
     // REMOVED: Don't start with generic activities - they cause poor quality results
     // Only use AI-generated city-specific activities
     const allActivities: GeneratedActivity[] = [];
+
+    const now = new Date();
+    const currentMonth = now.toLocaleString('en-US', { month: 'long' });
+    const currentSeason = (() => {
+      const m = now.getMonth() + 1;
+      if (m >= 3 && m <= 5) return 'Spring';
+      if (m >= 6 && m <= 8) return 'Summer';
+      if (m >= 9 && m <= 11) return 'Fall/Autumn';
+      return 'Winter';
+    })();
     
-    const prompt = `Generate exactly 6 activities that are UNIQUE AND FAMOUS specifically in ${cityName} - things this city is KNOWN FOR worldwide.
+    const prompt = `Generate exactly 7 activities that are UNIQUE AND FAMOUS specifically in ${cityName}.
+Today is ${currentMonth} (${currentSeason}). Include at least 1 activity that is especially relevant right now for this time of year in ${cityName} — a seasonal event, outdoor activity, festival, or trending experience locals and visitors are enjoying in ${currentSeason}.
 
 CRITICAL: Think about what ${cityName} is FAMOUS FOR. What do tourists specifically come to ${cityName} to see and do?
 
@@ -261,16 +272,17 @@ Return ONLY valid JSON:
   ]
 }`;
 
-    const systemPrompt = `You are a TRAVEL EXPERT who knows what makes each city FAMOUS and UNIQUE worldwide.
+    const systemPrompt = `You are a TRAVEL EXPERT who knows what makes each city FAMOUS and UNIQUE worldwide. Today is ${currentMonth} (${currentSeason}).
 
-YOUR TASK: Generate activities that are SPECIFIC to this city - things that tourists specifically come HERE to see.
+YOUR TASK: Generate activities that are SPECIFIC to this city - things that tourists specifically come HERE to see. Include at least one seasonal or currently trending activity for ${currentSeason}.
 
 CRITICAL RULES:
 1. Every activity must be something THIS CITY is FAMOUS for or UNIQUE to this city
 2. Include the city's most ICONIC attractions that appear in travel guides
 3. Include nearby world-famous attractions (day trips to natural wonders, etc.)
 4. Include the city's SIGNATURE entertainment/experiences
-5. NEVER generate generic activities that could be in any city (brewery tours, rooftop bars, food tours, etc.)
+5. Include 1 seasonal or currently trending experience for ${currentSeason} in this city (festivals, outdoor events, seasonal markets, etc.)
+6. NEVER generate generic activities that could be in any city (brewery tours, rooftop bars, food tours, etc.)
 
 EXAMPLES BY CITY:
 - Las Vegas: Bellagio Fountains, Fremont Street, Hoover Dam, Grand Canyon tour, casino resorts, Cirque du Soleil
