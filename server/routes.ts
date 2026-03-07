@@ -20668,6 +20668,9 @@ Questions? Just reply to this message. Welcome aboard!
           const staticCount = activities.filter((a: any) => a.source === 'static').length;
           if (staticCount === 0 && staticFromFile.length > 0) return true;
         }
+        // Generic activities (Group 3) must exist for EVERY city without exception
+        const genericCount = activities.filter((a: any) => a.source === 'generic').length;
+        if (genericCount === 0) return true;
         return false;
       })();
 

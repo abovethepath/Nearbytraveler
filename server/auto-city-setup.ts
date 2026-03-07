@@ -142,14 +142,17 @@ export async function ensureCityHasActivities(cityName: string, state?: string, 
             source: 'generic'
           });
           genericAdded++;
-        } else if ((existing[0] as any).source !== 'generic') {
-          // Update existing to have source generic for display grouping
-          await db.update(cityActivities)
-            .set({ source: 'generic' })
-            .where(and(
-              eq(cityActivities.cityName, cityName),
-              eq(cityActivities.activityName, genericActivity.name)
-            ));
+        } else {
+          // Existing activity found - ensure it's visible as generic (unhide if hidden)
+          const existingActivity = existing[0] as any;
+          if (existingActivity.source !== 'generic' || existingActivity.isHidden) {
+            await db.update(cityActivities)
+              .set({ source: 'generic', isHidden: false })
+              .where(and(
+                eq(cityActivities.cityName, cityName),
+                eq(cityActivities.activityName, genericActivity.name)
+              ));
+          }
         }
       } catch (error) {
         if (!(error as any)?.message?.includes('duplicate key')) {
