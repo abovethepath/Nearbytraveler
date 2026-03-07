@@ -82,7 +82,8 @@ export default function Home() {
   const [activeLocationFilter, setActiveLocationFilter] = useState<string>("");
   const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
   const [connectTargetUser, setConnectTargetUser] = useState<any>(null);
-  const [showAllUsers, setShowAllUsers] = useState(false);
+  const USERS_PAGE_SIZE = 8;
+  const [usersDisplayCount, setUsersDisplayCount] = useState(USERS_PAGE_SIZE);
   const [sortBy, setSortBy] = useState<'default' | 'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical' | 'available_now'>('default');
   const isDarkMode = document.documentElement.classList.contains("dark");
   
@@ -1521,8 +1522,8 @@ export default function Home() {
 
   // Get connection degrees for displayed users (LinkedIn-style 1st/2nd/3rd degree)
   const displayedUserIds = React.useMemo(() => {
-    return filteredUsers.slice(0, showAllUsers ? filteredUsers.length : 8).map(u => u.id);
-  }, [filteredUsers, showAllUsers]);
+    return filteredUsers.slice(0, usersDisplayCount).map(u => u.id);
+  }, [filteredUsers, usersDisplayCount]);
   
   const { data: connectionDegreesData } = useQuery<{ degrees: { [key: number]: { degree: number; mutualCount: number } } }>({
     queryKey: ['/api/connections/degrees/batch', effectiveUser?.id, displayedUserIds],
@@ -1981,7 +1982,7 @@ export default function Home() {
                         </div>
                       ))
                     ) : sortedAndFilteredUsers.length > 0 ? (
-                      sortedAndFilteredUsers.slice(0, showAllUsers ? sortedAndFilteredUsers.length : 12).map((otherUser) => (
+                      sortedAndFilteredUsers.slice(0, usersDisplayCount).map((otherUser) => (
                           <UserCard 
                             key={otherUser.id}
                             user={otherUser} 
@@ -2005,28 +2006,33 @@ export default function Home() {
                     )}
                   </div>
 
-                  {/* Load More Button */}
-                  {sortedAndFilteredUsers.length > 8 && (
-              <div className="flex justify-center mt-6">
-                <Button
-                  onClick={() => {
-                    setShowAllUsers(!showAllUsers);
-                    if (showAllUsers) {
-                      // Only scroll to top when collapsing (Load Less)
+                  {/* Load More / Load Less Buttons */}
+                  {sortedAndFilteredUsers.length > USERS_PAGE_SIZE && (
+              <div className="flex justify-center gap-3 mt-6">
+                {usersDisplayCount < sortedAndFilteredUsers.length && (
+                  <Button
+                    onClick={() => setUsersDisplayCount(prev => Math.min(prev + USERS_PAGE_SIZE, sortedAndFilteredUsers.length))}
+                    className="bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white dark:border-gray-500"
+                    data-testid="button-load-more-users"
+                  >
+                    Load More ({Math.min(USERS_PAGE_SIZE, sortedAndFilteredUsers.length - usersDisplayCount)} more)
+                  </Button>
+                )}
+                {usersDisplayCount > USERS_PAGE_SIZE && (
+                  <Button
+                    onClick={() => {
+                      setUsersDisplayCount(prev => Math.max(prev - USERS_PAGE_SIZE, USERS_PAGE_SIZE));
                       setTimeout(() => {
                         const discoverSection = document.querySelector('[data-testid="discover-people-section"]');
-                        if (discoverSection) {
-                          discoverSection.scrollIntoView({ behavior: 'smooth' });
-                        }
+                        if (discoverSection) discoverSection.scrollIntoView({ behavior: 'smooth' });
                       }, 100);
-                    }
-                    // When expanding (Load More), no scroll - stay in place
-                  }}
-                  className="bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white dark:border-gray-500"
-                  data-testid="button-load-more-users"
-                >
-                  {showAllUsers ? 'Load Less' : `Load More (${sortedAndFilteredUsers.length - 8} more)`}
-                </Button>
+                    }}
+                    className="bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white dark:border-gray-500"
+                    data-testid="button-load-less-users"
+                  >
+                    Load Less
+                  </Button>
+                )}
               </div>
                   )}
                 </>

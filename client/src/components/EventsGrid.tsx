@@ -293,16 +293,27 @@ const EventsGrid = ({
         })}
       </div>
 
-      {/* Show More Button */}
-      {sortedEvents.length > currentDisplayCount && (
-        <div className="flex justify-center">
-          <Button 
-            variant="outline" 
-            onClick={onShowMore || (() => setInternalDisplayCount(internalDisplayCount + 6))}
-            className="px-8 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
-          >
-            Load More ({sortedEvents.length - currentDisplayCount} remaining)
-          </Button>
+      {/* Load More / Load Less Buttons */}
+      {sortedEvents.length > limit && (
+        <div className="flex justify-center gap-3">
+          {currentDisplayCount < sortedEvents.length && (
+            <Button 
+              variant="outline" 
+              onClick={onShowMore || (() => setInternalDisplayCount(prev => Math.min(prev + 6, sortedEvents.length)))}
+              className="px-8 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+            >
+              Load More ({Math.min(6, sortedEvents.length - currentDisplayCount)} remaining)
+            </Button>
+          )}
+          {currentDisplayCount > limit && (
+            <Button
+              variant="outline"
+              onClick={() => setInternalDisplayCount(prev => Math.max(prev - 6, limit))}
+              className="px-8 border-slate-500 text-slate-400 hover:bg-slate-700 hover:text-white"
+            >
+              Load Less
+            </Button>
+          )}
         </div>
       )}
     </>

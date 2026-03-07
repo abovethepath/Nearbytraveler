@@ -475,15 +475,25 @@ export function PeopleDiscoveryWidget({
         ))}
       </div>
 
-      {/* Show More Button */}
-      {people.length > displayCount && (
-        <div className="text-center mt-6">
-          <button
-            onClick={() => setDisplayCount(prev => prev + 8)}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Show More
-          </button>
+      {/* Load More / Load Less Buttons */}
+      {people.length > 8 && (
+        <div className="text-center mt-6 flex justify-center gap-3">
+          {displayCount < people.length && (
+            <button
+              onClick={() => setDisplayCount(prev => Math.min(prev + 8, people.length))}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Load More ({Math.min(8, people.length - displayCount)} more)
+            </button>
+          )}
+          {displayCount > 8 && (
+            <button
+              onClick={() => setDisplayCount(prev => Math.max(prev - 8, 8))}
+              className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500 transition-colors"
+            >
+              Load Less
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -3058,21 +3058,22 @@ export function ProfileTabs(props: ProfilePageProps) {
                     
                     {/* Load More / Load Less buttons */}
                     {sortedUserConnections.length > 3 && (
-                      <div className="text-center pt-2">
-                        {connectionsDisplayCount < sortedUserConnections.length ? (
+                      <div className="text-center pt-2 flex justify-center gap-2">
+                        {connectionsDisplayCount < sortedUserConnections.length && (
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setConnectionsDisplayCount(sortedUserConnections.length)}
+                            onClick={() => setConnectionsDisplayCount(prev => Math.min(prev + 10, sortedUserConnections.length))}
                             className="text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-950 h-8"
                           >
-                            Load More ({sortedUserConnections.length - connectionsDisplayCount} more)
+                            Load More ({Math.min(10, sortedUserConnections.length - connectionsDisplayCount)} more)
                           </Button>
-                        ) : (
+                        )}
+                        {connectionsDisplayCount > 3 && (
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setConnectionsDisplayCount(3)}
+                            onClick={() => setConnectionsDisplayCount(prev => Math.max(prev - 10, 3))}
                             className="text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800 h-8"
                           >
                             Load Less

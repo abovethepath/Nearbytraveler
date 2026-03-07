@@ -293,10 +293,10 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
             {displayLimit > 6 && (
               <Button
                 variant="outline"
-                onClick={() => setDisplayLimit(6)}
+                onClick={() => setDisplayLimit(prev => Math.max(prev - 3, 6))}
                 className="bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white dark:border-gray-500"
               >
-                Show Less
+                Load Less
               </Button>
             )}
           </div>
