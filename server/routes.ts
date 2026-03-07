@@ -10677,6 +10677,21 @@ Questions? Just reply to this message. Welcome aboard!
               })
             );
           }
+
+          // Send email notification to the requester
+          setImmediate(async () => {
+            try {
+              const { sendConnectionAcceptedEmail } = await import('./email/notificationEmails');
+              const result = await sendConnectionAcceptedEmail(requesterId, receiverName, receiverUsername);
+              if (result.success && !result.skipped) {
+                console.log(`✅ CONNECTION ACCEPTED EMAIL: Sent to user ${requesterId}`);
+              } else if (result.skipped) {
+                console.log(`ℹ️ CONNECTION ACCEPTED EMAIL: Skipped - ${result.reason}`);
+              }
+            } catch (emailErr) {
+              console.error('❌ CONNECTION ACCEPTED EMAIL: Failed:', emailErr);
+            }
+          });
         } catch (e) {
           console.error("❌ CONNECTION ACCEPTED NOTIFICATION: Failed:", e);
         }
@@ -15923,7 +15938,23 @@ Questions? Just reply to this message. Welcome aboard!
       // Join the meetup
       const result = await storage.joinQuickMeetup(meetupId, parseInt(userId as string || '0'));
       if (process.env.NODE_ENV === 'development') console.log(`✅ USER ${userId} SUCCESSFULLY JOINED MEETUP ${meetupId}`);
-      
+
+      // Email organizer (background, non-blocking)
+      setImmediate(async () => {
+        try {
+          const joiningUserId = parseInt(userId as string || '0');
+          if (meetup.organizerId !== joiningUserId) {
+            const joiner = await storage.getUser(joiningUserId);
+            if (joiner) {
+              const { sendMeetupJoinEmail } = await import('./email/notificationEmails');
+              await sendMeetupJoinEmail(meetup.organizerId, joiner.name || joiner.username, joiner.username, meetup.title, meetup.meetingPoint);
+            }
+          }
+        } catch (err) {
+          console.error('❌ MEETUP JOIN EMAIL: Failed:', err);
+        }
+      });
+
       return res.json({ success: true, result });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error joining quick meetup:", error);
@@ -16840,23 +16871,39 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log(`✅ USER ${userId} SUCCESSFULLY JOINED QUICK MEET ${meetupId}`);
       
       // NOTIFY the organizer that someone joined their meetup
-      try {
-        const joiningUser = await storage.getUser(parseInt(userId as string || '0'));
-        if (joiningUser && meetup.organizerId !== parseInt(userId as string || '0')) {
-          const joinerName = joiningUser.name?.split(' ')[0] || joiningUser.username;
-          await storage.createNotification({
-            userId: meetup.organizerId,
-            fromUserId: parseInt(userId as string || '0'),
-            type: 'quick_meetup_joined',
-            title: `Someone joined your meetup!`,
-            message: `${joinerName} wants to join "${meetup.title}" at ${meetup.meetingPoint}`,
-            data: JSON.stringify({ meetupId: meetup.id, joinerId: parseInt(userId as string || '0') }),
-          });
-          console.log(`📣 Notified organizer ${meetup.organizerId} that user ${userId} joined their meetup`);
+      setImmediate(async () => {
+        try {
+          const joiningUserId = parseInt(userId as string || '0');
+          const joiningUser = await storage.getUser(joiningUserId);
+          if (joiningUser && meetup.organizerId !== joiningUserId) {
+            const joinerName = joiningUser.name?.split(' ')[0] || joiningUser.username;
+            await storage.createNotification({
+              userId: meetup.organizerId,
+              fromUserId: joiningUserId,
+              type: 'quick_meetup_joined',
+              title: `Someone joined your meetup!`,
+              message: `${joinerName} wants to join "${meetup.title}" at ${meetup.meetingPoint}`,
+              data: JSON.stringify({ meetupId: meetup.id, joinerId: joiningUserId }),
+            });
+            console.log(`📣 Notified organizer ${meetup.organizerId} that user ${userId} joined their meetup`);
+
+            // Send email to organizer
+            try {
+              const { sendMeetupJoinEmail } = await import('./email/notificationEmails');
+              const result = await sendMeetupJoinEmail(meetup.organizerId, joiningUser.name || joiningUser.username, joiningUser.username, meetup.title, meetup.meetingPoint);
+              if (result.success && !result.skipped) {
+                console.log(`✅ MEETUP JOIN EMAIL: Sent to organizer ${meetup.organizerId}`);
+              } else if (result.skipped) {
+                console.log(`ℹ️ MEETUP JOIN EMAIL: Skipped - ${result.reason}`);
+              }
+            } catch (emailErr) {
+              console.error('❌ MEETUP JOIN EMAIL: Failed:', emailErr);
+            }
+          }
+        } catch (notifyError) {
+          console.error('Error sending join notification:', notifyError);
         }
-      } catch (notifyError) {
-        console.error('Error sending join notification:', notifyError);
-      }
+      });
       
       return res.json({ success: true, result });
     } catch (error: any) {

@@ -1067,7 +1067,19 @@ app.use((req, res, next) => {
             console.error("⚠️ [cron] Ambassador status check failed:", error);
           }
         });
-        console.log("✅ Server started (travel status hourly, ambassador status monthly on 1st at midnight)");
+
+        // Event reminders: run every 30 minutes. Sends 24h and 1h-before emails, each only once per user per event.
+        const EVENT_REMINDER_INTERVAL = 30 * 60 * 1000;
+        setInterval(async () => {
+          try {
+            const { eventReminderService } = await import("./services/eventReminderService");
+            await eventReminderService.sendUpcomingEventReminders();
+          } catch (error) {
+            console.error("⚠️ Event reminder check failed:", error);
+          }
+        }, EVENT_REMINDER_INTERVAL);
+
+        console.log("✅ Server started (travel status hourly, ambassador status monthly on 1st at midnight, event reminders every 30 min)");
       } catch (error) {
         console.error("❌ Failed to initialize server services:", error);
         console.error(

@@ -1,7 +1,7 @@
 import { sendBrevoEmail } from "./brevoSend";
 import { db } from "../db";
-import { events, messages, users, userNotificationSettings } from "@shared/schema";
-import { and, eq, isNull, or, sql } from "drizzle-orm";
+import { events, users, userNotificationSettings } from "@shared/schema";
+import { and, eq, sql } from "drizzle-orm";
 import { Redis } from "ioredis";
 
 const APP_URL = process.env.APP_URL || "https://nearbytraveler.org";
@@ -203,7 +203,7 @@ export async function sendConnectionRequestEmail(recipientId: number, senderName
   }
 }
 
-const DM_INACTIVITY_WINDOW_MS = 20 * 60 * 1000;
+const DM_INACTIVITY_WINDOW_MS = 10 * 60 * 1000;
 const DM_THROTTLE_WINDOW_SECONDS = 30 * 60;
 
 let redisClient: Redis | null | undefined;
@@ -257,35 +257,13 @@ async function recipientIsActive(recipientId: number): Promise<boolean> {
   return Date.now() - lastSeenAt.getTime() < DM_INACTIVITY_WINDOW_MS;
 }
 
-async function isFirstDmFromNewPerson(recipientId: number, senderId: number): Promise<boolean> {
-  // "New person" means this is the first-ever DM between these two users.
-  // This function is called AFTER the message is inserted, so:
-  // - first-ever DM => count === 1
-  // - any existing convo => count > 1
-  const row = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(messages)
-    .where(
-      and(
-        isNull(messages.chatroomId),
-        or(
-          and(eq(messages.senderId, senderId), eq(messages.receiverId, recipientId)),
-          and(eq(messages.senderId, recipientId), eq(messages.receiverId, senderId)),
-        ),
-      ),
-    )
-    .then((rows) => rows[0]);
-
-  const count = Number(row?.count ?? 0);
-  return count === 1;
-}
 
 export async function sendNewMessageEmail(recipientId: number, senderId: number, messagePreview: string): Promise<EmailResult> {
   try {
     // STRICT RULES:
     // - Never send emails for chatrooms (city/event/hostel/group) — this function is DM-only.
-    // - Only send ONE email for the first-ever DM from a new person AND only if recipient is inactive (20 min).
-    // - Throttle: if multiple DMs arrive from same sender within 30 min, send only one email.
+    // - Only send if recipient has been inactive for at least 10 minutes.
+    // - Send at most 1 email per conversation (per sender) per 30-minute absence window.
 
     const prefs = await getUserEmailPreferences(recipientId);
     if (!prefs.emailNotifications || !prefs.messageNotifications) {
@@ -294,17 +272,12 @@ export async function sendNewMessageEmail(recipientId: number, senderId: number,
 
     const isActive = await recipientIsActive(recipientId);
     if (isActive) {
-      return { success: true, skipped: true, reason: "Recipient active in last 20 minutes" };
-    }
-
-    const firstDm = await isFirstDmFromNewPerson(recipientId, senderId);
-    if (!firstDm) {
-      return { success: true, skipped: true, reason: "Not first DM from a new person" };
+      return { success: true, skipped: true, reason: "Recipient active in last 10 minutes" };
     }
 
     const throttled = await shouldThrottleDmEmail(recipientId, senderId);
     if (throttled) {
-      return { success: true, skipped: true, reason: "Throttled (same sender within 30 minutes)" };
+      return { success: true, skipped: true, reason: "Already sent email for this conversation in current absence window" };
     }
 
     const [recipient, sender] = await Promise.all([
@@ -869,6 +842,156 @@ export async function sendReportConfirmationEmail(
     return { success: true, messageId: result.messageId };
   } catch (error: any) {
     console.error("❌ Failed to send report confirmation email:", error);
+    return { success: false, reason: error.message };
+  }
+}
+
+export async function sendConnectionAcceptedEmail(requesterId: number, acceptorName: string, acceptorUsername: string): Promise<EmailResult> {
+  try {
+    const prefs = await getUserEmailPreferences(requesterId);
+    if (!prefs.emailNotifications || !prefs.connectionAlerts) {
+      return { success: true, skipped: true, reason: "User disabled connection alerts" };
+    }
+
+    const requester = await db.select().from(users).where(eq(users.id, requesterId)).then(rows => rows[0]);
+    if (!requester || !requester.email) {
+      return { success: false, reason: "Requester not found or no email" };
+    }
+
+    const displayName = requester.name?.split(" ")[0] || requester.username;
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Connection Accepted! 🎉</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px;">
+              <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 30px;">
+                Great news — <strong>${acceptorName}</strong> (@${acceptorUsername}) accepted your connection request on Nearby Traveler!
+              </p>
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 30px;">
+                You can now send them a direct message and explore what you have in common.
+              </p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${APP_URL}/profile/${acceptorUsername}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">View Their Profile</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8f9fa; padding: 20px; text-align: center;">
+              <p style="font-size: 12px; color: #888888; margin: 0;">
+                <a href="${APP_URL}/settings" style="color: #10b981;">Manage email preferences</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+    const result = await sendBrevoEmail({
+      toEmail: requester.email,
+      subject: `${acceptorName} accepted your connection request! 🎉`,
+      textContent: `Hi ${displayName}! ${acceptorName} (@${acceptorUsername}) accepted your connection request on Nearby Traveler. View their profile at ${APP_URL}/profile/${acceptorUsername}`,
+      htmlContent,
+    });
+
+    return { success: true, messageId: result.messageId };
+  } catch (error: any) {
+    console.error("❌ Failed to send connection accepted email:", error);
+    return { success: false, reason: error.message };
+  }
+}
+
+export async function sendMeetupJoinEmail(organizerId: number, joinerName: string, joinerUsername: string, meetupTitle: string, meetingPoint: string): Promise<EmailResult> {
+  try {
+    const prefs = await getUserEmailPreferences(organizerId);
+    if (!prefs.emailNotifications || !prefs.eventReminders) {
+      return { success: true, skipped: true, reason: "Organizer disabled event emails" };
+    }
+
+    const organizer = await db.select().from(users).where(eq(users.id, organizerId)).then(rows => rows[0]);
+    if (!organizer || !organizer.email) {
+      return { success: false, reason: "Organizer not found or no email" };
+    }
+
+    const displayName = organizer.name?.split(" ")[0] || organizer.username;
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); padding: 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Someone Joined Your Meetup! 🤝</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px;">
+              <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
+                <strong>${joinerName}</strong> (@${joinerUsername}) just joined your Quick Meetup:
+              </p>
+              <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #111827; margin: 0 0 8px; font-size: 18px;">${meetupTitle}</h3>
+                <p style="color: #4b5563; margin: 0; font-size: 14px;">📍 ${meetingPoint}</p>
+              </div>
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 30px;">
+                Head to the app to coordinate and send them a message!
+              </p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${APP_URL}/profile/${joinerUsername}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">View Their Profile</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8f9fa; padding: 20px; text-align: center;">
+              <p style="font-size: 12px; color: #888888; margin: 0;">
+                <a href="${APP_URL}/settings" style="color: #f97316;">Manage email preferences</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+    const result = await sendBrevoEmail({
+      toEmail: organizer.email,
+      subject: `${joinerName} joined your meetup: ${meetupTitle}`,
+      textContent: `Hi ${displayName}! ${joinerName} (@${joinerUsername}) just joined your Quick Meetup "${meetupTitle}" at ${meetingPoint}. View their profile at ${APP_URL}/profile/${joinerUsername}`,
+      htmlContent,
+    });
+
+    return { success: true, messageId: result.messageId };
+  } catch (error: any) {
+    console.error("❌ Failed to send meetup join email:", error);
     return { success: false, reason: error.message };
   }
 }

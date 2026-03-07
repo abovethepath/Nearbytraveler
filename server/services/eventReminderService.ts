@@ -1,5 +1,6 @@
 import { storage } from '../storage';
 import { sendBrevoEmail } from '../email/brevoSend';
+import { Redis } from 'ioredis';
 
 interface EventReminder {
   eventId: number;
@@ -9,7 +10,36 @@ interface EventReminder {
   eventLocation: string;
   userEmail: string;
   userName: string;
-  reminderType: '36h' | '4h';
+  reminderType: '24h' | '1h';
+}
+
+let _reminderRedis: Redis | null | undefined;
+function getReminderRedis(): Redis | null {
+  if (_reminderRedis !== undefined) return _reminderRedis;
+  const url = process.env.REDIS_URL;
+  if (!url) { _reminderRedis = null; return null; }
+  try { _reminderRedis = new Redis(url); } catch { _reminderRedis = null; }
+  return _reminderRedis;
+}
+
+const reminderSentMem = new Set<string>();
+
+async function markReminderSent(eventId: number, userId: number, type: string): Promise<void> {
+  const key = `nt:event_reminder:${eventId}:${userId}:${type}`;
+  const redis = getReminderRedis();
+  if (redis) {
+    try { await redis.set(key, '1', 'EX', 26 * 60 * 60); return; } catch {}
+  }
+  reminderSentMem.add(key);
+}
+
+async function wasReminderSent(eventId: number, userId: number, type: string): Promise<boolean> {
+  const key = `nt:event_reminder:${eventId}:${userId}:${type}`;
+  const redis = getReminderRedis();
+  if (redis) {
+    try { return !!(await redis.get(key)); } catch {}
+  }
+  return reminderSentMem.has(key);
 }
 
 export class EventReminderService {
@@ -37,20 +67,18 @@ export class EventReminderService {
   }
 
   /**
-   * Get all events happening in the next 36 hours (for advance notice) and next 4 hours (for final reminder)
+   * Get all events happening in the next 25 hours (covers both 24h and 1h windows)
    */
   private async getUpcomingEvents(): Promise<any[]> {
     try {
       const now = new Date();
-      const in36Hours = new Date(now.getTime() + 36 * 60 * 60 * 1000);
+      const in25Hours = new Date(now.getTime() + 25 * 60 * 60 * 1000);
       
-      // Get all events with participants
       const events = await storage.getAllEventsWithParticipants();
       
-      // Filter events happening in the next 36 hours
       return events.filter((event: any) => {
         const eventDate = new Date(event.date);
-        return eventDate > now && eventDate <= in36Hours;
+        return eventDate > now && eventDate <= in25Hours;
       });
     } catch (error) {
       console.error('Error getting upcoming events:', error);
@@ -60,29 +88,32 @@ export class EventReminderService {
 
   /**
    * Process reminders for a specific event
+   * Sends at 24h before (±45 min window) and 1h before (±45 min window), each only once.
    */
   private async processEventReminders(event: any): Promise<void> {
     try {
       const eventDate = new Date(event.date);
       const now = new Date();
-      const timeDiff = eventDate.getTime() - now.getTime();
-      const hoursUntilEvent = timeDiff / (1000 * 60 * 60);
+      const hoursUntilEvent = (eventDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-      let reminderType: '36h' | '4h' | null = null;
+      let reminderType: '24h' | '1h' | null = null;
 
-      // Determine which reminder to send - 36 hours and 4 hours prior
-      if (hoursUntilEvent <= 36 && hoursUntilEvent > 35) {
-        reminderType = '36h';    // 36 hours ahead for planning
-      } else if (hoursUntilEvent <= 4 && hoursUntilEvent > 3) {
-        reminderType = '4h';     // 4 hours ahead for final reminder
+      // 24-hour reminder: between 23h15m and 24h45m before the event
+      if (hoursUntilEvent >= 23.25 && hoursUntilEvent <= 24.75) {
+        reminderType = '24h';
+      // 1-hour reminder: between 0h15m and 1h45m before the event
+      } else if (hoursUntilEvent >= 0.25 && hoursUntilEvent <= 1.75) {
+        reminderType = '1h';
       }
 
       if (!reminderType) return;
 
-      // Process participants from the aggregated data
       if (event.participants && Array.isArray(event.participants)) {
         for (const participant of event.participants) {
           if (participant.status === 'confirmed' && participant.userEmail) {
+            const alreadySent = await wasReminderSent(event.id, participant.userId, reminderType);
+            if (alreadySent) continue;
+
             await this.sendEventReminder({
               eventId: event.id,
               userId: participant.userId,
@@ -93,6 +124,8 @@ export class EventReminderService {
               userName: participant.userName,
               reminderType
             });
+
+            await markReminderSent(event.id, participant.userId, reminderType);
           }
         }
       }
@@ -163,10 +196,10 @@ Visit: https://nearbytraveler.org
   /**
    * Get time text for reminder type
    */
-  private getTimeText(reminderType: '36h' | '4h'): string {
+  private getTimeText(reminderType: '24h' | '1h'): string {
     switch (reminderType) {
-      case '36h': return 'in 36 hours';
-      case '4h': return 'in 4 hours';
+      case '24h': return 'in 24 hours';
+      case '1h': return 'in about 1 hour';
       default: return 'soon';
     }
   }
@@ -184,8 +217,8 @@ Visit: https://nearbytraveler.org
   }): string {
     const { userName, eventTitle, eventTimeFormatted, eventLocation, timeText, reminderType } = data;
     
-    const urgencyColor = reminderType === '4h' ? '#f59e0b' : '#3b82f6';
-    const urgencyEmoji = reminderType === '4h' ? '⏰' : '📅';
+    const urgencyColor = reminderType === '1h' ? '#f59e0b' : '#3b82f6';
+    const urgencyEmoji = reminderType === '1h' ? '⏰' : '📅';
 
     return `
 <!DOCTYPE html>
