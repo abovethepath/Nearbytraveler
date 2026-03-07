@@ -3,12 +3,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import WhatsAppChat from "@/components/WhatsAppChat";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MapPin, User, Plane, Users, Star } from "lucide-react";
+import { ArrowLeft, MapPin, User, Plane, Users, Star, X } from "lucide-react";
 import { AuthContext } from "@/App";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { ChatPageSkeleton } from "@/components/ui/chat-page-skeleton";
 import { getProfileImageUrl, SimpleAvatar } from "@/components/simple-avatar";
 import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { WhatYouHaveInCommon } from "@/components/what-you-have-in-common";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface UserDetails {
   id: number;
@@ -49,6 +52,8 @@ export default function DMChat() {
   const contextUser = authContext?.user;
   const authLoading = authContext?.authLoading;
   const [resolvedUser, setResolvedUser] = useState<any>(contextUser ?? {});
+  const [showThingsModal, setShowThingsModal] = useState(false);
+  const [showContactsModal, setShowContactsModal] = useState(false);
 
   useEffect(() => {
     if (contextUser?.id) {
@@ -230,22 +235,31 @@ export default function DMChat() {
             View Full Profile
           </Button>
 
-          {/* Stats row */}
-          <div className="flex gap-3 w-full mt-1">
-            <div className="flex-1 flex flex-col items-center gap-1 rounded-xl bg-gray-50 dark:bg-gray-800 py-3 px-2">
+          {/* Divider */}
+          <hr className="w-full border-gray-200 dark:border-gray-700" />
+
+          {/* Stats row — clickable tiles, centered */}
+          <div className="flex justify-center gap-3 w-full">
+            <button
+              onClick={() => setShowThingsModal(true)}
+              className="flex-1 flex flex-col items-center gap-1 rounded-xl bg-gray-50 dark:bg-gray-800 py-3 px-2 cursor-pointer hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors"
+            >
               <div className="flex items-center gap-1.5 text-orange-500">
                 <Star className="w-4 h-4" />
                 <span className="text-lg font-bold text-gray-900 dark:text-white">{thingsInCommonCount}</span>
               </div>
               <span className="text-xs text-gray-500 dark:text-gray-400 text-center leading-tight">Things in Common</span>
-            </div>
-            <div className="flex-1 flex flex-col items-center gap-1 rounded-xl bg-gray-50 dark:bg-gray-800 py-3 px-2">
+            </button>
+            <button
+              onClick={() => setShowContactsModal(true)}
+              className="flex-1 flex flex-col items-center gap-1 rounded-xl bg-gray-50 dark:bg-gray-800 py-3 px-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors"
+            >
               <div className="flex items-center gap-1.5 text-blue-500">
                 <Users className="w-4 h-4" />
                 <span className="text-lg font-bold text-gray-900 dark:text-white">{contactsInCommonCount}</span>
               </div>
               <span className="text-xs text-gray-500 dark:text-gray-400 text-center leading-tight">Contacts in Common</span>
-            </div>
+            </button>
           </div>
 
         </div>
@@ -255,6 +269,58 @@ export default function DMChat() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {chatComponent}
       </div>
+
+      {/* Things in Common modal */}
+      <Dialog open={showThingsModal} onOpenChange={setShowThingsModal}>
+        <DialogContent className="bg-white dark:bg-gray-900 max-w-lg w-full max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
+              <Star className="w-5 h-5 text-orange-500" />
+              Things in Common with @{displayName}
+            </DialogTitle>
+          </DialogHeader>
+          <WhatYouHaveInCommon currentUserId={user.id} otherUserId={otherUserId} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Contacts in Common modal */}
+      <Dialog open={showContactsModal} onOpenChange={setShowContactsModal}>
+        <DialogContent className="bg-white dark:bg-gray-900 max-w-sm w-full">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
+              <Users className="w-5 h-5 text-blue-500" />
+              Contacts in Common
+            </DialogTitle>
+          </DialogHeader>
+          {Array.isArray(mutualConnections) && mutualConnections.length > 0 ? (
+            <ul className="space-y-3 mt-2">
+              {(mutualConnections as any[]).map((contact: any) => (
+                <li key={contact.id} className="flex items-center gap-3">
+                  <Avatar className="w-10 h-10 shrink-0">
+                    {contact.profileImage ? (
+                      <AvatarImage src={contact.profileImage} alt={contact.username} />
+                    ) : null}
+                    <AvatarFallback className="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium">
+                      {(contact.username?.[0] ?? '?').toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">@{contact.username}</p>
+                    {contact.hometownCity && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate flex items-center gap-1">
+                        <MapPin className="w-3 h-3 shrink-0" />
+                        {contact.hometownCity}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">No contacts in common yet.</p>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
