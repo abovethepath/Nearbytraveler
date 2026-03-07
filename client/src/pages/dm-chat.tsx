@@ -181,17 +181,19 @@ export default function DMChat() {
   return (
     <div className="flex overflow-hidden">
       {/* LEFT PANEL — desktop only, same height as WhatsAppChat so layout locks perfectly */}
-      <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-hidden h-[calc(100dvh-5.5rem)]">
-        <div className="flex flex-col items-center gap-4 px-6 pt-8 pb-8">
-
-          {/* Back to messages */}
+      <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 bg-white dark:bg-gray-900 border-r-2 border-gray-300 dark:border-gray-600 overflow-hidden h-[calc(100dvh-5.5rem)]">
+        {/* Back to messages — pinned at top */}
+        <div className="px-6 pt-5 pb-2">
           <button
             onClick={() => setLocation('/messages')}
-            className="self-start flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mb-1 transition-colors"
+            className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Messages
           </button>
+        </div>
+
+        <div className="flex flex-col items-center gap-4 px-6 pt-10 pb-8">
 
           {/* Avatar */}
           {avatarUrl ? (
