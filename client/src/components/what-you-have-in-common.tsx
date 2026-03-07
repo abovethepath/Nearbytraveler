@@ -569,7 +569,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
 
   if (isLoading || !currentUser || !otherUser) {
     return (
-      <Card className="border-2 border-orange-300 bg-gradient-to-br from-orange-50 via-blue-50 to-orange-100 dark:border-orange-600 dark:from-orange-900/20 dark:via-blue-900/20 dark:to-orange-900/30 shadow-lg ring-2 ring-orange-200 dark:ring-orange-700">
+      <Card className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-lg font-bold">
             <Heart className="w-6 h-6 text-red-500 animate-pulse" />
@@ -588,7 +588,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
 
   if (!commonalities || commonalities.totalCount === 0) {
     return (
-      <Card className="border-2 border-orange-300 bg-gradient-to-br from-orange-50 via-blue-50 to-orange-100 dark:border-orange-600 dark:from-orange-900/20 dark:via-blue-900/20 dark:to-orange-900/30 shadow-lg ring-2 ring-orange-200 dark:ring-orange-700">
+      <Card className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-lg font-bold">
             <Heart className="w-6 h-6 text-red-500 animate-pulse" />
@@ -646,8 +646,23 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
     'badge totalCommon': commonStats.totalCommon,
   });
 
+  // Count exactly what is rendered as pills so the badge matches the visual output.
+  const renderedPillCount =
+    (commonalities?.sharedInterests.length ?? 0) +
+    (commonalities?.sharedActivities.length ?? 0) +
+    (commonalities?.sharedEvents.length ?? 0) +
+    (commonalities?.sharedCityActivities.length ?? 0) +
+    (commonalities?.sharedTravelIntent.length ?? 0) +
+    (commonalities?.sharedTravelDestinations.length ?? 0) +
+    (commonalities?.overlappingTravelDates.length ?? 0) +
+    (commonalities?.sharedSexualPreferences.length ?? 0) +
+    (commonalities?.sharedCountries.length ?? 0) +
+    (commonalities?.sharedLanguages.length ?? 0) +
+    allOtherCommonalities.length;
+  const renderedLabel = `${renderedPillCount} ${renderedPillCount === 1 ? "thing" : "things"} in common`;
+
   return (
-    <Card className="what-you-have-in-common-card border-2 border-orange-300 bg-gradient-to-br from-orange-50 via-blue-50 to-orange-100 dark:border-orange-600 dark:from-orange-900/20 dark:via-blue-900/20 dark:to-orange-900/30 shadow-lg hover:shadow-xl transition-all duration-300 ring-2 ring-orange-200 dark:ring-orange-700">
+    <Card className="what-you-have-in-common-card border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-lg font-bold">
@@ -659,7 +674,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
               className="inline-flex items-center justify-center rounded-full bg-blue-600 dark:bg-blue-500 text-white shadow-md border border-blue-700 dark:border-blue-600 text-sm font-bold px-4 py-2.5 min-h-[2.5rem]"
               data-testid="common-count-badge"
             >
-              {thingsInCommonLabel}
+              {renderedLabel}
             </span>
           </div>
         </div>
@@ -667,9 +682,9 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
           All your shared interests, activities, and experiences
         </p>
       </CardHeader>
-      <CardContent className="space-y-4 lg:space-y-3">
+      <CardContent className="space-y-4 lg:space-y-3 overflow-hidden">
         {/* Desktop: keep card wide/compact by placing these two sections side-by-side */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-w-0">
           {/* Shared Interests */}
           {commonalities.sharedInterests.length > 0 && (
             <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:bg-gradient-to-r dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg p-3 border border-blue-200 dark:border-blue-600">

@@ -99,6 +99,11 @@ export default function DMChat() {
     enabled: !!user?.id && !!otherUserId,
   });
 
+  const { data: otherUserTravelPlans = [] } = useQuery<any[]>({
+    queryKey: [`/api/travel-plans/user/${otherUserId}`],
+    enabled: !!otherUserId,
+  });
+
   if (!otherUserId) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
@@ -151,12 +156,19 @@ export default function DMChat() {
   // Hometown — the permanent base city
   const hometownDisplay = otherUser.hometownCity || otherUser.hometown || null;
 
-  // Travel destination — only show if currentCity differs from hometown (they are traveling)
+  // Travel destination — check active travel plan (within today's date range)
   const travelDestination = (() => {
-    const current = otherUser.currentCity?.trim();
-    const home = hometownDisplay?.trim();
-    if (!current || !home) return null;
-    return current.toLowerCase() !== home.toLowerCase() ? current : null;
+    const now = new Date();
+    const activePlan = (otherUserTravelPlans as any[]).find(plan => {
+      const start = new Date(plan.startDate);
+      const end = new Date(plan.endDate);
+      return start <= now && end >= now;
+    });
+    if (!activePlan) return null;
+    const dest = (activePlan.destination || activePlan.destinationCity || "").trim();
+    const home = hometownDisplay?.trim() || "";
+    if (!dest || dest.toLowerCase() === home.toLowerCase()) return null;
+    return dest;
   })();
 
   // Counts for the stat pills
