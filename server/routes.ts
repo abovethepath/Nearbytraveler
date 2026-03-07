@@ -6281,7 +6281,7 @@ Questions? Just reply to this message. Welcome aboard!
         }
 
         // Run compatibility + connectionDegree in parallel — neither can crash the bundle
-        const EXCLUDED_SYSTEM_USERS = [1, 2];
+        const EXCLUDED_SYSTEM_USERS = [1]; // nearbytravlr (1) only
         const getBundleConnections = async (uid: number): Promise<number[]> => {
           const result = await db.execute(sql`
             SELECT CASE WHEN requester_id = ${uid} THEN receiver_id ELSE requester_id END AS cid
@@ -10179,7 +10179,7 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       // System/admin users to exclude from degree calculations
-      const EXCLUDED_SYSTEM_USERS = [1, 2]; // nearbytravlr (1) and nearbytrav (2)
+      const EXCLUDED_SYSTEM_USERS = [1]; // nearbytravlr (1) only - user 2 is a real person and counts as mutual
 
       // Helper function to get accepted connections for a user (excluding system users)
       const getAcceptedConnections = async (uid: number): Promise<number[]> => {
@@ -10269,7 +10269,7 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       // System/admin users to exclude from degree calculations
-      const EXCLUDED_SYSTEM_USERS = [1, 2]; // nearbytravlr (1) and nearbytrav (2)
+      const EXCLUDED_SYSTEM_USERS = [1]; // nearbytravlr (1) only - user 2 is a real person and counts as mutual
 
       // Helper function to get accepted connections for a user (excluding system users)
       const getAcceptedConnections = async (uid: number): Promise<number[]> => {

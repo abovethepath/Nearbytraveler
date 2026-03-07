@@ -463,9 +463,6 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
     if (commonalities.sameAge) {
       commonalities.otherCommonalities.push("Similar age");
     }
-    if (commonalities.sameGender) {
-      commonalities.otherCommonalities.push("Same gender");
-    }
     if (commonalities.sameTravelStyle && currentUser.travelStyle && Array.isArray(currentUser.travelStyle)) {
       const commonStyles = currentUser.travelStyle.filter(style => 
         Array.isArray(otherUser.travelStyle) && otherUser.travelStyle.includes(style));

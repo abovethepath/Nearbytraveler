@@ -125,6 +125,7 @@ export function computeCommonStats(
   const blockedOtherCommonalities = new Set([
     "welcome to los angeles metro",
     "welcome to nearby traveler",
+    "same gender",
   ]);
   const otherCommonalities = dedupe(extraArrays)
     .filter((v) => !blockedOtherCommonalities.has(v.toLowerCase()))
@@ -132,28 +133,18 @@ export function computeCommonStats(
 
   const sharedContactsCount = Math.max(0, Number(connectionDegreeData?.mutualCount || 0) || 0);
 
-  const arraySum =
+  // Count only what is actually rendered as pills so the badge matches exactly.
+  // Each category below corresponds 1-to-1 with a rendered pill or group of pills.
+  // Do NOT add boolean flags or sub-arrays (chatrooms, communityTags, travelPlans, etc.)
+  // here — they are already folded into otherCommonalities above.
+  const totalCommon =
     sharedInterests.length +
     sharedActivities.length +
     sharedEvents.length +
-    (sharedLanguagesNonEnglish.length > 0 ? 1 : 0) +
+    sharedLanguagesNonEnglish.length +
     sharedCityActivities.length +
     sharedSexualPreferences.length +
-    (Array.isArray(compatibilityData?.sharedChatrooms) ? compatibilityData!.sharedChatrooms!.length : 0) +
-    (Array.isArray(compatibilityData?.sharedCommunityTags) ? compatibilityData!.sharedCommunityTags!.length : 0) +
-    (Array.isArray(compatibilityData?.sharedTravelPlans) ? compatibilityData!.sharedTravelPlans!.length : 0) +
-    (Array.isArray(compatibilityData?.sameHostel) && compatibilityData!.sameHostel!.length > 0 ? 1 : 0) +
-    (compatibilityData?.sameHometown ? 1 : 0) +
-    (compatibilityData?.sameCurrentCity ? 1 : 0) +
-    (compatibilityData?.bothHaveChildren ? 1 : 0) +
-    (compatibilityData?.bothNewToTown ? 1 : 0) +
-    (compatibilityData?.bothVeterans ? 1 : 0) +
-    (compatibilityData?.bothActiveDuty ? 1 : 0) +
     otherCommonalities.length;
-
-  // Use only arraySum (from compatibility data) so all views agree.
-  // Contacts in common are shown separately and are NOT part of "things in common".
-  const totalCommon = arraySum;
 
   return {
     sharedInterests,
