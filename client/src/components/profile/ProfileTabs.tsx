@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { MapPin, Camera, Globe, Languages, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2, ChevronsUpDown, Check, Pencil, Copy, Link } from "lucide-react";
+import { MapPin, Camera, Globe, Languages, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2, ChevronsUpDown, Check, Pencil, Copy, Link, Plane } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { calculateAge } from "@/lib/ageUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
@@ -670,13 +670,33 @@ export function ProfileTabs(props: ProfilePageProps) {
           {/* Main Content Column */}
           <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6 profile-sections-column">
 
-            {/* MOBILE (other-user): show What You Have in Common directly below hero (before About) */}
-            {/* Shows on mobile web AND native iOS app — this is the most important section */}
-            {(isMobileWeb || isNativeIOSApp()) && showWhatYouHaveInCommon && (
-              <div>
-                <WhatYouHaveInCommonInline />
-              </div>
-            )}
+            {/* "Why you might get along" — subtle highlight card, all platforms, other-user only */}
+            {showWhatYouHaveInCommon && (() => {
+              const interests = Array.isArray(commonStats?.sharedInterests) ? commonStats!.sharedInterests! : [];
+              const activities = Array.isArray(commonStats?.sharedActivities) ? commonStats!.sharedActivities! : [];
+              const mutuals = (commonStats?.sharedContactsCount as number) || 0;
+              const allShared = [...interests, ...activities];
+              if (allShared.length === 0 && mutuals === 0) return null;
+              const topNames = allShared.slice(0, 3);
+              return (
+                <div className="rounded-xl border border-green-200 dark:border-green-800/50 bg-green-50/60 dark:bg-green-950/30 px-4 py-3 flex gap-3 items-start shadow-sm">
+                  <Sparkles className="w-4 h-4 text-green-500 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-green-800 dark:text-green-300 mb-1">Why you might get along</p>
+                    <ul className="space-y-0.5 text-sm text-green-700 dark:text-green-400">
+                      {allShared.length > 0 && (
+                        <li>• {allShared.length} shared interest{allShared.length === 1 ? '' : 's'}{topNames.length > 0 && (
+                          <span className="text-green-600 dark:text-green-500"> — both enjoy {topNames.map(n => n.toLowerCase()).join(', ')}</span>
+                        )}</li>
+                      )}
+                      {mutuals > 0 && (
+                        <li>• {mutuals} mutual connection{mutuals === 1 ? '' : 's'}</li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* About Section - Always visible (tabs switch main content below) */}
             {(forceMobileWebAboutPanel || loadedTabs.has('about')) && (
@@ -2863,6 +2883,102 @@ export function ProfileTabs(props: ProfilePageProps) {
                   <CardTitle className="dark:text-white">Travel Stats</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 break-words overflow-hidden">
+                  {/* ── Clear Social Signals (top) ── */}
+                  <button
+                    type="button"
+                    className="flex items-center justify-between cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                    onClick={() => openTab('contacts')}
+                  >
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Users className="w-4 h-4 text-green-500" />
+                      Connections
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold dark:text-white">{userConnections.length}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    className="flex items-center justify-between cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                    onClick={() => openTab('countries')}
+                  >
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Globe className="w-4 h-4 text-blue-500" />
+                      Countries Visited
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold dark:text-white">{countriesVisited.length}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    className="flex items-center justify-between cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                    onClick={() => openTab('travel')}
+                  >
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Plane className="w-4 h-4 text-purple-500" />
+                      Trips Taken
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold dark:text-white">{(travelPlans || []).length}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    className="flex items-center justify-between cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                    onClick={() => openTab('references')}
+                  >
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Star className="w-4 h-4 text-orange-400" />
+                      References
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold dark:text-white">{userReferences?.length || 0}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </button>
+
+                  <div className="border-t border-gray-100 dark:border-gray-700" />
+
+                  <button 
+                    type="button"
+                    className="flex items-center justify-between cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/30 dark:border dark:border-gray-600 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      openTab('chatrooms');
+                    }}
+                    style={{ position: 'relative', zIndex: 50, pointerEvents: 'auto' }}
+                  >
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <MessageCircle className="w-4 h-4 text-orange-500" />
+                      City Chatrooms
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-orange-600 dark:text-orange-400">{userChatrooms.length}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </button>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-blue-500" />
+                      <span className="hidden sm:inline">Vouches</span>
+                      <span className="sm:hidden">Vouches {(vouches?.length || 0) === 0 ? ' • Get vouched by community' : ''}</span>
+                    </span>
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">{vouches?.length || 0}</span>
+                  </div>
+                  {(vouches?.length || 0) === 0 && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6 hidden sm:block">
+                      Get vouched by vouched community members who know you personally
+                    </div>
+                  )}
+
+                  {/* ── Engagement Points (below vouches, as requested) ── */}
+                  <div className="border-t border-gray-100 dark:border-gray-700" />
+
                   {isOwnProfile ? (
                     <HoverCard>
                       <HoverCardTrigger asChild>
@@ -2900,83 +3016,21 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
                     </div>
                   )}
-                  <button
-                    type="button"
-                    className="flex items-center justify-between cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
-                    onClick={() => setLocation('/dashboard/ambassador')}
-                  >
-                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                      <Award className="w-4 h-4 text-blue-500" />
-                      Ambassador Points
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-blue-600 dark:text-blue-400">{user?.ambassadorPoints || 0}</span>
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    className="flex items-center justify-between cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
-                    onClick={() => openTab('contacts')}
-                  >
-                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                      <Users className="w-4 h-4 text-green-500" />
-                      Connections
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold dark:text-white">{userConnections.length}</span>
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    className="flex items-center justify-between cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
-                    onClick={() => openTab('travel')}
-                  >
-                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-purple-500" />
-                      Active Travel Plans
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold dark:text-white">{(travelPlans || []).filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
-                    </div>
-                  </button>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Cumulative Trips Taken</span>
-                    <span className="font-semibold dark:text-white">{(travelPlans || []).filter(plan => plan.status === 'completed').length}</span>
-                  </div>
-                  <button 
-                    type="button"
-                    className="flex items-center justify-between cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/30 dark:border dark:border-gray-600 rounded-lg p-2 -m-2 transition-colors w-full text-left"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      openTab('chatrooms');
-                    }}
-                    style={{ position: 'relative', zIndex: 50, pointerEvents: 'auto' }}
-                  >
-                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                      <MessageCircle className="w-4 h-4 text-orange-500" />
-                      City Chatrooms
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-orange-600 dark:text-orange-400">{userChatrooms.length}</span>
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
-                    </div>
-                  </button>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                      <Shield className="w-4 h-4 text-blue-500" />
-                      <span className="hidden sm:inline">Vouches</span>
-                      <span className="sm:hidden">Vouches {(vouches?.length || 0) === 0 ? ' • Get vouched by community' : ''}</span>
-                    </span>
-                    <span className="font-semibold text-blue-600 dark:text-blue-400">{vouches?.length || 0}</span>
-                  </div>
-                  {(vouches?.length || 0) === 0 && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6 hidden sm:block">
-                      Get vouched by vouched community members who know you personally
-                    </div>
+                  {isOwnProfile && (
+                    <button
+                      type="button"
+                      className="flex items-center justify-between cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                      onClick={() => setLocation('/dashboard/ambassador')}
+                    >
+                      <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                        <Award className="w-4 h-4 text-blue-500" />
+                        Ambassador Points
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-blue-600 dark:text-blue-400">{user?.ambassadorPoints || 0}</span>
+                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                      </div>
+                    </button>
                   )}
                   {/* Chatrooms + Invite Friends: only in sidebar on iOS; on desktop they live in the profile hero card */}
                   {isOwnProfile && isNativeIOSApp() && (
