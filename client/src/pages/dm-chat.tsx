@@ -181,7 +181,7 @@ export default function DMChat() {
   return (
     <div className="flex overflow-hidden">
       {/* LEFT PANEL — desktop only, same height as WhatsAppChat so layout locks perfectly */}
-      <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 bg-white dark:bg-gray-900 border-r-2 border-gray-300 dark:border-gray-600 overflow-hidden h-[calc(100dvh-5.5rem)]">
+      <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 bg-white dark:bg-gray-900 border-r-4 border-gray-400 dark:border-gray-500 overflow-hidden h-[calc(100dvh-5.5rem)]">
         {/* Back to messages — pinned at top */}
         <div className="px-6 pt-5 pb-2">
           <button
@@ -193,7 +193,7 @@ export default function DMChat() {
           </button>
         </div>
 
-        <div className="flex flex-col items-center gap-4 px-6 pt-10 pb-8">
+        <div className="flex flex-col items-center gap-4 px-6 pt-16 pb-8 border-l-4 border-orange-400 dark:border-orange-500 ml-3">
 
           {/* Avatar */}
           {avatarUrl ? (
