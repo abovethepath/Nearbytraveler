@@ -299,8 +299,16 @@ const readSessionCache = (): User | null => {
 };
 const writeSessionCache = (u: User | null) => {
   try {
-    if (u) localStorage.setItem(SESSION_CACHE_KEY, JSON.stringify({ ...u, _ts: Date.now() }));
-    else localStorage.removeItem(SESSION_CACHE_KEY);
+    if (u) {
+      const payload = JSON.stringify({ ...u, _ts: Date.now() });
+      localStorage.setItem(SESSION_CACHE_KEY, payload);
+      localStorage.setItem('travelconnect_user', JSON.stringify(u));
+      localStorage.setItem('user', JSON.stringify(u));
+    } else {
+      localStorage.removeItem(SESSION_CACHE_KEY);
+      localStorage.removeItem('travelconnect_user');
+      localStorage.removeItem('user');
+    }
   } catch {}
 };
 
