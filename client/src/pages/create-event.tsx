@@ -127,8 +127,9 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
     }
   }, [importedFromUrl]);
 
-  // Get current user data (check both keys - auth may use 'user' or 'travelconnect_user')
-  const currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || localStorage.getItem('user') || '{}');
+  // Get current user data from auth cache (always fresh and complete)
+  const currentUser: any = (queryClient.getQueryData(['/api/auth/user']) as any) ||
+    (() => { try { return JSON.parse(localStorage.getItem('travelconnect_user') || localStorage.getItem('user') || '{}'); } catch { return {}; } })();
 
   const localTimeZone = React.useMemo(() => {
     try {
