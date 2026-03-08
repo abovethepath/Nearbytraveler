@@ -413,12 +413,12 @@ export function ProfileTabs(props: ProfilePageProps) {
   };
 
   return (
-    <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900 mt-3 md:mt-0">
+    <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900 md:mt-0">
       {/* Main Content Container - with overflow-x-hidden for rest of page */}
 
       {/* Navigation Tabs - Card Style. Desktop user: hidden (tabs in hero). iOS + business: show. */}
       {showTabsCard && (
-      <div className={`w-full max-w-full min-w-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-2 sm:mx-6 lg:mx-8 rounded-lg shadow-sm overflow-hidden ${isNativeIOSApp() ? 'mt-4' : 'mt-2 sm:mt-2 lg:mt-1'}`}>
+      <div className={`w-full max-w-full min-w-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-2 sm:mx-6 lg:mx-8 rounded-lg shadow-sm overflow-hidden ${isNativeIOSApp() ? 'mt-4' : 'mt-4 sm:mt-2 lg:mt-1'}`}>
         <div className="max-w-7xl mx-auto min-w-0">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 min-w-0">
             <div className="flex flex-nowrap gap-2 sm:gap-3 lg:gap-4 min-w-0 overflow-x-auto overflow-y-hidden scrollbar-hide pb-1 -mb-1 [&>button]:shrink-0">
@@ -668,7 +668,7 @@ export function ProfileTabs(props: ProfilePageProps) {
       <div className={`w-full max-w-full mx-auto ${isNativeIOSApp() && activeTab === 'menu' ? 'pb-2' : 'pb-20 sm:pb-4'} px-2 sm:px-4 lg:px-6 mt-2 overflow-x-hidden box-border`}>
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {/* Main Content Column */}
-          <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6 profile-sections-column">
+          <div className="w-full lg:col-span-2 space-y-4 sm:space-y-4 lg:space-y-6 profile-sections-column">
 
             {/* "Why you might get along" — subtle highlight card, all platforms, other-user only */}
             {showWhatYouHaveInCommon && (() => {

@@ -3825,7 +3825,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     connectionStatus,
   };
   return (
-    <div>
+    <div className="flex flex-col gap-4 md:gap-0">
       <ProfileHeader {...profileProps} />
       <ProfileTabs {...profileProps} />
       <ProfileDialogs {...profileProps} />
