@@ -14,7 +14,7 @@ import { InstagramShare } from "./InstagramShare";
 
 function normalizeLocationString(raw: string): string {
   const tokens = String(raw || "")
-    .split(/[,\\n]/g)
+    .split(/[,\n]/g)
     .map((t) => t.trim())
     .filter(Boolean);
 
