@@ -130,16 +130,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   // Lock page scroll so the header and input box never scroll off screen
   useEffect(() => {
     const prev = document.body.style.overflow;
-    const prevPos = document.body.style.position;
     const prevHtml = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
     document.documentElement.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = prev;
-      document.body.style.position = prevPos;
-      document.body.style.width = '';
       document.documentElement.style.overflow = prevHtml;
     };
   }, []);
