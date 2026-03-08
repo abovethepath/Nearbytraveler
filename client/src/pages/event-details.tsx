@@ -317,46 +317,47 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const isParticipant = !!currentParticipant;
   const participantStatus = currentParticipant?.status;
   const participantRole = currentParticipant?.role;
-  const isPrimaryOrganizer = viewAsGuest ? false : event.organizerId === currentUser?.id;
+  const isPrimaryOrganizer = viewAsGuest ? false : event?.organizerId === currentUser?.id;
   const isCoOrganizer = viewAsGuest ? false : participantRole === 'co-organizer';
   const isOrganizer = isPrimaryOrganizer || isCoOrganizer;
-  const organizer = users.find(u => u.id === event.organizerId);
+  const organizer = users.find(u => u.id === event?.organizerId);
   
   // Separate participants by status
   const goingParticipants = participants.filter(p => p.status === 'going');
   const interestedParticipants = participants.filter(p => p.status === 'interested');
   
   // Check if organizer is already counted in going participants
-  const organizerIsInGoingList = goingParticipants.some(p => p.userId === event.organizerId);
+  const organizerIsInGoingList = goingParticipants.some(p => p.userId === event?.organizerId);
   
   // Organizer is ALWAYS going - add 1 if they're not already in the going list
   const goingCount = goingParticipants.length + (organizerIsInGoingList ? 0 : 1);
   const interestedCount = interestedParticipants.length;
 
   const locationDisplay = useMemo(() => {
+    if (!event) return { primary: "", full: "", secondary: "" };
     const primary = normalizeLocationString(
       [
-        event.city,
-        event.state && event.state !== event.city ? event.state : null,
-        event.country,
+        event?.city,
+        event?.state && event?.state !== event?.city ? event?.state : null,
+        event?.country,
       ]
         .filter(Boolean)
         .join(", "),
     );
     const full = normalizeLocationString(
       [
-        event.venueName,
-        event.street || event.location,
-        event.city,
-        event.state && event.state !== event.city ? event.state : null,
-        event.country,
-        event.zipcode,
+        event?.venueName,
+        event?.street || event?.location,
+        event?.city,
+        event?.state && event?.state !== event?.city ? event?.state : null,
+        event?.country,
+        event?.zipcode,
       ]
         .filter(Boolean)
         .join(", "),
     );
     return {
-      primary: primary || normalizeLocationString(event.location || ""),
+      primary: primary || normalizeLocationString(event?.location || ""),
       full,
       secondary: full && full !== primary ? full : "",
     };
@@ -367,28 +368,30 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   
   // Get formatted event details for sharing
   const getShareMessage = () => {
-    const dateObj = new Date(event.date);
+    if (!event) return '';
+    const dateObj = new Date(event?.date);
     const eventDateStr = dateObj.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
     const eventTimeStr = dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-    const location = event.city ? ` in ${event.city}` : '';
-    return `Hey! Check out this event: "${event.title}"${location} on ${eventDateStr} at ${eventTimeStr}. Join me! ${getEventUrl()}`;
+    const location = event?.city ? ` in ${event?.city}` : '';
+    return `Hey! Check out this event: "${event?.title}"${location} on ${eventDateStr} at ${eventTimeStr}. Join me! ${getEventUrl()}`;
   };
 
   // Email share - opens email client with pre-filled subject and body
   const shareViaEmail = () => {
-    const subject = encodeURIComponent(`You're invited: ${event.title}`);
-    const dateObj = new Date(event.date);
+    if (!event) return;
+    const subject = encodeURIComponent(`You're invited: ${event?.title}`);
+    const dateObj = new Date(event?.date);
     const eventDate = dateObj.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
     const eventTime = `Time: ${dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}\n`;
-    const location = event.city ? `Location: ${event.city}${event.state ? `, ${event.state}` : ''}\n` : '';
+    const location = event?.city ? `Location: ${event?.city}${event?.state ? `, ${event?.state}` : ''}\n` : '';
     
     const body = encodeURIComponent(
       `Hi!\n\nI wanted to invite you to this event:\n\n` +
-      `${event.title}\n\n` +
+      `${event?.title}\n\n` +
       `Date: ${eventDate}\n` +
       eventTime +
       location +
-      `\n${event.description || ''}\n\n` +
+      `\n${event?.description || ''}\n\n` +
       `RSVP here: ${getEventUrl()}\n\n` +
       `Hope to see you there!`
     );
@@ -416,9 +419,10 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
 
   // Native share (for mobile devices)
   const shareEvent = async () => {
+    if (!event) return;
     const eventUrl = getEventUrl();
     const shareData = {
-      title: event.title,
+      title: event?.title,
       text: getShareMessage(),
       url: eventUrl,
     };
