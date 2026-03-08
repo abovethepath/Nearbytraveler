@@ -396,7 +396,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                 return (
                   <>
-                    <div className={`flex ${isMobileWeb ? "flex-row items-start" : "flex-col"} lg:flex-row lg:items-center gap-4 lg:gap-6`}>
+                    <div className={`flex ${isMobileWeb ? "flex-row items-start" : "flex-col"} lg:flex-row lg:items-center gap-4 lg:gap-6`} style={!isMobileWeb ? { alignItems: "center" } : undefined}>
                       {/* LEFT: avatar + status */}
                       <div className="flex-shrink-0">
                         <div
