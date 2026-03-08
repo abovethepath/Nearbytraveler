@@ -161,6 +161,7 @@ import About from "@/pages/about";
 import AmbassadorProgram from "@/pages/ambassador-program";
 import AmbassadorLanding from "@/pages/ambassador";
 import AmbassadorDashboard from "@/pages/ambassador-dashboard";
+import AmbassadorInfo from "@/pages/ambassador-info";
 import GettingStarted from "@/pages/getting-started";
 
 
@@ -1782,6 +1783,8 @@ function Router() {
         return <Donate />;
       case '/dashboard/ambassador':
         return <AmbassadorDashboard />;
+      case '/ambassador-info':
+        return <AmbassadorInfo />;
       case '/':
       case '/home':
         console.log('🏠 MOBILE: Rendering Home page for authenticated user');
