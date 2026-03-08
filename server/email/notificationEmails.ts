@@ -302,7 +302,7 @@ export async function sendNewMessageEmail(recipientId: number, senderId: number,
     }
 
     const displayName = recipient.name?.split(" ")[0] || recipient.username;
-    const senderName = sender.name || sender.username;
+    const senderName = sender.username || 'User';
     const truncatedMessage = messagePreview.length > 100 ? messagePreview.substring(0, 100) + "..." : messagePreview;
 
     const htmlContent = `
@@ -326,7 +326,7 @@ export async function sendNewMessageEmail(recipientId: number, senderId: number,
             <td style="padding: 40px;">
               <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
               <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
-                You have a new message from <strong>${senderName}</strong>:
+                You have a new message from <strong>@${senderName}</strong>:
               </p>
               <div style="background-color: #f3f4f6; border-left: 4px solid #10b981; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0;">
                 <p style="font-size: 15px; color: #555555; margin: 0; font-style: italic;">"${truncatedMessage}"</p>
@@ -352,8 +352,8 @@ export async function sendNewMessageEmail(recipientId: number, senderId: number,
 
     const result = await sendBrevoEmail({
       toEmail: recipient.email,
-      subject: `New message from ${senderName}`,
-      textContent: `Hi ${displayName}! You have a new message from ${senderName}: "${truncatedMessage}" View it at ${APP_URL}/messages/${senderId}`,
+      subject: `New message from @${senderName}`,
+      textContent: `Hi ${displayName}! You have a new message from @${senderName}: "${truncatedMessage}" View it at ${APP_URL}/messages/${senderId}`,
       htmlContent,
     });
 

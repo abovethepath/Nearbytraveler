@@ -217,7 +217,7 @@ class WebSocketService {
 
     // Show browser notification
     if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(`New message from ${data.from}`, {
+      new Notification(`New message from @${data.from}`, {
         body: data.preview,
         icon: '/icon-32x32.png',
         badge: '/icon-32x32.png',

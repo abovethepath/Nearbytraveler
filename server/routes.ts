@@ -11095,9 +11095,9 @@ Questions? Just reply to this message. Welcome aboard!
         // Send push notification
         try {
           const sender = await db.select({ name: users.name, username: users.username }).from(users).where(eq(users.id, senderIdNum)).then(r => r[0]);
-          const senderName = sender?.name || sender?.username || 'Someone';
+          const senderUsername = sender?.username || 'User';
           const { sendNewMessagePush } = await import('./services/pushNotificationService');
-          const pushResult = await sendNewMessagePush(recipientIdNum, senderName, preview);
+          const pushResult = await sendNewMessagePush(recipientIdNum, senderUsername, preview);
           if (pushResult.success) {
             console.log(`✅ MESSAGE PUSH: Sent to user ${receiverId}`);
           }
