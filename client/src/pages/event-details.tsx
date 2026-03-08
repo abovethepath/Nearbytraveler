@@ -584,53 +584,61 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
           {!!currentUser?.id && !isOrganizer && (
             <Card className="border border-gray-200 shadow-lg bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Join this event</CardTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Connect with other attendees and get event updates</p>
+                <CardTitle className="text-lg">{participantStatus ? 'You\'re in!' : 'Join this event'}</CardTitle>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {participantStatus ? 'Chat with attendees and get event updates' : 'Connect with other attendees and get event updates'}
+                </p>
               </CardHeader>
               <CardContent>
                 {participantStatus ? (
                   <div className="space-y-3">
-                    <Badge className="w-full justify-center py-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      ✓ {participantStatus === 'going' ? 'Going' : 'Interested'}
-                    </Badge>
-                    {participantStatus === 'interested' && (
-                      <Button
-                        className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0"
-                        onClick={() => joinEventMutation.mutate('going')}
-                        disabled={joinEventMutation.isPending}
-                        data-testid="button-change-status"
-                      >
-                        {joinEventMutation.isPending ? "..." : "Change to Going"}
-                      </Button>
+                    {participantStatus === 'going' ? (
+                      <Badge className="w-full justify-center py-2 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-base">
+                        ✓ Joined
+                      </Badge>
+                    ) : (
+                      <Badge className="w-full justify-center py-2 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-base">
+                        ✓ Interested
+                      </Badge>
                     )}
+                    <div className="flex gap-2">
+                      <Button
+                        className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600"
+                        onClick={() => setLocation(`/event-chat/${eventId}`)}
+                        data-testid="button-open-chat"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        Chat
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={shareEvent}
+                      >
+                        Share
+                      </Button>
+                    </div>
                     <button
                       onClick={() => leaveEventMutation.mutate()}
-                      className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white underline w-full"
+                      className="text-sm text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 w-full text-center"
                       disabled={leaveEventMutation.isPending}
                       data-testid="button-leave-event"
                     >
-                      {leaveEventMutation.isPending ? "Leaving..." : "No longer interested"}
+                      {leaveEventMutation.isPending ? "Leaving..." : "Leave event"}
                     </button>
-                    <Button
-                      className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600"
-                      onClick={() => setLocation(`/event-chat/${eventId}`)}
-                      data-testid="button-open-chat"
-                    >
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
-                      Go to chat
-                    </Button>
                   </div>
                 ) : (
                   <div className="flex gap-2">
                     <Button
-                      className="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0"
+                      className="flex-1 text-white border-0"
+                      style={{ background: 'linear-gradient(to right, #2563EB, #E85D2F)', border: 'none', color: 'white' }}
                       onClick={() => joinEventMutation.mutate('going')}
                       disabled={joinEventMutation.isPending}
                       data-testid="button-going"
                     >
-                      {joinEventMutation.isPending ? "..." : "Join?"}
+                      {joinEventMutation.isPending ? "..." : "Join"}
                     </Button>
                     <Button
                       variant="outline"

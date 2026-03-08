@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, Instagram, Check, Phone } from "lucide-react";
+import { Calendar, MapPin, Users, Instagram, Check, Phone, MessageCircle, X } from "lucide-react";
 import { useLocation } from "wouter";
 import type { Event } from "@shared/schema";
 import ConnectionCelebration from "./connection-celebration";
@@ -11,6 +11,7 @@ import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import ImageLoader from "./ImageLoader";
 import { InstagramShare } from "./InstagramShare";
+import { SimpleAvatar } from "./simple-avatar";
 
 function normalizeLocationString(raw: string): string {
   const tokens = String(raw || "")
@@ -38,7 +39,6 @@ function buildEventLocationDisplay(event: Event): string {
     event.country,
   ].filter(Boolean) as string[];
 
-  // De-duplicate city/state/country even if they appear inside other fields.
   return normalizeLocationString(rawParts.join(", "));
 }
 
@@ -53,7 +53,6 @@ export default function EventCard({ event, compact = false, featured = false }: 
   const { toast } = useToast();
   const { isVisible, celebrationData, triggerCelebration, hideCelebration } = useConnectionCelebration();
 
-  // Get current user
   const getCurrentUser = () => {
     const storedUser = localStorage.getItem('travelconnect_user');
     if (!storedUser) return null;
@@ -65,33 +64,34 @@ export default function EventCard({ event, compact = false, featured = false }: 
   };
   
   const currentUser = getCurrentUser();
-  
-  // Check if user is the event organizer
   const isOrganizer = currentUser?.id === event.organizerId;
   
-  // Fetch participant status for current user
-  const { data: participantStatus } = useQuery({
-    queryKey: ['/api/events', event.id, 'participants', 'user-status', currentUser?.id],
+  const { data: participantsData } = useQuery({
+    queryKey: ['/api/events', event.id, 'participants', currentUser?.id],
     queryFn: async () => {
-      if (!currentUser?.id) return null;
       const response = await fetch(`${getApiBaseUrl()}/api/events/${event.id}/participants`, {
         credentials: 'include',
       });
-      if (!response.ok) return null;
+      if (!response.ok) return { participants: [], status: null };
       const participants = await response.json();
-      const userParticipant = participants.find((p: any) => p.userId === currentUser.id);
-      return userParticipant?.status || null;
+      const userParticipant = currentUser?.id ? participants.find((p: any) => p.userId === currentUser.id) : null;
+      return { participants, status: userParticipant?.status || null };
     },
-    enabled: !!currentUser?.id && !isOrganizer,
-    staleTime: 60000, // Cache for 1 minute
+    enabled: !!event.id,
+    staleTime: 60000,
+  });
+
+  const { data: allUsers = [] } = useQuery<any[]>({
+    queryKey: ["/api/users"],
+    staleTime: 300000,
   });
   
-  // User is already attending if they have 'going' or 'interested' status
-  const isAlreadyAttending = participantStatus === 'going' || participantStatus === 'interested';
+  const participantStatus = participantsData?.status || null;
+  const participants = participantsData?.participants || [];
   const isGoing = participantStatus === 'going';
   const isInterested = participantStatus === 'interested';
+  const hasJoinedOrInterested = isGoing || isInterested;
 
-  // Join event mutation (with status: 'interested' or 'going')
   const joinEventMutation = useMutation({
     mutationFn: async ({ eventId, status }: { eventId: number; status: 'interested' | 'going' }) => {
       if (!currentUser?.id) throw new Error("User not authenticated");
@@ -102,18 +102,17 @@ export default function EventCard({ event, compact = false, featured = false }: 
     },
     onSuccess: (data, variables) => {
       toast({
-        title: variables.status === 'going' ? "Going to Event!" : "Marked as Interested!",
+        title: variables.status === 'going' ? "Joined Event!" : "Marked as Interested!",
         description: variables.status === 'going' 
-          ? "You've successfully joined this event. Get ready for an amazing experience!" 
-          : "You're interested in this event. You can change to 'Going' anytime!",
+          ? "You've joined this event. See you there!" 
+          : "You're interested in this event. You now have chat access!",
       });
       
-      // Invalidate events cache to refresh participant counts
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
       queryClient.invalidateQueries({ queryKey: ['/api/events', event.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/events', event.id, 'participants'] });
       queryClient.invalidateQueries({ queryKey: [`/api/events/${event.id}/participants`] });
       
-      // Trigger celebration animation
       triggerCelebration({
         type: 'event_join',
         userInfo: {
@@ -126,6 +125,30 @@ export default function EventCard({ event, compact = false, featured = false }: 
       toast({
         title: "Failed to Join Event",
         description: error.message || "Unable to join event at this time",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const leaveEventMutation = useMutation({
+    mutationFn: async () => {
+      if (!currentUser?.id) throw new Error("User not authenticated");
+      return await apiRequest("DELETE", `/api/events/${event.id}/leave`, { userId: currentUser.id });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Left Event",
+        description: "You've left this event.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/events', event.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/events', event.id, 'participants'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/events/${event.id}/participants`] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to leave event",
         variant: "destructive",
       });
     },
@@ -166,28 +189,18 @@ export default function EventCard({ event, compact = false, featured = false }: 
     }
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category.toLowerCase()) {
-      case "food":
-        return "border-sunset-orange";
-      case "adventure":
-        return "border-adventure-green";
-      case "culture":
-        return "border-travel-blue";
-      case "social":
-        return "border-orange-500";
-      default:
-        return "border-gray-300";
-    }
-  };
-
-  // Build full address for maps link and display
   const fullAddress = buildEventLocationDisplay(event);
   const mapsUrl = fullAddress
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`
     : null;
   const eventPhone = (event as { phone?: string }).phone;
   const telUrl = eventPhone ? `tel:${eventPhone.replace(/\s/g, "")}` : null;
+
+  const totalAttendees = participants.length;
+  const attendeeUsers = participants
+    .map((p: any) => allUsers.find((u: any) => u.id === p.userId))
+    .filter(Boolean)
+    .slice(0, 4);
 
   if (compact) {
     return (
@@ -256,7 +269,6 @@ export default function EventCard({ event, compact = false, featured = false }: 
     <>
       <article className="event-card rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 cursor-pointer text-left"
                onClick={() => setLocation(`/events/${event.id}`)}>
-        {/* Image */}
         {event.imageUrl && (
           <div className="relative">
             <img
@@ -265,12 +277,9 @@ export default function EventCard({ event, compact = false, featured = false }: 
               className="w-full h-48 object-cover object-center"
               loading="lazy"
             />
-
           </div>
         )}
 
-
-        {/* Content */}
         <div className="p-4 md:p-5 space-y-3">
           <h3 className="text-gray-900 dark:text-white text-lg font-semibold leading-snug line-clamp-2 break-normal">
             {event.title}
@@ -288,7 +297,6 @@ export default function EventCard({ event, compact = false, featured = false }: 
             </p>
           )}
 
-          {/* Meta — single-line rows (no wrapping/overlap) */}
           <div className="flex flex-col gap-2">
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <Calendar className="h-4 w-4 shrink-0 text-travel-blue" />
@@ -328,67 +336,70 @@ export default function EventCard({ event, compact = false, featured = false }: 
             )}
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <Users className="h-4 w-4 shrink-0" />
-              <span className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis">
-                {(event as any).participantCount ?? 0} attending
-              </span>
+              <div className="flex items-center gap-2">
+                {attendeeUsers.length > 0 && (
+                  <div className="flex -space-x-2">
+                    {attendeeUsers.map((u: any, i: number) => (
+                      <div key={u.id} className="w-6 h-6 rounded-full border-2 border-white dark:border-gray-800 overflow-hidden" style={{ zIndex: attendeeUsers.length - i }}>
+                        <SimpleAvatar user={u} size="xs" className="w-full h-full" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <span className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                  {totalAttendees || (event as any).participantCount || 0} attending
+                </span>
+              </div>
             </div>
           </div>
 
-
-          {/* Actions */}
           <div className="flex flex-wrap gap-2 pt-2">
-            <Button 
-              size="sm" 
-              variant="outline"
-              className="flex-shrink-0"
-              onClick={(e) => {
-                e.stopPropagation();
-                setLocation(`/event-chat/${event.id}`);
-              }}
-              data-testid="button-chat"
-            >
-              Chat
-            </Button>
-            
-            {/* Show organizer badge if user is the organizer */}
             {isOrganizer ? (
               <Badge className="flex items-center gap-1 bg-gradient-to-r from-[#2563EB] to-[#E85D2F] text-white px-3 py-1">
                 <Users className="h-3 w-3" />
                 Organizer
               </Badge>
-            ) : isGoing ? (
-              /* Show "Going" badge if already going */
-              <Badge className="flex items-center gap-1 bg-[#E85D2F] text-white px-3 py-1">
-                <Check className="h-3 w-3" />
-                Going
-              </Badge>
-            ) : isInterested ? (
-              /* Show "Interested" badge and upgrade to Going button */
+            ) : hasJoinedOrInterested ? (
               <>
-                <Badge className="flex items-center gap-1 bg-[#2563EB] text-white px-3 py-1">
-                  <Check className="h-3 w-3" />
-                  Interested
-                </Badge>
+                {isGoing && (
+                  <Badge className="flex items-center gap-1 bg-[#E85D2F] text-white px-3 py-1">
+                    <Check className="h-3 w-3" />
+                    Joined ✓
+                  </Badge>
+                )}
+                {isInterested && (
+                  <Badge className="flex items-center gap-1 bg-[#2563EB] text-white px-3 py-1">
+                    <Check className="h-3 w-3" />
+                    Interested ✓
+                  </Badge>
+                )}
                 <Button 
                   size="sm" 
-                  className="flex-1 min-w-[60px] text-white border-0"
+                  className="flex-shrink-0 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleJoinEvent('going');
+                    setLocation(`/event-chat/${event.id}`);
                   }}
-                  disabled={joinEventMutation.isPending}
-                  style={{ 
-                    background: 'linear-gradient(to right, #2563EB, #E85D2F)',
-                    border: 'none',
-                    color: 'white'
-                  }}
-                  data-testid="button-going"
+                  data-testid="button-chat"
                 >
-                  {joinEventMutation.isPending ? "..." : "I'm Going!"}
+                  <MessageCircle className="h-3 w-3 mr-1" />
+                  Chat
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="ghost"
+                  className="flex-shrink-0 text-gray-500 hover:text-red-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    leaveEventMutation.mutate();
+                  }}
+                  disabled={leaveEventMutation.isPending}
+                  data-testid="button-leave"
+                >
+                  {leaveEventMutation.isPending ? "..." : "Leave"}
                 </Button>
               </>
             ) : (
-              /* Show both buttons for users not yet attending */
               <>
                 <Button 
                   size="sm" 
@@ -405,7 +416,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                   }}
                   data-testid="button-going"
                 >
-                  {joinEventMutation.isPending ? "..." : "Join?"}
+                  {joinEventMutation.isPending ? "..." : "Join"}
                 </Button>
                 <Button 
                   size="sm" 
@@ -443,7 +454,6 @@ export default function EventCard({ event, compact = false, featured = false }: 
         </div>
       </article>
     
-      {/* Event Join Celebration Modal */}
       {celebrationData && (
         <ConnectionCelebration
           isVisible={isVisible}

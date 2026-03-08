@@ -29,7 +29,7 @@ interface SimpleAvatarProps {
     avatarColor?: string | null;
     avatarGradient?: string | null;
   } | null;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
   clickable?: boolean;
   onClick?: () => void;
@@ -39,6 +39,7 @@ interface SimpleAvatarProps {
 export function SimpleAvatar({ user, size = 'md', className = '', clickable = true, onClick, usePlaceholderPhoto = true }: SimpleAvatarProps) {
   // Size classes
   const sizeClasses = {
+    xs: 'w-6 h-6 text-xs',
     sm: 'w-8 h-8 text-sm',
     md: 'w-10 h-10 text-base', 
     lg: 'w-12 h-12 text-lg',
@@ -47,6 +48,7 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
 
   // Icon sizes for different avatar sizes
   const iconSizes = {
+    xs: 'w-3 h-3',
     sm: 'w-4 h-4',
     md: 'w-5 h-5',
     lg: 'w-6 h-6',
