@@ -503,7 +503,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       </div>
 
                       {!isMobileWeb && (
-                        <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-center max-h-48 overflow-hidden justify-center">
+                        <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-start pt-9 max-h-48 overflow-hidden justify-center">
                           {totalCommon > 0 ? (
                             <>
                               {/* Line 1: count */}
