@@ -1657,7 +1657,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     <div className="flex bg-gray-900 text-white overflow-hidden w-full h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5.5rem)] min-h-0" data-chat-page="true">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
-        <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-r border-gray-700">
+        <div className="hidden lg:flex lg:flex-col lg:w-[250px] bg-gray-800 border-r border-gray-700">
           <div className="px-4 py-3 border-b border-gray-700">
             <div className="text-lg font-semibold text-white mb-2">Members ({members.length})</div>
             <input
@@ -1741,7 +1741,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       )}
       
       {/* Main Chat Area */}
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex-1 min-w-0 overflow-hidden">
+      <div className="flex flex-col h-full lg:max-w-[800px] lg:mx-auto">
       {/* Header - compact padding on desktop; smaller title with truncation; no header avatars on desktop (sidebar shows members) */}
       <div
         className={`flex items-center flex-shrink-0 ${isMobileWeb ? 'gap-1.5' : 'gap-2'} px-2 bg-gray-800 border-b border-gray-700 min-w-0 pb-1 lg:py-1.5`}
@@ -2186,7 +2187,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   )}
 
                   <div 
-                    className={`chat-message-container relative max-w-[75%] ${isOwnMessage ? 'mr-2' : 'ml-2'}`}
+                    className={`chat-message-container relative max-w-[65%] ${isOwnMessage ? 'mr-4' : 'ml-1'}`}
                     style={{ 
                       WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.2)',
                       WebkitUserSelect: 'none',
@@ -2441,6 +2442,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           </div>
           </div>
         </div>
+      </div>
       </div>
       </div>
       
