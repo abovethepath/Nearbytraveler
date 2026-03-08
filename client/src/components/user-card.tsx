@@ -357,7 +357,6 @@ export default function UserCard({
                 data-role="user-card-bio"
                 title={user.bio || undefined}
                 style={{
-                  color: undefined,
                   fontSize: 12.5,
                   lineHeight: 1.5,
                   minHeight: "4.5em",
@@ -366,11 +365,13 @@ export default function UserCard({
                   display: "-webkit-box",
                   WebkitBoxOrient: "vertical" as any,
                   WebkitLineClamp: 3 as any,
-                  textAlign: "left",
+                  textAlign: "center",
+                  wordBreak: "break-word",
+                  whiteSpace: "normal",
                 }}
               >
                 <span
-                  style={{ color: pickTextColor("#1f2937", "#e5e7eb"), textAlign: "left" }}
+                  style={{ color: pickTextColor("#1f2937", "#e5e7eb"), textAlign: "center" }}
                 >
                   {bioText || '\u00A0'}
                 </span>
@@ -429,10 +430,16 @@ export default function UserCard({
                   color: pickTextColor("#9ca3af", "#D1D5DB"),
                   fontSize: 12.5,
                   lineHeight: 1.5,
-                  minHeight: '2.5rem',
-                  maxHeight: '2.5rem',
+                  minHeight: '3.75rem',
+                  maxHeight: '3.75rem',
                   marginTop: 6,
                   overflow: 'hidden',
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical' as any,
+                  WebkitLineClamp: 3 as any,
+                  textAlign: 'center',
+                  wordBreak: 'break-word',
+                  whiteSpace: 'normal',
                 }}
               >
                 {bioText || '\u00A0'}
@@ -502,7 +509,6 @@ export default function UserCard({
                 data-role="user-card-bio"
                 title={user.bio || undefined}
                 style={{
-                  color: undefined,
                   fontSize: 12.5,
                   lineHeight: 1.5,
                   minHeight: "4.5em",
@@ -511,11 +517,13 @@ export default function UserCard({
                   display: "-webkit-box",
                   WebkitBoxOrient: "vertical" as any,
                   WebkitLineClamp: 3 as any,
-                  textAlign: "left",
+                  textAlign: "center",
+                  wordBreak: "break-word",
+                  whiteSpace: "normal",
                 }}
               >
                 <span
-                  style={{ color: pickTextColor("#1f2937", "#e5e7eb"), textAlign: "left" }}
+                  style={{ color: pickTextColor("#1f2937", "#e5e7eb"), textAlign: "center" }}
                 >
                   {bioText || '\u00A0'}
                 </span>
@@ -576,6 +584,12 @@ export default function UserCard({
                   maxHeight: '3.75rem',
                   marginTop: 6,
                   overflow: 'hidden',
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical' as any,
+                  WebkitLineClamp: 3 as any,
+                  textAlign: 'center',
+                  wordBreak: 'break-word',
+                  whiteSpace: 'normal',
                 }}
               >
                 {bioText || '\u00A0'}
