@@ -1,0 +1,49 @@
+Now I have the full picture:
+
+Fix 1: The "Connections in Common · X" click at line 598-600 opens the contacts tab (openTab('contacts')). The user wants it to scroll to the mutual connections section instead. The ProfileTabs.tsx at line 365 already has the right pattern — scrollIntoView to data-testid="mutual-connections".
+
+Fix 2: The mutual connections sections exist at lines 778-801 (desktop, data-testid="mutual-connections-desktop") and 1073-1092 (mobile, data-testid="mutual-connections", lg:hidden). The desktop one is shown inside the hero flex row. The mobile one is lg:hidden. But these are small inline badges — they're not a full "section" listing all shared contacts. Let me check if there's a dedicated section in ProfileTabs that shows the full list:
+
+So there's no dedicated "Connections in Common" section on the profile page — just the small inline badges in the hero. The click handler at line 598-600 navigates to a "contacts" tab. Let me look at what the contacts tab shows and also check whether there was ever a proper section for mutual connections:
+
+Let me see the full contacts tab section and the "What You Have in Common" section:
+
+Now I understand the full picture. The contacts tab shows connections, but there's no dedicated "Connections in Common" section on the profile that lists mutual contacts. The hero has small avatar badges, and clicking "Connections in Common · 1" in the "What You Have in Common" box opens the contacts tab (which shows ALL connections, not just mutual ones).
+
+I need to:
+
+Change the click handler at line 598-600 to scroll to the mutual connections section instead of opening the contacts tab
+Create a proper "Connections in Common" section that lists all mutual contacts — I'll add it after the hero badges
+Let me first check where the "What You Have in Common" box is rendered and understand the structure better:
+
+Now let me find where the "Connections in Common" section should go. Currently the mutual connections are tiny avatar badges in the hero. I need a proper section. Let me check what data is available - specifically connectionDegreeData:
+
+connectionDegreeData.mutuals has the full mutual contacts data (sliced to 3 for display). Let me check how this data is fetched to see if it has all mutuals or just 3:
+
+Good — connectionDegreeData.mutuals is the full array of mutual contacts. Now let me understand the layout. The profile page structure is:
+
+Hero section (in ProfileHeaderUser) — has the small mutual badges
+ProfileTabBar — tab buttons
+"What You Have in Common" widget — in ProfileHeaderUser (the box with pills, connections in common count, etc.)
+Tab content (in ProfileTabs)
+I need to add a "Connections in Common" section BELOW the "What You Have in Common" widget and ABOVE the tab content, and give it a data-testid that the click handler can scroll to.
+
+Let me find exactly where the "What You Have in Common" widget ends to know where to add the section:
+
+Let me find where the profile page renders the hero and tabs to know where to add the section. Let me look at profile-complete.tsx to see how ProfileHeaderUser and ProfileTabs are composed:
+
+So the profile page renders <ProfileHeader> then <ProfileTabs>. ProfileHeader delegates to ProfileHeaderUser. Let me look at how ProfileHeader wraps ProfileHeaderUser:
+
+Now I have the full picture. The profile page is: <ProfileHeader> → <ProfileTabs>. Inside ProfileHeaderUser, there's the hero with avatar badges showing up to 3 mutuals. But there's no standalone "Connections in Common" section listing all mutual contacts on the page.
+
+I need to:
+
+Fix the click handler in the "What You Have in Common" box to scroll to a connections-in-common-section
+Add a proper "Connections in Common" section between the hero and tabs (in profile-complete.tsx)
+Let me check where the <ProfileHeader> and <ProfileTabs> are rendered in the page:
+
+Now I have everything. Let me make both fixes:
+
+Fix 1: Change the click handler for "Connections in Common" to scroll to the new section instead of opening the contacts tab.
+
+Fix 2: Add a "Connections in Common" section between <ProfileHeader> and <ProfileTabs> that lists all mutual contacts.
