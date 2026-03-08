@@ -56,7 +56,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
                 : "ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-white/20 text-white")))
 
   const tabWebBase = isHero
-    ? "relative px-0 py-1.5 text-[13px] leading-tight font-semibold transition-colors select-none whitespace-nowrap"
+    ? "relative px-0 py-2.5 text-[15px] leading-tight font-semibold transition-colors select-none whitespace-nowrap"
     : "relative px-0 py-2 text-sm sm:text-base font-semibold transition-colors select-none";
   // Hero background is a gradient that does not change by theme, so keep tab text dark/crisp even in dark mode.
   const tabWebInactive = isHero
