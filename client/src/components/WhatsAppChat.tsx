@@ -1795,22 +1795,54 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Main Chat Area */}
       <div className="flex-1 min-w-0 overflow-hidden h-full">
       <div className="flex flex-col h-full lg:max-w-[960px] lg:mx-auto">
-      {/* ═══ MOBILE HEADER: Two-row layout (back+logo+menu | avatar+name+status) — fixed to top ═══ */}
+      {/* ═══ MOBILE HEADER: Single-row layout (back | avatar+name+status | logo-menu) — fixed 52px height ═══ */}
       {isMobileWeb && (
-        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden z-20" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-          {/* Row 1: Back | Logo | 3-dot menu */}
-          <div className="flex items-center justify-between px-2 py-1">
+        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden z-20" style={{ paddingTop: 'env(safe-area-inset-top, 0px)', height: 'calc(env(safe-area-inset-top, 0px) + 52px)', minHeight: 'calc(env(safe-area-inset-top, 0px) + 52px)', maxHeight: 'calc(env(safe-area-inset-top, 0px) + 52px)' }}>
+          <div className="flex items-center h-[52px] px-2 gap-2">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => onBack ? onBack() : window.history.back()}
-              className="text-white hover:bg-gray-700 min-h-[44px] min-w-[44px] h-11 w-11 shrink-0 touch-target"
+              className="text-white hover:bg-gray-700 h-10 w-10 shrink-0 touch-target"
               data-testid="button-chat-back"
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <img src="/chat-logo.png" alt="Nearby Traveler" className="h-7 w-auto" />
-            <div className="flex items-center gap-0">
+
+            {chatType === 'dm' && props.otherUserProfileImage ? (
+              <Avatar className="w-8 h-8 shrink-0">
+                <AvatarImage src={props.otherUserProfileImage} />
+                <AvatarFallback className="bg-green-600 text-white text-xs">{(title || '?')[0]}</AvatarFallback>
+              </Avatar>
+            ) : (chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 ? (
+              <div className="flex -space-x-1.5 shrink-0">
+                {members.slice(0, 2).map((member) => (
+                  <Avatar key={member.id} className="w-7 h-7 border border-gray-800">
+                    <AvatarImage src={getProfileImageUrl(member) || undefined} />
+                    <AvatarFallback className="bg-green-600 text-white text-[8px]">{getFirstName(member.name, member.username)[0]}</AvatarFallback>
+                  </Avatar>
+                ))}
+                {members.length > 2 && (
+                  <div className="w-7 h-7 rounded-full bg-gray-700 border border-gray-800 flex items-center justify-center">
+                    <span className="text-[8px] text-gray-300">+{members.length - 2}</span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0">
+                <span className="text-xs text-gray-300 font-semibold">{(title || '?')[0]}</span>
+              </div>
+            )}
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[13px] font-semibold text-white truncate">{title || 'Chat'}</span>
+                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${messagesLoaded || isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
+              </div>
+              {subtitle && <p className="text-gray-400 truncate text-[10px] leading-tight">{subtitle}</p>}
+            </div>
+
+            <div className="flex items-center gap-0 shrink-0">
               {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
                 <Sheet open={showMembers} onOpenChange={setShowMembers}>
                   <SheetTrigger asChild>
@@ -1891,9 +1923,14 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               )}
               <Sheet open={moreMenuOpen} onOpenChange={setMoreMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700 h-9 w-9" onClick={() => setMoreMenuOpen(true)} data-testid="button-chat-more-mobile">
-                    <MoreVertical className="w-4 h-4" />
-                  </Button>
+                  <button
+                    type="button"
+                    className="h-9 w-9 flex items-center justify-center shrink-0 touch-target"
+                    onClick={() => setMoreMenuOpen(true)}
+                    data-testid="button-chat-more-mobile"
+                  >
+                    <img src="/new-logo.png" alt="Menu" className="h-7 w-auto" />
+                  </button>
                 </SheetTrigger>
                 <SheetContent side="bottom" className="bg-gray-900 border-t border-gray-700 text-white">
                   <SheetHeader>
@@ -1947,40 +1984,6 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   </div>
                 </SheetContent>
               </Sheet>
-            </div>
-          </div>
-          {/* Row 2: Avatar + name + status */}
-          <div className="flex items-center gap-2.5 px-3 pb-2">
-            {chatType === 'dm' && props.otherUserProfileImage ? (
-              <Avatar className="w-8 h-8 shrink-0">
-                <AvatarImage src={props.otherUserProfileImage} />
-                <AvatarFallback className="bg-green-600 text-white text-xs">{(title || '?')[0]}</AvatarFallback>
-              </Avatar>
-            ) : (chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 ? (
-              <div className="flex -space-x-1.5 shrink-0">
-                {members.slice(0, 3).map((member) => (
-                  <Avatar key={member.id} className="w-7 h-7 border border-gray-800">
-                    <AvatarImage src={getProfileImageUrl(member) || undefined} />
-                    <AvatarFallback className="bg-green-600 text-white text-[8px]">{getFirstName(member.name, member.username)[0]}</AvatarFallback>
-                  </Avatar>
-                ))}
-                {members.length > 3 && (
-                  <div className="w-7 h-7 rounded-full bg-gray-700 border border-gray-800 flex items-center justify-center">
-                    <span className="text-[8px] text-gray-300">+{members.length - 3}</span>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0">
-                <span className="text-xs text-gray-300 font-semibold">{(title || '?')[0]}</span>
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[14px] font-semibold text-white truncate">{title || 'Chat'}</span>
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${messagesLoaded || isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
-              </div>
-              {subtitle && <p className="text-gray-400 truncate text-[11px] leading-tight">{subtitle}</p>}
             </div>
           </div>
         </div>
