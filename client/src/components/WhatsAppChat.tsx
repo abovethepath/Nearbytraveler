@@ -1752,7 +1752,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm truncate text-white">
                         {getFirstName(member.name, member.username)}
-                        {member.isAdmin && <span className="ml-2 text-xs text-green-400">Admin</span>}
+                        {member.isAdmin && <span className={`ml-2 text-xs font-semibold ${chatType === 'event' || chatType === 'meetup' ? 'text-orange-400' : 'text-green-400'}`}>{chatType === 'event' || chatType === 'meetup' ? '👑 Host' : 'Admin'}</span>}
                         {member.isMuted && <span className="ml-2 text-xs text-red-400">Muted</span>}
                       </p>
                       <p className="text-xs text-gray-400 truncate">{member.locationLabel || member.location || member.hometownCity || 'Unknown'}</p>
@@ -1818,7 +1818,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                       <Users className="w-4 h-4" />
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="right" className="bg-gray-900 border-l border-gray-700 text-white w-80">
+                  <SheetContent side="right" className="members-sheet-mobile bg-gray-900 border-l border-gray-700 text-white w-80">
                     <SheetHeader>
                       <SheetTitle className="!text-lg font-semibold text-white">Members ({members.length})</SheetTitle>
                     </SheetHeader>
@@ -1863,7 +1863,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                               <div className="flex-1 min-w-0">
                                 <p className="font-semibold text-sm truncate">
                                   {getFirstName(member.name, member.username)}
-                                  {member.isAdmin && <span className="ml-2 text-xs text-green-400">Admin</span>}
+                                  {member.isAdmin && <span className={`ml-2 text-xs font-semibold ${chatType === 'event' || chatType === 'meetup' ? 'text-orange-400' : 'text-green-400'}`}>{chatType === 'event' || chatType === 'meetup' ? '👑 Host' : 'Admin'}</span>}
                                   {member.isMuted && <span className="ml-2 text-xs text-red-400">Muted</span>}
                                 </p>
                                 <p className="text-xs text-gray-400 truncate">{member.locationLabel || member.location || member.hometownCity || 'Unknown'}</p>
@@ -2065,7 +2065,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 <Users className="w-4 h-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="bg-gray-900 border-l border-gray-700 text-white w-80">
+            <SheetContent side="right" className="members-sheet-mobile bg-gray-900 border-l border-gray-700 text-white w-80">
               <SheetHeader>
                 <SheetTitle className="!text-lg font-semibold text-white">Members ({members.length})</SheetTitle>
               </SheetHeader>
@@ -2110,7 +2110,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-sm truncate">
                             {getFirstName(member.name, member.username)}
-                            {member.isAdmin && <span className="ml-2 text-xs text-green-400">Admin</span>}
+                            {member.isAdmin && <span className={`ml-2 text-xs font-semibold ${chatType === 'event' || chatType === 'meetup' ? 'text-orange-400' : 'text-green-400'}`}>{chatType === 'event' || chatType === 'meetup' ? '👑 Host' : 'Admin'}</span>}
                             {member.isMuted && <span className="ml-2 text-xs text-red-400">Muted</span>}
                           </p>
                           <p className="text-xs text-gray-400 truncate">{member.locationLabel || member.location || member.hometownCity || 'Unknown'}</p>

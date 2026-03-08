@@ -2484,6 +2484,22 @@ body.native-ios-app .native-ios-messages {
   }
 }
 
+@media (max-width: 767px) {
+  .members-sheet-mobile {
+    inset: auto !important;
+    top: 50% !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    transform: translateY(-50%) !important;
+    width: auto !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: 80vh !important;
+    border-radius: 1rem !important;
+    border: 1px solid #374151 !important;
+  }
+}
+
 /* ===== LANDING PAGE QUOTE — MUST STAY LAST =====
    Color driven entirely by CSS — no Tailwind color classes on the element.
    Light mode: dark gray. Dark mode: orange. No cascade conflicts. */
