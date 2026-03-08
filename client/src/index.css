@@ -2469,18 +2469,17 @@ body.native-ios-app .native-ios-messages {
 @media (max-width: 767px) {
   body:not([data-native-ios="true"]):not(.native-ios-app) [data-chat-page="true"] {
     position: fixed !important;
-    top: calc(env(safe-area-inset-top, 0px) + 44px) !important;
+    top: 0 !important;
     left: 0 !important;
     right: 0 !important;
-    bottom: 60px !important;
-    height: auto !important;
+    bottom: 0 !important;
+    height: 100dvh !important;
     max-height: none !important;
     overflow: hidden !important;
-    z-index: 40 !important;
+    z-index: 50 !important;
   }
-  /* Reduce input-area bottom padding — the container is already anchored above the bottom nav */
   body:not([data-native-ios="true"]):not(.native-ios-app) [data-chat-page="true"] .chat-input-area {
-    padding-bottom: 0.5rem !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
     margin-bottom: 0 !important;
   }
 }

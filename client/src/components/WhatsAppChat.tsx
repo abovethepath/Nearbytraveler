@@ -1793,11 +1793,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       )}
       
       {/* Main Chat Area */}
-      <div className="flex-1 min-w-0 overflow-hidden">
+      <div className="flex-1 min-w-0 overflow-hidden h-full">
       <div className="flex flex-col h-full lg:max-w-[960px] lg:mx-auto">
-      {/* ═══ MOBILE HEADER: Two-row layout (back+logo+menu | avatar+name+status) ═══ */}
+      {/* ═══ MOBILE HEADER: Two-row layout (back+logo+menu | avatar+name+status) — fixed to top ═══ */}
       {isMobileWeb && (
-        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden z-20" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
           {/* Row 1: Back | Logo | 3-dot menu */}
           <div className="flex items-center justify-between px-2 py-1">
             <Button
@@ -1809,7 +1809,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <span className="text-[13px] font-bold tracking-tight text-white/80 select-none">NearbyTraveler</span>
+            <img src="/chat-logo.png" alt="Nearby Traveler" className="h-7 w-auto" />
             <div className="flex items-center gap-0">
               {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
                 <Sheet open={showMembers} onOpenChange={setShowMembers}>
@@ -2221,7 +2221,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       </div>
 
       {/* Messages - Flex wrapper ensures proper spacing; min-h-0 allows flex child to shrink */}
-      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0 h-0">
         {/* Scrollable messages area */}
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pt-1 pb-2 bg-[#0b141a]" style={{
           overscrollBehavior: 'contain',
