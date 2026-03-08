@@ -1887,24 +1887,28 @@ function Router() {
         <>
           {console.log('🔍 APP ROUTING: Authentication evidence found, showing authenticated app for location:', location)}
           
-          {/* Navigation - Navbar handles both mobile and desktop, hidden in native iOS */}
-          {!isNativeIOSApp() && (
-            <Navbar />
-          )}
-          
-          {/* Main content — chat pages get a non-scrolling wrapper so header + input stay put */}
+          {/* Chat pages: navbar + chat locked inside a 100dvh flex column so nothing can scroll */}
           {isChatPage ? (
-            <div className="w-full overflow-hidden bg-background text-foreground">
-              {renderPage()}
+            <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              {!isNativeIOSApp() && <Navbar />}
+              <div style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
+                {renderPage()}
+              </div>
             </div>
           ) : (
-            <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden">
-              <main className={`w-full max-w-full overflow-x-hidden main-with-bottom-nav ${isNativeIOSApp() ? 'pt-0 pb-0' : 'pt-0 pb-24 md:pt-0 md:pb-20'}`}>
-                <div className="w-full max-w-full overflow-x-hidden">
-                  {renderPage()}
-                </div>
-              </main>
-            </div>
+            <>
+              {/* Navigation - Navbar handles both mobile and desktop, hidden in native iOS */}
+              {!isNativeIOSApp() && (
+                <Navbar />
+              )}
+              <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden">
+                <main className={`w-full max-w-full overflow-x-hidden main-with-bottom-nav ${isNativeIOSApp() ? 'pt-0 pb-0' : 'pt-0 pb-24 md:pt-0 md:pb-20'}`}>
+                  <div className="w-full max-w-full overflow-x-hidden">
+                    {renderPage()}
+                  </div>
+                </main>
+              </div>
+            </>
           )}
 
           {/* REMOVED: Instant Messaging Components - obsolete functionality */}

@@ -1695,7 +1695,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   };
 
   return (
-    <div className="flex bg-gray-900 text-white overflow-hidden w-full h-[calc(100svh-10rem)] md:h-[calc(100dvh-5.5rem)] min-h-0" data-chat-page="true">
+    <div className="flex bg-gray-900 text-white overflow-hidden w-full h-full min-h-0" data-chat-page="true">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[250px] bg-gray-800 border-r border-gray-700">
@@ -1787,7 +1787,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Header - compact padding on desktop; smaller title with truncation; no header avatars on desktop (sidebar shows members) */}
       <div
         className={`flex items-center flex-shrink-0 ${isMobileWeb ? 'gap-1.5' : 'gap-2'} px-2 bg-gray-800 border-b border-gray-700 min-w-0 pb-1 lg:py-1.5`}
-        style={isMobile ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 3.5rem)' } : undefined}
+        style={isMobile ? { paddingTop: 'env(safe-area-inset-top, 0px)' } : undefined}
       >
         <Button
           variant="ghost"
