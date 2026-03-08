@@ -696,7 +696,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                 {(showAllSharedInterests ? commonalities.sharedInterests : commonalities.sharedInterests.slice(0, 5)).map((interest, index) => (
                   <div
                     key={`shared-interest-${interest}-${index}`}
-                    className="common-shared-interest-pill inline-flex items-center justify-center h-8 sm:h-9 lg:h-6 rounded-full px-3 sm:px-4 lg:px-2.5 text-xs sm:text-sm lg:text-xs font-medium leading-none whitespace-nowrap bg-transparent text-blue-700 border border-blue-400 dark:bg-blue-900/50 dark:text-gray-100 dark:border-blue-700"
+                    className="common-shared-interest-pill inline-flex items-center justify-center py-1.5 sm:py-2 lg:py-1 rounded-full px-3 sm:px-4 lg:px-2.5 text-xs sm:text-sm lg:text-xs font-medium leading-tight bg-transparent text-blue-700 border border-blue-400 dark:bg-blue-900/50 dark:text-gray-100 dark:border-blue-700 max-w-full text-center break-words"
                   >
                     {interest}
                   </div>
@@ -803,7 +803,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </h5>
             <div className="flex flex-wrap gap-1.5">
               {commonalities.sharedActivities.map((activity, index) => (
-                <div key={`shared-activity-${activity}-${index}`} className="inline-flex items-center justify-center h-8 sm:h-9 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-none whitespace-nowrap bg-transparent text-orange-700 border border-orange-500 dark:bg-orange-500 dark:text-white dark:border-0 appearance-none select-none">
+                <div key={`shared-activity-${activity}-${index}`} className="inline-flex items-center justify-center py-1.5 sm:py-2 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-tight bg-transparent text-orange-700 border border-orange-500 dark:bg-orange-500 dark:text-white dark:border-0 appearance-none select-none max-w-full text-center break-words">
                   {activity}
                 </div>
               ))}
@@ -848,7 +848,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </h5>
             <div className="flex flex-wrap gap-1.5">
               {commonalities.sharedEvents.map((event, index) => (
-                <div key={`shared-event-${event}-${index}`} className="inline-flex items-center justify-center h-8 sm:h-9 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-none whitespace-nowrap bg-transparent text-purple-800 border border-purple-500 dark:bg-purple-500 dark:text-white dark:border-0 appearance-none select-none">
+                <div key={`shared-event-${event}-${index}`} className="inline-flex items-center justify-center py-1.5 sm:py-2 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-tight bg-transparent text-purple-800 border border-purple-500 dark:bg-purple-500 dark:text-white dark:border-0 appearance-none select-none max-w-full text-center break-words">
                   {event}
                 </div>
               ))}

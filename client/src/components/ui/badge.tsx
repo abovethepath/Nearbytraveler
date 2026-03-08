@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 whitespace-nowrap overflow-visible max-w-none",
+  "inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 break-words max-w-full",
   {
     variants: {
       variant: {
@@ -69,11 +69,11 @@ function Badge({ className, variant, ...props }: BadgeProps) {
   // FORCE CORRECT COLORS - COMPACT SIZE (only for non-pill badges)
   if (isInterest) {
     // Light mode: outlined pill; Dark mode: filled (unchanged)
-    enforcedClassName = 'text-xs bg-transparent text-blue-700 border-blue-500 dark:bg-blue-500 dark:text-white dark:border-blue-500 px-3 py-1 whitespace-nowrap overflow-visible max-w-none';
+    enforcedClassName = 'text-xs bg-transparent text-blue-700 border-blue-500 dark:bg-blue-500 dark:text-white dark:border-blue-500 px-3 py-1 break-words max-w-full';
   } else if (isActivity) {
-    enforcedClassName = 'text-xs bg-transparent text-orange-700 border-orange-500 dark:bg-orange-500 dark:text-white dark:border-orange-500 px-3 py-1 whitespace-nowrap overflow-visible max-w-none';
+    enforcedClassName = 'text-xs bg-transparent text-orange-700 border-orange-500 dark:bg-orange-500 dark:text-white dark:border-orange-500 px-3 py-1 break-words max-w-full';
   } else if (isEvent) {
-    enforcedClassName = 'text-xs bg-transparent text-purple-800 border-purple-500 dark:bg-purple-500 dark:text-white dark:border-purple-500 px-3 py-1 whitespace-nowrap overflow-visible max-w-none';
+    enforcedClassName = 'text-xs bg-transparent text-purple-800 border-purple-500 dark:bg-purple-500 dark:text-white dark:border-purple-500 px-3 py-1 break-words max-w-full';
   }
   
   // For non-pill badges, apply badgeVariants + enforcement
