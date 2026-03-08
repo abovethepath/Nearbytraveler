@@ -390,39 +390,53 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     <Card className="overflow-hidden shadow-lg rounded-2xl bg-white border border-gray-200 dark:border-0 dark:bg-gray-800 relative z-20">
       <div className="p-4">
         {myStatus ? (
-          <div className="mb-4 rounded-xl border-2 border-green-400 dark:border-green-500 overflow-hidden">
+          <div className="mb-4 rounded-xl border-2 border-green-700 dark:border-green-600 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-green-500 to-emerald-500 px-3 py-2 flex items-center gap-2 cursor-pointer"
+              className="px-3 py-2 cursor-pointer"
+              style={{ background: 'linear-gradient(to right, #166534, #14532d)' }}
               onClick={() => setLiveExpanded(!liveExpanded)}
             >
-              <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse shadow-lg shadow-white/50 flex-shrink-0" />
-              <span className="text-xs font-bold text-white flex-shrink-0">You're Live</span>
-              {!liveExpanded && (
-                <span className="text-[11px] text-white/90 truncate flex-1 min-w-0">
-                  · {(myStatus.activities || []).map((a: string) => {
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50 flex-shrink-0" />
+                <span className="text-xs font-bold text-white flex-shrink-0">You're Live</span>
+                <span className="text-[10px] font-semibold text-white/80 bg-white/20 px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-1">
+                  <Clock className="w-2.5 h-2.5" />
+                  {getTimeRemaining(myStatus.expiresAt)}
+                </span>
+                {!liveExpanded && (() => {
+                  const activities = (myStatus.activities || []).map((a: string) => {
                     const opt = ACTIVITY_OPTIONS.find(o => o.value === a);
                     return opt?.label || a;
-                  }).join(", ")}
-                </span>
-              )}
-              <span className="text-[10px] font-semibold text-white/80 bg-white/20 px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-1">
-                <Clock className="w-2.5 h-2.5" />
-                {getTimeRemaining(myStatus.expiresAt)}
-              </span>
-              <button
-                type="button"
-                className="h-5 w-5 p-0 flex items-center justify-center text-white/70 hover:text-white rounded flex-shrink-0"
-                onClick={(e) => { e.stopPropagation(); setLiveExpanded(!liveExpanded); }}
-              >
-                {liveExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-              </button>
-              <button
-                type="button"
-                className="h-5 w-5 p-0 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 rounded flex-shrink-0"
-                onClick={(e) => { e.stopPropagation(); clearAvailableMutation.mutate(); }}
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
+                  });
+                  const maxShow = 3;
+                  const shown = activities.slice(0, maxShow);
+                  const remaining = activities.length - maxShow;
+                  return (
+                    <div className="flex items-center gap-1 flex-1 min-w-0 overflow-hidden">
+                      {shown.map((label: string, i: number) => (
+                        <span key={i} className="text-[10px] font-medium text-white bg-white/20 px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">{label}</span>
+                      ))}
+                      {remaining > 0 && (
+                        <span className="text-[10px] text-white/70 whitespace-nowrap flex-shrink-0">+{remaining}</span>
+                      )}
+                    </div>
+                  );
+                })()}
+                <button
+                  type="button"
+                  className="h-5 w-5 p-0 flex items-center justify-center text-white/70 hover:text-white rounded flex-shrink-0"
+                  onClick={(e) => { e.stopPropagation(); setLiveExpanded(!liveExpanded); }}
+                >
+                  {liveExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                </button>
+                <button
+                  type="button"
+                  className="h-5 w-5 p-0 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 rounded flex-shrink-0"
+                  onClick={(e) => { e.stopPropagation(); clearAvailableMutation.mutate(); }}
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
             {liveExpanded && (
               <div className="px-4 py-3 bg-green-50 dark:bg-green-900/20">
