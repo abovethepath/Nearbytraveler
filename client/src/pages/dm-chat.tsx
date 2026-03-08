@@ -272,7 +272,7 @@ export default function DMChat() {
                 <Users className="w-4 h-4" />
                 <span className="text-lg font-bold text-gray-900 dark:text-white">{contactsInCommonCount}</span>
               </div>
-              <span className="text-xs text-gray-500 dark:text-gray-400 text-center leading-tight">Connections in Common</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 text-center leading-tight">{contactsInCommonCount === 1 ? 'Connection' : 'Connections'} in Common</span>
             </button>
           </div>
 

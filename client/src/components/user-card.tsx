@@ -405,7 +405,7 @@ export default function UserCard({
                       textAlign: 'center',
                     }}
                   >
-                    {contactsInCommon} contacts in common
+                    {contactsInCommon} {contactsInCommon === 1 ? 'contact' : 'contacts'} in common
                   </span>
                 </div>
               </div>
@@ -468,7 +468,7 @@ export default function UserCard({
                     <span className="inline-flex items-center justify-center rounded-full px-3 py-1 text-[13px] font-bold border"
                       style={{ color: pickTextColor("#FF6B35", "#3b82f6"), backgroundColor: 'rgba(255,107,53,0.10)', borderColor: 'rgba(255,107,53,0.25)' }}
                     >
-                      {contactsInCommon} contacts in common
+                      {contactsInCommon} {contactsInCommon === 1 ? 'contact' : 'contacts'} in common
                     </span>
                   </div>
                 </>
