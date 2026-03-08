@@ -147,29 +147,29 @@ export default function BusinessLanding() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Tour Operators</h3>
-              <p className="text-gray-700 text-sm">Walking tours, food tours, cultural experiences</p>
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Tour Operators</h3>
+              <p className="text-gray-700 dark:text-gray-200 text-sm">Walking tours, food tours, cultural experiences</p>
             </div>
-            <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Activity Providers</h3>
-              <p className="text-gray-700 text-sm">Hiking, biking, water sports, adventure activities</p>
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Activity Providers</h3>
+              <p className="text-gray-700 dark:text-gray-200 text-sm">Hiking, biking, water sports, adventure activities</p>
             </div>
-            <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Restaurants & Cafes</h3>
-              <p className="text-gray-700 text-sm">Hidden gems seeking authentic food lovers</p>
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Restaurants & Cafes</h3>
+              <p className="text-gray-700 dark:text-gray-200 text-sm">Hidden gems seeking authentic food lovers</p>
             </div>
-            <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Cultural Experiences</h3>
-              <p className="text-gray-700 text-sm">Art classes, cooking lessons, craft workshops</p>
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Cultural Experiences</h3>
+              <p className="text-gray-700 dark:text-gray-200 text-sm">Art classes, cooking lessons, craft workshops</p>
             </div>
-            <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Transportation Services</h3>
-              <p className="text-gray-700 text-sm">Local guides, drivers, unique transport</p>
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Transportation Services</h3>
+              <p className="text-gray-700 dark:text-gray-200 text-sm">Local guides, drivers, unique transport</p>
             </div>
-            <div className="bg-white !bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Local Guides</h3>
-              <p className="text-gray-700 text-sm">Photography tours, city experts, neighborhood specialists</p>
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Local Guides</h3>
+              <p className="text-gray-700 dark:text-gray-200 text-sm">Photography tours, city experts, neighborhood specialists</p>
             </div>
           </div>
         </div>
