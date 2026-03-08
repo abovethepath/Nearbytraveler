@@ -355,6 +355,24 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     return `${mins}m left`;
   };
 
+  const getActivityPillClass = (activity: string) => {
+    const map: Record<string, string> = {
+      drinks:     "bg-orange-900/60 text-orange-300 border-orange-700/50",
+      coffee:     "bg-amber-900/60 text-amber-300 border-amber-700/50",
+      food:       "bg-yellow-900/60 text-yellow-300 border-yellow-700/50",
+      hike:       "bg-green-900/60 text-green-300 border-green-700/50",
+      outdoor:    "bg-green-900/60 text-green-300 border-green-700/50",
+      bike:       "bg-sky-900/60 text-sky-300 border-sky-700/50",
+      beach:      "bg-cyan-900/60 text-cyan-300 border-cyan-700/50",
+      music:      "bg-purple-900/60 text-purple-300 border-purple-700/50",
+      nightlife:  "bg-pink-900/60 text-pink-300 border-pink-700/50",
+      sports:     "bg-red-900/60 text-red-300 border-red-700/50",
+      sightseeing:"bg-indigo-900/60 text-indigo-300 border-indigo-700/50",
+      cultural:   "bg-indigo-900/60 text-indigo-300 border-indigo-700/50",
+    };
+    return map[activity.toLowerCase()] ?? "bg-gray-800 text-gray-300 border-gray-700";
+  };
+
   const otherAvailableUsers = (Array.isArray(availableUsers) ? availableUsers : []).filter(
     (u: any) => u.userId !== currentUser?.id
   );
@@ -575,8 +593,27 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
 
             <div className={`space-y-2 ${showAllUsers ? 'max-h-80 overflow-y-auto pr-1' : ''}`}>
               {visibleUsers.map((entry: any) => (
-                <div key={entry.id} className="p-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-700/50 transition-colors">
-                  <div className="flex items-center gap-3">
+                <div
+                  key={entry.id}
+                  className="rounded-xl border border-orange-500/35 bg-gradient-to-br from-gray-900 via-amber-950/25 to-gray-900 shadow-[0_0_14px_rgba(251,146,60,0.12)] overflow-hidden"
+                >
+                  {/* Top bar: Live Now badge + countdown timer */}
+                  <div className="flex items-center justify-between px-3 pt-2.5 pb-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                      </span>
+                      <span className="text-[10px] font-bold text-green-400 uppercase tracking-wider">Live Now</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-orange-400 flex-shrink-0" />
+                      <span className="text-xs font-bold text-orange-400">{getTimeRemaining(entry.expiresAt)}</span>
+                    </div>
+                  </div>
+
+                  {/* User row: avatar + name + activities */}
+                  <div className="flex items-center gap-3 px-3 pb-2">
                     <button onClick={() => handleCardClick(entry.user.id)} className="flex-shrink-0 relative">
                       <SimpleAvatar
                         user={{ id: entry.user?.id || 0, username: entry.user?.username || "?", profileImage: entry.user?.profilePhoto }}
@@ -587,89 +624,84 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                     <div className="flex-1 min-w-0">
                       <button
                         onClick={() => handleCardClick(entry.user.id)}
-                        className="text-sm font-medium text-white hover:text-orange-500 truncate block text-left"
+                        className="text-sm font-semibold text-white hover:text-orange-400 truncate block text-left"
                       >
                         @{entry.user?.username}
                       </button>
-                      <div className="flex items-center gap-2">
-                        {entry.activities?.length > 0 && (
-                          <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                            {entry.activities.join(", ")}
-                          </span>
-                        )}
-                        <span className="text-xs text-green-600 dark:text-green-400 flex-shrink-0">
-                          {getTimeRemaining(entry.expiresAt)}
-                        </span>
-                      </div>
+                      {entry.activities?.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {entry.activities.map((act: string) => (
+                            <span
+                              key={act}
+                              className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${getActivityPillClass(act)}`}
+                            >
+                              {act}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                       {entry.customNote && (
-                        <div className="mt-1 px-2 py-1 bg-purple-50 dark:bg-purple-900/30 rounded border border-purple-200 dark:border-purple-700">
-                          <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 truncate">{entry.customNote}</p>
+                        <div className="mt-1.5 px-2 py-1 bg-purple-950/50 rounded border border-purple-700/40">
+                          <p className="text-xs font-semibold text-purple-300 truncate">{entry.customNote}</p>
                         </div>
                       )}
                     </div>
+                  </div>
+
+                  {/* Meet button — full width at bottom */}
+                  <div className="px-3 pb-3">
                     {pendingToUserIds.has(entry.userId) ? (
                       <Button
                         size="sm"
                         disabled
-                        className="h-7 text-xs bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-0 flex-shrink-0 cursor-not-allowed"
+                        className="w-full text-xs bg-gray-700 text-gray-400 border-0 cursor-not-allowed"
                       >
                         Pending ⏳
                       </Button>
                     ) : showMeetRequest === entry.userId ? (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-7 w-7 p-0 flex-shrink-0"
-                        onClick={() => { setShowMeetRequest(null); setMeetMessage(""); }}
-                      >
-                        <X className="w-3 h-3" />
-                      </Button>
+                      <div className="w-full space-y-2">
+                        <Textarea
+                          placeholder="Say hi or suggest a place..."
+                          value={meetMessage}
+                          onChange={(e) => setMeetMessage(e.target.value)}
+                          className="w-full min-h-[4rem] text-sm resize-y bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400"
+                          rows={3}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                              e.preventDefault();
+                              sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage });
+                            }
+                          }}
+                        />
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold"
+                            onClick={() => sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage })}
+                            disabled={sendRequestMutation.isPending}
+                          >
+                            <Send className="w-3.5 h-3.5 mr-1.5" />
+                            Send
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-gray-400 hover:text-white px-2"
+                            onClick={() => { setShowMeetRequest(null); setMeetMessage(""); }}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
                     ) : (
                       <Button
-                        size="sm"
-                        className="h-7 text-xs bg-orange-500 hover:bg-orange-600 text-white border-0 flex-shrink-0"
+                        className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm py-2 border-0"
                         onClick={() => setShowMeetRequest(entry.userId)}
                       >
-                        Meet
+                        Meet Up
                       </Button>
                     )}
                   </div>
-                  {showMeetRequest === entry.userId && !pendingToUserIds.has(entry.userId) && (
-                    <div className="mt-3 w-full min-w-0 space-y-2">
-                      <Textarea
-                        placeholder="Say hi or suggest a place..."
-                        value={meetMessage}
-                        onChange={(e) => setMeetMessage(e.target.value)}
-                        className="w-full min-w-0 max-w-full min-h-[4.5rem] text-sm sm:text-base resize-y bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 box-border"
-                        rows={3}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && !e.shiftKey) {
-                            e.preventDefault();
-                            sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage });
-                          }
-                        }}
-                      />
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          className="bg-orange-500 hover:bg-orange-600 text-white"
-                          onClick={() => sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage })}
-                          disabled={sendRequestMutation.isPending}
-                        >
-                          <Send className="w-3.5 h-3.5 mr-1.5" />
-                          Send
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-gray-400 hover:text-white"
-                          onClick={() => { setShowMeetRequest(null); setMeetMessage(""); }}
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
