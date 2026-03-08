@@ -3016,7 +3016,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
                     </div>
                   )}
-                  {isOwnProfile && (
+                  {isOwnProfile ? (
                     <button
                       type="button"
                       className="flex items-center justify-between cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
@@ -3031,7 +3031,22 @@ export function ProfileTabs(props: ProfilePageProps) {
                         <ChevronRight className="w-4 h-4 text-gray-400" />
                       </div>
                     </button>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                        <Award className="w-4 h-4 text-blue-500" />
+                        Ambassador Points
+                      </span>
+                      <span className="font-semibold text-blue-600 dark:text-blue-400">{user?.ambassadorPoints || 0}</span>
+                    </div>
                   )}
+                  <button
+                    type="button"
+                    className="text-sm text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline text-left transition-colors"
+                    onClick={() => setLocation('/ambassador-program')}
+                  >
+                    Learn about the Ambassador Program →
+                  </button>
                   {/* Chatrooms + Invite Friends: only in sidebar on iOS; on desktop they live in the profile hero card */}
                   {isOwnProfile && isNativeIOSApp() && (
                     <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3 flex flex-col gap-2">
