@@ -1927,8 +1927,8 @@ function Router() {
         </>
       )}
 
-      {/* Bottom Navigation - rendered outside conditional branches so it always shows for authenticated users; hidden on chat pages */}
-      {!isSignupRoute && !isNativeIOSApp() && authValue.isAuthenticated && !isChatPage && (
+      {/* Bottom Navigation - always shows for authenticated users */}
+      {!isSignupRoute && !isNativeIOSApp() && authValue.isAuthenticated && (
         <MobileBottomNav />
       )}
 

@@ -213,7 +213,7 @@ export default function DMChat() {
               className="w-28 h-28 rounded-full object-cover ring-2 ring-gray-700"
             />
           ) : (
-            <SimpleAvatar user={otherUser} size="xl" className="w-28 h-28 text-3xl" />
+            <SimpleAvatar user={otherUser} size="lg" className="!w-28 !h-28 text-3xl aspect-square" />
           )}
 
           <h2 className="text-xl font-bold text-white leading-tight text-center">
