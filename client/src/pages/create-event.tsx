@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon, MapPin, Users, Clock, Tag, Info, ArrowLeft, X, Image as ImageIcon, ChevronDown, ChevronUp } from "lucide-react";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -77,6 +77,24 @@ interface EventFormData {
   externalRsvpProvider?: string;
 }
 
+const US_TIMEZONES: string[] = [
+  "America/New_York",
+  "America/Chicago",
+  "America/Denver",
+  "America/Los_Angeles",
+  "America/Phoenix",
+  "America/Anchorage",
+  "Pacific/Honolulu",
+  "America/Puerto_Rico",
+  "America/Indiana/Indianapolis",
+  "America/Detroit",
+  "America/Boise",
+  "America/Indiana/Knox",
+  "America/Kentucky/Louisville",
+  "America/Menominee",
+  "America/North_Dakota/Center",
+];
+
 export default function CreateEvent({ onEventCreated, isModal = false }: CreateEventProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -120,35 +138,33 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
     }
   }, []);
 
-  const TIMEZONE_OPTIONS: string[] = React.useMemo(() => {
-    const fallback = [
-      "UTC",
-      "America/Los_Angeles",
-      "America/Denver",
-      "America/Chicago",
-      "America/New_York",
-      "America/Phoenix",
-      "America/Anchorage",
-      "Pacific/Honolulu",
-      "Europe/London",
-      "Europe/Paris",
-      "Europe/Berlin",
-      "Europe/Rome",
-      "Europe/Madrid",
-      "Asia/Dubai",
-      "Asia/Kolkata",
-      "Asia/Bangkok",
-      "Asia/Singapore",
-      "Asia/Tokyo",
-      "Australia/Sydney",
-    ];
+  const TIMEZONE_OPTIONS: { us: string[]; world: string[] } = React.useMemo(() => {
+    const supported: string[] = (Intl as any)?.supportedValuesOf
+      ? ((Intl as any).supportedValuesOf("timeZone") as string[])
+      : [];
 
-    const supported = (Intl as any)?.supportedValuesOf ? ((Intl as any).supportedValuesOf("timeZone") as string[]) : null;
-    const list = Array.isArray(supported) && supported.length ? supported : fallback;
+    const usSet = new Set<string>(US_TIMEZONES);
 
-    // Ensure local tz is included and first (so user sees it quickly)
-    const unique = new Set<string>([localTimeZone, ...list]);
-    return Array.from(unique);
+    // World = everything not in the US list, alphabetical
+    const world = Array.from(
+      new Set<string>([
+        ...(supported.length ? supported.filter((tz) => !usSet.has(tz)) : []),
+        "UTC",
+      ])
+    ).sort();
+
+    // US list: user's local tz goes first if it's a US tz, otherwise local tz goes at the very top of US section
+    const usOrdered = Array.from(new Set<string>([
+      ...(usSet.has(localTimeZone) ? [localTimeZone] : []),
+      ...US_TIMEZONES,
+    ]));
+
+    // If local tz is not US, prepend it to world and sort doesn't displace it
+    const worldOrdered = usSet.has(localTimeZone)
+      ? world
+      : Array.from(new Set<string>([localTimeZone, ...world]));
+
+    return { us: usOrdered, world: worldOrdered };
   }, [localTimeZone]);
 
   const formatTzLabel = React.useCallback((tz: string) => {
@@ -1661,11 +1677,23 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                     <SelectValue placeholder="Select timezone" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[320px]">
-                    {TIMEZONE_OPTIONS.map((tz) => (
-                      <SelectItem key={tz} value={tz}>
-                        {formatTzLabel(tz)}
-                      </SelectItem>
-                    ))}
+                    <SelectGroup>
+                      <SelectLabel className="text-xs text-muted-foreground px-2 py-1">United States</SelectLabel>
+                      {TIMEZONE_OPTIONS.us.map((tz) => (
+                        <SelectItem key={tz} value={tz}>
+                          {formatTzLabel(tz)}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel className="text-xs text-muted-foreground px-2 py-1">World</SelectLabel>
+                      {TIMEZONE_OPTIONS.world.map((tz) => (
+                        <SelectItem key={tz} value={tz}>
+                          {formatTzLabel(tz)}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
                   </SelectContent>
                 </Select>
                 <input type="hidden" {...register("timeZone")} />
