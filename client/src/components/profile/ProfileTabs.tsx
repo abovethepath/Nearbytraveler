@@ -795,22 +795,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       Tell travelers about yourself → Add Bio
                     </button>
                   ) : (
-                    <div className="text-gray-500 dark:text-gray-400 text-left leading-relaxed space-y-2">
-                      <p className="italic">@{user?.username} hasn't written a bio yet.</p>
-                      {((commonStats?.sharedInterests?.length ?? 0) > 0 || (commonStats?.sharedContactsCount ?? 0) > 0) && (
-                        <div>
-                          <p className="text-gray-700 dark:text-gray-300 font-medium not-italic">But you have:</p>
-                          <ul className="mt-1 space-y-0.5">
-                            {(commonStats?.sharedInterests?.length ?? 0) > 0 && (
-                              <li>• {commonStats!.sharedInterests!.length} shared interest{commonStats!.sharedInterests!.length === 1 ? '' : 's'}</li>
-                            )}
-                            {(commonStats?.sharedContactsCount ?? 0) > 0 && (
-                              <li>• {commonStats!.sharedContactsCount} mutual connection{(commonStats!.sharedContactsCount as number) === 1 ? '' : 's'}</li>
-                            )}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
+                    <p className="italic text-gray-500 dark:text-gray-400">@{user?.username} hasn't written a bio yet.</p>
                   )}
                 </div>
 
