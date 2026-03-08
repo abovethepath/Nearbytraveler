@@ -134,7 +134,7 @@ export default function AmbassadorLanding() {
 
             <div className="mt-6 rounded-xl border border-orange-200 dark:border-orange-900 bg-orange-50/70 dark:bg-orange-950/20 p-4">
               <p className="text-sm md:text-base font-semibold text-orange-900 dark:text-orange-200">
-                Reach 250 Aura Points on NearbyTraveler and you're automatically enrolled.
+                Interested in becoming an Ambassador? Apply below and our team will review your profile.
               </p>
             </div>
 
@@ -380,8 +380,8 @@ export default function AmbassadorLanding() {
                   body: "Be active on NearbyTraveler. Join events, connect with travelers, message locals, explore your city. Aura points accumulate automatically as you engage.",
                 },
                 {
-                  title: "Step 2 — Hit 250 Aura Points",
-                  body: "Once your Aura score reaches 250, you're automatically enrolled in the Ambassador Program. No form to fill out. No email to send. It just happens.",
+                  title: "Step 2 — Apply to the Program",
+                  body: "When you feel ready, apply to become an Ambassador. Our team reviews every application to ensure quality and commitment. No automatic enrollment — we hand-pick our Ambassadors.",
                 },
                 {
                   title: "Step 3 — Start Earning Ambassador Points",
@@ -406,7 +406,7 @@ export default function AmbassadorLanding() {
                   <CardTitle className="text-base">Aura Points — Your Entry Ticket</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-gray-600 dark:text-gray-300">
-                  Aura points are earned through everyday activity on the platform — joining events, connecting with people, being an engaged member. They measure how real and active you are. Hit 250 and the door opens automatically.
+                  Aura points are earned through everyday activity on the platform — joining events, connecting with people, being an engaged member. They measure how real and active you are. A strong Aura score shows you're a committed member of the community.
                 </CardContent>
               </Card>
               <Card className="border-gray-200 dark:border-gray-700">
@@ -527,10 +527,10 @@ export default function AmbassadorLanding() {
             <Card className="border-gray-200 dark:border-gray-700 overflow-hidden">
               <CardContent className="p-8 bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white">
                 <h2 className="text-3xl md:text-4xl font-bold mb-2">
-                  250 aura points. That's all it takes.
+                  Ready to make a difference?
                 </h2>
                 <p className="text-white/90 mb-6 max-w-3xl">
-                  Stay active, be part of the community, and the ambassador program unlocks automatically. The earlier you're in, the more your contributions count.
+                  Stay active, be part of the community, and apply when you're ready. Our team reviews every application personally. The earlier you're in, the more your contributions count.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
                   <Button
