@@ -507,26 +507,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         </div>
                       </div>
 
-                    </div>
-
-                    {/* Tab bar — sits between hero and "What You Have in Common" */}
-                    <div className="w-full mt-5 relative">
-                      <ProfileTabBar {...props} variant="hero" />
-                      {isMobileWeb && (
-                        <div
-                          aria-hidden
-                          className="pointer-events-none absolute right-0 top-0 h-full w-12 flex items-center justify-end pr-1 bg-gradient-to-l from-black/45 via-black/15 to-transparent"
-                        >
-                          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/35 text-white text-lg leading-none shadow-[0_10px_24px_rgba(0,0,0,0.35)] backdrop-blur-sm">
-                            ›
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Desktop "What You Have in Common" widget */}
-                    {!isMobileWeb && (
-                      <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-start mt-4 max-h-48 overflow-hidden justify-center cursor-pointer hover:bg-black/60 transition-colors" onClick={() => setSeeAllCommonOpen(true)}>
+                      {/* Desktop "What You Have in Common" widget — RIGHT column in hero row */}
+                      {!isMobileWeb && (
+                        <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-start max-h-48 overflow-hidden justify-center cursor-pointer hover:bg-black/60 transition-colors" onClick={() => setSeeAllCommonOpen(true)}>
                           {totalCommon > 0 ? (
                             <>
                               <div className="flex items-center gap-1.5 mb-1">
@@ -629,6 +612,23 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           )}
                         </div>
                       )}
+
+                    </div>
+
+                    {/* Tab bar — below the hero row */}
+                    <div className="w-full mt-5 relative">
+                      <ProfileTabBar {...props} variant="hero" />
+                      {isMobileWeb && (
+                        <div
+                          aria-hidden
+                          className="pointer-events-none absolute right-0 top-0 h-full w-12 flex items-center justify-end pr-1 bg-gradient-to-l from-black/45 via-black/15 to-transparent"
+                        >
+                          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/35 text-white text-lg leading-none shadow-[0_10px_24px_rgba(0,0,0,0.35)] backdrop-blur-sm">
+                            ›
+                          </span>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Mobile "What You Have in Common" hero card */}
                     {isMobileWeb && totalCommon > 0 && (
