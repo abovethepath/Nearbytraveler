@@ -1706,7 +1706,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   };
 
   return (
-    <div className="flex bg-gray-900 text-white overflow-hidden w-full h-full min-h-0" data-chat-page="true">
+    <div className={`flex bg-gray-900 text-white overflow-hidden w-full h-full min-h-0 ${isMobileWeb ? 'fixed inset-0 z-50' : ''}`} style={isMobileWeb ? { height: '100dvh' } : undefined} data-chat-page="true">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[250px] bg-gray-800 border-r border-gray-700">
@@ -2439,8 +2439,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           </div>
         )}
 
-        {/* Input box — native app: no bottom nav; mobile web: pb for bottom nav + safe area; desktop: pb-4 mb-4 for lift from edge */}
-        <div className={`chat-input-area px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : 'pb-[calc(env(safe-area-inset-bottom,0px)+4rem)] md:pb-4'}`}>
+        {/* Input box — native app: no bottom nav; mobile web: safe area only (no nav overlap since nav hidden on chat); desktop: pb-4 */}
+        <div className={`chat-input-area px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : isMobileWeb ? 'pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]' : 'pb-4'}`}>
           <div className="w-full">
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
           {!messagesLoaded && !isWsConnected && !loadError && (
