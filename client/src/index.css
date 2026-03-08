@@ -88,6 +88,32 @@ button, a, [role="button"], input[type="submit"] {
   }
 }
 
+/* Override autofill yellow highlighting - light mode uses white/light gray, dark mode uses dark gray */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #f5f5f5 inset !important;
+  box-shadow: 0 0 0 30px #f5f5f5 inset !important;
+}
+
+input:-webkit-autofill {
+  -webkit-text-fill-color: #1f2937 !important;
+}
+
+/* Dark mode autofill styling */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #374151 inset !important;
+  box-shadow: 0 0 0 30px #374151 inset !important;
+}
+
+.dark input:-webkit-autofill {
+  -webkit-text-fill-color: #f3f4f6 !important;
+}
+
 /* iOS-style card border radius */
 @media (max-width: 768px) {
   .rounded-lg {
