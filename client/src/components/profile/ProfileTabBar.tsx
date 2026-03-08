@@ -46,9 +46,9 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
   // Hero background is a colorful gradient across themes.
   // For other-user hero, keep badge numbers BLACK (requested explicitly).
   const badgeClass = isOtherHero
-    ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-white/70 text-black border border-black/20"
+    ? "ml-2 inline-flex items-center justify-center h-[18px] md:h-[20px] lg:h-[22px] min-w-[18px] md:min-w-[20px] lg:min-w-[22px] px-1.5 text-[11px] md:text-[12px] lg:text-xs font-bold rounded-full bg-white/70 text-black border border-black/20"
     : (isOwnHero
-        ? "ml-1.5 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-[#1a1a1a] !text-white border border-white/15"
+        ? "ml-1.5 inline-flex items-center justify-center h-[18px] md:h-[20px] lg:h-[22px] min-w-[18px] md:min-w-[20px] lg:min-w-[22px] px-1.5 text-[11px] md:text-[12px] lg:text-xs font-bold rounded-full bg-[#1a1a1a] !text-white border border-white/15"
         : (isHero
             ? "ml-2 inline-flex items-center justify-center h-[18px] min-w-[18px] px-1.5 text-[11px] font-bold rounded-full bg-[#FF6B35] text-white border border-black/20"
             : (isDesktopWeb
@@ -56,7 +56,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
                 : "ml-2 px-2 py-0.5 text-xs font-bold rounded-full bg-white/20 text-white")))
 
   const tabWebBase = isHero
-    ? "relative px-0 py-2.5 text-[15px] leading-tight font-semibold transition-colors select-none whitespace-nowrap"
+    ? "relative px-0 py-2.5 text-xs md:text-sm lg:text-base leading-tight font-semibold transition-colors select-none whitespace-nowrap"
     : "relative px-0 py-2 text-sm sm:text-base font-semibold transition-colors select-none";
   // Hero background is a gradient that does not change by theme, so keep tab text dark/crisp even in dark mode.
   const tabWebInactive = isHero
