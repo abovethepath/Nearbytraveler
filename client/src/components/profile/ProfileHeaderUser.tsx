@@ -424,10 +424,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 @{user?.username}
                                 {!isOwnProfile && (() => {
                                   const deg = (connectionDegreeData as any)?.degree;
-                                  if (deg === 1) return <sup className="text-sm text-white/60 font-normal ml-0.5">1st</sup>;
-                                  if (deg === 2) return <sup className="text-sm text-white/60 font-normal ml-0.5">2nd</sup>;
-                                  if (deg === 3) return <sup className="text-sm text-white/60 font-normal ml-0.5">3rd</sup>;
-                                  return null;
+                                  const label = deg === 1 ? '1st' : deg === 2 ? '2nd' : deg === 3 ? '3rd' : null;
+                                  if (!label) return null;
+                                  return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}>{label}</sup>;
                                 })()}
                               </h1>
                             </div>
@@ -942,10 +941,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             @{user?.username}
                             {!isOwnProfile && (() => {
                               const deg = (connectionDegreeData as any)?.degree;
-                              if (deg === 1) return <sup className="text-sm text-white/60 font-normal ml-0.5">1st</sup>;
-                              if (deg === 2) return <sup className="text-sm text-white/60 font-normal ml-0.5">2nd</sup>;
-                              if (deg === 3) return <sup className="text-sm text-white/60 font-normal ml-0.5">3rd</sup>;
-                              return null;
+                              const label = deg === 1 ? '1st' : deg === 2 ? '2nd' : deg === 3 ? '3rd' : null;
+                              if (!label) return null;
+                              return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}>{label}</sup>;
                             })()}
                           </h1>
                           {!isOwnProfile && connectionStatus?.status === 'accepted' && (
