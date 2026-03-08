@@ -1794,7 +1794,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       
       {/* Main Chat Area */}
       <div className="flex-1 min-w-0 overflow-hidden">
-      <div className="flex flex-col h-full lg:max-w-[800px] lg:mx-auto">
+      <div className="flex flex-col h-full lg:max-w-[960px] lg:mx-auto">
       {/* Header - compact padding on desktop; smaller title with truncation; no header avatars on desktop (sidebar shows members) */}
       <div
         className={`flex items-center flex-shrink-0 ${isMobileWeb ? 'gap-1.5' : 'gap-2'} px-2 bg-gray-800 border-b border-gray-700 min-w-0 pb-1 lg:py-1.5`}
