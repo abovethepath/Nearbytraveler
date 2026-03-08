@@ -478,6 +478,18 @@ export default function Home() {
   };
 
   // ONLY USER-CREATED EVENTS: Get events from both hometown AND travel destination (metro-resolved)
+  const { data: userConnections = [] } = useQuery({
+    queryKey: ['/api/connections', effectiveUser?.id],
+    queryFn: async () => {
+      if (!effectiveUser?.id) return [];
+      const response = await fetch(`${getApiBaseUrl()}/api/connections/${effectiveUser.id}`, { credentials: 'include' });
+      if (!response.ok) return [];
+      return response.json();
+    },
+    enabled: !!effectiveUser?.id,
+    staleTime: 60000,
+  });
+
   const { data: userPriorityEvents = [] } = useQuery({
     queryKey: ['/api/events', effectiveUser?.hometownCity, effectiveUser?.travelDestination, travelPlans?.map(p => p.id).join(',')],
     queryFn: async () => {
