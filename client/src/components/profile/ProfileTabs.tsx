@@ -413,7 +413,7 @@ export function ProfileTabs(props: ProfilePageProps) {
   };
 
   return (
-    <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900 mt-3 md:mt-0">
       {/* Main Content Container - with overflow-x-hidden for rest of page */}
 
       {/* Navigation Tabs - Card Style. Desktop user: hidden (tabs in hero). iOS + business: show. */}
