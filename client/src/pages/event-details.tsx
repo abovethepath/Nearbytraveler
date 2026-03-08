@@ -23,19 +23,16 @@ interface EventDetailsProps {
   eventId: string;
 }
 
-function normalizeLocationString(raw: string): string {
-  const tokens = String(raw || "")
-    .split(/[,\\n]/g)
-    .map((t) => t.trim())
-    .filter(Boolean);
-
+function deduplicateParts(parts: string[]): string {
   const seen = new Set<string>();
   const out: string[] = [];
-  for (const t of tokens) {
-    const key = t.toLowerCase();
+  for (const p of parts) {
+    const trimmed = p.trim();
+    if (!trimmed) continue;
+    const key = trimmed.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
-    out.push(t);
+    out.push(trimmed);
   }
   return out.join(", ");
 }
@@ -335,16 +332,14 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
 
   const locationDisplay = useMemo(() => {
     if (!event) return { primary: "", full: "", secondary: "" };
-    const primary = normalizeLocationString(
+    const primary = deduplicateParts(
       [
         event?.city,
         event?.state && event?.state !== event?.city ? event?.state : null,
         event?.country,
-      ]
-        .filter(Boolean)
-        .join(", "),
+      ].filter(Boolean) as string[],
     );
-    const full = normalizeLocationString(
+    const full = deduplicateParts(
       [
         event?.venueName,
         event?.street || event?.location,
@@ -352,12 +347,10 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
         event?.state && event?.state !== event?.city ? event?.state : null,
         event?.country,
         event?.zipcode,
-      ]
-        .filter(Boolean)
-        .join(", "),
+      ].filter(Boolean) as string[],
     );
     return {
-      primary: primary || normalizeLocationString(event?.location || ""),
+      primary: primary || (event?.location || "").trim(),
       full,
       secondary: full && full !== primary ? full : "",
     };
@@ -702,14 +695,12 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                       })
                       .slice(0, 15).map((participant) => {
                       const user = users.find(u => u.id === participant.userId);
-                      const cityLine = normalizeLocationString(
+                      const cityLine = deduplicateParts(
                         [
                           user?.hometownCity,
                           user?.hometownState && user.hometownState !== user.hometownCity ? user.hometownState : null,
                           user?.hometownCountry,
-                        ]
-                          .filter(Boolean)
-                          .join(", "),
+                        ].filter(Boolean) as string[],
                       );
                       
                       return (

@@ -29,19 +29,16 @@ interface CommunityEvent {
 
 export type { CommunityEvent };
 
-function normalizeLocationString(raw: string): string {
-  const tokens = String(raw || "")
-    .split(/[,\\n]/g)
-    .map((t) => t.trim())
-    .filter(Boolean);
-
+function deduplicateParts(parts: string[]): string {
   const seen = new Set<string>();
   const out: string[] = [];
-  for (const t of tokens) {
-    const key = t.toLowerCase();
+  for (const p of parts) {
+    const trimmed = p.trim();
+    if (!trimmed) continue;
+    const key = trimmed.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
-    out.push(t);
+    out.push(trimmed);
   }
   return out.join(", ");
 }
@@ -76,10 +73,9 @@ export default function ExternalEventCard({ event }: { event: CommunityEvent }) 
     }
   };
 
-  const locationDisplay = normalizeLocationString(
+  const locationDisplay = deduplicateParts(
     [event.venueName, event.address, event.city, event.state && event.state !== event.city ? event.state : null, event.country]
-      .filter(Boolean)
-      .join(", "),
+      .filter(Boolean) as string[],
   );
 
   return (

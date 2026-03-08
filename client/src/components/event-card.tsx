@@ -13,33 +13,31 @@ import ImageLoader from "./ImageLoader";
 import { InstagramShare } from "./InstagramShare";
 import { SimpleAvatar } from "./simple-avatar";
 
-function normalizeLocationString(raw: string): string {
-  const tokens = String(raw || "")
-    .split(/[,\n]/g)
-    .map((t) => t.trim())
-    .filter(Boolean);
-
+function deduplicateParts(parts: string[]): string {
   const seen = new Set<string>();
   const out: string[] = [];
-  for (const t of tokens) {
-    const key = t.toLowerCase();
+  for (const p of parts) {
+    const key = p.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
-    out.push(t);
+    out.push(p);
   }
   return out.join(", ");
 }
 
 function buildEventLocationDisplay(event: Event): string {
-  const rawParts = [
-    event.venueName,
-    event.street || event.location,
-    event.city,
-    event.state && event.state !== event.city ? event.state : null,
-    event.country,
-  ].filter(Boolean) as string[];
+  const parts: string[] = [];
 
-  return normalizeLocationString(rawParts.join(", "));
+  if (event.venueName) parts.push(event.venueName.trim());
+  const streetOrLocation = (event.street || event.location || "").trim();
+  if (streetOrLocation) parts.push(streetOrLocation);
+  if (event.city) parts.push(event.city.trim());
+  if (event.state && event.state.trim().toLowerCase() !== (event.city || "").trim().toLowerCase()) {
+    parts.push(event.state.trim());
+  }
+  if (event.country) parts.push(event.country.trim());
+
+  return deduplicateParts(parts);
 }
 
 interface EventCardProps {
@@ -270,11 +268,11 @@ export default function EventCard({ event, compact = false, featured = false }: 
       <article className="event-card rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 cursor-pointer text-left"
                onClick={() => setLocation(`/events/${event.id}`)}>
         {event.imageUrl && (
-          <div className="relative">
+          <div className="relative overflow-hidden h-[180px] md:h-[200px] lg:h-[220px]">
             <img
               src={event.imageUrl}
               alt={event.title}
-              className="w-full h-48 object-cover object-center"
+              className="w-full h-full object-cover object-center"
               loading="lazy"
             />
           </div>
