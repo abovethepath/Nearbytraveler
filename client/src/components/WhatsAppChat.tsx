@@ -74,11 +74,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     !isNativeIOSApp() &&
     typeof window !== "undefined" &&
     !!window.matchMedia &&
-    window.matchMedia("(max-width: 768px)").matches;
+    window.matchMedia("(max-width: 767px)").matches;
   const isMobile =
     typeof window !== "undefined" &&
     !!window.matchMedia &&
-    window.matchMedia("(max-width: 768px)").matches;
+    window.matchMedia("(max-width: 767px)").matches;
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
@@ -1795,86 +1795,256 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Main Chat Area */}
       <div className="flex-1 min-w-0 overflow-hidden">
       <div className="flex flex-col h-full lg:max-w-[960px] lg:mx-auto">
-      {/* Header - compact padding on desktop; smaller title with truncation; no header avatars on desktop (sidebar shows members) */}
+      {/* ═══ MOBILE HEADER: Two-row layout (back+logo+menu | avatar+name+status) ═══ */}
+      {isMobileWeb && (
+        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+          {/* Row 1: Back | Logo | 3-dot menu */}
+          <div className="flex items-center justify-between px-2 py-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onBack ? onBack() : window.history.back()}
+              className="text-white hover:bg-gray-700 min-h-[44px] min-w-[44px] h-11 w-11 shrink-0 touch-target"
+              data-testid="button-chat-back"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <span className="text-[13px] font-bold tracking-tight text-white/80 select-none">NearbyTraveler</span>
+            <div className="flex items-center gap-0">
+              {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
+                <Sheet open={showMembers} onOpenChange={setShowMembers}>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700 h-9 w-9 touch-target" data-testid="button-members">
+                      <Users className="w-4 h-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="bg-gray-900 border-l border-gray-700 text-white w-80">
+                    <SheetHeader>
+                      <SheetTitle className="!text-lg font-semibold text-white">Members ({members.length})</SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-4">
+                      <input
+                        type="text"
+                        placeholder="Search members..."
+                        value={memberSearch}
+                        onChange={(e) => setMemberSearch(e.target.value)}
+                        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-green-500"
+                        data-testid="input-member-search"
+                      />
+                    </div>
+                    <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-180px)]">
+                      {filteredMembers.length === 0 ? (
+                        <p className="text-center text-gray-400 py-4">No members found</p>
+                      ) : (
+                        filteredMembers.map((member) => (
+                          <div
+                            key={member.id}
+                            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors"
+                            data-testid={`member-item-${member.id}`}
+                          >
+                            <div 
+                              onClick={() => {
+                                setShowMembers(false);
+                                setMemberSearch("");
+                                localStorage.setItem('returnToChat', JSON.stringify({
+                                  chatId, chatType, title, subtitle, eventId,
+                                  timestamp: Date.now()
+                                }));
+                                navigate(`/profile/${member.id}`);
+                              }}
+                              className="flex items-center gap-3 flex-1 cursor-pointer"
+                            >
+                              <Avatar className="w-10 h-10">
+                                <AvatarImage src={getProfileImageUrl(member) || undefined} />
+                                <AvatarFallback className="bg-green-600 text-white text-sm">
+                                  {getFirstName(member.name, member.username)[0]}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-sm truncate">
+                                  {getFirstName(member.name, member.username)}
+                                  {member.isAdmin && <span className="ml-2 text-xs text-green-400">Admin</span>}
+                                  {member.isMuted && <span className="ml-2 text-xs text-red-400">Muted</span>}
+                                </p>
+                                <p className="text-xs text-gray-400 truncate">{member.locationLabel || member.location || member.hometownCity || 'Unknown'}</p>
+                              </div>
+                            </div>
+                            {isCurrentUserAdmin && member.id !== currentUserId && (
+                              <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                                {member.isMuted ? (
+                                  <Button size="sm" variant="ghost" className="h-8 text-green-400 hover:text-green-300 hover:bg-gray-700" onClick={() => unmuteMutation.mutate(member.id)} disabled={unmuteMutation.isPending} data-testid={`button-unmute-${member.id}`}>
+                                    <Volume2 className="w-4 h-4" />
+                                  </Button>
+                                ) : (
+                                  <Button size="sm" variant="ghost" className="h-8 text-red-400 hover:text-red-300 hover:bg-gray-700" onClick={() => { setSelectedMember(member); setMuteDialogOpen(true); }} data-testid={`button-mute-${member.id}`}>
+                                    <VolumeX className="w-4 h-4" />
+                                  </Button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              )}
+              <Sheet open={moreMenuOpen} onOpenChange={setMoreMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700 h-9 w-9" onClick={() => setMoreMenuOpen(true)} data-testid="button-chat-more-mobile">
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="bottom" className="bg-gray-900 border-t border-gray-700 text-white">
+                  <SheetHeader>
+                    <SheetTitle className="text-white">Options</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-4 space-y-2">
+                    {chatType === "dm" ? (
+                      <>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); navigate(`/profile/${chatId}`); }}>
+                          <UserIcon className="w-5 h-5" /><span className="font-semibold">View Profile</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); toggleNotificationsMuted(); }}>
+                          {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                          <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); blockDmUser(); }}>
+                          <ShieldAlert className="w-5 h-5" /><span className="font-semibold">Block User</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); reportConversation(); }}>
+                          <ShieldAlert className="w-5 h-5" /><span className="font-semibold">Report Conversation</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-red-300" onClick={() => { setMoreMenuOpen(false); deleteDmConversation(); }}>
+                          <Trash2 className="w-5 h-5" /><span className="font-semibold">Delete Conversation</span>
+                        </button>
+                      </>
+                    ) : chatType === "chatroom" ? (
+                      <>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); setShowMembers(true); }}>
+                          <Users className="w-5 h-5" /><span className="font-semibold">View Members</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); toggleNotificationsMuted(); }}>
+                          {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                          <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); shareChatroomLink(); }}>
+                          <Share2 className="w-5 h-5" /><span className="font-semibold">Share Chatroom</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); reportChatroom(); }}>
+                          <ShieldAlert className="w-5 h-5" /><span className="font-semibold">Report Chatroom</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-red-300" onClick={() => { setMoreMenuOpen(false); leaveChatroom(); }}>
+                          <LogOut className="w-5 h-5" /><span className="font-semibold">Leave Chatroom</span>
+                        </button>
+                      </>
+                    ) : (
+                      <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); toggleNotificationsMuted(); }}>
+                        {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                        <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
+                      </button>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </div>
+          {/* Row 2: Avatar + name + status */}
+          <div className="flex items-center gap-2.5 px-3 pb-2">
+            {chatType === 'dm' && props.otherUserProfileImage ? (
+              <Avatar className="w-8 h-8 shrink-0">
+                <AvatarImage src={props.otherUserProfileImage} />
+                <AvatarFallback className="bg-green-600 text-white text-xs">{(title || '?')[0]}</AvatarFallback>
+              </Avatar>
+            ) : (chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 ? (
+              <div className="flex -space-x-1.5 shrink-0">
+                {members.slice(0, 3).map((member) => (
+                  <Avatar key={member.id} className="w-7 h-7 border border-gray-800">
+                    <AvatarImage src={getProfileImageUrl(member) || undefined} />
+                    <AvatarFallback className="bg-green-600 text-white text-[8px]">{getFirstName(member.name, member.username)[0]}</AvatarFallback>
+                  </Avatar>
+                ))}
+                {members.length > 3 && (
+                  <div className="w-7 h-7 rounded-full bg-gray-700 border border-gray-800 flex items-center justify-center">
+                    <span className="text-[8px] text-gray-300">+{members.length - 3}</span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0">
+                <span className="text-xs text-gray-300 font-semibold">{(title || '?')[0]}</span>
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[14px] font-semibold text-white truncate">{title || 'Chat'}</span>
+                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${messagesLoaded || isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
+              </div>
+              {subtitle && <p className="text-gray-400 truncate text-[11px] leading-tight">{subtitle}</p>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ DESKTOP HEADER: Original single-row layout (hidden on mobile) ═══ */}
       <div
-        className={`flex items-center flex-shrink-0 ${isMobileWeb ? 'gap-1.5' : 'gap-2'} px-2 bg-gray-800 border-b border-gray-700 min-w-0 pb-1 lg:py-1.5`}
-        style={isMobile ? { paddingTop: 'env(safe-area-inset-top, 0px)' } : undefined}
+        className={`hidden md:flex items-center flex-shrink-0 gap-2 px-2 bg-gray-800 border-b border-gray-700 min-w-0 lg:py-1.5`}
       >
         <Button
           variant="ghost"
           size="icon"
           onClick={() => onBack ? onBack() : window.history.back()}
-          className="text-white hover:bg-gray-700 min-h-[44px] min-w-[44px] h-11 w-11 md:h-8 md:w-8 shrink-0 touch-target"
+          className="text-white hover:bg-gray-700 h-8 w-8 shrink-0"
         >
           <ArrowLeft className="w-4 h-4" />
         </Button>
         
         {/* WhatsApp-style member avatars for chatrooms, meetups, and events - hidden on desktop (lg+) since full member list is in left sidebar */}
         {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 && (
-          <div className={`flex ${isMobileWeb ? '-space-x-1' : '-space-x-2'} lg:hidden shrink-0`}>
-            {members.slice(0, isMobileWeb ? 3 : 4).map((member, index) => (
+          <div className="flex -space-x-2 lg:hidden shrink-0">
+            {members.slice(0, 4).map((member, index) => (
               <div
                 key={member.id}
                 onClick={() => {
-                  // Store chat return info before navigating
                   localStorage.setItem('returnToChat', JSON.stringify({
-                    chatId,
-                    chatType,
-                    title,
-                    subtitle,
-                    eventId,
-                    timestamp: Date.now() // For event chats, store the eventId so we can navigate back properly
+                    chatId, chatType, title, subtitle, eventId,
+                    timestamp: Date.now()
                   }));
                   navigate(`/profile/${member.id}`);
                 }}
                 className="cursor-pointer hover:scale-110 transition-transform duration-200"
                 data-testid={`avatar-member-${member.id}`}
               >
-                <Avatar className={isMobileWeb ? "w-6 h-6 border border-gray-800" : "w-8 h-8 border-2 border-gray-800"}>
+                <Avatar className="w-8 h-8 border-2 border-gray-800">
                   <AvatarImage src={getProfileImageUrl(member) || undefined} />
-                  <AvatarFallback className={isMobileWeb ? "bg-green-600 text-white text-[8px]" : "bg-green-600 text-white text-[10px]"}>
+                  <AvatarFallback className="bg-green-600 text-white text-[10px]">
                     {getFirstName(member.name, member.username)[0]}
                   </AvatarFallback>
                 </Avatar>
               </div>
             ))}
-            {members.length > (isMobileWeb ? 3 : 4) && (
+            {members.length > 4 && (
               <div 
                 onClick={() => setShowMembers(true)}
-                className={isMobileWeb
-                  ? "w-6 h-6 rounded-full bg-gray-700 border border-gray-800 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"
-                  : "w-8 h-8 rounded-full bg-gray-700 border-2 border-gray-800 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"}
+                className="w-8 h-8 rounded-full bg-gray-700 border-2 border-gray-800 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"
                 data-testid="button-more-members"
               >
-                <span className={isMobileWeb ? "text-[8px] text-gray-300" : "text-[10px] text-gray-300"}>
-                  +{members.length - (isMobileWeb ? 3 : 4)}
-                </span>
+                <span className="text-[10px] text-gray-300">+{members.length - 4}</span>
               </div>
             )}
           </div>
         )}
         
-        <div
-          className={
-            isMobileWeb
-              ? "flex-1 min-w-0 overflow-hidden"
-              : "flex-1 min-w-0 overflow-hidden max-w-[140px] xs:max-w-[180px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[280px]"
-          }
-        >
+        <div className="flex-1 min-w-0 overflow-hidden max-w-[140px] xs:max-w-[180px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[280px]">
           <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
             <div
-              className={
-                isMobileWeb
-                  ? "text-[15px] leading-tight font-semibold flex-1 min-w-0 truncate"
-                  : "text-xl font-semibold flex-1 min-w-0 truncate max-w-xs"
-              }
+              className="text-xl font-semibold flex-1 min-w-0 truncate max-w-xs"
               title={title || 'Chat'}
               role="heading"
               aria-level={1}
             >
               {title || 'Chat'}
             </div>
-            {/* Show green once messages are loaded (chat is usable), not just WebSocket */}
             <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
               messagesLoaded || isWsConnected 
                 ? 'bg-green-500' 
@@ -1923,14 +2093,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         onClick={() => {
                           setShowMembers(false);
                           setMemberSearch("");
-                          // Store chat return info before navigating
                           localStorage.setItem('returnToChat', JSON.stringify({
-                            chatId,
-                            chatType,
-                            title,
-                            subtitle,
-                            eventId,
-                            timestamp: Date.now() // For event chats, store the eventId so we can navigate back properly
+                            chatId, chatType, title, subtitle, eventId,
+                            timestamp: Date.now()
                           }));
                           navigate(`/profile/${member.id}`);
                         }}
@@ -1987,158 +2152,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             </SheetContent>
           </Sheet>
         )}
-        {/* 3-dot menu: bottom sheet on mobile, dropdown on desktop */}
-        {isMobile ? (
-          <Sheet open={moreMenuOpen} onOpenChange={setMoreMenuOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-gray-700 h-8 w-8"
-                onClick={() => setMoreMenuOpen(true)}
-                data-testid="button-chat-more"
-              >
-                <MoreVertical className="w-4 h-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="bg-gray-900 border-t border-gray-700 text-white">
-              <SheetHeader>
-                <SheetTitle className="text-white">Options</SheetTitle>
-              </SheetHeader>
-              <div className="mt-4 space-y-2">
-                {chatType === "dm" ? (
-                  <>
-                    <button
-                      type="button"
-                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
-                      onClick={() => {
-                        setMoreMenuOpen(false);
-                        navigate(`/profile/${chatId}`);
-                      }}
-                    >
-                      <UserIcon className="w-5 h-5" />
-                      <span className="font-semibold">View Profile</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
-                      onClick={() => {
-                        setMoreMenuOpen(false);
-                        toggleNotificationsMuted();
-                      }}
-                    >
-                      {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-                      <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
-                      onClick={() => {
-                        setMoreMenuOpen(false);
-                        blockDmUser();
-                      }}
-                    >
-                      <ShieldAlert className="w-5 h-5" />
-                      <span className="font-semibold">Block User</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
-                      onClick={() => {
-                        setMoreMenuOpen(false);
-                        reportConversation();
-                      }}
-                    >
-                      <ShieldAlert className="w-5 h-5" />
-                      <span className="font-semibold">Report Conversation</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-red-300"
-                      onClick={() => {
-                        setMoreMenuOpen(false);
-                        deleteDmConversation();
-                      }}
-                    >
-                      <Trash2 className="w-5 h-5" />
-                      <span className="font-semibold">Delete Conversation</span>
-                    </button>
-                  </>
-                ) : chatType === "chatroom" ? (
-                  <>
-                    <button
-                      type="button"
-                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
-                      onClick={() => {
-                        setMoreMenuOpen(false);
-                        setShowMembers(true);
-                      }}
-                    >
-                      <Users className="w-5 h-5" />
-                      <span className="font-semibold">View Members</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
-                      onClick={() => {
-                        setMoreMenuOpen(false);
-                        toggleNotificationsMuted();
-                      }}
-                    >
-                      {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-                      <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
-                      onClick={() => {
-                        setMoreMenuOpen(false);
-                        shareChatroomLink();
-                      }}
-                    >
-                      <Share2 className="w-5 h-5" />
-                      <span className="font-semibold">Share Chatroom</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
-                      onClick={() => {
-                        setMoreMenuOpen(false);
-                        reportChatroom();
-                      }}
-                    >
-                      <ShieldAlert className="w-5 h-5" />
-                      <span className="font-semibold">Report Chatroom</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-red-300"
-                      onClick={() => {
-                        setMoreMenuOpen(false);
-                        leaveChatroom();
-                      }}
-                    >
-                      <LogOut className="w-5 h-5" />
-                      <span className="font-semibold">Leave Chatroom</span>
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    type="button"
-                    className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left"
-                    onClick={() => {
-                      setMoreMenuOpen(false);
-                      toggleNotificationsMuted();
-                    }}
-                  >
-                    {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-                    <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
-                  </button>
-                )}
-              </div>
-            </SheetContent>
-          </Sheet>
-        ) : (
+        {/* 3-dot menu: dropdown on desktop (mobile uses SheetContent below via shared moreMenuOpen state) */}
+        {!isMobile && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700 h-8 w-8" data-testid="button-chat-more">

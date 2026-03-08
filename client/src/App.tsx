@@ -1902,7 +1902,7 @@ function Router() {
           {/* Chat pages: fixed to viewport so absolutely nothing can scroll */}
           {isChatPage ? (
             <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 40 }}>
-              {!isNativeIOSApp() && <Navbar />}
+              {!isNativeIOSApp() && <div className="hidden md:block"><Navbar /></div>}
               <div style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
                 {renderPage()}
               </div>
@@ -1927,8 +1927,8 @@ function Router() {
         </>
       )}
 
-      {/* Bottom Navigation - rendered outside conditional branches so it always shows for authenticated users */}
-      {!isSignupRoute && !isNativeIOSApp() && authValue.isAuthenticated && (
+      {/* Bottom Navigation - rendered outside conditional branches so it always shows for authenticated users; hidden on chat pages */}
+      {!isSignupRoute && !isNativeIOSApp() && authValue.isAuthenticated && !isChatPage && (
         <MobileBottomNav />
       )}
 
