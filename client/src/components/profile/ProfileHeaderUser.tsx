@@ -507,16 +507,39 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         </div>
                       </div>
 
-                      {!isMobileWeb && (
-                        <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-start mt-20 max-h-48 overflow-hidden justify-center cursor-pointer hover:bg-black/60 transition-colors" onClick={() => setSeeAllCommonOpen(true)}>
+                    </div>
+
+                    {/* Tab bar — sits between hero and "What You Have in Common" */}
+                    <div className="w-full mt-5 relative">
+                      <ProfileTabBar {...props} variant="hero" />
+                      {isMobileWeb && (
+                        <div
+                          aria-hidden
+                          className="pointer-events-none absolute right-0 top-0 h-full w-12 flex items-center justify-end pr-1 bg-gradient-to-l from-black/45 via-black/15 to-transparent"
+                        >
+                          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/35 text-white text-lg leading-none shadow-[0_10px_24px_rgba(0,0,0,0.35)] backdrop-blur-sm">
+                            ›
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Desktop "What You Have in Common" widget */}
+                    {!isMobileWeb && (
+                      <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-start mt-4 max-h-48 overflow-hidden justify-center cursor-pointer hover:bg-black/60 transition-colors" onClick={() => setSeeAllCommonOpen(true)}>
                           {totalCommon > 0 ? (
                             <>
-                              {/* Line 1: count */}
-                              <div className="w-full text-center font-black text-white text-xl leading-none mb-1">
-                                {totalCommon} {totalCommon === 1 ? "thing" : "things"} in common
+                              <div className="flex items-center gap-1.5 mb-1">
+                                <span className="text-lg">🤝</span>
+                                <span className="text-[11px] font-extrabold text-white uppercase tracking-widest leading-none">What You Have in Common</span>
                               </div>
 
-                              {/* Lines 2–3: up to 10 pills (interests → activities → events), 2 rows of ~5 */}
+                              <div className="mb-1">
+                                <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-extrabold bg-[#FF6B35] text-white shadow-md">
+                                  {totalCommon} in common
+                                </span>
+                              </div>
+
                               <div className="overflow-hidden">
                                 {(() => {
                                   const hostelPill = hostelMatch?.hostelName ? `🏨 ${hostelMatch.hostelName}` : null;
@@ -568,7 +591,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 })()}
                               </div>
 
-                              {/* Line 4: contacts left + see all right */}
                               <div className="mt-1 w-full flex items-center justify-between gap-2 text-xs text-gray-400">
                                 {sharedContactsCount > 0 ? (
                                   <button
@@ -604,9 +626,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         </div>
                       )}
 
-                    </div>
-
-                    {/* Mobile-only "What You Have in Common" hero card */}
+                    {/* Mobile "What You Have in Common" hero card */}
                     {isMobileWeb && totalCommon > 0 && (
                       <div className="mt-4 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 cursor-pointer hover:bg-black/60 transition-colors" onClick={() => setSeeAllCommonOpen(true)}>
                         <div className="flex items-center justify-between gap-2 mb-2">
@@ -650,21 +670,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         )}
                       </div>
                     )}
-
-                    {/* Tab bar (already text-only on web) */}
-                    <div className="w-full mt-5 relative">
-                      <ProfileTabBar {...props} variant="hero" />
-                      {isMobileWeb && (
-                        <div
-                          aria-hidden
-                          className="pointer-events-none absolute right-0 top-0 h-full w-12 flex items-center justify-end pr-1 bg-gradient-to-l from-black/45 via-black/15 to-transparent"
-                        >
-                          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-black/35 text-white text-lg leading-none shadow-[0_10px_24px_rgba(0,0,0,0.35)] backdrop-blur-sm">
-                            ›
-                          </span>
-                        </div>
-                      )}
-                    </div>
 
                     {/* See all modal */}
                     <Dialog open={seeAllCommonOpen} onOpenChange={setSeeAllCommonOpen}>

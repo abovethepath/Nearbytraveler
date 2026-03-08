@@ -462,7 +462,8 @@ function Navbar() {
     <>
       <header
         ref={headerRef}
-        className={`sticky top-0 z-[1000] bg-white dark:bg-black shadow-sm border-b border-gray-200 desktop-navbar ${isNativeIOSApp() ? "pt-3" : ""}`}
+        className={`fixed md:sticky top-0 left-0 right-0 z-[1000] bg-white dark:bg-black shadow-sm border-b border-gray-200 desktop-navbar ${isNativeIOSApp() ? "pt-3" : ""}`}
+        style={{ paddingTop: isNativeIOSApp() ? undefined : 'env(safe-area-inset-top, 0px)' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-3">

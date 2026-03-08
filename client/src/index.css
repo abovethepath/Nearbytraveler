@@ -127,6 +127,14 @@ input:-webkit-autofill {
   }
 }
 
+/* Mobile web: prevent body bounce — only content between navbars scrolls */
+@media (max-width: 767px) {
+  html, body {
+    overscroll-behavior: none;
+    overflow-x: hidden;
+  }
+}
+
 /* Main scroll container — GPU-accelerated so fixed navbar stays painted during scroll */
 .nt-hide-scrollbar {
   -webkit-overflow-scrolling: touch;
