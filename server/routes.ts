@@ -10257,10 +10257,7 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json({ degrees: {} });
       }
 
-      // System/admin users to exclude from degree calculations
-      const EXCLUDED_SYSTEM_USERS = [1]; // nearbytravlr (1) only - user 2 is a real person and counts as mutual
-
-      // Helper function to get accepted connections for a user (excluding system users)
+      // Helper function to get accepted connections for a user
       const getAcceptedConnections = async (uid: number): Promise<number[]> => {
         const result = await db.execute(sql`
           SELECT 
@@ -10274,7 +10271,7 @@ Questions? Just reply to this message. Welcome aboard!
         `);
         return result.rows
           .map((r: any) => parseInt(r.connected_user_id))
-          .filter((id: number) => !EXCLUDED_SYSTEM_USERS.includes(id));
+          .filter((id: number) => !isNaN(id));
       };
 
       // Get 1st degree connections for the current user
@@ -10300,11 +10297,12 @@ Questions? Just reply to this message. Welcome aboard!
       for (const targetId of targetUserIds.slice(0, 50)) { // Limit to 50 users
         if (targetId === userId) continue;
         
+        // Always get target's connections to find mutual contacts
+        const target1stDegree = await getAcceptedConnections(targetId);
+        const mutualCount = user1stDegree.filter(id => target1stDegree.includes(id)).length;
+        
         // Check 1st degree (directly connected)
         if (user1stDegree.includes(targetId)) {
-          // Get target's connections to find mutuals
-          const target1stDegree = await getAcceptedConnections(targetId);
-          const mutualCount = user1stDegree.filter(id => target1stDegree.includes(id)).length;
           degrees[targetId] = { degree: 1, mutualCount };
           continue;
         }
@@ -10316,18 +10314,18 @@ Questions? Just reply to this message. Welcome aboard!
         });
         
         if (mutualFriends.length > 0) {
-          degrees[targetId] = { degree: 2, mutualCount: mutualFriends.length };
+          degrees[targetId] = { degree: 2, mutualCount };
           continue;
         }
         
         // Check 3rd degree (simplified - check if target is in 2nd degree network)
         if (user2ndDegree.has(targetId)) {
-          degrees[targetId] = { degree: 3, mutualCount: 0 };
+          degrees[targetId] = { degree: 3, mutualCount };
           continue;
         }
         
         // No connection within 3 degrees
-        degrees[targetId] = { degree: 0, mutualCount: 0 };
+        degrees[targetId] = { degree: 0, mutualCount };
       }
 
       res.json({ degrees });

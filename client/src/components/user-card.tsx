@@ -383,7 +383,7 @@ export default function UserCard({
                 <div className="w-full flex justify-center">
                   <span
                     data-role="user-card-things-pill"
-                    className="inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border"
+                    className="inline-flex items-center justify-center rounded-full px-3 py-1 text-[13px] font-bold border"
                     style={{
                       color: pickTextColor("#3b82f6", "#FF6B35"),
                       backgroundColor: 'rgba(59,130,246,0.12)',
@@ -394,13 +394,18 @@ export default function UserCard({
                     {thingsInCommon} things in common
                   </span>
                 </div>
-                <div
-                  data-role="user-card-contacts"
-                  className="mt-0.5 w-full block text-[11px] font-medium truncate"
-                  style={{ width: "100%", textAlign: "center" }}
-                >
-                  <span style={{ color: pickTextColor("#FF6B35", "#3b82f6"), textAlign: "center" }}>
-                  {contactsInCommon} connections in common
+                <div className="w-full flex justify-center mt-1">
+                  <span
+                    data-role="user-card-contacts"
+                    className="inline-flex items-center justify-center rounded-full px-3 py-1 text-[13px] font-bold border"
+                    style={{
+                      color: pickTextColor("#FF6B35", "#3b82f6"),
+                      backgroundColor: 'rgba(255,107,53,0.10)',
+                      borderColor: 'rgba(255,107,53,0.25)',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {contactsInCommon} contacts in common
                   </span>
                 </div>
               </div>
@@ -447,18 +452,24 @@ export default function UserCard({
               {!isCurrentUser && (
                 <>
                   <div
-                    className="w-full text-center mt-1"
-                    style={{ fontSize: 12, fontWeight: 700, color: pickTextColor("#3b82f6", "#FF6B35") }}
+                    className="w-full flex justify-center mt-1"
                     data-role="user-card-things"
                   >
-                    {thingsInCommon} things in common
+                    <span className="inline-flex items-center justify-center rounded-full px-3 py-1 text-[13px] font-bold border"
+                      style={{ color: pickTextColor("#3b82f6", "#FF6B35"), backgroundColor: 'rgba(59,130,246,0.12)', borderColor: 'rgba(59,130,246,0.25)' }}
+                    >
+                      {thingsInCommon} things in common
+                    </span>
                   </div>
                   <div
-                    className="w-full text-center mt-0.5"
-                    style={{ fontSize: 12, fontWeight: 500, color: pickTextColor("#9ca3af", "#3b82f6") }}
+                    className="w-full flex justify-center mt-1"
                     data-role="user-card-contacts"
                   >
-                    {contactsInCommon} connections in common
+                    <span className="inline-flex items-center justify-center rounded-full px-3 py-1 text-[13px] font-bold border"
+                      style={{ color: pickTextColor("#FF6B35", "#3b82f6"), backgroundColor: 'rgba(255,107,53,0.10)', borderColor: 'rgba(255,107,53,0.25)' }}
+                    >
+                      {contactsInCommon} contacts in common
+                    </span>
                   </div>
                 </>
               )}
