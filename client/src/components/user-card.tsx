@@ -561,7 +561,7 @@ export default function UserCard({
                   style={{ width: "100%", textAlign: "center" }}
                 >
                   <span style={{ color: pickTextColor("#FF6B35", "#3b82f6") }}>
-                  {contactsInCommon} connections in common
+                  {contactsInCommon} {contactsInCommon === 1 ? 'connection' : 'connections'} in common
                   </span>
                 </div>
               </div>
@@ -619,7 +619,7 @@ export default function UserCard({
                     style={{ fontSize: 12, fontWeight: 500, color: pickTextColor("#9ca3af", "#3b82f6") }}
                     data-role="user-card-contacts"
                   >
-                    {contactsInCommon} connections in common
+                    {contactsInCommon} {contactsInCommon === 1 ? 'connection' : 'connections'} in common
                   </div>
                 </>
               )}

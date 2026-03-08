@@ -577,7 +577,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     }}
                                     className="text-xs text-gray-400 hover:text-gray-200 underline underline-offset-2"
                                   >
-                                    Connections in Common · {sharedContactsCount}
+                                    {sharedContactsCount === 1 ? 'Connection' : 'Connections'} in Common · {sharedContactsCount}
                                   </button>
                                 ) : (
                                   <span className="text-xs text-gray-400">Connections in Common · 0</span>
