@@ -66,6 +66,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const [shareWithFriendsOpen, setShareWithFriendsOpen] = React.useState(false);
   const [seeAllCommonOpen, setSeeAllCommonOpen] = React.useState(false);
 
+  React.useEffect(() => {
+    const handler = () => setSeeAllCommonOpen(true);
+    window.addEventListener('open-common-modal', handler);
+    return () => window.removeEventListener('open-common-modal', handler);
+  }, []);
+
   const origin = typeof window !== "undefined" ? window.location.origin : "https://nearbytraveler.org";
   const profileUrl = user?.username ? `${origin}/profile/${user.username}` : `${origin}/profile`;
   const shareText = `Check out this profile on NearbyTraveler: @${user?.username || "nearbytraveler"}\n\n${profileUrl}`;
@@ -503,7 +509,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       </div>
 
                       {!isMobileWeb && (
-                        <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-start pt-9 max-h-48 overflow-hidden justify-center">
+                        <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-start mt-8 max-h-48 overflow-hidden justify-center cursor-pointer hover:bg-black/60 transition-colors" onClick={() => setSeeAllCommonOpen(true)}>
                           {totalCommon > 0 ? (
                             <>
                               {/* Line 1: count */}
@@ -570,10 +576,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     type="button"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      const el =
-                                        document.querySelector('[data-testid="mutual-connections"]') ||
-                                        document.querySelector('[data-testid="mutual-connections-desktop"]');
-                                      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                                      setSeeAllCommonOpen(true);
                                     }}
                                     className="text-xs text-gray-400 hover:text-gray-200 underline underline-offset-2"
                                   >
@@ -606,7 +609,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                     {/* Mobile-only "What You Have in Common" hero card */}
                     {isMobileWeb && totalCommon > 0 && (
-                      <div className="mt-4 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4">
+                      <div className="mt-4 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 cursor-pointer hover:bg-black/60 transition-colors" onClick={() => setSeeAllCommonOpen(true)}>
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <div className="flex items-center gap-1.5">
                             <span className="text-lg">🤝</span>

@@ -679,7 +679,12 @@ export function ProfileTabs(props: ProfilePageProps) {
               if (allShared.length === 0 && mutuals === 0) return null;
               const topNames = allShared.slice(0, 3);
               return (
-                <div className="rounded-xl border border-green-200 dark:border-green-800/50 bg-green-50/60 dark:bg-green-950/30 px-4 py-3 flex gap-3 items-start shadow-sm">
+                <div
+                  className="rounded-xl border border-green-200 dark:border-green-800/50 bg-green-50/60 dark:bg-green-950/30 px-4 py-3 flex gap-3 items-start shadow-sm cursor-pointer hover:bg-green-100/60 dark:hover:bg-green-900/40 transition-colors"
+                  onClick={() => {
+                    window.dispatchEvent(new CustomEvent('open-common-modal'));
+                  }}
+                >
                   <Sparkles className="w-4 h-4 text-green-500 dark:text-green-400 mt-0.5 flex-shrink-0" />
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-green-800 dark:text-green-300 mb-1">Why you might get along</p>
