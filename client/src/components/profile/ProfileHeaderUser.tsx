@@ -499,43 +499,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             )}
                           </div>
 
-                          {isMobileWeb && (
-                            <>
-                              <div className="flex flex-wrap items-center gap-2 mt-2">
-                                {/* Subtle share icon near actions */}
-                                {shareButton(true)}
-                              </div>
-
-                              <div className="mt-2">
-                                {currentUser ? (
-                                  <ReportUserButton
-                                    userId={currentUser.id}
-                                    targetUserId={user.id}
-                                    targetUsername={user.username}
-                                    variant="ghost"
-                                    size="sm"
-                                    showIcon={false}
-                                    appearance="link"
-                                    className="!bg-transparent !border-0 px-0 py-0 text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
-                                  />
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      setLocation("/auth");
-                                    }}
-                                    onPointerDown={(e) => e.stopPropagation()}
-                                    className="text-sm text-red-200 hover:text-red-100 underline underline-offset-2 font-medium"
-                                    data-radix-dismissable-layer-ignore=""
-                                  >
-                                    Report
-                                  </button>
-                                )}
-                              </div>
-                            </>
-                          )}
                         </div>
                       </div>
 
@@ -1056,35 +1019,39 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   className="rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
                                 />
                               )}
-                              {/* Other user's profile: share button near action buttons (not beside username) */}
-                              {shareButton(true)}
-                              {user && (
-                                currentUser ? (
-                                  <ReportUserButton
-                                    userId={currentUser.id}
-                                    targetUserId={user.id}
-                                    targetUsername={user.username}
-                                    variant="ghost"
-                                    size="sm"
-                                    showIcon={false}
-                                    appearance="link"
-                                    className="!bg-transparent !border-0 px-0 py-0 underline underline-offset-2 font-medium text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400"
-                                  />
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      setLocation('/auth');
-                                    }}
-                                    onPointerDown={(e) => e.stopPropagation()}
-                                    className="text-xs text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer shrink-0"
-                                    data-radix-dismissable-layer-ignore=""
-                                  >
-                                    Report
-                                  </button>
-                                )
+                              {/* Other user's profile: share + report — desktop only (mobile has these in the About section below) */}
+                              {!isMobileWeb && (
+                                <>
+                                  {shareButton(true)}
+                                  {user && (
+                                    currentUser ? (
+                                      <ReportUserButton
+                                        userId={currentUser.id}
+                                        targetUserId={user.id}
+                                        targetUsername={user.username}
+                                        variant="ghost"
+                                        size="sm"
+                                        showIcon={false}
+                                        appearance="link"
+                                        className="!bg-transparent !border-0 px-0 py-0 underline underline-offset-2 font-medium text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400"
+                                      />
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          setLocation('/auth');
+                                        }}
+                                        onPointerDown={(e) => e.stopPropagation()}
+                                        className="text-xs text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 underline underline-offset-2 px-1 py-1 rounded font-medium cursor-pointer shrink-0"
+                                        data-radix-dismissable-layer-ignore=""
+                                      >
+                                        Report
+                                      </button>
+                                    )
+                                  )}
+                                </>
                               )}
                             </>
                           )}
