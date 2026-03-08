@@ -130,11 +130,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   // Lock page scroll so the header and input box never scroll off screen
   useEffect(() => {
     const prev = document.body.style.overflow;
+    const prevPos = document.body.style.position;
+    const prevHtml = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
     document.documentElement.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = prev;
-      document.documentElement.style.overflow = '';
+      document.body.style.position = prevPos;
+      document.body.style.width = '';
+      document.documentElement.style.overflow = prevHtml;
     };
   }, []);
 
@@ -1660,7 +1666,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   };
 
   return (
-    <div className="flex bg-gray-900 text-white overflow-hidden w-full h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5.5rem)] min-h-0" data-chat-page="true">
+    <div className="flex bg-gray-900 text-white overflow-hidden w-full h-[calc(100svh-10rem)] md:h-[calc(100dvh-5.5rem)] min-h-0" data-chat-page="true">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[250px] bg-gray-800 border-r border-gray-700">
@@ -2163,7 +2169,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {/* Scrollable messages area */}
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pt-1 pb-2 bg-[#0b141a]" style={{
-          WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'contain',
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23999999' stroke-width='2' opacity='0.18'%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Ccircle cx='150' cy='300' r='30'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Ccircle cx='100' cy='500' r='40'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Ccircle cx='150' cy='700' r='35'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3C/svg%3E")`
         }}>
           <div className="flex flex-col min-h-full justify-end w-full">
@@ -2379,7 +2385,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         )}
 
         {/* Input box — native app: no bottom nav; mobile web: pb for bottom nav + safe area; desktop: pb-4 mb-4 for lift from edge */}
-        <div className={`chat-input-area px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-4' : 'pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))] md:pb-4 md:mb-4 lg:pb-6 lg:mb-4'}`}>
+        <div className={`chat-input-area px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : 'pb-[calc(env(safe-area-inset-bottom,0px)+4rem)] md:pb-4'}`}>
           <div className="w-full">
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
           {!messagesLoaded && !isWsConnected && !loadError && (
