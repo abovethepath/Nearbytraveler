@@ -84,7 +84,7 @@ export default function Home() {
   const [connectTargetUser, setConnectTargetUser] = useState<any>(null);
   const USERS_PAGE_SIZE = 8;
   const [usersDisplayCount, setUsersDisplayCount] = useState(USERS_PAGE_SIZE);
-  const [sortBy, setSortBy] = useState<'available_now' | 'recent' | 'active' | 'compatibility' | 'closest_nearby' | 'alphabetical' | 'new_to_town'>('available_now');
+  const [sortBy, setSortBy] = useState<'available_now' | 'contacts' | 'active' | 'recent' | 'compatibility' | 'closest_nearby' | 'new_to_town'>('available_now');
   const isDarkMode = document.documentElement.classList.contains("dark");
   
   // Compact mode via URL parameter (add ?compact=true for smaller cards)
@@ -585,6 +585,15 @@ export default function Home() {
           const aAvail = effectiveAvailableNowIds.has(Number(a.id)) ? 1 : 0;
           const bAvail = effectiveAvailableNowIds.has(Number(b.id)) ? 1 : 0;
           if (bAvail !== aAvail) return bAvail - aAvail;
+          return new Date(b.lastSeenAt || b.createdAt || 0).getTime() - new Date(a.lastSeenAt || a.createdAt || 0).getTime();
+        }
+        case 'contacts': {
+          // Show connected users first, then non-connected
+          const currentUserId = user?.id || currentUserProfile?.id || effectiveUser?.id;
+          const aConnected = userConnections?.some((conn: any) => conn.connectedUserId === a.id || conn.userId === a.id) ? 1 : 0;
+          const bConnected = userConnections?.some((conn: any) => conn.connectedUserId === b.id || conn.userId === b.id) ? 1 : 0;
+          if (bConnected !== aConnected) return bConnected - aConnected;
+          // Within each group, sort by most recently active
           return new Date(b.lastSeenAt || b.createdAt || 0).getTime() - new Date(a.lastSeenAt || a.createdAt || 0).getTime();
         }
         case 'recent':
@@ -1903,12 +1912,12 @@ export default function Home() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="available_now" className="text-green-600 dark:text-green-400 font-semibold">🟢 Available Now</SelectItem>
-                    <SelectItem value="recent">Recent</SelectItem>
+                    <SelectItem value="contacts">Contacts</SelectItem>
                     <SelectItem value="active">Most Active</SelectItem>
+                    <SelectItem value="recent">Recent</SelectItem>
                     <SelectItem value="compatibility">Compatibility</SelectItem>
                     <SelectItem value="closest_nearby">Closest</SelectItem>
                     <SelectItem value="new_to_town">New to Town</SelectItem>
-                    <SelectItem value="alphabetical">A-Z</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
