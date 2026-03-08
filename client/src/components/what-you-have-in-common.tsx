@@ -111,7 +111,8 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
     enabled: !!(currentUserId && otherUserId && currentUserId !== otherUserId)
   });
 
-  // Filter out test/admin accounts from mutual connections (keep nearbytrav — real shared contact)
+  // nearbytrav counts as universal connection — do NOT filter it out
+  // Only filter test/admin accounts
   const mutualConnections = rawMutualConnections.filter((connection: any) => 
     connection.username !== 'admin' &&
     connection.username !== 'test'

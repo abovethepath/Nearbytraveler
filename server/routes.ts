@@ -6281,7 +6281,7 @@ Questions? Just reply to this message. Welcome aboard!
         }
 
         // Run compatibility + connectionDegree in parallel — neither can crash the bundle
-        const EXCLUDED_SYSTEM_USERS = [1]; // nearbytravlr (1) only
+        // nearbytrav counts as universal connection — do NOT exclude any user IDs here
         const getBundleConnections = async (uid: number): Promise<number[]> => {
           const result = await db.execute(sql`
             SELECT CASE WHEN requester_id = ${uid} THEN receiver_id ELSE requester_id END AS cid
@@ -6290,7 +6290,7 @@ Questions? Just reply to this message. Welcome aboard!
           `);
           return (result.rows as any[])
             .map((r) => parseInt(r.cid))
-            .filter((id) => !isNaN(id) && !EXCLUDED_SYSTEM_USERS.includes(id));
+            .filter((id) => !isNaN(id));
         };
 
         const [compatRes, degreeRes] = await Promise.allSettled([
@@ -10134,10 +10134,7 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json({ degree: 0, mutualCount: 0, mutuals: [] });
       }
 
-      // System/admin users to exclude from degree calculations
-      const EXCLUDED_SYSTEM_USERS = [1]; // nearbytravlr (1) only
-
-      // Helper function to get accepted connections for a user (excluding system users)
+      // nearbytrav counts as universal connection — do NOT exclude any user IDs here
       const getAcceptedConnections = async (uid: number): Promise<number[]> => {
         const result = await db.execute(sql`
           SELECT 
@@ -10149,10 +10146,9 @@ Questions? Just reply to this message. Welcome aboard!
           WHERE status = 'accepted' 
           AND (requester_id = ${uid} OR receiver_id = ${uid})
         `);
-        // Filter out system users from connections
         return result.rows
           .map((r: any) => parseInt(r.connected_user_id))
-          .filter((id: number) => !EXCLUDED_SYSTEM_USERS.includes(id));
+          .filter((id: number) => !isNaN(id));
       };
 
       // Get 1st degree connections for both users
@@ -10257,7 +10253,7 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json({ degrees: {} });
       }
 
-      // Helper function to get accepted connections for a user
+      // nearbytrav counts as universal connection — do NOT exclude any user IDs here
       const getAcceptedConnections = async (uid: number): Promise<number[]> => {
         const result = await db.execute(sql`
           SELECT 
@@ -10345,10 +10341,7 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ error: 'User ID is required' });
       }
 
-      // System/admin users to exclude from degree calculations
-      const EXCLUDED_SYSTEM_USERS = [1]; // nearbytravlr (1) only - user 2 is a real person and counts as mutual
-
-      // Helper function to get accepted connections for a user (excluding system users)
+      // nearbytrav counts as universal connection — do NOT exclude any user IDs here
       const getAcceptedConnections = async (uid: number): Promise<number[]> => {
         const result = await db.execute(sql`
           SELECT 
@@ -10362,7 +10355,7 @@ Questions? Just reply to this message. Welcome aboard!
         `);
         return result.rows
           .map((r: any) => parseInt(r.connected_user_id))
-          .filter((id: number) => !EXCLUDED_SYSTEM_USERS.includes(id));
+          .filter((id: number) => !isNaN(id));
       };
 
       // Get 1st degree connections
