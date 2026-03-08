@@ -193,86 +193,78 @@ export default function DMChat() {
   return (
     <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
       {/* LEFT PANEL — desktop only, same height as WhatsAppChat so layout locks perfectly */}
-      <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 bg-white dark:bg-gray-900 border-r-4 border-gray-400 dark:border-gray-500 overflow-hidden h-[calc(100dvh-5.5rem)]">
-        {/* Back to messages — pinned at top */}
+      <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 overflow-hidden h-[calc(100dvh-5.5rem)]" style={{ backgroundColor: '#0d1117' }}>
         <div className="px-6 pt-5 pb-2">
           <button
             onClick={() => setLocation('/messages')}
-            className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-300 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Messages
           </button>
         </div>
 
-        <div className="flex flex-col items-start gap-4 px-6 pt-16 pb-8 border-l-4 border-orange-400 dark:border-orange-500 ml-3">
+        <div className="flex flex-col items-start gap-4 px-6 pt-16 pb-8 border-l-4 border-gray-600 ml-3">
 
-          {/* Avatar */}
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt={displayName}
-              className="w-28 h-28 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700"
+              className="w-28 h-28 rounded-full object-cover ring-2 ring-gray-700"
             />
           ) : (
             <SimpleAvatar user={otherUser} size="xl" className="w-28 h-28 text-3xl" />
           )}
 
-          {/* Username */}
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white leading-tight">
+          <h2 className="text-xl font-bold text-white leading-tight">
             @{displayName}
           </h2>
 
-          {/* Hometown */}
           {hometownDisplay && (
-            <p className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+            <p className="flex items-center gap-1.5 text-sm text-gray-400">
               <MapPin className="w-3.5 h-3.5 text-orange-400 shrink-0" />
               {hometownDisplay}
             </p>
           )}
 
-          {/* Travel destination — only when actively traveling */}
           {travelDestination && (
-            <p className="flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 font-medium">
+            <p className="flex items-center gap-1.5 text-sm text-blue-400 font-medium">
               <Plane className="w-3.5 h-3.5 shrink-0" />
               Traveling to {travelDestination}
             </p>
           )}
 
-          {/* View Full Profile button */}
           <Button
             onClick={() => setLocation(`/profile/${otherUserId}`)}
             variant="outline"
-            className="w-full gap-2 text-sm border-gray-200 dark:border-gray-700 hover:border-orange-300 dark:hover:border-orange-600 hover:text-orange-600 dark:hover:text-orange-400 transition-colors mt-1"
+            className="w-full gap-2 text-sm border-gray-700 text-gray-300 hover:border-orange-600 hover:text-orange-400 transition-colors mt-1"
           >
             <User className="w-4 h-4" />
             View Full Profile
           </Button>
 
-          {/* Divider */}
-          <hr className="w-full border-gray-200 dark:border-gray-700" />
+          <hr className="w-full border-gray-700" />
 
-          {/* Stats row — clickable tiles, centered */}
           <div className="flex justify-center gap-3 w-full">
             <button
               onClick={() => setShowThingsModal(true)}
-              className="flex-1 flex flex-col items-center gap-1 rounded-xl bg-gray-50 dark:bg-gray-800 py-3 px-2 cursor-pointer hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors"
+              className="flex-1 flex flex-col items-center gap-1 rounded-xl bg-gray-800 py-3 px-2 cursor-pointer hover:bg-gray-700 transition-colors"
             >
               <div className="flex items-center gap-1.5 text-orange-500">
                 <Star className="w-4 h-4" />
-                <span className="text-lg font-bold text-gray-900 dark:text-white">{thingsInCommonCount}</span>
+                <span className="text-lg font-bold text-white">{thingsInCommonCount}</span>
               </div>
-              <span className="text-xs text-gray-500 dark:text-gray-400 text-center leading-tight">Things in Common</span>
+              <span className="text-xs text-gray-400 text-center leading-tight">Things in Common</span>
             </button>
             <button
               onClick={() => setShowContactsModal(true)}
-              className="flex-1 flex flex-col items-center gap-1 rounded-xl bg-gray-50 dark:bg-gray-800 py-3 px-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors"
+              className="flex-1 flex flex-col items-center gap-1 rounded-xl bg-gray-800 py-3 px-2 cursor-pointer hover:bg-gray-700 transition-colors"
             >
               <div className="flex items-center gap-1.5 text-blue-500">
                 <Users className="w-4 h-4" />
-                <span className="text-lg font-bold text-gray-900 dark:text-white">{contactsInCommonCount}</span>
+                <span className="text-lg font-bold text-white">{contactsInCommonCount}</span>
               </div>
-              <span className="text-xs text-gray-500 dark:text-gray-400 text-center leading-tight">{contactsInCommonCount === 1 ? 'Connection' : 'Connections'} in Common</span>
+              <span className="text-xs text-gray-400 text-center leading-tight">{contactsInCommonCount === 1 ? 'Connection' : 'Connections'} in Common</span>
             </button>
           </div>
 
@@ -280,7 +272,7 @@ export default function DMChat() {
       </aside>
 
       {/* RIGHT PANEL — chat (full width on mobile, 70% on desktop) */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden md:border-l-4 md:border-l-gray-600 md:border-r-4 md:border-r-gray-500">
         {chatComponent}
       </div>
 
