@@ -362,8 +362,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  const el = document.querySelector('[data-testid="mutual-connections"]') || document.querySelector('[data-testid="mutual-connections-desktop"]');
-                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  if (openTab) openTab('contacts');
+                  setTimeout(() => {
+                    const el = document.getElementById('connections-in-common-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 200);
                 }}
                 className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white hover:bg-black/30 transition-colors"
               >
@@ -3102,6 +3105,41 @@ export function ProfileTabs(props: ProfilePageProps) {
               style={{zIndex: 10, position: 'relative'}} 
               data-testid="contacts-content"
             >
+              {!isOwnProfile && (() => {
+                const degreeData = (props as any)?.connectionDegreeData as { mutualCount?: number; mutuals?: Array<{ id: number; username: string; name: string; profileImage?: string }> } | undefined;
+                const mutuals = degreeData?.mutuals || [];
+                if (mutuals.length === 0) return null;
+                return (
+                  <Card id="connections-in-common-section" className="bg-white border border-gray-200 dark:bg-gray-900 dark:border-gray-700">
+                    <CardHeader className="bg-white dark:bg-gray-900">
+                      <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+                        <Users className="w-5 h-5 text-blue-500" />
+                        Connections in Common ({mutuals.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {mutuals.map((mutual) => (
+                          <div
+                            key={mutual.id}
+                            className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 flex flex-col items-center text-center gap-2 cursor-pointer"
+                            onClick={() => setLocation(`/profile/${mutual.id}`)}
+                          >
+                            <SimpleAvatar
+                              user={mutual}
+                              size="md"
+                              className="w-14 h-14 rounded-full border-2 object-cover flex-shrink-0"
+                            />
+                            <p className="font-medium text-sm text-gray-900 dark:text-white break-words">
+                              @{mutual.username}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
               <Card className="bg-white border border-gray-200 dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center justify-between text-black dark:text-white">

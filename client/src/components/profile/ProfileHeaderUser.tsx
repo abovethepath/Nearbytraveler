@@ -597,8 +597,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     type="button"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      const el = document.getElementById('connections-in-common-section');
-                                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                      if (openTab) { openTab('contacts'); }
+                                      else { setLocation(`/profile/${user.id}?tab=contacts`); }
+                                      setTimeout(() => {
+                                        const el = document.getElementById('connections-in-common-section');
+                                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                      }, 200);
                                     }}
                                     className="text-xs text-gray-400 hover:text-gray-200 underline underline-offset-2"
                                   >
