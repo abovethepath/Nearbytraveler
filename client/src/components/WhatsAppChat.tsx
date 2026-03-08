@@ -1109,7 +1109,19 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 }
               } else if (data.chatroomId === chatId) {
                 setMessages(prev => {
+                  // Already have the real message
                   if (prev.some(m => m.id === data.payload.id)) return prev;
+                  // Replace the matching optimistic (temp) message sent by this user
+                  const optIdx = prev.findIndex(m =>
+                    m.id < 0 &&
+                    m.content === data.payload.content &&
+                    m.senderId == data.payload.senderId
+                  );
+                  if (optIdx >= 0) {
+                    const next = [...prev];
+                    next[optIdx] = data.payload;
+                    return next;
+                  }
                   return [...prev, data.payload];
                 });
                 scrollToBottom();
@@ -1252,6 +1264,28 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     // WebSocket is still used for real-time receipt/typing/sync.
     if (chatType !== 'dm' && wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       console.log('✅ Sending message via WebSocket...');
+
+      // Optimistic update — show the message immediately without waiting for server echo
+      const tempId = -(Date.now());
+      let currentUserData: any = {};
+      try { currentUserData = JSON.parse(localStorage.getItem('travelconnect_user') || localStorage.getItem('user') || localStorage.getItem('current_user') || '{}'); } catch { /**/ }
+      const optimisticMsg: Message = {
+        id: tempId,
+        senderId: currentUserId,
+        content,
+        messageType: 'text',
+        replyToId,
+        createdAt: new Date().toISOString(),
+        sender: {
+          id: currentUserId,
+          username: currentUserData.username || '',
+          name: currentUserData.name || '',
+          profileImage: currentUserData.profileImage
+        }
+      };
+      setMessages(prev => [...prev, optimisticMsg]);
+      scrollToBottom();
+
       const wsPayload: any = {
         content,
         messageType: 'text',
