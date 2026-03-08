@@ -100,7 +100,7 @@ export default function DMChat() {
   });
 
   const { data: otherUserTravelPlans = [] } = useQuery<any[]>({
-    queryKey: [`/api/travel-plans/user/${otherUserId}`],
+    queryKey: [`/api/travel-plans/${otherUserId}`],
     enabled: !!otherUserId,
   });
 
@@ -193,7 +193,7 @@ export default function DMChat() {
   return (
     <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
       {/* LEFT PANEL — desktop only, same height as WhatsAppChat so layout locks perfectly */}
-      <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 overflow-hidden h-[calc(100dvh-5.5rem)] border-l-[3px] border-r-[3px] border-[#e0e0e0] dark:border-[#2d2d2d]" style={{ backgroundColor: '#0d1117' }}>
+      <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 overflow-hidden h-full border-l-[3px] border-r-[3px] border-[#e0e0e0] dark:border-[#2d2d2d]" style={{ backgroundColor: '#0d1117' }}>
         <div className="px-6 pt-5 pb-2">
           <button
             onClick={() => setLocation('/messages')}
@@ -204,7 +204,7 @@ export default function DMChat() {
           </button>
         </div>
 
-        <div className="flex flex-col items-start gap-4 px-6 pt-16 pb-8">
+        <div className="flex flex-col items-center gap-4 px-6 pt-16 pb-8 flex-1">
 
           {avatarUrl ? (
             <img
@@ -216,19 +216,19 @@ export default function DMChat() {
             <SimpleAvatar user={otherUser} size="xl" className="w-28 h-28 text-3xl" />
           )}
 
-          <h2 className="text-xl font-bold text-white leading-tight">
+          <h2 className="text-xl font-bold text-white leading-tight text-center">
             @{displayName}
           </h2>
 
           {hometownDisplay && (
-            <p className="flex items-center gap-1.5 text-sm text-gray-400">
+            <p className="flex items-center justify-center gap-1.5 text-sm text-gray-400">
               <MapPin className="w-3.5 h-3.5 text-orange-400 shrink-0" />
               {hometownDisplay}
             </p>
           )}
 
           {travelDestination && (
-            <p className="flex items-center gap-1.5 text-sm text-blue-400 font-medium">
+            <p className="flex items-center justify-center gap-1.5 text-sm text-blue-400 font-medium">
               <Plane className="w-3.5 h-3.5 shrink-0" />
               Traveling to {travelDestination}
             </p>
