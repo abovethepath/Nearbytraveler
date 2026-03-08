@@ -385,7 +385,8 @@ function Router() {
     location.startsWith('/dm-chat/') ||
     location.startsWith('/event-chat/') ||
     location.startsWith('/meetup-chat/') ||
-    location.startsWith('/quick-meetup-chat/')
+    location.startsWith('/quick-meetup-chat/') ||
+    (location.startsWith('/messages/') && location.split('/')[2])
   );
 
   const landingPageRoutes = [
@@ -1887,9 +1888,9 @@ function Router() {
         <>
           {console.log('🔍 APP ROUTING: Authentication evidence found, showing authenticated app for location:', location)}
           
-          {/* Chat pages: navbar + chat locked inside a 100dvh flex column so nothing can scroll */}
+          {/* Chat pages: fixed to viewport so absolutely nothing can scroll */}
           {isChatPage ? (
-            <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 40 }}>
               {!isNativeIOSApp() && <Navbar />}
               <div style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
                 {renderPage()}

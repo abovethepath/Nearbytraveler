@@ -127,15 +127,26 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
   }, [muteKey]);
 
-  // Lock page scroll so the header and input box never scroll off screen
+  // Lock ALL page scroll — position:fixed on body is the only reliable way on iOS Safari
   useEffect(() => {
-    const prev = document.body.style.overflow;
-    const prevHtml = document.documentElement.style.overflow;
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
+    const s = document.body.style;
+    const h = document.documentElement.style;
+    const prev = { overflow: s.overflow, position: s.position, width: s.width, height: s.height, top: s.top, left: s.left, htmlOverflow: h.overflow };
+    s.overflow = 'hidden';
+    s.position = 'fixed';
+    s.width = '100%';
+    s.height = '100%';
+    s.top = '0';
+    s.left = '0';
+    h.overflow = 'hidden';
     return () => {
-      document.body.style.overflow = prev;
-      document.documentElement.style.overflow = prevHtml;
+      s.overflow = prev.overflow;
+      s.position = prev.position;
+      s.width = prev.width;
+      s.height = prev.height;
+      s.top = prev.top;
+      s.left = prev.left;
+      h.overflow = prev.htmlOverflow;
     };
   }, []);
 
