@@ -191,7 +191,7 @@ export default function DMChat() {
   );
 
   return (
-    <div className="flex overflow-hidden">
+    <div className="flex overflow-hidden h-full">
       {/* LEFT PANEL — desktop only, same height as WhatsAppChat so layout locks perfectly */}
       <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 bg-white dark:bg-gray-900 border-r-4 border-gray-400 dark:border-gray-500 overflow-hidden h-[calc(100dvh-5.5rem)]">
         {/* Back to messages — pinned at top */}
