@@ -193,7 +193,7 @@ export default function DMChat() {
   return (
     <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
       {/* LEFT PANEL — desktop only, same height as WhatsAppChat so layout locks perfectly */}
-      <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 overflow-hidden h-[calc(100dvh-5.5rem)]" style={{ backgroundColor: '#0d1117' }}>
+      <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 overflow-hidden h-[calc(100dvh-5.5rem)] border-l-[3px] border-r-[3px] border-[#e0e0e0] dark:border-[#2d2d2d]" style={{ backgroundColor: '#0d1117' }}>
         <div className="px-6 pt-5 pb-2">
           <button
             onClick={() => setLocation('/messages')}
@@ -204,7 +204,7 @@ export default function DMChat() {
           </button>
         </div>
 
-        <div className="flex flex-col items-start gap-4 px-6 pt-16 pb-8 border-l-4 border-gray-600 ml-3">
+        <div className="flex flex-col items-start gap-4 px-6 pt-16 pb-8">
 
           {avatarUrl ? (
             <img
@@ -272,7 +272,7 @@ export default function DMChat() {
       </aside>
 
       {/* RIGHT PANEL — chat (full width on mobile, 70% on desktop) */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden md:border-l-4 md:border-l-gray-600 md:border-r-4 md:border-r-gray-500">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden md:border-r-[3px] md:border-r-[#e0e0e0] md:dark:border-r-[#2d2d2d]">
         {chatComponent}
       </div>
 
