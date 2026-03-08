@@ -84,7 +84,7 @@ export default function Home() {
   const [connectTargetUser, setConnectTargetUser] = useState<any>(null);
   const USERS_PAGE_SIZE = 8;
   const [usersDisplayCount, setUsersDisplayCount] = useState(USERS_PAGE_SIZE);
-  const [sortBy, setSortBy] = useState<'default' | 'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical' | 'available_now'>('default');
+  const [sortBy, setSortBy] = useState<'available_now' | 'recent' | 'active' | 'compatibility' | 'closest_nearby' | 'alphabetical' | 'new_to_town'>('available_now');
   const isDarkMode = document.documentElement.classList.contains("dark");
   
   // Compact mode via URL parameter (add ?compact=true for smaller cards)
@@ -580,60 +580,53 @@ export default function Home() {
 
       // Then apply the selected sorting
       switch (sortBy) {
-        case 'closest_nearby':
-          // Sort by location proximity - prioritize same city, then state, then country
-          const currentUser = user || JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
-          const currentCity = currentUser?.hometownCity?.toLowerCase() || '';
-          const currentState = currentUser?.hometownState?.toLowerCase() || '';
-          const currentCountry = currentUser?.hometownCountry?.toLowerCase() || '';
-
-          // Calculate proximity score (higher = closer)
-          const getProximityScore = (user: any) => {
-            const userCity = user.hometownCity?.toLowerCase() || '';
-            const userState = user.hometownState?.toLowerCase() || '';
-            const userCountry = user.hometownCountry?.toLowerCase() || '';
-
-            if (userCity === currentCity) return 100; // Same city
-            if (userState === currentState) return 50; // Same state/region
-            if (userCountry === currentCountry) return 25; // Same country
-            return 0; // Different country
-          };
-
-          return getProximityScore(b) - getProximityScore(a);
+        case 'available_now': {
+          // Online/active users first, then by most recently seen
+          const aAvail = effectiveAvailableNowIds.has(Number(a.id)) ? 1 : 0;
+          const bAvail = effectiveAvailableNowIds.has(Number(b.id)) ? 1 : 0;
+          if (bAvail !== aAvail) return bAvail - aAvail;
+          return new Date(b.lastSeenAt || b.createdAt || 0).getTime() - new Date(a.lastSeenAt || a.createdAt || 0).getTime();
+        }
         case 'recent':
-          // Sort by creation date (most recent first)
-          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+          // Most recently active (last seen) first
+          return new Date(b.lastSeenAt || b.createdAt || 0).getTime() - new Date(a.lastSeenAt || a.createdAt || 0).getTime();
         case 'active':
-          // Sort by recently active users
-          return new Date(b.lastLocationUpdate || b.createdAt || 0).getTime() - new Date(a.lastLocationUpdate || a.createdAt || 0).getTime();
-        case 'aura':
-          // Sort by Travel Aura points (highest first)
-          return (b.aura || 0) - (a.aura || 0);
-        case 'references':
-          // Sort by number of references/reviews (assuming references are stored in a field)
-          const aReferences = a.references?.length || 0;
-          const bReferences = b.references?.length || 0;
-          return bReferences - aReferences;
+          // Most active users first — aura is awarded for all platform actions
+          // (messages, meetups, events, trips, photos, connections) making it the
+          // best available proxy for cumulative activity. Break ties by last seen.
+          if ((b.aura || 0) !== (a.aura || 0)) return (b.aura || 0) - (a.aura || 0);
+          return new Date(b.lastSeenAt || b.createdAt || 0).getTime() - new Date(a.lastSeenAt || a.createdAt || 0).getTime();
         case 'compatibility': {
-          // Sort by actual shared things in common with the current user (not the user's own total)
+          // Sort by actual shared things in common with the current user
           const aCompat = buildFastCompatibilityData(a);
           const bCompat = buildFastCompatibilityData(b);
           const aShared = aCompat.sharedInterests.length + aCompat.sharedActivities.length + aCompat.sharedCountries.length + aCompat.sharedLanguages.length;
           const bShared = bCompat.sharedInterests.length + bCompat.sharedActivities.length + bCompat.sharedCountries.length + bCompat.sharedLanguages.length;
           return bShared - aShared;
         }
-        case 'travel_experience':
-          // Sort by travel experience (number of countries visited)
-          const aCountries = a.countriesVisited?.length || 0;
-          const bCountries = b.countriesVisited?.length || 0;
-          return bCountries - aCountries;
-        case 'available_now':
-          const aAvail = effectiveAvailableNowIds.has(Number(a.id)) ? 1 : 0;
-          const bAvail = effectiveAvailableNowIds.has(Number(b.id)) ? 1 : 0;
-          if (bAvail !== aAvail) return bAvail - aAvail;
-          return new Date(b.lastLocationUpdate || b.createdAt || 0).getTime() - new Date(a.lastLocationUpdate || a.createdAt || 0).getTime();
+        case 'closest_nearby': {
+          // Sort by location proximity — same city > same state > same country
+          const currentUser = user || JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
+          const currentCity = currentUser?.hometownCity?.toLowerCase() || '';
+          const currentState = currentUser?.hometownState?.toLowerCase() || '';
+          const currentCountry = currentUser?.hometownCountry?.toLowerCase() || '';
+          const getProximityScore = (u: any) => {
+            if ((u.hometownCity?.toLowerCase() || '') === currentCity && currentCity) return 100;
+            if ((u.hometownState?.toLowerCase() || '') === currentState && currentState) return 50;
+            if ((u.hometownCountry?.toLowerCase() || '') === currentCountry && currentCountry) return 25;
+            return 0;
+          };
+          return getProximityScore(b) - getProximityScore(a);
+        }
         case 'alphabetical':
           return (a.username || '').localeCompare(b.username || '');
+        case 'new_to_town': {
+          // New-to-town users first, then by most recently active
+          const aNew = (a.isNewToTown && a.newToTownUntil && new Date(a.newToTownUntil) > new Date()) ? 1 : 0;
+          const bNew = (b.isNewToTown && b.newToTownUntil && new Date(b.newToTownUntil) > new Date()) ? 1 : 0;
+          if (bNew !== aNew) return bNew - aNew;
+          return new Date(b.lastSeenAt || b.createdAt || 0).getTime() - new Date(a.lastSeenAt || a.createdAt || 0).getTime();
+        }
         default:
           return 0;
       }
@@ -1122,7 +1115,7 @@ export default function Home() {
       // 3. They're currently traveling (should see themselves in their destination)
       // 4. Sorted by "recent" (newest members) - user should see themselves as newest
       // 5. They have Available Now active - show their card with green badge
-      if (filters.location || filters.search || effectiveUser?.isCurrentlyTraveling || sortBy === 'recent' || sortBy === 'default' || sortBy === 'available_now' || effectiveAvailableNowIds.has(Number(otherUser.id))) return true;
+      if (filters.location || filters.search || effectiveUser?.isCurrentlyTraveling || sortBy === 'recent' || sortBy === 'available_now' || effectiveAvailableNowIds.has(Number(otherUser.id))) return true;
 
       // Only exclude from general browsing without any specific context
       return false;
@@ -1906,18 +1899,15 @@ export default function Home() {
                     data-testid="select-sort"
                   >
                     <ArrowUpDown className="w-3.5 h-3.5 flex-shrink-0" />
-                    {sortBy !== 'default' && <SelectValue />}
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="default">Default</SelectItem>
                     <SelectItem value="available_now" className="text-green-600 dark:text-green-400 font-semibold">🟢 Available Now</SelectItem>
                     <SelectItem value="recent">Recent</SelectItem>
                     <SelectItem value="active">Most Active</SelectItem>
                     <SelectItem value="compatibility">Compatibility</SelectItem>
                     <SelectItem value="closest_nearby">Closest</SelectItem>
-                    <SelectItem value="travel_experience">Travel Exp</SelectItem>
-                    <SelectItem value="aura">Travel Aura</SelectItem>
-                    <SelectItem value="references">References</SelectItem>
+                    <SelectItem value="new_to_town">New to Town</SelectItem>
                     <SelectItem value="alphabetical">A-Z</SelectItem>
                   </SelectContent>
                 </Select>
