@@ -392,17 +392,23 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     <Card className="overflow-hidden shadow-lg rounded-2xl bg-white border border-gray-200 dark:border-0 dark:bg-gray-800 relative z-20">
       <div className="p-4">
         {myStatus ? (
-          <div className="mb-4 rounded-xl border-2 border-green-700 dark:border-green-600 overflow-hidden">
+          <div className="mb-4 overflow-hidden"
+            style={{
+              background: '#1A1D27',
+              border: '1px solid rgba(255, 107, 53, 0.3)',
+              borderRadius: '16px',
+              padding: '14px 16px',
+            }}
+          >
             <div
-              className="px-3 py-2 cursor-pointer"
-              style={{ background: 'linear-gradient(to right, #166534, #14532d)' }}
+              className="cursor-pointer"
               onClick={() => setLiveExpanded(!liveExpanded)}
             >
-              <div className="flex flex-wrap items-center gap-1.5">
+              <div className="flex flex-wrap items-center gap-2">
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50 flex-shrink-0" />
-                  <span className="text-xs font-bold text-white flex-shrink-0">You're Live</span>
-                  <span className="text-[10px] font-semibold text-white/80 bg-white/20 px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-1">
+                  <span className="text-white flex-shrink-0" style={{ fontSize: '15px', fontWeight: 600 }}>You're Live</span>
+                  <span className="text-white/80 bg-white/10 px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-1" style={{ fontSize: '10px', fontWeight: 600 }}>
                     <Clock className="w-2.5 h-2.5" />
                     {getTimeRemaining(myStatus.expiresAt)}
                   </span>
@@ -415,7 +421,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                   return (
                     <div className="flex flex-wrap items-center gap-1">
                       {activities.map((label: string, i: number) => (
-                        <span key={i} className="text-[10px] font-medium text-white bg-white/20 px-1.5 py-0.5 rounded-full whitespace-nowrap">{label}</span>
+                        <span key={i} className="text-white px-2 py-0.5 rounded-full whitespace-nowrap" style={{ fontSize: '10px', fontWeight: 600, backgroundColor: '#FF6B35' }}>{label}</span>
                       ))}
                     </div>
                   );
@@ -423,14 +429,14 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 <div className="flex items-center gap-0.5 ml-auto flex-shrink-0">
                   <button
                     type="button"
-                    className="h-5 w-5 p-0 flex items-center justify-center text-white/70 hover:text-white rounded flex-shrink-0"
+                    className="h-5 w-5 p-0 flex items-center justify-center text-gray-500 hover:text-white rounded flex-shrink-0"
                     onClick={(e) => { e.stopPropagation(); setLiveExpanded(!liveExpanded); }}
                   >
                     {liveExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                   </button>
                   <button
                     type="button"
-                    className="h-5 w-5 p-0 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 rounded flex-shrink-0"
+                    className="h-5 w-5 p-0 flex items-center justify-center text-gray-500 hover:text-white rounded flex-shrink-0"
                     onClick={(e) => { e.stopPropagation(); clearAvailableMutation.mutate(); }}
                   >
                     <X className="w-3.5 h-3.5" />
@@ -439,7 +445,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               </div>
             </div>
             {liveExpanded && (
-              <div className="px-4 py-3 bg-green-50 dark:bg-green-900/20">
+              <div className="pt-3 mt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                 <div className="flex flex-wrap gap-1.5">
                   {ACTIVITY_OPTIONS.map(({ label, icon: Icon, value }) => {
                     const isActive = myStatus.activities?.includes(value);
@@ -457,9 +463,10 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                         }}
                         className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
                           isActive
-                            ? "bg-orange-500 text-white shadow-sm"
-                            : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
+                            ? "text-white shadow-sm"
+                            : "text-gray-500"
                         }`}
+                        style={isActive ? { backgroundColor: '#FF6B35' } : { backgroundColor: 'rgba(255,255,255,0.08)' }}
                       >
                         <Icon className="w-3 h-3" />
                         {label}
@@ -470,23 +477,30 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 </div>
                 {myStatus.customNote && (
                   <div className="mt-2">
-                    <div className="px-3 py-1.5 bg-white dark:bg-gray-800 rounded-lg border border-purple-300 dark:border-purple-600">
-                      <p className="text-xs font-semibold text-purple-700 dark:text-purple-300">{myStatus.customNote}</p>
+                    <div className="px-3 py-1.5 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                      <p className="text-xs font-semibold text-gray-300">{myStatus.customNote}</p>
                     </div>
                   </div>
                 )}
               </div>
             )}
             {allGroupChats.length > 0 && allGroupChats.map((chat: any) => (
-              <button
+              <div
                 key={chat.id}
-                type="button"
-                onClick={() => { setSelectedGroupChat(chat); setShowGroupChat(true); }}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold transition-all"
+                className="flex items-center gap-2 pt-3 mt-3"
+                style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
               >
-                <MessageCircle className="w-4 h-4" />
-                {chat.chatroomName} ({chat.participantCount} people)
-              </button>
+                <MessageCircle className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <span className="text-xs text-gray-300 flex-1 min-w-0 truncate">{chat.chatroomName} ({chat.participantCount} people)</span>
+                <button
+                  type="button"
+                  onClick={() => { setSelectedGroupChat(chat); setShowGroupChat(true); }}
+                  className="text-white text-xs font-bold px-3 py-1 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: '#FF6B35' }}
+                >
+                  Join
+                </button>
+              </div>
             ))}
           </div>
         ) : (
