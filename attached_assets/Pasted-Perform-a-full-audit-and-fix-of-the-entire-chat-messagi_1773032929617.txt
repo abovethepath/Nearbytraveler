@@ -1,0 +1,54 @@
+Perform a full audit and fix of the entire chat/messaging experience on NearbyTraveler, covering chatroom creation, mobile layout, and header behavior:
+1. Accepting a meet request creates a chatroom, not a DM
+
+When a user accepts a meet request, create a hangout chatroom tied to that specific available-now session
+Do NOT create a 1-on-1 private DM thread — that is the wrong chat type for this flow
+If a chatroom for that hangout session already exists, navigate to it instead of creating a duplicate
+Each meet request is independent — accepting one must only affect that specific request, never bulk-accept others
+
+2. Chatroom naming and header
+
+Name the chatroom: "[Activity] with @username" — e.g. "Coffee with @elliotmarc08"
+Fall back to "Hangout with @username" if the activity name is unavailable
+Show the activity name and a matching icon/emoji in the chat header
+Show the location in short format — "City, State" or "City, Country" for international users
+Store activityType and sessionId on the chatroom record at creation time
+If the session expires, gracefully fall back to showing just participant usernames
+
+3. Remove bottom navbar from mobile chat
+
+The bottom navigation bar (Home, Explore, Create, Messages, Profile) must NEVER appear on any chat page on mobile
+Find and permanently remove whatever is re-enabling it on chat routes
+This applies to all chat types — hangout rooms, group chats, any chat view
+
+4. Fixed chat header on mobile
+
+Use position: fixed, top: 0, left: 0, right: 0, z-index: 1000
+Header must never move on scroll or when the keyboard opens
+Message list must have enough padding-top so no messages are hidden behind the header
+Logo in the header must not be squished — use object-fit: contain with a proper fixed width
+Location must show "City, State" only — never the full string like "Manhattan Beach, California, United States"
+
+5. Fixed message input bar above keyboard
+
+Use position: fixed and bottom: 0 on the input bar
+On iOS use env(safe-area-inset-bottom) for bottom padding — e.g. padding-bottom: calc(env(safe-area-inset-bottom) + 8px)
+The input bar must rise with the keyboard when it opens and never be hidden behind it
+Use height: 100dvh on the chat container instead of 100vh to handle keyboard resize correctly
+Message list bottom padding must adjust dynamically so the last message is never hidden behind the input bar
+
+6. Overall chat layout on mobile
+
+Header fixed at top, input bar fixed at bottom, messages scrollable in between
+Nothing should jump or shift when the keyboard opens or closes
+Works correctly on both iOS Safari and Android Chrome
+
+Test scenarios to verify:
+
+Accept a meet request → correct hangout chatroom opens with proper name and header
+Accept one request → only that card disappears, others remain
+Open chat → no bottom navbar visible
+Tap input field → keyboard opens, input bar rises, header stays still
+Send a message → input stays in place, list scrolls to latest
+Dismiss keyboard → layout restores cleanly
+Scroll messages → header never moves
