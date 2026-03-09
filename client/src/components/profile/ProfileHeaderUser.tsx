@@ -423,7 +423,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               <h1 className="text-xl sm:text-3xl font-extrabold text-white break-all leading-tight crisp-hero-text" style={{ color: '#ffffff' }}>
                                 @{user?.username}
                                 {!isOwnProfile && (() => {
-                                  const deg = (connectionDegreeData as any)?.degree;
+                                  const deg = connectionStatus?.status === 'accepted' ? 1 : (connectionDegreeData as any)?.degree;
                                   const label = deg === 1 ? '1st' : deg === 2 ? '2nd' : deg === 3 ? '3rd' : null;
                                   if (!label) return null;
                                   return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); openTab('contacts'); setTimeout(() => { document.getElementById('connections-in-common-section')?.scrollIntoView({ behavior: 'smooth' }); }, 150); }}>{label}</sup>;
@@ -991,7 +991,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all !text-white crisp-hero-text" style={{ color: "#ffffff" }}>
                             @{user?.username}
                             {!isOwnProfile && (() => {
-                              const deg = (connectionDegreeData as any)?.degree;
+                              const deg = connectionStatus?.status === 'accepted' ? 1 : (connectionDegreeData as any)?.degree;
                               const label = deg === 1 ? '1st' : deg === 2 ? '2nd' : deg === 3 ? '3rd' : null;
                               if (!label) return null;
                               return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); openTab('contacts'); setTimeout(() => { document.getElementById('connections-in-common-section')?.scrollIntoView({ behavior: 'smooth' }); }, 150); }}>{label}</sup>;
