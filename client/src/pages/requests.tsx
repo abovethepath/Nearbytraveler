@@ -111,8 +111,13 @@ export default function Requests() {
       });
       queryClient.invalidateQueries({ queryKey: [`/api/connections/${currentUserId}/requests`] });
       queryClient.invalidateQueries({ queryKey: ["/api/connections"] });
-      // Also invalidate connection status queries to update profile pages
       queryClient.invalidateQueries({ queryKey: ["/api/connections/status"] });
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const key0 = Array.isArray(query.queryKey) ? query.queryKey[0] : undefined;
+          return typeof key0 === 'string' && key0.includes('/profile-bundle');
+        },
+      });
     },
     onError: (error: any) => {
       toast({

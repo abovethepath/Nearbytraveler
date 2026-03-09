@@ -426,7 +426,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   const deg = (connectionDegreeData as any)?.degree;
                                   const label = deg === 1 ? '1st' : deg === 2 ? '2nd' : deg === 3 ? '3rd' : null;
                                   if (!label) return null;
-                                  return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}>{label}</sup>;
+                                  return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); openTab('contacts'); setTimeout(() => { document.getElementById('connections-in-common-section')?.scrollIntoView({ behavior: 'smooth' }); }, 150); }}>{label}</sup>;
                                 })()}
                               </h1>
                             </div>
@@ -952,7 +952,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               const deg = (connectionDegreeData as any)?.degree;
                               const label = deg === 1 ? '1st' : deg === 2 ? '2nd' : deg === 3 ? '3rd' : null;
                               if (!label) return null;
-                              return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}>{label}</sup>;
+                              return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); openTab('contacts'); setTimeout(() => { document.getElementById('connections-in-common-section')?.scrollIntoView({ behavior: 'smooth' }); }, 150); }}>{label}</sup>;
                             })()}
                           </h1>
                           {!isOwnProfile && connectionStatus?.status === 'accepted' && (
