@@ -23750,6 +23750,7 @@ Questions? Just reply to this message. Welcome aboard!
   app.patch("/api/available-now/requests/:requestId", async (req: any, res) => {
     try {
       const userId = req.session?.user?.id || req.headers['x-user-id'];
+      console.log(`[MEET ACCEPT API] requestId=${req.params.requestId}, userId=${userId}, status=${req.body?.status}, sessionUser=${req.session?.user?.id}, headerUser=${req.headers['x-user-id']}`);
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const { requestId } = req.params;
@@ -23767,8 +23768,16 @@ Questions? Just reply to this message. Welcome aboard!
         .returning();
 
       if (!updated) {
+        console.log(`[MEET ACCEPT API] NOT FOUND: requestId=${requestId}, toUserId=${userId} — checking if request exists at all`);
+        const [existingReq] = await db.select().from(availableNowRequests).where(eq(availableNowRequests.id, Number(requestId))).limit(1);
+        if (existingReq) {
+          console.log(`[MEET ACCEPT API] Request exists but toUserId=${existingReq.toUserId}, fromUserId=${existingReq.fromUserId}, status=${existingReq.status}`);
+        } else {
+          console.log(`[MEET ACCEPT API] Request ${requestId} does not exist in database`);
+        }
         return res.status(404).json({ error: "Meet request not found or not yours" });
       }
+      console.log(`[MEET ACCEPT API] Successfully updated request ${requestId} to ${status}`);
 
       // Log activity for meet request response
       try {

@@ -210,15 +210,20 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
 
   const respondRequestMutation = useMutation({
     mutationFn: async ({ requestId, status, fromUserId }: { requestId: number; status: string; fromUserId?: number }) => {
+      console.log(`[MEET ACCEPT] Attempting to ${status} request ${requestId}`);
       setPendingRequestId(requestId);
       const res = await apiRequest("PATCH", `/api/available-now/requests/${requestId}`, { status });
-      return res.json();
+      const data = await res.json();
+      console.log(`[MEET ACCEPT] Response:`, data);
+      return data;
     },
     onSuccess: (data: any, variables) => {
+      console.log(`[MEET ACCEPT] onSuccess fired`, { data, variables });
       setPendingRequestId(null);
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/activity-feed"] });
       if (currentUser?.id) {
         queryClient.invalidateQueries({ queryKey: ["/api/messages", currentUser.id] });
       }
@@ -236,8 +241,10 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         toast({ title: "Request declined" });
       }
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error(`[MEET ACCEPT] onError:`, error);
       setPendingRequestId(null);
+      toast({ title: "Couldn't process request", description: error?.message || "Please try again.", variant: "destructive" });
     },
   });
 

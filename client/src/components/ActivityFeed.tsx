@@ -164,16 +164,23 @@ function MeetRequestModal({
 
   const respondMutation = useMutation({
     mutationFn: async ({ status }: { status: "accepted" | "declined" }) => {
+      console.log(`[ACTIVITY MEET] Attempting to ${status} request ${requestId} for user ${currentUserId}`);
       const res = await fetch(`${getApiBaseUrl()}/api/available-now/requests/${requestId}`, {
         method: "PATCH",
         credentials: "include",
         headers: { "Content-Type": "application/json", "x-user-id": String(currentUserId) },
         body: JSON.stringify({ status }),
       });
-      if (!res.ok) throw new Error("Failed to update meet request");
+      console.log(`[ACTIVITY MEET] Response status: ${res.status}`);
+      if (!res.ok) {
+        const errBody = await res.text();
+        console.error(`[ACTIVITY MEET] Error body: ${errBody}`);
+        throw new Error(errBody || "Failed to update meet request");
+      }
       return res.json();
     },
     onSuccess: (_data, variables) => {
+      console.log(`[ACTIVITY MEET] Success:`, _data);
       toast({
         title: variables.status === "accepted" ? "Meet request accepted!" : "Meet request declined",
         description: variables.status === "accepted"
@@ -183,8 +190,9 @@ function MeetRequestModal({
       onActionComplete();
       onClose();
     },
-    onError: () => {
-      toast({ title: "Something went wrong", description: "Please try again.", variant: "destructive" });
+    onError: (error: any) => {
+      console.error(`[ACTIVITY MEET] Error:`, error);
+      toast({ title: "Something went wrong", description: error?.message || "Please try again.", variant: "destructive" });
     },
   });
 
