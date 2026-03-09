@@ -778,6 +778,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Separate editing states for clean cancel functionality
   const [isEditingPublicInterests, setIsEditingPublicInterests] = useState(false);
   const [activeEditSection, setActiveEditSection] = useState<string | null>(null);
+
+  // Handle ?edit=interests query param to auto-open interests editing
+  React.useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const editParam = params.get('edit');
+      if (editParam === 'interests' && isOwnProfile) {
+        setTimeout(() => {
+          setIsEditingPublicInterests(true);
+          setActiveEditSection('interests');
+          const el = document.querySelector('[data-testid="interests-section"]');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 500);
+      }
+    } catch {}
+  }, [isOwnProfile]);
   
   // Legacy compatibility (will be phased out)
   const editingInterests = isEditingPublicInterests;

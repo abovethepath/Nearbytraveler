@@ -603,6 +603,21 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   </button>
                                 )}
                               </div>
+                              {currentUser?.id && (
+                                <div className="mt-1.5 text-center">
+                                  <a
+                                    href={`/profile/${currentUser.id}?tab=about&edit=interests`}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setLocation(`/profile/${currentUser.id}?tab=about&edit=interests`);
+                                      e.preventDefault();
+                                    }}
+                                    className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
+                                  >
+                                    + Add more interests & activities to improve your matches
+                                  </a>
+                                </div>
+                              )}
                             </>
                           ) : (
                             <p className="text-[11px] text-white leading-snug text-center">
@@ -662,6 +677,21 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           >
                             See All →
                           </button>
+                        )}
+                        {currentUser?.id && (
+                          <div className="mt-2 text-center">
+                            <a
+                              href={`/profile/${currentUser.id}?tab=about&edit=interests`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setLocation(`/profile/${currentUser.id}?tab=about&edit=interests`);
+                                e.preventDefault();
+                              }}
+                              className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
+                            >
+                              + Add more interests & activities to improve your matches
+                            </a>
+                          </div>
                         )}
                       </div>
                     )}

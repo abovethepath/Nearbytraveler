@@ -103,6 +103,20 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
 
   return (
     <div>
+      {showHint && (
+        <p
+          style={{
+            fontSize: '11px',
+            color: 'rgba(255,255,255,0.4)',
+            fontStyle: 'italic',
+            textAlign: 'center',
+            marginBottom: '6px',
+            lineHeight: 1,
+          }}
+        >
+          {isMobileWeb ? 'Tap a tab to open' : 'Click a tab to open'}
+        </p>
+      )}
       <div
         className={`profile-tabbar ${isHero ? "profile-tabbar-hero" : "profile-tabbar-standalone"} flex ${
           isDesktopHero
@@ -279,20 +293,6 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           </Button>
         )}
       </div>
-      {showHint && (
-        <p
-          style={{
-            fontSize: '11px',
-            color: 'rgba(255,255,255,0.4)',
-            fontStyle: 'italic',
-            textAlign: 'center',
-            marginTop: '6px',
-            lineHeight: 1,
-          }}
-        >
-          {isMobileWeb ? 'Tap a tab to open' : 'Click a tab to open'}
-        </p>
-      )}
     </div>
   );
 }
