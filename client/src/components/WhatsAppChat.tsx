@@ -1702,7 +1702,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
   const formatTimestamp = (date: string) => {
     const d = new Date(date);
-    return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    const now = new Date();
+    const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    const isToday = d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+    if (isToday) return time;
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const isYesterday = d.getFullYear() === yesterday.getFullYear() && d.getMonth() === yesterday.getMonth() && d.getDate() === yesterday.getDate();
+    if (isYesterday) return `Yesterday ${time}`;
+    const isThisYear = d.getFullYear() === now.getFullYear();
+    const dateStr = d.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', ...(isThisYear ? {} : { year: '2-digit' }) });
+    return `${dateStr} ${time}`;
   };
 
   return (
