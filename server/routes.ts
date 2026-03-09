@@ -23808,7 +23808,19 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      res.json({ ...updated, otherUserId: updated?.fromUserId, groupChatroomId: groupChatroomId || null });
+      let chatroomName: string | null = null;
+      let participantCount: number | null = null;
+      if (groupChatroomId) {
+        const [chat] = await db.select({ chatroomName: meetupChatrooms.chatroomName, participantCount: meetupChatrooms.participantCount })
+          .from(meetupChatrooms)
+          .where(eq(meetupChatrooms.id, groupChatroomId))
+          .limit(1);
+        if (chat) {
+          chatroomName = chat.chatroomName;
+          participantCount = chat.participantCount;
+        }
+      }
+      res.json({ ...updated, otherUserId: updated?.fromUserId, groupChatroomId: groupChatroomId || null, chatroomName, participantCount });
     } catch (error: any) {
       console.error("Error updating request:", error);
       res.status(500).json({ error: "Failed to update request" });

@@ -85,6 +85,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const [meetMessage, setMeetMessage] = useState("");
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [localPendingUserIds, setLocalPendingUserIds] = useState<Set<number>>(new Set());
+  const [pendingRequestId, setPendingRequestId] = useState<number | null>(null);
   const [showGroupChat, setShowGroupChat] = useState(false);
   const [selectedGroupChat, setSelectedGroupChat] = useState<any>(null);
   const [groupChatMessage, setGroupChatMessage] = useState("");
@@ -209,10 +210,12 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
 
   const respondRequestMutation = useMutation({
     mutationFn: async ({ requestId, status, fromUserId }: { requestId: number; status: string; fromUserId?: number }) => {
+      setPendingRequestId(requestId);
       const res = await apiRequest("PATCH", `/api/available-now/requests/${requestId}`, { status });
       return res.json();
     },
     onSuccess: (data: any, variables) => {
+      setPendingRequestId(null);
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
@@ -220,22 +223,21 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         queryClient.invalidateQueries({ queryKey: ["/api/messages", currentUser.id] });
       }
       if (variables.status === "accepted") {
-        // otherUserId is the requester — open DM so the thread is saved and always in Messages inbox
-        const otherUserId = data?.otherUserId ?? variables.fromUserId;
-        if (otherUserId) {
-          setLocation(`/messages/${otherUserId}`);
-          if (data?.groupChatroomId) {
-            toast({ title: "It's a meet!", description: "Chat opened. You can always get back to it from Messages." });
-          } else {
-            toast({ title: "It's a meet!", description: "Chat is in Messages — you can reopen it anytime from there." });
-          }
-        } else if (data?.groupChatroomId) {
+        if (data?.groupChatroomId) {
           toast({ title: "It's a meet!", description: "Opening the group chat..." });
+          queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
+          queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
+          setSelectedGroupChat({ id: data.groupChatroomId, chatroomName: data.chatroomName || "Quick Meet", participantCount: data.participantCount || 2 });
           setTimeout(() => setShowGroupChat(true), 500);
+        } else {
+          toast({ title: "It's a meet!", description: "Request accepted!" });
         }
       } else {
         toast({ title: "Request declined" });
       }
+    },
+    onError: () => {
+      setPendingRequestId(null);
     },
   });
 
@@ -396,46 +398,44 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               style={{ background: 'linear-gradient(to right, #166534, #14532d)' }}
               onClick={() => setLiveExpanded(!liveExpanded)}
             >
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50 flex-shrink-0" />
-                <span className="text-xs font-bold text-white flex-shrink-0">You're Live</span>
-                <span className="text-[10px] font-semibold text-white/80 bg-white/20 px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-1">
-                  <Clock className="w-2.5 h-2.5" />
-                  {getTimeRemaining(myStatus.expiresAt)}
-                </span>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50 flex-shrink-0" />
+                  <span className="text-xs font-bold text-white flex-shrink-0">You're Live</span>
+                  <span className="text-[10px] font-semibold text-white/80 bg-white/20 px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-1">
+                    <Clock className="w-2.5 h-2.5" />
+                    {getTimeRemaining(myStatus.expiresAt)}
+                  </span>
+                </div>
                 {!liveExpanded && (() => {
                   const activities = (myStatus.activities || []).map((a: string) => {
                     const opt = ACTIVITY_OPTIONS.find(o => o.value === a);
                     return opt?.label || a;
                   });
-                  const maxShow = 3;
-                  const shown = activities.slice(0, maxShow);
-                  const remaining = activities.length - maxShow;
                   return (
-                    <div className="flex items-center gap-1 flex-1 min-w-0 overflow-hidden">
-                      {shown.map((label: string, i: number) => (
-                        <span key={i} className="text-[10px] font-medium text-white bg-white/20 px-1.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">{label}</span>
+                    <div className="flex flex-wrap items-center gap-1">
+                      {activities.map((label: string, i: number) => (
+                        <span key={i} className="text-[10px] font-medium text-white bg-white/20 px-1.5 py-0.5 rounded-full whitespace-nowrap">{label}</span>
                       ))}
-                      {remaining > 0 && (
-                        <span className="text-[10px] text-white/70 whitespace-nowrap flex-shrink-0">+{remaining}</span>
-                      )}
                     </div>
                   );
                 })()}
-                <button
-                  type="button"
-                  className="h-5 w-5 p-0 flex items-center justify-center text-white/70 hover:text-white rounded flex-shrink-0"
-                  onClick={(e) => { e.stopPropagation(); setLiveExpanded(!liveExpanded); }}
-                >
-                  {liveExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                </button>
-                <button
-                  type="button"
-                  className="h-5 w-5 p-0 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 rounded flex-shrink-0"
-                  onClick={(e) => { e.stopPropagation(); clearAvailableMutation.mutate(); }}
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-0.5 ml-auto flex-shrink-0">
+                  <button
+                    type="button"
+                    className="h-5 w-5 p-0 flex items-center justify-center text-white/70 hover:text-white rounded flex-shrink-0"
+                    onClick={(e) => { e.stopPropagation(); setLiveExpanded(!liveExpanded); }}
+                  >
+                    {liveExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  </button>
+                  <button
+                    type="button"
+                    className="h-5 w-5 p-0 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 rounded flex-shrink-0"
+                    onClick={(e) => { e.stopPropagation(); clearAvailableMutation.mutate(); }}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </div>
             {liveExpanded && (
@@ -561,16 +561,16 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                       size="sm"
                       className="h-7 bg-orange-500 hover:bg-orange-600 text-white text-xs"
                       onClick={() => respondRequestMutation.mutate({ requestId: req.id, status: "accepted", fromUserId: req.fromUser?.id })}
-                      disabled={respondRequestMutation.isPending}
+                      disabled={pendingRequestId === req.id}
                     >
-                      {respondRequestMutation.isPending ? "..." : "Accept"}
+                      {pendingRequestId === req.id ? "..." : "Accept"}
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       className="h-7 text-xs"
                       onClick={() => respondRequestMutation.mutate({ requestId: req.id, status: "declined" })}
-                      disabled={respondRequestMutation.isPending}
+                      disabled={pendingRequestId === req.id}
                     >
                       Pass
                     </Button>
