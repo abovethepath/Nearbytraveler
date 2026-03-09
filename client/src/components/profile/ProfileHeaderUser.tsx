@@ -726,12 +726,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                   {items.map((item) => (
-                                    <span
-                                      key={item}
-                                      className={`inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold border ${color}`}
-                                    >
-                                      {item}
-                                    </span>
+                                <button
+                                  key={item}
+                                  className={`inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold border text-left break-words max-w-full ${color}`}
+                                  style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
+                                >
+                                  {item}
+                                </button>
                                   ))}
                                 </div>
                               </div>
@@ -744,10 +745,30 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 Connections
                               </div>
                               <div className="flex flex-wrap gap-2 text-sm text-gray-700 dark:text-gray-200">
-                                <span className="inline-flex items-center rounded-full px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                                <button 
+                                  onClick={() => {
+                                    setSeeAllCommonOpen(false);
+                                    // Small delay to allow modal close animation
+                                    setTimeout(() => {
+                                      const el = document.getElementById('connections-in-common-section');
+                                      if (el) {
+                                        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                      } else {
+                                        // Fallback to tabs if section ID not found
+                                        window.dispatchEvent(new CustomEvent('openProfileTab', { detail: 'contacts' }));
+                                        // Try again after tab switch
+                                        setTimeout(() => {
+                                          const retryEl = document.getElementById('connections-in-common-section');
+                                          if (retryEl) retryEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                        }, 300);
+                                      }
+                                    }, 300);
+                                  }}
+                                  className="inline-flex items-center rounded-full px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                                >
                                   <span className="font-extrabold text-gray-900 dark:text-white mr-1">{sharedContactsCount}</span>
                                   shared connections
-                                </span>
+                                </button>
                               </div>
                             </div>
                           )}
