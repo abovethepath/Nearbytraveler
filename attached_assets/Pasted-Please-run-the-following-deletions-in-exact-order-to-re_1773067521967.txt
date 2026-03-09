@@ -1,0 +1,63 @@
+Please run the following deletions in exact order to remove these test users and all their data. Use this list of usernames for all deletions:
+
+USERNAMES: 'barbara809','travelguy09','playatravel','friendtravel','elluitd123','traaveldude1','marca123456','greg123','theman123','marcaaro123','marc12345678','x123345','a-aron','aaron9876','aaron12345','lefkoaaro','aaronm100','marcelliot12','aarona123','funtravels','nearbylocak6','testtravel','briguy102','nearbyloca24','nearbyloc54','lefkotravel','aaaronla54','travelban1','marcktravels','aaronmarc54','travel1000','aarontravel','marcaaron10','marcaaron','aaronmarc10','travelman13' AND any username LIKE 'user%'
+
+DELETION ORDER:
+
+TIER 1:
+DELETE FROM activity_log WHERE user_id IN (SELECT id FROM users WHERE username IN (...) OR username LIKE 'user%');
+DELETE FROM available_now_requests WHERE user_id IN (...);
+DELETE FROM business_locations WHERE user_id IN (...);
+DELETE FROM business_subscriptions WHERE user_id IN (...);
+DELETE FROM community_post_likes WHERE user_id IN (...);
+DELETE FROM community_post_replies WHERE user_id IN (...);
+DELETE FROM emergency_contacts WHERE user_id IN (...);
+DELETE FROM event_companion_participants WHERE user_id IN (...);
+DELETE FROM event_integrations WHERE user_id IN (...);
+DELETE FROM external_event_interests WHERE user_id IN (...);
+DELETE FROM hangout_participants WHERE user_id IN (...);
+DELETE FROM hosting_offers WHERE user_id IN (...);
+DELETE FROM live_share_reactions WHERE user_id IN (...);
+DELETE FROM meetup_chatroom_messages WHERE user_id IN (...);
+DELETE FROM meetup_share_cards WHERE user_id IN (...);
+DELETE FROM micro_experience_participants WHERE user_id IN (...);
+DELETE FROM mood_entries WHERE user_id IN (...);
+DELETE FROM packing_list_items WHERE user_id IN (...);
+DELETE FROM passport_stamps WHERE user_id IN (...);
+DELETE FROM photo_albums WHERE user_id IN (...);
+DELETE FROM proximity_notifications WHERE user_id IN (...);
+DELETE FROM quick_meetup_participants WHERE user_id IN (...);
+DELETE FROM quick_meetup_templates WHERE user_id IN (...);
+DELETE FROM recommendation_requests WHERE user_id IN (...);
+DELETE FROM recommendations WHERE user_id IN (...);
+DELETE FROM reference_votes WHERE user_id IN (...);
+DELETE FROM restaurant_reviews WHERE user_id IN (...);
+DELETE FROM secret_experience_likes WHERE user_id IN (...);
+DELETE FROM travel_crew_invites WHERE user_id IN (...);
+DELETE FROM travel_crew_members WHERE user_id IN (...);
+DELETE FROM travel_crew_messages WHERE user_id IN (...);
+DELETE FROM user_city_interests WHERE user_id IN (...);
+DELETE FROM user_community_tags WHERE user_id IN (...);
+DELETE FROM user_event_interests WHERE user_id IN (...);
+DELETE FROM verifications WHERE user_id IN (...);
+DELETE FROM vouches WHERE user_id IN (...);
+
+TIER 2:
+DELETE FROM community_posts WHERE user_id IN (...);
+DELETE FROM companions WHERE user_id IN (...);
+DELETE FROM hangouts WHERE user_id IN (...);
+DELETE FROM live_location_shares WHERE user_id IN (...);
+DELETE FROM micro_experiences WHERE user_id IN (...);
+DELETE FROM packing_lists WHERE user_id IN (...);
+DELETE FROM quick_meetups WHERE user_id IN (...);
+DELETE FROM references WHERE user_id IN (...);
+
+TIER 3:
+DELETE FROM community_tags WHERE user_id IN (...);
+DELETE FROM activity_templates WHERE user_id IN (...);
+DELETE FROM available_now WHERE user_id IN (...);
+
+TIER 4:
+DELETE FROM users WHERE username IN ('barbara809','travelguy09','playatravel','friendtravel','elluitd123','traaveldude1','marca123456','greg123','theman123','marcaaro123','marc12345678','x123345','a-aron','aaron9876','aaron12345','lefkoaaro','aaronm100','marcelliot12','aarona123','funtravels','nearbylocak6','testtravel','briguy102','nearbyloca24','nearbyloc54','lefkotravel','aaaronla54','travelban1','marcktravels','aaronmarc54','travel1000','aarontravel','marcaaron10','marcaaron','aaronmarc10','travelman13') OR username LIKE 'user%';
+
+Wrap everything in a single BEGIN/COMMIT transaction. Replace all (...) with (SELECT id FROM users WHERE username IN ('barbara809','travelguy09','playatravel','friendtravel','elluitd123','traaveldude1','marca123456','greg123','theman123','marcaaro123','marc12345678','x123345','a-aron','aaron9876','aaron12345','lefkoaaro','aaronm100','marcelliot12','aarona123','funtravels','nearbylocak6','testtravel','briguy102','nearbyloca24','nearbyloc54','lefkotravel','aaaronla54','travelban1','marcktravels','aaronmarc54','travel1000','aarontravel','marcaaron10','marcaaron','aaronmarc10','travelman13') OR username LIKE 'user%'). Confirm how many users were deleted when done.
