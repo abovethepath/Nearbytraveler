@@ -56,6 +56,28 @@ export default function TravelMatches({
   const [showFilters, setShowFilters] = useState(false);
   const [, setLocation] = useLocation();
 
+  // Fetch connection degrees for matches
+  const allMatches = [...smartMatches, ...destinationMatches];
+  const displayedUserIds = useMemo(() => {
+    return Array.from(new Set(allMatches.map(m => m.user.id)));
+  }, [smartMatches, destinationMatches]);
+
+  const { data: connectionDegreesData } = useQuery<{ degrees: { [key: number]: { degree: number; mutualCount: number } } }>({
+    queryKey: ['/api/connections/degrees/batch', userId, displayedUserIds],
+    queryFn: async () => {
+      if (!userId || displayedUserIds.length === 0) return { degrees: {} };
+      const response = await fetch(`${getApiBaseUrl()}/api/connections/degrees/batch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, targetUserIds: displayedUserIds })
+      });
+      if (!response.ok) return { degrees: {} };
+      return response.json();
+    },
+    enabled: !!(userId && displayedUserIds.length > 0),
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Smart matching query
   const { data: smartMatches = [], isLoading: smartLoading } = useQuery<MatchScore[]>({
     queryKey: ['/api/matching/find-matches', userId, destination, startDate?.toISOString(), endDate?.toISOString(), userTypes.join(',')],
@@ -91,7 +113,11 @@ export default function TravelMatches({
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <UserCard user={match.user} />
+            <UserCard 
+              user={match.user} 
+              currentUserId={userId}
+              connectionDegree={connectionDegreesData?.degrees?.[match.user.id]}
+            />
             <div className="flex-1">
               <Badge 
                 variant="outline" 

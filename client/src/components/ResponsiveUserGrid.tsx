@@ -36,6 +36,7 @@ interface ResponsiveUserGridProps {
   limit?: number;
   currentUserId?: number;
   compatibilityDataMap?: Record<number, { sharedInterests?: any[]; sharedActivities?: any[]; sharedEvents?: any[] }>;
+  connectionDegreesMap?: Record<number, { degree: number; mutualCount: number }>;
 }
 
 export default function ResponsiveUserGrid({ 
@@ -45,7 +46,8 @@ export default function ResponsiveUserGrid({
   onViewAll, 
   limit = 6,
   currentUserId,
-  compatibilityDataMap
+  compatibilityDataMap,
+  connectionDegreesMap
 }: ResponsiveUserGridProps) {
   const [, setLocation] = useLocation();
   const displayUsers = limit ? users.slice(0, limit) : users;
@@ -194,9 +196,16 @@ export default function ResponsiveUserGrid({
             {getBioSnippet(user) || '\u00A0'}
           </p>
           {!isCurrentUser && (
-            <p className="text-sm font-medium truncate mt-0.5" style={{ color: '#3b82f6' }}>
-              {getThingsInCommon(user)} things in common
-            </p>
+            <>
+              <p className="text-sm font-medium truncate mt-0.5" style={{ color: '#3b82f6' }}>
+                {getThingsInCommon(user)} things in common
+              </p>
+              {connectionDegreesMap?.[user.id] && (
+                <p className="text-sm font-medium truncate mt-0.5" style={{ color: '#FF6B35' }}>
+                  {connectionDegreesMap[user.id].mutualCount} {connectionDegreesMap[user.id].mutualCount === 1 ? 'Connection' : 'Connections'} in Common
+                </p>
+              )}
+            </>
           )}
           <p className="text-sm text-gray-600 dark:text-gray-400 truncate mt-0.5" title={formatHometownForDisplay(user)}>
             {user.userType === 'business' ? 'Business User' : formatHometownForDisplay(user)}
@@ -287,9 +296,16 @@ export default function ResponsiveUserGrid({
             {getBioSnippet(user) || '\u00A0'}
           </p>
           {!isCurrentUser && (
-            <p className="text-xs font-medium truncate mt-0.5" style={{ color: '#3b82f6' }}>
-              {getThingsInCommon(user)} things in common
-            </p>
+            <>
+              <p className="text-xs font-medium truncate mt-0.5" style={{ color: '#3b82f6' }}>
+                {getThingsInCommon(user)} things in common
+              </p>
+              {connectionDegreesMap?.[user.id] && (
+                <p className="text-xs font-medium truncate mt-0.5" style={{ color: '#FF6B35' }}>
+                  {connectionDegreesMap[user.id].mutualCount} {connectionDegreesMap[user.id].mutualCount === 1 ? 'Connection' : 'Connections'} in Common
+                </p>
+              )}
+            </>
           )}
           <p className="text-xs text-gray-600 dark:text-gray-400 truncate mt-0.5" title={formatHometownForDisplay(user)}>
             {user.userType === 'business' ? 'Business User' : formatHometownForDisplay(user)}

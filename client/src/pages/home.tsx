@@ -1512,6 +1512,7 @@ export default function Home() {
 
   // Get connection degrees for displayed users (LinkedIn-style 1st/2nd/3rd degree)
   const displayedUserIds = React.useMemo(() => {
+    // CRITICAL: Ensure we fetch for ALL users currently being rendered
     return filteredUsers.slice(0, usersDisplayCount).map(u => u.id);
   }, [filteredUsers, usersDisplayCount]);
   

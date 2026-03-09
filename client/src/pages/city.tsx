@@ -231,6 +231,27 @@ export default function CityPage({ cityName }: CityPageProps) {
   // Paginate users - show top 3 for preview, 9 when expanded, all when fully expanded
   const displayedUsers = showAllUsers ? filteredUsers : filteredUsers.slice(0, 3);
 
+  // Fetch connection degrees for displayed users (LinkedIn-style 1st/2nd/3rd degree)
+  const displayedUserIds = React.useMemo(() => {
+    return displayedUsers.map((u: any) => u.id);
+  }, [displayedUsers]);
+
+  const { data: connectionDegreesData } = useQuery<{ degrees: { [key: number]: { degree: number; mutualCount: number } } }>({
+    queryKey: ['/api/connections/degrees/batch', currentUserId, displayedUserIds],
+    queryFn: async () => {
+      if (!currentUserId || displayedUserIds.length === 0) return { degrees: {} };
+      const response = await fetch(`${getApiBaseUrl()}/api/connections/degrees/batch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: currentUserId, targetUserIds: displayedUserIds })
+      });
+      if (!response.ok) return { degrees: {} };
+      return response.json();
+    },
+    enabled: !!(currentUserId && displayedUserIds.length > 0),
+    staleTime: 5 * 60 * 1000,
+  });
+
   const currentEvents = showAllEvents ? events : events.slice(0, 3);
 
   if (!decodedCityName) {
@@ -461,6 +482,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                           searchLocation={decodedCityName}
                           currentUserId={isActuallyAuthenticated ? currentUserId : undefined}
                           isCurrentUser={isActuallyAuthenticated && !!currentUserId && user.id === currentUserId}
+                          connectionDegree={connectionDegreesData?.degrees?.[user.id]}
                           isAvailableNow={availableNowIds.includes(user.id)}
                           variant="homeCity"
                         />

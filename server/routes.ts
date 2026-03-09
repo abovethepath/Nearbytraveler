@@ -10532,11 +10532,36 @@ Questions? Just reply to this message. Welcome aboard!
       // Calculate degrees for each target user
       const degrees: { [targetId: number]: { degree: number; mutualCount: number } } = {};
       
-      for (const targetId of targetUserIds.slice(0, 50)) { // Limit to 50 users
+      // OPTIMIZED: Fetch all connections for all target users in a single query to avoid N+1
+      const allTargetConnections = await db.execute(sql`
+        SELECT 
+          requester_id, 
+          receiver_id,
+          CASE 
+            WHEN requester_id = ANY(${targetUserIds}) THEN requester_id
+            ELSE receiver_id
+          END as target_user_id,
+          CASE 
+            WHEN requester_id = ANY(${targetUserIds}) THEN receiver_id
+            ELSE requester_id
+          END as connected_user_id
+        FROM connections 
+        WHERE status = 'accepted' 
+        AND (requester_id = ANY(${targetUserIds}) OR receiver_id = ANY(${targetUserIds}))
+      `);
+
+      const targetConnectionsMap: { [targetId: number]: Set<number> } = {};
+      allTargetConnections.rows.forEach((r: any) => {
+        const tId = parseInt(r.target_user_id);
+        const cId = parseInt(r.connected_user_id);
+        if (!targetConnectionsMap[tId]) targetConnectionsMap[tId] = new Set();
+        targetConnectionsMap[tId].add(cId);
+      });
+      
+      for (const targetId of targetUserIds) { 
         if (targetId === userId) continue;
         
-        // Always get target's connections to find mutual contacts
-        const target1stDegree = await getAcceptedConnections(targetId);
+        const target1stDegree = Array.from(targetConnectionsMap[targetId] || []);
         const mutualCount = user1stDegree.filter(id => target1stDegree.includes(id)).length;
         
         // Check 1st degree (directly connected)

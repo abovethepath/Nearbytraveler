@@ -207,6 +207,8 @@ export default function UsersPage() {
           <ResponsiveUserGrid 
             users={users}
             title={`${userType.charAt(0).toUpperCase()}${userType.slice(1)}s in ${city}${state ? `, ${state}` : ''}${country ? `, ${country}` : ''}`}
+            currentUserId={currentUser?.id}
+            connectionDegreesMap={connectionDegreesData?.degrees}
           />
         )}
       </div>

@@ -238,6 +238,26 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
     return getSortedUsers(discoveredUsers as User[]);
   }, [discoveredUsers, sortBy, userId, effectiveUser]);
 
+  const displayedUserIds = useMemo(() => {
+    return sortedUsers.slice(0, 6).map(u => u.id);
+  }, [sortedUsers]);
+
+  const { data: connectionDegreesData } = useQuery<{ degrees: { [key: number]: { degree: number; mutualCount: number } } }>({
+    queryKey: ['/api/connections/degrees/batch', userId, displayedUserIds],
+    queryFn: async () => {
+      if (!userId || displayedUserIds.length === 0) return { degrees: {} };
+      const response = await fetch(`${getApiBaseUrl()}/api/connections/degrees/batch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: userId, targetUserIds: displayedUserIds })
+      });
+      if (!response.ok) return { degrees: {} };
+      return response.json();
+    },
+    enabled: !!(userId && displayedUserIds.length > 0),
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Check if user is truly not authenticated (not just loading)
   if (!user && !localStorage.getItem('travelconnect_user')) {
     return (
@@ -343,6 +363,7 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
                         compatibilityData={{ score: calculateCompatibilityScore(discoveredUser, effectiveUser) }}
                         currentUserId={effectiveUser?.id}
                         isCurrentUser={discoveredUser.id === effectiveUser?.id}
+                        connectionDegree={connectionDegreesData?.degrees?.[discoveredUser.id]}
                         isAvailableNow={effectiveAvailableNowIds.has(Number(discoveredUser.id))}
                       />
                     ))}

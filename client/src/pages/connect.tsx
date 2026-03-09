@@ -231,6 +231,27 @@ export default function ConnectPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Fetch connection degrees for search results
+  const displayedUserIds = useMemo(() => {
+    return searchResults.map(u => u.id);
+  }, [searchResults]);
+
+  const { data: connectionDegreesData } = useQuery<{ degrees: { [key: number]: { degree: number; mutualCount: number } } }>({
+    queryKey: ['/api/connections/degrees/batch', user?.id, displayedUserIds],
+    queryFn: async () => {
+      if (!user?.id || displayedUserIds.length === 0) return { degrees: {} };
+      const response = await fetch(`${getApiBaseUrl()}/api/connections/degrees/batch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, targetUserIds: displayedUserIds })
+      });
+      if (!response.ok) return { degrees: {} };
+      return response.json();
+    },
+    enabled: !!(user?.id && displayedUserIds.length > 0),
+    staleTime: 5 * 60 * 1000,
+  });
+
   const pageContent = (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 w-full max-w-full overflow-x-hidden">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
@@ -583,6 +604,7 @@ export default function ConnectPage() {
                     users={searchResults as any}
                     title={`Found ${searchResults.length} ${searchResults.length === 1 ? 'person' : 'people'} in ${searchLocation}`}
                     currentUserId={user?.id}
+                    connectionDegreesMap={connectionDegreesData?.degrees}
                   />
                 )}
               </CardContent>
