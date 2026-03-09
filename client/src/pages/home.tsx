@@ -60,6 +60,7 @@ import BusinessesGrid from "@/components/BusinessesGrid";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { AvailableNowWidget } from "@/components/AvailableNowWidget";
 import { MeetupAlertBanner } from "@/components/MeetupAlertBanner";
+import { CityPulse } from "@/components/CityPulse";
 import { ContextualEventRecommendations } from "@/components/ContextualEventRecommendations";
 import CityMap from "@/components/CityMap";
 import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
@@ -1792,6 +1793,14 @@ export default function Home() {
   </div>
 </section>
 )}
+
+      {effectiveUser && (
+        <CityPulse city={
+          (effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination)
+            ? effectiveUser.travelDestination.split(',')[0].trim()
+            : (effectiveUser.hometownCity || undefined)
+        } />
+      )}
 
       <div className="pt-2 sm:pt-4 pb-24 md:pb-8 lg:pb-4 relative">
         

@@ -2555,3 +2555,12 @@ html.dark .landing-quote {
 .profile-tab-pulse {
   animation: profileTabPulse 1.8s ease-in-out infinite;
 }
+
+@keyframes cityPulseLiveDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+.city-pulse-live-dot {
+  display: inline-flex;
+  animation: cityPulseLiveDot 2s ease-in-out infinite;
+}

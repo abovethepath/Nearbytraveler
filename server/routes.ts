@@ -2917,6 +2917,87 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // City Pulse - real-time activity stats for a city
+  app.get("/api/city-pulse", async (req, res) => {
+    try {
+      const city = (req.query.city as string || '').trim();
+      if (!city) return res.status(400).json({ message: "city parameter required" });
+
+      const cacheKey = `city-pulse:${city.toLowerCase()}`;
+      const cached = await cache.get<any>(cacheKey);
+      if (cached) return res.json(cached);
+
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const weekEnd = new Date(todayStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const cityLower = city.toLowerCase();
+
+      const [
+        newTravelersResult,
+        openToMeetResult,
+        eventsThisWeekResult,
+        eventsCreatedTodayResult,
+        connectionsResult,
+        newMembersResult
+      ] = await Promise.all([
+        db.execute(sql`
+          SELECT COUNT(*)::int as count FROM travel_plans
+          WHERE LOWER(destination_city) = ${cityLower}
+            AND start_date <= ${now.toISOString()}
+            AND end_date >= ${now.toISOString()}
+            AND created_at >= ${todayStart.toISOString()}
+        `),
+        db.execute(sql`
+          SELECT COUNT(*)::int as count FROM available_now
+          WHERE LOWER(city) = ${cityLower}
+            AND is_available = true
+            AND expires_at > ${now.toISOString()}
+        `),
+        db.execute(sql`
+          SELECT COUNT(*)::int as count FROM events
+          WHERE LOWER(city) = ${cityLower}
+            AND date >= ${todayStart.toISOString()}
+            AND date < ${weekEnd.toISOString()}
+        `),
+        db.execute(sql`
+          SELECT COUNT(*)::int as count FROM events
+          WHERE LOWER(city) = ${cityLower}
+            AND created_at >= ${todayStart.toISOString()}
+        `),
+        db.execute(sql`
+          SELECT COUNT(*)::int as count FROM connections
+          WHERE status = 'accepted'
+            AND created_at >= ${todayStart.toISOString()}
+            AND (
+              requester_id IN (SELECT id FROM users WHERE LOWER(hometown_city) = ${cityLower})
+              OR receiver_id IN (SELECT id FROM users WHERE LOWER(hometown_city) = ${cityLower})
+            )
+        `),
+        db.execute(sql`
+          SELECT COUNT(*)::int as count FROM users
+          WHERE LOWER(hometown_city) = ${cityLower}
+            AND created_at >= ${todayStart.toISOString()}
+        `)
+      ]);
+
+      const result = {
+        city,
+        newTravelers: (newTravelersResult as any).rows?.[0]?.count || 0,
+        openToMeet: (openToMeetResult as any).rows?.[0]?.count || 0,
+        eventsThisWeek: (eventsThisWeekResult as any).rows?.[0]?.count || 0,
+        eventsCreatedToday: (eventsCreatedTodayResult as any).rows?.[0]?.count || 0,
+        connectionsToday: (connectionsResult as any).rows?.[0]?.count || 0,
+        newMembersToday: (newMembersResult as any).rows?.[0]?.count || 0,
+      };
+
+      await cache.set(cacheKey, result, CACHE_TTL.MEDIUM);
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error fetching city pulse:", error);
+      res.status(500).json({ message: "Failed to fetch city pulse" });
+    }
+  });
+
   // City users endpoint - get all users for a specific city page WITH PROPER LA METRO CONSOLIDATION
   app.get("/api/city/:city/users", async (req, res) => {
     try {
