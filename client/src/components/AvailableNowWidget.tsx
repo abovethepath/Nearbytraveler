@@ -235,7 +235,13 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
           setSelectedGroupChat({ id: data.groupChatroomId, chatroomName: data.chatroomName || "Quick Meet", participantCount: data.participantCount || 2, activityType: data.activityType || null, city: data.chatroomCity || "", state: data.chatroomState || "" });
           setTimeout(() => setShowGroupChat(true), 500);
         } else {
-          toast({ title: "It's a meet!", description: "Request accepted!" });
+          const otherUserId = data?.otherUserId || variables.fromUserId;
+          if (otherUserId) {
+            toast({ title: "It's a meet!", description: "Opening chat..." });
+            setLocation(`/messages?user=${otherUserId}`);
+          } else {
+            toast({ title: "It's a meet!", description: "Request accepted! Check your messages." });
+          }
         }
       } else {
         toast({ title: "Request declined" });

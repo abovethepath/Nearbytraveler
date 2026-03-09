@@ -181,14 +181,18 @@ function MeetRequestModal({
     },
     onSuccess: (_data, variables) => {
       console.log(`[ACTIVITY MEET] Success:`, _data);
-      toast({
-        title: variables.status === "accepted" ? "Meet request accepted!" : "Meet request declined",
-        description: variables.status === "accepted"
-          ? `You and @${displayName} are now connected. Check your messages!`
-          : "The request has been removed from your feed.",
-      });
       onActionComplete();
-      onClose();
+      if (variables.status === "accepted") {
+        const chatUserId = _data?.otherUserId || actorId;
+        toast({ title: "It's a meet!", description: `Opening chat with @${displayName}...` });
+        onClose();
+        if (chatUserId) {
+          setLocation(`/messages?user=${chatUserId}`);
+        }
+      } else {
+        toast({ title: "Meet request declined", description: "The request has been removed from your feed." });
+        onClose();
+      }
     },
     onError: (error: any) => {
       console.error(`[ACTIVITY MEET] Error:`, error);
@@ -334,10 +338,22 @@ function MeetRequestModal({
                     )}
                   </Button>
                 </div>
+              ) : requestStatus === "accepted" ? (
+                <Button
+                  type="button"
+                  className="w-full h-12 text-base font-bold bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+                  onClick={() => {
+                    onClose();
+                    setLocation(`/messages?user=${actorId}`);
+                  }}
+                >
+                  <MessageSquare className="h-5 w-5 mr-2" />
+                  Go to Chat
+                </Button>
               ) : (
                 <div className="text-center py-3 rounded-xl bg-gray-50 dark:bg-gray-800/60">
                   <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
-                    {requestStatus === "accepted" ? "Accepted" : requestStatus === "declined" ? "Declined" : requestStatus === "expired" ? "Expired" : requestStatus}
+                    {requestStatus === "declined" ? "Declined" : requestStatus === "expired" ? "Expired" : requestStatus}
                   </span>
                 </div>
               )}

@@ -23822,8 +23822,6 @@ Questions? Just reply to this message. Welcome aboard!
 
       let groupChatroomId: number | null = null;
 
-      // On accept: create/update group chat and send one DM. Do NOT clear the acceptor's Available Now
-      // status (we never update availableNow here); it stays visible until they manually turn it off.
       if (status === "accepted" && updated) {
         const [acceptor] = await db.select({ username: users.username })
           .from(users).where(eq(users.id, Number(userId)));
@@ -23833,7 +23831,6 @@ Questions? Just reply to this message. Welcome aboard!
           .from(users).where(eq(users.id, updated.fromUserId));
         const requesterName = requester?.username || "Someone";
 
-        // Find the active Available Now session for this user (the acceptor)
         const [activeSession] = await db.select()
           .from(availableNow)
           .where(and(
@@ -23845,7 +23842,6 @@ Questions? Just reply to this message. Welcome aboard!
           .limit(1);
 
         if (activeSession) {
-          // Check if a group chat already exists for this Available Now session
           const [existingChatroom] = await db.select()
             .from(meetupChatrooms)
             .where(and(
@@ -23856,7 +23852,6 @@ Questions? Just reply to this message. Welcome aboard!
 
           if (existingChatroom) {
             groupChatroomId = existingChatroom.id;
-            // Add the new person to the group chat with a system message
             await db.update(meetupChatrooms)
               .set({ participantCount: sql`${meetupChatrooms.participantCount} + 1` })
               .where(eq(meetupChatrooms.id, existingChatroom.id));
@@ -23869,7 +23864,6 @@ Questions? Just reply to this message. Welcome aboard!
               messageType: 'system',
             });
           } else {
-            // Create a new group chat for this Available Now session
             const activityLabels: Record<string, string> = {
               coffee: "Coffee", food: "Food", drinks: "Drinks", explore: "Explore",
               music: "Music", fitness: "Fitness", hike: "Hike", bike: "Bike",
@@ -23897,7 +23891,6 @@ Questions? Just reply to this message. Welcome aboard!
 
             groupChatroomId = newChatroom.id;
 
-            // Add system welcome message
             await db.insert(meetupChatroomMessages).values({
               meetupChatroomId: newChatroom.id,
               userId: Number(userId),
@@ -23905,6 +23898,25 @@ Questions? Just reply to this message. Welcome aboard!
               message: `Group chat created! @${acceptorName} and @${requesterName} are meeting up. Everyone accepted will join here automatically. 🤝`,
               messageType: 'system',
             });
+          }
+        }
+
+        if (!groupChatroomId) {
+          const [anySession] = await db.select()
+            .from(availableNow)
+            .where(eq(availableNow.userId, Number(userId)))
+            .orderBy(desc(availableNow.createdAt))
+            .limit(1);
+          if (anySession) {
+            const [fallbackChatroom] = await db.select()
+              .from(meetupChatrooms)
+              .where(eq(meetupChatrooms.availableNowId, anySession.id))
+              .orderBy(desc(meetupChatrooms.id))
+              .limit(1);
+            if (fallbackChatroom) {
+              groupChatroomId = fallbackChatroom.id;
+              console.log(`[MEET ACCEPT] Found existing chatroom ${fallbackChatroom.id} from session ${anySession.id} (possibly expired)`);
+            }
           }
         }
 
