@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MapPin, Camera, Globe, Languages, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2, ChevronsUpDown, Check, Pencil, Copy, Link, Plane } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { calculateAge } from "@/lib/ageUtils";
@@ -311,167 +310,111 @@ export function ProfileTabs(props: ProfilePageProps) {
     const sharedEvents = Array.isArray(commonStats.sharedEvents) ? commonStats.sharedEvents : [];
     const sharedLanguagesNonEnglish = Array.isArray(commonStats.sharedLanguagesNonEnglish) ? commonStats.sharedLanguagesNonEnglish : [];
     const sharedCityActivities = Array.isArray(commonStats.sharedCityActivities) ? commonStats.sharedCityActivities : [];
-    const sharedSexualPreferences = Array.isArray(commonStats.sharedSexualPreferences) ? commonStats.sharedSexualPreferences : [];
     const otherCommonalities = Array.isArray(commonStats.otherCommonalities) ? commonStats.otherCommonalities : [];
     const sharedContactsCount = Number.isFinite(commonStats.sharedContactsCount as number) ? (commonStats.sharedContactsCount as number) : 0;
 
     const sections = [
       { label: "Shared Interests", items: sharedInterests, color: "bg-[#FF6B35] text-white border-black/10" },
-      { label: "Shared Activities", items: sharedActivities, color: "bg-orange-500 text-white shadow-sm ring-1 ring-white/20 border-blue-600/20" },
-      { label: "Shared Events", items: sharedEvents, color: "bg-orange-500 text-white shadow-sm ring-1 ring-white/20 border-purple-600/20" },
-      { label: "Shared City Activities", items: sharedCityActivities, color: "bg-teal-500 text-white border-teal-600/20" },
-      { label: "Shared Languages", items: sharedLanguagesNonEnglish, color: "bg-indigo-500 text-white border-indigo-600/20" },
-      { label: "Shared Sexual Preferences", items: sharedSexualPreferences, color: "bg-pink-500 text-white border-pink-600/20" },
-      { label: "Other Commonalities", items: otherCommonalities, color: "bg-white/20 text-white border-white/10" },
+      { label: "Shared Activities", items: sharedActivities, color: "bg-orange-500 text-white shadow-sm ring-1 ring-white/20" },
+      { label: "Shared Events", items: sharedEvents, color: "bg-orange-500 text-white shadow-sm ring-1 ring-white/20" },
+      { label: "Shared City Activities", items: sharedCityActivities, color: "bg-teal-500 text-white" },
+      { label: "Shared Languages", items: sharedLanguagesNonEnglish, color: "bg-indigo-500 text-white" },
+      { label: "Other", items: otherCommonalities, color: "bg-white/20 text-white" },
     ].filter((s) => s.items.length > 0);
 
+    const goToContacts = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (openTab) openTab('contacts');
+      setTimeout(() => {
+        const el = document.getElementById('connections-in-common-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 200);
+    };
+
     return (
-      <Dialog open={expanded} onOpenChange={setExpanded}>
-        <div
-          className="what-you-have-in-common-inline relative overflow-hidden rounded-2xl border-2 border-orange-500/30 shadow-lg bg-[#1e2139]"
-          role="button"
-          tabIndex={0}
-          onClick={() => setExpanded(true)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") setExpanded(true);
-          }}
-          aria-expanded={expanded}
-          data-testid="what-you-have-in-common-inline"
-          style={{ cursor: "pointer" }}
-        >
-          <div className="p-4 sm:p-5">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0">
-                <div className="text-white" style={{ fontSize: '18px', fontWeight: 700 }}>
-                  <span className="inline-flex items-center gap-2">
-                    <span aria-hidden>🤝</span>
-                    <span>What You Have in Common</span>
-                  </span>
-                </div>
-            <div className="mt-1 text-sm text-white font-black drop-shadow-md brightness-110">
-              Tap to view details
+      <div
+        className="what-you-have-in-common-inline relative overflow-hidden rounded-2xl border-2 border-orange-500/30 shadow-lg bg-[#1e2139]"
+        data-testid="what-you-have-in-common-inline"
+      >
+        {/* Header row — always visible */}
+        <div className="p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-white font-bold text-base sm:text-lg">
+              <span aria-hidden>🤝</span>
+              <span>What You Have in Common</span>
             </div>
-              </div>
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              className="shrink-0 text-xs sm:text-sm font-bold text-white/80 hover:text-white underline underline-offset-2 transition-colors"
+              data-testid="button-toggle-common-details"
+            >
+              {expanded ? 'Hide' : 'See details'}
+            </button>
+          </div>
+
+          {/* Count badge */}
+          <div className="mt-3 flex items-center gap-3 flex-wrap">
+            <div
+              className="inline-flex items-center justify-center rounded-2xl px-4 py-2 bg-[#FF6B35] text-white"
+              data-testid="common-count-badge"
+            >
+              <span className="text-xl sm:text-2xl font-extrabold leading-tight">{commonStats.totalCommon}</span>
+              <span className="ml-1.5 text-sm font-semibold text-white/90 leading-tight">
+                {commonStats.totalCommon === 1 ? "thing" : "things"} in common
+              </span>
+            </div>
+
+            {/* Mutual connections — direct link, never a modal */}
+            {sharedContactsCount > 0 && (
               <button
                 type="button"
-                className="shrink-0 text-xs sm:text-sm font-bold text-white/90 hover:text-white underline underline-offset-2"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setExpanded(true);
-                }}
-                data-testid="button-toggle-common-details"
+                onClick={goToContacts}
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold bg-blue-600/80 hover:bg-blue-600 text-white transition-colors"
               >
-                See details
+                👥 {sharedContactsCount} mutual {sharedContactsCount === 1 ? 'connection' : 'connections'} →
               </button>
-            </div>
-
-            <div className="mt-2 flex items-center justify-center">
-              <div
-                className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-center bg-[#FF6B35] text-white border border-black/10"
-                data-testid="common-count-badge"
-              >
-                <div className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
-                  {commonStats.totalCommon}
-                </div>
-                <div className="ml-2 text-sm sm:text-base font-semibold text-white/90 leading-tight">
-                  {commonStats.totalCommon === 1 ? "thing" : "things"} in common
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-              {sharedContactsCount > 0 && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (openTab) openTab('contacts');
-                    setTimeout(() => {
-                      const el = document.getElementById('connections-in-common-section');
-                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 200);
-                  }}
-                  className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white hover:bg-black/30 transition-colors"
-                >
-                  👥 <span className="font-extrabold mx-1">{sharedContactsCount}</span> {sharedContactsCount === 1 ? 'connection' : 'connection'} in common
-                </button>
-              )}
-            </div>
+            )}
           </div>
         </div>
 
-        <DialogContent className="sm:max-w-[500px] p-0 gap-0 bg-[#1e2139] border-none text-white max-h-[90vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl">
-          <DialogHeader className="p-6 border-b border-white/10 shrink-0">
-            <DialogTitle className="text-xl font-bold flex items-center gap-2 text-white">
-              <span>🤝</span> What You Have in Common
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide">
-            <div className="flex items-center justify-center">
-              <div className="inline-flex items-center justify-center rounded-2xl px-8 py-4 text-center bg-[#FF6B35] text-white border border-black/10 shadow-lg">
-                <div className="text-4xl font-black text-white leading-tight">
-                  {commonStats.totalCommon}
-                </div>
-                <div className="ml-3 text-lg font-bold text-white/90 leading-tight">
-                  {commonStats.totalCommon === 1 ? "thing" : "things"} in common
+        {/* Expandable detail section — no Dialog, fully inline */}
+        {expanded && (
+          <div className="border-t border-white/10 px-4 pb-4 pt-3 space-y-4">
+            {sharedContactsCount > 0 && (
+              <div className="bg-black/20 rounded-xl p-3 border border-white/10">
+                <p className="text-xs font-bold text-white/60 uppercase tracking-wider mb-2">Connections</p>
+                <button
+                  type="button"
+                  onClick={goToContacts}
+                  className="w-full flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">👥</span>
+                    <div className="text-left">
+                      <div className="font-bold text-white text-sm">{sharedContactsCount} Mutual {sharedContactsCount === 1 ? 'Connection' : 'Connections'}</div>
+                      <div className="text-xs text-white/50">Tap to see who you both know</div>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-white/40" />
+                </button>
+              </div>
+            )}
+            {sections.map(({ label, items, color }) => (
+              <div key={label} className="bg-black/20 rounded-xl p-3 border border-white/10">
+                <p className="text-xs font-bold text-white/60 uppercase tracking-wider mb-2">{label} ({items.length})</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {items.map((item) => (
+                    <span key={item} className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold border ${color}`}>
+                      {item}
+                    </span>
+                  ))}
                 </div>
               </div>
-            </div>
-
-            <div className="space-y-6">
-              {sharedContactsCount > 0 && (
-                <div className="bg-black/20 rounded-2xl p-4 border border-white/10">
-                  <div className="text-sm font-extrabold text-white mb-2 uppercase tracking-wider opacity-70">Connections</div>
-                  <button
-                    onClick={() => {
-                      setExpanded(false);
-                      if (openTab) openTab('contacts');
-                      setTimeout(() => {
-                        const el = document.getElementById('connections-in-common-section');
-                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      }, 200);
-                    }}
-                    className="w-full flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="text-2xl">👥</div>
-                      <div className="text-left">
-                        <div className="font-bold text-white">{sharedContactsCount} Mutual {sharedContactsCount === 1 ? 'Connection' : 'Connections'}</div>
-                        <div className="text-xs text-white/60">Tap to see who you both know</div>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-white/40" />
-                  </button>
-                </div>
-              )}
-
-              {sections.map(({ label, items, color }) => (
-                <div key={label} className="bg-black/20 rounded-2xl p-4 border border-white/10">
-                  <div className="text-sm font-extrabold text-white mb-3 uppercase tracking-wider opacity-70">{label} ({items.length})</div>
-                  <div className="flex flex-wrap gap-2">
-                    {items.map((item) => (
-                      <span key={item} className={`inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold border shadow-sm ${color}`}>
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
-          
-          <div className="p-4 bg-black/40 border-t border-white/10 shrink-0">
-            <Button 
-              className="w-full bg-white text-[#1e2139] hover:bg-white/90 font-bold rounded-xl py-6"
-              onClick={() => setExpanded(false)}
-            >
-              Got it!
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+        )}
+      </div>
     );
   };
 
@@ -742,12 +685,7 @@ export function ProfileTabs(props: ProfilePageProps) {
               if (allShared.length === 0 && mutuals === 0) return null;
               const topNames = allShared.slice(0, 3);
               return (
-                <div
-                  className="rounded-xl border border-green-200 dark:border-green-800/50 bg-green-50/60 dark:bg-green-950/30 px-4 py-3 flex gap-3 items-start shadow-sm cursor-pointer hover:bg-green-100/60 dark:hover:bg-green-900/40 transition-colors"
-                  onClick={() => {
-                    window.dispatchEvent(new CustomEvent('open-common-modal'));
-                  }}
-                >
+                <div className="rounded-xl border border-green-200 dark:border-green-800/50 bg-green-50/60 dark:bg-green-950/30 px-4 py-3 flex gap-3 items-start shadow-sm">
                   <Sparkles className="w-4 h-4 text-green-500 dark:text-green-400 mt-0.5 flex-shrink-0" />
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-green-800 dark:text-green-300 mb-1">Why you might get along</p>
@@ -758,7 +696,22 @@ export function ProfileTabs(props: ProfilePageProps) {
                         )}</li>
                       )}
                       {mutuals > 0 && (
-                        <li>• {mutuals} mutual connection{mutuals === 1 ? '' : 's'}</li>
+                        <li>
+                          •{' '}
+                          <button
+                            type="button"
+                            className="underline underline-offset-2 text-green-700 dark:text-green-300 font-semibold hover:text-green-900 dark:hover:text-green-100 transition-colors"
+                            onClick={() => {
+                              if (openTab) openTab('contacts');
+                              setTimeout(() => {
+                                const el = document.getElementById('connections-in-common-section');
+                                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }, 200);
+                            }}
+                          >
+                            {mutuals} mutual connection{mutuals === 1 ? '' : 's'} →
+                          </button>
+                        </li>
                       )}
                     </ul>
                   </div>
