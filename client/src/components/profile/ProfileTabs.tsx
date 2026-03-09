@@ -4202,11 +4202,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                           {countriesVisited.map((country: string, index: number) => (
                             <div 
                               key={country} 
-                              className={
-                                isMobileWeb
-                                  ? "pill-interests bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
-                                  : "pill-interests"
-                              }
+                              className="pill-interests bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 shadow-none"
                             >
                               {country}
                             </div>
