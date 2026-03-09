@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ChatInput } from '@/components/ui/chat-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { MessageCircle, Send, Users, ArrowLeft, Heart, Reply, Copy, Edit2, Trash2, Check, X, ThumbsUp } from 'lucide-react';
+import { MessageCircle, Send, Users, ArrowLeft, Heart, Reply, Copy, Edit2, Trash2, Check, X, ThumbsUp, Clock, Zap } from 'lucide-react';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
 import { SimpleAvatar, getProfileImageUrl } from '@/components/simple-avatar';
@@ -45,6 +45,26 @@ function getInitialTargetUserId(): number | null {
   return null;
 }
 
+function getInitialMeetupChatId(): number | null {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const mcId = params.get('meetupChat');
+    if (mcId && !isNaN(parseInt(mcId))) return parseInt(mcId);
+  } catch {}
+  return null;
+}
+
+function formatCountdown(expiresAt: string | Date): string {
+  const now = new Date().getTime();
+  const expires = new Date(expiresAt).getTime();
+  const diff = expires - now;
+  if (diff <= 0) return "Expired";
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  if (hours > 0) return `${hours}h ${minutes}m left`;
+  return `${minutes}m left`;
+}
+
 function getStoredUser() {
   return null;
 }
@@ -76,9 +96,11 @@ export default function Messages() {
   }, [userId]);
   const { toast } = useToast();
   const [selectedConversation, setSelectedConversation] = useState<number | null>(getInitialTargetUserId);
+  const [selectedMeetupChat, setSelectedMeetupChat] = useState<number | null>(getInitialMeetupChatId);
   const [newMessage, setNewMessage] = useState('');
   const prefillAppliedRef = useRef(false);
   const [connectionSearch, setConnectionSearch] = useState('');
+  const [countdownTick, setCountdownTick] = useState(0);
   const [instantMessages, setInstantMessages] = useState<any[]>([]);
   const [typingUsers, setTypingUsers] = useState<{ [userId: number]: boolean }>({});
   const [replyingTo, setReplyingTo] = useState<any | null>(null);
@@ -191,6 +213,73 @@ export default function Messages() {
     placeholderData: (previousData: any) => previousData,
   });
 
+  const { data: meetupChatrooms = [], isLoading: meetupChatsLoading } = useQuery({
+    queryKey: ['/api/meetup-chatrooms/mine'],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/meetup-chatrooms/mine`, {
+        credentials: 'include',
+        headers: { 'x-user-id': String(userId) },
+      });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!userId,
+    staleTime: 30000,
+    refetchInterval: 30000,
+  });
+
+  const { data: meetupChatMessages = [], refetch: refetchMeetupMessages } = useQuery({
+    queryKey: ['/api/meetup-chat-messages', selectedMeetupChat],
+    queryFn: async () => {
+      if (!selectedMeetupChat) return [];
+      const res = await fetch(`${getApiBaseUrl()}/api/available-now/group-chat/${selectedMeetupChat}/messages`, {
+        credentials: 'include',
+        headers: { 'x-user-id': String(userId) },
+      });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!userId && !!selectedMeetupChat,
+    staleTime: 5000,
+    refetchInterval: 5000,
+  });
+
+  const sendMeetupMessageMutation = useMutation({
+    mutationFn: async ({ chatroomId, message }: { chatroomId: number; message: string }) => {
+      const res = await fetch(`${getApiBaseUrl()}/api/available-now/group-chat/${chatroomId}/messages`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'x-user-id': String(userId) },
+        body: JSON.stringify({ message }),
+      });
+      if (!res.ok) throw new Error('Failed to send message');
+      return res.json();
+    },
+    onSuccess: () => {
+      setNewMessage('');
+      refetchMeetupMessages();
+    },
+    onError: () => {
+      toast({ title: "Message failed to send", variant: "destructive" });
+    },
+  });
+
+  useEffect(() => {
+    if (!selectedMeetupChat || (meetupChatrooms as any[]).length === 0) return;
+    const activeChatroom = (meetupChatrooms as any[]).find((c: any) => c.id === selectedMeetupChat);
+    if (!activeChatroom?.expiresAt || activeChatroom.isExpired) return;
+    const interval = setInterval(() => setCountdownTick(t => t + 1), 60000);
+    return () => clearInterval(interval);
+  }, [selectedMeetupChat, meetupChatrooms]);
+
+  useEffect(() => {
+    const mcParam = getInitialMeetupChatId();
+    if (mcParam) {
+      setSelectedMeetupChat(mcParam);
+      setSelectedConversation(null);
+    }
+  }, []);
+
   // When the user opens the Messages page, mark ALL received messages as read on the server
   // so badges clear to 0 across navbar/bottom-nav/notification bell.
   useEffect(() => {
@@ -289,14 +378,14 @@ export default function Messages() {
 
   // Scroll to BOTTOM to show newest messages and text box
   useEffect(() => {
-    if (selectedConversation && messagesContainerRef.current) {
+    if ((selectedConversation || selectedMeetupChat) && messagesContainerRef.current) {
       setTimeout(() => {
         if (messagesContainerRef.current) {
           messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
         }
       }, 100);
     }
-  }, [selectedConversation]);
+  }, [selectedConversation, selectedMeetupChat, meetupChatMessages]);
 
   // Fetch all users for name lookup
   const { data: allUsers = [] } = useQuery({
@@ -405,11 +494,10 @@ export default function Messages() {
           }
         }, 500);
       }
-    } else if (!targetUserId) {
-      // Clear selection when navigating back to /messages without a userId
+    } else if (!targetUserId && !getInitialMeetupChatId()) {
       setSelectedConversation(null);
     }
-  }, [targetUserId, conversations]); // Removed selectedConversation from deps to prevent loops
+  }, [targetUserId, conversations]);
 
   // Get messages for selected conversation (simplified to avoid duplication)
   const conversationMessages = selectedConversation 
@@ -610,7 +698,7 @@ export default function Messages() {
   return (
     <div data-chat-page="true" className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5rem)] lg:h-[calc(100dvh-5rem)]'} min-h-0`}>
       {/* Left Sidebar - Conversations. Mobile: full screen when no selection; hidden when chat open. Desktop (lg+): always visible. Single column on mobile. */}
-      <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-[#f0f2f5] dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500 min-w-0 flex-shrink-0`}>
+      <div className={`${(selectedConversation || selectedMeetupChat) ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-[#f0f2f5] dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500 min-w-0 flex-shrink-0`}>
         <div className={`border-b border-gray-200 dark:border-gray-700 ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'}`} style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: 'inherit' }}>
           <div className={`flex items-center gap-3 ${isNativeIOSApp() ? 'mb-2' : 'mb-3'}`}>
             <UniversalBackButton 
@@ -638,108 +726,341 @@ export default function Messages() {
         )}
 
         <div className="flex-1 overflow-y-auto">
-          {(connectionsLoading || messagesLoading) && conversations.length === 0 ? (
+          {(connectionsLoading || messagesLoading) && conversations.length === 0 && (meetupChatrooms as any[]).length === 0 ? (
             <div className="p-4 flex items-center justify-center">
               <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-blue-500" />
             </div>
-          ) : conversations.length === 0 ? (
+          ) : conversations.length === 0 && (meetupChatrooms as any[]).length === 0 ? (
             <div className="p-4 text-center text-gray-600 dark:text-gray-500">
               <MessageCircle className="w-10 h-10 mx-auto mb-2 opacity-50" />
               <p className="text-sm">No conversations yet</p>
             </div>
           ) : (
-            conversations
-              .filter((conv: any) => 
-                !connectionSearch || 
-                conv.username.toLowerCase().includes(connectionSearch.toLowerCase())
-              )
-              .map((conv: any) => (
-                <div
-                  key={conv.userId}
-                  data-conversation-id={conv.userId}
-                  className={`${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
-                    selectedConversation === conv.userId 
-                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 border-l-4 border-l-blue-400 shadow-lg text-white' 
-                      : (!isNativeIOSApp() && conv.unreadCount > 0)
-                        ? 'bg-white/70 dark:bg-gray-800/40 border-l-4 border-l-orange-400 hover:bg-white/90 dark:hover:bg-gray-800/55'
-                        : 'hover:bg-gray-200 dark:hover:bg-gray-700 hover:border-l-4 hover:border-l-gray-400 dark:hover:border-l-gray-500'
-                  } ${
-                    targetUserId && conv.userId === parseInt(targetUserId)
-                      ? 'ring-2 ring-orange-400 ring-opacity-75'
-                      : ''
-                  }`}
-                  onClick={() => {
-                    console.log('🔥 CONVERSATION CLICKED:', conv.username, 'ID:', conv.userId);
-                    navigate(`/messages/${conv.userId}`);
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div 
-                      className="cursor-pointer"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.location.href = `/profile/${conv.userId}`;
-                      }}
-                    >
-                      <Avatar className={`${isNativeIOSApp() ? 'w-12 h-12' : 'w-10 h-10'}`}>
-                        <AvatarImage 
-                          src={getProfileImageUrl(conv) || undefined} 
-                          alt={`${conv.username} avatar`}
-                        />
-                        <AvatarFallback className="bg-blue-600 text-white">
-                          {conv.username?.charAt(0)?.toUpperCase() || '?'}
-                        </AvatarFallback>
-                      </Avatar>
-                    </div>
-                    <div className="flex-1 min-w-0 overflow-hidden">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <h3 className={`text-sm truncate ${
-                          selectedConversation === conv.userId 
-                            ? 'text-white font-semibold' 
-                            : (!isNativeIOSApp() && conv.unreadCount > 0)
-                              ? 'text-gray-900 dark:text-white font-extrabold'
-                              : 'text-gray-900 dark:text-white font-semibold'
-                        }`}>
-                          @{conv.username}
-                        </h3>
-                        {!isNativeIOSApp() && conv.unreadCount > 0 && (
-                          <span
-                            className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 shrink-0"
-                            aria-label="Unread messages"
-                            title="Unread messages"
-                          />
-                        )}
-                        {conv.unreadCount > 0 && (
-                          <div className="bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                            {conv.unreadCount > 99 ? '99+' : conv.unreadCount}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className={`text-xs ${
-                        selectedConversation === conv.userId 
-                          ? 'text-gray-200' 
-                          : (!isNativeIOSApp() && conv.unreadCount > 0)
-                            ? 'text-gray-700 dark:text-gray-300 font-medium'
-                            : 'text-gray-600 dark:text-gray-500'
-                      }`}>
-                        {conv.location || ''}
-                      </div>
-                    </div>
-                    {selectedConversation === conv.userId && (
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    )}
+            <>
+              {(meetupChatrooms as any[]).length > 0 && (
+                <>
+                  <div className="px-3 py-2 bg-orange-50 dark:bg-orange-900/20 border-b border-orange-200 dark:border-orange-800">
+                    <p className="text-xs font-semibold text-orange-700 dark:text-orange-300 flex items-center gap-1">
+                      <Zap className="w-3 h-3" /> Meetup Chats
+                    </p>
                   </div>
-                </div>
-              ))
+                  {(meetupChatrooms as any[])
+                    .filter((mc: any) =>
+                      !connectionSearch ||
+                      (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase())
+                    )
+                    .map((mc: any) => {
+                      const isExpired = mc.isExpired || (mc.expiresAt && new Date(mc.expiresAt) < new Date());
+                      const countdown = mc.expiresAt ? formatCountdown(mc.expiresAt) : null;
+                      const isSelected = selectedMeetupChat === mc.id;
+                      return (
+                        <div
+                          key={`mc-${mc.id}`}
+                          className={`${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
+                            isSelected
+                              ? 'bg-gradient-to-r from-orange-500 to-orange-600 border-l-4 border-l-orange-300 shadow-lg text-white'
+                              : isExpired
+                                ? 'opacity-60 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                : 'hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-l-4 hover:border-l-orange-400'
+                          }`}
+                          onClick={() => {
+                            setSelectedMeetupChat(mc.id);
+                            setSelectedConversation(null);
+                            navigate(`/messages?meetupChat=${mc.id}`);
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                              isSelected ? 'bg-white/20' : 'bg-orange-100 dark:bg-orange-900/40'
+                            }`}>
+                              <Users className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-orange-600 dark:text-orange-400'}`} />
+                            </div>
+                            <div className="flex-1 min-w-0 overflow-hidden">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <h3 className={`text-sm truncate font-semibold ${
+                                  isSelected ? 'text-white' : 'text-gray-900 dark:text-white'
+                                }`}>
+                                  {mc.chatroomName || 'Meetup Chat'}
+                                </h3>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full shrink-0 font-medium ${
+                                  isSelected
+                                    ? 'bg-white/20 text-white'
+                                    : mc.chatType === 'available_now'
+                                      ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
+                                      : 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+                                }`}>
+                                  {mc.chatType === 'available_now' ? 'Meet' : 'Meetup'}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                {countdown && (
+                                  <span className={`text-[10px] flex items-center gap-0.5 ${
+                                    isSelected ? 'text-orange-100' : isExpired ? 'text-red-500' : 'text-orange-600 dark:text-orange-400'
+                                  }`}>
+                                    <Clock className="w-3 h-3" />
+                                    {countdown}
+                                  </span>
+                                )}
+                                {mc.lastMessage && (
+                                  <p className={`text-xs truncate ${
+                                    isSelected ? 'text-orange-100' : 'text-gray-500 dark:text-gray-400'
+                                  }`}>
+                                    {mc.lastMessageType === 'system' ? mc.lastMessage : `${mc.lastMessageUsername}: ${mc.lastMessage}`}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  {conversations.length > 0 && (
+                    <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
+                      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                        <MessageCircle className="w-3 h-3" /> Direct Messages
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+              {conversations
+                .filter((conv: any) => 
+                  !connectionSearch || 
+                  conv.username.toLowerCase().includes(connectionSearch.toLowerCase())
+                )
+                .map((conv: any) => (
+                  <div
+                    key={conv.userId}
+                    data-conversation-id={conv.userId}
+                    className={`${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
+                      selectedConversation === conv.userId 
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 border-l-4 border-l-blue-400 shadow-lg text-white' 
+                        : (!isNativeIOSApp() && conv.unreadCount > 0)
+                          ? 'bg-white/70 dark:bg-gray-800/40 border-l-4 border-l-orange-400 hover:bg-white/90 dark:hover:bg-gray-800/55'
+                          : 'hover:bg-gray-200 dark:hover:bg-gray-700 hover:border-l-4 hover:border-l-gray-400 dark:hover:border-l-gray-500'
+                    } ${
+                      targetUserId && conv.userId === parseInt(targetUserId)
+                        ? 'ring-2 ring-orange-400 ring-opacity-75'
+                        : ''
+                    }`}
+                    onClick={() => {
+                      setSelectedMeetupChat(null);
+                      setSelectedConversation(conv.userId);
+                      navigate(`/messages/${conv.userId}`);
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.href = `/profile/${conv.userId}`;
+                        }}
+                      >
+                        <Avatar className={`${isNativeIOSApp() ? 'w-12 h-12' : 'w-10 h-10'}`}>
+                          <AvatarImage 
+                            src={getProfileImageUrl(conv) || undefined} 
+                            alt={`${conv.username} avatar`}
+                          />
+                          <AvatarFallback className="bg-blue-600 text-white">
+                            {conv.username?.charAt(0)?.toUpperCase() || '?'}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <h3 className={`text-sm truncate ${
+                            selectedConversation === conv.userId 
+                              ? 'text-white font-semibold' 
+                              : (!isNativeIOSApp() && conv.unreadCount > 0)
+                                ? 'text-gray-900 dark:text-white font-extrabold'
+                                : 'text-gray-900 dark:text-white font-semibold'
+                          }`}>
+                            @{conv.username}
+                          </h3>
+                          {!isNativeIOSApp() && conv.unreadCount > 0 && (
+                            <span
+                              className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 shrink-0"
+                              aria-label="Unread messages"
+                              title="Unread messages"
+                            />
+                          )}
+                          {conv.unreadCount > 0 && (
+                            <div className="bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                              {conv.unreadCount > 99 ? '99+' : conv.unreadCount}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className={`text-xs ${
+                          selectedConversation === conv.userId 
+                            ? 'text-gray-200' 
+                            : (!isNativeIOSApp() && conv.unreadCount > 0)
+                              ? 'text-gray-700 dark:text-gray-300 font-medium'
+                              : 'text-gray-600 dark:text-gray-500'
+                        }`}>
+                          {conv.location || ''}
+                        </div>
+                      </div>
+                      {selectedConversation === conv.userId && (
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </>
           )}
         </div>
       </div>
 
       {/* Main Chat Area - Mobile: full screen only when conversation selected. Desktop (lg+): always visible. Single column on mobile. */}
-      <div className={`flex-1 flex flex-col h-full min-h-0 bg-white dark:bg-gray-900 min-w-0 ${!selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-auto`}>
-        {/* Loading state when conversation is selected but user data not loaded yet */}
-        {selectedConversation && !selectedUser && (connectionsLoading || messagesLoading || conversations.length === 0) ? (
+      <div className={`flex-1 flex flex-col h-full min-h-0 bg-white dark:bg-gray-900 min-w-0 ${!selectedConversation && !selectedMeetupChat ? 'hidden lg:flex' : 'flex'} w-full lg:w-auto`}>
+
+        {/* MEETUP CHATROOM VIEW */}
+        {selectedMeetupChat ? (() => {
+          const activeMeetup = (meetupChatrooms as any[]).find((c: any) => c.id === selectedMeetupChat);
+          const isExpired = activeMeetup?.isExpired || (activeMeetup?.expiresAt && new Date(activeMeetup.expiresAt) < new Date());
+          const countdown = activeMeetup?.expiresAt ? formatCountdown(activeMeetup.expiresAt) : null;
+          return (
+            <>
+              <div className={`${isNativeIOSApp() ? 'px-3 py-1.5' : 'px-4 py-2'} border-b border-gray-200 dark:border-gray-700 bg-orange-50 dark:bg-gray-800 shrink-0 min-w-0`}>
+                <div className="flex items-center gap-2 min-w-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setSelectedMeetupChat(null);
+                      isNativeIOSApp() ? window.history.back() : navigate('/messages');
+                    }}
+                    className="lg:hidden text-gray-600 dark:text-gray-400 min-h-[44px] min-w-[44px] h-11 w-11 shrink-0 touch-target"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </Button>
+                  <div className="w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center shrink-0">
+                    <Users className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div className="flex-1 min-w-0 overflow-hidden">
+                    <h2 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                      {activeMeetup?.chatroomName || 'Meetup Chat'}
+                    </h2>
+                    <div className="flex items-center gap-2">
+                      {countdown && (
+                        <span className={`text-xs flex items-center gap-0.5 ${isExpired ? 'text-red-500' : 'text-orange-600 dark:text-orange-400'}`}>
+                          <Clock className="w-3 h-3" />
+                          {countdown}
+                        </span>
+                      )}
+                      {activeMeetup?.city && (
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{activeMeetup.city}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                ref={messagesContainerRef}
+                className="flex-1 min-h-0 overflow-y-auto px-4 py-2 bg-[#D1D5DB] dark:bg-[#0b141a]"
+              >
+                <div className="flex flex-col min-h-full">
+                  <div className="flex-grow" />
+                  <div className="space-y-2 max-w-4xl mx-auto w-full">
+                    {(meetupChatMessages as any[]).length === 0 ? (
+                      <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                        <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                        <p>No messages yet in this meetup chat.</p>
+                      </div>
+                    ) : (
+                      (meetupChatMessages as any[]).map((msg: any) => {
+                        const isOwnMessage = Number(msg.userId) === userId;
+                        const isSystem = msg.messageType === 'system';
+                        if (isSystem) {
+                          return (
+                            <div key={msg.id} className="flex justify-center my-2">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">
+                                {msg.message}
+                              </p>
+                            </div>
+                          );
+                        }
+                        return (
+                          <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
+                            <div className="max-w-[70%]">
+                              {!isOwnMessage && (
+                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-0.5 ml-1 font-medium">
+                                  @{msg.username}
+                                </p>
+                              )}
+                              <div className={`px-4 py-2 rounded-2xl ${
+                                isOwnMessage
+                                  ? 'bg-[#DCF8C6] dark:bg-[#005C4B]'
+                                  : 'bg-gray-200 dark:bg-gray-700'
+                              }`}>
+                                <p className={`text-sm whitespace-pre-wrap break-words ${
+                                  isOwnMessage ? 'text-gray-900 dark:text-white' : 'text-gray-900 dark:text-gray-100'
+                                }`}>
+                                  {msg.message}
+                                </p>
+                                <p className={`text-xs opacity-70 text-right mt-1 ${
+                                  isOwnMessage ? 'text-black/60 dark:text-white/70' : 'text-gray-600 dark:text-gray-400'
+                                }`}>
+                                  {new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
+                </div>
+              </div>
+
+              <div
+                ref={inputContainerRef}
+                className="chat-input-area px-4 py-2 pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))] md:pb-4 md:mb-4 lg:pb-6 lg:mb-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0"
+              >
+                {isExpired ? (
+                  <div className="text-center py-2">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">This meetup chat has expired.</p>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 max-w-4xl mx-auto">
+                    <Input
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          if (newMessage.trim() && selectedMeetupChat) {
+                            sendMeetupMessageMutation.mutate({ chatroomId: selectedMeetupChat, message: newMessage.trim() });
+                          }
+                        }
+                      }}
+                      placeholder="Type a message..."
+                      className="flex-1 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                    />
+                    <Button
+                      onClick={() => {
+                        if (newMessage.trim() && selectedMeetupChat) {
+                          sendMeetupMessageMutation.mutate({ chatroomId: selectedMeetupChat, message: newMessage.trim() });
+                        }
+                      }}
+                      disabled={!newMessage.trim() || sendMeetupMessageMutation.isPending}
+                      size="icon"
+                      className="bg-orange-600 hover:bg-orange-700 text-white shrink-0 min-h-[44px] min-w-[44px] touch-target"
+                    >
+                      <Send className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </>
+          );
+        })() :
+        /* Loading state when conversation is selected but user data not loaded yet */
+        selectedConversation && !selectedUser && (connectionsLoading || messagesLoading || conversations.length === 0) ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center text-gray-600 dark:text-gray-400">
               <div className="animate-pulse">Loading conversation...</div>

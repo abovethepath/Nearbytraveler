@@ -183,11 +183,15 @@ function MeetRequestModal({
       console.log(`[ACTIVITY MEET] Success:`, _data);
       onActionComplete();
       if (variables.status === "accepted") {
-        const chatUserId = _data?.otherUserId || actorId;
         toast({ title: "It's a meet!", description: `Opening chat with @${displayName}...` });
         onClose();
-        if (chatUserId) {
-          setLocation(`/messages?user=${chatUserId}`);
+        if (_data?.groupChatroomId) {
+          setLocation(`/messages?meetupChat=${_data.groupChatroomId}`);
+        } else {
+          const chatUserId = _data?.otherUserId || actorId;
+          if (chatUserId) {
+            setLocation(`/messages?user=${chatUserId}`);
+          }
         }
       } else {
         toast({ title: "Meet request declined", description: "The request has been removed from your feed." });

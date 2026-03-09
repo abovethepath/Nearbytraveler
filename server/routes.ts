@@ -23885,7 +23885,7 @@ Questions? Just reply to this message. Welcome aboard!
               country: activeSession.country,
               activityType: primaryActivity || null,
               isActive: true,
-              expiresAt: activeSession.expiresAt,
+              expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
               participantCount: 2,
             }).returning();
 
@@ -24177,6 +24177,15 @@ Questions? Just reply to this message. Welcome aboard!
       const { message, replyToId } = req.body;
       if (!message?.trim()) return res.status(400).json({ error: "Message is required" });
 
+      const [chatroom] = await db.select({ isActive: meetupChatrooms.isActive, expiresAt: meetupChatrooms.expiresAt })
+        .from(meetupChatrooms)
+        .where(eq(meetupChatrooms.id, Number(chatroomId)))
+        .limit(1);
+      if (!chatroom) return res.status(404).json({ error: "Chatroom not found" });
+      if (!chatroom.isActive || (chatroom.expiresAt && new Date(chatroom.expiresAt) < new Date())) {
+        return res.status(403).json({ error: "This meetup chat has expired" });
+      }
+
       const [user] = await db.select({ username: users.username })
         .from(users).where(eq(users.id, Number(userId)));
 
@@ -24290,6 +24299,138 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error("Error leaving group chat:", error);
       res.status(500).json({ error: "Failed to leave chat" });
+    }
+  });
+
+  // ---------- UNIFIED MEETUP CHATROOMS FOR MESSAGES PAGE ----------
+
+  app.get("/api/meetup-chatrooms/mine", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const uid = Number(userId);
+
+      const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
+
+      // 1) Available Now chatrooms where I'm the host
+      const mySessions = await db.select({ id: availableNow.id })
+        .from(availableNow)
+        .where(eq(availableNow.userId, uid));
+      const mySessionIds = mySessions.map(s => s.id);
+
+      // 2) Available Now chatrooms where I was accepted as requester
+      const acceptedRequests = await db.select({ toUserId: availableNowRequests.toUserId })
+        .from(availableNowRequests)
+        .where(and(eq(availableNowRequests.fromUserId, uid), eq(availableNowRequests.status, "accepted")));
+      const hostUserIds = acceptedRequests.map(r => r.toUserId);
+
+      let acceptedSessionIds: number[] = [];
+      if (hostUserIds.length > 0) {
+        const hostSessions = await db.select({ id: availableNow.id })
+          .from(availableNow)
+          .where(inArray(availableNow.userId, hostUserIds));
+        acceptedSessionIds = hostSessions.map(s => s.id);
+      }
+
+      const allSessionIds = [...new Set([...mySessionIds, ...acceptedSessionIds])];
+
+      // 3) Quick meetup chatrooms where I'm the organizer or participant
+      const myQuickMeetups = await db.select({ id: quickMeetups.id })
+        .from(quickMeetups)
+        .where(eq(quickMeetups.organizerId, uid));
+      const participantMeetups = await db.select({ meetupId: quickMeetupParticipants.meetupId })
+        .from(quickMeetupParticipants)
+        .where(eq(quickMeetupParticipants.userId, uid));
+      const allMeetupIds = [...new Set([...myQuickMeetups.map(m => m.id), ...participantMeetups.map(p => p.meetupId)])];
+
+      // Build OR conditions for chatroom query
+      const conditions: any[] = [];
+      if (allSessionIds.length > 0) {
+        conditions.push(inArray(meetupChatrooms.availableNowId, allSessionIds));
+      }
+      if (allMeetupIds.length > 0) {
+        conditions.push(inArray(meetupChatrooms.meetupId, allMeetupIds));
+      }
+
+      if (conditions.length === 0) {
+        return res.json([]);
+      }
+
+      const chatrooms = await db.select()
+        .from(meetupChatrooms)
+        .where(and(
+          or(...conditions),
+          gte(meetupChatrooms.expiresAt, fortyEightHoursAgo)
+        ))
+        .orderBy(desc(meetupChatrooms.createdAt));
+
+      // Get latest message for each chatroom
+      const chatroomIds = chatrooms.map(c => c.id);
+      let latestMessages: Record<number, any> = {};
+      if (chatroomIds.length > 0) {
+        const msgs = await db.select({
+          meetupChatroomId: meetupChatroomMessages.meetupChatroomId,
+          message: meetupChatroomMessages.message,
+          username: meetupChatroomMessages.username,
+          sentAt: meetupChatroomMessages.sentAt,
+          messageType: meetupChatroomMessages.messageType,
+        })
+          .from(meetupChatroomMessages)
+          .where(inArray(meetupChatroomMessages.meetupChatroomId, chatroomIds))
+          .orderBy(desc(meetupChatroomMessages.sentAt));
+
+        for (const msg of msgs) {
+          if (!latestMessages[msg.meetupChatroomId]) {
+            latestMessages[msg.meetupChatroomId] = msg;
+          }
+        }
+      }
+
+      const result = chatrooms.map(c => {
+        const isExpired = c.expiresAt && new Date(c.expiresAt) < new Date();
+        const latest = latestMessages[c.id];
+        return {
+          ...c,
+          isExpired,
+          chatType: c.availableNowId ? "available_now" : c.meetupId ? "quick_meetup" : "meetup",
+          lastMessage: latest?.message || null,
+          lastMessageUsername: latest?.username || null,
+          lastMessageTime: latest?.sentAt || c.createdAt,
+          lastMessageType: latest?.messageType || null,
+        };
+      });
+
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error fetching my meetup chatrooms:", error);
+      res.status(500).json({ error: "Failed to fetch meetup chatrooms" });
+    }
+  });
+
+  app.post("/api/meetup-chatrooms/cleanup-expired", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const now = new Date();
+      const expiredChatrooms = await db.select({ id: meetupChatrooms.id })
+        .from(meetupChatrooms)
+        .where(and(
+          eq(meetupChatrooms.isActive, true),
+          lte(meetupChatrooms.expiresAt, now)
+        ));
+
+      if (expiredChatrooms.length > 0) {
+        const expiredIds = expiredChatrooms.map(c => c.id);
+        await db.update(meetupChatrooms)
+          .set({ isActive: false })
+          .where(inArray(meetupChatrooms.id, expiredIds));
+      }
+
+      res.json({ cleaned: expiredChatrooms.length });
+    } catch (error: any) {
+      console.error("Error cleaning expired chatrooms:", error);
+      res.status(500).json({ error: "Failed to cleanup" });
     }
   });
 

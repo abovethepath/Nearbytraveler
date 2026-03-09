@@ -240,7 +240,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             toast({ title: "It's a meet!", description: "Opening chat..." });
             setLocation(`/messages?user=${otherUserId}`);
           } else {
-            toast({ title: "It's a meet!", description: "Request accepted! Check your messages." });
+            toast({ title: "It's a meet!", description: "Check your Messages for the meetup chat." });
+            setLocation('/messages');
           }
         }
       } else {
