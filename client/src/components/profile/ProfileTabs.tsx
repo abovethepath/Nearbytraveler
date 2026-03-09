@@ -273,6 +273,16 @@ export function ProfileTabs(props: ProfilePageProps) {
   // Mobile web: About should always be visible directly below the hero (requested ordering),
   // even if tab panels are lazily mounted.
   const forceMobileWebAboutPanel = (isMobileWeb || isNativeIOSApp()) && !isOwnProfile;
+  
+  const getTabBadge = (count: number) => {
+    if (count === 0) return null;
+    return (
+      <span className="ml-2 inline-flex items-center justify-center bg-orange-500 text-white text-[10px] font-bold h-5 min-w-[20px] px-1.5 rounded-full shadow-sm">
+        {count}
+      </span>
+    );
+  };
+
   /* Back-compat: avoid rendering the same card twice; only show this fallback when About panel isn't mounted yet. */
   const showWhatYouHaveInCommonInTabs = showWhatYouHaveInCommon && !(loadedTabs as any)?.has?.('about');
   const editButtonClass = profileEditButtonClass;
@@ -307,8 +317,8 @@ export function ProfileTabs(props: ProfilePageProps) {
 
     const sections = [
       { label: "Shared Interests", items: sharedInterests, color: "bg-[#FF6B35] text-white border-black/10" },
-      { label: "Shared Activities", items: sharedActivities, color: "bg-blue-500 text-white border-blue-600/20" },
-      { label: "Shared Events", items: sharedEvents, color: "bg-purple-500 text-white border-purple-600/20" },
+      { label: "Shared Activities", items: sharedActivities, color: "bg-orange-500 text-white shadow-sm ring-1 ring-white/20 border-blue-600/20" },
+      { label: "Shared Events", items: sharedEvents, color: "bg-orange-500 text-white shadow-sm ring-1 ring-white/20 border-purple-600/20" },
       { label: "Shared City Activities", items: sharedCityActivities, color: "bg-teal-500 text-white border-teal-600/20" },
       { label: "Shared Languages", items: sharedLanguagesNonEnglish, color: "bg-indigo-500 text-white border-indigo-600/20" },
       { label: "Shared Sexual Preferences", items: sharedSexualPreferences, color: "bg-pink-500 text-white border-pink-600/20" },
@@ -338,9 +348,9 @@ export function ProfileTabs(props: ProfilePageProps) {
                     <span>What You Have in Common</span>
                   </span>
                 </div>
-                <div className="mt-1 text-sm text-white/80">
-                  Tap to view details
-                </div>
+            <div className="mt-1 text-sm text-white font-black drop-shadow-md brightness-110">
+              Tap to view details
+            </div>
               </div>
               <button
                 type="button"
@@ -482,7 +492,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 onClick={() => openTab('about')}
                 className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                   activeTab === 'about'
-                    ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                    ? 'bg-orange-600 text-white shadow-md'
                     : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                 }`}
                 data-testid="tab-about"
@@ -497,7 +507,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 onClick={() => openTab('contacts')}
                 className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                   activeTab === 'contacts'
-                    ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                    ? 'bg-orange-600 text-white shadow-md'
                     : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                 }`}
                 data-testid="tab-contacts"
@@ -506,7 +516,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                   activeTab === 'contacts' 
                     ? 'bg-white/20 text-white' 
-                    : 'bg-blue-500 text-white'
+                    : 'bg-orange-500 text-white shadow-sm ring-1 ring-white/20'
                 }`}>
                   {userConnections?.length || 0}
                 </span>
@@ -519,7 +529,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 onClick={() => openTab('photos')}
                 className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                   activeTab === 'photos'
-                    ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                    ? 'bg-orange-600 text-white shadow-md'
                     : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                 }`}
                 data-testid="tab-photos"
@@ -528,7 +538,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                   activeTab === 'photos' 
                     ? 'bg-white/20 text-white' 
-                    : 'bg-purple-500 text-white'
+                    : 'bg-orange-500 text-white shadow-sm ring-1 ring-white/20'
                 }`}>
                   {photos.length + (userTravelMemories?.length || 0)}
                 </span>
@@ -541,7 +551,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 onClick={() => openTab('references')}
                 className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                   activeTab === 'references'
-                    ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                    ? 'bg-orange-600 text-white shadow-md'
                     : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                 }`}
                 data-testid="tab-references"
@@ -550,7 +560,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                   activeTab === 'references' 
                     ? 'bg-white/20 text-white' 
-                    : 'bg-orange-500 text-white'
+                    : 'bg-orange-500 text-white shadow-sm ring-1 ring-white/20'
                 }`}>
                   {userReferences?.length || 0}
                 </span>
@@ -564,7 +574,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   onClick={() => openTab('travel')}
                   className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                     activeTab === 'travel'
-                      ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                      ? 'bg-orange-600 text-white shadow-md'
                       : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                   }`}
                   data-testid="tab-travel"
@@ -588,7 +598,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   onClick={() => openTab('countries')}
                   className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                     activeTab === 'countries'
-                      ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                      ? 'bg-orange-600 text-white shadow-md'
                       : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                   }`}
                   data-testid="tab-countries"
@@ -612,7 +622,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   onClick={() => openTab('chatrooms')}
                   className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                     activeTab === 'chatrooms'
-                      ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                      ? 'bg-orange-600 text-white shadow-md'
                       : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                   }`}
                   data-testid="tab-chatrooms"
@@ -621,7 +631,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                     activeTab === 'chatrooms' 
                       ? 'bg-white/20 text-white' 
-                      : 'bg-purple-500 text-white'
+                      : 'bg-orange-500 text-white shadow-sm ring-1 ring-white/20'
                   }`}>
                     {userChatrooms?.length || 0}
                   </span>
@@ -637,7 +647,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   onClick={() => openTab('menu')}
                   className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                     activeTab === 'menu'
-                      ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                      ? 'bg-orange-600 text-white shadow-md'
                       : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                   }`}
                   data-testid="tab-menu"
@@ -664,7 +674,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                     activeTab === 'vouches' 
                       ? 'bg-white/20 text-white' 
-                      : 'bg-purple-500 text-white'
+                      : 'bg-orange-500 text-white shadow-sm ring-1 ring-white/20'
                   }`}>
                     {userVouches?.length || 0}
                   </span>
