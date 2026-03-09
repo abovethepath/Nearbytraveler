@@ -424,17 +424,12 @@ export default function EventCard({ event, compact = false, featured = false }: 
               <>
                 <Button 
                   size="sm" 
-                  className="flex-1 min-w-[60px] text-white border-0"
+                  className="flex-1 min-w-[60px] text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleJoinEvent('going');
                   }}
                   disabled={joinEventMutation.isPending}
-                  style={{ 
-                    background: 'linear-gradient(to right, #2563EB, #E85D2F)',
-                    border: 'none',
-                    color: 'white'
-                  }}
                   data-testid="button-going"
                 >
                   {joinEventMutation.isPending ? "..." : "Join"}

@@ -5,113 +5,137 @@
 
 /* ──────────────────────────────────────────────────────────────
    1. PRIMARY CTA BUTTONS → solid black bg, white text, no gradients
-   Targets only <button> and <a> elements with gradient/colored backgrounds.
-   Does NOT touch: green (Available Now), red (destructive), or non-button elements.
+   Uses broad attribute selectors to catch ALL gradient and colored buttons.
    ────────────────────────────────────────────────────────────── */
 
-:root:not(.dark) button.from-blue-600.to-orange-500,
-:root:not(.dark) button.from-blue-500.to-orange-500,
-:root:not(.dark) button.from-blue-500.to-orange-600,
-:root:not(.dark) button.from-blue-600.to-orange-600,
-:root:not(.dark) button.from-blue-700.to-orange-600,
-:root:not(.dark) button.from-orange-500.to-blue-500,
-:root:not(.dark) button.from-orange-600.to-blue-600,
-:root:not(.dark) button.from-orange-500.to-orange-600,
-:root:not(.dark) button.from-orange-500.to-orange-400,
-:root:not(.dark) button.from-orange-600.to-orange-700,
-:root:not(.dark) button.from-purple-500.to-pink-500,
-:root:not(.dark) button.from-blue-600.to-orange-600,
-:root:not(.dark) button.from-blue-500.to-blue-600,
-:root:not(.dark) a.from-blue-600.to-orange-500,
-:root:not(.dark) a.from-blue-500.to-orange-500,
-:root:not(.dark) a.from-orange-500.to-orange-600,
-:root:not(.dark) a.from-orange-500.to-blue-500 {
+:root:not(.dark) button[class*="from-blue-"][class*="to-orange-"],
+:root:not(.dark) button[class*="from-orange-"][class*="to-blue-"],
+:root:not(.dark) button[class*="from-orange-"][class*="to-orange-"],
+:root:not(.dark) button[class*="from-blue-"][class*="to-blue-"],
+:root:not(.dark) button[class*="from-purple-"][class*="to-pink-"],
+:root:not(.dark) button[class*="from-orange-"][class*="to-pink-"],
+:root:not(.dark) button[class*="from-pink-"][class*="to-orange-"],
+:root:not(.dark) button[class*="from-orange-"][class*="to-amber-"],
+:root:not(.dark) button[class*="from-amber-"][class*="to-orange-"],
+:root:not(.dark) button[class*="from-blue-"][class*="to-purple-"],
+:root:not(.dark) button[class*="from-indigo-"][class*="to-blue-"],
+:root:not(.dark) a[class*="from-blue-"][class*="to-orange-"],
+:root:not(.dark) a[class*="from-orange-"][class*="to-blue-"],
+:root:not(.dark) a[class*="from-orange-"][class*="to-orange-"],
+:root:not(.dark) a[class*="from-blue-"][class*="to-blue-"],
+:root:not(.dark) a[class*="from-purple-"][class*="to-pink-"],
+:root:not(.dark) a[class*="from-orange-"][class*="to-pink-"] {
   background: #000000 !important;
   background-image: none !important;
   color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
-:root:not(.dark) button.from-blue-600.to-orange-500:hover,
-:root:not(.dark) button.from-blue-500.to-orange-500:hover,
-:root:not(.dark) button.from-blue-500.to-orange-600:hover,
-:root:not(.dark) button.from-blue-600.to-orange-600:hover,
-:root:not(.dark) button.from-orange-500.to-orange-600:hover,
-:root:not(.dark) button.from-orange-500.to-orange-400:hover,
-:root:not(.dark) button.from-purple-500.to-pink-500:hover,
-:root:not(.dark) a.from-blue-600.to-orange-500:hover,
-:root:not(.dark) a.from-blue-500.to-orange-500:hover,
-:root:not(.dark) a.from-orange-500.to-orange-600:hover {
+:root:not(.dark) button[class*="from-blue-"][class*="to-orange-"]:hover,
+:root:not(.dark) button[class*="from-orange-"][class*="to-blue-"]:hover,
+:root:not(.dark) button[class*="from-orange-"][class*="to-orange-"]:hover,
+:root:not(.dark) button[class*="from-blue-"][class*="to-blue-"]:hover,
+:root:not(.dark) button[class*="from-purple-"][class*="to-pink-"]:hover,
+:root:not(.dark) a[class*="from-blue-"][class*="to-orange-"]:hover,
+:root:not(.dark) a[class*="from-orange-"][class*="to-blue-"]:hover {
   background: #1a1a1a !important;
   background-image: none !important;
 }
 
-:root:not(.dark) button.bg-orange-500,
-:root:not(.dark) button.bg-orange-600,
-:root:not(.dark) button.bg-orange-700 {
+:root:not(.dark) button[class*="bg-orange-5"],
+:root:not(.dark) button[class*="bg-orange-6"],
+:root:not(.dark) button[class*="bg-orange-7"] {
   background-color: #000000 !important;
   color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
-:root:not(.dark) button.bg-orange-500:hover,
-:root:not(.dark) button.bg-orange-600:hover,
-:root:not(.dark) button.bg-orange-700:hover {
+:root:not(.dark) button[class*="bg-blue-5"],
+:root:not(.dark) button[class*="bg-blue-6"],
+:root:not(.dark) button[class*="bg-blue-7"] {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+:root:not(.dark) button[class*="bg-orange-5"]:hover,
+:root:not(.dark) button[class*="bg-orange-6"]:hover,
+:root:not(.dark) button[class*="bg-orange-7"]:hover,
+:root:not(.dark) button[class*="bg-blue-5"]:hover,
+:root:not(.dark) button[class*="bg-blue-6"]:hover,
+:root:not(.dark) button[class*="bg-blue-7"]:hover {
   background-color: #1a1a1a !important;
 }
 
-:root:not(.dark) button.bg-blue-500,
-:root:not(.dark) button.bg-blue-600,
-:root:not(.dark) button.bg-blue-700 {
+:root:not(.dark) a[class*="bg-orange-5"],
+:root:not(.dark) a[class*="bg-orange-6"],
+:root:not(.dark) a[class*="bg-blue-5"],
+:root:not(.dark) a[class*="bg-blue-6"] {
   background-color: #000000 !important;
   color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
-:root:not(.dark) button.bg-blue-500:hover,
-:root:not(.dark) button.bg-blue-600:hover,
-:root:not(.dark) button.bg-blue-700:hover {
+:root:not(.dark) a[class*="bg-orange-5"]:hover,
+:root:not(.dark) a[class*="bg-orange-6"]:hover,
+:root:not(.dark) a[class*="bg-blue-5"]:hover,
+:root:not(.dark) a[class*="bg-blue-6"]:hover {
   background-color: #1a1a1a !important;
 }
 
-:root:not(.dark) a.bg-orange-500,
-:root:not(.dark) a.bg-orange-600,
-:root:not(.dark) a.bg-blue-500,
-:root:not(.dark) a.bg-blue-600 {
-  background-color: #000000 !important;
-  color: #FFFFFF !important;
-}
-
-:root:not(.dark) a.bg-orange-500:hover,
-:root:not(.dark) a.bg-orange-600:hover,
-:root:not(.dark) a.bg-blue-500:hover,
-:root:not(.dark) a.bg-blue-600:hover {
-  background-color: #1a1a1a !important;
-}
-
-/* Gradient divs acting as buttons (with role="button" or inside <a>) */
-:root:not(.dark) div[role="button"].from-blue-600.to-orange-500,
-:root:not(.dark) div[role="button"].from-blue-500.to-orange-500,
-:root:not(.dark) div[role="button"].from-orange-500.to-orange-600 {
+:root:not(.dark) div[role="button"][class*="from-blue-"][class*="to-orange-"],
+:root:not(.dark) div[role="button"][class*="from-orange-"][class*="to-orange-"] {
   background: #000000 !important;
   background-image: none !important;
   color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+/* CRITICAL: Force white text on ANY black/dark background button */
+:root:not(.dark) button[style*="background: #000"],
+:root:not(.dark) button[style*="background-color: #000"],
+:root:not(.dark) button[class*="bg-black"],
+:root:not(.dark) button[class*="bg-gray-900"],
+:root:not(.dark) button[class*="bg-gray-800"] {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+/* Ensure ALL children of black buttons also have white text */
+:root:not(.dark) button[class*="from-blue-"][class*="to-orange-"] *,
+:root:not(.dark) button[class*="from-orange-"][class*="to-blue-"] *,
+:root:not(.dark) button[class*="from-orange-"][class*="to-orange-"] *,
+:root:not(.dark) button[class*="from-blue-"][class*="to-blue-"] *,
+:root:not(.dark) button[class*="from-purple-"][class*="to-pink-"] *,
+:root:not(.dark) button[class*="from-orange-"][class*="to-pink-"] *,
+:root:not(.dark) button[class*="bg-orange-5"] *,
+:root:not(.dark) button[class*="bg-orange-6"] *,
+:root:not(.dark) button[class*="bg-orange-7"] *,
+:root:not(.dark) button[class*="bg-blue-5"] *,
+:root:not(.dark) button[class*="bg-blue-6"] *,
+:root:not(.dark) button[class*="bg-blue-7"] * {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+/* Shadcn/Radix primary buttons using data-slot="button" */
+:root:not(.dark) button[class*="bg-primary"] {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
 /* ──────────────────────────────────────────────────────────────
    2. OUTLINE / SECONDARY BUTTONS → black border, black text
-   Only targets <button> elements.
    ────────────────────────────────────────────────────────────── */
 
-:root:not(.dark) button.border-orange-500,
-:root:not(.dark) button.border-orange-400,
-:root:not(.dark) button.border-orange-300,
-:root:not(.dark) button.border-blue-500,
-:root:not(.dark) button.border-blue-400 {
+:root:not(.dark) button[class*="border-orange-"],
+:root:not(.dark) button[class*="border-blue-"] {
   border-color: #000000 !important;
 }
 
-:root:not(.dark) button.text-orange-600:not(.bg-orange-500):not(.bg-orange-600):not([class*="from-orange"]),
-:root:not(.dark) button.text-orange-500:not(.bg-orange-500):not(.bg-orange-600):not([class*="from-orange"]),
-:root:not(.dark) button.text-blue-600:not(.bg-blue-500):not(.bg-blue-600):not([class*="from-blue"]),
-:root:not(.dark) button.text-blue-500:not(.bg-blue-500):not(.bg-blue-600):not([class*="from-blue"]) {
+:root:not(.dark) button[class*="text-orange-"]:not([class*="bg-orange-"]):not([class*="from-orange-"]),
+:root:not(.dark) button[class*="text-blue-"]:not([class*="bg-blue-"]):not([class*="from-blue-"]) {
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
 }
@@ -120,9 +144,17 @@
    3. DESTRUCTIVE BUTTONS → keep red (no override)
    ────────────────────────────────────────────────────────────── */
 
+:root:not(.dark) button[class*="bg-red-"],
+:root:not(.dark) button[class*="from-red-"],
+:root:not(.dark) button.destructive,
+:root:not(.dark) button[class*="destructive"] {
+  background-color: revert !important;
+  color: revert !important;
+  -webkit-text-fill-color: revert !important;
+}
+
 /* ──────────────────────────────────────────────────────────────
    4. GRADIENT TEXT HEADINGS → solid black
-   Targets elements using bg-clip-text + text-transparent pattern.
    ────────────────────────────────────────────────────────────── */
 
 :root:not(.dark) [class*="bg-gradient-to"][class*="bg-clip-text"][class*="text-transparent"] {
@@ -134,109 +166,93 @@
   color: #000000 !important;
 }
 
-:root:not(.dark) h1.text-orange-600,
-:root:not(.dark) h2.text-orange-600,
-:root:not(.dark) h3.text-orange-600,
-:root:not(.dark) h4.text-orange-600,
-:root:not(.dark) h1.text-orange-500,
-:root:not(.dark) h2.text-orange-500,
-:root:not(.dark) h3.text-orange-500,
-:root:not(.dark) h4.text-orange-500,
-:root:not(.dark) h1.text-blue-600,
-:root:not(.dark) h2.text-blue-600,
-:root:not(.dark) h3.text-blue-600,
-:root:not(.dark) h4.text-blue-600,
-:root:not(.dark) h1.text-blue-500,
-:root:not(.dark) h2.text-blue-500,
-:root:not(.dark) h3.text-blue-500,
-:root:not(.dark) h4.text-blue-500 {
+:root:not(.dark) h1[class*="text-orange-"],
+:root:not(.dark) h2[class*="text-orange-"],
+:root:not(.dark) h3[class*="text-orange-"],
+:root:not(.dark) h4[class*="text-orange-"],
+:root:not(.dark) h1[class*="text-blue-"],
+:root:not(.dark) h2[class*="text-blue-"],
+:root:not(.dark) h3[class*="text-blue-"],
+:root:not(.dark) h4[class*="text-blue-"] {
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
 }
 
 /* ──────────────────────────────────────────────────────────────
-   5. SECTION TITLE ICONS → dark gray
-   Scoped to SVGs inside headings only (h1-h4).
+   5. SECTION TITLE ICONS → dark gray (h1-h4 only)
    ────────────────────────────────────────────────────────────── */
 
-:root:not(.dark) h1 svg.text-orange-500,
-:root:not(.dark) h1 svg.text-orange-400,
-:root:not(.dark) h1 svg.text-orange-600,
-:root:not(.dark) h1 svg.text-blue-500,
-:root:not(.dark) h1 svg.text-blue-400,
-:root:not(.dark) h1 svg.text-blue-600,
-:root:not(.dark) h2 svg.text-orange-500,
-:root:not(.dark) h2 svg.text-orange-400,
-:root:not(.dark) h2 svg.text-orange-600,
-:root:not(.dark) h2 svg.text-blue-500,
-:root:not(.dark) h2 svg.text-blue-400,
-:root:not(.dark) h2 svg.text-blue-600,
-:root:not(.dark) h3 svg.text-orange-500,
-:root:not(.dark) h3 svg.text-orange-400,
-:root:not(.dark) h3 svg.text-orange-600,
-:root:not(.dark) h3 svg.text-blue-500,
-:root:not(.dark) h3 svg.text-blue-400,
-:root:not(.dark) h3 svg.text-blue-600,
-:root:not(.dark) h4 svg.text-orange-500,
-:root:not(.dark) h4 svg.text-orange-400,
-:root:not(.dark) h4 svg.text-orange-600,
-:root:not(.dark) h4 svg.text-blue-500,
-:root:not(.dark) h4 svg.text-blue-400,
-:root:not(.dark) h4 svg.text-blue-600 {
+:root:not(.dark) h1 svg[class*="text-orange-"],
+:root:not(.dark) h1 svg[class*="text-blue-"],
+:root:not(.dark) h2 svg[class*="text-orange-"],
+:root:not(.dark) h2 svg[class*="text-blue-"],
+:root:not(.dark) h3 svg[class*="text-orange-"],
+:root:not(.dark) h3 svg[class*="text-blue-"],
+:root:not(.dark) h4 svg[class*="text-orange-"],
+:root:not(.dark) h4 svg[class*="text-blue-"] {
   color: #1a1a1a !important;
 }
 
 /* ──────────────────────────────────────────────────────────────
    6. NOTIFICATION BANNER → black background, white text
-   Scoped specifically to MeetupAlertBanner component structure.
    ────────────────────────────────────────────────────────────── */
 
-:root:not(.dark) .from-orange-500.to-orange-600.text-white.rounded-lg.shadow-lg.mb-4 {
+:root:not(.dark) [class*="from-orange-500"][class*="to-orange-600"][class*="text-white"][class*="rounded-lg"][class*="shadow-lg"] {
   background: #000000 !important;
   background-image: none !important;
   color: #FFFFFF !important;
 }
 
-:root:not(.dark) .from-orange-500.to-orange-600.text-white.rounded-lg.shadow-lg.mb-4 .text-orange-100 {
+:root:not(.dark) [class*="from-orange-500"][class*="to-orange-600"][class*="text-white"] .text-orange-100 {
   color: rgba(255, 255, 255, 0.7) !important;
 }
 
-:root:not(.dark) .from-orange-500.to-orange-600.text-white.rounded-lg.shadow-lg.mb-4 .bg-white\/20 {
+:root:not(.dark) [class*="from-orange-500"][class*="to-orange-600"][class*="text-white"] .bg-white\/20 {
   background-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 /* ──────────────────────────────────────────────────────────────
    7. TIMER BADGES → dark gray background, white text
-   Scoped to badges inside quick meetup cards and available now contexts.
-   Uses data-testid selectors for precise targeting.
    ────────────────────────────────────────────────────────────── */
 
-:root:not(.dark) [data-testid^="quick-meetup-card"] .bg-orange-100 {
+:root:not(.dark) [data-testid^="quick-meetup-card"] .bg-orange-100,
+:root:not(.dark) [data-testid^="quick-meetup-card"] [class*="bg-orange-1"] {
   background-color: #374151 !important;
   color: #FFFFFF !important;
 }
 
-:root:not(.dark) [data-testid^="quick-meetup-card"] .bg-orange-100 .text-orange-700 {
+:root:not(.dark) [data-testid^="quick-meetup-card"] .bg-orange-100 .text-orange-700,
+:root:not(.dark) [data-testid^="quick-meetup-card"] .bg-orange-100 [class*="text-orange-"] {
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
 }
 
-:root:not(.dark) [data-testid^="quick-meetup-card"] .border-orange-300 {
-  border-color: #4b5563 !important;
-}
-
-:root:not(.dark) [data-testid="quick-meetup-widget"] .bg-orange-100.text-orange-700 {
+:root:not(.dark) [data-testid="quick-meetup-widget"] [class*="bg-orange-1"][class*="text-orange-"] {
   background-color: #374151 !important;
   color: #FFFFFF !important;
 }
 
-:root:not(.dark) [data-testid="quick-meetup-widget"] .bg-orange-100 svg.text-orange-700 {
+:root:not(.dark) [data-testid="quick-meetup-widget"] [class*="bg-orange-1"] svg[class*="text-orange-"] {
   color: #FFFFFF !important;
 }
 
-/* Messages page meetup chat timer badges */
-:root:not(.dark) .bg-orange-100.text-orange-800[class*="rounded"],
-:root:not(.dark) .bg-orange-100.text-orange-700[class*="rounded"] {
+:root:not(.dark) [class*="bg-orange-1"][class*="text-orange-8"][class*="rounded"],
+:root:not(.dark) [class*="bg-orange-1"][class*="text-orange-7"][class*="rounded"] {
+  background-color: #374151 !important;
+  color: #FFFFFF !important;
+}
+
+/* ALL orange timer/countdown badges anywhere */
+:root:not(.dark) span[class*="bg-orange-"][class*="text-orange-"][class*="rounded"],
+:root:not(.dark) div[class*="bg-orange-"][class*="text-orange-"][class*="rounded"],
+:root:not(.dark) span[class*="bg-orange-"][class*="text-white"][class*="rounded"] {
+  background-color: #374151 !important;
+  color: #FFFFFF !important;
+}
+
+/* Success Tips badge */
+:root:not(.dark) span[class*="bg-orange-"][class*="text-orange-"][class*="font-"],
+:root:not(.dark) div[class*="bg-orange-"][class*="text-orange-"][class*="font-"] {
   background-color: #374151 !important;
   color: #FFFFFF !important;
 }
@@ -245,16 +261,18 @@
    8. CARD BACKGROUNDS → clean white + subtle gray border
    ────────────────────────────────────────────────────────────── */
 
-:root:not(.dark) .from-green-50.to-teal-50,
-:root:not(.dark) .from-orange-50.to-yellow-50,
-:root:not(.dark) .from-orange-50.to-amber-50,
-:root:not(.dark) .from-yellow-50.to-orange-50,
-:root:not(.dark) .from-amber-50.to-orange-50 {
+:root:not(.dark) [class*="from-green-50"][class*="to-teal-50"],
+:root:not(.dark) [class*="from-orange-50"][class*="to-yellow-50"],
+:root:not(.dark) [class*="from-orange-50"][class*="to-amber-50"],
+:root:not(.dark) [class*="from-yellow-50"][class*="to-orange-50"],
+:root:not(.dark) [class*="from-amber-50"][class*="to-orange-50"],
+:root:not(.dark) [class*="from-blue-50"][class*="to-purple-50"],
+:root:not(.dark) [class*="from-purple-50"][class*="to-pink-50"] {
   background: #FFFFFF !important;
   background-image: none !important;
 }
 
-:root:not(.dark) .border-orange-200 {
+:root:not(.dark) .border-orange-200:not(button) {
   border-color: #e5e7eb !important;
 }
 
@@ -262,13 +280,12 @@
   border-color: #e5e7eb !important;
 }
 
-:root:not(.dark) .border-amber-200,
-:root:not(.dark) .border-amber-300 {
+:root:not(.dark) .border-amber-200:not(button),
+:root:not(.dark) .border-amber-300:not(button) {
   border-color: #e5e7eb !important;
 }
 
-:root:not(.dark) .bg-orange-50,
-:root:not(.dark) .bg-orange-100:not([data-testid^="quick-meetup-card"] .bg-orange-100) {
+:root:not(.dark) .bg-orange-50 {
   background-color: #FFFFFF !important;
 }
 
@@ -280,7 +297,6 @@
   background-color: #f9fafb !important;
 }
 
-/* Quick meetup glassmorphism cards → clean white with subtle border */
 :root:not(.dark) [data-testid="quick-meetup-widget"] .backdrop-blur-sm {
   background-color: #FFFFFF !important;
   backdrop-filter: none !important;
@@ -294,7 +310,6 @@
   border-color: #e5e7eb !important;
 }
 
-/* Quick meetup widget animated decorative orbs → hide in light mode */
 :root:not(.dark) [data-testid="quick-meetup-widget"] [class*="animate-float"][class*="rounded-full"][class*="blur-"] {
   display: none !important;
 }
@@ -303,17 +318,27 @@
   display: none !important;
 }
 
+/* Quick meetup card orange icons → dark gray */
+:root:not(.dark) [data-testid^="quick-meetup-card"] svg[class*="text-orange-"] {
+  color: #374151 !important;
+}
+
+/* Quick meetup card orange border → gray */
+:root:not(.dark) [data-testid^="quick-meetup-card"] [class*="border-orange-"] {
+  border-color: #e5e7eb !important;
+}
+
 /* ──────────────────────────────────────────────────────────────
    9. BADGE/PILL OVERRIDES → neutral tones
    ────────────────────────────────────────────────────────────── */
 
-:root:not(.dark) .bg-orange-100.text-orange-800 {
+:root:not(.dark) [class*="bg-orange-1"][class*="text-orange-8"]:not([data-testid^="quick-meetup-card"] *) {
   background-color: #f3f4f6 !important;
   color: #1f2937 !important;
 }
 
-:root:not(.dark) .bg-blue-100.text-blue-800,
-:root:not(.dark) .bg-blue-100.text-blue-700 {
+:root:not(.dark) [class*="bg-blue-1"][class*="text-blue-8"],
+:root:not(.dark) [class*="bg-blue-1"][class*="text-blue-7"] {
   background-color: #f3f4f6 !important;
   color: #1f2937 !important;
 }
@@ -402,9 +427,10 @@
   border-color: #9ca3af !important;
 }
 
-:root:not(.dark) [data-testid="advanced-search-modal"] button.rounded-full.bg-orange-500 {
+:root:not(.dark) [data-testid="advanced-search-modal"] button.rounded-full[class*="bg-orange-"] {
   background-color: #000000 !important;
   color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
   border-color: #000000 !important;
 }
 
@@ -412,10 +438,7 @@
   background: #000000 !important;
   background-image: none !important;
   color: #FFFFFF !important;
-}
-
-:root:not(.dark) [data-testid="advanced-search-modal"] [data-testid="button-search-top"]:hover {
-  background: #1a1a1a !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
 :root:not(.dark) [data-testid="advanced-search-modal"] [data-testid="button-clear-top"] {
@@ -427,11 +450,8 @@
 :root:not(.dark) [data-testid="advanced-search-modal"] [data-testid="button-close-search-bottom"] {
   background: #000000 !important;
   color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
   border-color: #000000 !important;
-}
-
-:root:not(.dark) [data-testid="advanced-search-modal"] [data-testid="button-close-search-bottom"]:hover {
-  background: #1a1a1a !important;
 }
 
 :root:not(.dark) [data-testid="advanced-search-modal"] [data-testid="button-close-search-sticky"] {
@@ -454,7 +474,7 @@
   color: #6b7280 !important;
 }
 
-:root:not(.dark) [data-testid="advanced-search-modal"] .border-orange-200 {
+:root:not(.dark) [data-testid="advanced-search-modal"] [class*="border-orange-"] {
   border-color: #e5e7eb !important;
 }
 
@@ -462,7 +482,7 @@
   background-color: #f9fafb !important;
 }
 
-:root:not(.dark) [data-testid="advanced-search-modal"] .text-orange-600 {
+:root:not(.dark) [data-testid="advanced-search-modal"] [class*="text-orange-6"] {
   color: #000000 !important;
 }
 
@@ -475,16 +495,120 @@
 }
 
 /* ──────────────────────────────────────────────────────────────
-   12. PROTECT — elements that must keep their colors
+   12. COLORED TEXT → black in light mode
    ────────────────────────────────────────────────────────────── */
 
-/* Available Now green dot — never touch */
-/* Destructive/red buttons — never touch (no rules target bg-red-*) */
-/* Profile hero tabs — already white text on dark gradient */
-/* Green Edit3 icon inside meetup cards */
-:root:not(.dark) [data-testid^="quick-meetup-card"] svg.text-green-500 {
+/* "Joined ✓" green text → black */
+:root:not(.dark) span[class*="text-green-6"],
+:root:not(.dark) span[class*="text-green-5"] {
+  color: #000000 !important;
+}
+
+/* Phone number links in blue → black */
+:root:not(.dark) a[href^="tel:"] {
+  color: #000000 !important;
+}
+
+/* Generic blue links inside cards/profiles → black */
+:root:not(.dark) a[class*="text-blue-6"],
+:root:not(.dark) a[class*="text-blue-5"],
+:root:not(.dark) a[class*="text-orange-6"],
+:root:not(.dark) a[class*="text-orange-5"] {
+  color: #000000 !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   13. CATCH-ALL: Generic colored bg buttons not caught above
+   Targets bg-gradient-to-r on buttons (Tailwind gradient direction class)
+   ────────────────────────────────────────────────────────────── */
+
+:root:not(.dark) button[class*="bg-gradient-to"]:not([class*="bg-clip-text"]) {
+  background: #000000 !important;
+  background-image: none !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+:root:not(.dark) button[class*="bg-gradient-to"]:not([class*="bg-clip-text"]):hover {
+  background: #1a1a1a !important;
+  background-image: none !important;
+}
+
+:root:not(.dark) button[class*="bg-gradient-to"]:not([class*="bg-clip-text"]) * {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+/* Also catch <a> links styled as gradient buttons */
+:root:not(.dark) a[class*="bg-gradient-to"]:not([class*="bg-clip-text"]) {
+  background: #000000 !important;
+  background-image: none !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+:root:not(.dark) a[class*="bg-gradient-to"]:not([class*="bg-clip-text"]) * {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   14. SHADCN BUTTON VARIANTS — ensure bg-[#2563EB] etc. → black
+   ────────────────────────────────────────────────────────────── */
+
+:root:not(.dark) button[class*="bg-\\[\\#2563EB\\]"],
+:root:not(.dark) button[class*="bg-\\[\\#1D4ED8\\]"],
+:root:not(.dark) button[class*="bg-\\[\\#F97316\\]"],
+:root:not(.dark) button[class*="bg-\\[\\#EA580C\\]"] {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+:root:not(.dark) button[class*="bg-\\[\\#2563EB\\]"]:hover,
+:root:not(.dark) button[class*="bg-\\[\\#1D4ED8\\]"]:hover,
+:root:not(.dark) button[class*="bg-\\[\\#F97316\\]"]:hover,
+:root:not(.dark) button[class*="bg-\\[\\#EA580C\\]"]:hover {
+  background-color: #1a1a1a !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   15. PROTECT — elements that MUST keep their colors
+   ────────────────────────────────────────────────────────────── */
+
+/* Available Now green indicators — never touch */
+:root:not(.dark) [data-testid^="quick-meetup-card"] svg[class*="text-green-5"] {
   color: #22c55e !important;
 }
-:root:not(.dark) [data-testid^="quick-meetup-card"] svg.text-red-500 {
+:root:not(.dark) [data-testid^="quick-meetup-card"] svg[class*="text-red-5"] {
   color: #ef4444 !important;
 }
+
+/* Available Now green dot pulse */
+:root:not(.dark) [class*="bg-green-4"],
+:root:not(.dark) [class*="bg-green-5"] {
+  background-color: revert !important;
+}
+
+/* Green status indicators */
+:root:not(.dark) span[class*="bg-green-"][class*="text-green-"] {
+  background-color: revert !important;
+  color: revert !important;
+}
+
+/* Red/destructive buttons — PROTECT (higher specificity) */
+:root:not(.dark) button[class*="bg-red-4"],
+:root:not(.dark) button[class*="bg-red-5"],
+:root:not(.dark) button[class*="bg-red-6"],
+:root:not(.dark) button[class*="bg-red-7"] {
+  background-color: revert !important;
+  color: revert !important;
+  -webkit-text-fill-color: revert !important;
+}
+
+:root:not(.dark) button[class*="bg-red-"] * {
+  color: revert !important;
+  -webkit-text-fill-color: revert !important;
+}
+
+/* Profile hero tabs — already white on dark gradient, don't touch */

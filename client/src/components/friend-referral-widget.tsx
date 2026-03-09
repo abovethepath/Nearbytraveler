@@ -164,17 +164,17 @@ ${emailForm.personalMessage || generatePersonalMessage()}`;
             <div className="grid grid-cols-2 gap-2">
               <Button
                 onClick={() => copyToClipboard(signupUrl)}
-                className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700 text-black text-sm"
+                className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700 text-white text-sm"
               >
-                <Copy className="h-4 w-4 mr-2 text-black" />
-                <span className="text-black">Copy Link</span>
+                <Copy className="h-4 w-4 mr-2" />
+                <span>Copy Link</span>
               </Button>
               <Button
                 onClick={openEmailForm}
-                className="bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700 text-black text-sm"
+                className="bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700 text-white text-sm"
               >
-                <Mail className="h-4 w-4 mr-2 text-black" />
-                <span className="text-black">Send Email</span>
+                <Mail className="h-4 w-4 mr-2" />
+                <span>Send Email</span>
               </Button>
               <Button
                 onClick={async () => {

@@ -650,8 +650,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                 ) : (
                   <div className="flex gap-2">
                     <Button
-                      className="flex-1 text-white border-0"
-                      style={{ background: 'linear-gradient(to right, #2563EB, #E85D2F)', border: 'none', color: 'white' }}
+                      className="flex-1 text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
                       onClick={() => joinEventMutation.mutate('going')}
                       disabled={joinEventMutation.isPending}
                       data-testid="button-going"
