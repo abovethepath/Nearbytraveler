@@ -16,7 +16,7 @@ export const GENERIC_CITY_ACTIVITIES = [
   { name: "Live Music Venues", description: "Catch local bands and live performances at intimate music clubs", category: "nightlife" },
   { name: "Jazz Clubs", description: "Enjoy live jazz at local clubs and lounges", category: "nightlife" },
   { name: "Karaoke Bars", description: "Sing your heart out at popular karaoke spots", category: "entertainment" },
-  { name: "Comedy Clubs", description: "Stand-up comedy shows and improv nights", category: "entertainment" },
+  { name: "Comedy Shows", description: "Stand-up comedy shows and improv nights", category: "entertainment" },
   { name: "Trivia Nights", description: "Test your knowledge at local pub trivia events", category: "entertainment" },
   { name: "Dance Clubs", description: "Dance the night away at popular local clubs", category: "nightlife" },
 

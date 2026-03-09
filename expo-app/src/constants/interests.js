@@ -9,7 +9,7 @@ export const SIGNUP_INTERESTS = [
   'Happy Hour',
   'Craft Beer & Breweries',
   'Wine Bars & Vineyards',
-  'Nightlife & Dancing',
+  'Nightlife & Parties',
   'Live Music',
   'Karaoke',
   'Comedy Shows',

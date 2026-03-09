@@ -2,6 +2,7 @@
 // Extracts structured event data from natural language descriptions using Anthropic Claude
 
 import Anthropic from "@anthropic-ai/sdk";
+import { EVENT_CATEGORIES } from "../../shared/eventCategories";
 
 const ANTHROPIC_MODEL = "claude-haiku-4-5-20251001";
 
@@ -36,20 +37,6 @@ interface EventDraftResult {
   error?: string;
 }
 
-const EVENT_CATEGORIES = [
-  "Meetup",
-  "Party",
-  "Sports",
-  "Food & Drink",
-  "Arts & Culture",
-  "Music",
-  "Outdoor",
-  "Networking",
-  "Workshop",
-  "Tour",
-  "Festival",
-  "Other"
-];
 
 export class AiEventDraftService {
   private getAnthropic(): Anthropic {

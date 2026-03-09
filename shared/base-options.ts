@@ -19,7 +19,7 @@ export const TOP_CHOICES = [
   "Happy Hour",
   "Craft Beer & Breweries",
   "Wine Bars & Vineyards",
-  "Nightlife & Dancing",
+  "Nightlife & Parties",
   "Live Music",
   "Karaoke",
   "Comedy Shows",
@@ -148,7 +148,7 @@ export const TRAVEL_ACTIVITIES = [
   "Bars / Happy Hour",
   "Live Music",
   "Comedy Shows",
-  "Nightlife & Dancing",
+  "Nightlife & Parties",
   
   // Culture & Sightseeing
   "Museums & Galleries",
@@ -501,7 +501,7 @@ export const SUB_INTEREST_CATEGORIES: SubInterestCategory[] = [
   },
   {
     id: "nightlife",
-    label: "Nightlife & Drinks",
+    label: "Nightlife & Parties",
     emoji: "🍸",
     subInterests: [
       "Cocktail Bars / Speakeasies",
@@ -513,7 +513,6 @@ export const SUB_INTEREST_CATEGORIES: SubInterestCategory[] = [
       "Lounges",
       "Live Music Venues",
       "Karaoke Bars",
-      "Comedy Clubs",
       "LGBTQIA+ Bars / Clubs",
       "Late Night Eats"
     ]
@@ -668,7 +667,7 @@ export const getAllSubInterests = (): string[] => {
 // - "Digital Nomads" (not relevant for meeting travelers/locals)
 // - "Nature Walks" (duplicate of "Hiking")
 // - "Concerts" (duplicate of "Live Music")
-// - "Rooftop Bars", "Cocktail Bars & Speakeasies" (consolidated into Happy Hour, Nightlife & Dancing, Craft Beer, Wine Bars)
+// - "Rooftop Bars", "Cocktail Bars & Speakeasies" (consolidated into Happy Hour, Nightlife & Parties, Craft Beer, Wine Bars)
 //
 // INTERESTS splits:
 // - "Volunteering & Activism" → "Volunteering", "Activism", "Animal Rescue & Shelters"

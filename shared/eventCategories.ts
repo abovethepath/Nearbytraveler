@@ -10,9 +10,9 @@ export const EVENT_CATEGORIES = [
   "Sports & Fitness",
   "Family Activities",
   "Nightlife & Parties",
-  "Education & Learning",
-  "Business & Professional",
-  "Custom" // For user-defined categories
+  "Outdoor & Nature",
+  "Tours & Experiences",
+  "Custom"
 ] as const;
 
 // Optional additional tags for more specific filtering (non-overlapping)
