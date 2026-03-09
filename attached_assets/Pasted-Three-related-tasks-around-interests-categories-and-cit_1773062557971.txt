@@ -1,0 +1,31 @@
+Three related tasks around interests, categories and city groups:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. FULL INTERESTS & CATEGORIES AUDIT — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Do a full audit across all three areas and present the findings before making any changes:
+• Profile Interests & Activities
+• Events categories
+• City Match 'Get More Specific' filters
+
+Identify what's in each, what's missing from each, what overlaps, and what's inconsistent in naming or structure. The goal is to align all three under the same taxonomy. Present the audit results for review and approval before touching anything.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. 'GET MORE SPECIFIC' — ADD TO PROFILE + SMARTER CITY MATCH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+After the audit is approved, implement the following:
+
+PROFILE: Add 'Get More Specific' granular sub-categories into the Interests & Activities section on the user's profile as a permanently saved preference. EXCLUDE the 'Tours & Experiences' category (Walking Tours, Food Tours, Ghost Tours, Boat Tours/Cruises, Helicopter/Scenic Tours, Cooking Classes etc.) — this is travel-specific and has no place as a permanent profile identity.
+
+CITY MATCH: Keep 'Get More Specific' on the City Match page as-is with ALL categories including Tours & Experiences. Make it pre-populate automatically from the user's saved profile interests on load. Changes on City Match are session-only and never save back to the profile. Every new City Match session resets to profile defaults. The idea is that while traveling a user may want to explore things they don't do at home — without permanently changing who they are on the platform.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. CITY PAGE — GROUP 1 & GROUP 2 MUST NEVER BE EMPTY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Critical bug confirmed on Stockholm — Group 1 is completely empty and Group 2 is missing entirely, jumping straight to Group 3. This must never happen on any city page.
+
+• BACKFILL NOW: Check every city in the database. For any city missing Group 1 content or Group 2 entirely, trigger AI generation immediately to populate them with curated city-relevant content
+• PREVENT GOING FORWARD: On every city page load, check if Group 1 has content and Group 2 exists. If either is missing, trigger AI generation before the page renders. Show a loading state if needed — never render a blank Group 1 or missing Group 2
+• Generated content saves permanently to the database — AI generation only triggers once per city, never again once content exists
+• Human-created and AI-generated groups coexist in the same listings
+• Group 1 and Group 2 are non-negotiable on every city page, always
