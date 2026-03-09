@@ -18,10 +18,17 @@ function useIsDarkMode() {
   return isDark;
 }
 
-export function MobileBottomNav() {
+export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boolean }) {
   const [location, setLocation] = useLocation();
   const [showActionMenu, setShowActionMenu] = useState(false);
   const isDark = useIsDarkMode();
+  const [isMobileSize, setIsMobileSize] = useState(() => window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobileSize(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const authContext = React.useContext(AuthContext);
   const [resolvedUser, setResolvedUser] = useState<any>(null);
 
@@ -57,6 +64,8 @@ export function MobileBottomNav() {
   });
 
   const unreadCount = (unreadData as any)?.unreadCount || 0;
+
+  if (hideOnMobile && isMobileSize) return null;
 
   const isBusinessUser = user?.userType === 'business';
 

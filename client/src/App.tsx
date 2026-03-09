@@ -1943,9 +1943,9 @@ function Router() {
         </>
       )}
 
-      {/* Bottom Navigation - shows for authenticated users, hidden on chat pages */}
-      {!isSignupRoute && !isNativeIOSApp() && !isChatPage && authValue.isAuthenticated && (
-        <MobileBottomNav />
+      {/* Bottom Navigation - shows for authenticated users, hidden on mobile for chat pages */}
+      {!isSignupRoute && !isNativeIOSApp() && authValue.isAuthenticated && (
+        <MobileBottomNav hideOnMobile={isChatPage} />
       )}
 
       {/* Advanced Search for native iOS - web nav is hidden, so we render the widget here and open it via postMessage from native header */}
