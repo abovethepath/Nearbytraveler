@@ -782,12 +782,12 @@ export default function Messages() {
                                 }`}>
                                   {mc.chatroomName || 'Meetup Chat'}
                                 </h3>
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full shrink-0 font-medium ${
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full shrink-0 font-bold text-white shadow-sm ${
                                   isSelected
-                                    ? 'bg-white/20 text-white'
+                                    ? 'bg-white/20'
                                     : mc.chatType === 'available_now'
-                                      ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
-                                      : 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+                                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 ring-1 ring-emerald-400/30'
+                                      : 'bg-gradient-to-r from-blue-500 to-indigo-600 ring-1 ring-blue-400/30'
                                 }`}>
                                   {mc.chatType === 'available_now' ? 'Meet' : 'Meetup'}
                                 </span>
