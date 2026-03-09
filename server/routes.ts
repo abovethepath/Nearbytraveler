@@ -7606,41 +7606,36 @@ Questions? Just reply to this message. Welcome aboard!
         };
       });
 
-      let logItems: any[] = [];
-      try {
-        const logRows = await db
-          .select()
-          .from(activityLog)
-          .where(eq(activityLog.userId, userId))
-          .orderBy(desc(activityLog.createdAt))
-          .limit(50);
+      const logRows = await db
+        .select()
+        .from(activityLog)
+        .where(eq(activityLog.userId, userId))
+        .orderBy(desc(activityLog.createdAt))
+        .limit(50);
 
-        logItems = logRows.map(l => ({
-          id: `log_${l.id}`,
-          kind: 'activity_log' as const,
-          type: l.action,
-          category: l.category as "all" | "events" | "connections" | "messages",
-          title: l.title,
-          preview: l.description,
-          timestamp: l.createdAt,
-          unread: false,
-          actor: l.targetUserId ? {
-            id: l.targetUserId,
-            username: l.targetUsername,
-            name: null,
-            profileImage: l.targetProfileImage,
-          } : null,
-          data: null,
-          connection: null,
-          meetRequest: null,
-          linkUrl: l.linkUrl,
-          relatedId: l.relatedId,
-          relatedType: l.relatedType,
-          relatedTitle: l.relatedTitle,
-        }));
-      } catch (logErr: any) {
-        console.warn("Activity log query skipped (table may not exist):", logErr?.message);
-      }
+      const logItems = logRows.map(l => ({
+        id: `log_${l.id}`,
+        kind: 'activity_log' as const,
+        type: l.action,
+        category: l.category as "all" | "events" | "connections" | "messages",
+        title: l.title,
+        preview: l.description,
+        timestamp: l.createdAt,
+        unread: false,
+        actor: l.targetUserId ? {
+          id: l.targetUserId,
+          username: l.targetUsername,
+          name: null,
+          profileImage: l.targetProfileImage,
+        } : null,
+        data: null,
+        connection: null,
+        meetRequest: null,
+        linkUrl: l.linkUrl,
+        relatedId: l.relatedId,
+        relatedType: l.relatedType,
+        relatedTitle: l.relatedTitle,
+      }));
 
       // Merge notifications and activity log, sorted by timestamp
       const allItems = [...items, ...logItems].sort((a, b) => {
