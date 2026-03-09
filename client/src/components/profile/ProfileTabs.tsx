@@ -318,7 +318,7 @@ export function ProfileTabs(props: ProfilePageProps) {
         <div className="p-4 sm:p-5">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <div className="text-lg sm:text-xl font-extrabold text-white">
+              <div className="text-white" style={{ fontSize: '18px', fontWeight: 700 }}>
                 <span className="inline-flex items-center gap-2">
                   <span aria-hidden>🤝</span>
                   <span>What You Have in Common</span>
