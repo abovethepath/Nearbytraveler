@@ -393,6 +393,7 @@ function Router() {
   const isChatPage = (
     location.startsWith('/chatroom/') ||
     location.startsWith('/dm-chat/') ||
+    location.startsWith('/chat/') ||
     location.startsWith('/event-chat/') ||
     location.startsWith('/meetup-chat/') ||
     location.startsWith('/quick-meetup-chat/') ||
@@ -1930,8 +1931,8 @@ function Router() {
         </>
       )}
 
-      {/* Bottom Navigation - always shows for authenticated users */}
-      {!isSignupRoute && !isNativeIOSApp() && authValue.isAuthenticated && (
+      {/* Bottom Navigation - shows for authenticated users, hidden on chat pages */}
+      {!isSignupRoute && !isNativeIOSApp() && !isChatPage && authValue.isAuthenticated && (
         <MobileBottomNav />
       )}
 

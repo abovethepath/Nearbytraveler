@@ -183,7 +183,22 @@ export default function DMChat() {
       chatId={otherUserId}
       chatType="dm"
       title={displayName}
-      subtitle={otherUser.hometown || "Direct Message"}
+      subtitle={(() => {
+        const loc = otherUser.hometownCity || otherUser.hometown || "";
+        if (!loc) return "Direct Message";
+        const parts = loc.split(",").map((s: string) => s.trim());
+        if (parts.length >= 3) {
+          const country = parts[parts.length - 1];
+          const isUS = /united states|usa|us/i.test(country);
+          if (isUS) {
+            const state = parts[parts.length - 2];
+            const stateAbbr: Record<string, string> = { "Alabama":"AL","Alaska":"AK","Arizona":"AZ","Arkansas":"AR","California":"CA","Colorado":"CO","Connecticut":"CT","Delaware":"DE","Florida":"FL","Georgia":"GA","Hawaii":"HI","Idaho":"ID","Illinois":"IL","Indiana":"IN","Iowa":"IA","Kansas":"KS","Kentucky":"KY","Louisiana":"LA","Maine":"ME","Maryland":"MD","Massachusetts":"MA","Michigan":"MI","Minnesota":"MN","Mississippi":"MS","Missouri":"MO","Montana":"MT","Nebraska":"NE","Nevada":"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND","Ohio":"OH","Oklahoma":"OK","Oregon":"OR","Pennsylvania":"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD","Tennessee":"TN","Texas":"TX","Utah":"UT","Vermont":"VT","Virginia":"VA","Washington":"WA","West Virginia":"WV","Wisconsin":"WI","Wyoming":"WY" };
+            return `${parts[0]}, ${stateAbbr[state] || state}`;
+          }
+          return `${parts[0]}, ${country}`;
+        }
+        return parts.length === 2 ? loc : parts[0];
+      })()}
       currentUserId={user.id}
       otherUserUsername={otherUser.username}
       otherUserProfileImage={otherUser.profileImage}

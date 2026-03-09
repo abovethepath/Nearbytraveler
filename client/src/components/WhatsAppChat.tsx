@@ -1810,7 +1810,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       <div className="flex flex-col h-full">
       {/* ═══ MOBILE HEADER: Single-row layout (back | avatar+name+status | logo-menu) — fixed 52px height ═══ */}
       {isMobileWeb && (
-        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden z-20" style={{ paddingTop: 'env(safe-area-inset-top, 0px)', height: 'calc(env(safe-area-inset-top, 0px) + 52px)', minHeight: 'calc(env(safe-area-inset-top, 0px) + 52px)', maxHeight: 'calc(env(safe-area-inset-top, 0px) + 52px)' }}>
+        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden" style={{ position: 'sticky', top: 0, zIndex: 1000, paddingTop: 'env(safe-area-inset-top, 0px)', height: 'calc(env(safe-area-inset-top, 0px) + 52px)', minHeight: 'calc(env(safe-area-inset-top, 0px) + 52px)', maxHeight: 'calc(env(safe-area-inset-top, 0px) + 52px)', transform: 'translateZ(0)', willChange: 'transform' }}>
           <div className="flex items-center h-[52px] px-2 gap-2">
             <Button
               variant="ghost"
@@ -1942,7 +1942,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                     onClick={() => setMoreMenuOpen(true)}
                     data-testid="button-chat-more-mobile"
                   >
-                    <img src="/new-logo.png" alt="Menu" className="h-7 w-auto" />
+                    <img src="/new-logo.png" alt="Menu" className="h-7 w-[28px] object-contain" />
                   </button>
                 </SheetTrigger>
                 <SheetContent side="bottom" className="bg-gray-900 border-t border-gray-700 text-white">
