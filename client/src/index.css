@@ -2039,7 +2039,7 @@ p, span, div, button, input, textarea, select {
 
 @keyframes nudge-blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50% { opacity: 0.6; }
 }
 .nudge-pulse {
   animation: nudge-blink 2s ease-in-out infinite;

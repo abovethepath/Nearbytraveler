@@ -769,7 +769,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   {isOwnProfile && (
                     <div className="relative flex items-center gap-2">
                       {isProfileIncomplete() && (
-                        <span className="text-orange-500 dark:text-orange-400 text-sm font-semibold whitespace-nowrap animate-pulse flex items-center gap-1">
+                        <span className="text-red-500 dark:text-red-400 text-sm font-semibold whitespace-nowrap animate-pulse flex items-center gap-1">
                           Fill out bio
                           <span className="inline-block">&#8594;</span>
                         </span>
