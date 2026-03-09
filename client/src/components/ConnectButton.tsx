@@ -34,6 +34,7 @@ export default function ConnectButton({
     status: 'pending' | 'accepted' | 'rejected' | 'none';
     requesterId?: number;
     receiverId?: number;
+    senderId?: number;
   }>({
     queryKey: [`/api/connections/status/${currentUserId}/${targetUserId}`],
     enabled: !!currentUserId && !!targetUserId,
@@ -147,6 +148,30 @@ export default function ConnectButton({
     }
     
     if (connectionStatus?.status === 'pending') {
+      const isIncoming = connectionStatus.senderId === targetUserId || connectionStatus.requesterId === targetUserId;
+      
+      if (isIncoming) {
+        // Handle accept request
+        try {
+          const response = await apiRequest('POST', `/api/connections/accept/${targetUserId}`, {});
+          if (response.ok) {
+            queryClient.invalidateQueries({ queryKey: [`/api/connections/status/${currentUserId}/${targetUserId}`] });
+            queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}/profile-bundle`] });
+            toast({
+              title: "Connection Accepted",
+              description: `You are now connected with ${targetName || targetUsername}.`,
+            });
+          }
+        } catch (err) {
+          toast({
+            title: "Accept Failed",
+            description: "Failed to accept connection request.",
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+
       // Request already sent - show toast
       toast({
         title: "Request Already Sent",
@@ -163,23 +188,25 @@ export default function ConnectButton({
   const getButtonState = () => {
     const isGhost = appearance === "ghost";
     if (connectionStatus?.status === 'accepted') {
-      return { 
-        text: 'Connected', 
-        disabled: false, 
-        variant: 'default' as const, 
-        className: isGhost
-          ? 'bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-700 border border-blue-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white dark:border-0'
-          : 'bg-blue-600 hover:bg-blue-700 text-white border-0'
-      };
+      return null; // Hide the button if connected
     }
     if (connectionStatus?.status === 'pending') {
+      const isIncoming = connectionStatus.senderId === targetUserId || connectionStatus.requesterId === targetUserId;
+      
+      if (isIncoming) {
+        return {
+          text: 'Accept Request',
+          disabled: false,
+          variant: 'default' as const,
+          className: 'bg-green-600 hover:bg-green-700 text-white border-0 shadow-sm'
+        };
+      }
+
       return { 
         text: 'Request Sent', 
-        disabled: false, 
+        disabled: true, 
         variant: 'default' as const, 
-        className: isGhost
-          ? 'bg-[#fff7e6] hover:bg-[#ffefd1] text-amber-800 border border-amber-200 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:text-white dark:border-0'
-          : 'bg-yellow-500 hover:bg-yellow-600 text-white border-0'
+        className: 'bg-orange-600/50 text-white border-0 cursor-not-allowed'
       };
     }
     // This is the key fix - only THIS button's isPending state affects THIS button
@@ -189,20 +216,13 @@ export default function ConnectButton({
       variant: 'default' as const, 
       className: isGhost
         ? 'bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-700 border border-blue-200 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white dark:border-0'
-        : 'bg-blue-600 hover:bg-blue-700 text-white border-0'
+        : 'bg-orange-600 hover:bg-orange-700 text-white border-0 shadow-sm'
     };
   };
 
   const buttonState = getButtonState();
 
-  if (connectionStatus?.status === 'accepted') {
-    return (
-      <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-600 text-white shrink-0 ${className}`}>
-        <Check className="w-3 h-3" />
-        Connected
-      </span>
-    );
-  }
+  if (!buttonState) return null;
 
   return (
     <Button

@@ -6370,7 +6370,7 @@ Questions? Just reply to this message. Welcome aboard!
         // optional backfill — never crash the bundle
       }
 
-      let connectionStatus = { status: 'none' as string, connectionId: null as number | null };
+      let connectionStatus = { status: 'none' as string, connectionId: null as number | null, senderId: null as number | null };
       let compatibility = null;
       let connectionDegree: { degree: number; mutualCount: number; mutuals: any[] } | null = null;
 
@@ -6386,6 +6386,7 @@ Questions? Just reply to this message. Welcome aboard!
             connectionStatus = {
               status: existingConnection[0].status,
               connectionId: existingConnection[0].id,
+              senderId: existingConnection[0].requesterId,
             };
           }
         } catch (e) {
@@ -10197,7 +10198,9 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json({
           status: connection.status,
           requesterId: connection.requesterId,
-          receiverId: connection.receiverId
+          receiverId: connection.receiverId,
+          senderId: connection.requesterId,
+          connectionId: connection.id
         });
       } else {
         if (process.env.NODE_ENV === 'development') console.log(`CONNECTION STATUS: No connection found between ${userId} and ${targetUserId}`);

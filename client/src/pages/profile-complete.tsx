@@ -3702,12 +3702,34 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Get connect button text and state
   const getConnectButtonState = () => {
     if (connectionStatus?.status === 'accepted') {
-      return { text: 'Connected', disabled: false, variant: 'default' as const, className: 'bg-blue-600 hover:bg-blue-700 text-white border-0' };
+      return null; // Don't show the button if already connected
     }
+    
     if (connectionStatus?.status === 'pending') {
-      return { text: 'Request Sent', disabled: true, variant: 'default' as const, className: 'bg-gray-600 hover:bg-gray-700 text-white border-0' };
+      // Check if current user is the requester or the recipient
+      // If profileBundle.connectionStatus includes senderId, we can use it
+      // Otherwise we can check connectionRequests which contains incoming requests
+      const isIncoming = connectionRequests.some((req: any) => req.userId === currentUser?.id || req.senderId === effectiveUserId);
+      
+      // Actually, connectionRequests in the bundle are usually INCOMING to the profile being viewed?
+      // No, if I am viewing User B, and User B has a pending request from me, 
+      // then for ME, it's an outgoing request.
+      
+      // Let's look at how connectionStatus is populated in the bundle.
+      // If I am User A viewing User B.
+      // status: 'pending' means there is a record in connections table with status 'pending' between A and B.
+      
+      // We need to know who is the 'user_id' (target) and who is the 'friend_id' (requester) in that record.
+      // In our schema: user_id is the recipient, friend_id is the sender.
+      
+      if (connectionStatus?.senderId === currentUser?.id) {
+        return { text: 'Request Sent', disabled: true, variant: 'default' as const, className: 'bg-orange-600/50 text-white border-0 cursor-not-allowed' };
+      } else {
+        return { text: 'Accept Request', disabled: false, variant: 'default' as const, className: 'bg-green-600 hover:bg-green-700 text-white border-0' };
+      }
     }
-    return { text: 'Connect', disabled: false, variant: 'default' as const, className: 'bg-blue-600 hover:bg-blue-700 text-white border-0' };
+    
+    return { text: 'Connect', disabled: false, variant: 'default' as const, className: 'bg-orange-600 hover:bg-orange-700 text-white border-0 shadow-sm' };
   };
 
   // Function to determine current location based on travel status
