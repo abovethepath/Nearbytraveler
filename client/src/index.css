@@ -159,7 +159,12 @@ input:-webkit-autofill {
   z-index: 2147483647 !important;
   isolation: isolate !important;
   pointer-events: auto !important;
-  padding-top: var(--sat);
+  padding-top: var(--sat) !important;
+  padding-bottom: 0 !important;
+  background-color: #000000 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .mobile-top-nav * {

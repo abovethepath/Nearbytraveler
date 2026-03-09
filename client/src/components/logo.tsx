@@ -41,7 +41,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
 
   let sizeClass = "h-8 w-auto max-h-8";
   
-  if (variant === "navbar") sizeClass = "h-10 w-auto max-h-10";
+  if (variant === "navbar") sizeClass = "h-8 w-auto max-h-8";
   if (variant === "landing") sizeClass = "h-12 w-auto max-h-12";
   if (variant === "header") sizeClass = "h-16 w-auto max-h-16";
   if (variant === "auth") sizeClass = "h-20 sm:h-24 md:h-28 w-auto max-h-32";

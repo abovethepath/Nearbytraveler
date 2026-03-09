@@ -8,9 +8,9 @@ export default function LandingNavbar() {
   const [, setLocation] = useLocation();
 
   return (
-    <nav className="bg-transparent relative z-10 block w-full" style={{display: 'block', visibility: 'visible', minHeight: '56px'}}>
+    <nav className="bg-transparent relative z-10 block w-full" style={{display: 'block', visibility: 'visible', minHeight: '48px'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-14 lg:h-16" style={{display: 'flex'}}>
+        <div className="flex justify-between items-center h-12 lg:h-16" style={{display: 'flex'}}>
           
           <div className="flex-shrink-0 flex items-center gap-2">
             <Logo variant="navbar" />
@@ -63,11 +63,11 @@ export default function LandingNavbar() {
           </div>
 
           {/* Mobile: Sign In button + hamburger menu */}
-          <div className="flex items-center lg:hidden gap-1">
+          <div className="flex items-center lg:hidden gap-0.5">
             <button
               onClick={() => setLocation('/signin')}
-              className="text-orange-600 dark:text-orange-400 text-sm font-semibold px-3 py-2 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 active:bg-orange-100 transition-colors"
-              style={{ minHeight: '40px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+              className="text-orange-600 dark:text-orange-400 text-sm font-semibold px-2 py-1.5 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 active:bg-orange-100 transition-colors"
+              style={{ minHeight: '36px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
             >
               Sign In
             </button>
@@ -79,7 +79,7 @@ export default function LandingNavbar() {
               }}
               type="button" 
               className="flex items-center justify-center rounded-xl text-gray-600 dark:text-gray-300 hover:text-gray-800 active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
-              style={{ width: '44px', height: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+              style={{ width: '40px', height: '40px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             >
               {!mobileMenuOpen ? (

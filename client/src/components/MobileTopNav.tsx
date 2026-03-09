@@ -123,8 +123,8 @@ export function MobileTopNav() {
         }}
       >
         <div 
-          className="h-11 flex items-center justify-between px-4"
-          style={{ minHeight: '44px' }}
+          className="h-9 flex items-center justify-between px-3"
+          style={{ minHeight: '36px' }}
         >
           <button
             type="button"
@@ -132,8 +132,8 @@ export function MobileTopNav() {
             data-testid="button-mobile-search"
             className="ios-touch-target flex items-center justify-center rounded-xl text-gray-700 dark:text-gray-200 active:bg-gray-200/60 dark:active:bg-gray-700/60"
             style={{
-              width: '44px',
-              height: '44px',
+              width: '36px',
+              height: '36px',
               touchAction: 'manipulation',
               WebkitTapHighlightColor: 'transparent',
             }}
@@ -143,10 +143,10 @@ export function MobileTopNav() {
               openSearch();
             }}
           >
-            <Search className="w-[22px] h-[22px] pointer-events-none" />
+            <Search className="w-[18px] h-[18px] pointer-events-none" />
           </button>
 
-          <div className="flex-1 flex justify-center pointer-events-none">
+          <div className="flex-1 flex justify-center pointer-events-none scale-75 origin-center">
             <Logo variant="navbar" />
           </div>
 
@@ -155,14 +155,14 @@ export function MobileTopNav() {
             aria-label="Profile"
             className="ios-touch-target flex items-center justify-center"
             style={{
-              width: '44px',
-              height: '44px',
+              width: '36px',
+              height: '36px',
               touchAction: 'manipulation',
               WebkitTapHighlightColor: 'transparent',
             }}
             onClick={handleAvatarTap}
           >
-            <Avatar className="w-8 h-8 border-2 border-gray-200/80 dark:border-gray-600/80 pointer-events-none ring-1 ring-white/20">
+            <Avatar className="w-6 h-6 border-2 border-gray-200/80 dark:border-gray-600/80 pointer-events-none ring-1 ring-white/20">
               <AvatarImage
                 src={getProfileImageUrl(currentUser) || undefined}
                 alt={currentUser?.name || currentUser?.username || "User"}
