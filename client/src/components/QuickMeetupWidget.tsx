@@ -1475,7 +1475,7 @@ export function QuickMeetupWidget({
           if (!open) setDetailsMeetup(null);
         }}
       >
-        <DialogContent className="w-[calc(100%-1rem)] sm:w-full max-w-lg p-0 overflow-hidden !top-auto !bottom-0 !translate-y-0 sm:!top-1/2 sm:!bottom-auto sm:!-translate-y-1/2 rounded-t-2xl sm:rounded-2xl">
+        <DialogContent className="max-w-lg p-0 overflow-hidden rounded-2xl bg-white dark:bg-gray-900">
           {detailsMeetup && (
             <div className="bg-white dark:bg-gray-900">
               <DialogHeader className="px-4 pt-4 pb-2">
