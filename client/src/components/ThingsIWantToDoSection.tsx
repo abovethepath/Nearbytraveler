@@ -14,6 +14,7 @@ import { resolveAndJoinHostelChatroom } from "@/lib/hostelChatrooms";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { profileEditButtonClass } from "@/components/profile/editButtonClass";
+import SubInterestSelector from "@/components/SubInterestSelector";
 
 function useIsDarkModeClass() {
   const [isDark, setIsDark] = useState(() =>
@@ -137,6 +138,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   const [editOpen, setEditOpen] = useState(false);
   const [editCityKey, setEditCityKey] = useState<string>("");
   const [newActivityName, setNewActivityName] = useState("");
+  const [editSubInterests, setEditSubInterests] = useState<string[]>([]);
+  const [subInterestsDirty, setSubInterestsDirty] = useState(false);
 
   // Fetch user's travel plans to get trip destinations
   const { data: travelPlans = [], isLoading: loadingTravelPlans } = useQuery<TravelPlan[]>({
@@ -845,6 +848,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   variant="outline"
                   onClick={() => {
                     setEditCityKey(hometownCityKey || uniqueRows.find((r) => !!r.key)?.key || "");
+                    setEditSubInterests(userProfile?.subInterests || []);
+                    setSubInterestsDirty(false);
                     setEditOpen(true);
                   }}
                   className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg"
@@ -897,6 +902,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   variant="outline"
                   onClick={() => {
                     setEditCityKey(hometownCityKey || uniqueRows.find((r) => !!r.key)?.key || "");
+                    setEditSubInterests(userProfile?.subInterests || []);
+                    setSubInterestsDirty(false);
                     setEditOpen(true);
                   }}
                   className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg"
@@ -1033,6 +1040,39 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                     Items show as clean pills on your profile. Deletes only appear here.
                   </p>
                 </div>
+              </div>
+
+              <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                <SubInterestSelector
+                  selectedSubInterests={editSubInterests}
+                  onSubInterestsChange={(newSubs) => {
+                    setEditSubInterests(newSubs);
+                    setSubInterestsDirty(true);
+                  }}
+                  excludeCategories={["tours"]}
+                  showOptionalLabel={true}
+                />
+                {subInterestsDirty && (
+                  <div className="mt-2 flex justify-end">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          await apiRequest("PATCH", `/api/users/${userId}`, { subInterests: editSubInterests });
+                          queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+                          setSubInterestsDirty(false);
+                          toast({ title: "Sub-interests saved" });
+                        } catch (err) {
+                          toast({ title: "Failed to save sub-interests", variant: "destructive" });
+                        }
+                      }}
+                      className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0"
+                    >
+                      Save Sub-Interests
+                    </Button>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-3 max-h-[45vh] overflow-auto pr-1">
