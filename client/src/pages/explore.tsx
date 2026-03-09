@@ -18,7 +18,6 @@ import { SkeletonCard } from "@/components/ui/skeleton-loaders";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getMetroAreaName } from "../../../shared/metro-areas";
-import ActivityFeed from "@/components/ActivityFeed";
 
 function UserAvatar({ user, size = "sm" }: { user: any; size?: string }) {
   const sizeClass = size === "sm" ? "w-8 h-8 text-xs" : size === "md" ? "w-10 h-10 text-sm" : "w-12 h-12 text-base";
@@ -112,7 +111,7 @@ export default function Explore() {
   const userCity = rawCity ? getMetroAreaName(rawCity) : "";
   const userCountry = resolved.country;
 
-  const [activeTab, setActiveTab] = useState<"live" | "communities" | "activity">("live");
+  const [activeTab, setActiveTab] = useState<"live" | "communities">("live");
   const [showCreateLiveShare, setShowCreateLiveShare] = useState(false);
 
   // Live share form state
@@ -428,21 +427,14 @@ export default function Explore() {
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 md:py-4 min-w-0 overflow-x-hidden">
         {/* Single flat 3-tab bar — no more nested tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
-          <TabsList className="grid grid-cols-3 mb-4 w-full p-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm">
+          <TabsList className="grid grid-cols-2 mb-4 w-full p-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm">
             <TabsTrigger value="live" className="flex items-center justify-center gap-1 py-2 text-xs sm:text-sm min-w-0">
               <MapPin className="w-3.5 h-3.5 shrink-0" /> <span>Live</span>
             </TabsTrigger>
             <TabsTrigger value="communities" className="flex items-center justify-center gap-1 py-2 text-xs sm:text-sm min-w-0">
               <Globe className="w-3.5 h-3.5 shrink-0" /> <span className="hidden xs:inline">Communities</span><span className="xs:hidden">Groups</span>
             </TabsTrigger>
-            <TabsTrigger value="activity" className="flex items-center justify-center gap-1 py-2 text-xs sm:text-sm min-w-0">
-              <Zap className="w-3.5 h-3.5 shrink-0" /> <span>Activity</span>
-            </TabsTrigger>
           </TabsList>
-
-          <TabsContent value="activity" className="space-y-4">
-            <ActivityFeed />
-          </TabsContent>
 
           {/* ===== LIVE LOCATION SHARES TAB ===== */}
           <TabsContent value="live" className="space-y-4">

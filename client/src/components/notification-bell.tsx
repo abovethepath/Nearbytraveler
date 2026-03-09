@@ -191,6 +191,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
           markAllAsReadMutation.mutate();
         }
       }}
+      modal={false}
     >
       <DropdownMenuTrigger asChild>
         <button

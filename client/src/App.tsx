@@ -41,6 +41,7 @@ import CouchsurfingLanding from "@/pages/couchsurfing-landing";
 import Connect from "@/pages/connect";
 import Requests from "@/pages/requests";
 import Explore from "@/pages/explore";
+import ActivityPage from "@/pages/activity";
 import CommunityDetail from "@/pages/community-detail";
 
 
@@ -1688,6 +1689,8 @@ function Router() {
         return <Discover />;
       case '/explore':
         return <Explore />;
+      case '/activity':
+        return <ActivityPage />;
       case '/match-in-city':
         return <MatchInCity />;
       case '/share-qr':
