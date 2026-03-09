@@ -640,7 +640,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </div>
                           <button
                             type="button"
-                            onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (openTab) { openTab('contacts'); } else { setLocation(`/profile/${user.id}?tab=contacts`); }
+                              setTimeout(() => {
+                                const el = document.getElementById('connections-in-common-section');
+                                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }, 200);
+                            }}
                             className="text-sm text-white/70 hover:text-white underline underline-offset-2 shrink-0"
                           >
                             See All
@@ -661,15 +668,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 {tag}
                               </span>
                             ))}
-                            {allSharedTags.length > 6 && (
-                              <button
-                                type="button"
-                                onClick={(e) => { e.stopPropagation(); setSeeAllCommonOpen(true); }}
-                                className="text-sm text-white/70 hover:text-white underline underline-offset-2"
-                              >
-                                See All ({allSharedTags.length - 6})
-                              </button>
-                            )}
+                            
                           </div>
                         )}
                       </div>
