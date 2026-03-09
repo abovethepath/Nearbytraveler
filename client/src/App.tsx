@@ -408,6 +408,7 @@ function Router() {
     location.startsWith('/event-chat/') ||
     location.startsWith('/meetup-chat/') ||
     location.startsWith('/quick-meetup-chat/') ||
+    location.startsWith('/whatsapp-chatroom/') ||
     (location.startsWith('/messages/') && location.split('/')[2])
   );
 

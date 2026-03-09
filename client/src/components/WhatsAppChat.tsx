@@ -2644,7 +2644,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           {/* Bottom Sheet Menu - positioned above bottom nav */}
           <div 
             className="fixed left-2 right-2 bg-gray-800 rounded-2xl shadow-2xl z-[99999] border border-gray-700"
-            style={{ touchAction: 'auto', bottom: 'max(90px, calc(env(safe-area-inset-bottom) + 70px))' }}
+            style={{ touchAction: 'auto', bottom: 'calc(env(safe-area-inset-bottom) + 16px)' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Action buttons */}
