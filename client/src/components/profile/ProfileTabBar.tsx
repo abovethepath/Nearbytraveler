@@ -29,6 +29,13 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
     setTriggerQuickMeetup,
   } = props as Record<string, any>;
 
+  const [hasClickedTab, setHasClickedTab] = React.useState(false);
+
+  const handleTabClick = React.useCallback((tab: string) => {
+    setHasClickedTab(true);
+    openTab(tab);
+  }, [openTab]);
+
   const isHero = variant === "hero";
   const isDesktopWeb = !isNativeIOSApp();
   const isOtherHero = isHero && !isOwnProfile;
@@ -91,181 +98,200 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
     color: isDarkMode ? "#FFFFFF" : "#000000",
   } as React.CSSProperties;
 
+  const showHint = !isOwnProfile && !hasClickedTab;
+  const firstTabPulseClass = showHint ? "profile-tab-pulse" : "";
+
   return (
-    <div
-      className={`profile-tabbar ${isHero ? "profile-tabbar-hero" : "profile-tabbar-standalone"} flex ${
-        isDesktopHero
-          ? "flex-nowrap"
-          : (isHero && isMobileWeb ? "flex-nowrap overflow-x-auto overflow-y-hidden" : "flex-wrap")
-      } items-end ${isDesktopHero ? "gap-2 sm:gap-2 lg:gap-3" : "gap-4 sm:gap-5"} ${
-        isHero ? "pt-4 mt-4" : ""
-      } ${isDesktopWeb ? (isHero ? "border-b border-gray-200/70 pb-1" : "border-b border-gray-200 dark:border-white/15 pb-1") : ""}`}
-      style={isHero && isMobileWeb ? { WebkitOverflowScrolling: "touch" } : undefined}
-    >
-      {showAboutTab && (
-        <button
-          role="tab"
-          aria-selected={activeTab === "about"}
-          aria-controls="panel-about"
-          onClick={() => openTab("about")}
-          className={`${btn(activeTab === "about")} inline-flex items-center gap-1`}
-          data-testid="tab-about"
-          style={heroTextStyle}
-        >
-          About
-        </button>
-      )}
-
-      <button
-        role="tab"
-        aria-selected={activeTab === "contacts"}
-        aria-controls="panel-contacts"
-        onClick={() => openTab("contacts")}
-        className={`${btn(activeTab === "contacts")} inline-flex items-center gap-1`}
-        data-testid="tab-contacts"
-        style={heroTextStyle}
+    <div>
+      <div
+        className={`profile-tabbar ${isHero ? "profile-tabbar-hero" : "profile-tabbar-standalone"} flex ${
+          isDesktopHero
+            ? "flex-nowrap"
+            : (isHero && isMobileWeb ? "flex-nowrap overflow-x-auto overflow-y-hidden" : "flex-wrap")
+        } items-end ${isDesktopHero ? "gap-2 sm:gap-2 lg:gap-3" : "gap-4 sm:gap-5"} ${
+          isHero ? "pt-4 mt-4" : ""
+        } ${isDesktopWeb ? (isHero ? "border-b border-gray-200/70 pb-1" : "border-b border-gray-200 dark:border-white/15 pb-1") : ""}`}
+        style={isHero && isMobileWeb ? { WebkitOverflowScrolling: "touch" } : undefined}
       >
-        Contacts
-        <span className={badgeClass} style={badgeStyle}>
-          {userConnections?.length || 0}
-        </span>
-      </button>
+        {showAboutTab && (
+          <button
+            role="tab"
+            aria-selected={activeTab === "about"}
+            aria-controls="panel-about"
+            onClick={() => handleTabClick("about")}
+            className={`${btn(activeTab === "about")} inline-flex items-center gap-1 ${firstTabPulseClass}`}
+            data-testid="tab-about"
+            style={heroTextStyle}
+          >
+            About
+          </button>
+        )}
 
-      <button
-        role="tab"
-        aria-selected={activeTab === "photos"}
-        aria-controls="panel-photos"
-        onClick={() => openTab("photos")}
-        className={`${btn(activeTab === "photos")} inline-flex items-center gap-1`}
-        data-testid="tab-photos"
-        style={heroTextStyle}
-      >
-        Photos
-        <span className={badgeClass} style={badgeStyle}>
-          {(photos?.length || 0) + (userTravelMemories?.length || 0)}
-        </span>
-      </button>
-
-      <button
-        role="tab"
-        aria-selected={activeTab === "references"}
-        aria-controls="panel-references"
-        onClick={() => openTab("references")}
-        className={`${btn(activeTab === "references")} inline-flex items-center gap-1`}
-        data-testid="tab-references"
-        style={heroTextStyle}
-      >
-        References
-        <span className={badgeClass} style={badgeStyle}>
-          {userReferences?.length || 0}
-        </span>
-      </button>
-
-      {user?.userType !== "business" && (
         <button
           role="tab"
-          aria-selected={activeTab === "travel"}
-          aria-controls="panel-travel"
-          onClick={() => openTab("travel")}
-          className={`${btn(activeTab === "travel")} inline-flex items-center gap-1`}
-          data-testid="tab-travel"
+          aria-selected={activeTab === "contacts"}
+          aria-controls="panel-contacts"
+          onClick={() => handleTabClick("contacts")}
+          className={`${btn(activeTab === "contacts")} inline-flex items-center gap-1 ${!showAboutTab ? firstTabPulseClass : ""}`}
+          data-testid="tab-contacts"
           style={heroTextStyle}
         >
-          Travel Plans
+          Contacts
           <span className={badgeClass} style={badgeStyle}>
-            {travelPlans?.length || 0}
+            {userConnections?.length || 0}
           </span>
         </button>
-      )}
 
-      {user?.userType !== "business" && (
         <button
           role="tab"
-          aria-selected={activeTab === "countries"}
-          aria-controls="panel-countries"
-          onClick={() => openTab("countries")}
-          className={`${btn(activeTab === "countries")} inline-flex items-center gap-1`}
-          data-testid="tab-countries"
+          aria-selected={activeTab === "photos"}
+          aria-controls="panel-photos"
+          onClick={() => handleTabClick("photos")}
+          className={`${btn(activeTab === "photos")} inline-flex items-center gap-1`}
+          data-testid="tab-photos"
           style={heroTextStyle}
         >
-          Countries
+          Photos
           <span className={badgeClass} style={badgeStyle}>
-            {countriesVisited?.length || 0}
+            {(photos?.length || 0) + (userTravelMemories?.length || 0)}
           </span>
         </button>
-      )}
 
-      {isOwnProfile && user?.userType !== "business" && (
         <button
           role="tab"
-          aria-selected={activeTab === "chatrooms"}
-          aria-controls="panel-chatrooms"
-          onClick={() => openTab("chatrooms")}
-          className={`${btn(activeTab === "chatrooms")} inline-flex items-center gap-1`}
-          data-testid="tab-chatrooms"
+          aria-selected={activeTab === "references"}
+          aria-controls="panel-references"
+          onClick={() => handleTabClick("references")}
+          className={`${btn(activeTab === "references")} inline-flex items-center gap-1`}
+          data-testid="tab-references"
           style={heroTextStyle}
         >
-          Chatrooms
+          References
           <span className={badgeClass} style={badgeStyle}>
-            {userChatrooms?.length || 0}
+            {userReferences?.length || 0}
           </span>
         </button>
-      )}
 
-      {user?.userType !== "business" && (
-        <button
-          role="tab"
-          aria-selected={activeTab === "vouches"}
-          aria-controls="panel-vouches"
-          onClick={() => openTab("vouches")}
-          className={`${btn(activeTab === "vouches")} inline-flex items-center gap-1`}
-          data-testid="tab-vouches"
-          style={heroTextStyle}
-        >
-          Vouches
-          <span className={badgeClass} style={badgeStyle}>
-            {userVouches?.length || 0}
-          </span>
-        </button>
-      )}
+        {user?.userType !== "business" && (
+          <button
+            role="tab"
+            aria-selected={activeTab === "travel"}
+            aria-controls="panel-travel"
+            onClick={() => handleTabClick("travel")}
+            className={`${btn(activeTab === "travel")} inline-flex items-center gap-1`}
+            data-testid="tab-travel"
+            style={heroTextStyle}
+          >
+            Travel Plans
+            <span className={badgeClass} style={badgeStyle}>
+              {travelPlans?.length || 0}
+            </span>
+          </button>
+        )}
 
-      {(user as any)?.ambassadorStatus === 'active' && user?.userType !== "business" && (
-        <button
-          role="tab"
-          aria-selected={activeTab === "ambassador"}
-          aria-controls="panel-ambassador"
-          onClick={() => openTab("ambassador")}
-          className={`${btn(activeTab === "ambassador")} inline-flex items-center gap-1`}
-          data-testid="tab-ambassador"
-          style={activeTab === "ambassador" ? undefined : heroTextStyle}
-        >
-          ⭐ Ambassador
-        </button>
-      )}
+        {user?.userType !== "business" && (
+          <button
+            role="tab"
+            aria-selected={activeTab === "countries"}
+            aria-controls="panel-countries"
+            onClick={() => handleTabClick("countries")}
+            className={`${btn(activeTab === "countries")} inline-flex items-center gap-1`}
+            data-testid="tab-countries"
+            style={heroTextStyle}
+          >
+            Countries
+            <span className={badgeClass} style={badgeStyle}>
+              {countriesVisited?.length || 0}
+            </span>
+          </button>
+        )}
 
-      {!isDesktopWeb && isOwnProfile && user?.userType !== "business" && (
-        <Button
-          onClick={() => {
-            const widget = document.querySelector('[data-testid="quick-meet-widget"]');
-            if (widget) widget.scrollIntoView({ behavior: "smooth", block: "center" });
-            setTriggerQuickMeetup?.(true);
-            setTimeout(() => setTriggerQuickMeetup?.(false), 500);
-          }}
-          variant={isDesktopWeb ? "ghost" : "default"}
-          className={
-            isDesktopWeb
-              ? "ml-auto -mb-1 px-2 py-2 text-sm font-semibold text-gray-600 hover:text-gray-900 hover:bg-transparent dark:text-gray-300 dark:hover:text-white"
-              : `bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 border-0 px-4 sm:px-6 py-2 text-sm font-medium rounded-lg flex items-center justify-center ${isHero ? "text-black" : ""}`
-          }
-          style={!isDesktopWeb && isHero ? { color: "black" } : undefined}
-          data-testid="button-lets-meet-now"
-        >
-          <Calendar
-            className={isDesktopWeb ? "w-4 h-4 mr-2" : "w-4 h-4 mr-2"}
+        {isOwnProfile && user?.userType !== "business" && (
+          <button
+            role="tab"
+            aria-selected={activeTab === "chatrooms"}
+            aria-controls="panel-chatrooms"
+            onClick={() => handleTabClick("chatrooms")}
+            className={`${btn(activeTab === "chatrooms")} inline-flex items-center gap-1`}
+            data-testid="tab-chatrooms"
+            style={heroTextStyle}
+          >
+            Chatrooms
+            <span className={badgeClass} style={badgeStyle}>
+              {userChatrooms?.length || 0}
+            </span>
+          </button>
+        )}
+
+        {user?.userType !== "business" && (
+          <button
+            role="tab"
+            aria-selected={activeTab === "vouches"}
+            aria-controls="panel-vouches"
+            onClick={() => handleTabClick("vouches")}
+            className={`${btn(activeTab === "vouches")} inline-flex items-center gap-1`}
+            data-testid="tab-vouches"
+            style={heroTextStyle}
+          >
+            Vouches
+            <span className={badgeClass} style={badgeStyle}>
+              {userVouches?.length || 0}
+            </span>
+          </button>
+        )}
+
+        {(user as any)?.ambassadorStatus === 'active' && user?.userType !== "business" && (
+          <button
+            role="tab"
+            aria-selected={activeTab === "ambassador"}
+            aria-controls="panel-ambassador"
+            onClick={() => handleTabClick("ambassador")}
+            className={`${btn(activeTab === "ambassador")} inline-flex items-center gap-1`}
+            data-testid="tab-ambassador"
+            style={activeTab === "ambassador" ? undefined : heroTextStyle}
+          >
+            ⭐ Ambassador
+          </button>
+        )}
+
+        {!isDesktopWeb && isOwnProfile && user?.userType !== "business" && (
+          <Button
+            onClick={() => {
+              const widget = document.querySelector('[data-testid="quick-meet-widget"]');
+              if (widget) widget.scrollIntoView({ behavior: "smooth", block: "center" });
+              setTriggerQuickMeetup?.(true);
+              setTimeout(() => setTriggerQuickMeetup?.(false), 500);
+            }}
+            variant={isDesktopWeb ? "ghost" : "default"}
+            className={
+              isDesktopWeb
+                ? "ml-auto -mb-1 px-2 py-2 text-sm font-semibold text-gray-600 hover:text-gray-900 hover:bg-transparent dark:text-gray-300 dark:hover:text-white"
+                : `bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 border-0 px-4 sm:px-6 py-2 text-sm font-medium rounded-lg flex items-center justify-center ${isHero ? "text-black" : ""}`
+            }
             style={!isDesktopWeb && isHero ? { color: "black" } : undefined}
-          />
-          <span style={!isDesktopWeb && isHero ? { color: "black" } : undefined}>Let's Meet Now</span>
-        </Button>
+            data-testid="button-lets-meet-now"
+          >
+            <Calendar
+              className={isDesktopWeb ? "w-4 h-4 mr-2" : "w-4 h-4 mr-2"}
+              style={!isDesktopWeb && isHero ? { color: "black" } : undefined}
+            />
+            <span style={!isDesktopWeb && isHero ? { color: "black" } : undefined}>Let's Meet Now</span>
+          </Button>
+        )}
+      </div>
+      {showHint && (
+        <p
+          style={{
+            fontSize: '11px',
+            color: 'rgba(255,255,255,0.4)',
+            fontStyle: 'italic',
+            textAlign: 'center',
+            marginTop: '6px',
+            lineHeight: 1,
+          }}
+        >
+          {isMobileWeb ? 'Tap a tab to explore' : 'Click a tab to explore'}
+        </p>
       )}
     </div>
   );

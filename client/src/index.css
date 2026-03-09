@@ -2547,3 +2547,11 @@ html.dark .landing-quote {
 .common-radiate-widget {
   animation: commonRadiate 2.4s ease-in-out infinite;
 }
+
+@keyframes profileTabPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.profile-tab-pulse {
+  animation: profileTabPulse 1.8s ease-in-out infinite;
+}
