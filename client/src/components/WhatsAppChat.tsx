@@ -2442,8 +2442,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           </div>
         )}
 
-        {/* Input box — native app: no bottom nav; mobile web: safe area only (no nav overlap since nav hidden on chat); desktop: pb-4 */}
-        <div className={`chat-input-area px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : isMobileWeb ? 'pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]' : 'pb-4'}`}>
+        {/* Input box — native app: no bottom nav; mobile web: safe area only (no nav overlap since nav hidden on chat); desktop: pb-[76px] clears the 60px bottom navbar */}
+        <div className={`chat-input-area px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : isMobileWeb ? 'pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]' : 'pb-[76px]'}`}>
           <div className="w-full">
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
           {!messagesLoaded && !isWsConnected && !loadError && (

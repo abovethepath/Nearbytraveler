@@ -96,7 +96,6 @@ export default function WhatsAppChatroom() {
   const isMember = hasJoined || membershipCheck?.isMember;
 
   if (isMember) {
-    // Private DM chatrooms (iOS): go back to previous page (e.g. profile). City chatrooms: go to /chatrooms
     const isPrivateDM = chatroom.city === 'Private' && chatroom.country === 'DM';
     return (
       <WhatsAppChat

@@ -1,0 +1,102 @@
+THIS IS THE MOST CRITICAL TASK ON THE 
+ENTIRE SITE. DO NOT HALF-DO THIS.
+READ EVERY WORD CAREFULLY.
+
+THE DM CHAT IS THE ONLY APPROVED CHAT 
+DESIGN. EVERY SINGLE CHAT ON THIS SITE 
+MUST LOOK AND BEHAVE EXACTLY LIKE IT.
+NO EXCEPTIONS. NO VARIATIONS.
+ONE CHAT. ONE DESIGN. PERIOD.
+
+RIGHT NOW THE SITE HAS MULTIPLE BROKEN 
+INCONSISTENT CHAT LAYOUTS. THIS IS 
+UNACCEPTABLE AND MUST BE FIXED COMPLETELY 
+IN THIS TASK. NOT PARTIALLY. COMPLETELY.
+
+═══════════════════════════════════════
+STEP 1 — FIX THE DM CHAT FIRST
+═══════════════════════════════════════
+The DM chat has one remaining bug:
+The message input bar is hidden behind 
+the bottom navbar on desktop.
+
+Fix: Add padding-bottom to the chat 
+container equal to the bottom navbar 
+height so the input bar always sits 
+ABOVE the navbar and is never covered.
+
+This must be pixel perfect.
+The input bar must be fully visible 
+at all times on desktop.
+
+═══════════════════════════════════════
+STEP 2 — BUILD THE UNIVERSAL CHAT
+═══════════════════════════════════════
+The DM chat layout is now the universal 
+standard. Apply it to EVERY chat type:
+
+- City chatrooms
+- Event chatrooms
+- Quick meetup chatrooms
+- Hangout chatrooms
+- Community chatrooms
+
+DESKTOP LAYOUT — NON-NEGOTIABLE:
+Left panel (250px fixed):
+  For DMs: single user avatar + 
+  username + city + stats
+  For ALL other chats: list of ALL 
+  members with avatar + username + city,
+  same card style as DM left panel,
+  same dark background, same borders
+
+Right panel (remaining width):
+  Header pinned to top — never moves
+  Messages scroll in the middle only
+  Input bar pinned ABOVE bottom navbar
+  Never overlaps navbar, never hidden
+
+Bottom navbar: always visible on desktop
+Messages: anchor to bottom, newest last
+
+MOBILE LAYOUT — NON-NEGOTIABLE:
+No left panel — full screen chat
+Header pinned to very top — never moves
+Messages scroll in middle only
+Input bar pinned to very bottom of screen
+NO bottom navbar on mobile in any chat
+Nothing bounces, nothing moves except 
+the message list
+
+═══════════════════════════════════════
+STEP 3 — DELETE ALL OLD CHAT LAYOUTS
+═══════════════════════════════════════
+Every existing chatroom component that 
+has its own layout must be replaced 
+with this universal design.
+No old chat layout code should remain.
+WhatsAppChat.tsx becomes the single 
+source of truth for all chat UI.
+All other chat pages become thin 
+wrappers that pass data into it.
+
+═══════════════════════════════════════
+STEP 4 — TEST EVERY SINGLE CHAT
+═══════════════════════════════════════
+Before marking this done, verify:
+✓ DM chat — input bar above navbar
+✓ City chatroom — matches DM layout
+✓ Event chatroom — matches DM layout
+✓ Quick meetup chatroom — matches DM layout
+✓ Hangout chatroom — matches DM layout
+✓ Community chatroom — matches DM layout
+✓ Desktop — navbar always visible
+✓ Mobile — full screen, no navbar
+✓ Header never scrolls away on any chat
+✓ Input bar never hidden on any chat
+
+IF ANY OF THESE FAIL THE TASK IS NOT DONE.
+
+Apply to: both desktop and mobile.
+This is not optional. This is not partial.
+Every chat. Same design. Zero exceptions.
