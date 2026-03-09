@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useAutoHideHero } from "@/hooks/useAutoHideHero";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,17 +74,7 @@ export default function DiscoverPage() {
     return [...new Set(relevantCityNames)];
   }, [user, userProfile, travelPlans]);
   
-  // Hero section visibility state
-  const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
-    const saved = localStorage.getItem('hideDiscoverHero');
-    return saved !== 'true'; // Default to visible
-  });
-
-  const toggleHeroVisibility = () => {
-    const newValue = !isHeroVisible;
-    setIsHeroVisible(newValue);
-    localStorage.setItem('hideDiscoverHero', String(!newValue));
-  };
+  const { isHeroVisible, toggleHeroVisibility, autoHidden, showHeroFromAutoHide } = useAutoHideHero('discover');
 
   // Redirect business users away from destination discovery page
   useEffect(() => {
@@ -179,16 +170,26 @@ export default function DiscoverPage() {
       {!isHeroVisible && !isMobile && !isNative && (
         <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleHeroVisibility}
-              className="text-sm"
-              data-testid="button-show-discover-hero"
-            >
-              <ChevronDown className="w-4 h-4 mr-2" />
-              Show Cities Hero
-            </Button>
+            {autoHidden ? (
+              <button
+                onClick={showHeroFromAutoHide}
+                className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                data-testid="button-show-discover-hero"
+              >
+                Show intro ›
+              </button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleHeroVisibility}
+                className="text-sm"
+                data-testid="button-show-discover-hero"
+              >
+                <ChevronDown className="w-4 h-4 mr-2" />
+                Show Cities Hero
+              </Button>
+            )}
           </div>
         </div>
       )}

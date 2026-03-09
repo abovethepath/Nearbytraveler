@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useAutoHideHero } from "@/hooks/useAutoHideHero";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,17 +37,7 @@ export default function CityPage({ cityName }: CityPageProps) {
   const [showAllEvents, setShowAllEvents] = useState(false);
   const [sortBy, setSortBy] = useState("recent");
   
-  // Hero section visibility state
-  const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
-    const saved = localStorage.getItem('hideCityHero');
-    return saved !== 'true'; // Default to visible
-  });
-
-  const toggleHeroVisibility = () => {
-    const newValue = !isHeroVisible;
-    setIsHeroVisible(newValue);
-    localStorage.setItem('hideCityHero', String(!newValue));
-  };
+  const { isHeroVisible, toggleHeroVisibility, autoHidden, showHeroFromAutoHide } = useAutoHideHero('city');
   
   // Remove lazy loading - load all widgets immediately
   const loadedWidgets = new Set(['stats', 'secrets', 'tips', 'map']);
@@ -287,7 +278,32 @@ export default function CityPage({ cityName }: CityPageProps) {
         </button>
       </div>
       
+      {/* Show intro link when auto-hidden */}
+      {!isHeroVisible && (
+        <div className="mx-4 mt-2 mb-2">
+          {autoHidden ? (
+            <button
+              onClick={showHeroFromAutoHide}
+              className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              Show intro ›
+            </button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleHeroVisibility}
+              className="text-sm"
+            >
+              <ChevronDown className="w-4 h-4 mr-2" />
+              Show City Header
+            </Button>
+          )}
+        </div>
+      )}
+
       {/* City Header - Standardized Layout */}
+      {isHeroVisible && (
       <section className="relative py-4 sm:py-6 lg:py-10 overflow-hidden bg-white dark:bg-gray-900 mx-4 mt-2 mb-6 rounded-xl border border-gray-200 dark:border-gray-700">
         <div className="relative z-10 px-6 py-2">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -304,13 +320,22 @@ export default function CityPage({ cityName }: CityPageProps) {
                 Discover people, events, and businesses in {parsedCityName}
               </p>
             </div>
-            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 flex-shrink-0">
-              <MapPin className="w-5 h-5" />
-              <span className="text-base">{parsedCityName}</span>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                <MapPin className="w-5 h-5" />
+                <span className="text-base">{parsedCityName}</span>
+              </div>
+              <button
+                onClick={toggleHeroVisibility}
+                className="text-xs text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
       </section>
+      )}
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">

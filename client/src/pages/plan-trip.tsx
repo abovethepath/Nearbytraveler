@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "@/App";
+import { useAutoHideHero } from "@/hooks/useAutoHideHero";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -83,15 +84,7 @@ export default function PlanTrip() {
   const { toast } = useToast();
   const [currentLocation, setLocation] = useLocation();
 
-  const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
-    const saved = localStorage.getItem('hidePlanTripHero');
-    return saved === 'false';
-  });
-  const toggleHeroVisibility = () => {
-    const newValue = !isHeroVisible;
-    setIsHeroVisible(newValue);
-    localStorage.setItem('hidePlanTripHero', String(!newValue));
-  };
+  const { isHeroVisible, toggleHeroVisibility, autoHidden, showHeroFromAutoHide } = useAutoHideHero('planTrip');
   
   console.log('=== PLAN TRIP PAGE INITIALIZATION ===');
   console.log('Current URL location:', currentLocation);
@@ -713,16 +706,26 @@ export default function PlanTrip() {
       {!isHeroVisible && (
         <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleHeroVisibility}
-              className="text-sm"
-              data-testid="button-show-plantrip-hero"
-            >
-              <ChevronDown className="w-4 h-4 mr-2" />
-              Show Trip Hero
-            </Button>
+            {autoHidden ? (
+              <button
+                onClick={showHeroFromAutoHide}
+                className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                data-testid="button-show-plantrip-hero"
+              >
+                Show intro ›
+              </button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleHeroVisibility}
+                className="text-sm"
+                data-testid="button-show-plantrip-hero"
+              >
+                <ChevronDown className="w-4 h-4 mr-2" />
+                Show Trip Hero
+              </Button>
+            )}
           </div>
         </div>
       )}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useAutoHideHero } from "@/hooks/useAutoHideHero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -241,17 +242,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     });
   };
 
-  // Hero section visibility state (for after city selection)
-  const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
-    const saved = localStorage.getItem('hideMatchInCityHero');
-    return saved !== 'true'; // Default to visible
-  });
-
-  const toggleHeroVisibility = () => {
-    const newValue = !isHeroVisible;
-    setIsHeroVisible(newValue);
-    localStorage.setItem('hideMatchInCityHero', String(!newValue));
-  };
+  const { isHeroVisible, toggleHeroVisibility, autoHidden, showHeroFromAutoHide } = useAutoHideHero('matchInCity');
   
   // Hero section visibility state (for initial city selection screen)
   const [isInitialHeroVisible, setIsInitialHeroVisible] = useState<boolean>(() => {
@@ -2134,16 +2125,26 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           <>
             {!isHeroVisible && (
               <div className="max-w-4xl mx-auto mb-6">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={toggleHeroVisibility}
-                  className="text-sm text-gray-600 dark:text-gray-300 border-gray-300 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
-                  data-testid="button-show-match-hero"
-                >
-                  <ChevronDown className="w-4 h-4 mr-2" />
-                  Show Instructions
-                </Button>
+                {autoHidden ? (
+                  <button
+                    onClick={showHeroFromAutoHide}
+                    className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                    data-testid="button-show-match-hero"
+                  >
+                    Show intro ›
+                  </button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={toggleHeroVisibility}
+                    className="text-sm text-gray-600 dark:text-gray-300 border-gray-300 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
+                    data-testid="button-show-match-hero"
+                  >
+                    <ChevronDown className="w-4 h-4 mr-2" />
+                    Show Instructions
+                  </Button>
+                )}
               </div>
             )}
             {isHeroVisible && (

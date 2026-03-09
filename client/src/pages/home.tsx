@@ -1,4 +1,5 @@
 import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
+import { useAutoHideHero } from "@/hooks/useAutoHideHero";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { AuthContext } from "@/App";
@@ -98,17 +99,7 @@ export default function Home() {
   const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set(['hero', 'users', 'events', 'messages', 'weather', 'quickMeets'])); // Load all sections immediately
   const [activeSection, setActiveSection] = useState<string>('hero');
 
-  // Hero section visibility state
-  const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
-    const saved = localStorage.getItem('hideHeroSection');
-    return saved !== 'true'; // Default to visible
-  });
-
-  const toggleHeroVisibility = () => {
-    const newValue = !isHeroVisible;
-    setIsHeroVisible(newValue);
-    localStorage.setItem('hideHeroSection', String(!newValue));
-  };
+  const { isHeroVisible, toggleHeroVisibility, autoHidden, showHeroFromAutoHide } = useAutoHideHero('homepage');
 
   const { user, setUser, logout } = useContext(AuthContext);
 
@@ -1656,16 +1647,26 @@ export default function Home() {
 {!isNativeIOSApp() && !isHeroVisible && (
   <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
     <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={toggleHeroVisibility}
-        className="text-sm"
-        data-testid="button-show-hero"
-      >
-        <ChevronDown className="w-4 h-4 mr-2" />
-        Show Welcome Message
-      </Button>
+      {autoHidden ? (
+        <button
+          onClick={showHeroFromAutoHide}
+          className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+          data-testid="button-show-hero"
+        >
+          Show intro ›
+        </button>
+      ) : (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={toggleHeroVisibility}
+          className="text-sm"
+          data-testid="button-show-hero"
+        >
+          <ChevronDown className="w-4 h-4 mr-2" />
+          Show Welcome Message
+        </Button>
+      )}
       <ThemeToggle />
     </div>
   </div>

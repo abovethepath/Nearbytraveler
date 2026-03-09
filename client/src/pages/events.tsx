@@ -1,5 +1,6 @@
 // Events page - v2.2 - Complete location fix
 import React, { useState } from "react";
+import { useAutoHideHero } from "@/hooks/useAutoHideHero";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -62,17 +63,7 @@ export default function Events() {
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
 
-  // Hero section visibility state
-  const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
-    const saved = localStorage.getItem('hideEventsHeroSection');
-    return saved !== 'true'; // Default to visible
-  });
-
-  const toggleHeroVisibility = () => {
-    const newValue = !isHeroVisible;
-    setIsHeroVisible(newValue);
-    localStorage.setItem('hideEventsHeroSection', String(!newValue));
-  };
+  const { isHeroVisible, toggleHeroVisibility, autoHidden, showHeroFromAutoHide } = useAutoHideHero('events');
 
   React.useEffect(() => {
     if (showCreateEvent) {
@@ -554,16 +545,26 @@ export default function Events() {
       {!isNativeIOSApp() && !isHeroVisible && (
         <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleHeroVisibility}
-              className="text-sm"
-              data-testid="button-show-events-hero"
-            >
-              <ChevronDown className="w-4 h-4 mr-2" />
-              Show Events Hero
-            </Button>
+            {autoHidden ? (
+              <button
+                onClick={showHeroFromAutoHide}
+                className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                data-testid="button-show-events-hero"
+              >
+                Show intro ›
+              </button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleHeroVisibility}
+                className="text-sm"
+                data-testid="button-show-events-hero"
+              >
+                <ChevronDown className="w-4 h-4 mr-2" />
+                Show Events Hero
+              </Button>
+            )}
           </div>
         </div>
       )}
