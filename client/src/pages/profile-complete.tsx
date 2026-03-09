@@ -830,7 +830,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Simple edit form data (copying signup pattern)
   const [editFormData, setEditFormData] = useState({
     interests: [] as string[],
-    activities: [] as string[]
+    activities: [] as string[],
+    subInterests: [] as string[]
   });
 
   // Simple toggle function copied from signup
@@ -1732,10 +1733,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       
       setEditFormData({
         interests: migratedInterests,
-        activities: migratedActivities
+        activities: migratedActivities,
+        subInterests: user.subInterests || []
       });
       
-      // Reset form with user type-specific data
       if (user.userType === 'business') {
         // Extract custom entries from the arrays (entries not in predefined lists)
         const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
@@ -1831,10 +1832,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         const reSyncMigratedInterests = migrateLegacyOptions(user.interests || []);
         const reSyncMigratedActivities = migrateLegacyOptions(user.activities || []);
         
-        // Initialize editFormData with user's current data
         setEditFormData({
           interests: reSyncMigratedInterests,
-          activities: reSyncMigratedActivities
+          activities: reSyncMigratedActivities,
+          subInterests: user.subInterests || []
         });
         
         // For business users, extract and set custom fields

@@ -1051,7 +1051,8 @@ export class DatabaseStorage implements IStorage {
         avatarGradient: 'avatar_gradient',
         coverPhoto: 'cover_photo',
         videoIntroUrl: 'video_intro_url',
-        videoIntroThumbnail: 'video_intro_thumbnail'
+        videoIntroThumbnail: 'video_intro_thumbnail',
+        subInterests: 'sub_interests'
       };
 
       // Convert field names to snake_case for database

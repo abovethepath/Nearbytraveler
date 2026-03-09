@@ -540,69 +540,19 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
   }, [citySearchTerm, allCities, user, userProfile, travelPlans]);
 
-  // Sync userSubInterests from userActivities - sub-interests are persisted as user-city-interests
+  // Pre-populate sub-interests from user's saved profile defaults when city changes
   useEffect(() => {
     if (!selectedCity) {
       setUserSubInterests([]);
       return;
     }
-    const allSubInterests = SUB_INTEREST_CATEGORIES.flatMap(c => c.subInterests);
-    const citySubs = userActivities
-      .filter(ua => ua.cityName === selectedCity && allSubInterests.includes(ua.activityName))
-      .map(ua => ua.activityName);
-    setUserSubInterests(citySubs);
-  }, [selectedCity, userActivities]);
+    const profileSubs = user?.subInterests || [];
+    setUserSubInterests(profileSubs);
+  }, [selectedCity, user?.subInterests]);
   
-  // Handler to update sub-interests - persist to user-city-interests so they appear on profile
-  const handleSubInterestsChange = async (newSubInterests: string[]) => {
-    const storedUser = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
-    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-    const userId = actualUser?.id;
-    if (!userId || !selectedCity) {
-      setUserSubInterests(newSubInterests);
-      return;
-    }
-    const prev = userSubInterests;
-    const added = newSubInterests.filter(s => !prev.includes(s));
-    const removed = prev.filter(s => !newSubInterests.includes(s));
+  // Session-only handler — changes do NOT save back to profile or API
+  const handleSubInterestsChange = (newSubInterests: string[]) => {
     setUserSubInterests(newSubInterests);
-    setSubInterestsLoading(true);
-    const apiBase = getApiBaseUrl();
-    try {
-      for (const subInterest of added) {
-        const res = await fetch(`${apiBase}/api/user-city-interests`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': String(userId) },
-          body: JSON.stringify({ activityName: subInterest, cityName: selectedCity })
-        });
-        if (res.ok) {
-          const created = await res.json();
-          if (created.removed) {
-            setUserActivities(u => u.filter(x => x.activityName !== subInterest || x.cityName !== selectedCity));
-            continue;
-          }
-          setUserActivities(u => [...u, created]);
-          setCityActivities(c => {
-            const exists = c.some(a => a.activityName === subInterest && a.cityName === selectedCity);
-            if (exists) return c;
-            return [...c, { id: created.activityId, activityName: subInterest, cityName: selectedCity }];
-          });
-        }
-      }
-      for (const subInterest of removed) {
-        const ua = userActivities.find(ua => ua.activityName === subInterest && ua.cityName === selectedCity);
-        if (ua?.id) {
-          await fetch(`${apiBase}/api/user-city-interests/${ua.id}`, { method: 'DELETE', headers: { 'x-user-id': String(userId) } });
-          setUserActivities(u => u.filter(x => x.id !== ua.id));
-        }
-      }
-      queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
-    } catch (e) {
-      console.error('Sub-interests save error:', e);
-      toast({ title: "Error", description: "Failed to save selections", variant: "destructive" });
-    } finally {
-      setSubInterestsLoading(false);
-    }
   };
 
   // NOTE: userActivities are loaded from user-city-interests via fetchUserActivities when selectedCity changes.

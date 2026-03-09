@@ -6980,7 +6980,10 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      // subInterests removed - column doesn't exist in production database
+      if (updates.subInterests !== undefined) {
+        mappedUpdates.sub_interests = updates.subInterests;
+        delete mappedUpdates.subInterests;
+      }
 
       // MAP HOMETOWN FIELDS FIRST
       if (updates.hometownCity !== undefined) {

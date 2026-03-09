@@ -8,15 +8,21 @@ interface SubInterestSelectorProps {
   onSubInterestsChange: (subInterests: string[]) => void;
   showOptionalLabel?: boolean;
   variant?: "default" | "dark";
+  excludeCategories?: string[];
 }
 
 export default function SubInterestSelector({
   selectedSubInterests,
   onSubInterestsChange,
   showOptionalLabel = true,
-  variant = "default"
+  variant = "default",
+  excludeCategories = []
 }: SubInterestSelectorProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  
+  const filteredCategories = excludeCategories.length > 0
+    ? SUB_INTEREST_CATEGORIES.filter(c => !excludeCategories.includes(c.id))
+    : SUB_INTEREST_CATEGORIES;
   
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories(prev => {
@@ -65,7 +71,7 @@ export default function SubInterestSelector({
       </p>
       
       <div className="space-y-2">
-        {SUB_INTEREST_CATEGORIES.map(category => {
+        {filteredCategories.map(category => {
           const isExpanded = expandedCategories.has(category.id);
           const selectedCount = getSelectedCountForCategory(category);
           

@@ -28,6 +28,7 @@ import { VouchWidget } from "@/components/vouch-widget";
 import { VouchButton } from "@/components/VouchButton";
 import { ConditionalVouchCard } from "@/components/ConditionalVouchCard";
 import BusinessEventsWidget from "@/components/business-events-widget";
+import SubInterestSelector from "@/components/SubInterestSelector";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
 import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS } from "@shared/base-options";
@@ -1225,7 +1226,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                           setIsEditingPublicInterests(true);
                           setEditFormData({
                             interests: allInterests,
-                            activities: allActivities
+                            activities: allActivities,
+                            subInterests: user?.subInterests || []
                           });
                         }}
                         size="sm"
@@ -1260,7 +1262,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                               interests: predefinedInterests,
                               customInterests: customInterests.join(', '),
                               activities: predefinedActivities,
-                              customActivities: customActivities.join(', ')
+                              customActivities: customActivities.join(', '),
+                              subInterests: editFormData.subInterests || []
                             };
                             const apiBase = getApiBaseUrl();
                             const response = await fetch(`${apiBase}/api/users/${user.id}`, {
@@ -1559,6 +1562,16 @@ export function ProfileTabs(props: ProfilePageProps) {
                       })()}
                     </div>
 
+                    {/* GET MORE SPECIFIC - Sub-Interest Categories (excluding Tours & Experiences) */}
+                    <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
+                      <SubInterestSelector
+                        selectedSubInterests={editFormData.subInterests || []}
+                        onSubInterestsChange={(newSubs) => setEditFormData(prev => ({ ...prev, subInterests: newSubs }))}
+                        excludeCategories={["tours"]}
+                        showOptionalLabel={true}
+                      />
+                    </div>
+
                     {/* SAVE/CANCEL BUTTONS */}
                     <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-600">
                       <Button 
@@ -1577,7 +1590,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                               interests: predefinedInterests,
                               customInterests: customInterests.join(', '),
                               activities: predefinedActivities,
-                              customActivities: customActivities.join(', ')
+                              customActivities: customActivities.join(', '),
+                              subInterests: editFormData.subInterests || []
                             };
                             
                             const apiBase = getApiBaseUrl();
@@ -1758,6 +1772,30 @@ export function ProfileTabs(props: ProfilePageProps) {
                         );
                       })()}
                     </div>
+
+                    {/* SUB-INTERESTS (Get More Specific) - view mode */}
+                    {(user?.subInterests || []).length > 0 && (
+                      <div>
+                        <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-orange-500" />
+                          Specific Interests
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {(user?.subInterests || []).map((subInterest: string, index: number) => (
+                            <div 
+                              key={`sub-interest-${index}`} 
+                              className={
+                                isMobileWeb
+                                  ? "pill-interests bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#4A2800]/35 dark:border-[#FB923C]/45 dark:text-[#FB923C]"
+                                  : `h-8 px-4 rounded-full text-sm font-medium flex items-center bg-[#ffffff] text-[#111827] border border-gray-200 shadow-none dark:bg-[#4A2800]/35 dark:bg-none dark:border-[#FB923C]/45 dark:text-[#FB923C]`
+                              }
+                            >
+                              <span>{subInterest}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* SECRET ACTIVITIES - only if user has them */}
                     {user?.userType !== 'business' && !!((user as any)?.secretActivities || (user as any)?.secret_activities) && (
