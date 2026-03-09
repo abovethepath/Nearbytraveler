@@ -1349,13 +1349,40 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   }, [isOwnProfile, viewerTravelPlans, travelPlans]);
 
   // BUNDLE-DERIVED: Connection degree from profile bundle
-  const connectionDegreeData = profileBundle?.connectionDegree as {
+  const bundleConnectionDegree = profileBundle?.connectionDegree as {
     degree: number;
     mutualCount: number;
     mutuals: Array<{ id: number; username: string; name: string; profileImage?: string }>;
     connectingFriends?: Array<{ id: number; username: string; name: string; profileImage?: string }>;
     connectingFriendCount?: number;
   } | undefined;
+
+  // FALLBACK: If the bundle's connectionDegree is null/undefined (query failed on server),
+  // fetch it separately via the standalone endpoint. This ensures mutual counts
+  // are never stuck at 0 due to a transient server-side failure.
+  const { data: fallbackConnectionDegree } = useQuery<{
+    degree: number;
+    mutualCount: number;
+    mutuals: Array<{ id: number; username: string; name: string; profileImage?: string }>;
+  }>({
+    queryKey: ['/api/connections/degree', currentUser?.id, effectiveUserId],
+    queryFn: async () => {
+      if (!currentUser?.id || !effectiveUserId || currentUser.id === effectiveUserId) {
+        return { degree: 0, mutualCount: 0, mutuals: [] };
+      }
+      const url = `${getApiBaseUrl()}/api/connections/degree/${currentUser.id}/${effectiveUserId}`;
+      const response = await fetch(url, { credentials: 'include' });
+      if (!response.ok) throw new Error('fallback degree fetch failed');
+      return response.json();
+    },
+    enabled: !!currentUser?.id && !!effectiveUserId && currentUser.id !== effectiveUserId
+      && !bundleLoading && !bundleConnectionDegree,
+    staleTime: 5 * 60 * 1000,
+    retry: 2,
+  });
+
+  // Use bundle data if available, otherwise use fallback
+  const connectionDegreeData = bundleConnectionDegree ?? fallbackConnectionDegree;
 
   const commonStats = useMemo(() => {
     console.log("COMMON STATS INPUTS", {

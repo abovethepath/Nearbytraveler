@@ -6392,23 +6392,94 @@ Questions? Just reply to this message. Welcome aboard!
           console.warn('Profile bundle: connection status check failed:', (e as any)?.message);
         }
 
-        // Run compatibility + connectionDegree in parallel — neither can crash the bundle
-        // nearbytrav counts as universal connection — do NOT exclude any user IDs here
-        const getBundleConnections = async (uid: number): Promise<number[]> => {
-          const result = await db.execute(sql`
-            SELECT CASE WHEN requester_id = ${uid} THEN receiver_id ELSE requester_id END AS cid
-            FROM connections
-            WHERE status = 'accepted' AND (requester_id = ${uid} OR receiver_id = ${uid})
-          `);
-          return (result.rows as any[])
-            .map((r) => parseInt(r.cid))
-            .filter((id) => !isNaN(id));
+        // ──────────────────────────────────────────────────────────────────
+        // MUTUAL CONNECTIONS QUERY — ROOT CAUSE FIX (permanent)
+        //
+        // HOW IT WORKS:
+        //   The connections table stores accepted friendships. Each row has
+        //   requester_id and receiver_id. A user's full connection list is
+        //   found by checking BOTH columns (the user could be on either side).
+        //
+        //   "Mutual connections" between viewer (V) and target profile (T)
+        //   are users who appear in BOTH V's connection list AND T's connection
+        //   list. Since every user on the platform is connected to nearbytrav
+        //   (user ID 2), any two users who are both connected to nearbytrav
+        //   will always have at least 1 mutual. Showing 0 mutuals is a bug.
+        //
+        // WHY THIS APPROACH:
+        //   Previous implementation used two separate queries + JS array
+        //   intersection inside Promise.allSettled. If either query threw
+        //   (DB timeout, connection reset, etc.), the error was silently
+        //   swallowed, connectionDegree became null, and the null result
+        //   was cached in Redis for 5 minutes — making the bug persist.
+        //
+        //   This fix uses a SINGLE SQL query that computes mutuals in the DB,
+        //   includes retry logic, and refuses to cache null results.
+        //
+        // DO NOT MODIFY without understanding the above. If you add filtering
+        // or exclusions, you WILL break mutual counts.
+        // ──────────────────────────────────────────────────────────────────
+
+        const computeConnectionDegree = async (vId: number, tId: number, attempt = 1): Promise<{ degree: number; mutualCount: number; mutuals: any[] }> => {
+          try {
+            // Step 1: Check if directly connected (1st degree)
+            const directCheck = await db.execute(sql`
+              SELECT 1 FROM connections
+              WHERE status = 'accepted'
+              AND ((requester_id = ${vId} AND receiver_id = ${tId})
+                OR (requester_id = ${tId} AND receiver_id = ${vId}))
+              LIMIT 1
+            `);
+            const isDirectlyConnected = (directCheck.rows as any[]).length > 0;
+
+            // Step 2: Find mutual connection IDs using a single SQL query
+            // This joins viewer's connections with target's connections in the DB
+            // to find user IDs that appear in BOTH lists.
+            const mutualResult = await db.execute(sql`
+              SELECT v_conn.cid AS mutual_id
+              FROM (
+                SELECT CASE WHEN requester_id = ${vId} THEN receiver_id ELSE requester_id END AS cid
+                FROM connections
+                WHERE status = 'accepted' AND (requester_id = ${vId} OR receiver_id = ${vId})
+              ) v_conn
+              INNER JOIN (
+                SELECT CASE WHEN requester_id = ${tId} THEN receiver_id ELSE requester_id END AS cid
+                FROM connections
+                WHERE status = 'accepted' AND (requester_id = ${tId} OR receiver_id = ${tId})
+              ) t_conn ON v_conn.cid = t_conn.cid
+            `);
+
+            const mutualIds = (mutualResult.rows as any[])
+              .map((r) => parseInt(r.mutual_id))
+              .filter((id) => !isNaN(id));
+
+            const degree = isDirectlyConnected ? 1 : mutualIds.length > 0 ? 2 : 0;
+
+            const mutuals = mutualIds.length > 0
+              ? await db.select({
+                  id: users.id,
+                  username: users.username,
+                  name: users.name,
+                  profileImage: users.profileImage,
+                }).from(users).where(inArray(users.id, mutualIds.slice(0, 5)))
+              : [];
+
+            console.log(`🤝 MUTUAL CONNECTIONS: viewer=${vId} target=${tId} degree=${degree} mutualCount=${mutualIds.length} (attempt ${attempt})`);
+            return { degree, mutualCount: mutualIds.length, mutuals };
+          } catch (err: any) {
+            console.error(`🤝 MUTUAL CONNECTIONS FAILED (attempt ${attempt}):`, err?.message);
+            if (attempt < 2) {
+              // Retry once on failure
+              return computeConnectionDegree(vId, tId, attempt + 1);
+            }
+            // After retry, return a safe default but log loudly
+            console.error(`🤝 MUTUAL CONNECTIONS PERMANENTLY FAILED for viewer=${vId} target=${tId} — returning null so it won't be cached`);
+            throw err; // Re-throw so we know not to cache
+          }
         };
 
         const [compatRes, degreeRes] = await Promise.allSettled([
           (async () => {
-            // Try storage.getUser first; fall back to direct DB query so system accounts
-            // (e.g. nearbytrav, ID 2) that may not pass storage-level checks are still found.
             let viewer = await storage.getUser(viewerId);
             if (!viewer) {
               const [rawViewer] = await db.select().from(users).where(eq(users.id, viewerId));
@@ -6421,30 +6492,18 @@ Questions? Just reply to this message. Welcome aboard!
             const viewerPlans = await storage.getUserTravelPlans(viewerId);
             return matchingService.calculateCompatibilityScore(viewer, user, viewerPlans, travelPlansData);
           })(),
-          (async () => {
-            const [vConns, tConns] = await Promise.all([
-              getBundleConnections(viewerId),
-              getBundleConnections(userId),
-            ]);
-            const mutualIds = vConns.filter((id) => tConns.includes(id));
-            const degree = vConns.includes(userId) ? 1 : mutualIds.length > 0 ? 2 : 0;
-            const mutuals = mutualIds.length > 0
-              ? await db.select({
-                  id: users.id,
-                  username: users.username,
-                  name: users.name,
-                  profileImage: users.profileImage,
-                }).from(users).where(inArray(users.id, mutualIds.slice(0, 5)))
-              : [];
-            return { degree, mutualCount: mutualIds.length, mutuals };
-          })(),
+          computeConnectionDegree(viewerId, userId),
         ]);
 
         if (compatRes.status === 'fulfilled') compatibility = compatRes.value;
         else console.warn('Profile bundle: compatibility THREW:', (compatRes as PromiseRejectedResult).reason?.message, (compatRes as PromiseRejectedResult).reason?.stack?.split('\n')[1]);
 
-        if (degreeRes.status === 'fulfilled') connectionDegree = degreeRes.value;
-        else console.warn('Profile bundle: connectionDegree failed:', (degreeRes as PromiseRejectedResult).reason?.message);
+        if (degreeRes.status === 'fulfilled') {
+          connectionDegree = degreeRes.value;
+        } else {
+          // connectionDegree stays null — we will NOT cache this bundle (see below)
+          console.error('Profile bundle: connectionDegree PERMANENTLY FAILED:', (degreeRes as PromiseRejectedResult).reason?.message);
+        }
 
         console.log('PROFILE BUNDLE COMPATIBILITY DEBUG', {
           viewerId,
@@ -6501,8 +6560,13 @@ Questions? Just reply to this message. Welcome aboard!
         businessDeals,
       };
 
-      // Write to Redis cache with 5 minute TTL for stale-while-revalidate
-      cache.set(bundleCacheKey, bundleResponse, CACHE_TTL.MEDIUM).catch(() => {/* non-fatal */});
+      // Write to Redis cache — but ONLY if connectionDegree was successfully computed.
+      // If it's null (query failed), do NOT cache — the next request should retry fresh.
+      if (connectionDegree !== null || !viewerId) {
+        cache.set(bundleCacheKey, bundleResponse, CACHE_TTL.MEDIUM).catch(() => {/* non-fatal */});
+      } else {
+        console.warn(`⚠️ PROFILE-BUNDLE: NOT caching for viewer=${viewerId} because connectionDegree is null (query failed)`);
+      }
 
       res.json(bundleResponse);
     } catch (error: any) {
@@ -10305,7 +10369,13 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // Get connection degree between two users (1st, 2nd, 3rd degree like LinkedIn)
+  // ──────────────────────────────────────────────────────────────────
+  // STANDALONE CONNECTION DEGREE ENDPOINT
+  // Used as a fallback when the profile bundle's connectionDegree is null.
+  // Uses the same single-SQL mutual query as the bundle for consistency.
+  // See the profile-bundle endpoint's MUTUAL CONNECTIONS QUERY comment
+  // for full documentation on how the query works.
+  // ──────────────────────────────────────────────────────────────────
   app.get("/api/connections/degree/:userId/:targetUserId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
@@ -10315,83 +10385,74 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json({ degree: 0, mutualCount: 0, mutuals: [] });
       }
 
-      // nearbytrav counts as universal connection — do NOT exclude any user IDs here
+      // Check direct connection (1st degree)
+      const directCheck = await db.execute(sql`
+        SELECT 1 FROM connections
+        WHERE status = 'accepted'
+        AND ((requester_id = ${userId} AND receiver_id = ${targetUserId})
+          OR (requester_id = ${targetUserId} AND receiver_id = ${userId}))
+        LIMIT 1
+      `);
+      const isDirectlyConnected = (directCheck.rows as any[]).length > 0;
+
+      // Find mutual connections using single SQL join (same as profile bundle)
+      const mutualResult = await db.execute(sql`
+        SELECT v_conn.cid AS mutual_id
+        FROM (
+          SELECT CASE WHEN requester_id = ${userId} THEN receiver_id ELSE requester_id END AS cid
+          FROM connections
+          WHERE status = 'accepted' AND (requester_id = ${userId} OR receiver_id = ${userId})
+        ) v_conn
+        INNER JOIN (
+          SELECT CASE WHEN requester_id = ${targetUserId} THEN receiver_id ELSE requester_id END AS cid
+          FROM connections
+          WHERE status = 'accepted' AND (requester_id = ${targetUserId} OR receiver_id = ${targetUserId})
+        ) t_conn ON v_conn.cid = t_conn.cid
+      `);
+
+      const mutualIds = (mutualResult.rows as any[])
+        .map((r: any) => parseInt(r.mutual_id))
+        .filter((id: number) => !isNaN(id));
+
+      const degree = isDirectlyConnected ? 1 : mutualIds.length > 0 ? 2 : 0;
+
+      const mutuals = mutualIds.length > 0
+        ? await db.select({
+            id: users.id,
+            username: users.username,
+            name: users.name,
+            profileImage: users.profileImage
+          }).from(users).where(inArray(users.id, mutualIds.slice(0, 5)))
+        : [];
+
+      console.log(`🤝 STANDALONE DEGREE: viewer=${userId} target=${targetUserId} degree=${degree} mutualCount=${mutualIds.length}`);
+
+      if (degree === 1 || degree === 2) {
+        return res.json({ degree, mutualCount: mutualIds.length, mutuals });
+      }
+
+      // 3rd degree check — only if not 1st or 2nd (degree === 0 at this point)
       const getAcceptedConnections = async (uid: number): Promise<number[]> => {
         const result = await db.execute(sql`
-          SELECT 
-            CASE 
-              WHEN requester_id = ${uid} THEN receiver_id
-              ELSE requester_id
-            END as connected_user_id
-          FROM connections 
-          WHERE status = 'accepted' 
-          AND (requester_id = ${uid} OR receiver_id = ${uid})
+          SELECT CASE WHEN requester_id = ${uid} THEN receiver_id ELSE requester_id END AS cid
+          FROM connections WHERE status = 'accepted' AND (requester_id = ${uid} OR receiver_id = ${uid})
         `);
-        return result.rows
-          .map((r: any) => parseInt(r.connected_user_id))
-          .filter((id: number) => !isNaN(id));
+        return (result.rows as any[]).map((r: any) => parseInt(r.cid)).filter((id: number) => !isNaN(id));
       };
 
-      // Get 1st degree connections for both users
       const user1stDegree = await getAcceptedConnections(userId);
-      const target1stDegree = await getAcceptedConnections(targetUserId);
-
-      // Check if directly connected (1st degree)
-      if (user1stDegree.includes(targetUserId)) {
-        // Get mutual connections for context
-        const mutualIds = user1stDegree.filter(id => target1stDegree.includes(id));
-        const mutuals = mutualIds.length > 0 
-          ? await db.select({
-              id: users.id,
-              username: users.username,
-              name: users.name,
-              profileImage: users.profileImage
-            }).from(users).where(inArray(users.id, mutualIds.slice(0, 5)))
-          : [];
-        
-        return res.json({ 
-          degree: 1, 
-          mutualCount: mutualIds.length,
-          mutuals
-        });
-      }
-
-      // Check for 2nd degree (friend of a friend)
-      const mutualIds = user1stDegree.filter(id => target1stDegree.includes(id));
-      if (mutualIds.length > 0) {
-        const mutuals = await db.select({
-          id: users.id,
-          username: users.username,
-          name: users.name,
-          profileImage: users.profileImage
-        }).from(users).where(inArray(users.id, mutualIds.slice(0, 5)));
-        
-        return res.json({ 
-          degree: 2, 
-          mutualCount: mutualIds.length,
-          mutuals
-        });
-      }
-
-      // Check for 3rd degree (friend of friend of friend)
-      // Get 2nd degree connections for user (friends of friends)
       let user2ndDegree: number[] = [];
-      for (const friendId of user1stDegree.slice(0, 50)) { // Limit to prevent performance issues
+      for (const friendId of user1stDegree.slice(0, 50)) {
         const friendConnections = await getAcceptedConnections(friendId);
         user2ndDegree = [...user2ndDegree, ...friendConnections.filter(id => 
           id !== userId && !user1stDegree.includes(id) && !user2ndDegree.includes(id)
         )];
       }
 
-      // Check if target is in user's 2nd degree network
       if (user2ndDegree.includes(targetUserId)) {
-        // Find the connecting friend (the mutual 2nd degree connection)
         const connectingFriendIds: number[] = [];
         for (const friendId of user1stDegree) {
-          if (target1stDegree.includes(friendId)) {
-            // This shouldn't happen since we checked mutuals above, but check anyway
-            continue;
-          }
+          if (mutualIds.includes(friendId)) continue;
           const friendConnections = await getAcceptedConnections(friendId);
           if (friendConnections.includes(targetUserId)) {
             connectingFriendIds.push(friendId);
