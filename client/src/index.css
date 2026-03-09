@@ -2467,6 +2467,17 @@ body.native-ios-app {
   overflow: hidden !important;
 }
 
+body.is-chat-page .mobile-bottom-nav,
+body.is-chat-page .desktop-navbar {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body.is-chat-page {
+  overflow: hidden !important;
+}
+
 body[data-native-ios="true"] .native-ios-fullpage,
 body.native-ios-app .native-ios-fullpage {
   height: calc(100vh - var(--native-bottom-inset, 88px)) !important;

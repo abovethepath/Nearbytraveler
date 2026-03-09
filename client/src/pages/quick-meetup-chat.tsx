@@ -31,6 +31,11 @@ export default function QuickMeetupChat() {
 
   const { user, authLoading } = useAuth();
 
+  useEffect(() => {
+    document.body.classList.add('is-chat-page');
+    return () => document.body.classList.remove('is-chat-page');
+  }, []);
+
   const { data: meetup, isLoading: meetupLoading, isError: meetupError, error, failureCount } = useQuery<QuickMeetup>({
     queryKey: ['/api/quick-meets', meetupId],
     queryFn: async () => {
@@ -125,7 +130,19 @@ export default function QuickMeetupChat() {
   }
 
   return (
-    <div className="flex overflow-hidden h-full max-w-[850px] mx-auto w-full">
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        zIndex: 50,
+      }}
+    >
       <WhatsAppChat
         chatId={chatroom.id}
         chatType="meetup"
