@@ -1832,10 +1832,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Main Chat Area */}
       <div className="flex-1 min-w-0 overflow-hidden h-full">
       <div className="flex flex-col h-full">
-      {/* ═══ MOBILE HEADER: Single-row layout (back | avatar+name+status | logo-menu) — fixed 52px height ═══ */}
+      {/* ═══ MOBILE HEADER: Single-row layout (back | avatar+name+status | logo-menu) — DMs get taller header for bigger logo ═══ */}
       {isMobileWeb && (
-        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden" style={{ position: 'sticky', top: 0, zIndex: 1000, paddingTop: 'env(safe-area-inset-top, 0px)', height: 'calc(env(safe-area-inset-top, 0px) + 52px)', minHeight: 'calc(env(safe-area-inset-top, 0px) + 52px)', maxHeight: 'calc(env(safe-area-inset-top, 0px) + 52px)', transform: 'translateZ(0)', willChange: 'transform' }}>
-          <div className="flex items-center h-[52px] px-2 gap-2">
+        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden" style={{ position: 'sticky', top: 0, zIndex: 1000, paddingTop: 'env(safe-area-inset-top, 0px)', height: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, minHeight: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, maxHeight: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, transform: 'translateZ(0)', willChange: 'transform' }}>
+          <div className={`flex items-center ${chatType === 'dm' ? 'h-[62px]' : 'h-[52px]'} px-2 gap-2`}>
             <Button
               variant="ghost"
               size="icon"
@@ -1847,9 +1847,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             </Button>
 
             {chatType === 'dm' && props.otherUserProfileImage ? (
-              <Avatar className="w-8 h-8 shrink-0">
+              <Avatar className="w-10 h-10 shrink-0">
                 <AvatarImage src={props.otherUserProfileImage} />
-                <AvatarFallback className="bg-green-600 text-white text-xs">{(title || '?')[0]}</AvatarFallback>
+                <AvatarFallback className="bg-green-600 text-white text-sm">{(title || '?')[0]}</AvatarFallback>
               </Avatar>
             ) : (chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 ? (
               <div className="flex -space-x-1.5 shrink-0">
@@ -1866,17 +1866,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 )}
               </div>
             ) : (
-              <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0">
-                <span className="text-xs text-gray-300 font-semibold">{(title || '?')[0]}</span>
+              <div className={`${chatType === 'dm' ? 'w-10 h-10' : 'w-8 h-8'} rounded-full bg-gray-700 flex items-center justify-center shrink-0`}>
+                <span className={`${chatType === 'dm' ? 'text-sm' : 'text-xs'} text-gray-300 font-semibold`}>{(title || '?')[0]}</span>
               </div>
             )}
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-[13px] font-semibold text-white truncate">{title || 'Chat'}</span>
+                <span className={`${chatType === 'dm' ? 'text-base' : 'text-[13px]'} font-semibold text-white truncate`}>{title || 'Chat'}</span>
                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${messagesLoaded || isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
               </div>
-              {subtitle && <p className="text-gray-400 truncate text-[10px] leading-tight">{subtitle}</p>}
+              {subtitle && <p className={`text-gray-400 truncate ${chatType === 'dm' ? 'text-xs' : 'text-[10px]'} leading-tight`}>{subtitle}</p>}
             </div>
 
             <div className="flex items-center gap-0 shrink-0">
@@ -1962,11 +1962,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 <SheetTrigger asChild>
                   <button
                     type="button"
-                    className="h-9 w-9 flex items-center justify-center shrink-0 touch-target"
+                    className={`${chatType === 'dm' ? 'h-[52px] w-[52px]' : 'h-9 w-9'} flex items-center justify-center shrink-0 touch-target`}
                     onClick={() => setMoreMenuOpen(true)}
                     data-testid="button-chat-more-mobile"
                   >
-                    <img src="/new-logo.png" alt="Menu" className="h-9 w-[36px] object-contain" />
+                    <img src="/new-logo.png" alt="Menu" className={`${chatType === 'dm' ? 'h-[52px] w-[52px]' : 'h-10 w-10'} object-contain`} />
                   </button>
                 </SheetTrigger>
                 <SheetContent side="bottom" className="bg-gray-900 border-t border-gray-700 text-white">
