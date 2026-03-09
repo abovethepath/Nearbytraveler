@@ -509,15 +509,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                       {/* Desktop "What You Have in Common" widget — RIGHT column in hero row */}
                       {!isMobileWeb && (
-                        <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-start max-h-48 overflow-hidden justify-center cursor-pointer hover:bg-black/60 transition-colors" onClick={() => setSeeAllCommonOpen(true)}>
+                        <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-end max-h-48 overflow-hidden justify-center cursor-pointer hover:bg-black/60 transition-colors" onClick={() => setSeeAllCommonOpen(true)}>
                           {totalCommon > 0 ? (
                             <>
-                              <div className="flex items-center gap-1.5 mb-1">
+                              <div className="flex items-center gap-1.5 mb-1 flex-wrap">
                                 <span className="text-lg">🤝</span>
                                 <span className="text-[11px] font-extrabold text-white uppercase tracking-widest leading-none">What You Have in Common</span>
-                              </div>
-
-                              <div className="mb-1">
                                 <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-extrabold bg-[#FF6B35] text-white shadow-md">
                                   {totalCommon} in common
                                 </span>
@@ -593,16 +590,18 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 ) : (
                                   <span className="text-xs text-gray-400">Connections in Common · 0</span>
                                 )}
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSeeAllCommonOpen(true);
-                                  }}
-                                  className="text-xs text-gray-400 hover:text-gray-200 underline underline-offset-2"
-                                >
-                                  See All →
-                                </button>
+                                {allSharedTags.length > 10 && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSeeAllCommonOpen(true);
+                                    }}
+                                    className="text-xs text-gray-400 hover:text-gray-200 underline underline-offset-2"
+                                  >
+                                    See All →
+                                  </button>
+                                )}
                               </div>
                             </>
                           ) : (
@@ -633,34 +632,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     {/* Mobile "What You Have in Common" hero card */}
                     {isMobileWeb && totalCommon > 0 && (
                       <div className="mt-4 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 cursor-pointer hover:bg-black/60 transition-colors" onClick={() => setSeeAllCommonOpen(true)}>
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-lg">🤝</span>
-                            <span className="text-[11px] font-extrabold text-white uppercase tracking-widest leading-none">What You Have in Common</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (openTab) { openTab('contacts'); } else { setLocation(`/profile/${user.id}?tab=contacts`); }
-                              setTimeout(() => {
-                                const el = document.getElementById('connections-in-common-section');
-                                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                              }, 200);
-                            }}
-                            className="text-sm text-white/70 hover:text-white underline underline-offset-2 shrink-0"
-                          >
-                            See All
-                          </button>
-                        </div>
-                        <div className="mb-2">
+                        <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+                          <span className="text-lg">🤝</span>
+                          <span className="text-[11px] font-extrabold text-white uppercase tracking-widest leading-none">What You Have in Common</span>
                           <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-extrabold bg-[#FF6B35] text-white shadow-md">
                             {totalCommon} in common
                           </span>
                         </div>
                         {allSharedTags.length > 0 && (
                           <div className="flex flex-wrap gap-1.5">
-                            {allSharedTags.slice(0, 6).map((tag) => (
+                            {allSharedTags.slice(0, 10).map((tag) => (
                               <span
                                 key={tag}
                                 className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-black/50 text-white border border-white/30"
@@ -668,8 +649,19 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 {tag}
                               </span>
                             ))}
-                            
                           </div>
+                        )}
+                        {allSharedTags.length > 10 && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSeeAllCommonOpen(true);
+                            }}
+                            className="mt-2 text-sm text-white/70 hover:text-white underline underline-offset-2"
+                          >
+                            See All →
+                          </button>
                         )}
                       </div>
                     )}
