@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MapPin, Camera, Globe, Languages, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2, ChevronsUpDown, Check, Pencil, Copy, Link, Plane } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { calculateAge } from "@/lib/ageUtils";
@@ -315,105 +316,133 @@ export function ProfileTabs(props: ProfilePageProps) {
     ].filter((s) => s.items.length > 0);
 
     return (
-      <div
-        className="what-you-have-in-common-inline relative overflow-hidden rounded-2xl border-2 border-orange-500/30 shadow-lg bg-[#1e2139]"
-        role="button"
-        tabIndex={0}
-        onClick={() => setExpanded((v) => !v)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") setExpanded((v) => !v);
-        }}
-        aria-expanded={expanded}
-        data-testid="what-you-have-in-common-inline"
-        style={{ cursor: "pointer" }}
-      >
-        <div className="p-4 sm:p-5">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <div className="text-white" style={{ fontSize: '18px', fontWeight: 700 }}>
-                <span className="inline-flex items-center gap-2">
-                  <span aria-hidden>🤝</span>
-                  <span>What You Have in Common</span>
-                </span>
+      <Dialog open={expanded} onOpenChange={setExpanded}>
+        <div
+          className="what-you-have-in-common-inline relative overflow-hidden rounded-2xl border-2 border-orange-500/30 shadow-lg bg-[#1e2139]"
+          role="button"
+          tabIndex={0}
+          onClick={() => setExpanded(true)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") setExpanded(true);
+          }}
+          aria-expanded={expanded}
+          data-testid="what-you-have-in-common-inline"
+          style={{ cursor: "pointer" }}
+        >
+          <div className="p-4 sm:p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <div className="text-white" style={{ fontSize: '18px', fontWeight: 700 }}>
+                  <span className="inline-flex items-center gap-2">
+                    <span aria-hidden>🤝</span>
+                    <span>What You Have in Common</span>
+                  </span>
+                </div>
+                <div className="mt-1 text-sm text-white/80">
+                  Tap to view details
+                </div>
               </div>
-              <div className="mt-1 text-sm text-white/80">
-                Tap to {expanded ? "collapse" : "expand"}
-              </div>
-            </div>
-            <button
-              type="button"
-              className="shrink-0 text-xs sm:text-sm font-bold text-white/90 hover:text-white underline underline-offset-2"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setExpanded((v) => !v);
-              }}
-              data-testid="button-toggle-common-details"
-            >
-              {expanded ? "See less" : "See details"}
-            </button>
-          </div>
-
-          <div className="mt-2 flex items-center justify-center">
-            <div
-              className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-center bg-[#FF6B35] text-white border border-black/10"
-              data-testid="common-count-badge"
-            >
-              <div className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
-                {commonStats.totalCommon}
-              </div>
-              <div className="ml-2 text-sm sm:text-base font-semibold text-white/90 leading-tight">
-                {commonStats.totalCommon === 1 ? "thing" : "things"} in common
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            {sharedContactsCount > 0 && (
               <button
                 type="button"
+                className="shrink-0 text-xs sm:text-sm font-bold text-white/90 hover:text-white underline underline-offset-2"
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
-                  if (openTab) openTab('contacts');
-                  setTimeout(() => {
-                    const el = document.getElementById('connections-in-common-section');
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 200);
+                  setExpanded(true);
                 }}
-                className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white hover:bg-black/30 transition-colors"
+                data-testid="button-toggle-common-details"
               >
-                👥 <span className="font-extrabold mx-1">{sharedContactsCount}</span> {sharedContactsCount === 1 ? 'connection' : 'connections'} in common
+                See details
               </button>
-            )}
-            {sharedLanguagesNonEnglish.length > 0 && (
-              <span className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white">
-                <span className="font-extrabold mr-1">{sharedLanguagesNonEnglish.length}</span> languages
-              </span>
-            )}
-          </div>
+            </div>
 
-          {/* Always show first section (interests) collapsed; expand shows all */}
-          {sections.slice(0, 1).map(({ label, items, color }) => (
-            <div key={label} className="mt-5">
-              <div className="text-sm font-extrabold text-white">{label} ({items.length})</div>
-              <div className="mt-3 flex flex-wrap gap-2.5">
-                {items.map((item) => (
-                  <span key={item} className={`inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold border ${color}`}>
-                    {item}
-                  </span>
-                ))}
+            <div className="mt-2 flex items-center justify-center">
+              <div
+                className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-center bg-[#FF6B35] text-white border border-black/10"
+                data-testid="common-count-badge"
+              >
+                <div className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+                  {commonStats.totalCommon}
+                </div>
+                <div className="ml-2 text-sm sm:text-base font-semibold text-white/90 leading-tight">
+                  {commonStats.totalCommon === 1 ? "thing" : "things"} in common
+                </div>
               </div>
             </div>
-          ))}
 
-          {expanded && (
-            <div className="mt-5 space-y-4">
-              {sections.slice(1).map(({ label, items, color }) => (
-                <div key={label}>
-                  <div className="text-sm font-extrabold text-white">{label} ({items.length})</div>
-                  <div className="mt-2 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+              {sharedContactsCount > 0 && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (openTab) openTab('contacts');
+                    setTimeout(() => {
+                      const el = document.getElementById('connections-in-common-section');
+                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 200);
+                  }}
+                  className="inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold bg-black/20 border border-white/10 text-white hover:bg-black/30 transition-colors"
+                >
+                  👥 <span className="font-extrabold mx-1">{sharedContactsCount}</span> {sharedContactsCount === 1 ? 'connection' : 'connection'} in common
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <DialogContent className="sm:max-w-[500px] p-0 gap-0 bg-[#1e2139] border-none text-white max-h-[90vh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl">
+          <DialogHeader className="p-6 border-b border-white/10 shrink-0">
+            <DialogTitle className="text-xl font-bold flex items-center gap-2 text-white">
+              <span>🤝</span> What You Have in Common
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide">
+            <div className="flex items-center justify-center">
+              <div className="inline-flex items-center justify-center rounded-2xl px-8 py-4 text-center bg-[#FF6B35] text-white border border-black/10 shadow-lg">
+                <div className="text-4xl font-black text-white leading-tight">
+                  {commonStats.totalCommon}
+                </div>
+                <div className="ml-3 text-lg font-bold text-white/90 leading-tight">
+                  {commonStats.totalCommon === 1 ? "thing" : "things"} in common
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {sharedContactsCount > 0 && (
+                <div className="bg-black/20 rounded-2xl p-4 border border-white/10">
+                  <div className="text-sm font-extrabold text-white mb-2 uppercase tracking-wider opacity-70">Connections</div>
+                  <button
+                    onClick={() => {
+                      setExpanded(false);
+                      if (openTab) openTab('contacts');
+                      setTimeout(() => {
+                        const el = document.getElementById('connections-in-common-section');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }, 200);
+                    }}
+                    className="w-full flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="text-2xl">👥</div>
+                      <div className="text-left">
+                        <div className="font-bold text-white">{sharedContactsCount} Mutual {sharedContactsCount === 1 ? 'Connection' : 'Connections'}</div>
+                        <div className="text-xs text-white/60">Tap to see who you both know</div>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-white/40" />
+                  </button>
+                </div>
+              )}
+
+              {sections.map(({ label, items, color }) => (
+                <div key={label} className="bg-black/20 rounded-2xl p-4 border border-white/10">
+                  <div className="text-sm font-extrabold text-white mb-3 uppercase tracking-wider opacity-70">{label} ({items.length})</div>
+                  <div className="flex flex-wrap gap-2">
                     {items.map((item) => (
-                      <span key={item} className={`inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-semibold border ${color}`}>
+                      <span key={item} className={`inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold border shadow-sm ${color}`}>
                         {item}
                       </span>
                     ))}
@@ -421,9 +450,18 @@ export function ProfileTabs(props: ProfilePageProps) {
                 </div>
               ))}
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+          
+          <div className="p-4 bg-black/40 border-t border-white/10 shrink-0">
+            <Button 
+              className="w-full bg-white text-[#1e2139] hover:bg-white/90 font-bold rounded-xl py-6"
+              onClick={() => setExpanded(false)}
+            >
+              Got it!
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     );
   };
 
