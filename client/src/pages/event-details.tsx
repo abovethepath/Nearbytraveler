@@ -254,18 +254,30 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
       const resolvedEventId = event?.id ?? parseInt(eventId);
       if (!currentUser?.id || !resolvedEventId) throw new Error("Missing user or event ID");
 
-      return await apiRequest("POST", `/api/events/${resolvedEventId}/join`, {
-        userId: currentUser.id,
-        notes: status === 'going' ? "Looking forward to attending!" : "Interested in this event",
-        status
+      const response = await fetch(`${getApiBaseUrl()}/api/events/${resolvedEventId}/join`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser.id.toString(),
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          userId: currentUser.id,
+          notes: status === 'going' ? "Looking forward to attending!" : "Interested in this event",
+          status
+        }),
       });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to join event');
+      }
+      return response.json();
     },
     onSuccess: async (data, status) => {
       toast({
         title: "Success!",
         description: status === 'going' ? "You're going to this event!" : "Marked as interested",
       });
-      // Invalidate and refetch to update UI immediately
       await queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}/participants`] });
       await queryClient.refetchQueries({ queryKey: [`/api/events/${eventId}/participants`] });
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
@@ -291,7 +303,20 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
       const resolvedEventId = event?.id ?? parseInt(eventId);
       if (!currentUser?.id || !resolvedEventId) throw new Error("Missing user or event ID");
 
-      return await apiRequest("DELETE", `/api/events/${resolvedEventId}/leave`, { userId: currentUser.id });
+      const response = await fetch(`${getApiBaseUrl()}/api/events/${resolvedEventId}/leave`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser.id.toString(),
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId: currentUser.id }),
+      });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to leave event');
+      }
+      return response.json();
     },
     onSuccess: () => {
       toast({

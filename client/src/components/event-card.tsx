@@ -93,10 +93,20 @@ export default function EventCard({ event, compact = false, featured = false }: 
   const joinEventMutation = useMutation({
     mutationFn: async ({ eventId, status }: { eventId: number; status: 'interested' | 'going' }) => {
       if (!currentUser?.id) throw new Error("User not authenticated");
-      return await apiRequest("POST", `/api/events/${eventId}/join`, { 
-        userId: currentUser.id,
-        status
+      const response = await fetch(`${getApiBaseUrl()}/api/events/${eventId}/join`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser.id.toString(),
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId: currentUser.id, status }),
       });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to join event');
+      }
+      return response.json();
     },
     onSuccess: (data, variables) => {
       toast({
@@ -131,7 +141,20 @@ export default function EventCard({ event, compact = false, featured = false }: 
   const leaveEventMutation = useMutation({
     mutationFn: async () => {
       if (!currentUser?.id) throw new Error("User not authenticated");
-      return await apiRequest("DELETE", `/api/events/${event.id}/leave`, { userId: currentUser.id });
+      const response = await fetch(`${getApiBaseUrl()}/api/events/${event.id}/leave`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser.id.toString(),
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId: currentUser.id }),
+      });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to leave event');
+      }
+      return response.json();
     },
     onSuccess: () => {
       toast({

@@ -12578,7 +12578,8 @@ Questions? Just reply to this message. Welcome aboard!
   app.post("/api/events/:id/join", async (req, res) => {
     try {
       const eventId = parseInt(req.params.id || '0');
-      const { userId, notes, status = 'going' } = req.body;
+      const { notes, status = 'going' } = req.body;
+      const userId = req.body.userId || parseInt(req.headers['x-user-id'] as string || '0') || (req.session as any)?.user?.id;
       
       if (!userId) {
         return res.status(400).json({ message: "User ID required" });
@@ -12827,7 +12828,7 @@ Questions? Just reply to this message. Welcome aboard!
   app.delete("/api/events/:id/leave", async (req, res) => {
     try {
       const eventId = parseInt(req.params.id || '0');
-      const { userId } = req.body;
+      const userId = req.body.userId || parseInt(req.headers['x-user-id'] as string || '0') || (req.session as any)?.user?.id;
       
       if (!userId) {
         return res.status(400).json({ message: "User ID required" });

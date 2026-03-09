@@ -370,7 +370,20 @@ export default function Events() {
   // Join event mutation
   const joinEventMutation = useMutation({
     mutationFn: async ({ eventId, userId }: { eventId: number; userId: number }) => {
-      return await apiRequest("POST", `/api/events/${eventId}/join`, { userId });
+      const response = await fetch(`${getApiBaseUrl()}/api/events/${eventId}/join`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': userId.toString(),
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId, status: 'going' }),
+      });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to join event');
+      }
+      return response.json();
     },
     onSuccess: async (_, { eventId }) => {
       toast({
@@ -378,7 +391,6 @@ export default function Events() {
         description: "You've successfully joined the event!",
       });
 
-      // Invalidate events cache to refresh participant counts
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
       queryClient.invalidateQueries({ queryKey: ['/api/events', eventId] });
       queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}/participants`] });
@@ -400,7 +412,20 @@ export default function Events() {
   // Leave event mutation
   const leaveEventMutation = useMutation({
     mutationFn: async ({ eventId, userId }: { eventId: number; userId: number }) => {
-      return await apiRequest("DELETE", `/api/events/${eventId}/leave`, { userId });
+      const response = await fetch(`${getApiBaseUrl()}/api/events/${eventId}/leave`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': userId.toString(),
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId }),
+      });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to leave event');
+      }
+      return response.json();
     },
     onSuccess: async (_, { eventId }) => {
       toast({
@@ -408,7 +433,6 @@ export default function Events() {
         description: "You've left the event.",
       });
 
-      // Invalidate events cache to refresh participant counts
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
       queryClient.invalidateQueries({ queryKey: ['/api/events', eventId] });
       queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}/participants`] });

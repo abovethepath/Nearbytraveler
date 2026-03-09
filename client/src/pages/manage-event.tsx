@@ -275,10 +275,14 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
 
   const addCoOrgByUserMutation = useMutation({
     mutationFn: async (userId: number) => {
-      const joinRes = await apiRequest("POST", `/api/events/${eventId}/join`, {
-        userId,
-        status: 'going',
-        notes: 'Added as co-organizer'
+      const joinRes = await fetch(`${getApiBaseUrl()}/api/events/${eventId}/join`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': userId.toString(),
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId, status: 'going', notes: 'Added as co-organizer' }),
       });
       if (!joinRes.ok) throw new Error("Failed to add user to event");
       
