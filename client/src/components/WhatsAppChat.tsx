@@ -1794,7 +1794,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       
       {/* Main Chat Area */}
       <div className="flex-1 min-w-0 overflow-hidden h-full">
-      <div className="flex flex-col h-full lg:max-w-[960px] lg:mx-auto">
+      <div className="flex flex-col h-full">
       {/* ═══ MOBILE HEADER: Single-row layout (back | avatar+name+status | logo-menu) — fixed 52px height ═══ */}
       {isMobileWeb && (
         <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden z-20" style={{ paddingTop: 'env(safe-area-inset-top, 0px)', height: 'calc(env(safe-area-inset-top, 0px) + 52px)', minHeight: 'calc(env(safe-area-inset-top, 0px) + 52px)', maxHeight: 'calc(env(safe-area-inset-top, 0px) + 52px)' }}>
