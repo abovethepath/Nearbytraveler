@@ -70,9 +70,6 @@ export function HelpChatbot() {
   }, [messages]);
 
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
   }, [isOpen]);
 
   useEffect(() => {

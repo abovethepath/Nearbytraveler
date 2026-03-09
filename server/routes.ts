@@ -1171,6 +1171,36 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  app.post("/api/auth/refresh", async (req, res) => {
+    try {
+      const sess = (req as any).session;
+      const hasSimpleSession = !!sess?.user?.id;
+      const hasPassportSession = !!(req as any).isAuthenticated?.() && !!(req as any).user;
+      if (!hasSimpleSession && !hasPassportSession) {
+        return res.status(401).json({ message: "No active session" });
+      }
+      const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+      if (sess?.cookie) {
+        sess.cookie.maxAge = thirtyDays;
+      }
+      if (typeof sess?.touch === 'function') sess.touch();
+      await new Promise<void>((resolve) => {
+        if (typeof sess?.save === 'function') {
+          sess.save((err: any) => {
+            if (err) console.error("Session refresh save error:", err);
+            resolve();
+          });
+        } else {
+          resolve();
+        }
+      });
+      return res.json({ ok: true, expiresIn: thirtyDays });
+    } catch (error) {
+      console.error("Session refresh error:", error);
+      return res.status(500).json({ message: "Failed to refresh session" });
+    }
+  });
+
   // Real login endpoint with credentials
   app.post("/api/auth/login", async (req, res) => {
     try {

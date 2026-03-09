@@ -9,7 +9,7 @@ export function setupSimpleAuth(app: Express) {
     saveUninitialized: false,
     cookie: {
       secure: false, // Set to true in production with HTTPS
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
     }
   }));
   console.log("🔐 Setting up simple authentication redirect...");

@@ -1057,7 +1057,6 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             placeholder={replyingTo ? "Reply..." : "Type a message..."}
             className="w-full min-w-0 flex-1 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-10 text-sm"
             disabled={sendGroupMessageMutation.isPending}
-            autoFocus
           />
           <Button
             type="submit"

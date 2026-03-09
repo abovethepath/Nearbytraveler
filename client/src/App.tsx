@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 
-import { queryClient, invalidateUserCache, getApiBaseUrl } from "./lib/queryClient";
+import { queryClient, invalidateUserCache, getApiBaseUrl, startSessionRefresh, stopSessionRefresh } from "./lib/queryClient";
 import { posthogIdentifyUser, posthogReset } from "@/lib/posthog";
 import { QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -376,6 +376,15 @@ function Router() {
   useEffect(() => {
     if (loginPending) setIsAuthenticating(true);
   }, [loginPending]);
+
+  useEffect(() => {
+    if (user) {
+      startSessionRefresh();
+    } else {
+      stopSessionRefresh();
+    }
+    return () => stopSessionRefresh();
+  }, [user]);
   
   // Track page views for analytics
   useAnalytics();

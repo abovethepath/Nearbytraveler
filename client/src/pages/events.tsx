@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle, Star, Sparkles, ChevronDown, MessageCircle, History, Link2 } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle, Check, Star, Sparkles, ChevronDown, MessageCircle, History, Link2 } from "lucide-react";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { useAuth } from "@/App";
@@ -493,6 +493,7 @@ export default function Events() {
 
   const handleJoinEvent = (event: Event) => {
     if (!currentUser) return;
+    if ((event as any).organizerId === currentUser.id) return;
 
     const isUserJoined = participants.some(p => p.userId === currentUser.id && p.eventId === event.id);
 
@@ -510,6 +511,11 @@ export default function Events() {
   const isUserJoined = (eventId: number) => {
     if (!currentUser) return false;
     return participants.some(p => p.userId === currentUser.id && p.eventId === eventId);
+  };
+
+  const isEventCreator = (event: any) => {
+    if (!currentUser) return false;
+    return event.organizerId === currentUser.id;
   };
 
   // Handle loading and error states in render without early returns to fix hooks ordering
@@ -1077,23 +1083,37 @@ export default function Events() {
                                     </Button>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <Button 
-                                      size="sm" 
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleJoinEvent(event);
-                                      }}
-                                      disabled={joinEventMutation.isPending || leaveEventMutation.isPending}
-                                      variant={isUserJoined(event.id) ? "outline" : "default"}
-                                      className={isUserJoined(event.id) ? "flex-1" : "flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0"}
-                                      style={!isUserJoined(event.id) ? { 
-                                        background: 'linear-gradient(to right, #2563eb, #ea580c)',
-                                        border: 'none'
-                                      } : {}}
-                                      data-testid={`button-join-leave-${event.id}`}
-                                    >
-                                      {isUserJoined(event.id) ? "Leave" : "Join Event"}
-                                    </Button>
+                                    {isEventCreator(event) ? (
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="flex-1"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                        }}
+                                        data-testid={`button-your-event-${event.id}`}
+                                      >
+                                        Your Event
+                                      </Button>
+                                    ) : (
+                                      <Button 
+                                        size="sm" 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleJoinEvent(event);
+                                        }}
+                                        disabled={joinEventMutation.isPending || leaveEventMutation.isPending}
+                                        variant={isUserJoined(event.id) ? "outline" : "default"}
+                                        className={isUserJoined(event.id) ? "flex-1 text-green-600 border-green-300" : "flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0"}
+                                        style={!isUserJoined(event.id) ? { 
+                                          background: 'linear-gradient(to right, #2563eb, #ea580c)',
+                                          border: 'none'
+                                        } : {}}
+                                        data-testid={`button-join-leave-${event.id}`}
+                                      >
+                                        {isUserJoined(event.id) ? "✓ Joined" : "Join Event"}
+                                      </Button>
+                                    )}
                                   </div>
                                 </div>
                               )}
@@ -1247,21 +1267,28 @@ export default function Events() {
                             </span>
                           </div>
 
-                          {/* Interest Button */}
-                          <Button 
-                            size="sm" 
-                            variant="ghost"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleJoinEvent(event);
-                            }}
-                            className={isUserJoined(event.id) 
-                              ? "text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20" 
-                              : "text-orange-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                            }
-                          >
-                            <Heart className={`w-5 h-5 ${isUserJoined(event.id) ? 'fill-current' : ''}`} />
-                          </Button>
+                          {isEventCreator(event) ? (
+                            <span className="text-xs text-gray-500 font-medium px-2">Your Event</span>
+                          ) : (
+                            <Button 
+                              size="sm" 
+                              variant="ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleJoinEvent(event);
+                              }}
+                              className={isUserJoined(event.id) 
+                                ? "text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20" 
+                                : "text-orange-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                              }
+                            >
+                              {isUserJoined(event.id) ? (
+                                <Check className="w-5 h-5" />
+                              ) : (
+                                <Heart className="w-5 h-5" />
+                              )}
+                            </Button>
+                          )}
                         </div>
                       </CardContent>
                     </Card>

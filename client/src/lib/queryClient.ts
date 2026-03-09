@@ -16,6 +16,43 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+let refreshPromise: Promise<boolean> | null = null;
+
+async function tryRefreshSession(): Promise<boolean> {
+  if (refreshPromise) return refreshPromise;
+  refreshPromise = (async () => {
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      return res.ok;
+    } catch {
+      return false;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+  return refreshPromise;
+}
+
+let refreshInterval: ReturnType<typeof setInterval> | null = null;
+
+export function startSessionRefresh() {
+  if (refreshInterval) return;
+  tryRefreshSession();
+  refreshInterval = setInterval(() => {
+    tryRefreshSession();
+  }, 30 * 60 * 1000);
+}
+
+export function stopSessionRefresh() {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+    refreshInterval = null;
+  }
+}
+
 function hasVerifiedSession(): boolean {
   try {
     return sessionStorage.getItem("nt_session_verified") === "1";
@@ -130,6 +167,29 @@ export async function apiRequest(
       console.log('Response received:', { status: res.status, statusText: res.statusText, ok: res.ok });
     }
     
+    if (res.status === 401) {
+      const refreshed = await tryRefreshSession();
+      if (refreshed) {
+        const retryController = new AbortController();
+        const retryTimeout = setTimeout(() => retryController.abort(), 30000);
+        res = await fetch(fullUrl, {
+          method,
+          headers,
+          body: data ? JSON.stringify(data) : null,
+          credentials: 'include',
+          signal: retryController.signal,
+        });
+        clearTimeout(retryTimeout);
+        if (res.status === 401) {
+          window.location.href = '/?session_expired=1';
+          throw new Error('Session expired. Please log in again.');
+        }
+      } else {
+        window.location.href = '/?session_expired=1';
+        throw new Error('Session expired. Please log in again.');
+      }
+    }
+    
     await throwIfResNotOk(res);
     return res;
   } catch (error) {
@@ -189,8 +249,24 @@ export const getQueryFn: <T>(options: {
       headers,
     });
 
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-      return null;
+    if (res.status === 401) {
+      if (unauthorizedBehavior === "returnNull") {
+        return null;
+      }
+      const refreshed = await tryRefreshSession();
+      if (refreshed) {
+        res = await fetch(fullUrl, {
+          credentials: "include",
+          headers,
+        });
+        if (res.status === 401) {
+          window.location.href = '/?session_expired=1';
+          throw new Error('Session expired. Please log in again.');
+        }
+      } else {
+        window.location.href = '/?session_expired=1';
+        throw new Error('Session expired. Please log in again.');
+      }
     }
 
     await throwIfResNotOk(res);

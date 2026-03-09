@@ -533,7 +533,6 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       const titleInput = document.getElementById("title");
       if (titleInput) {
         titleInput.scrollIntoView({ behavior: "smooth", block: "center" });
-        titleInput.focus();
       }
     }, 150);
   };

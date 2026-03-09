@@ -2318,7 +2318,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           setSimilarActivity(similar);
                         }}
                         className="text-gray-800 dark:text-white"
-                        autoFocus
                       />
                       {/* Similar activity suggestion - quality control */}
                       {similarActivity && !showEventSuggestion && (() => {
