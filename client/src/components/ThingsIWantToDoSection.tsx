@@ -78,8 +78,6 @@ function rgba(hex: string, alpha: number) {
 interface ThingsIWantToDoSectionProps {
   userId: number;
   isOwnProfile: boolean;
-  showNudge?: boolean;
-  onNudgeDismiss?: () => void;
 }
 
 interface UserProfile {
@@ -121,7 +119,15 @@ interface TravelPlan {
   status: string;
 }
 
-export function ThingsIWantToDoSection({ userId, isOwnProfile, showNudge, onNudgeDismiss }: ThingsIWantToDoSectionProps) {
+function shouldShowThingsNudge(userId: number) {
+  try {
+    const raw = localStorage.getItem(`nt_nudges_${userId}`);
+    const s = raw ? JSON.parse(raw) : { logins: 0, thingsToDo: false };
+    return (s.logins || 0) <= 5 && !s.thingsToDo;
+  } catch { return false; }
+}
+
+export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDoSectionProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -332,7 +338,15 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile, showNudge, onNudg
       queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
       toast({ title: "Added", description: "Added to your list." });
       setNewActivityName("");
-      onNudgeDismiss?.();
+      if (isOwnProfile) {
+        try {
+          const key = `nt_nudges_${userId}`;
+          const raw = localStorage.getItem(key);
+          const s = raw ? JSON.parse(raw) : { logins: 0 };
+          s.thingsToDo = true;
+          localStorage.setItem(key, JSON.stringify(s));
+        } catch {}
+      }
     },
     onError: (e: any) => {
       toast({
@@ -820,7 +834,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile, showNudge, onNudg
             </h2>
             {isOwnProfile && (
               <div className="flex items-center gap-2">
-                {showNudge && (
+                {shouldShowThingsNudge(userId) && (
                   <span className="text-red-500 dark:text-red-400 text-xs font-semibold whitespace-nowrap nudge-pulse">
                     The more you add, the better your matches →
                   </span>
@@ -872,7 +886,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile, showNudge, onNudg
             </h2>
             {isOwnProfile && (
               <div className="flex items-center gap-2">
-                {showNudge && (
+                {shouldShowThingsNudge(userId) && (
                   <span className="text-red-500 dark:text-red-400 text-xs font-semibold whitespace-nowrap nudge-pulse">
                     The more you add, the better your matches →
                   </span>

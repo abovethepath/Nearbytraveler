@@ -241,6 +241,17 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
   );
 }
 
+function getNudgeState(userId: number) {
+  try {
+    const raw = localStorage.getItem(`nt_nudges_${userId}`);
+    return raw ? JSON.parse(raw) : { logins: 0, bio: false, interests: false, thingsToDo: false };
+  } catch { return { logins: 0, bio: false, interests: false, thingsToDo: false }; }
+}
+function shouldShowNudge(userId: number, section: 'bio' | 'interests' | 'thingsToDo') {
+  const s = getNudgeState(userId);
+  return s.logins <= 5 && !s[section];
+}
+
 export function ProfileTabs(props: ProfilePageProps) {
   const {
     activeTab, openTab, user, setLocation, isOwnProfile, userConnections, photos, userTravelMemories, userReferences, travelPlans, userVouches, setTriggerQuickMatch, setTriggerQuickMeetup, triggerQuickMeetup, isProfileIncomplete, setIsEditMode, editFormData, isEditingPublicInterests, setIsEditingPublicInterests, setActiveEditSection, setEditFormData, effectiveUserId, queryClient, toast, tabRefs, loadedTabs, showConnectionFilters, setShowConnectionFilters, connectionFilters, setConnectionFilters, sortedUserConnections, connectionsDisplayCount, setConnectionsDisplayCount, editingConnectionNote, setEditingConnectionNote, connectionNoteText, setConnectionNoteText, currentUser, showWriteReferenceModal, setShowWriteReferenceModal, showReferenceForm, setShowReferenceForm, referenceForm, createReference, connectionRequests, countriesVisited, tempCountries, setTempCountries, customCountryInput, setCustomCountryInput, editingCountries, updateCountries, userChatrooms, setShowChatroomList, vouches, compatibilityData, eventsGoing, eventsInterested, businessDealsLoading, businessDeals, ownerContactForm, setOwnerContactForm, editingOwnerInfo, updateOwnerContact, handleSaveOwnerContact, getMetropolitanArea, apiRequest, handleEditCountries, handleSaveCountries, handleCancelCountries, COUNTRIES_OPTIONS, GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, safeGetAllActivities, getApiBaseUrl, getHometownInterests, getTravelInterests, getProfileInterests, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_INTERESTS, ALL_ACTIVITIES, customInterestInput, setCustomInterestInput, customActivityInput, setCustomActivityInput, editingInterests, editingActivities, showCreateDeal, setShowCreateDeal, quickDeals, setShowFullGallery, setSelectedPhotoIndex, uploadingPhoto, EventOrganizerHubSection, editingLanguages, handleEditLanguages, LANGUAGES_OPTIONS, tempLanguages, setTempLanguages, customLanguageInput, setCustomLanguageInput, handleSaveLanguages, handleCancelLanguages, updateLanguages
@@ -757,10 +768,15 @@ export function ProfileTabs(props: ProfilePageProps) {
 
                   {isOwnProfile && (
                     <div className="relative flex items-center gap-2">
-                      {(props as any).profileNudges?.showBioNudge && (!user?.bio || !user.bio.trim()) && (
-                        <span className="text-red-500 dark:text-red-400 text-sm font-semibold whitespace-nowrap nudge-pulse flex items-center gap-1">
-                          Fill out your bio to match with others
+                      {isProfileIncomplete() && (
+                        <span className="text-orange-500 dark:text-orange-400 text-sm font-semibold whitespace-nowrap animate-pulse flex items-center gap-1">
+                          Fill out bio
                           <span className="inline-block">&#8594;</span>
+                        </span>
+                      )}
+                      {!isProfileIncomplete() && currentUser?.id && shouldShowNudge(currentUser.id, 'bio') && (!user?.bio || !user.bio.trim()) && (
+                        <span className="text-red-500 dark:text-red-400 text-xs font-semibold whitespace-nowrap nudge-pulse">
+                          Fill out your bio to match with others →
                         </span>
                       )}
                       <Button
@@ -1191,7 +1207,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   </CardTitle>
                   {isOwnProfile && !isEditingPublicInterests && (
                     <div className="flex items-center gap-2">
-                      {(props as any).profileNudges?.showInterestsNudge && (
+                      {currentUser?.id && shouldShowNudge(currentUser.id, 'interests') && (
                         <span className="text-red-500 dark:text-red-400 text-xs font-semibold whitespace-nowrap nudge-pulse">
                           The more you add, the better your matches →
                         </span>
@@ -1782,8 +1798,6 @@ export function ProfileTabs(props: ProfilePageProps) {
               <ThingsIWantToDoSection
                 userId={effectiveUserId || 0}
                 isOwnProfile={isOwnProfile}
-                showNudge={(props as any).profileNudges?.showThingsToDoNudge}
-                onNudgeDismiss={(props as any).profileNudges?.dismissThingsToDo}
               />
             )}
 

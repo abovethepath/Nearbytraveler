@@ -38,7 +38,6 @@ import { VouchWidget } from "@/components/vouch-widget";
 import TravelPlansWidget from "@/components/TravelPlansWidget";
 // Removed framer-motion import for static interface
 import { useToast } from "@/hooks/use-toast";
-import { useProfileNudges } from "@/hooks/useProfileNudges";
 import { AuthContext } from "@/App";
 import { authStorage } from "@/lib/auth";
 import ConnectButton from "@/components/ConnectButton";
@@ -636,6 +635,29 @@ const getFilteredInterestsForProfile = (user: User, isOwnProfile: boolean) => {
   return filteredInterests;
 };
 
+function nudgeDismiss(userId: number, section: 'bio' | 'interests' | 'thingsToDo') {
+  try {
+    const key = `nt_nudges_${userId}`;
+    const raw = localStorage.getItem(key);
+    const s = raw ? JSON.parse(raw) : { logins: 0 };
+    s[section] = true;
+    localStorage.setItem(key, JSON.stringify(s));
+  } catch {}
+}
+function nudgeIncrementLogin(userId: number) {
+  try {
+    const key = `nt_nudges_${userId}`;
+    const sessionKey = 'nt_nudge_session';
+    const currentSession = sessionStorage.getItem(sessionKey);
+    if (currentSession === String(userId)) return;
+    sessionStorage.setItem(sessionKey, String(userId));
+    const raw = localStorage.getItem(key);
+    const s = raw ? JSON.parse(raw) : { logins: 0 };
+    s.logins = (s.logins || 0) + 1;
+    localStorage.setItem(key, JSON.stringify(s));
+  } catch {}
+}
+
 function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -775,39 +797,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   
 
   
-  const effectiveUserId = propUserId || currentUser?.id;
-  
-  const isOwnProfile = React.useMemo(() => {
-    if (!currentUser?.id) return false;
-    if (!propUserId) return true;
-    const propId = parseInt(String(propUserId));
-    const currentId = parseInt(String(currentUser.id));
-    return propId === currentId;
-  }, [propUserId, currentUser?.id]);
-
-  const profileNudges = useProfileNudges(isOwnProfile, effectiveUserId);
-
   // Edit mode states for individual widgets - FIXED WITH SEPARATE BOOLEANS
   // Separate editing states for clean cancel functionality
   const [isEditingPublicInterests, setIsEditingPublicInterests] = useState(false);
   const [activeEditSection, setActiveEditSection] = useState<string | null>(null);
 
-  // Handle ?edit=interests query param to auto-open interests editing
-  React.useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const editParam = params.get('edit');
-      if (editParam === 'interests' && isOwnProfile) {
-        setTimeout(() => {
-          setIsEditingPublicInterests(true);
-          setActiveEditSection('interests');
-          const el = document.querySelector('[data-testid="interests-section"]');
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 500);
-      }
-    } catch {}
-  }, [isOwnProfile]);
-  
   // Legacy compatibility (will be phased out)
   const editingInterests = isEditingPublicInterests;
   const [showAllInterests, setShowAllInterests] = useState(false);
@@ -1101,6 +1095,41 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       refreshAuth();
     }
   }, [authContextUser, setAuthUser]);
+  
+  const effectiveUserId = propUserId || currentUser?.id;
+  
+  // CRITICAL FIX: More robust isOwnProfile calculation with proper type handling
+  const isOwnProfile = React.useMemo(() => {
+    if (!currentUser?.id) return false;
+    
+    // If no propUserId, we're viewing our own profile from /profile route
+    if (!propUserId) return true;
+    
+    // Compare IDs with type coercion
+    const propId = parseInt(String(propUserId));
+    const currentId = parseInt(String(currentUser.id));
+    
+    return propId === currentId;
+  }, [propUserId, currentUser?.id]);
+  
+  React.useEffect(() => {
+    if (isOwnProfile && effectiveUserId) nudgeIncrementLogin(effectiveUserId);
+  }, [isOwnProfile, effectiveUserId]);
+
+  React.useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const editParam = params.get('edit');
+      if (editParam === 'interests' && isOwnProfile) {
+        setTimeout(() => {
+          setIsEditingPublicInterests(true);
+          setActiveEditSection('interests');
+          const el = document.querySelector('[data-testid="interests-section"]');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 500);
+      }
+    } catch {}
+  }, [isOwnProfile]);
 
   // OPTIMIZED: Fetch ALL profile data in a single batched request
   // This replaces 18 separate API calls with 1 bundled request for 5-10x faster loading
@@ -3241,7 +3270,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       refetchUser();
       
-      profileNudges.dismissInterests?.();
+      if (effectiveUserId) nudgeDismiss(effectiveUserId, 'interests');
       
       toast({
         title: "All preferences saved!",
@@ -3552,8 +3581,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // CRITICAL: Invalidate profile-bundle to refresh interests/activities immediately
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
       
-      if (updatedUser.bio && updatedUser.bio.trim()) {
-        profileNudges.dismissBio?.();
+      if (effectiveUserId && updatedUser.bio && updatedUser.bio.trim()) {
+        nudgeDismiss(effectiveUserId, 'bio');
       }
       
       toast({
@@ -3841,7 +3870,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     editingLanguages, handleEditLanguages, LANGUAGES_OPTIONS, tempLanguages, setTempLanguages, customLanguageInput, setCustomLanguageInput,
     handleSaveLanguages, handleCancelLanguages, updateLanguages,
     connectionStatus,
-    profileNudges,
   };
   return (
     <div className="flex flex-col gap-4 md:gap-0">
