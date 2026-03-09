@@ -278,8 +278,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   };
 
   const leaveChatroom = async () => {
-    if (chatType !== "chatroom") return;
-    if (typeof window !== "undefined" && !window.confirm("Leave this chatroom?")) return;
+    if (chatType === "dm") return;
+    const label = chatType === "meetup" ? "meetup chat" : chatType === "event" ? "event chat" : "chatroom";
+    if (typeof window !== "undefined" && !window.confirm(`Leave this ${label}?`)) return;
     try {
       const u: any = (() => {
         try { return JSON.parse(localStorage.getItem("user") || localStorage.getItem("travelconnect_user") || localStorage.getItem("current_user") || "{}"); } catch { return {}; }
@@ -297,13 +298,15 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.message || data?.error || `HTTP ${res.status}`);
-      toast({ title: "Left chatroom" });
+      toast({ title: `Left ${label}` });
       queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatId}/members`] });
       queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatId}`] });
       if (onBack) onBack();
+      else if (chatType === "meetup") navigate("/quick-meetups");
+      else if (chatType === "event") navigate("/events");
       else navigate("/chatrooms");
     } catch (e: any) {
-      toast({ title: "Couldn't leave chatroom", description: String(e?.message || "Please try again."), variant: "destructive" });
+      toast({ title: `Couldn't leave ${label}`, description: String(e?.message || "Please try again."), variant: "destructive" });
     }
   };
 
@@ -1986,10 +1989,18 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         </button>
                       </>
                     ) : (
-                      <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); toggleNotificationsMuted(); }}>
-                        {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-                        <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
-                      </button>
+                      <>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); setShowMembers(true); }}>
+                          <Users className="w-5 h-5" /><span className="font-semibold">View Members</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); toggleNotificationsMuted(); }}>
+                          {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                          <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-red-300" onClick={() => { setMoreMenuOpen(false); leaveChatroom(); }}>
+                          <LogOut className="w-5 h-5" /><span className="font-semibold">Leave Chat</span>
+                        </button>
+                      </>
                     )}
                   </div>
                 </SheetContent>
@@ -2223,10 +2234,21 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   </DropdownMenuItem>
                 </>
               ) : (
-                <DropdownMenuItem onClick={toggleNotificationsMuted}>
-                  {(notificationsMuted ? <Volume2 className="w-4 h-4 mr-2" /> : <VolumeX className="w-4 h-4 mr-2" />)}
-                  {notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}
-                </DropdownMenuItem>
+                <>
+                  <DropdownMenuItem onClick={() => setShowMembers(true)}>
+                    <Users className="w-4 h-4 mr-2" />
+                    View Members
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={toggleNotificationsMuted}>
+                    {(notificationsMuted ? <Volume2 className="w-4 h-4 mr-2" /> : <VolumeX className="w-4 h-4 mr-2" />)}
+                    {notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-gray-700" />
+                  <DropdownMenuItem className="text-red-300 focus:text-red-200" onClick={leaveChatroom}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Leave Chat
+                  </DropdownMenuItem>
+                </>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
