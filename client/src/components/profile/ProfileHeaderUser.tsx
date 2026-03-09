@@ -402,7 +402,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                 return (
                   <>
-                    <div className={`flex ${isMobileWeb ? "flex-row items-start" : "flex-col"} lg:flex-row lg:items-center gap-4 lg:gap-6`} style={!isMobileWeb ? { alignItems: "center" } : undefined}>
+                    <div className={`flex ${isMobileWeb ? "flex-row items-start" : "flex-col"} lg:flex-row lg:items-start gap-4 lg:gap-6`}>
                       {/* LEFT: avatar + status */}
                       <div className="flex-shrink-0">
                         <div
@@ -509,7 +509,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                       {/* Desktop "What You Have in Common" widget — RIGHT column in hero row */}
                       {!isMobileWeb && (
-                        <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 self-end max-h-48 overflow-hidden justify-center cursor-pointer hover:bg-black/60 transition-colors" onClick={() => setSeeAllCommonOpen(true)}>
+                        <div className="common-radiate-widget hidden lg:flex flex-col flex-1 min-w-0 rounded-2xl bg-black/50 backdrop-blur-sm border border-white/20 p-4 gap-2 max-h-48 overflow-hidden justify-center cursor-pointer hover:bg-black/60 transition-colors mt-8" onClick={() => setSeeAllCommonOpen(true)}>
                           {totalCommon > 0 ? (
                             <>
                               <div className="flex items-center gap-1.5 mb-1 flex-wrap">
