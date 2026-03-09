@@ -1744,12 +1744,20 @@ export function ProfileTabs(props: ProfilePageProps) {
                             <span aria-hidden>🤫</span>
                             <span>Secret things I would do if my closest friends came to town</span>
                           </h4>
-                          <p
-                            className="text-[#333333] dark:text-gray-100 text-sm italic whitespace-pre-wrap break-words"
+                          <div
+                            className="whitespace-pre-wrap break-words text-sm"
+                            style={{
+                              background: 'rgba(255, 107, 53, 0.15)',
+                              border: '1px solid rgba(255, 107, 53, 0.4)',
+                              borderRadius: '10px',
+                              padding: '10px 14px',
+                              color: '#FFFFFF',
+                              fontWeight: 600,
+                            }}
                             data-testid="text-secret-activities"
                           >
-                            {(user as any)?.secretActivities || (user as any)?.secret_activities}
-                          </p>
+                            <span aria-hidden>🤫 </span>{(user as any)?.secretActivities || (user as any)?.secret_activities}
+                          </div>
                         </div>
                       </div>
                     )}
