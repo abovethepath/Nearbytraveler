@@ -1850,7 +1850,6 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                         <div className="rounded-xl border border-blue-200/70 dark:border-blue-400/30 bg-blue-50/70 dark:bg-blue-950/30 p-4">
                           <h4 className="font-extrabold text-[#1a1a1a] dark:text-white mb-2 flex items-center gap-2">
-                            <span aria-hidden>🤫</span>
                             <span>Secret things I would do if my closest friends came to town</span>
                           </h4>
                           <div
