@@ -7438,6 +7438,26 @@ Questions? Just reply to this message. Welcome aboard!
         for (const c of pendingConns) pendingConnMap[c.requesterId] = c;
       }
 
+      // For available_now_meet_request notifications, look up request status
+      const meetRequestNotifs = notifRows.filter(n => n.type === 'available_now_meet_request');
+      const meetRequestStatusMap: Record<number, { id: number; status: string; fromUserId: number }> = {};
+      if (meetRequestNotifs.length > 0) {
+        const meetRequestIds: number[] = [];
+        for (const n of meetRequestNotifs) {
+          try {
+            const d = n.data ? JSON.parse(n.data as string) : null;
+            if (d?.requestId) meetRequestIds.push(d.requestId);
+          } catch {}
+        }
+        if (meetRequestIds.length > 0) {
+          const meetRows = await db
+            .select({ id: availableNowRequests.id, status: availableNowRequests.status, fromUserId: availableNowRequests.fromUserId })
+            .from(availableNowRequests)
+            .where(inArray(availableNowRequests.id, meetRequestIds));
+          for (const r of meetRows) meetRequestStatusMap[r.id] = r;
+        }
+      }
+
       const typeToCategory = (type: string): "all" | "events" | "connections" | "messages" => {
         if (type.startsWith('connection')) return 'connections';
         if (type.startsWith('event') || type.includes('event')) return 'events';
@@ -7448,6 +7468,10 @@ Questions? Just reply to this message. Welcome aboard!
       const items = notifRows.map(n => {
         const actor = n.fromUserId ? (actorMap[n.fromUserId] || null) : null;
         const conn = n.type === 'connection_request' && n.fromUserId ? (pendingConnMap[n.fromUserId] || null) : null;
+        const parsedData = n.data ? (() => { try { return JSON.parse(n.data as string); } catch { return null; } })() : null;
+        const meetRequest = n.type === 'available_now_meet_request' && parsedData?.requestId
+          ? (meetRequestStatusMap[parsedData.requestId] || null)
+          : null;
         return {
           id: n.id,
           kind: 'notification',
@@ -7458,8 +7482,9 @@ Questions? Just reply to this message. Welcome aboard!
           timestamp: n.createdAt,
           unread: !n.isRead,
           actor,
-          data: n.data ? (() => { try { return JSON.parse(n.data as string); } catch { return null; } })() : null,
+          data: parsedData,
           connection: conn,
+          meetRequest,
         };
       });
 
@@ -23495,6 +23520,10 @@ Questions? Just reply to this message. Welcome aboard!
           eq(availableNowRequests.toUserId, Number(userId))
         ))
         .returning();
+
+      if (!updated) {
+        return res.status(404).json({ error: "Meet request not found or not yours" });
+      }
 
       let groupChatroomId: number | null = null;
 

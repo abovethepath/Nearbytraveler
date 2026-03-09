@@ -1,11 +1,12 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { MessageSquare, Users } from "lucide-react";
+import { MessageSquare, Users, MapPin, X, ExternalLink, UserCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { useAuth } from "@/App";
+import { useToast } from "@/hooks/use-toast";
 
 type ActivityFilter = "all" | "events" | "connections" | "messages";
 
@@ -34,11 +35,28 @@ type ActivityNotificationItem = ActivityBase & {
   actor?: { id: number; username?: string | null; name?: string | null; profileImage?: string | null } | null;
   data?: any;
   connection?: { id: number; status: string; requesterId: number; receiverId: number } | null;
+  meetRequest?: { id: number; status: string; fromUserId: number } | null;
 };
 
 type ActivityFeedResponse = {
   items: Array<ActivityEventChatItem | ActivityNotificationItem>;
   unreadCount: number;
+};
+
+type RequesterProfile = {
+  id: number;
+  username: string | null;
+  name: string | null;
+  fullName: string | null;
+  profileImage: string | null;
+  profilePhoto: string | null;
+  bio: string | null;
+  location: string | null;
+  interests: string[] | null;
+  travelStyle: string | null;
+  connectionCount?: number;
+  citiesVisited?: number;
+  mutualConnections?: Array<{ id: number; username: string | null; profileImage: string | null }>;
 };
 
 function safeDate(value: unknown): Date | null {
@@ -67,18 +85,246 @@ function InitialAvatar({
   username,
   profileImage,
   fallbackLabel,
+  size = "sm",
 }: {
   username?: string | null;
   profileImage?: string | null;
   fallbackLabel?: string;
+  size?: "sm" | "lg";
 }) {
+  const sizeClass = size === "lg" ? "h-20 w-20 text-2xl" : "h-10 w-10 text-base";
   if (profileImage) {
-    return <img src={profileImage} alt="" className="h-10 w-10 rounded-full object-cover" />;
+    return <img src={profileImage} alt="" className={`${sizeClass} rounded-full object-cover`} />;
   }
   const initial = (username || fallbackLabel || "?")[0]?.toUpperCase?.() || "?";
   return (
-    <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center font-bold text-gray-700 dark:text-gray-200">
+    <div className={`${sizeClass} rounded-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center font-bold text-gray-700 dark:text-gray-200`}>
       {initial}
+    </div>
+  );
+}
+
+function MeetRequestModal({
+  item,
+  currentUserId,
+  onClose,
+  onActionComplete,
+}: {
+  item: ActivityNotificationItem;
+  currentUserId: number;
+  onClose: () => void;
+  onActionComplete: () => void;
+}) {
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const actorId = item.actor?.id || item.data?.fromUserId;
+  const requestId = item.meetRequest?.id || item.data?.requestId;
+  const hasMeetRequestData = !!item.meetRequest;
+  const requestStatus = hasMeetRequestData ? (item.meetRequest!.status || "pending") : "expired";
+
+  const { data: profile, isLoading: profileLoading } = useQuery<RequesterProfile>({
+    queryKey: ["/api/users", actorId, "meet-profile"],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/users/${actorId}`, {
+        credentials: "include",
+        headers: { "x-user-id": String(currentUserId) },
+      });
+      if (!res.ok) throw new Error("Failed to fetch profile");
+      return res.json();
+    },
+    enabled: !!actorId,
+    staleTime: 60000,
+  });
+
+  const { data: mutualData } = useQuery<Array<{ id: number; username: string | null; profileImage: string | null }>>({
+    queryKey: ["/api/mutual-connections", currentUserId, actorId],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/mutual-connections/${currentUserId}/${actorId}`, {
+        credentials: "include",
+        headers: { "x-user-id": String(currentUserId) },
+      });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!actorId && !!currentUserId,
+    staleTime: 60000,
+  });
+
+  const respondMutation = useMutation({
+    mutationFn: async ({ status }: { status: "accepted" | "declined" }) => {
+      const res = await fetch(`${getApiBaseUrl()}/api/available-now/requests/${requestId}`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json", "x-user-id": String(currentUserId) },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) throw new Error("Failed to update meet request");
+      return res.json();
+    },
+    onSuccess: (_data, variables) => {
+      toast({
+        title: variables.status === "accepted" ? "Meet request accepted!" : "Meet request declined",
+        description: variables.status === "accepted"
+          ? `You and @${displayName} are now connected. Check your messages!`
+          : "The request has been removed from your feed.",
+      });
+      onActionComplete();
+      onClose();
+    },
+    onError: () => {
+      toast({ title: "Something went wrong", description: "Please try again.", variant: "destructive" });
+    },
+  });
+
+  const photo = profile?.profilePhoto || profile?.profileImage || item.actor?.profileImage;
+  const displayName = profile?.fullName || profile?.name || profile?.username || item.actor?.username || item.actor?.name || "Someone";
+  const usernameStr = profile?.username || item.actor?.username;
+  const location = profile?.location;
+  const bio = profile?.bio;
+  const interests = profile?.interests || [];
+  const mutualConns = mutualData || [];
+  const isPending = requestStatus === "pending";
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, [onClose]);
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/95" />
+      <div
+        className="relative w-full md:max-w-lg md:rounded-2xl rounded-t-2xl bg-white dark:bg-gray-900 shadow-2xl max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom-4 md:slide-in-from-bottom-0 md:zoom-in-95 duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="sticky top-0 z-10 flex items-center justify-between px-4 pt-4 pb-2 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Meet Request</h3>
+          <button type="button" onClick={onClose} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+            <X className="h-5 w-5 text-gray-500" />
+          </button>
+        </div>
+
+        <div className="p-5">
+          {profileLoading ? (
+            <div className="flex flex-col items-center gap-3 py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+              <span className="text-sm text-gray-500">Loading profile...</span>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col items-center text-center gap-3 mb-5">
+                <InitialAvatar username={usernameStr} profileImage={photo} fallbackLabel="?" size="lg" />
+                <div>
+                  <div className="text-xl font-bold text-gray-900 dark:text-gray-100">{displayName}</div>
+                  {usernameStr && (
+                    <div className="text-sm text-gray-500 dark:text-gray-400">@{usernameStr}</div>
+                  )}
+                </div>
+                {location && (
+                  <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300">
+                    <MapPin className="h-3.5 w-3.5" />
+                    <span>{location}</span>
+                  </div>
+                )}
+              </div>
+
+              {bio && (
+                <div className="mb-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {bio}
+                </div>
+              )}
+
+              {interests.length > 0 && (
+                <div className="mb-4">
+                  <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Interests</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {interests.slice(0, 12).map((tag, i) => (
+                      <span key={i} className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50">
+                        {tag}
+                      </span>
+                    ))}
+                    {interests.length > 12 && (
+                      <span className="px-2.5 py-1 rounded-full text-xs font-medium text-gray-500">+{interests.length - 12} more</span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {mutualConns.length > 0 && (
+                <div className="mb-4 p-3 rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/40">
+                  <div className="text-xs font-semibold text-orange-700 dark:text-orange-300 uppercase tracking-wide mb-2">
+                    {mutualConns.length} Mutual Connection{mutualConns.length !== 1 ? "s" : ""}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex -space-x-2">
+                      {mutualConns.slice(0, 5).map((mc) => (
+                        <InitialAvatar key={mc.id} username={mc.username} profileImage={mc.profileImage} fallbackLabel="?" size="sm" />
+                      ))}
+                    </div>
+                    {mutualConns.length > 5 && (
+                      <span className="text-xs text-orange-600 dark:text-orange-400">+{mutualConns.length - 5}</span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() => { onClose(); setLocation(`/profile/${actorId}`); }}
+                className="flex items-center gap-1.5 text-sm font-semibold text-[#2563EB] hover:text-[#1D4ED8] mb-5 transition-colors"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                View Full Profile
+              </button>
+
+              {isPending && requestId ? (
+                <div className="flex gap-3">
+                  <Button
+                    type="button"
+                    className="flex-1 h-12 text-base font-bold bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+                    onClick={() => respondMutation.mutate({ status: "accepted" })}
+                    disabled={respondMutation.isPending}
+                  >
+                    {respondMutation.isPending ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <>
+                        <UserCheck className="h-5 w-5 mr-2" />
+                        Accept
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1 h-12 text-base font-bold border-red-300 dark:border-red-800 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30"
+                    onClick={() => respondMutation.mutate({ status: "declined" })}
+                    disabled={respondMutation.isPending}
+                  >
+                    {respondMutation.isPending ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      "Decline"
+                    )}
+                  </Button>
+                </div>
+              ) : (
+                <div className="text-center py-3 rounded-xl bg-gray-50 dark:bg-gray-800/60">
+                  <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                    {requestStatus === "accepted" ? "Accepted" : requestStatus === "declined" ? "Declined" : requestStatus === "expired" ? "Expired" : requestStatus}
+                  </span>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -90,6 +336,7 @@ export default function ActivityFeed() {
   const currentUser = auth.user;
 
   const [filter, setFilter] = useState<ActivityFilter>("all");
+  const [meetModalItem, setMeetModalItem] = useState<ActivityNotificationItem | null>(null);
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery<ActivityFeedResponse>({
     queryKey: ["/api/activity-feed", currentUser?.id],
@@ -173,6 +420,13 @@ export default function ActivityFeed() {
           ? "No connection activity yet."
           : "No activity yet.";
 
+  const handleMeetActionComplete = () => {
+    qc.invalidateQueries({ queryKey: ["/api/activity-feed", currentUser?.id] });
+    qc.invalidateQueries({ queryKey: ["/api/activity-feed", currentUser?.id, "unread-count"] });
+    qc.invalidateQueries({ queryKey: ["/api/notifications", currentUser?.id] });
+    qc.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -224,7 +478,7 @@ export default function ActivityFeed() {
         <Card className="p-4 border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <div className="font-bold text-red-700 dark:text-red-200">Couldn’t load activity</div>
+              <div className="font-bold text-red-700 dark:text-red-200">Couldn't load activity</div>
               <div className="text-sm text-red-600 dark:text-red-300">Please try again.</div>
             </div>
             <Button type="button" variant="outline" size="sm" onClick={() => refetch()}>
@@ -235,13 +489,14 @@ export default function ActivityFeed() {
       ) : filtered.length === 0 ? (
         <Card className="p-6 text-center bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
           <div className="text-gray-700 dark:text-gray-200 font-semibold">{emptyLabel}</div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">When you have activity, it’ll show up here.</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">When you have activity, it'll show up here.</div>
         </Card>
       ) : (
         <div className="space-y-3">
           {filtered.map((item) => {
             const timestamp = formatTimeAgo(item.timestamp);
             const unread = !!item.unread;
+            const isMeetRequest = item.kind === "notification" && String((item as ActivityNotificationItem).type) === "available_now_meet_request";
 
             const open = async () => {
               if (item.kind === "event_chat") {
@@ -259,6 +514,11 @@ export default function ActivityFeed() {
 
               if (typeof n.id === "number") {
                 markNotificationRead.mutate(n.id);
+              }
+
+              if (type === "available_now_meet_request") {
+                setMeetModalItem(n);
+                return;
               }
 
               if (type.startsWith("post_event_connect:")) {
@@ -317,6 +577,24 @@ export default function ActivityFeed() {
               </div>
             );
 
+            const meetRequestBadge = (() => {
+              if (!isMeetRequest) return null;
+              const n = item as ActivityNotificationItem;
+              const status = n.meetRequest?.status;
+              if (!status || status === "pending") return null;
+              return (
+                <div className="mt-1.5">
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                    status === "accepted"
+                      ? "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300"
+                      : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
+                  }`}>
+                    {status === "accepted" ? "Accepted" : status === "declined" ? "Declined" : status}
+                  </span>
+                </div>
+              );
+            })();
+
             const connectionActions = (() => {
               if (item.kind !== "notification") return null;
               const n = item as ActivityNotificationItem;
@@ -374,9 +652,13 @@ export default function ActivityFeed() {
                 key={`${item.kind}_${String(item.id)}`}
                 type="button"
                 onClick={() => open()}
-                className="w-full text-left"
+                className={`w-full text-left cursor-pointer ${isMeetRequest ? "group" : ""}`}
               >
-                <Card className="p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <Card className={`p-4 bg-white dark:bg-gray-900 border transition-colors ${
+                  isMeetRequest
+                    ? "border-orange-200 dark:border-orange-900/50 hover:bg-orange-50/50 dark:hover:bg-orange-950/20 hover:border-orange-300 dark:hover:border-orange-800"
+                    : "border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
+                }`}>
                   <div className="flex items-start gap-3">
                     <div className="shrink-0">{left}</div>
                     <div className="min-w-0 flex-1">
@@ -398,6 +680,7 @@ export default function ActivityFeed() {
                         </div>
                         {rightSide}
                       </div>
+                      {meetRequestBadge}
                       {connectionActions}
                     </div>
                   </div>
@@ -406,6 +689,15 @@ export default function ActivityFeed() {
             );
           })}
         </div>
+      )}
+
+      {meetModalItem && currentUser?.id && (
+        <MeetRequestModal
+          item={meetModalItem}
+          currentUserId={currentUser.id}
+          onClose={() => setMeetModalItem(null)}
+          onActionComplete={handleMeetActionComplete}
+        />
       )}
     </div>
   );
