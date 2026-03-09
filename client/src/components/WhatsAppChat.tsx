@@ -160,8 +160,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
     const onResize = () => {
       const h = vv.height;
+      const offsetTop = vv.offsetTop || 0;
       setViewportHeight(h);
-      // Scroll input into view when keyboard opens
+      if (chatContainerRef.current) {
+        chatContainerRef.current.style.top = `${offsetTop}px`;
+      }
       requestAnimationFrame(() => {
         if (document.activeElement && (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT')) {
           document.activeElement.scrollIntoView({ block: 'nearest', behavior: 'instant' as ScrollBehavior });
@@ -170,8 +173,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     };
 
     vv.addEventListener('resize', onResize);
+    vv.addEventListener('scroll', onResize);
     onResize();
-    return () => vv.removeEventListener('resize', onResize);
+    return () => {
+      vv.removeEventListener('resize', onResize);
+      vv.removeEventListener('scroll', onResize);
+    };
   }, [isMobileWeb]);
 
   const toggleNotificationsMuted = () => {
@@ -1743,7 +1750,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   };
 
   return (
-    <div ref={chatContainerRef} className={`flex bg-gray-900 text-white overflow-hidden w-full h-full min-h-0 ${isMobileWeb ? 'fixed inset-0 z-50' : ''}`} style={isMobileWeb ? { height: viewportHeight ? `${viewportHeight}px` : '100dvh', maxHeight: viewportHeight ? `${viewportHeight}px` : '100dvh', transition: 'height 0.1s ease-out' } : undefined} data-chat-page="true">
+    <div ref={chatContainerRef} className={`flex bg-gray-900 text-white overflow-hidden w-full h-full min-h-0 ${isMobileWeb ? 'fixed left-0 right-0 z-50' : ''}`} style={isMobileWeb ? { top: 0, height: viewportHeight ? `${viewportHeight}px` : '100dvh', maxHeight: viewportHeight ? `${viewportHeight}px` : '100dvh' } : undefined} data-chat-page="true">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[250px] bg-gray-800 border-r border-gray-700">
