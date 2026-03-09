@@ -162,11 +162,22 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       const h = vv.height;
       const offsetTop = vv.offsetTop || 0;
       setViewportHeight(h);
+      
       if (chatContainerRef.current) {
+        // iOS 18 fix: Set height to visual viewport height and use fixed positioning
+        // This prevents the browser from scrolling the body when the keyboard appears
+        chatContainerRef.current.style.height = `${h}px`;
         chatContainerRef.current.style.top = `${offsetTop}px`;
+        
+        // CRITICAL: Prevent the window from scrolling
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
       }
+      
+      // Ensure the active input is visible but DON'T let the browser scroll the whole page
       requestAnimationFrame(() => {
         if (document.activeElement && (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT')) {
+          // Use 'nearest' and 'instant' to minimize browser-driven layout shifts
           document.activeElement.scrollIntoView({ block: 'nearest', behavior: 'instant' as ScrollBehavior });
         }
       });
@@ -174,10 +185,22 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
     vv.addEventListener('resize', onResize);
     vv.addEventListener('scroll', onResize);
+    // Add touchmove listener to prevent bounce/scroll while keyboard is open
+    const preventScroll = (e: TouchEvent) => {
+      if (vv.height < window.innerHeight) {
+        // Keyboard is likely open, prevent default scroll behavior on the root
+        if (e.target === chatContainerRef.current) {
+          e.preventDefault();
+        }
+      }
+    };
+    window.addEventListener('touchmove', preventScroll, { passive: false });
+
     onResize();
     return () => {
       vv.removeEventListener('resize', onResize);
       vv.removeEventListener('scroll', onResize);
+      window.removeEventListener('touchmove', preventScroll);
     };
   }, [isMobileWeb]);
 
@@ -1750,7 +1773,20 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   };
 
   return (
-    <div ref={chatContainerRef} className={`flex bg-gray-900 text-white overflow-hidden w-full h-full min-h-0 ${isMobileWeb ? 'fixed left-0 right-0 z-50' : ''}`} style={isMobileWeb ? { top: 0, height: viewportHeight ? `${viewportHeight}px` : '100dvh', maxHeight: viewportHeight ? `${viewportHeight}px` : '100dvh' } : undefined} data-chat-page="true">
+    <div 
+      ref={chatContainerRef} 
+      className={`flex bg-gray-900 text-white overflow-hidden w-full h-full min-h-0 ${isMobileWeb ? 'fixed left-0 right-0 z-50' : ''}`} 
+      style={isMobileWeb ? { 
+        top: 0, 
+        height: viewportHeight ? `${viewportHeight}px` : '100dvh', 
+        maxHeight: viewportHeight ? `${viewportHeight}px` : '100dvh',
+        position: 'fixed',
+        left: 0,
+        right: 0,
+        backgroundColor: '#0b141a'
+      } : undefined} 
+      data-chat-page="true"
+    >
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[250px] bg-gray-800 border-r border-gray-700">
@@ -2558,6 +2594,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               className="flex-1 min-h-[36px] max-h-[100px] bg-gray-700 border-gray-600 text-white resize-none rounded-full px-3 py-2 text-sm"
               rows={1}
               disabled={chatType !== 'dm' && !messagesLoaded && !isWsConnected}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck="false"
             />
             <Button 
               onClick={sendMessage} 
