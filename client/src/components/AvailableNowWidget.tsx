@@ -227,7 +227,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
           toast({ title: "It's a meet!", description: "Opening the group chat..." });
           queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
           queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
-          setSelectedGroupChat({ id: data.groupChatroomId, chatroomName: data.chatroomName || "Quick Meet", participantCount: data.participantCount || 2 });
+          setSelectedGroupChat({ id: data.groupChatroomId, chatroomName: data.chatroomName || "Quick Meet", participantCount: data.participantCount || 2, activityType: data.activityType || null, city: data.chatroomCity || "", state: data.chatroomState || "" });
           setTimeout(() => setShowGroupChat(true), 500);
         } else {
           toast({ title: "It's a meet!", description: "Request accepted!" });
@@ -857,17 +857,63 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       >
         <DialogHeader className="flex-shrink-0 px-4 pt-3 pb-2 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
-                <Users className="h-4 w-4 text-white" />
-              </div>
-              <div className="min-w-0">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              {(() => {
+                const activityIcons: Record<string, { icon: any; emoji: string }> = {
+                  coffee: { icon: Coffee, emoji: "☕" },
+                  food: { icon: Utensils, emoji: "🍽️" },
+                  drinks: { icon: Beer, emoji: "🍻" },
+                  explore: { icon: Camera, emoji: "📸" },
+                  music: { icon: Music, emoji: "🎵" },
+                  fitness: { icon: Dumbbell, emoji: "💪" },
+                  hike: { icon: Mountain, emoji: "🥾" },
+                  bike: { icon: Bike, emoji: "🚴" },
+                  beach: { icon: Waves, emoji: "🏖️" },
+                  sightseeing: { icon: Compass, emoji: "🧭" },
+                };
+                const activity = groupChatroom?.activityType;
+                const activityInfo = activity ? activityIcons[activity] : null;
+                const ActivityIcon = activityInfo?.icon;
+                return (
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: activity ? 'linear-gradient(135deg, #f97316, #ea580c)' : '#3b82f6' }}>
+                    {ActivityIcon ? <ActivityIcon className="h-4.5 w-4.5 text-white" /> : <Users className="h-4 w-4 text-white" />}
+                  </div>
+                );
+              })()}
+              <div className="min-w-0 flex-1">
                 <DialogTitle className="text-base font-bold text-gray-900 dark:text-white truncate">
                   {groupChatroom?.chatroomName || "Quick Meet Chat"}
                 </DialogTitle>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {groupChatroom?.participantCount || 0} people · {groupChatroom?.city}
-                </p>
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                  <span>{groupChatroom?.participantCount || 0} people</span>
+                  {groupChatroom?.city && (
+                    <>
+                      <span>·</span>
+                      <span className="flex items-center gap-0.5">
+                        <MapPin className="w-2.5 h-2.5" />
+                        {groupChatroom.city}{groupChatroom.state ? `, ${groupChatroom.state}` : ""}
+                      </span>
+                    </>
+                  )}
+                  {groupChatroom?.activityType && (() => {
+                    const labels: Record<string, string> = {
+                      coffee: "Coffee", food: "Food", drinks: "Drinks", explore: "Explore",
+                      music: "Music", fitness: "Fitness", hike: "Hike", bike: "Bike",
+                      beach: "Beach", sightseeing: "Sightseeing"
+                    };
+                    const emojis: Record<string, string> = {
+                      coffee: "☕", food: "🍽️", drinks: "🍻", explore: "📸",
+                      music: "🎵", fitness: "💪", hike: "🥾", bike: "🚴",
+                      beach: "🏖️", sightseeing: "🧭"
+                    };
+                    return (
+                      <>
+                        <span>·</span>
+                        <span>{emojis[groupChatroom.activityType] || "🤝"} {labels[groupChatroom.activityType] || groupChatroom.activityType}</span>
+                      </>
+                    );
+                  })()}
+                </div>
               </div>
             </div>
             <Button

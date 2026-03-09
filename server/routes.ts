@@ -23744,14 +23744,26 @@ Questions? Just reply to this message. Welcome aboard!
             });
           } else {
             // Create a new group chat for this Available Now session
-            const activities = activeSession.activities?.join(', ') || 'Quick Meet';
+            const activityLabels: Record<string, string> = {
+              coffee: "Coffee", food: "Food", drinks: "Drinks", explore: "Explore",
+              music: "Music", fitness: "Fitness", hike: "Hike", bike: "Bike",
+              beach: "Beach", sightseeing: "Sightseeing"
+            };
+            const sessionActivities = activeSession.activities || [];
+            const primaryActivity = sessionActivities.length > 0 ? sessionActivities[0] : null;
+            const activityLabel = primaryActivity ? (activityLabels[primaryActivity] || primaryActivity) : null;
+            const chatroomName = activityLabel
+              ? `${activityLabel} with @${acceptorName}`
+              : `Hangout with @${acceptorName}`;
+            const activitiesStr = sessionActivities.map((a: string) => activityLabels[a] || a).join(', ') || 'Quick Meet';
             const [newChatroom] = await db.insert(meetupChatrooms).values({
               availableNowId: activeSession.id,
-              chatroomName: `${acceptorName}'s Quick Meet`,
-              description: `Group chat for everyone meeting up with @${acceptorName} — ${activities}`,
+              chatroomName,
+              description: `Group chat for everyone meeting up with @${acceptorName} — ${activitiesStr}`,
               city: activeSession.city,
               state: activeSession.state || '',
               country: activeSession.country,
+              activityType: primaryActivity || null,
               isActive: true,
               expiresAt: activeSession.expiresAt,
               participantCount: 2,
@@ -23810,17 +23822,29 @@ Questions? Just reply to this message. Welcome aboard!
 
       let chatroomName: string | null = null;
       let participantCount: number | null = null;
+      let activityType: string | null = null;
+      let chatroomCity: string | null = null;
+      let chatroomState: string | null = null;
       if (groupChatroomId) {
-        const [chat] = await db.select({ chatroomName: meetupChatrooms.chatroomName, participantCount: meetupChatrooms.participantCount })
+        const [chat] = await db.select({
+          chatroomName: meetupChatrooms.chatroomName,
+          participantCount: meetupChatrooms.participantCount,
+          activityType: meetupChatrooms.activityType,
+          city: meetupChatrooms.city,
+          state: meetupChatrooms.state,
+        })
           .from(meetupChatrooms)
           .where(eq(meetupChatrooms.id, groupChatroomId))
           .limit(1);
         if (chat) {
           chatroomName = chat.chatroomName;
           participantCount = chat.participantCount;
+          activityType = chat.activityType;
+          chatroomCity = chat.city;
+          chatroomState = chat.state || null;
         }
       }
-      res.json({ ...updated, otherUserId: updated?.fromUserId, groupChatroomId: groupChatroomId || null, chatroomName, participantCount });
+      res.json({ ...updated, otherUserId: updated?.fromUserId, groupChatroomId: groupChatroomId || null, chatroomName, participantCount, activityType, chatroomCity, chatroomState });
     } catch (error: any) {
       console.error("Error updating request:", error);
       res.status(500).json({ error: "Failed to update request" });

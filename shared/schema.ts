@@ -1223,6 +1223,7 @@ export const meetupChatrooms = pgTable("meetup_chatrooms", {
   country: text("country").notNull(),
   latitude: real("latitude"),
   longitude: real("longitude"),
+  activityType: text("activity_type"),
   isActive: boolean("is_active").notNull().default(true),
   expiresAt: timestamp("expires_at").notNull(),
   participantCount: integer("participant_count").notNull().default(0),
