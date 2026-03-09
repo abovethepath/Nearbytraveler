@@ -757,9 +757,9 @@ export function ProfileTabs(props: ProfilePageProps) {
 
                   {isOwnProfile && (
                     <div className="relative flex items-center gap-2">
-                      {isProfileIncomplete() && (
-                        <span className="text-orange-500 dark:text-orange-400 text-sm font-semibold whitespace-nowrap animate-pulse flex items-center gap-1">
-                          Fill out bio
+                      {(props as any).profileNudges?.showBioNudge && (!user?.bio || !user.bio.trim()) && (
+                        <span className="text-red-500 dark:text-red-400 text-sm font-semibold whitespace-nowrap nudge-pulse flex items-center gap-1">
+                          Fill out your bio to match with others
                           <span className="inline-block">&#8594;</span>
                         </span>
                       )}
@@ -1190,30 +1190,37 @@ export function ProfileTabs(props: ProfilePageProps) {
                     Interests & Activities
                   </CardTitle>
                   {isOwnProfile && !isEditingPublicInterests && (
-                    <Button
-                      onClick={() => {
-                        const userInterests = user?.interests || [];
-                        const customInterests = user?.customInterests ? user.customInterests.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
-                        const allInterests = [...userInterests, ...customInterests];
-                        
-                        const userActivities = user?.activities || [];
-                        const customActivities = user?.customActivities ? user.customActivities.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
-                        const allActivities = [...userActivities, ...customActivities];
-                        
-                        setIsEditingPublicInterests(true);
-                        setEditFormData({
-                          interests: allInterests,
-                          activities: allActivities
-                        });
-                      }}
-                      size="sm"
-                      variant="outline"
-                      className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg"
-                      data-testid="button-edit-interests"
-                    >
-                      <Pencil className="w-3.5 h-3.5 mr-2" />
-                      Edit
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      {(props as any).profileNudges?.showInterestsNudge && (
+                        <span className="text-red-500 dark:text-red-400 text-xs font-semibold whitespace-nowrap nudge-pulse">
+                          The more you add, the better your matches →
+                        </span>
+                      )}
+                      <Button
+                        onClick={() => {
+                          const userInterests = user?.interests || [];
+                          const customInterests = user?.customInterests ? user.customInterests.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
+                          const allInterests = [...userInterests, ...customInterests];
+                          
+                          const userActivities = user?.activities || [];
+                          const customActivities = user?.customActivities ? user.customActivities.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
+                          const allActivities = [...userActivities, ...customActivities];
+                          
+                          setIsEditingPublicInterests(true);
+                          setEditFormData({
+                            interests: allInterests,
+                            activities: allActivities
+                          });
+                        }}
+                        size="sm"
+                        variant="outline"
+                        className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg"
+                        data-testid="button-edit-interests"
+                      >
+                        <Pencil className="w-3.5 h-3.5 mr-2" />
+                        Edit
+                      </Button>
+                    </div>
                   )}
                 </div>
               </CardHeader>
@@ -1775,6 +1782,8 @@ export function ProfileTabs(props: ProfilePageProps) {
               <ThingsIWantToDoSection
                 userId={effectiveUserId || 0}
                 isOwnProfile={isOwnProfile}
+                showNudge={(props as any).profileNudges?.showThingsToDoNudge}
+                onNudgeDismiss={(props as any).profileNudges?.dismissThingsToDo}
               />
             )}
 

@@ -78,6 +78,8 @@ function rgba(hex: string, alpha: number) {
 interface ThingsIWantToDoSectionProps {
   userId: number;
   isOwnProfile: boolean;
+  showNudge?: boolean;
+  onNudgeDismiss?: () => void;
 }
 
 interface UserProfile {
@@ -119,7 +121,7 @@ interface TravelPlan {
   status: string;
 }
 
-export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDoSectionProps) {
+export function ThingsIWantToDoSection({ userId, isOwnProfile, showNudge, onNudgeDismiss }: ThingsIWantToDoSectionProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -330,6 +332,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
       toast({ title: "Added", description: "Added to your list." });
       setNewActivityName("");
+      onNudgeDismiss?.();
     },
     onError: (e: any) => {
       toast({
@@ -816,20 +819,27 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
               <span>📍 Things I Want to Do in:</span>
             </h2>
             {isOwnProfile && (
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  setEditCityKey(hometownCityKey || uniqueRows.find((r) => !!r.key)?.key || "");
-                  setEditOpen(true);
-                }}
-                className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg"
-                data-testid="button-edit-things-to-do"
-              >
-                <Pencil className="w-3.5 h-3.5 mr-2" />
-                Edit
-              </Button>
+              <div className="flex items-center gap-2">
+                {showNudge && (
+                  <span className="text-red-500 dark:text-red-400 text-xs font-semibold whitespace-nowrap nudge-pulse">
+                    The more you add, the better your matches →
+                  </span>
+                )}
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setEditCityKey(hometownCityKey || uniqueRows.find((r) => !!r.key)?.key || "");
+                    setEditOpen(true);
+                  }}
+                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg"
+                  data-testid="button-edit-things-to-do"
+                >
+                  <Pencil className="w-3.5 h-3.5 mr-2" />
+                  Edit
+                </Button>
+              </div>
             )}
           </div>
           {isOwnProfile && (
@@ -861,20 +871,27 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
               <span>📍 Things I Want to Do in{isOwnProfile ? ":" : ` ${headerCity}:`}</span>
             </h2>
             {isOwnProfile && (
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  setEditCityKey(hometownCityKey || uniqueRows.find((r) => !!r.key)?.key || "");
-                  setEditOpen(true);
-                }}
-                className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg"
-                data-testid="button-edit-things-to-do"
-              >
-                <Pencil className="w-3.5 h-3.5 mr-2" />
-                Edit
-              </Button>
+              <div className="flex items-center gap-2">
+                {showNudge && (
+                  <span className="text-red-500 dark:text-red-400 text-xs font-semibold whitespace-nowrap nudge-pulse">
+                    The more you add, the better your matches →
+                  </span>
+                )}
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setEditCityKey(hometownCityKey || uniqueRows.find((r) => !!r.key)?.key || "");
+                    setEditOpen(true);
+                  }}
+                  className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg"
+                  data-testid="button-edit-things-to-do"
+                >
+                  <Pencil className="w-3.5 h-3.5 mr-2" />
+                  Edit
+                </Button>
+              </div>
             )}
           </div>
           {isOwnProfile && (

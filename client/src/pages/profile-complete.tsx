@@ -38,6 +38,7 @@ import { VouchWidget } from "@/components/vouch-widget";
 import TravelPlansWidget from "@/components/TravelPlansWidget";
 // Removed framer-motion import for static interface
 import { useToast } from "@/hooks/use-toast";
+import { useProfileNudges } from "@/hooks/useProfileNudges";
 import { AuthContext } from "@/App";
 import { authStorage } from "@/lib/auth";
 import ConnectButton from "@/components/ConnectButton";
@@ -774,6 +775,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   
 
   
+  const effectiveUserId = propUserId || currentUser?.id;
+  
+  const isOwnProfile = React.useMemo(() => {
+    if (!currentUser?.id) return false;
+    if (!propUserId) return true;
+    const propId = parseInt(String(propUserId));
+    const currentId = parseInt(String(currentUser.id));
+    return propId === currentId;
+  }, [propUserId, currentUser?.id]);
+
+  const profileNudges = useProfileNudges(isOwnProfile, effectiveUserId);
+
   // Edit mode states for individual widgets - FIXED WITH SEPARATE BOOLEANS
   // Separate editing states for clean cancel functionality
   const [isEditingPublicInterests, setIsEditingPublicInterests] = useState(false);
@@ -1088,23 +1101,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       refreshAuth();
     }
   }, [authContextUser, setAuthUser]);
-  
-  const effectiveUserId = propUserId || currentUser?.id;
-  
-  // CRITICAL FIX: More robust isOwnProfile calculation with proper type handling
-  const isOwnProfile = React.useMemo(() => {
-    if (!currentUser?.id) return false;
-    
-    // If no propUserId, we're viewing our own profile from /profile route
-    if (!propUserId) return true;
-    
-    // Compare IDs with type coercion
-    const propId = parseInt(String(propUserId));
-    const currentId = parseInt(String(currentUser.id));
-    
-    return propId === currentId;
-  }, [propUserId, currentUser?.id]);
-  
 
   // OPTIMIZED: Fetch ALL profile data in a single batched request
   // This replaces 18 separate API calls with 1 bundled request for 5-10x faster loading
@@ -3245,6 +3241,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       refetchUser();
       
+      profileNudges.dismissInterests?.();
+      
       toast({
         title: "All preferences saved!",
         description: `Successfully saved ${editFormData.interests.length} interests and ${editFormData.activities.length} activities.`,
@@ -3554,6 +3552,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // CRITICAL: Invalidate profile-bundle to refresh interests/activities immediately
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
       
+      if (updatedUser.bio && updatedUser.bio.trim()) {
+        profileNudges.dismissBio?.();
+      }
+      
       toast({
         title: "Profile updated",
         description: "Your profile has been successfully updated.",
@@ -3839,6 +3841,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     editingLanguages, handleEditLanguages, LANGUAGES_OPTIONS, tempLanguages, setTempLanguages, customLanguageInput, setCustomLanguageInput,
     handleSaveLanguages, handleCancelLanguages, updateLanguages,
     connectionStatus,
+    profileNudges,
   };
   return (
     <div className="flex flex-col gap-4 md:gap-0">
