@@ -67,10 +67,10 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
     : "relative px-0 py-2 text-sm sm:text-base font-semibold transition-colors select-none";
   // Hero background is a gradient that does not change by theme, so keep tab text dark/crisp even in dark mode.
   const tabWebInactive = isHero
-    ? "text-black hover:text-black"
+    ? "text-white hover:text-white/80"
     : "text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white";
   const tabWebActive = isHero
-    ? "text-black after:absolute after:left-0 after:right-0 after:-bottom-[1px] after:h-[2px] after:bg-orange-500 after:rounded-full"
+    ? "text-white after:absolute after:left-0 after:right-0 after:-bottom-[1px] after:h-[2px] after:bg-orange-400 after:rounded-full"
     : "text-orange-600 dark:text-orange-400 after:absolute after:left-0 after:right-0 after:-bottom-[1px] after:h-[2px] after:bg-orange-500 after:rounded-full";
 
   const tabLegacyBase = "text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all";
@@ -78,7 +78,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
     ? "bg-white/70 text-black border border-white/70 shadow-md"
     : "bg-blue-600 text-white border border-blue-600 shadow-md";
   const tabLegacyInactive = isHero
-    ? "bg-white/25 border border-white/50 text-black hover:bg-white/35 hover:border-white/60 backdrop-blur-sm"
+    ? "bg-white/25 border border-white/50 text-white hover:bg-white/35 hover:border-white/60 backdrop-blur-sm"
     : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400";
 
   const btn = (active: boolean) => {
@@ -91,7 +91,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
   const isDarkMode = theme === "dark";
 
   // Explicit tab label + badge styles (requested).
-  const heroTextStyle = { color: "#000000" } as React.CSSProperties;
+  const heroTextStyle = { color: "#FFFFFF" } as React.CSSProperties;
   // Light mode → black numbers on white badge; Dark mode → white numbers on dark badge.
   const badgeStyle = {
     backgroundColor: isDarkMode ? "rgba(0,0,0,0.60)" : "rgba(255,255,255,0.90)",
@@ -124,7 +124,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
             : (isHero && isMobileWeb ? "flex-nowrap overflow-x-auto overflow-y-hidden" : "flex-wrap")
         } items-end ${isDesktopHero ? "gap-2 sm:gap-2 lg:gap-3" : "gap-4 sm:gap-5"} ${
           isHero ? "pt-4 mt-4" : ""
-        } ${isDesktopWeb ? (isHero ? "border-b border-gray-200/70 pb-1" : "border-b border-gray-200 dark:border-white/15 pb-1") : ""}`}
+        } ${isDesktopWeb ? (isHero ? "border-b border-white/30 pb-1" : "border-b border-gray-200 dark:border-white/15 pb-1") : ""}`}
         style={isHero && isMobileWeb ? { WebkitOverflowScrolling: "touch" } : undefined}
       >
         {showAboutTab && (
@@ -280,16 +280,16 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
             className={
               isDesktopWeb
                 ? "ml-auto -mb-1 px-2 py-2 text-sm font-semibold text-gray-600 hover:text-gray-900 hover:bg-transparent dark:text-gray-300 dark:hover:text-white"
-                : `bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 border-0 px-4 sm:px-6 py-2 text-sm font-medium rounded-lg flex items-center justify-center ${isHero ? "text-black" : ""}`
+                : `bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 border-0 px-4 sm:px-6 py-2 text-sm font-medium rounded-lg flex items-center justify-center ${isHero ? "text-white" : ""}`
             }
-            style={!isDesktopWeb && isHero ? { color: "black" } : undefined}
+            style={!isDesktopWeb && isHero ? { color: "white" } : undefined}
             data-testid="button-lets-meet-now"
           >
             <Calendar
               className={isDesktopWeb ? "w-4 h-4 mr-2" : "w-4 h-4 mr-2"}
-              style={!isDesktopWeb && isHero ? { color: "black" } : undefined}
+              style={!isDesktopWeb && isHero ? { color: "white" } : undefined}
             />
-            <span style={!isDesktopWeb && isHero ? { color: "black" } : undefined}>Let's Meet Now</span>
+            <span style={!isDesktopWeb && isHero ? { color: "white" } : undefined}>Let's Meet Now</span>
           </Button>
         )}
       </div>

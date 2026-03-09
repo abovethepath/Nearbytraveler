@@ -57,8 +57,8 @@ html, body { overflow-x: hidden; }
 @media (min-width: 768px) {
   body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed .profile-tabbar.profile-tabbar-hero > button,
   body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed .profile-tabbar.profile-tabbar-hero > [role="tab"] {
-    color: #000000 !important;
-    -webkit-text-fill-color: #000000 !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
   }
 }
 
