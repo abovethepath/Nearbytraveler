@@ -2595,9 +2595,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               rows={1}
               disabled={chatType !== 'dm' && !messagesLoaded && !isWsConnected}
               autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="none"
-              spellCheck="false"
+              autoCorrect="on"
+              autoCapitalize="sentences"
+              spellCheck="true"
             />
             <Button 
               onClick={sendMessage} 
