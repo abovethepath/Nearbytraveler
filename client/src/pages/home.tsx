@@ -1690,7 +1690,7 @@ export default function Home() {
         <span className="text-sm font-bold bg-gradient-to-r from-blue-400 to-orange-400 bg-clip-text text-transparent">Connect • Discover • Experience</span>
       </div>
 
-      <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6">
+      <h1 className="md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6" style={{ wordBreak: 'keep-all', overflowWrap: 'normal', hyphens: 'none', fontSize: 'clamp(1.3rem, 6vw, 2.25rem)' }}>
         {effectiveUser?.userType === "business" ? (
           <>
             <span
@@ -1731,7 +1731,7 @@ export default function Home() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 space-y-4">
-        <p className="text-xl sm:text-2xl lg:text-3xl leading-relaxed font-semibold travel-tagline" style={{ color: '#FF6B35' }}>
+        <p className="text-xl sm:text-2xl lg:text-3xl leading-relaxed font-semibold travel-tagline" style={{ color: '#FF6B35', wordBreak: 'keep-all', overflowWrap: 'normal', hyphens: 'none' }}>
           Travel doesn't change you. The people you meet do.
         </p>
       </div>
