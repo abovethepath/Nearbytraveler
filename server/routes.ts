@@ -3337,6 +3337,17 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   });
 
   // Initialize sample data route (for restoring lost data)
+  app.post("/api/admin/flush-profile-cache", async (req, res) => {
+    try {
+      await cache.deletePattern("profile-bundle:*");
+      console.log("🗑️ ADMIN: Flushed all profile-bundle cache entries");
+      res.json({ success: true, message: "All profile-bundle cache entries flushed" });
+    } catch (error: any) {
+      console.error("Error flushing profile cache:", error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
   app.post("/api/admin/init-data", async (req, res) => {
     try {
       // await storage.initializeSampleData(); // Method not available
