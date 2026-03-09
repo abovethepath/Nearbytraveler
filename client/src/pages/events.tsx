@@ -1112,14 +1112,24 @@ export default function Events() {
             <div>
               <div className="flex items-center justify-between mb-4 gap-2">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white">All Community Events</h2>
-                <Button
-                  variant="outline"
-                  onClick={() => setLocation('/event-history')}
-                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base font-semibold text-orange-600 border-2 border-orange-400 hover:bg-orange-100 hover:border-orange-500 dark:text-orange-400 dark:border-orange-500 dark:hover:bg-orange-900/30 shadow-sm whitespace-nowrap"
-                >
-                  <History className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                  <span>Past Events</span>
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setLocation('/calendar')}
+                    className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base font-semibold text-blue-600 border-2 border-blue-400 hover:bg-blue-100 hover:border-blue-500 dark:text-blue-400 dark:border-blue-500 dark:hover:bg-blue-900/30 shadow-sm whitespace-nowrap"
+                  >
+                    <Calendar className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                    <span className="hidden sm:inline">Calendar</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setLocation('/event-history')}
+                    className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base font-semibold text-orange-600 border-2 border-orange-400 hover:bg-orange-100 hover:border-orange-500 dark:text-orange-400 dark:border-orange-500 dark:hover:bg-orange-900/30 shadow-sm whitespace-nowrap"
+                  >
+                    <History className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                    <span>Past Events</span>
+                  </Button>
+                </div>
               </div>
               {eventsLoadError ? (
                 <div className="text-center py-10 sm:py-14 bg-red-50 dark:bg-red-950/30 rounded-2xl border border-dashed border-red-200 dark:border-red-800">

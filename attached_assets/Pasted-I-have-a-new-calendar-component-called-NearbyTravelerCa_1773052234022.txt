@@ -1,0 +1,60 @@
+I have a new calendar component called NearbyTravelerCalendar.jsx — 
+add it to the project and wire it into the existing events page. 
+Then make the following updates:
+
+DATABASE:
+1. Add these columns to the events table if they don't exist:
+   ALTER TABLE events ADD COLUMN IF NOT EXISTS city TEXT;
+   ALTER TABLE events ADD COLUMN IF NOT EXISTS recurring TEXT; 
+   (values: null, 'weekly', 'monthly')
+   ALTER TABLE events ADD COLUMN IF NOT EXISTS recurring_day TEXT;
+   (e.g. 'monday', 'wednesday', or '1st' for monthly)
+
+API:
+2. Create or update the events endpoint to accept a city filter:
+   GET /api/events?city=Los+Angeles
+3. Recurring events should auto-generate forward instances for 
+   the next 3 months based on their recurring_day rule
+4. When creating an event, auto-tag it with the city the user 
+   is currently viewing
+
+CALENDAR COMPONENT:
+5. Replace the hardcoded EVENTS array with a useEffect + fetch 
+   call to /api/events?city= passing the user's current city 
+   from their profile/session
+6. Map the returned data to this shape:
+   { id, title, day (day of month), recurring (null/weekly/monthly),
+     color, icon, time, location, desc, rsvp (attendee count) }
+7. Show the city name as a subtitle in the calendar header:
+   e.g. "Los Angeles Events"
+8. Add a city switcher button near the header so users can 
+   browse other cities' calendars
+9. If the user hasn't selected a city yet, show a simple city 
+   picker before the calendar loads
+10. Show a loading spinner while events are fetching
+11. If no events exist for that city yet, show:
+    "No events in [city] this month — be the first to add one!"
+
+EVENT CREATION:
+12. Add a + Create Event button to the calendar page
+13. The event creation form should include:
+    - Event title
+    - Date and time
+    - Location/venue
+    - Description
+    - City field (pre-filled with current city, editable)
+    - Icon picker (emoji)
+    - Recurring toggle: None / Weekly / Monthly
+    - If Weekly selected: show day picker (Mon/Tue/Wed etc.)
+    - If Monthly selected: show date picker (1st, 15th etc.)
+14. Only logged-in users can create events
+15. Save the event to the database with the city and 
+    recurring fields
+
+COLORS:
+- Recurring weekly → orange #FF6B35
+- Recurring monthly → blue #3B82F6
+- One-time special event → green #10B981
+
+Do not change the visual design or layout of the calendar 
+component at all.

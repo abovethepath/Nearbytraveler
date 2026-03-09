@@ -21,6 +21,7 @@ import ProfileComplete from "@/pages/profile-complete";
 import Messages from "@/pages/messages";
 import Events from "@/pages/events";
 import EventHistory from "@/pages/event-history";
+import CalendarPage from "@/pages/calendar";
 import CreateEvent from "@/pages/create-event";
 import Create from "@/pages/create";
 import EventDetails from "@/pages/event-details";
@@ -1657,6 +1658,8 @@ function Router() {
         return <Events />;
       case '/event-history':
         return <EventHistory />;
+      case '/calendar':
+        return <CalendarPage />;
       case '/events-landing':
         return <EventsLanding />;
       case '/business-landing':

@@ -1,5 +1,5 @@
 ## Overview
-Nearby Traveler is a social networking platform that connects travelers, locals, and businesses through location-based meetups and cross-cultural interactions. Its primary goal is to enrich travel experiences and foster local engagement by providing real-time connections, AI-powered city content, robust photo management, mobile responsiveness, and a global map system for discovery. The platform aims to be the leading destination for authentic human connections and genuine local experiences.
+Nearby Traveler is a social networking platform designed to connect travelers, locals, and businesses through location-based meetups and cross-cultural interactions. Its core purpose is to enrich travel experiences and foster local engagement by providing real-time connections, AI-powered city content, robust photo management, mobile responsiveness, and a global map system for discovery. The platform aims to be the leading destination for authentic human connections and genuine local experiences, offering AI-powered travel recommendations, smart content generation, and dynamic event creation.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -21,6 +21,7 @@ AVAILABLE NOW GROUP CHAT: When accepting meet requests from Available Now, inste
 VIDEO INTRO ON PROFILE: Users can upload a 15-30 second video intro on their profile page (below bio section). Videos stored in object storage under video-intros/{userId}/. API endpoints: POST /api/users/:id/video-intro/upload-url (get signed upload URL), PUT /api/users/:id/video-intro (confirm upload), GET /api/users/:id/video-intro (get signed read URL), DELETE /api/users/:id/video-intro. Component: client/src/components/VideoIntro.tsx. Own profile shows "Add a video intro" link; others see "Watch Video Intro" button that opens fullscreen modal player. Upload, confirm, and delete endpoints require auth (own profile only). Not shown for business profiles.
 AMBASSADOR PROGRAM PAGES: Two separate ambassador pages exist: (1) /ambassador-program — public landing page for non-logged-in visitors with LandingHeader/Footer, (2) /ambassador-info — internal app page for logged-in users with dark UI, no landing page layout. The "Learn about the Ambassador Program" link in profile Travel Stats points to /ambassador-info. The /dashboard/ambassador route shows the ambassador dashboard.
 ACTIVITY PAGE & HISTORY LOG: Activity is a top-level nav item at /activity (removed from Explore page). The ActivityFeed component (`client/src/components/ActivityFeed.tsx`) merges notifications (from `notifications` table) with activity log entries (from `activity_log` table). Activity log entries are written by `server/services/activityLogService.ts` via `writeActivityLog()` when users: send/accept connection requests, accept/decline meet requests, RSVP to events, or join communities. Feed shows newest first, capped at 50 items. Filter tabs: All / Events / Connections / Messages. Meet request cards open a profile modal with Accept/Decline. All items are clickable and navigate to the relevant profile, event, or community page. Empty state shows "No activity yet" with Explore button.
+EVENTS CALENDAR: Monthly calendar view at /calendar showing city-based events with color-coded dots (green=one-time, orange=weekly recurring, blue=monthly recurring). Component: `client/src/components/NearbyTravelerCalendar.tsx`, Page: `client/src/pages/calendar.tsx`. Features: city picker on first load, month navigation, day click to expand events, event creation dialog with recurring toggle (none/weekly/monthly), day-of-week picker for weekly, day-of-month picker for monthly. Uses existing events table columns (isRecurring, recurrenceType, recurrencePattern). Recurring instances generated client-side. API extended with `calendarView=true` parameter for 120-day lookahead (vs default 42 days). Calendar link added to events page next to "Past Events" button.
 VIRAL FEATURES (Explore Page at /explore): Added comprehensive viral growth features including: (1) Live Location Shares - "I'm at [place] for the next hour" expiring location posts like Instagram Stories for IRL meetups, (2) Micro-Experiences - Quick 15-90 min structured activities with join/leave, capacity limits, energy levels, and city-based discovery, (3) Activity Templates & Skill Swaps - Pre-built activity structures like "Coffee Walk", "Taco Crawl", "Gym Buddy Session" plus skill swap templates like "Photography tips for Korean language practice", (4) Post-Meetup Shareable Cards - Auto-generated "We met on Nearby Traveler" content with country flags and profile pics for Instagram/TikTok sharing, (5) Community Tags - Self-selected identity communities (Solo Female Traveler, LGBTQ+ Traveler, Digital Nomad, Foodie, Fitness, Budget/Luxury, Photography, Nightlife, Culture, Adventure, Language Exchange, Sober Social, Family, Eco Traveler) for discovery and matching. Database tables: live_location_shares, live_share_reactions, micro_experiences, micro_experience_participants, activity_templates, meetup_share_cards, community_tags, user_community_tags. Navigate via "Explore" in navbar (icon: ⚡).
 
 ## System Architecture
@@ -28,7 +29,7 @@ VIRAL FEATURES (Explore Page at /explore): Added comprehensive viral growth feat
 ### Frontend
 - **Technology Stack**: React 18 with TypeScript, Vite, Tailwind CSS with shadcn/ui, Wouter, and TanStack Query.
 - **PWA**: Progressive Web App with mobile-first design and offline capabilities.
-- **UI/UX Decisions**: MBA-level design principles, consistent orange-blue branding, standardized hero sections, dynamic CSS, comprehensive mobile optimization, and a chat rooms tab in navigation. Features streamlined signup, prominent display of user events, and intelligent metropolitan area consolidation for chatrooms. Includes custom text entry for interests/activities/events, diversity business ownership categories with privacy controls, repositioned languages widget, business geolocation mapping, and enhanced business contact management.
+- **UI/UX Decisions**: MBA-level design principles, consistent orange-blue branding, standardized hero sections, dynamic CSS, comprehensive mobile optimization, and a chat rooms tab in navigation. Features streamlined signup, prominent display of user events, intelligent metropolitan area consolidation for chatrooms, custom text entry for interests/activities/events, diversity business ownership categories with privacy controls, repositioned languages widget, business geolocation mapping, and enhanced business contact management.
 
 ### Backend
 - **Technology Stack**: Node.js with Express and TypeScript for a type-safe RESTful API.
@@ -41,23 +42,13 @@ VIRAL FEATURES (Explore Page at /explore): Added comprehensive viral growth feat
 - **Primary Database**: PostgreSQL.
 - **ORM**: Drizzle ORM.
 - **Schema**: Comprehensive schema for users, travel plans, events, connections, messages, businesses, and sessions.
-- **Performance Indexes**: 14 optimized indexes for key tables.
-- **Session Storage**: Redis-based session storage.
-
-### Performance Optimizations
-- **Profile Bundle Endpoint**: Consolidates 18 API calls into 1 batched request for faster profile page loading.
-- **Event Cache**: 5-minute cache for external event API calls.
-- **Two-Level API Cache**: `server/cache.ts` implements L1 in-memory + L2 Redis. Reads always hit memory first (~0ms). Redis is written to asynchronously (fire-and-forget) for cross-restart persistence. Cache HITs for `/api/users` and `/api/events` serve in <10ms total response time (vs 632ms with Redis-only).
-- **Database Connection Pooling**: Neon serverless PostgreSQL with 100 connection pool, health monitoring, and retry logic.
-- **Health Monitoring**: `/api/health` endpoint for real-time database health and connection status.
-- **Slow Request Logging**: Automatic logging of API requests exceeding 2 seconds.
-- **WebSocket Multi-Instance Scaling**: Redis pub/sub for real-time chat across multiple server instances.
+- **Performance Optimizations**: 14 optimized indexes for key tables. Redis-based session storage. Profile bundle endpoint consolidates 18 API calls into 1. Event cache with 5-minute duration. Two-level API cache (in-memory L1 + Redis L2). Neon serverless PostgreSQL with 100 connection pool. `/api/health` endpoint for monitoring. Slow request logging for API calls exceeding 2 seconds. WebSocket scaling with Redis pub/sub for multi-instance chat.
 
 ### AI Integration
 - **AI Model**: Anthropic Claude Sonnet.
 - **Capabilities**: AI-powered travel recommendations, photo analysis, user compatibility scoring, smart content generation, AI-powered city activities enhancement, AI bio generation, AI Quick Create for events, and AI Quick Create for meetups with voice input.
-- **AI Quick Meetup**: Voice/text input for creating quick meetups - users can speak or type descriptions like "coffee at the pier in 2 hours" and AI parses it into structured meetup data (title, meeting point, city, response time, organizer notes). Uses OpenAI GPT-4o-mini via `/api/ai/meetup-draft` endpoint with `AIQuickCreateMeetup` component.
-- **AI Help Chatbot**: Floating help assistant (bottom-right corner) that answers questions about platform features. Uses OpenAI GPT-4o-mini with comprehensive platform knowledge including voice-powered meetups, events, chatrooms, ambassador program, travel plans, and more. Features suggested questions, conversation history, and highlights under-discovered features like voice input. Component: `client/src/components/HelpChatbot.tsx`, API: `/api/ai/help-chat`.
+- **AI Quick Meetup**: Voice/text input for creating quick meetups, parsing natural language into structured meetup data.
+- **AI Help Chatbot**: Floating help assistant answering platform feature questions, using OpenAI GPT-4o-mini with comprehensive platform knowledge.
 
 ## External Dependencies
 
@@ -67,7 +58,7 @@ VIRAL FEATURES (Explore Page at /explore): Added comprehensive viral growth feat
 
 ### AI & Machine Learning
 - **Anthropic Claude API**: AI services.
-- **OpenAI**: AI services (fallback for AI Bio Generator).
+- **OpenAI**: AI services (for AI Bio Generator and Help Chatbot).
 
 ### Communication Services
 - **SendGrid**: Email delivery.
@@ -87,5 +78,5 @@ VIRAL FEATURES (Explore Page at /explore): Added comprehensive viral growth feat
 - **StubHub**: Premium event listings.
 - **Ticketmaster**: Event listings.
 - **Meetup**: Local event feeds.
-- **Luma**: Event calendar sync via API (requires Luma Plus). Tables: `event_integrations`, `external_events`. Services: `server/services/lumaClient.ts`, `server/services/eventSyncService.ts`. API: `/api/integrations`, `/api/external-events`. Frontend: `/integrations` page.
-- **Partiful**: Event calendar sync via ICS feed URL. Service: `server/services/icsParser.ts`. Shares same tables and API endpoints as Luma integration.
+- **Luma**: Event calendar sync via API.
+- **Partiful**: Event calendar sync via ICS feed URL.

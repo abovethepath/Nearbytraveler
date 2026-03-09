@@ -11890,10 +11890,10 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/events", async (req, res) => {
     const _eventsStart = Date.now();
     try {
-      const { city, state, country, userId } = req.query;
+      const { city, state, country, userId, calendarView } = req.query;
 
-      // 60-second server-side cache keyed by city + userId
-      const cacheKey = `events:v2:${city || 'all'}:${userId || 'anon'}`;
+      // 60-second server-side cache keyed by city + userId + calendarView
+      const cacheKey = `events:v2:${city || 'all'}:${userId || 'anon'}:${calendarView ? 'cal' : 'list'}`;
       const cachedEvents = await cache.get<any[]>(cacheKey);
       if (cachedEvents) {
         console.log(`⚡ CACHE HIT /api/events city="${city || 'all'}" — ${cachedEvents.length} events in ${Date.now() - _eventsStart}ms`);
@@ -11914,7 +11914,8 @@ Questions? Just reply to this message. Welcome aboard!
         // Search events in relevant cities - OPTIMIZED single query
         // Also includes events where the searched city is in additionalCities for cross-metro visibility
         const now = new Date();
-        const sixWeeksFromNow = new Date(now.getTime() + (42 * 24 * 60 * 60 * 1000));
+        const lookAheadDays = calendarView ? 120 : 42;
+        const sixWeeksFromNow = new Date(now.getTime() + (lookAheadDays * 24 * 60 * 60 * 1000));
         
         // PERFORMANCE FIX: Use single query with OR condition instead of loop
         const { inArray, arrayContains } = await import('drizzle-orm');
@@ -12021,7 +12022,8 @@ Questions? Just reply to this message. Welcome aboard!
         // Return ONLY USER-CREATED events in next 6 weeks if no city specified
         // FILTER OUT AI-GENERATED EVENTS: Only include events with organizer_id > 0
         const now = new Date();
-        const sixWeeksFromNow = new Date(now.getTime() + (42 * 24 * 60 * 60 * 1000));
+        const lookAheadNoCityDays = calendarView ? 120 : 42;
+        const sixWeeksFromNow = new Date(now.getTime() + (lookAheadNoCityDays * 24 * 60 * 60 * 1000));
         
         eventsQuery = await db.select().from(events)
           .where(and(
