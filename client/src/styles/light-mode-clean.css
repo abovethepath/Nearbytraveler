@@ -363,7 +363,119 @@
 }
 
 /* ──────────────────────────────────────────────────────────────
-   11. PROTECT — elements that must keep their colors
+   11. FIND TRAVELERS (Advanced Search) modal → light mode
+   ────────────────────────────────────────────────────────────── */
+
+:root:not(.dark) [data-testid="advanced-search-modal"] {
+  background: #FFFFFF !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] h2,
+:root:not(.dark) [data-testid="advanced-search-modal"] h3,
+:root:not(.dark) [data-testid="advanced-search-modal"] label {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] p {
+  color: #6b7280 !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] input {
+  background-color: #FFFFFF !important;
+  border-color: #d1d5db !important;
+  color: #000000 !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] input::placeholder {
+  color: #9ca3af !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] button.rounded-full.bg-transparent {
+  background-color: #f3f4f6 !important;
+  color: #000000 !important;
+  border-color: #d1d5db !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] button.rounded-full.bg-transparent:hover {
+  background-color: #e5e7eb !important;
+  border-color: #9ca3af !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] button.rounded-full.bg-orange-500 {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  border-color: #000000 !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] [data-testid="button-search-top"] {
+  background: #000000 !important;
+  background-image: none !important;
+  color: #FFFFFF !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] [data-testid="button-search-top"]:hover {
+  background: #1a1a1a !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] [data-testid="button-clear-top"] {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] [data-testid="button-close-search-bottom"] {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+  border-color: #000000 !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] [data-testid="button-close-search-bottom"]:hover {
+  background: #1a1a1a !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] [data-testid="button-close-search-sticky"] {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+  border-color: #d1d5db !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] button[data-state] {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+  border-color: #d1d5db !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] button[data-state] span {
+  color: #000000 !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] button[data-state] svg {
+  color: #6b7280 !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] .border-orange-200 {
+  border-color: #e5e7eb !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] .bg-orange-50 {
+  background-color: #f9fafb !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] .text-orange-600 {
+  color: #000000 !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] .border-t {
+  border-color: #e5e7eb !important;
+}
+
+:root:not(.dark) [data-testid="advanced-search-modal"] .border-b {
+  border-color: #e5e7eb !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   12. PROTECT — elements that must keep their colors
    ────────────────────────────────────────────────────────────── */
 
 /* Available Now green dot — never touch */

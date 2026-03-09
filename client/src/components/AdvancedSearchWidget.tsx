@@ -235,6 +235,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
         className="relative w-full max-w-4xl max-h-[85vh] md:max-h-[90vh] mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-2xl flex flex-col"
         onClick={(e) => e.stopPropagation()}
         style={{ touchAction: 'auto' }}
+        data-testid="advanced-search-modal"
       >
         {/* Sticky X Button - Always visible floating in top-right corner */}
         <Button 
