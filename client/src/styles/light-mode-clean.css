@@ -319,7 +319,51 @@
 }
 
 /* ──────────────────────────────────────────────────────────────
-   10. PROTECT — elements that must keep their colors
+   10. EVENTS PAGE — Create/AI/Import cards → clean white
+   ────────────────────────────────────────────────────────────── */
+
+:root:not(.dark) [data-testid="create-event-main-cta"],
+:root:not(.dark) [data-testid="ai-create-event-cta"],
+:root:not(.dark) [data-testid="import-event-cta"] {
+  background: #FFFFFF !important;
+  background-image: none !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+:root:not(.dark) [data-testid="create-event-main-cta"]:hover,
+:root:not(.dark) [data-testid="ai-create-event-cta"]:hover,
+:root:not(.dark) [data-testid="import-event-cta"]:hover {
+  background: #f9fafb !important;
+  border-color: #d1d5db !important;
+}
+
+:root:not(.dark) [data-testid="create-event-main-cta"] h2,
+:root:not(.dark) [data-testid="ai-create-event-cta"] h2,
+:root:not(.dark) [data-testid="import-event-cta"] h2 {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+:root:not(.dark) [data-testid="create-event-main-cta"] p,
+:root:not(.dark) [data-testid="ai-create-event-cta"] p,
+:root:not(.dark) [data-testid="import-event-cta"] p {
+  color: #6b7280 !important;
+}
+
+:root:not(.dark) [data-testid="create-event-main-cta"] .bg-white\/10,
+:root:not(.dark) [data-testid="ai-create-event-cta"] .bg-white\/10,
+:root:not(.dark) [data-testid="import-event-cta"] .bg-white\/10 {
+  background-color: #f3f4f6 !important;
+}
+
+:root:not(.dark) [data-testid="create-event-main-cta"] svg,
+:root:not(.dark) [data-testid="ai-create-event-cta"] svg,
+:root:not(.dark) [data-testid="import-event-cta"] svg {
+  color: #000000 !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   11. PROTECT — elements that must keep their colors
    ────────────────────────────────────────────────────────────── */
 
 /* Available Now green dot — never touch */
