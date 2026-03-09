@@ -290,7 +290,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
             lineHeight: 1,
           }}
         >
-          {isMobileWeb ? 'Tap a tab to explore' : 'Click a tab to explore'}
+          {isMobileWeb ? 'Tap a tab to open' : 'Click a tab to open'}
         </p>
       )}
     </div>
