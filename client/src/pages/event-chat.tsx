@@ -111,13 +111,15 @@ export default function EventChat() {
   }
 
   return (
-    <WhatsAppChat
-      chatId={chatroom.id}
-      chatType="event"
-      title={event.title}
-      subtitle={new Date(event.date).toLocaleDateString()}
-      currentUserId={userId}
-      eventId={eventId}
-    />
+    <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
+      <WhatsAppChat
+        chatId={chatroom.id}
+        chatType="event"
+        title={event.title}
+        subtitle={new Date(event.date).toLocaleDateString()}
+        currentUserId={userId}
+        eventId={eventId}
+      />
+    </div>
   );
 }

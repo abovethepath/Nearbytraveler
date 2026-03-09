@@ -125,13 +125,15 @@ export default function QuickMeetupChat() {
   }
 
   return (
-    <WhatsAppChat
-      chatId={chatroom.id}
-      chatType="meetup"
-      meetupId={meetupId}
-      title={meetup.title}
-      subtitle={`${meetup.participantCount || 1} participants`}
-      currentUserId={user.id}
-    />
+    <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
+      <WhatsAppChat
+        chatId={chatroom.id}
+        chatType="meetup"
+        meetupId={meetupId}
+        title={meetup.title}
+        subtitle={`${meetup.participantCount || 1} participants`}
+        currentUserId={user.id}
+      />
+    </div>
   );
 }

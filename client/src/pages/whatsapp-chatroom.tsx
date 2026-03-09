@@ -98,14 +98,16 @@ export default function WhatsAppChatroom() {
   if (isMember) {
     const isPrivateDM = chatroom.city === 'Private' && chatroom.country === 'DM';
     return (
-      <WhatsAppChat
-        chatId={chatroomId}
-        chatType="chatroom"
-        title={chatroom.name}
-        subtitle={`${chatroom.memberCount} members`}
-        currentUserId={currentUserId}
-        onBack={() => (isPrivateDM ? navigate(-1 as any) : navigate('/chatrooms'))}
-      />
+      <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
+        <WhatsAppChat
+          chatId={chatroomId}
+          chatType="chatroom"
+          title={chatroom.name}
+          subtitle={`${chatroom.memberCount} members`}
+          currentUserId={currentUserId}
+          onBack={() => (isPrivateDM ? navigate(-1 as any) : navigate('/chatrooms'))}
+        />
+      </div>
     );
   }
 

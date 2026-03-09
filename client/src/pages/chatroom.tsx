@@ -78,12 +78,14 @@ export default function ChatroomPage() {
   }
 
   return (
-    <WhatsAppChat
-      chatId={chatroomId}
-      chatType="chatroom"
-      title={chatroom.name}
-      subtitle={`${chatroom.memberCount} members`}
-      currentUserId={user?.id}
-    />
+    <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
+      <WhatsAppChat
+        chatId={chatroomId}
+        chatType="chatroom"
+        title={chatroom.name}
+        subtitle={`${chatroom.memberCount} members`}
+        currentUserId={user?.id}
+      />
+    </div>
   );
 }
