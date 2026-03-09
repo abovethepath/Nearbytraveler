@@ -698,12 +698,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
                     {/* See all modal */}
                     <Dialog open={seeAllCommonOpen} onOpenChange={setSeeAllCommonOpen}>
-                      <DialogContent className="w-[95%] sm:max-w-xl max-h-[85vh] flex flex-col bg-white dark:bg-gray-900 p-0 overflow-hidden border-none shadow-2xl rounded-2xl sm:rounded-3xl">
+                      <DialogContent className="w-[95%] sm:max-w-xl h-fit max-h-[85vh] flex flex-col bg-white dark:bg-gray-900 p-0 overflow-hidden border-none shadow-2xl rounded-2xl sm:rounded-3xl focus:outline-none">
                         <DialogHeader className="p-6 pb-2 sm:p-8 sm:pb-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
                           <DialogTitle className="text-gray-900 dark:text-white">What You Have in Common</DialogTitle>
                         </DialogHeader>
 
-                        <div className="flex-1 overflow-y-auto p-6 pt-2 sm:p-8 sm:pt-4 space-y-5 custom-scrollbar">
+                        <div className="flex-1 overflow-y-auto p-6 pt-2 sm:p-8 sm:pt-4 space-y-5 custom-scrollbar touch-pan-y">
                           <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 px-4 py-4 shrink-0">
                             <div className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white leading-tight">
                               {totalCommon} {totalCommon === 1 ? "thing" : "things"} in common
