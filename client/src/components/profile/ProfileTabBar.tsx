@@ -103,6 +103,27 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
 
   return (
     <div>
+      {showHint && (
+        <p
+          style={{
+            fontSize: '12px',
+            color: isHero ? '#ffffff' : '#111827',
+            fontStyle: 'italic',
+            textAlign: 'center',
+            marginBottom: '6px',
+            lineHeight: 1.4,
+            fontWeight: 600,
+            textShadow: isHero ? '0 1px 4px rgba(0,0,0,0.8)' : 'none',
+            background: isHero ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.85)',
+            display: 'inline-block',
+            width: '100%',
+            padding: '4px 0',
+            borderRadius: '6px',
+          }}
+        >
+          {isMobileWeb ? '👆 Tap a tab to open' : '👆 Click a tab to open'}
+        </p>
+      )}
       <div
         className={`profile-tabbar ${isHero ? "profile-tabbar-hero" : "profile-tabbar-standalone"} flex ${
           isDesktopHero
@@ -279,20 +300,6 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           </Button>
         )}
       </div>
-      {showHint && (
-        <p
-          style={{
-            fontSize: '11px',
-            color: isHero ? 'rgba(255,255,255,0.4)' : 'rgba(107,114,128,0.7)',
-            fontStyle: 'italic',
-            textAlign: 'center',
-            marginTop: '6px',
-            lineHeight: 1,
-          }}
-        >
-          {isMobileWeb ? 'Tap a tab to open' : 'Click a tab to open'}
-        </p>
-      )}
     </div>
   );
 }
