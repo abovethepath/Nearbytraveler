@@ -2486,6 +2486,8 @@ body.native-ios-app .native-ios-messages {
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
+    bottom: 0 !important;
+    height: 100dvh;
     overflow: hidden !important;
     z-index: 50 !important;
     touch-action: none;
@@ -2494,6 +2496,9 @@ body.native-ios-app .native-ios-messages {
   body:not([data-native-ios="true"]):not(.native-ios-app) [data-chat-page="true"] .chat-input-area {
     padding-bottom: env(safe-area-inset-bottom, 0px) !important;
     margin-bottom: 0 !important;
+    visibility: visible !important;
+    display: block !important;
+    opacity: 1 !important;
   }
 }
 
