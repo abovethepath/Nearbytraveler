@@ -930,7 +930,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         </DialogHeader>
 
         <ScrollArea className="flex-1 px-3 py-2 overflow-y-auto">
-          <div className="space-y-2">
+          <div className="flex flex-col min-h-full justify-end space-y-2">
             {groupChatMessages.length === 0 ? (
               <div className="text-center py-8">
                 <MessageCircle className="h-10 w-10 mx-auto mb-3 text-gray-300 dark:text-gray-600" />

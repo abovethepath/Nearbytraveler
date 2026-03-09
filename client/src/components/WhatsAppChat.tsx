@@ -1966,7 +1966,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                     onClick={() => setMoreMenuOpen(true)}
                     data-testid="button-chat-more-mobile"
                   >
-                    <img src="/new-logo.png" alt="Menu" className="h-7 w-[28px] object-contain" />
+                    <img src="/new-logo.png" alt="Menu" className="h-9 w-[36px] object-contain" />
                   </button>
                 </SheetTrigger>
                 <SheetContent side="bottom" className="bg-gray-900 border-t border-gray-700 text-white">
@@ -2410,7 +2410,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                       >
                         {!isOwnMessage && showAvatar && (
                           <p 
-                            className="text-xs font-semibold mb-0.5 cursor-pointer hover:underline" 
+                            className="text-[13px] font-semibold mb-0.5 cursor-pointer hover:underline" 
                             style={{ color: '#4ade80' }}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -2431,7 +2431,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                           const src = (message.mediaUrl && String(message.mediaUrl)) || (isImage ? message.content : '');
 
                           if (!isImage) {
-                            return <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>;
+                            return <p className="text-[15px] whitespace-pre-wrap break-words">{message.content}</p>;
                           }
 
                           return (
@@ -2451,8 +2451,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         })()}
                         
                         <div className="flex items-center justify-end gap-1 mt-0.5">
-                          <span className="text-[10px] opacity-70">{formatTimestamp(message.createdAt)}</span>
-                          {message.isEdited && <span className="text-[10px] opacity-60 italic" data-testid="text-edited-indicator">Edited</span>}
+                          <span className="text-[11px] opacity-70">{formatTimestamp(message.createdAt)}</span>
+                          {message.isEdited && <span className="text-[11px] opacity-60 italic" data-testid="text-edited-indicator">Edited</span>}
                         </div>
                       </div>
                     )}
