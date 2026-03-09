@@ -1,0 +1,44 @@
+Here's the full master audit prompt:
+
+Replit Prompt:
+Perform a full mobile responsive audit of the NearbyTraveler homepage on screens 390px–430px wide (iPhone standard sizes). Fix every layout issue found:
+1. Hero Section
+
+Headline text must never break mid-word or hyphenate — use hyphens: none and word-break: keep-all
+Font size should scale down gracefully using clamp() so all text fits without wrapping awkwardly
+Hero image should be fully contained and not overflow horizontally
+Tagline "Travel doesn't change you. The people you meet do." should be centered and fully visible
+
+2. Top Navbar
+
+Logo should never be squished — use object-fit: contain with a proper fixed width
+Bell icon and avatar should stay right-aligned and not overlap anything
+Navbar must be fully static — position: fixed, never moves on scroll or keyboard open
+
+3. You're Live Bar
+
+Must never truncate the hangout activity name with "..."
+Allow the bar to wrap to 2 lines if the content is too long
+Timer, activity name, and close button must all be visible simultaneously
+
+4. Meet Requests Section
+
+"Meet Requests (2)" heading must be fully visible and not clipped
+Each request card must be full width with avatar, username, message, Accept and Pass buttons all visible
+Accept and Pass buttons must be right-aligned and never pushed off screen
+Cards must be independently actionable — accepting one cannot affect others
+
+5. Discover Section
+
+"Discover People" title must never be truncated — move to its own line above the filter buttons
+Filters and Available Now buttons on their own second line, left-aligned
+Available Now dropdown must open within the viewport and not overflow right
+Traveler cards in the feed must be fully responsive with no horizontal bleed
+No horizontal scrolling anywhere in this section
+
+6. General
+
+Audit the entire page for horizontal overflow — nothing should bleed past the viewport
+Add overflow-x: hidden to the page root and any section containers as a safeguard
+All tap targets (buttons, cards, links) must be at least 44px tall for comfortable mobile tapping
+Consistent padding of at least 16px on left and right margins throughout the page

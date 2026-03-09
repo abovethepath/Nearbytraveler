@@ -2486,11 +2486,10 @@ body.native-ios-app .native-ios-messages {
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
-    bottom: 0 !important;
-    height: 100dvh !important;
-    max-height: none !important;
     overflow: hidden !important;
     z-index: 50 !important;
+    touch-action: none;
+    -webkit-overflow-scrolling: auto;
   }
   body:not([data-native-ios="true"]):not(.native-ios-app) [data-chat-page="true"] .chat-input-area {
     padding-bottom: env(safe-area-inset-bottom, 0px) !important;
