@@ -75,11 +75,18 @@ export default function Auth() {
           localStorage.removeItem('current_user');
           localStorage.removeItem('auth_token');
           
-          // Now fetch the full user data from the server session (source of truth)
-          const fullUserRes = await fetch('/api/auth/user', { credentials: 'include' });
           let fullUser = data.user;
-          if (fullUserRes.ok) {
-            fullUser = await fullUserRes.json();
+          try {
+            const fullUserRes = await fetch('/api/auth/user', { credentials: 'include' });
+            if (fullUserRes.ok) {
+              fullUser = await fullUserRes.json();
+            } else {
+              const byIdRes = await fetch(`/api/users/${data.user.id}`, { credentials: 'include' });
+              if (byIdRes.ok) {
+                fullUser = await byIdRes.json();
+              }
+            }
+          } catch {
           }
 
           // Update global auth state immediately (avoids async auth lag + route flashes).

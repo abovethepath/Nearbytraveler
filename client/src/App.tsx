@@ -327,6 +327,7 @@ function Router() {
   const [authInitialized, setAuthInitialized] = useState(cachedUser !== null);
   const [isVerifyingAuth, setIsVerifyingAuth] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const loginSucceededAtRef = React.useRef<number>(0);
   const LOGIN_PENDING_KEY = "nt_login_pending";
   const [loginPending, setLoginPending] = useState(() => {
     try {
@@ -673,16 +674,18 @@ function Router() {
         }
 
         if (res.status === 401) {
-          // No valid session → treat as logged out immediately.
+          const msSinceLogin = Date.now() - loginSucceededAtRef.current;
+          if (msSinceLogin < 10_000) {
+            console.log("Auth sync: 401 within login grace period, keeping user state");
+            return;
+          }
           clearLocalAuthState("syncAuthFromServer:401");
           setUser(null);
           setLoginPendingFlag(false);
           setIsAuthenticating(false);
 
-          // Redirect unauthenticated users away from protected routes.
           if (!isPublicRoute && !(authLoading || !authInitialized || isLoading)) {
             try {
-              // Preserve intended destination for after login.
               if (!isLandingPage) localStorage.setItem("postAuthRedirect", location);
             } catch {
               // ignore
@@ -836,11 +839,15 @@ function Router() {
         }
         
         if (response.status === 401) {
-          // No session cookie / expired session — clear cache so next load shows login.
-          writeSessionCache(null);
-          clearLocalAuthState("checkServerAuth:401");
-          setUser(null);
-          setLoginPendingFlag(false);
+          const msSinceLogin = Date.now() - loginSucceededAtRef.current;
+          if (msSinceLogin < 10_000) {
+            console.log("Initial auth check: 401 within login grace period, skipping clear");
+          } else {
+            writeSessionCache(null);
+            clearLocalAuthState("checkServerAuth:401");
+            setUser(null);
+            setLoginPendingFlag(false);
+          }
         } else {
           console.log("⚠️ Server auth check returned non-OK:", response.status);
         }
@@ -1022,11 +1029,11 @@ function Router() {
       },
       login: (userData: User, token?: string) => {
         console.log('AuthContext login called with:', userData?.username || 'null');
-        // CRITICAL: Clear ALL old user data first to prevent stale data from previous user
         authStorage.clearUser();
         invalidateUserCache();
         clearSessionInvalid();
         markSessionVerified();
+        loginSucceededAtRef.current = Date.now();
         setUser(userData);
       },
       isAuthenticated: actualAuth,
@@ -1090,8 +1097,6 @@ function Router() {
     }
   }, [user?.id, normalizedPath, authValue.authLoading, authValue.isAuthenticated, setLocation]);
 
-  // Web route guard: never redirect while auth is hydrating/validating.
-  // Only redirect to /auth when we definitively know there's no authenticated user.
   useEffect(() => {
     if (isNativeIOSApp()) return;
     if (authValue.authLoading) return;
@@ -1099,6 +1104,7 @@ function Router() {
     if (loginPending) return;
     if (isPublicRoute) return;
     if (authValue.isAuthenticated) return;
+    if (Date.now() - loginSucceededAtRef.current < 10_000) return;
 
     try {
       localStorage.setItem("postAuthRedirect", location);
@@ -1201,10 +1207,8 @@ function Router() {
 
     // Session-cookie-only auth: localStorage is NOT an auth source. If the server session
     // hasn't been verified in this tab, treat the user as logged out.
-    const isActuallyAuthenticated = authValue.isAuthenticated || (!!effectiveUser && isSessionVerified());
+    const isActuallyAuthenticated = authValue.isAuthenticated || (!!effectiveUser && isSessionVerified()) || (Date.now() - loginSucceededAtRef.current < 10_000 && !!effectiveUser);
 
-    // Protected-route handling for unauthenticated users: show landing here (redirect is handled
-    // by the route-guard effect so the URL also updates to "/").
     if (!isActuallyAuthenticated && !isPublicRoute) {
       return <LandingStreamlined />;
     }
@@ -1882,8 +1886,7 @@ function Router() {
   }
 
 
-  // NAVIGATION RELIABILITY FIX: Check ALL authentication sources immediately
-  const hasAnyAuthEvidence = authValue.isAuthenticated;
+  const hasAnyAuthEvidence = authValue.isAuthenticated || (Date.now() - loginSucceededAtRef.current < 10_000 && !!user?.id);
 
   return (
     <AuthContext.Provider value={authValue}>

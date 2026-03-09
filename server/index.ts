@@ -598,9 +598,10 @@ app.use(
     cookie: {
       secure: true,
       httpOnly: true,
-      sameSite: "none",
+      sameSite: "none" as const,
       maxAge: 365 * 24 * 60 * 60 * 1000,
-      path: "/", // Explicit path
+      path: "/",
+      partitioned: true,
     },
     name: "nt.sid",
   }),
