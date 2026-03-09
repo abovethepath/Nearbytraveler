@@ -1823,10 +1823,10 @@ export default function Home() {
 
             <div className="home-discover-people relative z-10 bg-white dark:bg-gray-900 rounded-3xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
             
-            <div className="flex items-center justify-between gap-2 mb-6 flex-nowrap" data-testid="discover-people-section">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6" data-testid="discover-people-section">
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 <h2
-                  className="text-xl sm:text-2xl font-black bg-gradient-to-r from-blue-600 via-cyan-600 to-orange-500 bg-clip-text text-transparent whitespace-nowrap truncate min-w-0"
+                  className="text-xl sm:text-2xl font-black bg-gradient-to-r from-blue-600 via-cyan-600 to-orange-500 bg-clip-text text-transparent"
                   style={{ WebkitTextFillColor: "transparent" }}
                 >
                   {activeFilter === "travel-dates" 
@@ -1902,7 +1902,7 @@ export default function Home() {
                 )}
               </div>
               
-              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 self-start sm:self-auto">
                 <Button
                   variant="outline"
                   size="sm"
