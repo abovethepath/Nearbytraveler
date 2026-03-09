@@ -90,16 +90,16 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
-  // Explicit tab label + badge styles (requested).
   const heroTextStyle = { color: "#FFFFFF" } as React.CSSProperties;
-  // Light mode → black numbers on white badge; Dark mode → white numbers on dark badge.
-  const badgeStyle = {
-    backgroundColor: isDarkMode ? "rgba(0,0,0,0.60)" : "rgba(255,255,255,0.90)",
-    color: isDarkMode ? "#FFFFFF" : "#000000",
-  } as React.CSSProperties;
+  const badgeStyle = isHero
+    ? { backgroundColor: "rgba(0,0,0,0.60)", color: "#FFFFFF" } as React.CSSProperties
+    : {
+        backgroundColor: isDarkMode ? "rgba(0,0,0,0.60)" : "rgba(255,255,255,0.90)",
+        color: isDarkMode ? "#FFFFFF" : "#000000",
+      } as React.CSSProperties;
 
   const showHint = !isOwnProfile && !hasClickedTab;
-  const firstTabPulseClass = showHint ? "profile-tab-pulse" : "";
+  const firstTabPulseClass = "";
 
   return (
     <div>
