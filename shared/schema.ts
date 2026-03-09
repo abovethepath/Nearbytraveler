@@ -3046,4 +3046,32 @@ export const insertExternalEventSchema = createInsertSchema(externalEvents).omit
 export type ExternalEvent = typeof externalEvents.$inferSelect;
 export type InsertExternalEvent = z.infer<typeof insertExternalEventSchema>;
 
+// ==================== ACTIVITY LOG ====================
+export const activityLog = pgTable("activity_log", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  action: text("action").notNull(),
+  category: text("category").notNull().default("all"),
+  title: text("title").notNull(),
+  description: text("description"),
+  targetUserId: integer("target_user_id"),
+  targetUsername: text("target_username"),
+  targetProfileImage: text("target_profile_image"),
+  relatedId: integer("related_id"),
+  relatedType: text("related_type"),
+  relatedTitle: text("related_title"),
+  linkUrl: text("link_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_activity_log_user").on(table.userId),
+  index("idx_activity_log_created").on(table.createdAt),
+]);
+
+export const insertActivityLogSchema = createInsertSchema(activityLog).omit({
+  id: true,
+  createdAt: true,
+});
+export type ActivityLog = typeof activityLog.$inferSelect;
+export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
+
 

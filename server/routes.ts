@@ -92,7 +92,8 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog } from "../shared/schema";
+import { writeActivityLog } from "./services/activityLogService";
 import { alias } from "drizzle-orm/pg-core";
 
 // Helper function to compute public display name based on user preference
@@ -7398,16 +7399,19 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json({ items: [], unreadCount: 0 });
       }
 
+      const sessionUserId = (req as any)?.session?.user?.id;
+      const headerUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
+      const callerId = sessionUserId || headerUserId;
+      if (callerId && callerId !== userId) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
       const notifRows = await db
         .select()
         .from(notifications)
         .where(eq(notifications.userId, userId))
         .orderBy(desc(notifications.createdAt))
         .limit(50);
-
-      if (notifRows.length === 0) {
-        return res.json({ items: [], unreadCount: 0 });
-      }
 
       // Collect actor IDs to fetch in one query
       const actorIds = [...new Set(notifRows.map(n => n.fromUserId).filter((id): id is number => !!id))];
@@ -7488,8 +7492,47 @@ Questions? Just reply to this message. Welcome aboard!
         };
       });
 
-      const unreadCount = items.filter(i => i.unread).length;
-      return res.json({ items, unreadCount });
+      // Fetch activity log entries for this user (last 50)
+      const logRows = await db
+        .select()
+        .from(activityLog)
+        .where(eq(activityLog.userId, userId))
+        .orderBy(desc(activityLog.createdAt))
+        .limit(50);
+
+      const logItems = logRows.map(l => ({
+        id: `log_${l.id}`,
+        kind: 'activity_log' as const,
+        type: l.action,
+        category: l.category as "all" | "events" | "connections" | "messages",
+        title: l.title,
+        preview: l.description,
+        timestamp: l.createdAt,
+        unread: false,
+        actor: l.targetUserId ? {
+          id: l.targetUserId,
+          username: l.targetUsername,
+          name: null,
+          profileImage: l.targetProfileImage,
+        } : null,
+        data: null,
+        connection: null,
+        meetRequest: null,
+        linkUrl: l.linkUrl,
+        relatedId: l.relatedId,
+        relatedType: l.relatedType,
+        relatedTitle: l.relatedTitle,
+      }));
+
+      // Merge notifications and activity log, sorted by timestamp
+      const allItems = [...items, ...logItems].sort((a, b) => {
+        const ta = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+        const tb = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+        return tb - ta;
+      }).slice(0, 50);
+
+      const unreadCount = allItems.filter(i => i.unread).length;
+      return res.json({ items: allItems, unreadCount });
     } catch (error: any) {
       console.error("Error fetching activity feed:", error);
       return res.status(500).json({ message: "Failed to fetch activity feed" });
@@ -10505,6 +10548,26 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`CONNECTION: Successfully created connection request from ${finalRequesterId} to ${finalTargetUserId}:`, newConnection);
 
+      // Log activity: connection request sent
+      {
+        const tId = parseInt(finalTargetUserId || '0');
+        const rId = parseInt(finalRequesterId || '0');
+        try {
+          const [targetUser] = await db.select({ username: users.username, profileImage: users.profileImage }).from(users).where(eq(users.id, tId)).limit(1);
+          writeActivityLog({
+            userId: rId,
+            action: "connection_request_sent",
+            category: "connections",
+            title: "Connection request sent",
+            description: `You sent a connection request to @${targetUser?.username || "someone"}`,
+            targetUserId: tId,
+            targetUsername: targetUser?.username || null,
+            targetProfileImage: targetUser?.profileImage || null,
+            linkUrl: `/profile/${tId}`,
+          });
+        } catch {}
+      }
+
       // Create in-app notification + push over WebSocket (real-time) in-band so the recipient sees it immediately.
       const recipientIdNum = parseInt(finalTargetUserId || '0');
       const requesterIdNum = parseInt(finalRequesterId || '0');
@@ -10651,13 +10714,44 @@ Questions? Just reply to this message. Welcome aboard!
 
           // Load receiver identity for message text
           const receiver = await db
-            .select({ username: users.username, name: users.name })
+            .select({ username: users.username, name: users.name, profileImage: users.profileImage })
             .from(users)
             .where(eq(users.id, receiverId))
             .then((r) => r[0]);
 
           const receiverUsername = receiver?.username || "someone";
           const receiverName = receiver?.name || receiverUsername;
+
+          // Load requester identity for activity log
+          const requester = await db
+            .select({ username: users.username, profileImage: users.profileImage })
+            .from(users)
+            .where(eq(users.id, requesterId))
+            .then((r) => r[0]);
+
+          // Log for both users
+          writeActivityLog({
+            userId: receiverId,
+            action: "connection_accepted",
+            category: "connections",
+            title: "You connected",
+            description: `You connected with @${requester?.username || "someone"}`,
+            targetUserId: requesterId,
+            targetUsername: requester?.username || null,
+            targetProfileImage: requester?.profileImage || null,
+            linkUrl: `/profile/${requesterId}`,
+          });
+          writeActivityLog({
+            userId: requesterId,
+            action: "connection_accepted",
+            category: "connections",
+            title: "Connection accepted",
+            description: `@${receiverUsername} accepted your connection request`,
+            targetUserId: receiverId,
+            targetUsername: receiverUsername,
+            targetProfileImage: receiver?.profileImage || null,
+            linkUrl: `/profile/${receiverId}`,
+          });
 
           const title = "Connection accepted";
           const message = `@${receiverUsername} accepted your connection request`;
@@ -12382,6 +12476,24 @@ Questions? Just reply to this message. Welcome aboard!
       const participant = await storage.joinEvent(eventId, userId, notes, status);
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT JOIN: User ${userId} successfully joined event ${eventId} as ${status}`);
       
+      // Log activity: event RSVP
+      try {
+        const [eventForLog] = await db.select({ title: events.title }).from(events).where(eq(events.id, eventId)).limit(1);
+        if (eventForLog) {
+          writeActivityLog({
+            userId,
+            action: status === 'going' ? "event_rsvp" : "event_interested",
+            category: "events",
+            title: status === 'going' ? "You RSVP'd" : "You're interested",
+            description: status === 'going' ? `You RSVP'd to ${eventForLog.title}` : `You marked interest in ${eventForLog.title}`,
+            relatedId: eventId,
+            relatedType: "event",
+            relatedTitle: eventForLog.title,
+            linkUrl: `/events/${eventId}`,
+          });
+        }
+      } catch {}
+
       // Send SMS notification only if status is 'going' (not for 'interested')
       if (status === 'going') {
         try {
@@ -19863,6 +19975,22 @@ Questions? Just reply to this message. Welcome aboard!
       // Award 1 aura for joining chatroom
       await storage.awardAura(userId, 1, 'joining chatroom');
 
+      // Log activity: community join
+      try {
+        const chatroomName = chatroom[0]?.name || "a community";
+        writeActivityLog({
+          userId,
+          action: "community_joined",
+          category: "all",
+          title: "Joined a community",
+          description: `You joined the ${chatroomName} community`,
+          relatedId: roomId,
+          relatedType: "chatroom",
+          relatedTitle: chatroomName,
+          linkUrl: `/chatroom/${roomId}`,
+        });
+      } catch {}
+
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM JOIN: User ${userId} successfully joined chatroom ${roomId}`);
       res.json({ success: true, message: "Successfully joined chatroom!", newMember: true });
     } catch (error: any) {
@@ -23524,6 +23652,47 @@ Questions? Just reply to this message. Welcome aboard!
       if (!updated) {
         return res.status(404).json({ error: "Meet request not found or not yours" });
       }
+
+      // Log activity for meet request response
+      try {
+        const [fromUser] = await db.select({ username: users.username, profileImage: users.profileImage }).from(users).where(eq(users.id, updated.fromUserId)).limit(1);
+        if (status === "accepted") {
+          writeActivityLog({
+            userId: Number(userId),
+            action: "meet_request_accepted",
+            category: "connections",
+            title: "Meet request accepted",
+            description: `You accepted a meet request from @${fromUser?.username || "someone"}`,
+            targetUserId: updated.fromUserId,
+            targetUsername: fromUser?.username || null,
+            targetProfileImage: fromUser?.profileImage || null,
+            linkUrl: `/profile/${updated.fromUserId}`,
+          });
+          const [acceptorUser] = await db.select({ username: users.username, profileImage: users.profileImage }).from(users).where(eq(users.id, Number(userId))).limit(1);
+          writeActivityLog({
+            userId: updated.fromUserId,
+            action: "meet_request_accepted",
+            category: "connections",
+            title: "Meet request accepted",
+            description: `@${acceptorUser?.username || "someone"} accepted your meet request`,
+            targetUserId: Number(userId),
+            targetUsername: acceptorUser?.username || null,
+            targetProfileImage: acceptorUser?.profileImage || null,
+            linkUrl: `/profile/${userId}`,
+          });
+        } else {
+          writeActivityLog({
+            userId: Number(userId),
+            action: "meet_request_declined",
+            category: "connections",
+            title: "Meet request declined",
+            description: `You declined a meet request from @${fromUser?.username || "someone"}`,
+            targetUserId: updated.fromUserId,
+            targetUsername: fromUser?.username || null,
+            targetProfileImage: fromUser?.profileImage || null,
+          });
+        }
+      } catch {}
 
       let groupChatroomId: number | null = null;
 

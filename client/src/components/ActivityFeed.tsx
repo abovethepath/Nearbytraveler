@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { MessageSquare, Users, MapPin, X, ExternalLink, UserCheck, Loader2 } from "lucide-react";
+import { MessageSquare, Users, MapPin, X, ExternalLink, UserCheck, Loader2, Calendar, Activity as ActivityIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getApiBaseUrl } from "@/lib/queryClient";
@@ -38,8 +38,20 @@ type ActivityNotificationItem = ActivityBase & {
   meetRequest?: { id: number; status: string; fromUserId: number } | null;
 };
 
+type ActivityLogItem = ActivityBase & {
+  kind: "activity_log";
+  type: string;
+  actor?: { id: number; username?: string | null; name?: string | null; profileImage?: string | null } | null;
+  linkUrl?: string | null;
+  relatedId?: number | null;
+  relatedType?: string | null;
+  relatedTitle?: string | null;
+};
+
+type AnyActivityItem = ActivityEventChatItem | ActivityNotificationItem | ActivityLogItem;
+
 type ActivityFeedResponse = {
-  items: Array<ActivityEventChatItem | ActivityNotificationItem>;
+  items: AnyActivityItem[];
   unreadCount: number;
 };
 
@@ -404,7 +416,7 @@ export default function ActivityFeed() {
     },
   });
 
-  const items = (data?.items || []) as Array<ActivityEventChatItem | ActivityNotificationItem>;
+  const items = (data?.items || []) as AnyActivityItem[];
 
   const filtered = useMemo(() => {
     if (filter === "all") return items;
@@ -489,7 +501,14 @@ export default function ActivityFeed() {
       ) : filtered.length === 0 ? (
         <Card className="p-6 text-center bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
           <div className="text-gray-700 dark:text-gray-200 font-semibold">{emptyLabel}</div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">When you have activity, it'll show up here.</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">No activity yet — start exploring to connect with travelers near you!</div>
+          <Button
+            type="button"
+            className="mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+            onClick={() => setLocation("/explore")}
+          >
+            Explore
+          </Button>
         </Card>
       ) : (
         <div className="space-y-3">
@@ -506,6 +525,16 @@ export default function ActivityFeed() {
                   // non-blocking
                 }
                 setLocation(`/event-chat/${item.eventId}`);
+                return;
+              }
+
+              if (item.kind === "activity_log") {
+                const logItem = item as ActivityLogItem;
+                if (logItem.linkUrl) {
+                  setLocation(logItem.linkUrl);
+                } else if (logItem.actor?.id) {
+                  setLocation(`/profile/${logItem.actor.id}`);
+                }
                 return;
               }
 
@@ -535,6 +564,10 @@ export default function ActivityFeed() {
                 setLocation("/connect");
                 return;
               }
+              if (n.actor?.id) {
+                setLocation(`/profile/${n.actor.id}`);
+                return;
+              }
             };
 
             const left = (() => {
@@ -545,6 +578,42 @@ export default function ActivityFeed() {
                 return (
                   <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-950 flex items-center justify-center">
                     <MessageSquare className="h-5 w-5 text-[#2563EB]" />
+                  </div>
+                );
+              }
+
+              if (item.kind === "activity_log") {
+                const logItem = item as ActivityLogItem;
+                if (logItem.actor?.profileImage) {
+                  return <img src={logItem.actor.profileImage} alt="" className="h-10 w-10 rounded-full object-cover" />;
+                }
+                const action = logItem.type;
+                if (action.includes("event") || action.includes("rsvp")) {
+                  return (
+                    <div className="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-950 flex items-center justify-center">
+                      <Calendar className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    </div>
+                  );
+                }
+                if (action.includes("community") || action.includes("chatroom")) {
+                  return (
+                    <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center">
+                      <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    </div>
+                  );
+                }
+                if (action.includes("connection") || action.includes("meet")) {
+                  return (
+                    <InitialAvatar
+                      username={logItem.actor?.username || null}
+                      profileImage={null}
+                      fallbackLabel="NT"
+                    />
+                  );
+                }
+                return (
+                  <div className="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                    <ActivityIcon className="h-5 w-5 text-gray-500" />
                   </div>
                 );
               }
