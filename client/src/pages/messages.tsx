@@ -446,10 +446,11 @@ export default function Messages() {
         ).length;
         
         if (existing) {
+          const isNewer = !existing.lastMessageTime || new Date(message.createdAt).getTime() > new Date(existing.lastMessageTime).getTime();
           conversationMap.set(otherUserId, {
             ...existing,
-            lastMessage: message.content,
-            lastMessageTime: message.createdAt,
+            lastMessage: isNewer ? message.content : existing.lastMessage,
+            lastMessageTime: isNewer ? message.createdAt : existing.lastMessageTime,
             unreadCount: unreadCount,
           });
         } else {
@@ -729,7 +730,7 @@ export default function Messages() {
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto pb-4">
+        <div className="flex-1 min-h-0" style={{ overflowY: 'scroll', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', paddingBottom: '96px' }}>
           {(connectionsLoading || messagesLoading) && conversations.length === 0 && (meetupChatrooms as any[]).length === 0 ? (
             <div className="p-4 flex items-center justify-center">
               <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-blue-500" />

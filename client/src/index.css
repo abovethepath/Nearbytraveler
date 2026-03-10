@@ -376,14 +376,12 @@ body {
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: auto !important;
-    /* GPU-composited layer — keeps the nav painted at all times during scroll */
+    /* GPU-composited layer via translateZ — do NOT add will-change:transform as that
+       combined with position:fixed causes iOS Safari to drop the element during scroll */
     transform: translate3d(0, 0, 0) !important;
     -webkit-transform: translate3d(0, 0, 0) !important;
-    will-change: transform !important;
     backface-visibility: hidden !important;
     -webkit-backface-visibility: hidden !important;
-    /* REMOVED: contain:paint — tells browser to skip rendering when "out of view",
-       which causes the nav to disappear during mobile scroll animations */
     transition: none !important;
     /* Ensure nothing clips or hides this element */
     clip: auto !important;

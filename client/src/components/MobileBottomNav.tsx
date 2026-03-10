@@ -127,7 +127,6 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
         overflow: 'visible',
         transform: 'translateZ(0)',
         WebkitTransform: 'translateZ(0)',
-        willChange: 'transform',
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
       }}
