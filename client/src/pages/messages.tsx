@@ -1023,7 +1023,7 @@ export default function Messages() {
 
               <div
                 ref={inputContainerRef}
-                className="chat-input-area px-4 py-2 pb-[max(5rem,calc(env(safe-area-inset-bottom)+4rem))] md:pb-4 md:mb-4 lg:pb-6 lg:mb-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0"
+                className="chat-input-area px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0"
               >
                 {isExpired ? (
                   <div className="text-center py-2">

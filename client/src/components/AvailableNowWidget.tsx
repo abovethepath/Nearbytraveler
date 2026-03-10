@@ -506,11 +506,11 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 <span className="text-xs text-gray-300 flex-1 min-w-0 truncate">{chat.chatroomName} ({chat.participantCount} people)</span>
                 <button
                   type="button"
-                  onClick={() => { setSelectedGroupChat(chat); setShowGroupChat(true); }}
+                  onClick={() => setLocation(`/messages?meetupChat=${chat.id}`)}
                   className="text-white text-xs font-bold px-3 py-1 rounded-full flex-shrink-0"
                   style={{ backgroundColor: '#FF6B35' }}
                 >
-                  Join
+                  Open
                 </button>
               </div>
             ))}
@@ -547,7 +547,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               <button
                 key={chat.id}
                 type="button"
-                onClick={() => { setSelectedGroupChat(chat); setShowGroupChat(true); }}
+                onClick={() => setLocation(`/messages?meetupChat=${chat.id}`)}
                 className="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl text-sm font-semibold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all"
               >
                 <div className="flex items-center gap-2">
