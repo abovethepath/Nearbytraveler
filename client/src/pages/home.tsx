@@ -1921,8 +1921,7 @@ export default function Home() {
                   className="!inline-flex !items-center !justify-center gap-1.5 bg-white dark:bg-white/10 hover:bg-gray-50 dark:hover:bg-white/15 text-gray-800 dark:text-white border border-gray-200 dark:border-white/15"
                   data-testid="button-open-advanced-filters"
                 >
-                  <Filter className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span>Filters</span>
+                  <Filter className="w-4 h-4" />
                 </Button>
                 {/* Sort Dropdown */}
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
