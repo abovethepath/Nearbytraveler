@@ -2704,11 +2704,6 @@ export function ProfileTabs(props: ProfilePageProps) {
                                     <span className="text-xs text-gray-500 dark:!text-gray-200">
                                       {chatroom.memberCount ?? 0} members
                                     </span>
-                                    {chatroom.unreadCount > 0 && (
-                                      <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30 px-1.5 py-0.5 rounded">
-                                        {chatroom.unreadCount} unread
-                                      </span>
-                                    )}
                                     {activityText && (
                                       <span className="text-xs text-gray-400 dark:!text-gray-200">· {activityText}</span>
                                     )}
