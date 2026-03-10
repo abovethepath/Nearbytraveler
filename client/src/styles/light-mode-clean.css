@@ -652,3 +652,85 @@
 :root:not(.dark) button.available-now-secondary-cta:hover {
   background-color: #1d4ed8 !important;
 }
+
+/* ──────────────────────────────────────────────────────────────
+   16. AVAILABLE NOW ENTRY CARDS — white background in light mode
+   ────────────────────────────────────────────────────────────── */
+
+/* Card container: white bg, orange border retained */
+:root:not(.dark) [data-testid="available-now-entry-card"] {
+  background: #ffffff !important;
+  background-image: none !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* All generic white text inside → near-black */
+:root:not(.dark) [data-testid="available-now-entry-card"] .text-white {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+
+/* Timer text */
+:root:not(.dark) [data-testid="available-now-entry-card"] span.text-xs.font-bold.text-white,
+:root:not(.dark) [data-testid="available-now-entry-card"] span[class*="font-bold"][class*="text-white"] {
+  color: #374151 !important;
+  -webkit-text-fill-color: #374151 !important;
+}
+
+/* Clock icon beside timer */
+:root:not(.dark) [data-testid="available-now-entry-card"] svg.text-white\/70 {
+  color: #6b7280 !important;
+}
+
+/* Gray subdued text */
+:root:not(.dark) [data-testid="available-now-entry-card"] .text-gray-400,
+:root:not(.dark) [data-testid="available-now-entry-card"] [class*="text-gray-4"] {
+  color: #6b7280 !important;
+  -webkit-text-fill-color: #6b7280 !important;
+}
+
+/* Custom note box */
+:root:not(.dark) [data-testid="available-now-entry-card"] .bg-purple-950\/50 {
+  background-color: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+}
+:root:not(.dark) [data-testid="available-now-entry-card"] .text-purple-300 {
+  color: #374151 !important;
+  -webkit-text-fill-color: #374151 !important;
+}
+
+/* Activity pills — lighten dark bg to neutral */
+:root:not(.dark) [data-testid="available-now-entry-card"] span[class*="border"][class*="text-"][class*="rounded-full"] {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+  -webkit-text-fill-color: #374151 !important;
+  border-color: #d1d5db !important;
+}
+
+/* Keep green dot indicators */
+:root:not(.dark) [data-testid="available-now-entry-card"] .bg-green-500 {
+  background-color: #22c55e !important;
+}
+
+/* Pending button */
+:root:not(.dark) [data-testid="available-now-entry-card"] button.bg-gray-700 {
+  background-color: #e5e7eb !important;
+  color: #6b7280 !important;
+  -webkit-text-fill-color: #6b7280 !important;
+}
+
+/* Meet request textarea */
+:root:not(.dark) [data-testid="available-now-entry-card"] textarea {
+  background-color: #ffffff !important;
+  border-color: #d1d5db !important;
+  color: #111827 !important;
+}
+:root:not(.dark) [data-testid="available-now-entry-card"] textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+/* Ghost cancel button */
+:root:not(.dark) [data-testid="available-now-entry-card"] button[class*="text-gray-4"][class*="hover:text-white"] {
+  color: #6b7280 !important;
+  -webkit-text-fill-color: #6b7280 !important;
+}

@@ -651,6 +651,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               {visibleUsers.map((entry: any) => (
                 <div
                   key={entry.id}
+                  data-testid="available-now-entry-card"
                   className="rounded-xl border border-orange-500/35 bg-gradient-to-br from-gray-900 via-amber-950/25 to-gray-900 shadow-[0_0_14px_rgba(251,146,60,0.12)] overflow-hidden"
                 >
                   {/* Top bar: Live Now badge + countdown timer */}
