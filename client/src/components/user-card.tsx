@@ -8,6 +8,7 @@ import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
 import { prefetchedNav } from "@/lib/navigation";
 import { US_STATES } from "@shared/locationData";
 import { useQuery } from "@tanstack/react-query";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 export interface User {
   id: number;
@@ -215,9 +216,28 @@ export default function UserCard({
     queryKey: currentUserId ? [`/api/compatibility/${currentUserId}/${user.id}`] : [],
     enabled: !!currentUserId && !isCurrentUser,
   });
+
+  // Self-fetch connection degree from source of truth endpoint.
+  // Triggers when: no prop provided, OR prop says 0 (batch endpoint can be inaccurate).
+  // Source of truth = /api/connections/degree which uses a reliable SQL JOIN (same as profile page).
+  const needsSelfFetch = !connectionDegree || connectionDegree.mutualCount === 0;
+  const { data: selfFetchedDegree } = useQuery<{ degree: number; mutualCount: number }>({
+    queryKey: ['/api/connections/degree', currentUserId, user.id],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/connections/degree/${currentUserId}/${user.id}`);
+      if (!res.ok) return { degree: 0, mutualCount: 0 };
+      return res.json();
+    },
+    enabled: !!currentUserId && !isCurrentUser && needsSelfFetch,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Prefer: prop with mutualCount > 0, then self-fetched, then prop (even if 0), then 0
+  const effectiveConnectionDegree =
+    (connectionDegree && connectionDegree.mutualCount > 0) ? connectionDegree : (selfFetchedDegree ?? connectionDegree);
   const effectiveCompatibilityData = (compatibilityFromApi as any) ?? compatibilityData;
-  const thingsInCommon = computeCommonStats(effectiveCompatibilityData, connectionDegree).totalCommon;
-  const contactsInCommon = connectionDegree?.mutualCount ?? 0;
+  const thingsInCommon = computeCommonStats(effectiveCompatibilityData, effectiveConnectionDegree).totalCommon;
+  const contactsInCommon = effectiveConnectionDegree?.mutualCount ?? 0;
   const bioText = truncateBioToSentences(user.bio, 3);
 
   return (

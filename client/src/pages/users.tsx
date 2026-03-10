@@ -12,7 +12,13 @@ import { UniversalBackButton } from "@/components/UniversalBackButton";
 
 export default function UsersPage() {
   const [location, setLocation] = useLocation();
-  
+
+  const currentUser = (() => {
+    try {
+      const raw = localStorage.getItem('travelconnect_user');
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  })();
 
   const [searchParams, setSearchParams] = useState<URLSearchParams | null>(null);
   
