@@ -209,7 +209,7 @@ export function UserListModal({ isOpen, onClose, city, state, country, userType,
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold text-sm text-gray-900 dark:text-white">{user.name}</h3>
+                          <h3 className="font-semibold text-sm text-gray-900 dark:text-white">{(user as any).firstName || user.username}</h3>
                           <span className="text-xs text-gray-500 dark:text-gray-400">@{user.username}</span>
                         </div>
                         

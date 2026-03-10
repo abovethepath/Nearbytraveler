@@ -286,7 +286,7 @@ export default function UserCard({
             style={{ background: getUserGradient() }}
           >
             <span className={`font-bold text-white/90 ${compact ? 'text-2xl' : 'text-4xl'}`}>
-              {user.name?.charAt(0) || user.username?.charAt(0) || '?'}
+              {(user as any).firstName?.charAt(0) || user.name?.charAt(0) || user.username?.charAt(0) || '?'}
             </span>
           </div>
         )}

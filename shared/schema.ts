@@ -13,6 +13,8 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   name: text("name").notNull(),
+  firstName: text("first_name"), // Public display name / nickname — shown everywhere
+  lastName: text("last_name"),   // Stored privately, never displayed publicly (admin only)
   userType: text("user_type").notNull(), // 'traveler', 'local', 'business'
   isNewToTown: boolean("is_new_to_town").default(false), // Track "New to Town" users (local users who recently moved)
   newToTownUntil: timestamp("new_to_town_until"), // Timestamp when "New to Town" status expires (9 months from signup)

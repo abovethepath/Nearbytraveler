@@ -17,7 +17,9 @@ export default function SignupAccount() {
   const PHONE_IN_USE_MESSAGE = "This phone number is already linked to an account. Please sign in instead.";
   
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
+    name: "",        // Business only: business name
     contactName: "", // Business only: name of contact person
     username: "",
     email: "",
@@ -148,10 +150,12 @@ export default function SignupAccount() {
     setCurrentError(null);
     setIsLoading(true);
     
-    // Basic validation (business requires contactName too)
+    // Basic validation
     const missingBusiness = userType === 'business' && !formData.contactName?.trim();
-    if (!formData.name || !formData.username || !formData.email || !formData.phoneNumber || !formData.password || missingBusiness) {
-      const errorMsg = userType === 'business' ? "Please fill in Business Name, Name of Contact, Username, Contact Phone, Contact Email, and Password." : "Please fill in all required fields.";
+    const missingNameFields = userType !== 'business' && (!formData.firstName?.trim() || !formData.lastName?.trim());
+    const missingBusinessName = userType === 'business' && !formData.name?.trim();
+    if (missingNameFields || missingBusinessName || !formData.username || !formData.email || !formData.phoneNumber || !formData.password || missingBusiness) {
+      const errorMsg = userType === 'business' ? "Please fill in Business Name, Name of Contact, Username, Contact Phone, Contact Email, and Password." : "Please fill in your first name, last name, and all other required fields.";
       setCurrentError(errorMsg);
       toast({
         title: "Missing fields",
@@ -212,8 +216,13 @@ export default function SignupAccount() {
 
     // Store account data for profile completion (business: name = business name, contactName = name of contact)
     const isNewToTown = sessionStorage.getItem('isNewToTown') === 'true';
+    const firstName = formData.firstName?.trim();
+    const lastName = formData.lastName?.trim();
     const accountData: Record<string, unknown> = {
-      name: formData.name,
+      // For non-business: name = "FirstName LastName" for backward compat; for business: name = business name
+      name: userType === 'business' ? formData.name.trim() : `${firstName} ${lastName}`,
+      firstName: userType !== 'business' ? firstName : undefined,
+      lastName: userType !== 'business' ? lastName : undefined,
       username: formData.username,
       email: formData.email.toLowerCase().trim(),
       confirmEmail: formData.confirmEmail.toLowerCase().trim(),
@@ -253,10 +262,16 @@ export default function SignupAccount() {
     }
   };
 
-  // Check if all fields are properly filled and valid (business also needs contactName)
+  // Check if all fields are properly filled and valid
+  const nonBusinessNameValid = userType !== 'business'
+    ? (formData.firstName.trim() !== "" && formData.lastName.trim() !== "")
+    : true;
+  const businessNameValid = userType === 'business'
+    ? (formData.name.trim() !== "" && formData.contactName?.trim() !== "")
+    : true;
   const isFormValid = 
-    formData.name.trim() !== "" &&
-    (userType !== 'business' || formData.contactName?.trim() !== "") &&
+    nonBusinessNameValid &&
+    businessNameValid &&
     formData.username.trim() !== "" &&
     formData.username.length >= 6 &&
     formData.email.trim() !== "" &&
@@ -320,35 +335,67 @@ export default function SignupAccount() {
             )}
             
             <form onSubmit={handleSubmit} noValidate className="space-y-4">
-              <div>
-                <Label htmlFor="name" className="text-base font-medium text-gray-900 dark:text-white">
-                  {userType === 'business' ? 'Business Name *' : 'Full Name *'}
-                </Label>
-                <Input
-                  id="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder={userType === 'business' ? "Your business name" : 'Your full name'}
-                  className="text-base py-3"
-                  required
-                />
-              </div>
-
-              {userType === 'business' && (
-                <div>
-                  <Label htmlFor="contactName" className="text-base font-medium text-gray-900 dark:text-white">
-                    Name of Contact *
-                  </Label>
-                  <Input
-                    id="contactName"
-                    type="text"
-                    value={formData.contactName}
-                    onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
-                    placeholder="Person managing this account"
-                    className="text-base py-3"
-                    required
-                  />
+              {userType === 'business' ? (
+                <>
+                  <div>
+                    <Label htmlFor="name" className="text-base font-medium text-gray-900 dark:text-white">
+                      Business Name *
+                    </Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="Your business name"
+                      className="text-base py-3"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="contactName" className="text-base font-medium text-gray-900 dark:text-white">
+                      Name of Contact *
+                    </Label>
+                    <Input
+                      id="contactName"
+                      type="text"
+                      value={formData.contactName}
+                      onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
+                      placeholder="Person managing this account"
+                      className="text-base py-3"
+                      required
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="firstName" className="text-base font-medium text-gray-900 dark:text-white">
+                      First name or nickname *
+                    </Label>
+                    <Input
+                      id="firstName"
+                      type="text"
+                      value={formData.firstName}
+                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                      placeholder="Travis"
+                      className="text-base py-3"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName" className="text-base font-medium text-gray-900 dark:text-white">
+                      Last name *
+                    </Label>
+                    <Input
+                      id="lastName"
+                      type="text"
+                      value={formData.lastName}
+                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                      placeholder="Smith"
+                      className="text-base py-3"
+                      required
+                    />
+                  </div>
                 </div>
               )}
 

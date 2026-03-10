@@ -191,9 +191,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             {/* RIGHT: @username + Share Profile, buttons - bio has its own dedicated section below hero */}
             <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0 lg:pl-[23rem]">
               <div className="flex items-center gap-2.5 shrink-0 w-full max-w-full">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold break-all leading-tight crisp-hero-text text-white" style={{ color: '#ffffff' }}>
-                  @{user?.username}
-                </h1>
+                <div className="flex flex-col leading-tight">
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold break-all crisp-hero-text text-white" style={{ color: '#ffffff' }}>
+                    {(user as any)?.firstName || user?.username}
+                  </h1>
+                  {(user as any)?.firstName && (
+                    <span className="text-sm sm:text-base font-medium text-white/80 break-all">@{user?.username}</span>
+                  )}
+                </div>
                 {/* Own profile: ⋮ menu lives on username row (top-right) */}
                 {isOwnProfile && (
                   <div className="ml-auto">
@@ -421,7 +426,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <h1 className="text-xl sm:text-3xl font-extrabold text-white break-all leading-tight crisp-hero-text" style={{ color: '#ffffff' }}>
-                                @{user?.username}
+                                {(user as any)?.firstName || user?.username}
                                 {!isOwnProfile && (() => {
                                   const deg = connectionStatus?.status === 'accepted' ? 1 : (connectionDegreeData as any)?.degree;
                                   const label = deg === 1 ? '1st' : deg === 2 ? '2nd' : deg === 3 ? '3rd' : null;
@@ -429,6 +434,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); openTab('contacts'); setTimeout(() => { document.getElementById('connections-in-common-section')?.scrollIntoView({ behavior: 'smooth' }); }, 150); }}>{label}</sup>;
                                 })()}
                               </h1>
+                              {(user as any)?.firstName && (
+                                <div className="text-sm font-medium text-white/75 break-all mt-0.5">@{user?.username}</div>
+                              )}
                             </div>
 
                             <div className="mt-2 space-y-1">
@@ -988,8 +996,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     <div className="flex items-center gap-2 flex-wrap">
                       <div className="flex items-center gap-2.5 shrink-0 w-fit max-w-full">
                         <div className="lg:inline-flex lg:items-center lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm">
+                          <div className="flex flex-col">
                           <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all !text-white crisp-hero-text" style={{ color: "#ffffff" }}>
-                            @{user?.username}
+                            {(user as any)?.firstName || user?.username}
                             {!isOwnProfile && (() => {
                               const deg = connectionStatus?.status === 'accepted' ? 1 : (connectionDegreeData as any)?.degree;
                               const label = deg === 1 ? '1st' : deg === 2 ? '2nd' : deg === 3 ? '3rd' : null;
@@ -997,6 +1006,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); openTab('contacts'); setTimeout(() => { document.getElementById('connections-in-common-section')?.scrollIntoView({ behavior: 'smooth' }); }, 150); }}>{label}</sup>;
                             })()}
                           </h1>
+                          {(user as any)?.firstName && (
+                            <span className="text-sm font-medium text-white/75 break-all">@{user?.username}</span>
+                          )}
+                          </div>
                           {!isOwnProfile && connectionStatus?.status === 'accepted' && (
                             <span className="ml-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 shrink-0" title="Connected">
                               <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth={2.5}>

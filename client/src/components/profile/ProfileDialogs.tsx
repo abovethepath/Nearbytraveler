@@ -894,6 +894,23 @@ export function ProfileDialogs(props: ProfilePageProps) {
                 </div>
               )}
 
+              {/* FIRST NAME FIELD */}
+              <div className="space-y-2">
+                <FormField
+                  control={profileForm.control}
+                  name={"firstName" as any}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">First name or nickname</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="How people will see your name" className="text-base" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               {/* ALWAYS VISIBLE PERSONAL INFORMATION SECTION */}
               <div className="space-y-6 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border-2 border-blue-200 dark:border-blue-700">
                 <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 flex items-center gap-2">

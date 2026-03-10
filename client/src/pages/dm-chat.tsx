@@ -150,7 +150,7 @@ export default function DMChat() {
     return fullName.trim().split(' ')[0] || '';
   };
 
-  const displayName = otherUser.username || getFirstName(otherUser.name) || 'User';
+  const displayName = (otherUser as any).firstName || otherUser.username || getFirstName(otherUser.name) || 'User';
   const avatarUrl = getProfileImageUrl(otherUser);
 
   // Hometown — the permanent base city

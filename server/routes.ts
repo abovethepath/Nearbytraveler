@@ -3889,6 +3889,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           id: users.id,
           username: users.username,
           name: users.name,
+          firstName: users.firstName,
+          lastName: users.lastName,
           userType: users.userType,
           email: users.email,
           lastLogin: users.lastLogin,
@@ -4157,8 +4159,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           // Find the nearbytrav system account (ID 2)
           const nearbytravAccount = await storage.getUser(2);
           if (nearbytravAccount) {
-            // Extract first name only (take first word of full name)
-            const firstName = (user.name || user.username || 'Traveler').split(' ')[0];
+            const firstName = user.firstName || (user.name || user.username || 'Traveler').split(' ')[0];
             await storage.sendSystemMessage(2, user.id, `Welcome to Nearby Traveler, ${firstName}! ✈️
 
 I'm Aaron - excited to have you join our community connecting travelers and locals through shared interests.
@@ -5391,7 +5392,7 @@ Questions? Just reply to this message!
         try {
           const nearbytravAccount = await storage.getUser(NEARBYTRAV_USER_ID);
           if (nearbytravAccount) {
-            const firstName = (user.name || user.username || 'Traveler').split(' ')[0];
+            const firstName = user.firstName || (user.name || user.username || 'Traveler').split(' ')[0];
             const welcomeMessage = user.userType === 'business'
               ? `Welcome to Nearby Traveler Business, ${firstName}! 🏢
 
@@ -6725,6 +6726,14 @@ Questions? Just reply to this message. Welcome aboard!
       if (updates.websiteUrl !== undefined) {
         updates.website_url = updates.websiteUrl;
         delete updates.websiteUrl;
+      }
+      if (updates.firstName !== undefined) {
+        updates.first_name = updates.firstName;
+        delete updates.firstName;
+      }
+      if (updates.lastName !== undefined) {
+        updates.last_name = updates.lastName;
+        delete updates.lastName;
       }
       if (updates.isVeteran !== undefined) {
         updates.is_veteran = updates.isVeteran;
@@ -23243,6 +23252,8 @@ Questions? Just reply to this message. Welcome aboard!
         username: users.username,
         email: users.email,
         name: users.name,
+        firstName: users.firstName,
+        lastName: users.lastName,
         userType: users.userType,
         bio: users.bio,
         location: users.location,

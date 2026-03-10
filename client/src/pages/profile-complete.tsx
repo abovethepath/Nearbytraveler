@@ -416,6 +416,7 @@ interface EnhancedProfileProps {
 // Profile schema for form validation - conditional based on user type
 const createProfileSchema = (userType: string) => {
   const baseSchema = z.object({
+    firstName: z.string().optional(),
     bio: z.string().optional(),
     hometownCity: z.string().optional(),
     hometownState: z.string().optional(), 
@@ -1783,6 +1784,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           .filter((item: string) => safeGetAllActivities().includes(item));
         
         profileForm.reset({
+          firstName: (user as any).firstName || (user as any).first_name || "",
           bio: user.bio || "",
           businessName: (user as any).business_name || (user as any).businessName || "",
           hometownCity: user.hometownCity || "",
@@ -1811,6 +1813,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
         
         profileForm.reset({
+          firstName: (user as any).firstName || (user as any).first_name || "",
           bio: user.bio || "",
           secretActivities: user.secretActivities || "",
           hometownCity: user.hometownCity || "",
@@ -1881,6 +1884,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             .filter((item: string) => safeGetAllActivities().includes(item));
           
           profileForm.reset({
+            firstName: (user as any).firstName || (user as any).first_name || "",
             bio: user.bio || "",
             businessName: (user as any).business_name || (user as any).businessName || "",
             businessDescription: (user as any).business_description || (user as any).businessDescription || "",
@@ -1915,6 +1919,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         } else {
           // For non-business users, reset with their data
           profileForm.reset({
+            firstName: (user as any).firstName || (user as any).first_name || "",
             bio: user.bio || "",
             secretActivities: user.secretActivities || "",
             hometownCity: user.hometownCity || "",
@@ -2067,6 +2072,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       console.log('📅 FORM INIT - user.dateOfBirth raw:', user.dateOfBirth);
       console.log('📅 FORM INIT - formatted:', user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : "empty");
       profileForm.reset({
+        firstName: (user as any).firstName || (user as any).first_name || "",
         bio: user.bio || "",
         ...(user?.userType === 'business' ? { 
           businessName: (user as any).business_name || (user as any).businessName || "",
@@ -3574,6 +3580,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         console.log('🔥 Re-syncing form with updated user data');
         if (user?.userType !== 'business') {
           profileForm.reset({
+            firstName: (updatedUser as any).firstName || (updatedUser as any).first_name || "",
             bio: updatedUser.bio || "",
             secretActivities: updatedUser.secretActivities || "",
             hometownCity: updatedUser.hometownCity || "",
@@ -3861,7 +3868,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const isNearbytrav = isOwnProfile && currentUser?.username === 'nearbytrav';
 
   type AdminUser = {
-    id: number; username: string; name: string; userType: string; email: string;
+    id: number; username: string; name: string; firstName: string | null; lastName: string | null;
+    userType: string; email: string;
     lastLogin: string | null; createdAt: string; ambassadorStatus: string | null;
     isAdmin: boolean | null; profileImage: string | null; adminNotes: string | null;
     referralCount: number | null; hometownCity: string | null; hometownState: string | null;
@@ -4089,7 +4097,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <span className="font-medium text-sm text-gray-900 dark:text-white">{u.username}</span>
-                            {u.name && u.name !== u.username && (
+                            {(u.firstName || u.lastName) ? (
+                              <span className="text-xs text-gray-500 dark:text-gray-400">· {[u.firstName, u.lastName].filter(Boolean).join(' ')}</span>
+                            ) : u.name && u.name !== u.username && (
                               <span className="text-xs text-gray-500 dark:text-gray-400">· {u.name}</span>
                             )}
                             {u.ambassadorStatus === 'active' && (
