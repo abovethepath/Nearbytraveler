@@ -144,7 +144,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     s.top = '0';
     s.left = '0';
     h.overflow = 'hidden';
-    document.body.classList.add('is-chat-page');
+    if (window.innerWidth < 768) document.body.classList.add('is-chat-page');
     return () => {
       s.overflow = prev.overflow;
       s.position = prev.position;
