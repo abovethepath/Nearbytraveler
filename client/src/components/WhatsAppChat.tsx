@@ -66,6 +66,17 @@ interface WhatsAppChatProps {
   otherUserProfileImage?: string | null;
 }
 
+const EMOJI_CATEGORIES = [
+  { label: "😊 Smileys", emojis: ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😌','😍','🥰','😘','😗','😋','😛','😝','😜','🤪','🤩','🥳','😎','🤓','🧐','😏','😒','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','👾','🤖','😺','😸','😹','😻','😼','😽','🙀','😿','😾'] },
+  { label: "👋 Gestures", emojis: ['👍','👎','👌','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👋','🤚','🖐️','✋','🖖','👏','🙌','🤲','🙏','🤝','💪','🦾','🦵','🦶','👂','🦻','👃','🫀','🫁','🧠','🦷','🦴','👀','👁️','👅','👄'] },
+  { label: "❤️ Hearts", emojis: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💕','💞','💓','💗','💖','💘','💝','💟','❣️','💔','❤️‍🔥','❤️‍🩹','🫶','💋','💌','💍','💎','🏆','🎖️','🥇','🥈','🥉','🎗️','🎀','🎁'] },
+  { label: "🐶 Animals", emojis: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦟','🦗','🕷️','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🦣','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🦬','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐕‍🦺','🐈','🐈‍⬛','🪶','🐓','🦃','🦤','🦚','🦜','🦢','🦩','🕊️'] },
+  { label: "🍕 Food", emojis: ['🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶️','🫑','🧄','🧅','🥔','🍠','🥐','🥖','🫓','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🫔','🌮','🌯','🫙','🧆','🥙','🧫','🥗','🥘','🫕','🍲','🍜','🍝','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥮','🍢','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🧃','🥤','🧋','🍵','☕','🫖','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🧉','🍾','🧊'] },
+  { label: "⚽ Activities", emojis: ['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🏓','🏸','🏒','🏑','🥍','🏏','🪃','🥅','⛳','🪁','🏹','🎣','🤿','🥊','🥋','🎽','🛹','🛼','🛷','⛸️','🥌','🎿','⛷️','🏂','🪂','🏋️','🤼','🤸','⛹️','🤺','🏇','🧘','🏄','🏊','🚣','🧗','🚵','🚴','🏆','🥇','🎪','🎭','🎨','🎬','🎤','🎧','🎼','🎹','🎸','🎺','🎻','🪘','🥁','🎷','🎮','🕹️','🎲','🧩','🃏','🀄','🎯','🎳','🎰'] },
+  { label: "✈️ Travel", emojis: ['🚗','🚕','🚙','🚌','🚎','🏎️','🚓','🚑','🚒','🚐','🛻','🚚','🚛','🚜','🏍️','🛵','🚲','🛴','🛺','🚁','🛸','✈️','🚀','🛩️','🪂','⛵','🚤','🛥️','🛳️','⛴️','🚢','🚂','🚆','🚇','🚊','🚉','🏠','🏡','🏢','🏣','🏤','🏥','🏦','🏨','🏩','🏪','🏫','🏭','🏯','🏰','⛪','🕌','🛕','⛩️','🗺️','🗾','🌋','⛰️','🏔️','🗻','🏕️','🏖️','🏜️','🏝️','🏞️','🌅','🌄','🌠','🎇','🎆','🌇','🌆','🏙️','🌃','🌌','🌉','🌁'] },
+  { label: "💡 Symbols", emojis: ['✨','🌟','⭐','💫','🌈','☀️','🌤️','⛅','🌥️','☁️','🌦️','🌧️','⛈️','🌩️','🌨️','❄️','☃️','⛄','🌬️','💨','💧','💦','🌊','🔥','🌙','🌛','🌜','🌝','🌞','🔆','🔅','🌺','🌸','🌼','🌻','🌹','🌷','🪷','🌱','🌿','☘️','🍀','🎋','🍃','🍂','🍁','🪸','🪨','🌾','💐','🪴','🌵','🌴','🌳','🌲','💯','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🟤','🔶','🔷','🔸','🔹','🔺','🔻','💠','🔘','🔲','🔳','▪️','▫️','◾','◽','◼️','◻️','⬛','⬜','🟥','🟧','🟨','🟩','🟦','🟪','⬛','⬜'] },
+];
+
 export default function WhatsAppChat(props: WhatsAppChatProps) {
   const { chatId, chatType, title, subtitle, currentUserId, onBack, eventId, meetupId } = props;
   const [, navigate] = useLocation();
@@ -94,6 +105,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [notificationsMuted, setNotificationsMuted] = useState(false);
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isWsConnected, setIsWsConnected] = useState(false);
   const [hasConnectedBefore, setHasConnectedBefore] = useState(false);
   const [messagesLoaded, setMessagesLoaded] = useState(false);
@@ -128,6 +140,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       setNotificationsMuted(false);
     }
   }, [muteKey]);
+
+  useEffect(() => {
+    if (!selectedMessage) setShowEmojiPicker(false);
+  }, [selectedMessage]);
 
   // Lock ALL page scroll — position:fixed on body is the only reliable way on iOS Safari
   useEffect(() => {
@@ -2725,7 +2741,45 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                     </button>
                   );
                 })}
+                {/* "+" expand button */}
+                <button
+                  type="button"
+                  onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setShowEmojiPicker(v => !v); }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowEmojiPicker(v => !v); }}
+                  className={`flex flex-col items-center justify-center flex-1 py-2 rounded-xl transition-all ${showEmojiPicker ? 'bg-gray-600' : 'hover:bg-gray-700 active:bg-gray-600'}`}
+                  style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+                >
+                  <span className="text-xl leading-none text-gray-300 font-bold pointer-events-none">{showEmojiPicker ? '✕' : '+'}</span>
+                </button>
               </div>
+
+              {/* Full emoji picker grid */}
+              {showEmojiPicker && (
+                <div className="mt-2 max-h-56 overflow-y-auto rounded-xl bg-gray-900 border border-gray-700">
+                  {EMOJI_CATEGORIES.map((cat) => (
+                    <div key={cat.label} className="px-2 pt-2 pb-1">
+                      <p className="text-[10px] text-gray-500 font-semibold mb-1 uppercase tracking-wider">{cat.label}</p>
+                      <div className="flex flex-wrap gap-0.5">
+                        {cat.emojis.map((emoji) => {
+                          const hasReacted = currentUserId ? selectedMessage.reactions?.[emoji]?.includes(currentUserId) : false;
+                          return (
+                            <button
+                              key={emoji}
+                              type="button"
+                              onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleReaction(selectedMessage.id, emoji); setSelectedMessage(null); }}
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleReaction(selectedMessage.id, emoji); setSelectedMessage(null); }}
+                              className={`text-xl p-1 rounded-lg transition-all ${hasReacted ? 'bg-gray-600' : 'hover:bg-gray-700 active:bg-gray-600'}`}
+                              style={{ touchAction: 'manipulation', cursor: 'pointer', minWidth: '2.25rem', textAlign: 'center' }}
+                            >
+                              {emoji}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Divider */}
