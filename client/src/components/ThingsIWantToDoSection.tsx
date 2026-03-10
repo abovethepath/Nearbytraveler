@@ -733,34 +733,63 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
             </div>
           ))}
 
-          {/* Activity Pills (display only; editing happens in modal) */}
+          {/* Activity Pills */}
           {activities.map((activity: any) => (
-            <div key={`act-${activity.id}`} className="relative">
+            <div key={`act-${activity.id}`} className="group/pill">
               <div
-                className={`${pillBaseClass} hover:shadow-[0_0_12px_rgba(0,0,0,0.12)]`}
+                className={`${pillBaseClass} hover:shadow-[0_0_12px_rgba(0,0,0,0.12)] ${!isMobile && isOwnProfile ? 'relative pr-6' : ''}`}
                 style={pillStyle}
               >
                 {activity.activityName}
+                {!isMobile && isOwnProfile && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteActivity.mutate(activity.id);
+                    }}
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-0 group-hover/pill:opacity-100 transition-opacity w-4 h-4 flex items-center justify-center rounded-full hover:bg-black/20"
+                    title="Remove"
+                    aria-label={`Remove ${activity.activityName}`}
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
               </div>
             </div>
           ))}
 
-          {/* Event Pills (display only; editing happens in modal) */}
+          {/* Event Pills */}
           {events.map((event: any) => {
             const eventId = (event as any).eventId || event.id;
             const eventUrl = `/events/${eventId}`;
             const eventDate = (event as any).date || (event as any).eventDate;
             const isEventPast = eventDate ? new Date(eventDate) < new Date() : false;
             return (
-              <div key={`evt-${event.id}`} className={`relative ${isEventPast ? 'opacity-60' : ''}`}>
-                <Link href={eventUrl}>
-                  <div
-                    className={`${pillBaseClass} cursor-pointer transition-all md:hover:scale-105 hover:shadow-md`}
-                    style={pillStyle}
-                  >
+              <div key={`evt-${event.id}`} className={`group/pill ${isEventPast ? 'opacity-60' : ''}`}>
+                <div
+                  className={`${pillBaseClass} cursor-pointer transition-all md:hover:scale-105 hover:shadow-md ${!isMobile && isOwnProfile ? 'relative pr-6' : ''}`}
+                  style={pillStyle}
+                >
+                  <Link href={eventUrl} className="flex-1 min-w-0">
                     {isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}
-                  </div>
-                </Link>
+                  </Link>
+                  {!isMobile && isOwnProfile && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        deleteEvent.mutate(event);
+                      }}
+                      className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-0 group-hover/pill:opacity-100 transition-opacity w-4 h-4 flex items-center justify-center rounded-full hover:bg-black/20 z-10"
+                      title="Remove"
+                      aria-label={`Remove ${event.eventTitle || (event as any).title}`}
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
               </div>
             );
           })}
