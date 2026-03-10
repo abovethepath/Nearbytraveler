@@ -171,6 +171,7 @@ import CityPage from "@/pages/city";
 import UsersPage from "@/pages/users";
 import AdminDashboard from "@/pages/admin-dashboard";
 import AdminReferrals from "@/pages/admin-referrals";
+import WaitlistAdmin from "@/pages/waitlist-admin";
 import ReferralsPage from "@/pages/referrals";
 import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
@@ -1760,6 +1761,8 @@ function Router() {
         return <AdminDashboard />;
       case '/admin/referrals':
         return <AdminReferrals />;
+      case '/waitlist-admin':
+        return <WaitlistAdmin />;
       case '/referrals':
         return <ReferralsPage />;
       case '/test-city-page':
