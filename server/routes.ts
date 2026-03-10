@@ -3230,7 +3230,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (process.env.NODE_ENV === 'development') console.log(`CONNECTIONS FIXED: Found ${users.length} users for location: ${finalSearchLocation}, type: ${userType}`);
       
       // STEALTH MODE: Filter out users who have hidden themselves from the current searcher
-      if (currentUserId && currentUserId > 0) {
+      // Admin (nearbytrav, user ID 2) bypasses all stealth filters to see every user
+      if (currentUserId && currentUserId > 0 && currentUserId !== 2) {
         const hiddenFromMe = await db.select({ userId: hiddenFromUsers.userId })
           .from(hiddenFromUsers)
           .where(eq(hiddenFromUsers.hiddenFromId, currentUserId));
@@ -22818,8 +22819,9 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       // STEALTH MODE: Filter out users who have hidden themselves from the current searcher
+      // Admin (nearbytrav, user ID 2) bypasses all stealth filters to see every user
       let finalUsers = enhancedUsers;
-      if (userId) {
+      if (userId && parseInt(userId as string) !== 2) {
         const currentUserId = parseInt(userId as string);
         const hiddenFromMe = await db.select({ usrId: hiddenFromUsers.userId })
           .from(hiddenFromUsers)
@@ -23786,7 +23788,8 @@ Questions? Just reply to this message. Welcome aboard!
       }));
 
       const currentUserId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
-      if (currentUserId > 0) {
+      // Admin (nearbytrav, user ID 2) bypasses all stealth/block filters to see every user
+      if (currentUserId > 0 && currentUserId !== 2) {
         const hiddenFromMe = await db.select({ userId: hiddenFromUsers.userId })
           .from(hiddenFromUsers)
           .where(eq(hiddenFromUsers.hiddenFromId, currentUserId));
@@ -24285,7 +24288,8 @@ Questions? Just reply to this message. Welcome aboard!
         ));
       let activeIds = results.map(r => r.userId);
       
-      if (currentUserId > 0) {
+      // Admin (nearbytrav, user ID 2) bypasses all stealth/block filters to see every user
+      if (currentUserId > 0 && currentUserId !== 2) {
         const hiddenFromMe = await db.select({ userId: hiddenFromUsers.userId })
           .from(hiddenFromUsers)
           .where(eq(hiddenFromUsers.hiddenFromId, currentUserId));
