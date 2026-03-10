@@ -470,9 +470,13 @@ export default function Messages() {
       }
     });
 
-    return Array.from(conversationMap.values()).sort((a: any, b: any) => 
-      new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
-    );
+    return Array.from(conversationMap.values())
+      .filter((conv: any) =>
+        conv.lastMessage !== '' || (targetUserId && conv.userId === parseInt(targetUserId))
+      )
+      .sort((a: any, b: any) => 
+        new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
+      );
   }, [connections, messages, allUsers, targetUserId, userId]);
 
   // Auto-select target conversation from URL and scroll it into view
