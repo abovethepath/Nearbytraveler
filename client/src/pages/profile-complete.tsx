@@ -3975,7 +3975,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             ) : !adminUsers?.length ? (
               <div className="px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">No users found.</div>
             ) : (
-              <div className="divide-y divide-gray-100 dark:divide-gray-800">
+              <div className="divide-y divide-gray-100 dark:divide-gray-800 overflow-y-auto max-h-[600px]">
                 {adminUsers.map((u) => (
                   <div
                     key={u.id}
