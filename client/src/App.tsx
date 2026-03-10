@@ -416,7 +416,7 @@ function Router() {
     '/', '/landing', '/landing-new', '/auth', '/auth/signup', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling',
     '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/ambassador', '/ambassador-program', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/finishing-setup', '/quick-login', '/preview-landing', '/preview-first-landing',
-    '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code', '/landing-simple', '/signin', '/launching-soon'
+    '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code', '/landing-simple', '/signin', '/launching-soon', '/waitlist'
   ];
   const isLandingPage = landingPageRoutes.includes(location);
 
@@ -548,6 +548,7 @@ function Router() {
       "/business-card",
       "/qr-code",
       "/launching-soon",
+      "/waitlist",
       "/join",
     ]);
     if (PUBLIC_MARKETING_ROUTES.has(normalizedPath)) return true;
@@ -1394,8 +1395,8 @@ function Router() {
         console.log('Showing Login page');
         return <Auth />;
       }
-      if (location === '/launching-soon') {
-        console.log('Showing Launching Soon page');
+      if (location === '/launching-soon' || location === '/waitlist') {
+        console.log('Showing Launching Soon / Waitlist page');
         return <LaunchingSoon />;
       }
       // Public trip invite landing (must work when logged out)
