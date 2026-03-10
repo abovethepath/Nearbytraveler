@@ -2913,42 +2913,51 @@ export function ProfileTabs(props: ProfilePageProps) {
 
             {/* Events I'm Going To - Only show on own profile for non-business users */}
             {isOwnProfile && user?.userType !== 'business' && eventsGoing.length > 0 && (
-              <Card className="hover:shadow-lg transition-all duration-200 hover:border-green-300 mt-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                <CardHeader className="pb-2">
+              <Card className="mt-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="h-1 w-full bg-gradient-to-r from-green-400 to-emerald-500" />
+                <CardHeader className="pb-3 pt-4">
                   <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2 text-base">
-                    <Calendar className="w-5 h-5 text-green-500" />
-                    Events I'm Going To
-                    <Badge variant="secondary" className="ml-auto bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                    <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center flex-shrink-0">
+                      <Calendar className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    </div>
+                    <span>Events I'm Going To</span>
+                    <span className="ml-auto inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white text-xs font-bold">
                       {eventsGoing.length}
-                    </Badge>
+                    </span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-2 pt-0">
                   {eventsGoing.slice(0, 3).map((event: any) => (
-                    <div 
-                      key={event.id} 
-                      className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                    <div
+                      key={event.id}
+                      className="group flex items-start gap-3 p-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 hover:border-green-300 dark:hover:border-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 cursor-pointer transition-all"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
-                      <h4 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
-                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-green-700 dark:group-hover:text-green-300 transition-colors">
+                          {event.title}
+                        </h4>
+                        <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 text-xs font-medium">
+                            <Calendar className="w-3 h-3" />
+                            {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                            <MapPin className="w-3 h-3" />
+                            {event.city}{event.state && `, ${event.state}`}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                        <MapPin className="w-3 h-3" />
-                        {event.city}{event.state && `, ${event.state}`}
-                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-green-500 flex-shrink-0 mt-0.5 transition-colors" />
                     </div>
                   ))}
                   {eventsGoing.length > 3 && (
-                    <Button 
-                      variant="ghost" 
-                      className="w-full text-sm text-gray-500"
+                    <button
+                      className="w-full text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium py-1 transition-colors"
                       onClick={() => setLocation('/events')}
                     >
-                      View all {eventsGoing.length} events
-                    </Button>
+                      View all {eventsGoing.length} events →
+                    </button>
                   )}
                 </CardContent>
               </Card>
@@ -2956,43 +2965,51 @@ export function ProfileTabs(props: ProfilePageProps) {
 
             {/* Events I'm Interested In - Only show on own profile for non-business users */}
             {isOwnProfile && user?.userType !== 'business' && eventsInterested.length > 0 && (
-              <Card className="hover:shadow-lg transition-all duration-200 hover:border-orange-300 mt-4 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                <CardHeader className="pb-2">
+              <Card className="mt-4 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="h-1 w-full bg-gradient-to-r from-orange-400 to-amber-500" />
+                <CardHeader className="pb-3 pt-4">
                   <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2 text-base">
-                    <Star className="w-5 h-5 text-orange-500" />
-                    Events I'm Interested In
-                    <Badge variant="secondary" className="ml-auto bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                    <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center flex-shrink-0">
+                      <Star className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                    </div>
+                    <span>Events I'm Interested In</span>
+                    <span className="ml-auto inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white text-xs font-bold">
                       {eventsInterested.length}
-                    </Badge>
+                    </span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-2 pt-0">
                   {eventsInterested.slice(0, 3).map((event: any) => (
-                    <div 
-                      key={event.id} 
-                      className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                    <div
+                      key={event.id}
+                      className="group flex items-start gap-3 p-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 hover:border-orange-300 dark:hover:border-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 cursor-pointer transition-all"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
-                      <h4 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1">{event.title}</h4>
-                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-orange-700 dark:group-hover:text-orange-300 transition-colors">
+                          {event.title}
+                        </h4>
+                        <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 text-xs font-medium">
+                            <Calendar className="w-3 h-3" />
+                            {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                            <MapPin className="w-3 h-3" />
+                            {event.city}{event.state && `, ${event.state}`}
+                          </span>
+                        </div>
+                        <button
+                          className="mt-2 text-xs font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 underline underline-offset-2 transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setLocation(`/events/${event.id}`);
+                          }}
+                        >
+                          Mark as Going →
+                        </button>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                        <MapPin className="w-3 h-3" />
-                        {event.city}{event.state && `, ${event.state}`}
-                      </div>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="mt-2 w-full text-xs"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setLocation(`/events/${event.id}`);
-                        }}
-                      >
-                        Change to Going
-                      </Button>
+                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-orange-500 flex-shrink-0 mt-0.5 transition-colors" />
                     </div>
                   ))}
                   {eventsInterested.length > 3 && (
