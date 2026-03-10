@@ -2465,6 +2465,7 @@ body.native-ios-app {
   overflow: hidden !important;
 }
 
+body.is-chat-page .mobile-top-nav,
 body.is-chat-page .mobile-bottom-nav,
 body.is-chat-page .desktop-navbar {
   display: none !important;
@@ -2499,9 +2500,10 @@ body.native-ios-app .native-ios-messages {
 
 /* ===== MOBILE WEB CHAT: FIXED POSITIONING =====
    On mobile web, the keyboard opening changes dvh, which collapses the container
-   and shifts the chat header up. Fix: use position:fixed anchored between the
-   top and bottom navs, same as the native iOS approach. Excluded from native iOS
-   which has its own .native-ios-messages rule. */
+   and shifts the chat header up. Fix: use position:fixed with inset:0 anchored to
+   the full screen. MobileTopNav + MobileBottomNav are hidden via body.is-chat-page.
+   WhatsAppChat manages its own height via the visualViewport JS API for keyboard handling —
+   do NOT override height here with !important or it breaks keyboard resize. */
 @media (max-width: 767px) {
   body:not([data-native-ios="true"]):not(.native-ios-app) [data-chat-page="true"] {
     position: fixed !important;
@@ -2509,9 +2511,6 @@ body.native-ios-app .native-ios-messages {
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
-    height: 100dvh !important;
-    /* Push content below the mobile top nav (36px h-9) + iOS safe-area-inset-top */
-    padding-top: calc(36px + env(safe-area-inset-top, 0px)) !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
     z-index: 50 !important;
@@ -2519,7 +2518,7 @@ body.native-ios-app .native-ios-messages {
     -webkit-overflow-scrolling: auto;
   }
   body:not([data-native-ios="true"]):not(.native-ios-app) [data-chat-page="true"] .chat-input-area {
-    /* Stick input above iPhone home bar; MobileBottomNav is hidden via is-chat-page */
+    /* Stick input above iPhone home bar; both navbars are hidden via is-chat-page */
     padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px) !important;
     margin-bottom: 0 !important;
     visibility: visible !important;

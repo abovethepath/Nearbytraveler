@@ -131,7 +131,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
   }, [muteKey]);
 
-  // Lock ALL page scroll — position:fixed on body is the only reliable way on iOS Safari
+  // Lock ALL page scroll — position:fixed on body is the only reliable way on iOS Safari.
+  // Also add is-chat-page so MobileTopNav + MobileBottomNav are hidden for all chat types.
   useEffect(() => {
     const s = document.body.style;
     const h = document.documentElement.style;
@@ -143,6 +144,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     s.top = '0';
     s.left = '0';
     h.overflow = 'hidden';
+    document.body.classList.add('is-chat-page');
     return () => {
       s.overflow = prev.overflow;
       s.position = prev.position;
@@ -151,6 +153,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       s.top = prev.top;
       s.left = prev.left;
       h.overflow = prev.htmlOverflow;
+      document.body.classList.remove('is-chat-page');
     };
   }, []);
 
