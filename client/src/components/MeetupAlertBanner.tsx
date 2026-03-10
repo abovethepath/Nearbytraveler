@@ -32,6 +32,18 @@ export function MeetupAlertBanner({ userId }: MeetupAlertBannerProps) {
     refetchInterval: 30000,
   });
 
+  const { data: quickMeetupsData } = useQuery<{ meetups: any[] }>({
+    queryKey: ['/api/quick-meetups'],
+    enabled: !!userId,
+    refetchInterval: 60000,
+  });
+
+  const activeMeetupIds = new Set(
+    (quickMeetupsData?.meetups || [])
+      .filter((m: any) => new Date(m.expiresAt) > new Date())
+      .map((m: any) => m.id)
+  );
+
   const markAllReadMutation = useMutation({
     mutationFn: async () => {
       return await apiRequest('PUT', `/api/notifications/${userId}/read-all`);
@@ -41,11 +53,23 @@ export function MeetupAlertBanner({ userId }: MeetupAlertBannerProps) {
     },
   });
 
+  const FALLBACK_TTL_MS = 48 * 60 * 60 * 1000;
+
   const meetupNotifications = notifications.filter((n) => {
     if (n.isRead || n.type !== 'quick_meetup_nearby') return false;
     try {
       const d = n.data ? JSON.parse(n.data) : {};
+
       if (d.expiresAt && new Date(d.expiresAt) < new Date()) return false;
+
+      if (!d.expiresAt) {
+        const age = Date.now() - new Date(n.createdAt).getTime();
+        if (age > FALLBACK_TTL_MS) return false;
+      }
+
+      if (d.meetupId && quickMeetupsData) {
+        if (!activeMeetupIds.has(d.meetupId)) return false;
+      }
     } catch {}
     return true;
   });
@@ -60,6 +84,10 @@ export function MeetupAlertBanner({ userId }: MeetupAlertBannerProps) {
     try {
       const data = latestMeetup.data ? JSON.parse(latestMeetup.data) : {};
       if (data.expiresAt && new Date(data.expiresAt) < new Date()) {
+        handleDismiss();
+        return;
+      }
+      if (data.meetupId && !activeMeetupIds.has(data.meetupId)) {
         handleDismiss();
         return;
       }
