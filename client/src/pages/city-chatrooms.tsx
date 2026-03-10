@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { MessageCircle, Users, MapPin, UserPlus, Loader2, Plus, ArrowLeft, Lock, Globe } from "lucide-react";
 import { SkeletonChatroomList } from "@/components/ui/skeleton-loaders";
 import { useLocation } from "wouter";
+import { formatChatroomName } from "@/lib/formatChatroomName";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 
 interface CityChatroom {
@@ -410,7 +411,7 @@ export default function CityChatroomsPage() {
                   <div className="mb-4">
                     <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2 line-clamp-2 flex items-center gap-2">
                       {chatroom.isPublic === false && <Lock className="w-4 h-4 text-orange-600 flex-shrink-0" />}
-                      {chatroom.name}
+                      {formatChatroomName(chatroom.name)}
                     </h3>
                     <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
                       <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />

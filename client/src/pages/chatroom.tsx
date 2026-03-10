@@ -6,6 +6,7 @@ import { ChatPageSkeleton } from "@/components/ui/chat-page-skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
+import { formatChatroomName } from "@/lib/formatChatroomName";
 
 interface ChatroomDetails {
   id: number;
@@ -82,7 +83,7 @@ export default function ChatroomPage() {
       <WhatsAppChat
         chatId={chatroomId}
         chatType="chatroom"
-        title={chatroom.name}
+        title={formatChatroomName(chatroom.name)}
         subtitle={`${chatroom.memberCount} members`}
         currentUserId={user?.id}
       />
