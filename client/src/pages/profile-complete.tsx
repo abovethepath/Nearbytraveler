@@ -422,6 +422,7 @@ const createProfileSchema = (userType: string) => {
     hometownState: z.string().optional(), 
     hometownCountry: z.string().optional(),
     travelStyle: z.array(z.string()).default([]),
+    privateInterests: z.array(z.string()).default([]),
   });
 
   if (userType === 'business') {
@@ -1792,6 +1793,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           hometownCountry: user.hometownCountry || "",
           dateOfBirth: user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : "",
           travelStyle: user.travelStyle || [],
+          privateInterests: (user as any).privateInterests || (user as any).private_interests || [],
           businessDescription: (user as any).business_description || (user as any).businessDescription || "",
           businessType: (user as any).business_type || (user as any).businessType || "",
           city: user.city || "",
@@ -1825,6 +1827,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           sexualPreference: user.sexualPreference || [],
           sexualPreferenceVisible: Boolean(user.sexualPreferenceVisible),
           travelStyle: user.travelStyle || [],
+          privateInterests: (user as any).privateInterests || (user as any).private_interests || [],
           travelWhy: user.travelWhy || "",
           travelHow: user.travelHow || "",
           travelBudget: user.travelBudget || "",
@@ -1894,6 +1897,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             hometownCountry: user.hometownCountry || "",
             dateOfBirth: user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : "",
             travelStyle: user.travelStyle || [],
+            privateInterests: (user as any).privateInterests || (user as any).private_interests || [],
             city: user.city || "",
             state: user.state || "",
             country: user.country || "",
@@ -1931,6 +1935,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             sexualPreference: user.sexualPreference || [],
             sexualPreferenceVisible: !!user.sexualPreferenceVisible,
             travelStyle: user.travelStyle || [],
+            privateInterests: (user as any).privateInterests || (user as any).private_interests || [],
             travelingWithChildren: !!user.travelingWithChildren,
             childrenAges: user.childrenAges || (user as any).children_ages || "",
             isVeteran: !!user.isVeteran || !!((user as any).is_veteran),
@@ -2088,6 +2093,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         sexualPreference: Array.isArray(user.sexualPreference) ? user.sexualPreference : (user.sexualPreference ? [user.sexualPreference] : []),
         sexualPreferenceVisible: user.sexualPreferenceVisible || false,
         travelStyle: Array.isArray(user.travelStyle) ? user.travelStyle : [],
+        privateInterests: Array.isArray((user as any).privateInterests) ? (user as any).privateInterests : (Array.isArray((user as any).private_interests) ? (user as any).private_interests : []),
         isVeteran: (user as any).is_veteran || user.isVeteran || false,
         isActiveDuty: (user as any).is_active_duty || user.isActiveDuty || false,
         // Business contact fields - only for business users
@@ -3592,6 +3598,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             sexualPreference: updatedUser.sexualPreference || [],
             sexualPreferenceVisible: updatedUser.sexualPreferenceVisible !== undefined ? updatedUser.sexualPreferenceVisible : false,
             travelStyle: updatedUser.travelStyle || [],
+            privateInterests: (updatedUser as any).privateInterests || (updatedUser as any).private_interests || [],
             travelingWithChildren: updatedUser.travelingWithChildren === true,
             childrenAges: (updatedUser as any).childrenAges || "",
             isVeteran: updatedUser.isVeteran !== undefined ? updatedUser.isVeteran : false,

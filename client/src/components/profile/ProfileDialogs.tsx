@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -34,7 +34,7 @@ import { CustomerUploadedPhotos } from "@/components/customer-uploaded-photos";
 import { formatDateForDisplay } from "@/lib/dateUtils";
 import { getDateInputConstraints } from "@/lib/ageUtils";
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, PRIVACY_NOTES, FORM_HEADERS } from "@/lib/formConstants";
-import { BUSINESS_TYPES, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "@shared/base-options";
+import { BUSINESS_TYPES, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, PRIVATE_INTERESTS_BY_CATEGORY } from "@shared/base-options";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import {
   X,
@@ -141,6 +141,21 @@ export function ProfileDialogs(props: ProfilePageProps) {
     tabRefs,
     safeGetAllActivities,
   } = props as Record<string, any>;
+
+  const [showLifestyleWelcome, setShowLifestyleWelcome] = useState(false);
+
+  const currentPrivateInterests: string[] = profileForm?.watch('privateInterests') || [];
+
+  const togglePrivateInterest = (interest: string) => {
+    const current: string[] = profileForm.getValues('privateInterests') || [];
+    const alreadySelected = current.includes(interest);
+    if (!alreadySelected && current.length === 0 && !localStorage.getItem('lifestyle_welcome_shown')) {
+      localStorage.setItem('lifestyle_welcome_shown', 'true');
+      setShowLifestyleWelcome(true);
+    }
+    const updated = alreadySelected ? current.filter((i: string) => i !== interest) : [...current, interest];
+    profileForm.setValue('privateInterests', updated, { shouldDirty: true });
+  };
 
   return (
 <>
@@ -1601,6 +1616,69 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   </Button>
                 </div>
               </div>
+
+              {/* Private Interests Section — only for non-business users */}
+              {user?.userType !== 'business' && (
+                <div className="border border-red-200 dark:border-red-800 rounded-xl overflow-hidden">
+                  <div className="bg-red-50 dark:bg-red-950/40 px-4 py-3 flex items-center gap-2 border-b border-red-200 dark:border-red-800">
+                    <Eye className="w-4 h-4 text-red-500 flex-shrink-0" />
+                    <h4 className="text-sm font-semibold text-red-800 dark:text-red-300">Lifestyle Interests (18+)</h4>
+                  </div>
+                  <div className="px-4 py-3 bg-white dark:bg-gray-900">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 leading-relaxed">
+                      🔒 <strong>Private only — never shown on your profile.</strong> These selections help match you with like-minded travelers and locals. Only you can see them.
+                    </p>
+                    {Object.entries(PRIVATE_INTERESTS_BY_CATEGORY).map(([category, options]) => (
+                      <div key={category} className="mb-4">
+                        <p className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide mb-2">{category}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {(options as string[]).map((interest: string) => {
+                            const isSelected = currentPrivateInterests.includes(interest);
+                            return (
+                              <button
+                                key={interest}
+                                type="button"
+                                onClick={() => togglePrivateInterest(interest)}
+                                className={`inline-flex items-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap border transition-all ${
+                                  isSelected
+                                    ? 'bg-red-600 text-white border-red-600'
+                                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-red-300 dark:border-red-700 hover:border-red-500'
+                                }`}
+                              >
+                                {interest}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Lifestyle Welcome Dialog — shown once on first selection */}
+              <Dialog open={showLifestyleWelcome} onOpenChange={setShowLifestyleWelcome}>
+                <DialogContent className="bg-white dark:bg-gray-900 max-w-sm mx-4">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2 text-red-700 dark:text-red-400">
+                      <Eye className="w-5 h-5" />
+                      Lifestyle Interests are Private
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                    <p>Your lifestyle selections are <strong>100% private</strong> and will never appear on your public profile.</p>
+                    <p>They are used only to help match you with compatible travelers and locals who share similar interests.</p>
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3 text-xs text-yellow-800 dark:text-yellow-300">
+                      Only people who also select matching lifestyle interests will discover you through those filters.
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={() => setShowLifestyleWelcome(false)} className="w-full bg-red-600 hover:bg-red-700 text-white">
+                      Got it
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
 
               {/* Save/Cancel buttons - sticky at bottom on mobile for easy access */}
               <div className="flex gap-2 pt-4 sticky bottom-0 bg-white dark:bg-gray-900 pb-8 sm:pb-4 border-t mt-4 -mx-6 px-6 md:relative md:border-t-0 md:mx-0 md:px-0 z-10">

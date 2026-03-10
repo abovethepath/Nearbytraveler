@@ -1,0 +1,17 @@
+The private_interests feature is almost fully intact in the codebase. The database column exists, the backend search and matching works, the save logic works. The ONLY things missing are:
+
+The PRIVATE_INTERESTS options list in shared/base-options.ts
+The picker UI on the profile edit page
+
+Please restore ONLY these two things — do not touch anything else.
+1. In shared/base-options.ts add back the getPrivateInterests() function and PRIVATE_INTERESTS array with these options organized in subcategories:
+Lifestyle & Relationships: "Nudist / Naturist", "Nude Beaches", "Clothing Optional Resorts", "ENM (Ethical Non-Monogamy)", "Swinger Friendly", "Polyamory", "Open Relationship", "Hotwife / Lifestyle Couple", "Single Male in Lifestyle", "Single Female in Lifestyle", "Unicorn Friendly"
+Lifestyle Travel: "Lifestyle Resort Travel", "Clothing Optional Cruises", "Adult Only Resorts", "Naughty Travel Events", "Desire / Hedo Style Resorts"
+Spiritual & Sensual: "Tantra", "Tantric Travel", "Sacred Sexuality", "Conscious Sexuality", "Tantric Retreats", "Breathwork and Intimacy", "Mindful Connections", "Spiritual Sensuality", "Kundalini", "Intimacy Workshops"
+Vibe: "Late Night Adventures", "Skinny Dipping", "Body Positivity", "Sensual Connections", "No Judgment Zone"
+2. Restore the picker UI on the profile edit page — look at profile-page-backup.tsx for exactly how it was built before and replicate it. Place it as a clearly separated section at the bottom of the profile editor.
+3. Above the picker add this exact message:
+"These interests are completely private. They will only be visible to and searchable by other members who have also selected lifestyle interests. No one else will ever see these."
+4. First time a user selects any option show a one time popup saying:
+"Your lifestyle interests are completely private. They are never shown publicly and are only shared with members who have selected matching interests. You can remove these at any time."
+Do not touch the database, backend routes, matching logic, or anything else — it is all already working. Only restore the options list and the frontend picker UI.

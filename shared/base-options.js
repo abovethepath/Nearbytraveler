@@ -623,3 +623,55 @@ export const getAllSubInterests = () => {
 // - Outdoor Adventures (duplicate of "Hiking" in Top Choices)
 // 
 // Events have been removed from user profiles - they now only exist as community events that users can create/attend
+
+// ========================================
+// PRIVATE INTERESTS (lifestyle / adult)
+// ========================================
+
+export const PRIVATE_INTERESTS_BY_CATEGORY = {
+  "Lifestyle & Relationships": [
+    "Nudist / Naturist",
+    "Nude Beaches",
+    "Clothing Optional Resorts",
+    "ENM (Ethical Non-Monogamy)",
+    "Swinger Friendly",
+    "Polyamory",
+    "Open Relationship",
+    "Hotwife / Lifestyle Couple",
+    "Single Male in Lifestyle",
+    "Single Female in Lifestyle",
+    "Unicorn Friendly",
+  ],
+  "Lifestyle Travel": [
+    "Lifestyle Resort Travel",
+    "Clothing Optional Cruises",
+    "Adult Only Resorts",
+    "Naughty Travel Events",
+    "Desire / Hedo Style Resorts",
+  ],
+  "Spiritual & Sensual": [
+    "Tantra",
+    "Tantric Travel",
+    "Sacred Sexuality",
+    "Conscious Sexuality",
+    "Tantric Retreats",
+    "Breathwork and Intimacy",
+    "Mindful Connections",
+    "Spiritual Sensuality",
+    "Kundalini",
+    "Intimacy Workshops",
+  ],
+  "Vibe": [
+    "Late Night Adventures",
+    "Skinny Dipping",
+    "Body Positivity",
+    "Sensual Connections",
+    "No Judgment Zone",
+  ],
+};
+
+export const PRIVATE_INTERESTS = Object.values(PRIVATE_INTERESTS_BY_CATEGORY).flat();
+
+export function getPrivateInterests() {
+  return PRIVATE_INTERESTS;
+}
