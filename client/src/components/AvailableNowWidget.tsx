@@ -706,7 +706,24 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
 
                   {/* Meet button — full width at bottom */}
                   <div className="px-3 pb-3">
-                    {pendingToUserIds.has(entry.userId) ? (
+                    {(() => {
+                      const existingChat = allGroupChats.find((chat: any) => chat.availableNowId === entry.id);
+                      if (existingChat) {
+                        return (
+                          <Button
+                            size="sm"
+                            className="w-full text-xs bg-emerald-600 hover:bg-emerald-700 text-white border-0 font-bold"
+                            onClick={() => setLocation(`/messages?meetupChat=${existingChat.id}`)}
+                          >
+                            <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
+                            Go to Chat
+                          </Button>
+                        );
+                      }
+                      return null;
+                    })()}
+                    {!allGroupChats.find((chat: any) => chat.availableNowId === entry.id) && (
+                    pendingToUserIds.has(entry.userId) ? (
                       <Button
                         size="sm"
                         disabled
@@ -756,7 +773,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                       >
                         Meet Up
                       </Button>
-                    )}
+                    ))}
                   </div>
                 </div>
               ))}
