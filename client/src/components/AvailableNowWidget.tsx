@@ -230,10 +230,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       if (variables.status === "accepted") {
         if (data?.groupChatroomId) {
           toast({ title: "It's a meet!", description: "Opening the group chat..." });
-          queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
-          queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
-          setSelectedGroupChat({ id: data.groupChatroomId, chatroomName: data.chatroomName || "Quick Meet", participantCount: data.participantCount || 2, activityType: data.activityType || null, city: data.chatroomCity || "", state: data.chatroomState || "" });
-          setTimeout(() => setShowGroupChat(true), 500);
+          queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
+          setLocation(`/messages?meetupChat=${data.groupChatroomId}`);
         } else {
           const otherUserId = data?.otherUserId || variables.fromUserId;
           if (otherUserId) {
