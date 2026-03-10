@@ -745,10 +745,14 @@ export default function Messages() {
                     </p>
                   </div>
                   {(meetupChatrooms as any[])
-                    .filter((mc: any) =>
-                      !connectionSearch ||
-                      (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase())
-                    )
+                    .filter((mc: any) => {
+                      if (mc.expiresAt) {
+                        const expiredMs = Date.now() - new Date(mc.expiresAt).getTime();
+                        if (expiredMs > 48 * 60 * 60 * 1000) return false;
+                      }
+                      return !connectionSearch ||
+                        (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase());
+                    })
                     .map((mc: any) => {
                       const isExpired = mc.isExpired || (mc.expiresAt && new Date(mc.expiresAt) < new Date());
                       const countdown = mc.expiresAt ? formatCountdown(mc.expiresAt) : null;
