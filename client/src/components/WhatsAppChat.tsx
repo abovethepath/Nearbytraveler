@@ -2136,17 +2136,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           </div>
         )}
         
-        <div className="flex-1 min-w-0 overflow-hidden max-w-[140px] xs:max-w-[180px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[280px]">
-          <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+        <div className="flex-1 min-w-0 overflow-hidden">
+          <div className="flex items-start gap-1.5 min-w-0">
             <div
-              className="text-xl font-semibold flex-1 min-w-0 truncate max-w-xs"
+              className="text-sm font-semibold min-w-0 line-clamp-2 leading-tight flex-1"
               title={title || 'Chat'}
               role="heading"
               aria-level={1}
             >
               {title || 'Chat'}
             </div>
-            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
+            <span className={`w-2 h-2 rounded-full flex-shrink-0 mt-1 ${
               messagesLoaded || isWsConnected 
                 ? 'bg-green-500' 
                 : 'bg-yellow-500 animate-pulse'
