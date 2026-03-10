@@ -24297,14 +24297,14 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json({ chatrooms: [] });
       }
 
-      // Find recent Available Now sessions for those users (active OR expired within last 24h)
+      // Find only ACTIVE Available Now sessions (not expired) — expired hangouts do not show on home page
       const hostUserIds = acceptedRequests.map(r => r.toUserId);
-      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const rightNow = new Date();
       const activeSessions = await db.select()
         .from(availableNow)
         .where(and(
           inArray(availableNow.userId, hostUserIds),
-          gte(availableNow.expiresAt, twentyFourHoursAgo)
+          gte(availableNow.expiresAt, rightNow)
         ));
 
       if (activeSessions.length === 0) {
@@ -24491,6 +24491,31 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error("Error leaving group chat:", error);
       res.status(500).json({ error: "Failed to leave chat" });
+    }
+  });
+
+  // ---------- MEETUP CHATROOM INFO (for expiry/closed state checks) ----------
+
+  app.get("/api/meetup-chatrooms/:chatroomId/info", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      if (!chatroomId) return res.status(400).json({ error: "Invalid chatroom ID" });
+      const [chatroom] = await db.select({
+        id: meetupChatrooms.id,
+        chatroomName: meetupChatrooms.chatroomName,
+        isActive: meetupChatrooms.isActive,
+        expiresAt: meetupChatrooms.expiresAt,
+        meetupId: meetupChatrooms.meetupId,
+        availableNowId: meetupChatrooms.availableNowId,
+      }).from(meetupChatrooms).where(eq(meetupChatrooms.id, chatroomId)).limit(1);
+      if (!chatroom) return res.status(404).json({ error: "Chatroom not found" });
+      const isExpired = chatroom.expiresAt ? new Date(chatroom.expiresAt) < new Date() : false;
+      res.json({ ...chatroom, isExpired });
+    } catch (error: any) {
+      console.error("Error fetching chatroom info:", error);
+      res.status(500).json({ error: "Failed to fetch chatroom info" });
     }
   });
 
