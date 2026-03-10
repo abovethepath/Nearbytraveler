@@ -665,6 +665,76 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
               </div>
             </div>
 
+            {/* Age Range Filter */}
+            <Collapsible
+              open={expandedSections.demographics}
+              onOpenChange={() => toggleSection('demographics')}
+            >
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors w-full text-left py-1">
+                  {expandedSections.demographics ? (
+                    <ChevronUp className="w-3.5 h-3.5 shrink-0" />
+                  ) : (
+                    <ChevronDown className="w-3.5 h-3.5 shrink-0" />
+                  )}
+                  <span>Age Range</span>
+                  {(searchFilters.minAge || searchFilters.maxAge) && (
+                    <span className="ml-auto text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-full">
+                      {searchFilters.minAge || '18'}–{searchFilters.maxAge || '99'}
+                    </span>
+                  )}
+                  {!searchFilters.minAge && !searchFilters.maxAge && (
+                    <span className="ml-auto text-xs text-gray-400 dark:text-gray-500">Optional • all ages shown</span>
+                  )}
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="pt-2 pb-1">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 space-y-1">
+                      <Label className="text-xs text-gray-500 dark:text-gray-400">Min age</Label>
+                      <Input
+                        type="number"
+                        min={18}
+                        max={99}
+                        placeholder="18"
+                        value={searchFilters.minAge}
+                        onChange={(e) => setSearchFilters(prev => ({ ...prev, minAge: e.target.value }))}
+                        className="h-9 text-sm"
+                      />
+                    </div>
+                    <div className="mt-5 text-gray-400 text-sm">to</div>
+                    <div className="flex-1 space-y-1">
+                      <Label className="text-xs text-gray-500 dark:text-gray-400">Max age</Label>
+                      <Input
+                        type="number"
+                        min={18}
+                        max={99}
+                        placeholder="99"
+                        value={searchFilters.maxAge}
+                        onChange={(e) => setSearchFilters(prev => ({ ...prev, maxAge: e.target.value }))}
+                        className="h-9 text-sm"
+                      />
+                    </div>
+                    {(searchFilters.minAge || searchFilters.maxAge) && (
+                      <div className="mt-5">
+                        <button
+                          onClick={() => setSearchFilters(prev => ({ ...prev, minAge: '', maxAge: '' }))}
+                          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded transition-colors"
+                          title="Clear age filter"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">
+                    Leave both blank to see people of all ages
+                  </p>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
             {/* Simple Search Button */}
             <Button 
               onClick={handleSearch}
