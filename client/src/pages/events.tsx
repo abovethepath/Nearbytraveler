@@ -538,19 +538,35 @@ export default function Events() {
   // Handle loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex items-center justify-between">
-              <BackButton fallbackRoute="/events-landing" />
-              <h1 className="text-3xl font-bold text-gray-900">Events</h1>
-            </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 w-full max-w-[100vw] overflow-x-hidden">
+        <div className="container mx-auto px-4 pt-4 pb-24 max-w-2xl">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
+            <div className="h-7 w-36 rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse" />
           </div>
-        </div>
-        <div className="container mx-auto p-6">
-          <div className="text-center py-8">
-            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p>Loading events...</p>
+          <div className="h-10 w-full rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse mb-4" />
+          <div className="flex gap-2 mb-6 overflow-hidden">
+            {[1,2,3,4].map(i => (
+              <div key={i} className="h-8 w-20 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse flex-shrink-0" />
+            ))}
+          </div>
+          <div className="space-y-4">
+            {[1,2,3,4,5].map(i => (
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow border border-gray-200 dark:border-gray-700 animate-pulse">
+                <div className="flex gap-3">
+                  <div className="w-14 h-16 rounded-xl bg-gray-200 dark:bg-gray-700 flex-shrink-0" />
+                  <div className="flex-1 space-y-2 min-w-0">
+                    <div className="h-5 w-3/4 rounded bg-gray-200 dark:bg-gray-700" />
+                    <div className="h-4 w-1/2 rounded bg-gray-200 dark:bg-gray-700" />
+                    <div className="h-4 w-2/3 rounded bg-gray-200 dark:bg-gray-700" />
+                    <div className="flex gap-2 pt-1">
+                      <div className="h-6 w-16 rounded-full bg-gray-200 dark:bg-gray-700" />
+                      <div className="h-6 w-20 rounded-full bg-gray-200 dark:bg-gray-700" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
