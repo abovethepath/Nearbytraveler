@@ -2705,34 +2705,34 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             }}
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Emoji reaction row — WhatsApp style */}
+            <div className="px-3 pt-3 pb-2">
+              <div className="flex items-center justify-between gap-1">
+                {['❤️', '😂', '😮', '😢', '🙏', '👍'].map((emoji) => {
+                  const hasReacted = currentUserId ? selectedMessage.reactions?.[emoji]?.includes(currentUserId) : false;
+                  const count = selectedMessage.reactions?.[emoji]?.length || 0;
+                  return (
+                    <button
+                      key={emoji}
+                      type="button"
+                      onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleReaction(selectedMessage.id, emoji); setSelectedMessage(null); }}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleReaction(selectedMessage.id, emoji); setSelectedMessage(null); }}
+                      className={`flex flex-col items-center justify-center flex-1 py-2 rounded-xl transition-all ${hasReacted ? 'bg-gray-600 scale-110' : 'hover:bg-gray-700 active:bg-gray-600'}`}
+                      style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+                    >
+                      <span className="text-2xl leading-none pointer-events-none">{emoji}</span>
+                      {count > 0 && <span className={`text-[10px] mt-0.5 pointer-events-none font-semibold ${hasReacted ? 'text-orange-400' : 'text-gray-400'}`}>{count}</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="mx-3 border-t border-gray-700" />
+
             {/* Action buttons */}
-            <div className="px-2 py-3 space-y-1">
-              {/* Thumbs up reaction - available for ALL messages */}
-              {(() => {
-                const hasLiked = currentUserId ? selectedMessage.reactions?.['👍']?.includes(currentUserId) : false;
-                return (
-                  <button 
-                    type="button" 
-                    onTouchEnd={(e) => { 
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleReaction(selectedMessage.id, '👍');
-                    }}
-                    onClick={(e) => { 
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleReaction(selectedMessage.id, '👍');
-                    }}
-                    className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                    style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(59, 130, 246, 0.3)' }}
-                    data-testid="button-react-thumbsup"
-                  >
-                    <ThumbsUp className={`w-5 h-5 pointer-events-none ${hasLiked ? 'text-orange-400 fill-orange-400' : 'text-blue-400'}`} />
-                    <span className="text-sm pointer-events-none">{hasLiked ? 'Unlike' : 'Like'}</span>
-                  </button>
-                );
-              })()}
-              
+            <div className="px-2 py-2 space-y-1">
               {selectedMessage.senderId == currentUserId ? (
                 /* YOUR OWN MESSAGE: Edit and Delete */
                 <>
@@ -2741,14 +2741,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                     onTouchEnd={(e) => { 
                       e.preventDefault();
                       e.stopPropagation();
-                      console.log('Edit TOUCH for message:', selectedMessage.id);
                       startEdit(selectedMessage); 
                       setSelectedMessage(null);
                     }}
                     onClick={(e) => { 
                       e.preventDefault();
                       e.stopPropagation();
-                      console.log('Edit CLICK for message:', selectedMessage.id);
                       startEdit(selectedMessage); 
                       setSelectedMessage(null);
                     }}
@@ -2764,13 +2762,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                     onTouchEnd={(e) => { 
                       e.preventDefault();
                       e.stopPropagation();
-                      console.log('Delete TOUCH for message:', selectedMessage.id);
                       handleDeleteMessage(selectedMessage.id); 
                     }}
                     onClick={(e) => { 
                       e.preventDefault();
                       e.stopPropagation();
-                      console.log('Delete CLICK for message:', selectedMessage.id);
                       handleDeleteMessage(selectedMessage.id); 
                     }}
                     className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
@@ -2788,14 +2784,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   onTouchEnd={(e) => { 
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Reply TOUCH for message:', selectedMessage.id);
                     setReplyingTo(selectedMessage); 
                     setSelectedMessage(null); 
                   }}
                   onClick={(e) => { 
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Reply CLICK for message:', selectedMessage.id);
                     setReplyingTo(selectedMessage); 
                     setSelectedMessage(null); 
                   }}
