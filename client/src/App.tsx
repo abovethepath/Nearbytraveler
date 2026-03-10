@@ -31,6 +31,7 @@ import Meetups from "@/pages/meetups";
 import QuickMeetupsPage from "@/pages/quick-meetups";
 import MeetupManagePage from "@/pages/meetup-manage";
 import MeetupChat from "@/pages/meetup-chat";
+import MeetupChatroomChat from "@/pages/meetup-chatroom-chat";
 import EventChat from "@/pages/event-chat";
 import QuickMeetupChat from "@/pages/quick-meetup-chat";
 import EventsLanding from "@/pages/events-landing";
@@ -409,6 +410,7 @@ function Router() {
     location.startsWith('/event-chat/') ||
     location.startsWith('/meetup-chat/') ||
     location.startsWith('/quick-meetup-chat/') ||
+    location.startsWith('/meetup-chatroom-chat/') ||
     location.startsWith('/whatsapp-chatroom/') ||
     (location.startsWith('/messages/') && location.split('/')[2])
   );
@@ -1530,6 +1532,10 @@ function Router() {
       return <QuickMeetupChat />;
     }
 
+    if (location.startsWith('/meetup-chatroom-chat/')) {
+      return <MeetupChatroomChat />;
+    }
+
     // Route alias: /event/:id → /events/:id
     if (location.startsWith('/event/') && location.split('/')[2]) {
       const rawId = location.split('/')[2] || '';
@@ -1864,6 +1870,7 @@ function Router() {
           '/chatrooms',
           '/event-chat',
           '/quick-meetup-chat',
+          '/meetup-chatroom-chat',
           '/messages',
           '/dm-chat',
           '/meetups',

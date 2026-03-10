@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ChatInput } from '@/components/ui/chat-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MessageCircle, Send, Users, ArrowLeft, Heart, Reply, Copy, Edit2, Trash2, Check, X, ThumbsUp, Clock, Zap } from 'lucide-react';
+import WhatsAppChat from '@/components/WhatsAppChat';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
 import { SimpleAvatar, getProfileImageUrl } from '@/components/simple-avatar';
@@ -768,9 +769,13 @@ export default function Messages() {
                                 : 'hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-l-4 hover:border-l-orange-400'
                           }`}
                           onClick={() => {
-                            setSelectedMeetupChat(mc.id);
-                            setSelectedConversation(null);
-                            navigate(`/messages?meetupChat=${mc.id}`);
+                            if (window.innerWidth < 1024) {
+                              navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`);
+                            } else {
+                              setSelectedMeetupChat(mc.id);
+                              setSelectedConversation(null);
+                              navigate(`/messages?meetupChat=${mc.id}`);
+                            }
                           }}
                         >
                           <div className="flex items-center gap-3">
@@ -913,149 +918,22 @@ export default function Messages() {
       <div className={`flex-1 flex flex-col h-full min-h-0 bg-white dark:bg-gray-900 min-w-0 ${!selectedConversation && !selectedMeetupChat ? 'hidden lg:flex' : 'flex'} w-full lg:w-auto`}>
 
         {/* MEETUP CHATROOM VIEW */}
-        {selectedMeetupChat ? (() => {
-          const activeMeetup = (meetupChatrooms as any[]).find((c: any) => c.id === selectedMeetupChat);
-          const isExpired = activeMeetup?.isExpired || (activeMeetup?.expiresAt && new Date(activeMeetup.expiresAt) < new Date());
-          const countdown = activeMeetup?.expiresAt ? formatCountdown(activeMeetup.expiresAt) : null;
-          return (
-            <>
-              <div className={`${isNativeIOSApp() ? 'px-3 py-1.5' : 'px-4 py-2'} border-b border-gray-200 dark:border-gray-700 bg-orange-50 dark:bg-gray-800 shrink-0 min-w-0`}>
-                <div className="flex items-center gap-2 min-w-0">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setSelectedMeetupChat(null);
-                      isNativeIOSApp() ? window.history.back() : navigate('/messages');
-                    }}
-                    className="lg:hidden text-gray-600 dark:text-gray-400 min-h-[44px] min-w-[44px] h-11 w-11 shrink-0 touch-target"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                  </Button>
-                  <div className="w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center shrink-0">
-                    <Users className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                  </div>
-                  <div className="flex-1 min-w-0 overflow-hidden">
-                    <h2 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                      {activeMeetup?.chatroomName || 'Meetup Chat'}
-                    </h2>
-                    <div className="flex items-center gap-2">
-                      {activeMeetup?.city && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400">{activeMeetup.city}</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Static expiry note — no countdown, just a calm heads-up */}
-              <div className="px-4 py-2 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 shrink-0">
-                <p className="text-xs text-amber-700 dark:text-amber-300 text-center">
-                  This chat will be deleted 24 hours after the meetup ends
-                </p>
-              </div>
-
-              <div
-                ref={messagesContainerRef}
-                className="flex-1 min-h-0 overflow-y-auto px-4 py-2 bg-[#D1D5DB] dark:bg-[#0b141a]"
-              >
-                <div className="flex flex-col min-h-full">
-                  <div className="flex-grow" />
-                  <div className="space-y-2 max-w-4xl mx-auto w-full">
-                    {(meetupChatMessages as any[]).length === 0 ? (
-                      <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-                        <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                        <p>No messages yet in this meetup chat.</p>
-                      </div>
-                    ) : (
-                      (meetupChatMessages as any[]).map((msg: any) => {
-                        const isOwnMessage = Number(msg.userId) === userId;
-                        const isSystem = msg.messageType === 'system';
-                        if (isSystem) {
-                          return (
-                            <div key={msg.id} className="flex justify-center my-2">
-                              <p className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">
-                                {msg.message}
-                              </p>
-                            </div>
-                          );
-                        }
-                        return (
-                          <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
-                            <div className="max-w-[70%]">
-                              {!isOwnMessage && (
-                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-0.5 ml-1 font-medium">
-                                  @{msg.username}
-                                </p>
-                              )}
-                              <div className={`px-4 py-2 rounded-2xl ${
-                                isOwnMessage
-                                  ? 'bg-[#DCF8C6] dark:bg-[#005C4B]'
-                                  : 'bg-gray-200 dark:bg-gray-700'
-                              }`}>
-                                <p className={`text-sm whitespace-pre-wrap break-words ${
-                                  isOwnMessage ? 'text-gray-900 dark:text-white' : 'text-gray-900 dark:text-gray-100'
-                                }`}>
-                                  {msg.message}
-                                </p>
-                                <p className={`text-xs opacity-70 text-right mt-1 ${
-                                  isOwnMessage ? 'text-black/60 dark:text-white/70' : 'text-gray-600 dark:text-gray-400'
-                                }`}>
-                                  {new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })
-                    )}
-                    <div ref={messagesEndRef} />
-                  </div>
-                </div>
-              </div>
-
-              <div
-                ref={inputContainerRef}
-                className="chat-input-area px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0"
-              >
-                {isExpired ? (
-                  <div className="text-center py-2">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">This meetup chat has expired.</p>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 max-w-4xl mx-auto">
-                    <Input
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          if (newMessage.trim() && selectedMeetupChat) {
-                            sendMeetupMessageMutation.mutate({ chatroomId: selectedMeetupChat, message: newMessage.trim() });
-                          }
-                        }
-                      }}
-                      placeholder="Type a message..."
-                      className="flex-1 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
-                    />
-                    <Button
-                      onClick={() => {
-                        if (newMessage.trim() && selectedMeetupChat) {
-                          sendMeetupMessageMutation.mutate({ chatroomId: selectedMeetupChat, message: newMessage.trim() });
-                        }
-                      }}
-                      disabled={!newMessage.trim() || sendMeetupMessageMutation.isPending}
-                      size="icon"
-                      className="bg-orange-600 hover:bg-orange-700 text-white shrink-0 min-h-[44px] min-w-[44px] touch-target"
-                    >
-                      <Send className="w-4 h-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </>
-          );
-        })() :
+          {selectedMeetupChat ? (() => {
+            const activeMeetup = (meetupChatrooms as any[]).find((c: any) => c.id === selectedMeetupChat);
+            return (
+              <WhatsAppChat
+                chatId={selectedMeetupChat}
+                chatType="meetup"
+                title={activeMeetup?.chatroomName || 'Meetup Chat'}
+                subtitle={activeMeetup?.city || 'Group chat'}
+                currentUserId={userId!}
+                onBack={() => {
+                  setSelectedMeetupChat(null);
+                  navigate('/messages');
+                }}
+              />
+            );
+          })() :
         /* Loading state when conversation is selected but user data not loaded yet */
         selectedConversation && !selectedUser && (connectionsLoading || messagesLoading || conversations.length === 0) ? (
           <div className="flex-1 flex items-center justify-center">
