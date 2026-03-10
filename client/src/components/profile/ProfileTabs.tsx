@@ -1396,7 +1396,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                         return customInterests.length > 0 && (
                           <div className="mt-2">
                             <div className="flex items-center justify-between mb-1">
-                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Your Custom Interests (click X to remove):</p>
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Your Custom Interests (click ✕ to remove):</p>
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -1424,7 +1424,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                   title="Click to remove"
                                 >
                                   {interest}
-                                  <span className="ml-1 font-bold">Ã—</span>
+                                  <span className="ml-1 font-bold">✕</span>
                                 </button>
                               ))}
                             </div>
@@ -1524,7 +1524,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                             {customActivities.length > 0 && (
                               <div className="mt-2">
                                 <div className="flex items-center justify-between mb-1">
-                                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Your Custom Activities (click X to remove):</p>
+                                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Your Custom Activities (click ✕ to remove):</p>
                                   <Button
                                     type="button"
                                     variant="ghost"
@@ -1552,7 +1552,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                       title="Click to remove"
                                     >
                                       {activity}
-                                      <span className="ml-1 font-bold">Ã—</span>
+                                      <span className="ml-1 font-bold">✕</span>
                                     </button>
                                   ))}
                                 </div>
@@ -2146,7 +2146,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                             const customInterests = editFormData.interests.filter(interest => !allPredefinedInterests.includes(interest));
                             return customInterests.length > 0 && (
                             <div className="mt-2">
-                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Your Custom Interests (click X to remove):</p>
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Your Custom Interests (click ✕ to remove):</p>
                               <div className="flex flex-wrap gap-2">
                                 {customInterests.map((interest, index) => (
                                   <span
@@ -2162,7 +2162,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                       }}
                                       className="ml-1 text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-100"
                                     >
-                                      Ã—
+                                      ✕
                                     </button>
                                   </span>
                                 ))}
@@ -2247,7 +2247,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                           {/* Display Custom Activities with Delete Option */}
                           {(Array.isArray(editFormData.activities) ? editFormData.activities.filter(activity => !safeGetAllActivities().includes(activity)) : []).length > 0 && (
                             <div className="mt-2">
-                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Custom Activities (click X to remove):</p>
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Custom Activities (click ✕ to remove):</p>
                               <div className="flex flex-wrap gap-2">
                                 {(Array.isArray(editFormData.activities) ? editFormData.activities.filter(activity => !safeGetAllActivities().includes(activity)) : []).map((activity, index) => (
                                   <span
@@ -2263,7 +2263,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                       }}
                                       className="ml-1 text-green-600 hover:text-green-800 dark:text-green-300 dark:hover:text-green-100"
                                     >
-                                      Ã—
+                                      ✕
                                     </button>
                                   </span>
                                 ))}
@@ -3688,7 +3688,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                               onClick={() => setTempLanguages(tempLanguages.filter(l => l !== language))}
                               className="ml-2 text-blue-200 hover:text-white"
                             >
-                              Ã—
+                              ✕
                             </button>
                           </div>
                         ))}
@@ -4236,7 +4236,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                 onClick={() => setTempCountries(tempCountries.filter(c => c !== country))}
                                 className="ml-2 text-green-200 hover:text-white"
                               >
-                                Ã—
+                                ✕
                               </button>
                             </div>
                           ))}
