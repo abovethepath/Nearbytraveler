@@ -881,7 +881,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     {/* Group Chat Dialog */}
     <Dialog open={showGroupChat} onOpenChange={(open) => { setShowGroupChat(open); if (!open) { setSelectedMessage(null); setReplyingTo(null); } }}>
       <DialogContent 
-        className="max-w-lg w-[92vw] sm:w-full h-[70vh] sm:h-[600px] flex flex-col bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-0 overflow-hidden"
+        className="max-w-lg w-[96vw] sm:w-full h-[82vh] sm:h-[600px] flex flex-col bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-0 overflow-hidden"
       >
         <DialogHeader className="flex-shrink-0 px-4 pt-3 pb-2 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
@@ -912,14 +912,14 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 <DialogTitle className="text-base font-bold text-gray-900 dark:text-white truncate">
                   {groupChatroom?.chatroomName || "Quick Meet Chat"}
                 </DialogTitle>
-                <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
-                  <span>{groupChatroom?.participantCount || 0} people</span>
+                <div className="flex items-center flex-wrap gap-x-1.5 gap-y-0 text-xs text-gray-500 dark:text-gray-400 leading-tight">
+                  <span className="whitespace-nowrap">{groupChatroom?.participantCount || 0} people</span>
                   {groupChatroom?.city && (
                     <>
                       <span>·</span>
-                      <span className="flex items-center gap-0.5">
-                        <MapPin className="w-2.5 h-2.5" />
-                        {groupChatroom.city}{groupChatroom.state ? `, ${groupChatroom.state}` : ""}
+                      <span className="flex items-center gap-0.5 whitespace-nowrap">
+                        <MapPin className="w-2.5 h-2.5 flex-shrink-0" />
+                        <span className="truncate max-w-[100px]">{groupChatroom.city}{groupChatroom.state ? `, ${groupChatroom.state}` : ""}</span>
                       </span>
                     </>
                   )}
@@ -937,7 +937,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                     return (
                       <>
                         <span>·</span>
-                        <span>{emojis[groupChatroom.activityType] || "🤝"} {labels[groupChatroom.activityType] || groupChatroom.activityType}</span>
+                        <span className="whitespace-nowrap">{emojis[groupChatroom.activityType] || "🤝"} {labels[groupChatroom.activityType] || groupChatroom.activityType}</span>
                       </>
                     );
                   })()}
@@ -949,10 +949,10 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               size="sm"
               onClick={() => leaveGroupChatMutation.mutate()}
               disabled={leaveGroupChatMutation.isPending}
-              className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs gap-1 flex-shrink-0"
+              className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs gap-1 flex-shrink-0 px-2"
             >
               <LogOut className="w-3.5 h-3.5" />
-              Leave
+              <span className="hidden sm:inline">Leave</span>
             </Button>
           </div>
         </DialogHeader>
