@@ -402,12 +402,14 @@ export default function Messages() {
   const conversations = React.useMemo(() => {
     const conversationMap = new Map();
     
-    // Add connections
+    // Add connections — skip ghost users (no real username or name set)
     (connections as any[]).forEach((connection: any) => {
       const connectedUser = connection.connectedUser;
       if (connectedUser) {
         const connectedUserId = Number(connectedUser.id);
         if (!connectedUserId) return;
+        // Skip ghost/deleted users that have no real username or name
+        if (!connectedUser.username && !connectedUser.name) return;
         conversationMap.set(connectedUserId, {
           userId: connectedUserId,
           username: connectedUser?.username || connectedUser?.name || `User ${connectedUserId}`,
@@ -461,6 +463,8 @@ export default function Messages() {
           // Use embedded user from message (e.g. from meet-request DMs) so thread appears in inbox even if not in allUsers
           const fromMessage = senderId === userId ? message.receiverUser : message.senderUser;
           const otherUser = fromMessage || (allUsers as any[]).find((u: any) => u.id === otherUserId);
+          // Skip ghost/deleted users with no real identity
+          if (!otherUser?.username && !otherUser?.name) return;
           conversationMap.set(otherUserId, {
             userId: otherUserId,
             username: otherUser?.username || otherUser?.name || `User ${otherUserId}`,
@@ -475,9 +479,12 @@ export default function Messages() {
     });
 
     return Array.from(conversationMap.values())
-      .filter((conv: any) =>
-        conv.lastMessage !== '' || (targetUserId && conv.userId === parseInt(targetUserId))
-      )
+      .filter((conv: any) => {
+        // Remove ghost users: username is the numeric fallback pattern "User {id}"
+        if (conv.username === `User ${conv.userId}`) return false;
+        // Only show conversations with actual messages (or the target user from URL)
+        return conv.lastMessage !== '' || (targetUserId && conv.userId === parseInt(targetUserId));
+      })
       .sort((a: any, b: any) => 
         new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
       );
