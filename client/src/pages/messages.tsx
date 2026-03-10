@@ -392,6 +392,20 @@ export default function Messages() {
     }
   }, [selectedConversation, selectedMeetupChat, meetupChatMessages]);
 
+  // Add/remove is-chat-page class on body when a DM or meetup chat is open on mobile.
+  // This hides the MobileBottomNav (z-9999) so it doesn't cover the fixed chat input bar (z-50).
+  useEffect(() => {
+    const isChatOpen = !!(selectedConversation || selectedMeetupChat);
+    if (isChatOpen) {
+      document.body.classList.add('is-chat-page');
+    } else {
+      document.body.classList.remove('is-chat-page');
+    }
+    return () => {
+      document.body.classList.remove('is-chat-page');
+    };
+  }, [selectedConversation, selectedMeetupChat]);
+
   // Fetch all users for name lookup
   const { data: allUsers = [] } = useQuery({
     queryKey: ['/api/users'],

@@ -2509,18 +2509,24 @@ body.native-ios-app .native-ios-messages {
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
-    height: 100dvh;
+    height: 100dvh !important;
+    /* Push content below the mobile top nav (36px h-9) + iOS safe-area-inset-top */
+    padding-top: calc(36px + env(safe-area-inset-top, 0px)) !important;
+    box-sizing: border-box !important;
     overflow: hidden !important;
     z-index: 50 !important;
     touch-action: none;
     -webkit-overflow-scrolling: auto;
   }
   body:not([data-native-ios="true"]):not(.native-ios-app) [data-chat-page="true"] .chat-input-area {
-    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    /* Stick input above iPhone home bar; MobileBottomNav is hidden via is-chat-page */
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px) !important;
     margin-bottom: 0 !important;
     visibility: visible !important;
     display: block !important;
     opacity: 1 !important;
+    position: relative !important;
+    z-index: 10 !important;
   }
 }
 
