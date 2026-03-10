@@ -103,27 +103,6 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
 
   return (
     <div>
-      {showHint && (
-        <p
-          style={{
-            fontSize: '12px',
-            color: isHero ? '#ffffff' : '#111827',
-            fontStyle: 'italic',
-            textAlign: 'center',
-            marginBottom: '6px',
-            lineHeight: 1.4,
-            fontWeight: 600,
-            textShadow: isHero ? '0 1px 4px rgba(0,0,0,0.8)' : 'none',
-            background: isHero ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.85)',
-            display: 'inline-block',
-            width: '100%',
-            padding: '4px 0',
-            borderRadius: '6px',
-          }}
-        >
-          {isMobileWeb ? '👆 Tap a tab to open' : '👆 Click a tab to open'}
-        </p>
-      )}
       <div
         className={`profile-tabbar ${isHero ? "profile-tabbar-hero" : "profile-tabbar-standalone"} flex ${
           isDesktopHero
@@ -148,20 +127,44 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           </button>
         )}
 
-        <button
-          role="tab"
-          aria-selected={activeTab === "contacts"}
-          aria-controls="panel-contacts"
-          onClick={() => handleTabClick("contacts")}
-          className={`${btn(activeTab === "contacts")} inline-flex items-center gap-1 ${!showAboutTab ? firstTabPulseClass : ""}`}
-          data-testid="tab-contacts"
-          style={heroTextStyle}
-        >
-          Contacts
-          <span className={badgeClass} style={badgeStyle}>
-            {userConnections?.length || 0}
-          </span>
-        </button>
+        <div style={{ position: 'relative', display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          {showHint && (
+            <span
+              style={{
+                position: 'absolute',
+                bottom: '100%',
+                left: 0,
+                marginBottom: '4px',
+                fontSize: '11px',
+                fontWeight: 700,
+                fontStyle: 'italic',
+                whiteSpace: 'nowrap',
+                color: isHero ? '#ffffff' : '#111827',
+                textShadow: isHero ? '0 1px 4px rgba(0,0,0,0.9)' : 'none',
+                background: isHero ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.9)',
+                padding: '2px 8px',
+                borderRadius: '20px',
+                pointerEvents: 'none',
+              }}
+            >
+              {isMobileWeb ? 'Tap a tab 👇' : 'Click a tab 👇'}
+            </span>
+          )}
+          <button
+            role="tab"
+            aria-selected={activeTab === "contacts"}
+            aria-controls="panel-contacts"
+            onClick={() => handleTabClick("contacts")}
+            className={`${btn(activeTab === "contacts")} inline-flex items-center gap-1 ${!showAboutTab ? firstTabPulseClass : ""}`}
+            data-testid="tab-contacts"
+            style={heroTextStyle}
+          >
+            Contacts
+            <span className={badgeClass} style={badgeStyle}>
+              {userConnections?.length || 0}
+            </span>
+          </button>
+        </div>
 
         <button
           role="tab"
