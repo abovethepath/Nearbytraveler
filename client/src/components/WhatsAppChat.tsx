@@ -2690,10 +2690,19 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             onClick={() => setSelectedMessage(null)}
             style={{ touchAction: 'auto' }}
           />
-          {/* Bottom Sheet Menu - positioned above bottom nav */}
+          {/* Bottom Sheet Menu - aligned to chat container width */}
           <div 
-            className="fixed left-2 right-2 bg-gray-800 rounded-2xl shadow-2xl z-[99999] border border-gray-700"
-            style={{ touchAction: 'auto', bottom: 'calc(env(safe-area-inset-bottom) + 16px)' }}
+            className="fixed bg-gray-800 rounded-2xl shadow-2xl z-[99999] border border-gray-700"
+            style={{
+              touchAction: 'auto',
+              bottom: 'calc(env(safe-area-inset-bottom) + 16px)',
+              left: chatContainerRef.current
+                ? `${chatContainerRef.current.getBoundingClientRect().left + 8}px`
+                : '8px',
+              right: chatContainerRef.current
+                ? `${window.innerWidth - chatContainerRef.current.getBoundingClientRect().right + 8}px`
+                : '8px',
+            }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Action buttons */}
