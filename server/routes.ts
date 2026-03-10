@@ -3896,12 +3896,56 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           ambassadorStatus: users.ambassadorStatus,
           isAdmin: users.isAdmin,
           profileImage: users.profileImage,
+          adminNotes: users.adminNotes,
+          referralCount: users.referralCount,
+          hometownCity: users.hometownCity,
+          hometownState: users.hometownState,
         })
         .from(users)
         .orderBy(sqlExpr`CASE WHEN ${users.lastLogin} IS NULL THEN 1 ELSE 0 END`, desc(users.lastLogin));
       return res.json(allUsers);
     } catch (error: any) {
       console.error("Admin users endpoint error:", error);
+      return res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  // Admin: Save notes for a user (only nearbytrav, user ID 2)
+  app.patch("/api/admin/users/:id/notes", async (req, res) => {
+    try {
+      const sessionUser = (req as any).session?.user;
+      if (!sessionUser || sessionUser.id !== 2) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const targetId = parseInt(req.params.id);
+      if (!targetId) return res.status(400).json({ message: "Invalid user ID" });
+      const { notes } = req.body || {};
+      const updated = await storage.updateUser(targetId, { adminNotes: notes ?? null });
+      return res.json({ ok: true, adminNotes: updated?.adminNotes ?? null });
+    } catch (error: any) {
+      console.error("Admin notes endpoint error:", error);
+      return res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  // Admin: Toggle ambassador status for a user (only nearbytrav, user ID 2)
+  app.patch("/api/admin/users/:id/ambassador", async (req, res) => {
+    try {
+      const sessionUser = (req as any).session?.user;
+      if (!sessionUser || sessionUser.id !== 2) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const targetId = parseInt(req.params.id);
+      if (!targetId) return res.status(400).json({ message: "Invalid user ID" });
+      const { status } = req.body || {}; // 'active' | 'inactive' | null
+      const updated = await storage.updateUser(targetId, {
+        ambassadorStatus: status ?? null,
+        ambassadorStatusSetByAdmin: true,
+        ...(status === 'active' ? { ambassadorEnrolledAt: new Date() } : {}),
+      });
+      return res.json({ ok: true, ambassadorStatus: updated?.ambassadorStatus ?? null });
+    } catch (error: any) {
+      console.error("Admin ambassador endpoint error:", error);
       return res.status(500).json({ message: "Server error" });
     }
   });

@@ -3923,22 +3923,35 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
   const isNearbytrav = isOwnProfile && currentUser?.username === 'nearbytrav';
 
-  const { data: adminUsers, isLoading: adminLoading } = useQuery<{
+  type AdminUser = {
     id: number; username: string; name: string; userType: string; email: string;
     lastLogin: string | null; createdAt: string; ambassadorStatus: string | null;
-    isAdmin: boolean | null; profileImage: string | null;
-  }[]>({
+    isAdmin: boolean | null; profileImage: string | null; adminNotes: string | null;
+    referralCount: number | null; hometownCity: string | null; hometownState: string | null;
+  };
+
+  const { data: adminUsers, isLoading: adminLoading } = useQuery<AdminUser[]>({
     queryKey: ['/api/admin/users'],
     enabled: isNearbytrav,
   });
 
+  const [adminTab, setAdminTab] = useState<'all' | 'ambassadors' | 'cold'>('all');
+  const [expandedUserId, setExpandedUserId] = useState<number | null>(null);
+  const [noteDrafts, setNoteDrafts] = useState<Record<number, string>>({});
+  const [savingNote, setSavingNote] = useState<number | null>(null);
+  const [togglingAmbassador, setTogglingAmbassador] = useState<number | null>(null);
+  const [localUserData, setLocalUserData] = useState<Record<number, Partial<AdminUser>>>({});
+
+  const COLD_DAYS = 14;
+
   function AdminDashboard() {
     if (!isNearbytrav) return null;
 
-    const formatLastLogin = (ts: string | null) => {
+    const now = Date.now();
+
+    const formatRelTime = (ts: string | null) => {
       if (!ts) return 'Never';
-      const d = new Date(ts);
-      const diff = Date.now() - d.getTime();
+      const diff = now - new Date(ts).getTime();
       const mins = Math.floor(diff / 60000);
       if (mins < 1) return 'Just now';
       if (mins < 60) return `${mins}m ago`;
@@ -3946,8 +3959,31 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       if (hrs < 24) return `${hrs}h ago`;
       const days = Math.floor(hrs / 24);
       if (days < 7) return `${days}d ago`;
-      return d.toLocaleDateString();
+      if (days < 30) return `${days}d ago`;
+      return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
     };
+
+    const formatJoinDate = (ts: string) => {
+      return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    };
+
+    const isCold = (u: AdminUser) => {
+      if (!u.lastLogin) return true;
+      return (now - new Date(u.lastLogin).getTime()) > COLD_DAYS * 86400000;
+    };
+
+    const isNewToday = (ts: string) => (now - new Date(ts).getTime()) < 86400000;
+    const isNewThisWeek = (ts: string) => (now - new Date(ts).getTime()) < 7 * 86400000;
+
+    const all = adminUsers ?? [];
+    const ambassadors = all.filter(u => u.ambassadorStatus === 'active');
+    const coldUsers = all.filter(u => isCold(u));
+    const newToday = all.filter(u => isNewToday(u.createdAt)).length;
+    const newThisWeek = all.filter(u => isNewThisWeek(u.createdAt)).length;
+
+    const filtered = adminTab === 'ambassadors' ? ambassadors
+      : adminTab === 'cold' ? coldUsers
+      : all;
 
     const typeColor: Record<string, string> = {
       traveler: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
@@ -3955,71 +3991,202 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       business: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
     };
 
+    const getUser = (u: AdminUser) => ({ ...u, ...(localUserData[u.id] || {}) });
+
+    const saveNote = async (userId: number) => {
+      setSavingNote(userId);
+      try {
+        const notes = noteDrafts[userId] ?? '';
+        await apiRequest('PATCH', `/api/admin/users/${userId}/notes`, { notes });
+        setLocalUserData(prev => ({ ...prev, [userId]: { ...prev[userId], adminNotes: notes || null } }));
+      } catch (e) {
+        console.error('Failed to save note', e);
+      } finally {
+        setSavingNote(null);
+      }
+    };
+
+    const toggleAmbassador = async (u: AdminUser) => {
+      const merged = getUser(u);
+      const newStatus = merged.ambassadorStatus === 'active' ? 'inactive' : 'active';
+      setTogglingAmbassador(u.id);
+      try {
+        await apiRequest('PATCH', `/api/admin/users/${u.id}/ambassador`, { status: newStatus });
+        setLocalUserData(prev => ({ ...prev, [u.id]: { ...prev[u.id], ambassadorStatus: newStatus } }));
+      } catch (e) {
+        console.error('Failed to toggle ambassador', e);
+      } finally {
+        setTogglingAmbassador(null);
+      }
+    };
+
     return (
       <div className="max-w-4xl mx-auto px-4 py-6">
         <Card className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2">
+          <CardHeader className="pb-3 border-b border-gray-100 dark:border-gray-800">
+            <div className="flex items-center gap-2 mb-3">
               <Shield className="w-5 h-5 text-gray-700 dark:text-gray-300" />
               <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">Admin Dashboard</CardTitle>
-              {adminUsers && (
-                <span className="ml-auto text-sm text-gray-500 dark:text-gray-400">
-                  {adminUsers.length} users total
-                </span>
-              )}
+            </div>
+            {/* Stats bar */}
+            <div className="grid grid-cols-5 gap-2 text-center">
+              {[
+                { label: 'Total', value: all.length, color: 'text-gray-900 dark:text-white' },
+                { label: 'Today', value: newToday, color: 'text-green-600 dark:text-green-400' },
+                { label: 'This Week', value: newThisWeek, color: 'text-blue-600 dark:text-blue-400' },
+                { label: 'Ambassadors', value: ambassadors.length, color: 'text-yellow-600 dark:text-yellow-400' },
+                { label: 'Going Cold', value: coldUsers.length, color: 'text-red-600 dark:text-red-400' },
+              ].map(stat => (
+                <div key={stat.label} className="bg-gray-50 dark:bg-gray-800 rounded-lg py-2 px-1">
+                  <div className={`text-xl font-bold ${stat.color}`}>{stat.value}</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">{stat.label}</div>
+                </div>
+              ))}
             </div>
           </CardHeader>
+
+          {/* Filter tabs */}
+          <div className="flex border-b border-gray-100 dark:border-gray-800">
+            {([
+              ['all', 'All', all.length],
+              ['ambassadors', 'Ambassadors', ambassadors.length],
+              ['cold', `Cold (${COLD_DAYS}d+)`, coldUsers.length],
+            ] as [string, string, number][]).map(([key, label, count]) => (
+              <button
+                key={key}
+                onClick={() => setAdminTab(key as any)}
+                className={`flex-1 py-2.5 text-xs font-medium transition-colors ${
+                  adminTab === key
+                    ? 'border-b-2 border-gray-900 dark:border-white text-gray-900 dark:text-white'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                }`}
+              >
+                {label} <span className="ml-1 opacity-60">({count})</span>
+              </button>
+            ))}
+          </div>
+
           <CardContent className="p-0">
             {adminLoading ? (
               <div className="px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">Loading users…</div>
-            ) : !adminUsers?.length ? (
-              <div className="px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">No users found.</div>
+            ) : !filtered.length ? (
+              <div className="px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">No users in this view.</div>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-gray-800 overflow-y-auto max-h-[600px]">
-                {adminUsers.map((u) => (
-                  <div
-                    key={u.id}
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-colors"
-                    onClick={() => window.location.href = `/profile/${u.id}`}
-                  >
-                    <Avatar className="w-9 h-9 flex-shrink-0">
-                      {u.profileImage ? (
-                        <AvatarImage src={u.profileImage} alt={u.username} />
-                      ) : null}
-                      <AvatarFallback className="text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                        {u.username.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="font-medium text-sm text-gray-900 dark:text-white truncate">{u.username}</span>
-                        {u.name && u.name !== u.username && (
-                          <span className="text-xs text-gray-500 dark:text-gray-400 truncate">· {u.name}</span>
-                        )}
-                        {u.ambassadorStatus === 'active' && (
-                          <Badge className="text-[10px] py-0 px-1.5 h-4 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 border-0">
-                            Ambassador
-                          </Badge>
-                        )}
-                        {u.isAdmin && (
-                          <Badge className="text-[10px] py-0 px-1.5 h-4 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 border-0">
-                            Admin
-                          </Badge>
-                        )}
+                {filtered.map((rawU) => {
+                  const u = getUser(rawU);
+                  const isExpanded = expandedUserId === u.id;
+                  const noteDraft = noteDrafts[u.id] ?? (u.adminNotes || '');
+                  const cold = isCold(rawU);
+
+                  return (
+                    <div key={u.id}>
+                      {/* Main row */}
+                      <div
+                        className={`flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${cold && adminTab !== 'cold' ? 'border-l-2 border-red-300 dark:border-red-700' : ''}`}
+                        onClick={() => setExpandedUserId(isExpanded ? null : u.id)}
+                      >
+                        <Avatar className="w-9 h-9 flex-shrink-0">
+                          {u.profileImage ? <AvatarImage src={u.profileImage} alt={u.username} /> : null}
+                          <AvatarFallback className="text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                            {u.username.slice(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="font-medium text-sm text-gray-900 dark:text-white">{u.username}</span>
+                            {u.name && u.name !== u.username && (
+                              <span className="text-xs text-gray-500 dark:text-gray-400">· {u.name}</span>
+                            )}
+                            {u.ambassadorStatus === 'active' && (
+                              <Badge className="text-[10px] py-0 px-1.5 h-4 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 border-0">Ambassador</Badge>
+                            )}
+                            {u.isAdmin && (
+                              <Badge className="text-[10px] py-0 px-1.5 h-4 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 border-0">Admin</Badge>
+                            )}
+                            {(u.referralCount ?? 0) > 0 && (
+                              <Badge className="text-[10px] py-0 px-1.5 h-4 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 border-0">
+                                {u.referralCount} referral{u.referralCount !== 1 ? 's' : ''}
+                              </Badge>
+                            )}
+                            {u.adminNotes && (
+                              <span className="text-[10px] text-orange-500" title={u.adminNotes}>📝</span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${typeColor[u.userType] || 'bg-gray-100 text-gray-700'}`}>
+                              {u.userType}
+                            </span>
+                            {u.hometownCity && (
+                              <span className="text-[10px] text-gray-400 dark:text-gray-500">{u.hometownCity}{u.hometownState ? `, ${u.hometownState}` : ''}</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex-shrink-0 text-right">
+                          <div className={`text-xs font-medium ${cold ? 'text-red-500 dark:text-red-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                            {formatRelTime(u.lastLogin)}
+                          </div>
+                          <div className="text-[10px] text-gray-400 dark:text-gray-500">joined {formatJoinDate(u.createdAt)}</div>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${typeColor[u.userType] || 'bg-gray-100 text-gray-700'}`}>
-                          {u.userType}
-                        </span>
-                        <span className="text-xs text-gray-400 dark:text-gray-500">{u.email}</span>
-                      </div>
+
+                      {/* Expanded panel */}
+                      {isExpanded && (
+                        <div className="px-4 pb-4 pt-1 bg-gray-50 dark:bg-gray-800/40 border-t border-gray-100 dark:border-gray-700">
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="text-xs text-gray-500 dark:text-gray-400">{u.email}</span>
+                            <span className="text-gray-300 dark:text-gray-600">·</span>
+                            <button
+                              className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                              onClick={(e) => { e.stopPropagation(); window.open(`/profile/${u.id}`, '_blank'); }}
+                            >
+                              View profile
+                            </button>
+                          </div>
+
+                          {/* Notes */}
+                          <div className="mb-3">
+                            <label className="text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-1 block">Private notes</label>
+                            <textarea
+                              className="w-full text-sm rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-gray-400"
+                              rows={2}
+                              placeholder='e.g. "Met at Playa del Rey meetup, very engaged"'
+                              value={noteDraft}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => setNoteDrafts(prev => ({ ...prev, [u.id]: e.target.value }))}
+                            />
+                            <button
+                              className="mt-1 text-xs bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-3 py-1 rounded-md font-medium disabled:opacity-50"
+                              disabled={savingNote === u.id}
+                              onClick={(e) => { e.stopPropagation(); saveNote(u.id); }}
+                            >
+                              {savingNote === u.id ? 'Saving…' : 'Save note'}
+                            </button>
+                          </div>
+
+                          {/* Ambassador toggle */}
+                          <div className="flex items-center gap-2">
+                            <button
+                              className={`text-xs px-3 py-1 rounded-md font-medium border transition-colors disabled:opacity-50 ${
+                                u.ambassadorStatus === 'active'
+                                  ? 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-100 dark:hover:bg-yellow-900/50'
+                                  : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                              }`}
+                              disabled={togglingAmbassador === u.id}
+                              onClick={(e) => { e.stopPropagation(); toggleAmbassador(rawU); }}
+                            >
+                              {togglingAmbassador === u.id ? 'Updating…'
+                                : u.ambassadorStatus === 'active' ? '★ Remove Ambassador'
+                                : '☆ Make Ambassador'}
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex-shrink-0 text-right">
-                      <div className="text-xs font-medium text-gray-700 dark:text-gray-300">{formatLastLogin(u.lastLogin)}</div>
-                      <div className="text-[10px] text-gray-400 dark:text-gray-500">last login</div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>
