@@ -797,14 +797,6 @@ export default function Messages() {
                                 </span>
                               </div>
                               <div className="flex items-center gap-2 mt-0.5">
-                                {countdown && (
-                                  <span className={`text-[10px] flex items-center gap-0.5 ${
-                                    isSelected ? 'text-orange-100' : isExpired ? 'text-red-500' : 'text-orange-600 dark:text-orange-400'
-                                  }`}>
-                                    <Clock className="w-3 h-3" />
-                                    {countdown}
-                                  </span>
-                                )}
                                 {mc.lastMessage && (
                                   <p className={`text-xs truncate ${
                                     isSelected ? 'text-orange-100' : 'text-gray-500 dark:text-gray-400'
