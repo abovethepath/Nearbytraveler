@@ -46,7 +46,6 @@ export const TOP_CHOICES = [
 export const INTERESTS = [
     "Sober/Alcohol-Free Lifestyle",
     "420-Friendly",
-    "Nudism",
     "Religious & Spiritual Sites",
     "Wellness & Mindfulness",
     "Animal Rescue & Shelters",
@@ -656,7 +655,6 @@ export const PRIVATE_INTERESTS_BY_CATEGORY = {
     "Conscious Sexuality",
     "Tantric Retreats",
     "Breathwork and Intimacy",
-    "Mindful Connections",
     "Spiritual Sensuality",
     "Kundalini",
     "Intimacy Workshops",

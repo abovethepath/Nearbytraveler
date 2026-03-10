@@ -1,0 +1,22 @@
+Do two things:
+1. Remove "Nudism" from the public Other Interests list
+
+Find where "Nudism" appears in the public interests options (likely in shared/base-options.ts or wherever the Other Interests tags are defined)
+Remove it from that list completely
+It will live only in the private lifestyle interests section instead
+
+2. Add the private lifestyle interests section at the bottom of the profile edit page
+
+The privateInterests column already exists in the database and the backend already handles saving and searching it
+Look at profile-page-backup.tsx for how it was built before and use that as reference
+Place it at the very bottom of the profile edit page below all existing interests and activities
+Style it to match the existing interests sections
+
+Show this exact text above the options in small subtle text: "These are completely private. Only visible to and searchable by members who have also selected lifestyle interests. Never shown publicly."
+Add these selectable tags organized by subcategory:
+Lifestyle & Relationships: Nudist/Naturist, Nude Beaches, Clothing Optional Resorts, ENM (Ethical Non-Monogamy), Swinger Friendly, Polyamory, Open Relationship, Hotwife/Lifestyle Couple, Single Male in Lifestyle, Single Female in Lifestyle, Unicorn Friendly
+Lifestyle Travel: Lifestyle Resort Travel, Clothing Optional Cruises, Adult Only Resorts, Naughty Travel Events, Desire/Hedo Style Resorts
+Spiritual & Sensual: Tantra, Tantric Travel, Sacred Sexuality, Conscious Sexuality, Tantric Retreats, Breathwork and Intimacy, Spiritual Sensuality, Kundalini, Intimacy Workshops
+Vibe: Late Night Adventures, Skinny Dipping, Body Positivity, Sensual Connections, No Judgment Zone
+Save all selections to the existing privateInterests field — do not create any new database columns or backend routes
+First time a user selects anything show a one time popup saying: "Your lifestyle interests are completely private. Never shown publicly. Only shared with mutually matched members. You can remove these at any time."
