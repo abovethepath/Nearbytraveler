@@ -392,11 +392,11 @@ export default function Messages() {
     }
   }, [selectedConversation, selectedMeetupChat, meetupChatMessages]);
 
-  // Add/remove is-chat-page class on body when a DM or meetup chat is open on mobile.
-  // This hides the MobileBottomNav (z-9999) so it doesn't cover the fixed chat input bar (z-50).
+  // Add/remove is-chat-page class on body when a DM or meetup chat is open on mobile ONLY.
+  // On desktop both navbars stay visible — only mobile needs fullscreen chat treatment.
   useEffect(() => {
     const isChatOpen = !!(selectedConversation || selectedMeetupChat);
-    if (isChatOpen) {
+    if (isChatOpen && window.innerWidth < 768) {
       document.body.classList.add('is-chat-page');
     } else {
       document.body.classList.remove('is-chat-page');
@@ -729,7 +729,7 @@ export default function Messages() {
   return (
     <div
       data-chat-page={selectedConversation || selectedMeetupChat ? "true" : undefined}
-      className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-[calc(100dvh-144px)] md:h-[calc(100dvh-5rem)] lg:h-[calc(100dvh-5rem)]'} min-h-0`}
+      className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-[calc(100dvh-144px)] md:h-[calc(100dvh-117px)] lg:h-[calc(100dvh-117px)]'} min-h-0`}
     >
       {/* Left Sidebar - Conversations. Mobile: full screen when no selection; hidden when chat open. Desktop (lg+): always visible. Single column on mobile. */}
       <div className={`${(selectedConversation || selectedMeetupChat) ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-[#f0f2f5] dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500 min-w-0 flex-shrink-0`}>

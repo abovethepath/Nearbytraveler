@@ -2465,16 +2465,20 @@ body.native-ios-app {
   overflow: hidden !important;
 }
 
-body.is-chat-page .mobile-top-nav,
-body.is-chat-page .mobile-bottom-nav,
-body.is-chat-page .desktop-navbar {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
+/* On mobile only: fullscreen chat hides all navbars.
+   On desktop (≥768px) both navbars stay visible at all times. */
+@media (max-width: 767px) {
+  body.is-chat-page .mobile-top-nav,
+  body.is-chat-page .mobile-bottom-nav,
+  body.is-chat-page .desktop-navbar {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
 
-body.is-chat-page {
-  overflow: hidden !important;
+  body.is-chat-page {
+    overflow: hidden !important;
+  }
 }
 
 body[data-native-ios="true"] .native-ios-fullpage,
