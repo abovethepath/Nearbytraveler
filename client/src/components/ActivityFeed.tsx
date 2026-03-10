@@ -578,6 +578,12 @@ export default function ActivityFeed() {
                 return;
               }
 
+              if (type === "new_message") {
+                if (n.actor?.id) setLocation(`/messages/${n.actor.id}`);
+                else setLocation("/messages");
+                return;
+              }
+
               if (type.startsWith("post_event_connect:")) {
                 const eventId = n.data?.eventId;
                 if (eventId) setLocation(`/events/${eventId}`);

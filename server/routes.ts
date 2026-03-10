@@ -11496,12 +11496,52 @@ Questions? Just reply to this message. Welcome aboard!
         
         // Send push notification
         try {
-          const sender = await db.select({ name: users.name, username: users.username }).from(users).where(eq(users.id, senderIdNum)).then(r => r[0]);
+          const sender = await db.select({ name: users.name, username: users.username, profileImage: users.profileImage }).from(users).where(eq(users.id, senderIdNum)).then(r => r[0]);
           const senderUsername = sender?.username || 'User';
           const { sendNewMessagePush } = await import('./services/pushNotificationService');
           const pushResult = await sendNewMessagePush(recipientIdNum, senderUsername, preview);
           if (pushResult.success) {
             console.log(`✅ MESSAGE PUSH: Sent to user ${receiverId}`);
+          }
+
+          // Create in-app notification for receiver (rate-limited: one per sender per hour)
+          try {
+            const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+            const existing = await db.select({ id: notifications.id })
+              .from(notifications)
+              .where(and(
+                eq(notifications.userId, recipientIdNum),
+                eq(notifications.fromUserId, senderIdNum),
+                eq(notifications.type, 'new_message'),
+                eq(notifications.isRead, false),
+                gte(notifications.createdAt, oneHourAgo)
+              ))
+              .limit(1);
+
+            if (existing.length === 0) {
+              await db.insert(notifications).values({
+                userId: recipientIdNum,
+                fromUserId: senderIdNum,
+                type: 'new_message',
+                title: `New message from @${senderUsername}`,
+                message: preview || 'Sent you a message',
+                data: JSON.stringify({ senderUsername, senderProfileImage: sender?.profileImage || null, preview }),
+                isRead: false,
+              });
+              writeActivityLog({
+                userId: recipientIdNum,
+                action: 'message_received',
+                category: 'messages',
+                title: `New message from @${senderUsername}`,
+                description: preview || 'Sent you a message',
+                targetUserId: senderIdNum,
+                targetUsername: senderUsername,
+                targetProfileImage: sender?.profileImage || null,
+                linkUrl: `/messages/${senderIdNum}`,
+              });
+            }
+          } catch (err) {
+            console.error('❌ MESSAGE NOTIFICATION: Failed to create:', err);
           }
         } catch (error) {
           console.error('❌ MESSAGE PUSH: Failed:', error);

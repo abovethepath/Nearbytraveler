@@ -846,7 +846,7 @@ export default function Messages() {
                     className={`${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
                       selectedConversation === conv.userId 
                         ? 'bg-gradient-to-r from-blue-600 to-blue-700 border-l-4 border-l-blue-400 shadow-lg text-white' 
-                        : (!isNativeIOSApp() && conv.unreadCount > 0)
+                        : conv.unreadCount > 0
                           ? 'bg-white/70 dark:bg-gray-800/40 border-l-4 border-l-orange-400 hover:bg-white/90 dark:hover:bg-gray-800/55'
                           : 'hover:bg-gray-200 dark:hover:bg-gray-700 hover:border-l-4 hover:border-l-gray-400 dark:hover:border-l-gray-500'
                     } ${
@@ -883,13 +883,13 @@ export default function Messages() {
                           <h3 className={`text-sm truncate ${
                             selectedConversation === conv.userId 
                               ? 'text-white font-semibold' 
-                              : (!isNativeIOSApp() && conv.unreadCount > 0)
+                              : conv.unreadCount > 0
                                 ? 'text-gray-900 dark:text-white font-extrabold'
                                 : 'text-gray-900 dark:text-white font-semibold'
                           }`}>
                             @{conv.username}
                           </h3>
-                          {!isNativeIOSApp() && conv.unreadCount > 0 && (
+                          {conv.unreadCount > 0 && (
                             <span
                               className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 shrink-0"
                               aria-label="Unread messages"
@@ -906,7 +906,7 @@ export default function Messages() {
                         <div className={`text-xs ${
                           selectedConversation === conv.userId 
                             ? 'text-gray-200' 
-                            : (!isNativeIOSApp() && conv.unreadCount > 0)
+                            : conv.unreadCount > 0
                               ? 'text-gray-700 dark:text-gray-300 font-medium'
                               : 'text-gray-600 dark:text-gray-500'
                         }`}>

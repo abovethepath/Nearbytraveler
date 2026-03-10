@@ -131,6 +131,11 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     (n) => !n.isRead && n.type === 'available_now_meet_request'
   );
 
+  // Filter unread DM notifications (one per sender, with sender info embedded in data)
+  const messageNotifications = notifications.filter(
+    (n) => !n.isRead && n.type === 'new_message'
+  );
+
   const respondToConnectionRequestMutation = useMutation({
     mutationFn: async ({ connectionId, status }: { connectionId: number; status: "accepted" | "rejected" }) => {
       return await apiRequest("PUT", `/api/connections/${connectionId}`, { status });
@@ -142,10 +147,11 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     },
   });
 
-  // Badge count should represent *unread* items, not pending/actionable items.
-  // Pending connection requests remain visible in the dropdown, but shouldn't keep the bell badge stuck > 0 after being viewed.
+  // Badge count: unread notifications (includes new_message) + any raw unread DMs not yet in notifications
   const unreadNotificationCount = notifications.filter((n) => !n.isRead).length;
-  const totalNotifications = unreadMessages.length + unreadNotificationCount;
+  // Avoid double-counting: if we have new_message notifications, use those for the message count
+  const rawUnreadCount = messageNotifications.length > 0 ? 0 : unreadMessages.length;
+  const totalNotifications = rawUnreadCount + unreadNotificationCount;
   const hasAnyDropdownItems = totalNotifications > 0 || connectionRequests.length > 0;
 
   // Real-time: when server pushes a notification via WebSocket, refetch so bell updates immediately
@@ -404,8 +410,49 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
               </>
             )}
 
-            {/* Unread Messages */}
-            {unreadMessages.length > 0 && (
+            {/* Per-sender DM notifications (rich: avatar + sender + preview) */}
+            {messageNotifications.map((notification) => {
+              let senderUsername = '';
+              let senderProfileImage: string | null = null;
+              let msgPreview = notification.message;
+              try {
+                const d = notification.data ? JSON.parse(notification.data) : {};
+                senderUsername = d.senderUsername || '';
+                senderProfileImage = d.senderProfileImage || null;
+                msgPreview = d.preview || notification.message;
+              } catch {}
+              const displayName = senderUsername ? `@${senderUsername}` : notification.title;
+              return (
+                <DropdownMenuItem
+                  key={notification.id}
+                  className="cursor-pointer p-3 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  onClick={() => {
+                    markAsReadMutation.mutate(notification.id);
+                    setLocation(notification.fromUserId ? `/messages/${notification.fromUserId}` : '/messages');
+                  }}
+                >
+                  <div className="flex items-center gap-3 w-full">
+                    {senderProfileImage ? (
+                      <img src={senderProfileImage} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+                        <MessageCircle className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{displayName}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300 truncate">{msgPreview}</p>
+                    </div>
+                    <Badge variant="secondary" className="ml-auto bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                      New
+                    </Badge>
+                  </div>
+                </DropdownMenuItem>
+              );
+            })}
+
+            {/* Fallback: raw unread count when no new_message notifications exist yet */}
+            {messageNotifications.length === 0 && unreadMessages.length > 0 && (
               <DropdownMenuItem
                 className="cursor-pointer p-3 hover:bg-gray-50 dark:hover:bg-gray-700"
                 onClick={() => setLocation("/messages")}
@@ -417,10 +464,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                       {unreadMessages.length} Unread Message{unreadMessages.length > 1 ? 's' : ''}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-300 truncate">
-                      {unreadMessages.length === 1 
-                        ? `New message received`
-                        : `${unreadMessages.length} new messages`
-                      }
+                      Tap to open messages
                     </p>
                   </div>
                   <Badge variant="secondary" className="ml-auto">
