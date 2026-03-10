@@ -940,18 +940,19 @@ export default function Messages() {
                       {activeMeetup?.chatroomName || 'Meetup Chat'}
                     </h2>
                     <div className="flex items-center gap-2">
-                      {countdown && (
-                        <span className={`text-xs flex items-center gap-0.5 ${isExpired ? 'text-red-500' : 'text-orange-600 dark:text-orange-400'}`}>
-                          <Clock className="w-3 h-3" />
-                          {countdown}
-                        </span>
-                      )}
                       {activeMeetup?.city && (
                         <span className="text-xs text-gray-500 dark:text-gray-400">{activeMeetup.city}</span>
                       )}
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Static expiry note — no countdown, just a calm heads-up */}
+              <div className="px-4 py-2 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 shrink-0">
+                <p className="text-xs text-amber-700 dark:text-amber-300 text-center">
+                  This chat expires 24 hours after creation
+                </p>
               </div>
 
               <div
