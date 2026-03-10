@@ -140,6 +140,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
     activeTab,
     tabRefs,
     safeGetAllActivities,
+    currentUser,
   } = props as Record<string, any>;
 
   const [showLifestyleWelcome, setShowLifestyleWelcome] = useState(false);

@@ -3739,7 +3739,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // We need to know who is the 'user_id' (target) and who is the 'friend_id' (requester) in that record.
       // In our schema: user_id is the recipient, friend_id is the sender.
       
-      if (connectionStatus?.senderId === currentUser?.id) {
+      if (connectionStatus?.requesterId === currentUser?.id) {
         return { text: 'Request Sent', disabled: true, variant: 'default' as const, className: 'bg-orange-600/50 text-white border-0 cursor-not-allowed' };
       } else {
         return { text: 'Accept Request', disabled: false, variant: 'default' as const, className: 'bg-green-600 hover:bg-green-700 text-white border-0' };
@@ -3762,6 +3762,31 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     // Otherwise show their hometown - NEVER use location field (contains metro area)
     return user.hometownCity || "Not specified";
   };
+
+  // Admin hooks — MUST live BEFORE any early return so React sees a consistent hook count
+  const isNearbytrav = isOwnProfile && currentUser?.username === 'nearbytrav';
+
+  type AdminUser = {
+    id: number; username: string; name: string; firstName: string | null; lastName: string | null;
+    userType: string; email: string;
+    lastLogin: string | null; createdAt: string; ambassadorStatus: string | null;
+    isAdmin: boolean | null; profileImage: string | null; adminNotes: string | null;
+    referralCount: number | null; hometownCity: string | null; hometownState: string | null;
+  };
+
+  const { data: adminUsers, isLoading: adminLoading } = useQuery<AdminUser[]>({
+    queryKey: ['/api/admin/users'],
+    enabled: isNearbytrav,
+  });
+
+  const [adminTab, setAdminTab] = useState<'all' | 'ambassadors' | 'cold'>('all');
+  const [expandedUserId, setExpandedUserId] = useState<number | null>(null);
+  const [noteDrafts, setNoteDrafts] = useState<Record<number, string>>({});
+  const [savingNote, setSavingNote] = useState<number | null>(null);
+  const [togglingAmbassador, setTogglingAmbassador] = useState<number | null>(null);
+  const [localUserData, setLocalUserData] = useState<Record<number, Partial<AdminUser>>>({});
+
+  const COLD_DAYS = 14;
 
   if (userLoading && !user) {
     const nav = (propUserId && prefetchedNav.userId === propUserId) ? prefetchedNav : null;
@@ -3873,31 +3898,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
 
-
-  // Admin hooks — must live BEFORE any early return so React sees a consistent hook count
-  const isNearbytrav = isOwnProfile && currentUser?.username === 'nearbytrav';
-
-  type AdminUser = {
-    id: number; username: string; name: string; firstName: string | null; lastName: string | null;
-    userType: string; email: string;
-    lastLogin: string | null; createdAt: string; ambassadorStatus: string | null;
-    isAdmin: boolean | null; profileImage: string | null; adminNotes: string | null;
-    referralCount: number | null; hometownCity: string | null; hometownState: string | null;
-  };
-
-  const { data: adminUsers, isLoading: adminLoading } = useQuery<AdminUser[]>({
-    queryKey: ['/api/admin/users'],
-    enabled: isNearbytrav,
-  });
-
-  const [adminTab, setAdminTab] = useState<'all' | 'ambassadors' | 'cold'>('all');
-  const [expandedUserId, setExpandedUserId] = useState<number | null>(null);
-  const [noteDrafts, setNoteDrafts] = useState<Record<number, string>>({});
-  const [savingNote, setSavingNote] = useState<number | null>(null);
-  const [togglingAmbassador, setTogglingAmbassador] = useState<number | null>(null);
-  const [localUserData, setLocalUserData] = useState<Record<number, Partial<AdminUser>>>({});
-
-  const COLD_DAYS = 14;
 
   // Add null check
   if (!user) {

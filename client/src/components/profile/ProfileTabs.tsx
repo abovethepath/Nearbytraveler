@@ -120,7 +120,7 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
             <SimpleAvatar
               src={profileImage || undefined}
               username={username}
-              size={80}
+              size="xl"
               className="rounded-full"
             />
           </div>
