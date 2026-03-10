@@ -1,6 +1,8 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "@/App";
 import { useAutoHideHero } from "@/hooks/useAutoHideHero";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -84,7 +86,8 @@ export default function PlanTrip() {
   const { toast } = useToast();
   const [currentLocation, setLocation] = useLocation();
 
-  const { isHeroVisible, toggleHeroVisibility, autoHidden, showHeroFromAutoHide } = useAutoHideHero('planTrip');
+  const { isHeroVisible, toggleHeroVisibility, autoHidden, showHeroFromAutoHide } = useAutoHideHero('planTrip', 5, false);
+  const isMobile = useIsMobile();
   
   console.log('=== PLAN TRIP PAGE INITIALIZATION ===');
   console.log('Current URL location:', currentLocation);
@@ -701,11 +704,13 @@ export default function PlanTrip() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-gray-900 overflow-hidden break-words">
-      {/* Show Hero Button - Only visible when hero is hidden */}
-      {!isHeroVisible && (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 overflow-hidden break-words w-full max-w-[100vw]">
+
+      {/* Show Hero Button — only when hero is hidden, not in native iOS app */}
+      {!isNativeIOSApp() && !isHeroVisible && (
         <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <BackButton fallbackRoute="/" />
             {autoHidden ? (
               <button
                 onClick={showHeroFromAutoHide}
@@ -723,16 +728,16 @@ export default function PlanTrip() {
                 data-testid="button-show-plantrip-hero"
               >
                 <ChevronDown className="w-4 h-4 mr-2" />
-                Show Trip Hero
+                Show intro
               </Button>
             )}
           </div>
         </div>
       )}
 
-      {/* HERO SECTION — Standardized Layout */}
-      {isHeroVisible && (
-        <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden bg-white dark:bg-gray-900">
+      {/* HERO SECTION — Compact standardized layout (same as Events page) */}
+      {!isNativeIOSApp() && isHeroVisible && (
+        <section className="relative py-6 sm:py-8 lg:py-3 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white dark:from-gray-800 dark:via-gray-800 dark:to-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-4 flex items-center justify-between">
               <BackButton fallbackRoute="/" />
@@ -746,92 +751,82 @@ export default function PlanTrip() {
               </button>
             </div>
 
-          {/* Mobile layout */}
-          <div className="block md:hidden text-center">
-            <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2 mb-6">
-              <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
-              <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Plan • Connect • Explore</span>
-            </div>
-
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
-              <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                {isEditMode ? "Edit Your Trip" : "Create a Trip"}
-              </span>
-            </h1>
-
-            <div className="mb-6 flex justify-center px-4">
-              <div className="relative w-full max-w-sm">
-                <div className="relative rounded-2xl overflow-hidden shadow-xl aspect-[4/3]">
-                  <img 
-                    src={planTripHeroImage}
-                    alt="Plan your trip"
-                    className="w-full h-full object-cover"
-                    loading="eager"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
+            {isMobile ? (
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2 mb-4">
+                  <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full" />
+                  <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Plan • Connect • Explore</span>
                 </div>
-              </div>
-            </div>
 
-            <div className="max-w-2xl mx-auto px-4 space-y-4">
-              <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-                {isEditMode ? "Perfect your journey — every detail matters." : "Step 1 of 2: Destination + dates get you into the right city."}
-              </p>
-            </div>
-          </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight mb-4">
+                  {isEditMode ? "Edit Your Trip" : "Create a Trip"}
+                </h1>
 
-          {/* Desktop layout */}
-          <div className="hidden md:block">
-            <div className="relative py-8">
-              <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center">
-                <div className="md:col-span-3">
-                  <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2.5 mb-8">
-                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
-                    <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Plan • Connect • Explore</span>
-                  </div>
-
-                  <div className="space-y-6">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-                      <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                        {isEditMode ? "Edit Your Trip" : "Create a Trip"}
-                      </span>
-                    </h1>
-
-                    <div className="max-w-2xl space-y-4">
-                      <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-                        {isEditMode 
-                          ? "Perfect your journey — every detail matters."
-                          : "Step 1 of 2: Destination + dates get you into the right city."
-                        }
-                      </p>
-                      <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
-                        {isEditMode
-                          ? "Fine-tune your travel plan, update your interests, and enhance your adventure preferences to get even better matches and recommendations."
-                          : "Next, you'll pick City Plans (things you want to do) to match with the right people."
-                        }
-                      </p>
+                <div className="mb-4 flex justify-center px-4">
+                  <div className="relative w-full max-w-xs">
+                    <div className="relative rounded-2xl overflow-hidden shadow-xl aspect-[4/3] ring-2 ring-white/40 dark:ring-gray-500/50 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_12px_40px_-8px_rgba(0,0,0,0.25)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_12px_40px_-8px_rgba(0,0,0,0.6)]">
+                      <img
+                        src={planTripHeroImage}
+                        alt="Plan your trip"
+                        className="w-full h-full object-cover"
+                        loading="eager"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
                     </div>
                   </div>
                 </div>
 
-                <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
-                  <div className="relative group">
-                    <div className="relative">
-                      <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50">
-                        <img
-                          src={planTripHeroImage}
-                          alt="Plan your trip"
-                          className="w-full h-full object-cover"
-                          loading="eager"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
+                <p className="text-base text-gray-600 dark:text-gray-300 leading-relaxed font-medium max-w-sm mx-auto px-4">
+                  {isEditMode
+                    ? "Perfect your journey — every detail matters."
+                    : "Step 1 of 2: Destination + dates get you into the right city."}
+                </p>
+              </div>
+            ) : (
+              <div className="relative py-6 lg:py-0">
+                <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center lg:flex lg:items-center lg:justify-between lg:gap-10">
+                  <div className="md:col-span-3">
+                    <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2.5 lg:px-5 lg:py-2 mb-5 lg:mb-3">
+                      <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full" />
+                      <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Plan • Connect • Explore</span>
+                    </div>
+
+                    <div className="space-y-4 lg:space-y-3">
+                      <h1 className="text-3xl md:text-4xl lg:text-3xl font-bold tracking-tight leading-tight">
+                        <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
+                          {isEditMode ? "Edit Your Trip" : "Create a Trip"}
+                        </span>
+                      </h1>
+
+                      <div className="max-w-2xl space-y-2">
+                        <p className="text-base lg:text-sm text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                          {isEditMode
+                            ? "Perfect your journey — every detail matters."
+                            : "Step 1 of 2: Destination + dates get you into the right city."}
+                        </p>
+                        <p className="text-sm lg:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                          {isEditMode
+                            ? "Fine-tune your travel plan, update your interests, and enhance your adventure preferences."
+                            : "Next, you'll pick City Plans (things you want to do) to match with the right people."}
+                        </p>
                       </div>
                     </div>
                   </div>
+
+                  <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last lg:hidden">
+                    <div className="relative w-full max-w-sm sm:max-w-md h-[220px] sm:h-[260px] md:h-[300px] rounded-xl overflow-hidden shadow-xl ring-2 ring-white/40 dark:ring-gray-500/50 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_12px_40px_-8px_rgba(0,0,0,0.25)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_12px_40px_-8px_rgba(0,0,0,0.6)]">
+                      <img
+                        src={planTripHeroImage}
+                        alt="Plan your trip"
+                        className="w-full h-full object-cover"
+                        loading="eager"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            )}
           </div>
         </section>
       )}

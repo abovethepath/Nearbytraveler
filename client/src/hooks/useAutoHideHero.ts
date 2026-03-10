@@ -20,7 +20,7 @@ function checkHidden(hideKey: string, pageKey: string): boolean {
   return false;
 }
 
-export function useAutoHideHero(pageKey: string, threshold = 5) {
+export function useAutoHideHero(pageKey: string, threshold = 5, defaultVisible = true) {
   const visitKey = `${pageKey}_visits`;
   const hideKey = `hide${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}HeroSection`;
   const manualShowKey = `${pageKey}_hero_manual_show`;
@@ -29,11 +29,13 @@ export function useAutoHideHero(pageKey: string, threshold = 5) {
     const manuallyHidden = checkHidden(hideKey, pageKey);
     if (manuallyHidden) return false;
 
-    const visits = parseInt(localStorage.getItem(visitKey) || '0', 10);
     const manuallyShown = localStorage.getItem(manualShowKey) === 'true';
-    if (visits >= threshold && !manuallyShown) return false;
+    if (manuallyShown) return true;
 
-    return true;
+    const visits = parseInt(localStorage.getItem(visitKey) || '0', 10);
+    if (visits >= threshold) return false;
+
+    return defaultVisible;
   });
 
   const [autoHidden, setAutoHidden] = useState<boolean>(() => {
