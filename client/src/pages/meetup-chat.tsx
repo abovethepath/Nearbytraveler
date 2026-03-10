@@ -60,13 +60,15 @@ export default function MeetupChat() {
   }
 
   return (
-    <WhatsAppChat
-      chatId={meetupId}
-      chatType="meetup"
-      meetupId={meetupId}
-      title={meetup.title}
-      subtitle={`${meetup.participantCount} participants`}
-      currentUserId={user?.id}
-    />
+    <div className="flex overflow-hidden h-full max-w-[850px] mx-auto w-full">
+      <WhatsAppChat
+        chatId={meetupId}
+        chatType="meetup"
+        meetupId={meetupId}
+        title={meetup.title}
+        subtitle={`${meetup.participantCount} participants`}
+        currentUserId={user?.id}
+      />
+    </div>
   );
 }

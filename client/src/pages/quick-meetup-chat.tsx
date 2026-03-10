@@ -138,19 +138,22 @@ export default function QuickMeetupChat() {
         right: 0,
         bottom: 0,
         display: 'flex',
-        flexDirection: 'column',
+        alignItems: 'stretch',
+        justifyContent: 'center',
         overflow: 'hidden',
         zIndex: 50,
       }}
     >
-      <WhatsAppChat
-        chatId={chatroom.id}
-        chatType="meetup"
-        meetupId={meetupId}
-        title={meetup.title}
-        subtitle={`${meetup.participantCount || 1} participants`}
-        currentUserId={user.id}
-      />
+      <div className="flex overflow-hidden h-full max-w-[850px] mx-auto w-full">
+        <WhatsAppChat
+          chatId={chatroom.id}
+          chatType="meetup"
+          meetupId={meetupId}
+          title={meetup.title}
+          subtitle={`${meetup.participantCount || 1} participants`}
+          currentUserId={user.id}
+        />
+      </div>
     </div>
   );
 }
