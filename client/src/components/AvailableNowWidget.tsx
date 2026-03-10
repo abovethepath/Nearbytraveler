@@ -522,7 +522,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             <button
               type="button"
               onClick={() => setShowSetup(true)}
-              className="w-full py-3.5 px-4 rounded-xl bg-white hover:bg-gray-50 text-gray-900 font-bold text-base text-center border border-gray-200 shadow-sm cursor-pointer active:scale-[0.98] transition-all relative z-30 dark:border-transparent dark:bg-gradient-to-r dark:from-purple-600 dark:via-orange-500 dark:to-green-500 dark:hover:from-purple-700 dark:hover:via-orange-600 dark:hover:to-green-600 dark:text-white dark:shadow-lg dark:shadow-orange-500/30"
+              className="available-now-primary-cta w-full py-3.5 px-4 rounded-xl bg-white hover:bg-gray-50 text-gray-900 font-bold text-base text-center border border-gray-200 shadow-sm cursor-pointer active:scale-[0.98] transition-all relative z-30 dark:border-transparent dark:bg-gradient-to-r dark:from-purple-600 dark:via-orange-500 dark:to-green-500 dark:hover:from-purple-700 dark:hover:via-orange-600 dark:hover:to-green-600 dark:text-white dark:shadow-lg dark:shadow-orange-500/30"
             >
               <span className="flex items-center justify-center gap-2 pointer-events-none">
                 <Zap className="w-5 h-5 text-yellow-300" />
@@ -533,7 +533,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             {onSortByAvailableNow && (
               <Button
                 size="sm"
-                className="w-full mt-3 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 font-semibold text-xs py-2 rounded-full dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white dark:border-transparent"
+                className="available-now-secondary-cta w-full mt-3 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 font-semibold text-xs py-2 rounded-full dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white dark:border-transparent"
                 onClick={onSortByAvailableNow}
               >
                 🟢 See Who Else is Available Now
@@ -665,8 +665,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                       <span className="text-[10px] font-bold text-green-400 uppercase tracking-wider">Live Now</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-orange-400 flex-shrink-0" />
-                      <span className="text-xs font-bold text-orange-400">{getTimeRemaining(entry.expiresAt)}</span>
+                      <Clock className="w-3 h-3 text-white/70 flex-shrink-0" />
+                      <span className="text-xs font-bold text-white">{getTimeRemaining(entry.expiresAt)}</span>
                     </div>
                   </div>
 

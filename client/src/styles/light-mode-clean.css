@@ -612,3 +612,43 @@
 }
 
 /* Profile hero tabs — already white on dark gradient, don't touch */
+
+/* ──────────────────────────────────────────────────────────────
+   AVAILABLE NOW CTAs — exempt from black button rule.
+   These are primary engagement buttons that must stay colorful.
+   ────────────────────────────────────────────────────────────── */
+
+/* "I'm Available to Hang Out" — vibrant green-to-orange gradient */
+:root:not(.dark) button.available-now-primary-cta,
+:root:not(.dark) button.available-now-primary-cta:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #f97316 100%) !important;
+  background-image: linear-gradient(135deg, #16a34a 0%, #f97316 100%) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35) !important;
+}
+
+:root:not(.dark) button.available-now-primary-cta:hover {
+  background: linear-gradient(135deg, #15803d 0%, #ea580c 100%) !important;
+  background-image: linear-gradient(135deg, #15803d 0%, #ea580c 100%) !important;
+}
+
+:root:not(.dark) button.available-now-primary-cta * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* "See Who Else is Available Now" — solid blue with white text */
+:root:not(.dark) button.available-now-secondary-cta,
+:root:not(.dark) button.available-now-secondary-cta:hover {
+  background-color: #2563eb !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border-color: transparent !important;
+}
+
+:root:not(.dark) button.available-now-secondary-cta:hover {
+  background-color: #1d4ed8 !important;
+}
