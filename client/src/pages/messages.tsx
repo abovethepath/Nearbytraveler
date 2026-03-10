@@ -951,7 +951,7 @@ export default function Messages() {
               {/* Static expiry note — no countdown, just a calm heads-up */}
               <div className="px-4 py-2 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 shrink-0">
                 <p className="text-xs text-amber-700 dark:text-amber-300 text-center">
-                  This chat expires 24 hours after creation
+                  This chat will be deleted 24 hours after the meetup ends
                 </p>
               </div>
 

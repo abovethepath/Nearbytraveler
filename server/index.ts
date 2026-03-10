@@ -1080,7 +1080,47 @@ app.use((req, res, next) => {
           }
         }, EVENT_REMINDER_INTERVAL);
 
-        console.log("✅ Server started (travel status hourly, ambassador status monthly on 1st at midnight, event reminders every 30 min)");
+        // Expired chat cleanup: run every 6 hours. Hard-deletes meetup chatrooms and quick meetups
+        // that expired more than 24 hours ago, along with all their messages and participants.
+        const runExpiredChatCleanup = async () => {
+          try {
+            const { db } = await import("./db");
+            const { meetupChatrooms, meetupChatroomMessages, quickMeetups, quickMeetupParticipants } = await import("../shared/schema");
+            const { lt, inArray } = await import("drizzle-orm");
+            const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+            // Find expired meetup chatroom IDs
+            const expiredChatrooms = await db
+              .select({ id: meetupChatrooms.id })
+              .from(meetupChatrooms)
+              .where(lt(meetupChatrooms.expiresAt, cutoff));
+            if (expiredChatrooms.length > 0) {
+              const ids = expiredChatrooms.map((r: { id: number }) => r.id);
+              await db.delete(meetupChatroomMessages).where(inArray(meetupChatroomMessages.meetupChatroomId, ids));
+              await db.delete(meetupChatrooms).where(inArray(meetupChatrooms.id, ids));
+              console.log(`🧹 Deleted ${ids.length} expired meetup chatroom(s) and their messages`);
+            }
+
+            // Find expired quick meetup IDs
+            const expiredMeetups = await db
+              .select({ id: quickMeetups.id })
+              .from(quickMeetups)
+              .where(lt(quickMeetups.expiresAt, cutoff));
+            if (expiredMeetups.length > 0) {
+              const ids = expiredMeetups.map((r: { id: number }) => r.id);
+              await db.delete(quickMeetupParticipants).where(inArray(quickMeetupParticipants.meetupId, ids));
+              await db.delete(quickMeetups).where(inArray(quickMeetups.id, ids));
+              console.log(`🧹 Deleted ${ids.length} expired quick meetup(s) and their participants`);
+            }
+          } catch (error) {
+            console.error("⚠️ Expired chat cleanup failed:", error);
+          }
+        };
+        // Run once shortly after startup to clean any backlog, then every 6 hours
+        setTimeout(runExpiredChatCleanup, 5 * 60 * 1000);
+        setInterval(runExpiredChatCleanup, 6 * 60 * 60 * 1000);
+
+        console.log("✅ Server started (travel status hourly, ambassador status monthly on 1st at midnight, event reminders every 30 min, expired chat cleanup every 6h)");
       } catch (error) {
         console.error("❌ Failed to initialize server services:", error);
         console.error(
