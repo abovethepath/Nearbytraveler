@@ -1256,6 +1256,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         return res.status(500).json({ error: "Session save failed" });
       }
 
+      // Track last login timestamp (fire-and-forget)
+      storage.updateUser(user.id, { lastLogin: new Date() }).catch(() => {});
+
       // Regenerate session ID on login to guarantee a clean, isolated session for
       // this user — prevents any cross-session state bleed when multiple users
       // log in from different browser contexts simultaneously.
@@ -1319,6 +1322,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       }
       const existingUser = await storage.getUserByAppleId(sub);
       if (existingUser) {
+        // Track last login timestamp (fire-and-forget)
+        storage.updateUser(existingUser.id, { lastLogin: new Date() }).catch(() => {});
         const sess = (req as any).session;
         if (sess && typeof sess.save === "function") {
           sess.user = {
@@ -3866,6 +3871,38 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     } catch (error: any) {
       console.error("Travel status update failed:", error);
       res.status(500).json({ message: "Failed to update travel statuses", error: error.message });
+    }
+  });
+
+  // Admin: Get all users sorted by most recently active (only nearbytrav, user ID 2)
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      const sessionUser = (req as any).session?.user;
+      if (!sessionUser || sessionUser.id !== 2) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      const { db } = await import("./db");
+      const { users } = await import("../shared/schema");
+      const { desc, sql: sqlExpr } = await import("drizzle-orm");
+      const allUsers = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          userType: users.userType,
+          email: users.email,
+          lastLogin: users.lastLogin,
+          createdAt: users.createdAt,
+          ambassadorStatus: users.ambassadorStatus,
+          isAdmin: users.isAdmin,
+          profileImage: users.profileImage,
+        })
+        .from(users)
+        .orderBy(sqlExpr`CASE WHEN ${users.lastLogin} IS NULL THEN 1 ELSE 0 END`, desc(users.lastLogin));
+      return res.json(allUsers);
+    } catch (error: any) {
+      console.error("Admin users endpoint error:", error);
+      return res.status(500).json({ message: "Server error" });
     }
   });
 

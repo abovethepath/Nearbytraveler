@@ -3921,10 +3921,118 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     handleSaveLanguages, handleCancelLanguages, updateLanguages,
     connectionStatus,
   };
+  const isNearbytrav = isOwnProfile && currentUser?.username === 'nearbytrav';
+
+  const { data: adminUsers, isLoading: adminLoading } = useQuery<{
+    id: number; username: string; name: string; userType: string; email: string;
+    lastLogin: string | null; createdAt: string; ambassadorStatus: string | null;
+    isAdmin: boolean | null; profileImage: string | null;
+  }[]>({
+    queryKey: ['/api/admin/users'],
+    enabled: isNearbytrav,
+  });
+
+  function AdminDashboard() {
+    if (!isNearbytrav) return null;
+
+    const formatLastLogin = (ts: string | null) => {
+      if (!ts) return 'Never';
+      const d = new Date(ts);
+      const diff = Date.now() - d.getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'Just now';
+      if (mins < 60) return `${mins}m ago`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return `${hrs}h ago`;
+      const days = Math.floor(hrs / 24);
+      if (days < 7) return `${days}d ago`;
+      return d.toLocaleDateString();
+    };
+
+    const typeColor: Record<string, string> = {
+      traveler: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      local: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      business: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+    };
+
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        <Card className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+              <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">Admin Dashboard</CardTitle>
+              {adminUsers && (
+                <span className="ml-auto text-sm text-gray-500 dark:text-gray-400">
+                  {adminUsers.length} users total
+                </span>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            {adminLoading ? (
+              <div className="px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">Loading users…</div>
+            ) : !adminUsers?.length ? (
+              <div className="px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">No users found.</div>
+            ) : (
+              <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                {adminUsers.map((u) => (
+                  <div
+                    key={u.id}
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-colors"
+                    onClick={() => window.location.href = `/profile/${u.id}`}
+                  >
+                    <Avatar className="w-9 h-9 flex-shrink-0">
+                      {u.profileImage ? (
+                        <AvatarImage src={u.profileImage} alt={u.username} />
+                      ) : null}
+                      <AvatarFallback className="text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        {u.username.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="font-medium text-sm text-gray-900 dark:text-white truncate">{u.username}</span>
+                        {u.name && u.name !== u.username && (
+                          <span className="text-xs text-gray-500 dark:text-gray-400 truncate">· {u.name}</span>
+                        )}
+                        {u.ambassadorStatus === 'active' && (
+                          <Badge className="text-[10px] py-0 px-1.5 h-4 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 border-0">
+                            Ambassador
+                          </Badge>
+                        )}
+                        {u.isAdmin && (
+                          <Badge className="text-[10px] py-0 px-1.5 h-4 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 border-0">
+                            Admin
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${typeColor[u.userType] || 'bg-gray-100 text-gray-700'}`}>
+                          {u.userType}
+                        </span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">{u.email}</span>
+                      </div>
+                    </div>
+                    <div className="flex-shrink-0 text-right">
+                      <div className="text-xs font-medium text-gray-700 dark:text-gray-300">{formatLastLogin(u.lastLogin)}</div>
+                      <div className="text-[10px] text-gray-400 dark:text-gray-500">last login</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4 md:gap-0">
       <ProfileHeader {...profileProps} />
       <ProfileTabs {...profileProps} />
+      {isNearbytrav && <AdminDashboard />}
       <ProfileDialogs {...profileProps} />
     </div>
   );

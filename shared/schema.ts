@@ -225,7 +225,8 @@ export const users = pgTable("users", {
   // Password reset fields
   resetPasswordToken: text("reset_password_token"),
   resetPasswordExpiry: timestamp("reset_password_expiry"),
-  
+
+  lastLogin: timestamp("last_login"),
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
   index("idx_users_hometown").on(table.hometownCity, table.hometownCountry),
