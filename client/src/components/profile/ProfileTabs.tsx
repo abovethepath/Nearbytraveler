@@ -3269,13 +3269,16 @@ export function ProfileTabs(props: ProfilePageProps) {
                 if (mutuals.length === 0) return null;
                 return (
                   <Card id="connections-in-common-section" className="bg-white border border-gray-200 dark:bg-gray-900 dark:border-gray-700">
-                    <CardHeader className="bg-white dark:bg-gray-900">
+                    <CardHeader className="pb-2 bg-white dark:bg-gray-900">
                       <CardTitle className="flex items-center gap-2 text-black dark:text-white">
                         <Users className="w-5 h-5 text-blue-500" />
                         Connections in Common ({mutuals.length})
                       </CardTitle>
+                      <p className="text-sm text-blue-500 dark:text-blue-400 font-medium mt-1">
+                        You both know {mutuals.length === 1 ? 'this person' : 'these people'} — a great way to break the ice and make meeting up easier.
+                      </p>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pb-4">
                       <div className="flex flex-wrap justify-center gap-3">
                         {mutuals.map((mutual) => (
                           <div
