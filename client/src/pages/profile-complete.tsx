@@ -3857,14 +3857,29 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
-  // Add debug logging before render
-  console.log('Profile render - about to render JSX', {
-    userId: user?.id,
-    username: user?.username,
-    userType: user?.userType,
-    hasUser: !!user,
-    userKeys: user ? Object.keys(user).length : 0
+  // Admin hooks — must live BEFORE any early return so React sees a consistent hook count
+  const isNearbytrav = isOwnProfile && currentUser?.username === 'nearbytrav';
+
+  type AdminUser = {
+    id: number; username: string; name: string; userType: string; email: string;
+    lastLogin: string | null; createdAt: string; ambassadorStatus: string | null;
+    isAdmin: boolean | null; profileImage: string | null; adminNotes: string | null;
+    referralCount: number | null; hometownCity: string | null; hometownState: string | null;
+  };
+
+  const { data: adminUsers, isLoading: adminLoading } = useQuery<AdminUser[]>({
+    queryKey: ['/api/admin/users'],
+    enabled: isNearbytrav,
   });
+
+  const [adminTab, setAdminTab] = useState<'all' | 'ambassadors' | 'cold'>('all');
+  const [expandedUserId, setExpandedUserId] = useState<number | null>(null);
+  const [noteDrafts, setNoteDrafts] = useState<Record<number, string>>({});
+  const [savingNote, setSavingNote] = useState<number | null>(null);
+  const [togglingAmbassador, setTogglingAmbassador] = useState<number | null>(null);
+  const [localUserData, setLocalUserData] = useState<Record<number, Partial<AdminUser>>>({});
+
+  const COLD_DAYS = 14;
 
   // Add null check
   if (!user) {
@@ -3921,28 +3936,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     handleSaveLanguages, handleCancelLanguages, updateLanguages,
     connectionStatus,
   };
-  const isNearbytrav = isOwnProfile && currentUser?.username === 'nearbytrav';
-
-  type AdminUser = {
-    id: number; username: string; name: string; userType: string; email: string;
-    lastLogin: string | null; createdAt: string; ambassadorStatus: string | null;
-    isAdmin: boolean | null; profileImage: string | null; adminNotes: string | null;
-    referralCount: number | null; hometownCity: string | null; hometownState: string | null;
-  };
-
-  const { data: adminUsers, isLoading: adminLoading } = useQuery<AdminUser[]>({
-    queryKey: ['/api/admin/users'],
-    enabled: isNearbytrav,
-  });
-
-  const [adminTab, setAdminTab] = useState<'all' | 'ambassadors' | 'cold'>('all');
-  const [expandedUserId, setExpandedUserId] = useState<number | null>(null);
-  const [noteDrafts, setNoteDrafts] = useState<Record<number, string>>({});
-  const [savingNote, setSavingNote] = useState<number | null>(null);
-  const [togglingAmbassador, setTogglingAmbassador] = useState<number | null>(null);
-  const [localUserData, setLocalUserData] = useState<Record<number, Partial<AdminUser>>>({});
-
-  const COLD_DAYS = 14;
 
   function AdminDashboard() {
     if (!isNearbytrav) return null;
