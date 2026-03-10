@@ -41,9 +41,14 @@ export function MeetupAlertBanner({ userId }: MeetupAlertBannerProps) {
     },
   });
 
-  const meetupNotifications = notifications.filter(
-    (n) => !n.isRead && n.type === 'quick_meetup_nearby'
-  );
+  const meetupNotifications = notifications.filter((n) => {
+    if (n.isRead || n.type !== 'quick_meetup_nearby') return false;
+    try {
+      const d = n.data ? JSON.parse(n.data) : {};
+      if (d.expiresAt && new Date(d.expiresAt) < new Date()) return false;
+    } catch {}
+    return true;
+  });
 
   if (dismissed || meetupNotifications.length === 0) {
     return null;
@@ -54,6 +59,10 @@ export function MeetupAlertBanner({ userId }: MeetupAlertBannerProps) {
   const handleViewMeetups = () => {
     try {
       const data = latestMeetup.data ? JSON.parse(latestMeetup.data) : {};
+      if (data.expiresAt && new Date(data.expiresAt) < new Date()) {
+        handleDismiss();
+        return;
+      }
       if (data.meetupId) {
         setLocation(`/quick-meetups?id=${data.meetupId}`);
       } else {

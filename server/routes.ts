@@ -16544,12 +16544,35 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // GET quick meetup chatroom
-  app.get("/api/quick-meetup-chatrooms/:meetupId", async (req, res) => {
+  app.get("/api/quick-meetup-chatrooms/:meetupId", async (req: any, res) => {
     try {
       const meetupId = parseInt(req.params.meetupId || '0');
       
       if (!meetupId) {
         return res.status(400).json({ message: "Invalid meetup ID" });
+      }
+
+      const requestingUserId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string || '0');
+      if (requestingUserId) {
+        const [meetup] = await db.select({ organizerId: quickMeetups.organizerId })
+          .from(quickMeetups)
+          .where(eq(quickMeetups.id, meetupId))
+          .limit(1);
+        if (meetup) {
+          const isOrganizer = meetup.organizerId === requestingUserId;
+          if (!isOrganizer) {
+            const [participation] = await db.select({ id: quickMeetupParticipants.id })
+              .from(quickMeetupParticipants)
+              .where(and(
+                eq(quickMeetupParticipants.meetupId, meetupId),
+                eq(quickMeetupParticipants.userId, requestingUserId)
+              ))
+              .limit(1);
+            if (!participation) {
+              return res.status(403).json({ message: "You are not a participant of this meetup" });
+            }
+          }
+        }
       }
 
       const chatroom = await storage.getQuickMeetupChatroom(meetupId);
@@ -16898,7 +16921,7 @@ Questions? Just reply to this message. Welcome aboard!
                 type: 'quick_meetup_nearby',
                 title: `New Quick Meetup in ${newMeetup.city}!`,
                 message: `${organizerName} wants to meet: "${newMeetup.title}" at ${newMeetup.meetingPoint}`,
-                data: JSON.stringify({ meetupId: newMeetup.id, city: newMeetup.city }),
+                data: JSON.stringify({ meetupId: newMeetup.id, city: newMeetup.city, expiresAt: newMeetup.expiresAt }),
               });
             }
           }

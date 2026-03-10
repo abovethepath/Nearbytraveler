@@ -967,6 +967,13 @@ function QuickMeetupsPage() {
                   <Button
                     className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
                     onClick={() => {
+                      const currentUserId = actualUser?.id;
+                      const isParticipant = participants.some(p => p.userId === currentUserId);
+                      const isOrganizer = selectedMeetup.organizerId === currentUserId;
+                      if (!isParticipant && !isOrganizer) {
+                        toast({ title: "Access denied", description: "You are not a participant of this meetup.", variant: "destructive" });
+                        return;
+                      }
                       setLocation(`/quick-meetup-chat/${selectedMeetup.id}`);
                       setSelectedMeetupId(null);
                     }}
