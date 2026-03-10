@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp, Camera, User as UserIcon, ShieldAlert, Share2, LogOut } from "lucide-react";
+import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp, Camera, User as UserIcon, ShieldAlert, Share2, LogOut, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
@@ -60,15 +60,16 @@ interface WhatsAppChatProps {
   subtitle?: string;
   currentUserId?: number;
   onBack?: () => void;
-  eventId?: number; // For event chats, this is the actual event ID (chatId is the chatroom ID)
-  meetupId?: number; // For meetup chats, this is the actual meetup ID (chatId may be a chatroom ID)
+  eventId?: number;
+  meetupId?: number;
   otherUserUsername?: string;
   otherUserProfileImage?: string | null;
+  readOnly?: boolean;
 }
 
 
 export default function WhatsAppChat(props: WhatsAppChatProps) {
-  const { chatId, chatType, title, subtitle, currentUserId, onBack, eventId, meetupId } = props;
+  const { chatId, chatType, title, subtitle, currentUserId, onBack, eventId, meetupId, readOnly } = props;
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const isMobileWeb =
@@ -2552,6 +2553,15 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         )}
 
         {/* Input box — native app: no bottom nav; mobile web: safe area only (no nav overlap since nav hidden on chat); desktop: pb-[76px] clears the 60px bottom navbar */}
+        {readOnly ? (
+          <div
+            className={`chat-input-area flex items-center justify-center gap-2 px-4 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : isMobileWeb ? 'pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]' : 'pb-[76px]'}`}
+            style={{ minHeight: 56 }}
+          >
+            <Lock className="w-4 h-4 text-gray-500 flex-shrink-0" />
+            <span className="text-gray-400 text-sm">This hangout has ended — messages are read-only</span>
+          </div>
+        ) : (
         <div className={`chat-input-area px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : isMobileWeb ? 'pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]' : 'pb-[76px]'}`}>
           <div className="w-full">
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
@@ -2625,6 +2635,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           </div>
           </div>
         </div>
+        )}
       </div>
       </div>
       </div>
