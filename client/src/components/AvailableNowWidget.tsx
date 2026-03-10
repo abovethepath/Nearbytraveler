@@ -573,7 +573,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               <div key={req.id} className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
                 <div className="flex items-center gap-2">
                   <SimpleAvatar
-                    user={{ id: req.fromUser?.id || 0, username: req.fromUser?.username || "?", profileImage: req.fromUser?.profilePhoto }}
+                    user={{ id: req.fromUser?.id || 0, username: req.fromUser?.username || "?", profileImage: req.fromUser?.profileImage }}
                     size="sm"
                   />
                   <div className="flex-1 min-w-0">
