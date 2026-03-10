@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useLocation } from "wouter";
 import { Home, Plus, MessageSquare, User, Calendar, Search, X, MapPin, Zap, Users, Compass } from "lucide-react";
 import { AuthContext } from "@/App";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/queryClient";
+import websocketService from "@/services/websocketService";
 
 function useIsDarkMode() {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
@@ -64,6 +65,26 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
   });
 
   const unreadCount = (unreadData as any)?.unreadCount || 0;
+  const queryClientInst = useQueryClient();
+
+  // Real-time: invalidate unread count whenever a new message or notification arrives
+  const qcRef = useRef(queryClientInst);
+  qcRef.current = queryClientInst;
+  const userIdRef = useRef(user?.id);
+  userIdRef.current = user?.id;
+  useEffect(() => {
+    const refresh = () => {
+      if (userIdRef.current) {
+        qcRef.current.invalidateQueries({ queryKey: ['/api/messages', userIdRef.current, 'unread-count'] });
+      }
+    };
+    websocketService.on('instant_message_received', refresh);
+    websocketService.on('notification', refresh);
+    return () => {
+      websocketService.off('instant_message_received', refresh);
+      websocketService.off('notification', refresh);
+    };
+  }, []);
 
   if (hideOnMobile && isMobileSize) return null;
 

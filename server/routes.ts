@@ -11469,9 +11469,30 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`💬 IM MESSAGE: Message stored with ID ${newMessage[0]?.id}`);
 
-      // Notify online users via WebSocket (if receiver is online)
-      // This will be handled by the WebSocket service
-      
+      // Real-time: push instant_message_received to receiver via WebSocket so their DM list updates immediately
+      try {
+        const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+        const receiverWs = wsMap?.get(parseInt(receiverId || '0'));
+        if (receiverWs && receiverWs.readyState === 1) {
+          receiverWs.send(JSON.stringify({
+            type: 'instant_message_received',
+            payload: {
+              message: {
+                id: newMessage[0]?.id,
+                senderId: parseInt(senderId || '0'),
+                receiverId: parseInt(receiverId || '0'),
+                content: newMessage[0]?.content || '',
+                createdAt: newMessage[0]?.createdAt,
+                messageType: newMessage[0]?.messageType || 'text',
+                mediaUrl: newMessage[0]?.mediaUrl || null,
+              }
+            }
+          }));
+        }
+      } catch (wsErr) {
+        if (process.env.NODE_ENV === 'development') console.warn('WS push to receiver failed:', wsErr);
+      }
+
       // Send notifications (background, rate-limited per user)
       setImmediate(async () => {
         const recipientIdNum = parseInt(receiverId || '0');
@@ -11528,17 +11549,17 @@ Questions? Just reply to this message. Welcome aboard!
                 data: JSON.stringify({ senderUsername, senderProfileImage: sender?.profileImage || null, preview }),
                 isRead: false,
               });
-              writeActivityLog({
-                userId: recipientIdNum,
-                action: 'message_received',
-                category: 'messages',
-                title: `New message from @${senderUsername}`,
-                description: preview || 'Sent you a message',
-                targetUserId: senderIdNum,
-                targetUsername: senderUsername,
-                targetProfileImage: sender?.profileImage || null,
-                linkUrl: `/messages/${senderIdNum}`,
-              });
+              // Push notification event via WebSocket so the receiver's bell and unread badge update instantly
+              try {
+                const wsMap2 = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+                const receiverWs2 = wsMap2?.get(recipientIdNum);
+                if (receiverWs2 && receiverWs2.readyState === 1) {
+                  receiverWs2.send(JSON.stringify({
+                    type: 'notification',
+                    payload: { type: 'new_message', fromUserId: senderIdNum },
+                  }));
+                }
+              } catch {}
             }
           } catch (err) {
             console.error('❌ MESSAGE NOTIFICATION: Failed to create:', err);

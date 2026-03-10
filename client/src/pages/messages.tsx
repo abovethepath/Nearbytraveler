@@ -348,16 +348,20 @@ export default function Messages() {
     // Set up instant message handlers
     const handleInstantMessage = (data: any) => {
       console.log('📥 Received instant message:', data);
-      setInstantMessages(prev => [...prev, {
-        id: Date.now(),
-        senderId: data.message.senderId,
-        receiverId: user.id,
-        content: data.message.content,
-        createdAt: data.message.timestamp,
-        messageType: 'instant'
-      }]);
-      
-      // Keep natural scroll position
+      const msg = data.message || data.payload?.message;
+      if (msg) {
+        setInstantMessages(prev => [...prev, {
+          id: msg.id || Date.now(),
+          senderId: msg.senderId,
+          receiverId: user.id,
+          content: msg.content,
+          createdAt: msg.createdAt || msg.timestamp || new Date().toISOString(),
+          messageType: msg.messageType || 'text',
+          mediaUrl: msg.mediaUrl || null,
+        }]);
+      }
+      // Refetch messages so the DM list shows updated unread count immediately
+      setTimeout(() => refetchMessages(), 300);
     };
 
     const handleTypingIndicator = (data: any) => {
@@ -375,7 +379,7 @@ export default function Messages() {
       websocketService.off('instant_message_received', handleInstantMessage);
       websocketService.off('typing_indicator', handleTypingIndicator);
     };
-  }, [userId]);
+  }, [userId, refetchMessages]);
 
   // Scroll to BOTTOM to show newest messages and text box
   useEffect(() => {
