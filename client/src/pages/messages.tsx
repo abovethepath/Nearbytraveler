@@ -699,7 +699,7 @@ export default function Messages() {
   return (
     <div
       data-chat-page={selectedConversation || selectedMeetupChat ? "true" : undefined}
-      className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-[calc(100dvh-10rem)] md:h-[calc(100dvh-5rem)] lg:h-[calc(100dvh-5rem)]'} min-h-0`}
+      className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-[calc(100dvh-144px)] md:h-[calc(100dvh-5rem)] lg:h-[calc(100dvh-5rem)]'} min-h-0`}
     >
       {/* Left Sidebar - Conversations. Mobile: full screen when no selection; hidden when chat open. Desktop (lg+): always visible. Single column on mobile. */}
       <div className={`${(selectedConversation || selectedMeetupChat) ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-[#f0f2f5] dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500 min-w-0 flex-shrink-0`}>
@@ -729,7 +729,7 @@ export default function Messages() {
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto pb-4">
           {(connectionsLoading || messagesLoading) && conversations.length === 0 && (meetupChatrooms as any[]).length === 0 ? (
             <div className="p-4 flex items-center justify-center">
               <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-blue-500" />
