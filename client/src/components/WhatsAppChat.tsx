@@ -1787,79 +1787,88 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       } : undefined} 
       data-chat-page="true"
     >
-      {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
+      {/* Desktop Members Sidebar — matches approved DM left-panel design */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
-        <div className="hidden lg:flex lg:flex-col lg:w-[250px] bg-gray-800 border-r border-gray-700">
-          <div className="px-4 py-3 border-b border-gray-700">
-            <div className="text-lg font-semibold text-white mb-2">Members ({members.length})</div>
+        <aside
+          className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 overflow-hidden h-full border-l-[3px] border-r-[3px] border-[#e0e0e0] dark:border-[#2d2d2d]"
+          style={{ backgroundColor: '#0d1117' }}
+        >
+          {/* Back button */}
+          <div className="px-6 pt-5 pb-2">
+            <button
+              onClick={onBack ? onBack : () => navigate(-1 as any)}
+              className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-300 transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              {chatType === 'event' ? 'Event' : chatType === 'meetup' ? 'Meetup' : 'Chatrooms'}
+            </button>
+          </div>
+
+          {/* Chatroom icon + title */}
+          <div className="flex flex-col items-center gap-3 px-6 pt-6 pb-5">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-600 to-orange-500 flex items-center justify-center shrink-0">
+              <Users className="w-9 h-9 text-white" />
+            </div>
+            <h2 className="text-xl font-bold text-white leading-tight text-center">{title}</h2>
+            {subtitle && <p className="text-sm text-gray-400 text-center">{subtitle}</p>}
+          </div>
+
+          <hr className="border-gray-800 mx-6" />
+
+          {/* Member list */}
+          <div className="px-4 pt-4 pb-2">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Members ({members.length})</p>
             <input
               type="text"
               placeholder="Search members..."
               value={memberSearch}
               onChange={(e) => setMemberSearch(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm placeholder-gray-400 focus:outline-none focus:border-green-500"
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-green-500"
             />
           </div>
-          <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2">
+          <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
             {filteredMembers.length === 0 ? (
-              <p className="text-center text-gray-400 py-4 text-sm">No members found</p>
+              <p className="text-center text-gray-500 py-4 text-sm">No members found</p>
             ) : (
               filteredMembers.map((member) => (
                 <div
                   key={member.id}
-                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-700 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-800/60 transition-colors"
                 >
                   <div
                     onClick={() => {
-                      localStorage.setItem('returnToChat', JSON.stringify({
-                        chatId,
-                        chatType,
-                        title,
-                        subtitle,
-                        eventId,
-                        timestamp: Date.now()
-                      }));
+                      localStorage.setItem('returnToChat', JSON.stringify({ chatId, chatType, title, subtitle, eventId, timestamp: Date.now() }));
                       navigate(`/profile/${member.id}`);
                     }}
-                    className="flex items-center gap-3 flex-1 cursor-pointer"
+                    className="flex items-center gap-3 flex-1 cursor-pointer min-w-0"
                   >
-                    <Avatar className="w-10 h-10">
+                    <Avatar className="w-9 h-9 shrink-0">
                       <AvatarImage src={getProfileImageUrl(member) || undefined} />
-                      <AvatarFallback className="bg-green-600 text-white text-sm">
+                      <AvatarFallback className="bg-green-700 text-white text-sm">
                         {getFirstName(member.name, member.username)[0]}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm truncate text-white">
                         {getFirstName(member.name, member.username)}
-                        {member.isAdmin && <span className={`ml-2 text-xs font-semibold ${chatType === 'event' || chatType === 'meetup' ? 'text-orange-400' : 'text-green-400'}`}>{chatType === 'event' || chatType === 'meetup' ? '👑 Host' : 'Admin'}</span>}
-                        {member.isMuted && <span className="ml-2 text-xs text-red-400">Muted</span>}
+                        {member.isAdmin && (
+                          <span className={`ml-1.5 text-xs font-semibold ${chatType === 'event' || chatType === 'meetup' ? 'text-orange-400' : 'text-green-400'}`}>
+                            {chatType === 'event' || chatType === 'meetup' ? '👑 Host' : 'Admin'}
+                          </span>
+                        )}
+                        {member.isMuted && <span className="ml-1.5 text-xs text-red-400">Muted</span>}
                       </p>
-                      <p className="text-xs text-gray-400 truncate">{member.locationLabel || member.location || member.hometownCity || 'Unknown'}</p>
+                      <p className="text-xs text-gray-500 truncate">{member.locationLabel || member.location || member.hometownCity || ''}</p>
                     </div>
                   </div>
                   {isCurrentUserAdmin && member.id !== currentUserId && (
                     <div onClick={(e) => e.stopPropagation()}>
                       {member.isMuted ? (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 w-7 p-0 text-green-400 hover:text-green-300 hover:bg-gray-600"
-                          onClick={() => unmuteMutation.mutate(member.id)}
-                          disabled={unmuteMutation.isPending}
-                        >
+                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-green-400 hover:text-green-300 hover:bg-gray-700" onClick={() => unmuteMutation.mutate(member.id)} disabled={unmuteMutation.isPending}>
                           <Volume2 className="w-3.5 h-3.5" />
                         </Button>
                       ) : (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-gray-600"
-                          onClick={() => {
-                            setSelectedMember(member);
-                            setMuteDialogOpen(true);
-                          }}
-                        >
+                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-gray-700" onClick={() => { setSelectedMember(member); setMuteDialogOpen(true); }}>
                           <VolumeX className="w-3.5 h-3.5" />
                         </Button>
                       )}
@@ -1869,7 +1878,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               ))
             )}
           </div>
-        </div>
+        </aside>
       )}
       
       {/* Main Chat Area */}
