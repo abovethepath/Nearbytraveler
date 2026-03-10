@@ -1956,8 +1956,8 @@ function Router() {
                 <Navbar />
               )}
               {isChatPage ? (
-                /* Desktop chat — sits below the sticky navbar with room for the bottom nav */
-                <div style={{ height: 'calc(100dvh - 56px - 80px)', overflow: 'hidden' }} className="w-full max-w-full bg-background">
+                /* Desktop chat — sits below the sticky navbar with room for the bottom nav (61px = 60px inner + 1px border) */
+                <div style={{ height: 'calc(100dvh - 56px - 61px)', overflow: 'hidden' }} className="w-full max-w-full bg-background">
                   {renderPage()}
                 </div>
               ) : (
