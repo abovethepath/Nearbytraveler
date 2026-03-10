@@ -31,10 +31,6 @@ export default function QuickMeetupChat() {
 
   const { user, authLoading } = useAuth();
 
-  useEffect(() => {
-    document.body.classList.add('is-chat-page');
-    return () => document.body.classList.remove('is-chat-page');
-  }, []);
 
   const { data: meetup, isLoading: meetupLoading, isError: meetupError, error, failureCount } = useQuery<QuickMeetup>({
     queryKey: ['/api/quick-meets', meetupId],
@@ -130,30 +126,15 @@ export default function QuickMeetupChat() {
   }
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        display: 'flex',
-        alignItems: 'stretch',
-        justifyContent: 'center',
-        overflow: 'hidden',
-        zIndex: 50,
-      }}
-    >
-      <div className="flex overflow-hidden h-full max-w-[850px] mx-auto w-full">
-        <WhatsAppChat
-          chatId={chatroom.id}
-          chatType="meetup"
-          meetupId={meetupId}
-          title={meetup.title}
-          subtitle={`${meetup.participantCount || 1} participants`}
-          currentUserId={user.id}
-        />
-      </div>
+    <div className="flex overflow-hidden h-full max-w-[850px] mx-auto w-full">
+      <WhatsAppChat
+        chatId={chatroom.id}
+        chatType="meetup"
+        meetupId={meetupId}
+        title={meetup.title}
+        subtitle={`${meetup.participantCount || 1} participants`}
+        currentUserId={user.id}
+      />
     </div>
   );
 }
