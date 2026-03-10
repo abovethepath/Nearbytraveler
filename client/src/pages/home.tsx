@@ -1927,7 +1927,7 @@ export default function Home() {
                 {/* Sort Dropdown */}
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
                   <SelectTrigger
-                    className="w-auto min-w-[2.5rem] px-2 sm:px-3 !flex !items-center !justify-center gap-1 bg-white dark:bg-white/10 hover:bg-gray-50 dark:hover:bg-white/15 text-gray-800 dark:text-white border border-gray-200 dark:border-white/15"
+                    className="h-9 w-auto min-w-[2.5rem] px-2 sm:px-3 text-sm !flex !items-center !justify-center gap-1 bg-white dark:bg-white/10 hover:bg-gray-50 dark:hover:bg-white/15 text-gray-800 dark:text-white border border-gray-200 dark:border-white/15"
                     data-testid="select-sort"
                   >
                     <ArrowUpDown className="w-3.5 h-3.5 flex-shrink-0" />
