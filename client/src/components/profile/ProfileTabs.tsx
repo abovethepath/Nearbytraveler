@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { MapPin, Camera, Globe, Languages, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, EyeOff, Share2, ChevronsUpDown, Check, Pencil, Copy, Link, Plane } from "lucide-react";
+import { MapPin, Camera, Globe, Languages, Users, Calendar, Star, Edit, Edit2, Heart, MessageSquare, X, Plus, Package, TrendingUp, Zap, Shield, ChevronRight, AlertCircle, Phone, Building2, ThumbsUp, Sparkles, Award, MessageCircle, Eye, EyeOff, Share2, ChevronsUpDown, Check, Pencil, Copy, Link, Plane } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { calculateAge } from "@/lib/ageUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
@@ -31,7 +31,7 @@ import BusinessEventsWidget from "@/components/business-events-widget";
 import SubInterestSelector from "@/components/SubInterestSelector";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
-import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS } from "@shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS, PRIVATE_INTERESTS_BY_CATEGORY } from "@shared/base-options";
 import { ReportUserButton } from "@/components/report-user-button";
 import type { ProfilePageProps } from "./profile-complete-types";
 import { profileEditButtonClass } from "@/components/profile/editButtonClass";
@@ -259,6 +259,8 @@ export function ProfileTabs(props: ProfilePageProps) {
   } = props as Record<string, any>;
 
   const outgoingConnectionRequests = (props as any)?.outgoingConnectionRequests || [];
+
+  const [showLifestyleWelcome, setShowLifestyleWelcome] = useState(false);
 
   /* Desktop user profiles: tabs are integrated into hero (ProfileTabBar); hide duplicate card. iOS + business: show tabs card. */
   const showTabsCard = isNativeIOSApp() || user?.userType === 'business';
@@ -1264,7 +1266,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                               customInterests: customInterests.join(', '),
                               activities: predefinedActivities,
                               customActivities: customActivities.join(', '),
-                              subInterests: editFormData.subInterests || []
+                              subInterests: editFormData.subInterests || [],
+                              privateInterests: editFormData.privateInterests || []
                             };
                             const apiBase = getApiBaseUrl();
                             const response = await fetch(`${apiBase}/api/users/${user.id}`, {
@@ -1573,6 +1576,79 @@ export function ProfileTabs(props: ProfilePageProps) {
                       />
                     </div>
 
+                    {/* LIFESTYLE & PRIVATE INTERESTS SECTION */}
+                    {user?.userType !== 'business' && (
+                      <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
+                        <div className="border border-red-200 dark:border-red-800 rounded-xl overflow-hidden">
+                          <div className="bg-red-50 dark:bg-red-950/40 px-4 py-3 flex items-center gap-2 border-b border-red-200 dark:border-red-800">
+                            <Eye className="w-4 h-4 text-red-500 flex-shrink-0" />
+                            <h4 className="text-sm font-semibold text-red-800 dark:text-red-300">Lifestyle &amp; Private Interests</h4>
+                          </div>
+                          <div className="px-4 py-3 bg-white dark:bg-gray-800">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">
+                              These are completely private. Only visible to and searchable by members who have also selected lifestyle interests. Never shown publicly.
+                            </p>
+                            {Object.entries(PRIVATE_INTERESTS_BY_CATEGORY).map(([category, options]) => (
+                              <div key={category} className="mb-4">
+                                <p className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide mb-2">{category}</p>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {(options as string[]).map((interest: string) => {
+                                    const isSelected = (editFormData.privateInterests || []).includes(interest);
+                                    return (
+                                      <button
+                                        key={interest}
+                                        type="button"
+                                        onClick={() => {
+                                          const current: string[] = editFormData.privateInterests || [];
+                                          const alreadySelected = current.includes(interest);
+                                          if (!alreadySelected && current.length === 0 && !localStorage.getItem('lifestyle_welcome_shown')) {
+                                            localStorage.setItem('lifestyle_welcome_shown', 'true');
+                                            setShowLifestyleWelcome(true);
+                                          }
+                                          const updated = alreadySelected ? current.filter((i: string) => i !== interest) : [...current, interest];
+                                          setEditFormData((prev: any) => ({ ...prev, privateInterests: updated }));
+                                        }}
+                                        className={`inline-flex items-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap border transition-all ${
+                                          isSelected
+                                            ? 'bg-red-600 text-white border-red-600'
+                                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-red-300 dark:border-red-700 hover:border-red-500'
+                                        }`}
+                                      >
+                                        {interest}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Lifestyle Welcome one-time dialog */}
+                    {showLifestyleWelcome && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div className="fixed inset-0 bg-black/95" onClick={() => setShowLifestyleWelcome(false)} />
+                        <div className="relative bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4">
+                          <div className="flex items-center gap-2 text-red-700 dark:text-red-400">
+                            <Eye className="w-5 h-5" />
+                            <h3 className="font-semibold text-base">Lifestyle Interests are Private</h3>
+                          </div>
+                          <p className="text-sm text-gray-700 dark:text-gray-300">Your lifestyle interests are <strong>completely private</strong>. Never shown publicly. Only shared with mutually matched members.</p>
+                          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3 text-xs text-yellow-800 dark:text-yellow-300">
+                            Only people who also select matching lifestyle interests will discover you through those filters.
+                          </div>
+                          <button
+                            onClick={() => setShowLifestyleWelcome(false)}
+                            className="w-full py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium text-sm"
+                          >
+                            Got it
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
                     {/* SAVE/CANCEL BUTTONS */}
                     <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-600">
                       <Button 
@@ -1592,7 +1668,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                               customInterests: customInterests.join(', '),
                               activities: predefinedActivities,
                               customActivities: customActivities.join(', '),
-                              subInterests: editFormData.subInterests || []
+                              subInterests: editFormData.subInterests || [],
+                              privateInterests: editFormData.privateInterests || []
                             };
                             
                             const apiBase = getApiBaseUrl();

@@ -833,7 +833,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [editFormData, setEditFormData] = useState({
     interests: [] as string[],
     activities: [] as string[],
-    subInterests: [] as string[]
+    subInterests: [] as string[],
+    privateInterests: [] as string[]
   });
 
   // Simple toggle function copied from signup
@@ -1763,7 +1764,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       setEditFormData({
         interests: migratedInterests,
         activities: migratedActivities,
-        subInterests: user.subInterests || []
+        subInterests: user.subInterests || [],
+        privateInterests: Array.isArray((user as any).privateInterests) ? (user as any).privateInterests : (Array.isArray((user as any).private_interests) ? (user as any).private_interests : [])
       });
       
       if (user.userType === 'business') {
@@ -1868,7 +1870,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         setEditFormData({
           interests: reSyncMigratedInterests,
           activities: reSyncMigratedActivities,
-          subInterests: user.subInterests || []
+          subInterests: user.subInterests || [],
+          privateInterests: Array.isArray((user as any).privateInterests) ? (user as any).privateInterests : (Array.isArray((user as any).private_interests) ? (user as any).private_interests : [])
         });
         
         // For business users, extract and set custom fields

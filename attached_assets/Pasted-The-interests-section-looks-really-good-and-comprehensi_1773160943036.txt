@@ -1,0 +1,31 @@
+The interests section looks really good and comprehensive! The private section isn't there because Replit found that the frontend picker UI was fully removed — it needs to be rebuilt. Here's a focused prompt just for that:
+
+---
+
+**Replit Prompt:**
+
+> The `private_interests` column already exists in the database and the backend already handles saving and searching it. The ONLY thing missing is the frontend UI to select them.
+>
+> Look at `profile-page-backup.tsx` — this has the exact old UI for how private interests were displayed and selected. Use that as your reference.
+>
+> Add a new section at the very bottom of the profile edit page, BELOW all existing interests and activities sections, called **"Lifestyle & Private Interests"**
+>
+> Above the options show this exact text in small subtle text: "These are completely private. Only visible to and searchable by members who have also selected lifestyle interests. Never shown publicly."
+>
+> Add these selectable tags organized by subcategory:
+>
+> **Lifestyle & Relationships:** Nudist/Naturist, Nude Beaches, Clothing Optional Resorts, ENM (Ethical Non-Monogamy), Swinger Friendly, Polyamory, Open Relationship, Hotwife/Lifestyle Couple, Single Male in Lifestyle, Single Female in Lifestyle, Unicorn Friendly
+>
+> **Lifestyle Travel:** Lifestyle Resort Travel, Clothing Optional Cruises, Adult Only Resorts, Naughty Travel Events, Desire/Hedo Style Resorts
+>
+> **Spiritual & Sensual:** Tantra, Tantric Travel, Sacred Sexuality, Conscious Sexuality, Tantric Retreats, Breathwork and Intimacy, Mindful Connections, Spiritual Sensuality, Kundalini, Intimacy Workshops
+>
+> **Vibe:** Late Night Adventures, Skinny Dipping, Body Positivity, Sensual Connections, No Judgment Zone
+>
+> Save selections to the existing `privateInterests` field — do not create any new database columns or backend routes, they already exist and work.
+>
+> First time a user selects anything show a one time popup: "Your lifestyle interests are completely private. Never shown publicly. Only shared with mutually matched members."
+
+---
+
+Paste that and it should drop straight in since all the backend work is already done.
