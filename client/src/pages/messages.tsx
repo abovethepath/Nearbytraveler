@@ -749,7 +749,9 @@ export default function Messages() {
                     .filter((mc: any) => {
                       if (mc.expiresAt) {
                         const expiredMs = Date.now() - new Date(mc.expiresAt).getTime();
-                        if (expiredMs > 48 * 60 * 60 * 1000) return false;
+                        // Keep chatrooms visible for 30 days after expiry so message
+                        // history remains accessible (was 48 hours — too aggressive)
+                        if (expiredMs > 30 * 24 * 60 * 60 * 1000) return false;
                       }
                       return !connectionSearch ||
                         (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase());

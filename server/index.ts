@@ -1080,25 +1080,30 @@ app.use((req, res, next) => {
           }
         }, EVENT_REMINDER_INTERVAL);
 
-        // Expired chat cleanup: run every 6 hours. Hard-deletes meetup chatrooms and quick meetups
-        // that expired more than 24 hours ago, along with all their messages and participants.
+        // Expired chat cleanup: run every 6 hours. Hard-deletes QUICK MEETUP chatrooms only
+        // (those with a meetupId and no eventId) that expired more than 24 hours ago.
+        // Event chatrooms (those with an eventId) are NEVER deleted — their message history
+        // must persist permanently so users can always view past event conversations.
         const runExpiredChatCleanup = async () => {
           try {
             const { db } = await import("./db");
             const { meetupChatrooms, meetupChatroomMessages, quickMeetups, quickMeetupParticipants } = await import("../shared/schema");
-            const { lt, inArray } = await import("drizzle-orm");
+            const { lt, inArray, isNull, and } = await import("drizzle-orm");
             const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-            // Find expired meetup chatroom IDs
+            // Only delete quick-meetup chatrooms — EXCLUDE any row with an eventId
             const expiredChatrooms = await db
               .select({ id: meetupChatrooms.id })
               .from(meetupChatrooms)
-              .where(lt(meetupChatrooms.expiresAt, cutoff));
+              .where(and(
+                lt(meetupChatrooms.expiresAt, cutoff),
+                isNull(meetupChatrooms.eventId)   // never touch event chatrooms
+              ));
             if (expiredChatrooms.length > 0) {
               const ids = expiredChatrooms.map((r: { id: number }) => r.id);
               await db.delete(meetupChatroomMessages).where(inArray(meetupChatroomMessages.meetupChatroomId, ids));
               await db.delete(meetupChatrooms).where(inArray(meetupChatrooms.id, ids));
-              console.log(`🧹 Deleted ${ids.length} expired meetup chatroom(s) and their messages`);
+              console.log(`🧹 Deleted ${ids.length} expired quick-meetup chatroom(s) and their messages`);
             }
 
             // Find expired quick meetup IDs

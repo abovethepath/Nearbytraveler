@@ -9889,13 +9889,13 @@ export class DatabaseStorage implements IStorage {
   // Event Chatroom methods
   async getEventChatroom(eventId: number): Promise<any | undefined> {
     try {
+      // Do NOT filter by isActive — event chatrooms must always be findable
+      // so that existing message history is never orphaned by re-creation
       const [chatroom] = await db
         .select()
         .from(meetupChatrooms)
-        .where(and(
-          eq(meetupChatrooms.eventId, eventId),
-          eq(meetupChatrooms.isActive, true)
-        ));
+        .where(eq(meetupChatrooms.eventId, eventId))
+        .orderBy(meetupChatrooms.id); // oldest first — the original chatroom
       
       return chatroom;
     } catch (error) {
@@ -9932,6 +9932,11 @@ export class DatabaseStorage implements IStorage {
         throw new Error(`Event ${eventId} missing required date field`);
       }
 
+      // Set expiry 1 year after event date — event chat history must persist
+      // long after the event ends, not expire on the event day itself
+      const eventDate = new Date(event.date);
+      const expiresAt = new Date(eventDate.getTime() + 365 * 24 * 60 * 60 * 1000);
+
       const [chatroom] = await db.insert(meetupChatrooms).values({
         eventId: eventId,
         chatroomName: `${event.title} - Group Chat`,
@@ -9940,7 +9945,7 @@ export class DatabaseStorage implements IStorage {
         state: event.state || '',
         country: event.country || 'United States',
         isActive: true,
-        expiresAt: new Date(event.date),
+        expiresAt,
         participantCount: 0
       }).returning();
 
