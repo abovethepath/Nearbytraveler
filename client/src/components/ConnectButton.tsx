@@ -188,7 +188,12 @@ export default function ConnectButton({
   const getButtonState = () => {
     const isGhost = appearance === "ghost";
     if (connectionStatus?.status === 'accepted') {
-      return null; // Hide the button if connected
+      return {
+        text: 'Connected',
+        disabled: true,
+        variant: 'default' as const,
+        className: 'bg-gray-500/60 text-white border-0 cursor-default opacity-75'
+      };
     }
     if (connectionStatus?.status === 'pending') {
       const isIncoming = connectionStatus.senderId === targetUserId || connectionStatus.requesterId === targetUserId;
@@ -230,7 +235,7 @@ export default function ConnectButton({
       disabled={buttonState.disabled}
       variant={buttonState.variant}
       size={size}
-      className={`${buttonState.className} ${className}`}
+      className={connectionStatus?.status === 'accepted' ? buttonState.className : `${buttonState.className} ${className}`}
       data-testid={`button-connect-${targetUserId}`}
     >
       {buttonState.text}
