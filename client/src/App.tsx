@@ -413,6 +413,17 @@ function Router() {
     (location.startsWith('/messages/') && location.split('/')[2])
   );
 
+  // On desktop we render chat pages in the normal navbar flow so both navbars stay visible.
+  // On mobile, WhatsAppChat handles its own fullscreen layout via isMobileWeb.
+  const [isDesktopViewport, setIsDesktopViewport] = React.useState(
+    () => typeof window !== 'undefined' && window.innerWidth >= 768
+  );
+  React.useEffect(() => {
+    const handle = () => setIsDesktopViewport(window.innerWidth >= 768);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
+
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/auth/signup', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling',
     '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/ambassador', '/ambassador-program', '/getting-started',
@@ -1923,13 +1934,13 @@ function Router() {
         <>
           {console.log('🔍 APP ROUTING: Authentication evidence found, showing authenticated app for location:', location)}
           
-          {/* Chat pages: fixed to viewport so absolutely nothing can scroll */}
-          {isChatPage ? (
+          {/* Chat pages on mobile: fixed fullscreen so keyboard/scroll never breaks layout.
+              Chat pages on desktop: normal navbar layout so both navbars stay visible.
+              Non-chat pages: always normal layout. */}
+          {isChatPage && !isDesktopViewport ? (
+            /* Mobile chat — fullscreen fixed. WhatsAppChat also self-positions via isMobileWeb. */
             <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 40 }}>
-              {!isNativeIOSApp() && <div className="hidden md:block"><Navbar /></div>}
-              <div style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
-                {renderPage()}
-              </div>
+              {renderPage()}
             </div>
           ) : (
             <>
@@ -1937,13 +1948,21 @@ function Router() {
               {!isNativeIOSApp() && (
                 <Navbar />
               )}
-              <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden">
-                <main className={`w-full max-w-full overflow-x-hidden main-with-bottom-nav ${isNativeIOSApp() ? 'pt-0 pb-0' : 'pt-[56px] pb-[88px] md:pt-0 md:pb-20'}`}>
-                  <div className="w-full max-w-full overflow-x-hidden">
-                    {renderPage()}
-                  </div>
-                </main>
-              </div>
+              {isChatPage ? (
+                /* Desktop chat — sits below the sticky navbar with room for the bottom nav */
+                <div style={{ height: 'calc(100dvh - 56px - 80px)', overflow: 'hidden' }} className="w-full max-w-full bg-background">
+                  {renderPage()}
+                </div>
+              ) : (
+                /* Regular pages — normal scrollable layout */
+                <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden">
+                  <main className={`w-full max-w-full overflow-x-hidden main-with-bottom-nav ${isNativeIOSApp() ? 'pt-0 pb-0' : 'pt-[56px] pb-[88px] md:pt-0 md:pb-20'}`}>
+                    <div className="w-full max-w-full overflow-x-hidden">
+                      {renderPage()}
+                    </div>
+                  </main>
+                </div>
+              )}
             </>
           )}
 
