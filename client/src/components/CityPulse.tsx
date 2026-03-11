@@ -63,7 +63,7 @@ export function CityPulse({ city }: CityPulseProps) {
       emoji: "🤝",
       count: data.connectionsToday,
       label: "new connections today",
-      onClick: () => setLocation("/connect"),
+      onClick: () => setLocation("/requests"),
     },
     {
       emoji: "👥",
