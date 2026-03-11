@@ -734,3 +734,47 @@
   color: #6b7280 !important;
   -webkit-text-fill-color: #6b7280 !important;
 }
+
+/* ──────────────────────────────────────────────────────────────
+   RADIX DROPDOWN MENUS — white bg, black text in light mode
+   ────────────────────────────────────────────────────────────── */
+
+:root:not(.dark) [data-radix-dropdown-menu-content] {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+:root:not(.dark) [data-radix-dropdown-menu-content] [role="menuitem"],
+:root:not(.dark) [data-radix-dropdown-menu-content] [role="menuitemcheckbox"],
+:root:not(.dark) [data-radix-dropdown-menu-content] [role="menuitemradio"],
+:root:not(.dark) [data-radix-dropdown-menu-content] [role="group"],
+:root:not(.dark) [data-radix-dropdown-menu-content] span,
+:root:not(.dark) [data-radix-dropdown-menu-content] p,
+:root:not(.dark) [data-radix-dropdown-menu-content] div:not([class*="bg-blue-"]):not([class*="bg-green-"]):not([class*="bg-red-"]):not([class*="rounded-full"]) {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+
+:root:not(.dark) [data-radix-dropdown-menu-content] svg {
+  color: #374151 !important;
+}
+
+:root:not(.dark) [data-radix-dropdown-menu-content] [role="separator"],
+:root:not(.dark) [data-radix-dropdown-menu-content] [data-orientation="horizontal"] {
+  background-color: #e5e7eb !important;
+}
+
+:root:not(.dark) [data-radix-dropdown-menu-content] [role="menuitem"]:hover,
+:root:not(.dark) [data-radix-dropdown-menu-content] [role="menuitem"]:focus {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+
+:root:not(.dark) [data-radix-dropdown-menu-content] kbd {
+  background-color: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+  color: #374151 !important;
+  -webkit-text-fill-color: #374151 !important;
+}
