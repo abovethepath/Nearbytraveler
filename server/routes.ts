@@ -16738,6 +16738,49 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // ---------- QUICK MEETUP CHATROOM ----------
+
+  // GET or create the chatroom for a quick meetup (get-or-create, idempotent)
+  app.get("/api/quick-meetup-chatrooms/:meetupId", async (req, res) => {
+    try {
+      const meetupId = parseInt(req.params.meetupId || '0');
+      const userId = req.headers['x-user-id'];
+      if (!meetupId) return res.status(400).json({ message: "Invalid meetup ID" });
+      if (!userId) return res.status(401).json({ message: "User ID required" });
+
+      // Look up existing chatroom
+      let chatroom = await storage.getMeetupChatroom(meetupId);
+
+      if (!chatroom) {
+        // Auto-create the chatroom on first access
+        chatroom = await storage.createQuickMeetupChatroom(meetupId);
+      }
+
+      if (!chatroom) return res.status(404).json({ message: "Chatroom not found" });
+
+      // Seed chatroom_members from quick_meetup_participants (idempotent upsert)
+      try {
+        const participants = await storage.getQuickMeetupParticipants(meetupId);
+        for (const p of participants) {
+          await storage.joinQuickMeetupChatroom(chatroom.id, p.userId);
+        }
+        // Also ensure the requesting user is a member
+        await storage.joinQuickMeetupChatroom(chatroom.id, parseInt(userId as string));
+      } catch (seedErr) {
+        console.error('Error seeding chatroom members:', seedErr);
+      }
+
+      return res.json({
+        id: chatroom.id,
+        meetupId: chatroom.meetupId,
+        name: chatroom.chatroomName,
+      });
+    } catch (error: any) {
+      console.error("Error fetching quick meetup chatroom:", error);
+      return res.status(500).json({ message: "Failed to fetch chatroom" });
+    }
+  });
+
   // ---------- LEGACY QUICK MEETUPS API ROUTES (deprecated, will be removed in future versions) ----------
   // These endpoints are deprecated in favor of the new "quick meet" terminology above.
   // They are kept for backward compatibility but will be removed in a future release.
