@@ -23400,32 +23400,9 @@ Questions? Just reply to this message. Welcome aboard!
           }
         }
 
-        if (!groupChatroomId) {
-          const [anySession] = await db.select()
-            .from(availableNow)
-            .where(eq(availableNow.userId, Number(userId)))
-            .orderBy(desc(availableNow.createdAt))
-            .limit(1);
-          if (anySession) {
-            const [fallbackChatroom] = await db.select()
-              .from(meetupChatrooms)
-              .where(eq(meetupChatrooms.availableNowId, anySession.id))
-              .orderBy(desc(meetupChatrooms.id))
-              .limit(1);
-            if (fallbackChatroom) {
-              groupChatroomId = fallbackChatroom.id;
-              console.log(`[MEET ACCEPT] Found existing chatroom ${fallbackChatroom.id} from session ${anySession.id} (possibly expired)`);
-
-              // Ensure requester can access fallback chatroom
-              await db.insert(chatroomMembers).values({
-                chatroomId: fallbackChatroom.id,
-                userId: updated.fromUserId,
-                role: 'member',
-                isActive: true,
-              }).onConflictDoNothing();
-            }
-          }
-        }
+        // NOTE: No fallback to old/expired chatrooms. If there is no active
+        // session at accept-time, groupChatroomId stays null. A new session on
+        // a future day will create its own fresh chatroom when someone accepts.
 
         // Send a single DM so the requester sees the acceptance (guard against duplicate PATCH calls)
         const acceptanceContent = groupChatroomId
@@ -23632,7 +23609,8 @@ Questions? Just reply to this message. Welcome aboard!
         .from(meetupChatrooms)
         .where(and(
           inArray(meetupChatrooms.availableNowId, sessionIds),
-          eq(meetupChatrooms.isActive, true)
+          eq(meetupChatrooms.isActive, true),
+          gt(meetupChatrooms.expiresAt, rightNow)
         ));
 
       res.json({ chatrooms });
@@ -23845,54 +23823,28 @@ Questions? Just reply to this message. Welcome aboard!
 
       const now = new Date();
 
-      // 1) Available Now chatrooms where I'm the host
-      const mySessions = await db.select({ id: availableNow.id })
-        .from(availableNow)
-        .where(eq(availableNow.userId, uid));
-      const mySessionIds = mySessions.map(s => s.id);
+      // Use chatroom_members as the single source of truth.
+      // Only show meetup chatrooms this user is explicitly seeded into,
+      // and only those that are still active and not yet expired.
+      // This prevents: (a) showing expired rooms, (b) showing rooms the user
+      // was never a member of, (c) bleeding old conversations into new sessions.
+      const memberRows = await db.select({ chatroomId: chatroomMembers.chatroomId })
+        .from(chatroomMembers)
+        .where(and(
+          eq(chatroomMembers.userId, uid),
+          eq(chatroomMembers.isActive, true)
+        ));
 
-      // 2) Available Now chatrooms where I was accepted as requester
-      const acceptedRequests = await db.select({ toUserId: availableNowRequests.toUserId })
-        .from(availableNowRequests)
-        .where(and(eq(availableNowRequests.fromUserId, uid), eq(availableNowRequests.status, "accepted")));
-      const hostUserIds = acceptedRequests.map(r => r.toUserId);
+      const myChatroomIds = memberRows.map(r => r.chatroomId);
 
-      let acceptedSessionIds: number[] = [];
-      if (hostUserIds.length > 0) {
-        const hostSessions = await db.select({ id: availableNow.id })
-          .from(availableNow)
-          .where(inArray(availableNow.userId, hostUserIds));
-        acceptedSessionIds = hostSessions.map(s => s.id);
-      }
-
-      const allSessionIds = [...new Set([...mySessionIds, ...acceptedSessionIds])];
-
-      // 3) Quick meetup chatrooms where I'm the organizer or participant
-      const myQuickMeetups = await db.select({ id: quickMeetups.id })
-        .from(quickMeetups)
-        .where(eq(quickMeetups.organizerId, uid));
-      const participantMeetups = await db.select({ meetupId: quickMeetupParticipants.meetupId })
-        .from(quickMeetupParticipants)
-        .where(eq(quickMeetupParticipants.userId, uid));
-      const allMeetupIds = [...new Set([...myQuickMeetups.map(m => m.id), ...participantMeetups.map(p => p.meetupId)])];
-
-      // Build OR conditions for chatroom query
-      const conditions: any[] = [];
-      if (allSessionIds.length > 0) {
-        conditions.push(inArray(meetupChatrooms.availableNowId, allSessionIds));
-      }
-      if (allMeetupIds.length > 0) {
-        conditions.push(inArray(meetupChatrooms.meetupId, allMeetupIds));
-      }
-
-      if (conditions.length === 0) {
+      if (myChatroomIds.length === 0) {
         return res.json([]);
       }
 
       const chatrooms = await db.select()
         .from(meetupChatrooms)
         .where(and(
-          or(...conditions),
+          inArray(meetupChatrooms.id, myChatroomIds),
           eq(meetupChatrooms.isActive, true),
           gt(meetupChatrooms.expiresAt, now)
         ))
