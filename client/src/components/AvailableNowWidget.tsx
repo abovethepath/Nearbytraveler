@@ -413,8 +413,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         {myStatus ? (
           <div className="mb-4 overflow-hidden"
             style={{
-              background: '#1A1D27',
-              border: '1px solid rgba(255, 107, 53, 0.3)',
+              background: '#ECFDF5',
+              border: '1px solid #6EE7B7',
               borderRadius: '16px',
               padding: '14px 16px',
             }}
@@ -425,9 +425,9 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             >
               <div className="flex flex-wrap items-center gap-2">
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50 flex-shrink-0" />
-                  <span className="text-white flex-shrink-0" style={{ fontSize: '15px', fontWeight: 600 }}>You're Live</span>
-                  <span className="text-white/80 bg-white/10 px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-1" style={{ fontSize: '10px', fontWeight: 600 }}>
+                  <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-lg shadow-green-400/50 flex-shrink-0" />
+                  <span className="flex-shrink-0" style={{ fontSize: '15px', fontWeight: 700, color: '#065F46' }}>You're Live</span>
+                  <span className="px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-1" style={{ fontSize: '10px', fontWeight: 600, color: '#065F46', background: 'rgba(16,185,129,0.15)' }}>
                     <Clock className="w-2.5 h-2.5" />
                     {getTimeRemaining(myStatus.expiresAt)}
                   </span>
@@ -448,14 +448,16 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 <div className="flex items-center gap-0.5 ml-auto flex-shrink-0">
                   <button
                     type="button"
-                    className="h-5 w-5 p-0 flex items-center justify-center text-gray-500 hover:text-white rounded flex-shrink-0"
+                    className="h-5 w-5 p-0 flex items-center justify-center rounded flex-shrink-0"
+                    style={{ color: '#065F46' }}
                     onClick={(e) => { e.stopPropagation(); setLiveExpanded(!liveExpanded); }}
                   >
                     {liveExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                   </button>
                   <button
                     type="button"
-                    className="h-5 w-5 p-0 flex items-center justify-center text-gray-500 hover:text-white rounded flex-shrink-0"
+                    className="h-5 w-5 p-0 flex items-center justify-center rounded flex-shrink-0"
+                    style={{ color: '#065F46' }}
                     onClick={(e) => { e.stopPropagation(); clearAvailableMutation.mutate(); }}
                   >
                     <X className="w-3.5 h-3.5" />

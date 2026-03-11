@@ -1692,9 +1692,9 @@ export default function Home() {
 
   {isMobile ? (
     <div className="text-center">
-      <div className="inline-flex items-center gap-2 bg-gray-900/70 border border-gray-700 rounded-full px-6 py-2 mb-6">
+      <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-6 py-2 mb-6 shadow-sm">
         <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
-        <span className="text-sm font-bold bg-gradient-to-r from-blue-400 to-orange-400 bg-clip-text text-transparent">Connect • Discover • Experience</span>
+        <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
       </div>
 
       <h1 className="md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6" style={{ wordBreak: 'keep-all', overflowWrap: 'normal', hyphens: 'none', fontSize: 'clamp(1.3rem, 6vw, 2.25rem)' }}>
@@ -1747,9 +1747,9 @@ export default function Home() {
     <div className="relative py-6 lg:py-0">
       <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center lg:flex lg:items-center lg:justify-between lg:gap-10">
         <div className="md:col-span-3 md:relative md:pl-4 md:before:content-[''] md:before:absolute md:before:left-0 md:before:top-2 md:before:bottom-2 md:before:w-[4px] md:before:rounded-full md:before:bg-gradient-to-b md:before:from-[#FF6B35] md:before:to-[#A855F7] md:before:opacity-70">
-          <div className="inline-flex items-center gap-2 bg-gray-900/70 border border-gray-700 rounded-full px-6 py-2.5 lg:px-5 lg:py-2 mb-5 lg:mb-3">
+          <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-6 py-2.5 lg:px-5 lg:py-2 mb-5 lg:mb-3 shadow-sm">
             <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
-            <span className="text-sm font-bold bg-gradient-to-r from-blue-400 to-orange-400 bg-clip-text text-transparent">Connect • Discover • Experience</span>
+            <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
           </div>
 
           <div className="space-y-4 lg:space-y-3">

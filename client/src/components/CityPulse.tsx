@@ -95,7 +95,7 @@ export function CityPulse({ city }: CityPulseProps) {
               <span className="font-bold text-[13px] text-orange-500 dark:text-[#FF6B35]">
                 {pill.count}
               </span>
-              <span className="text-[12px] font-medium text-gray-500 dark:text-white/70">
+              <span className="text-[12px] font-medium text-gray-700 dark:text-white/70">
                 {pill.label}
               </span>
             </button>
