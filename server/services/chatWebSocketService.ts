@@ -907,11 +907,11 @@ export class ChatWebSocketService {
     
     this.typingUsers.delete(typingKey);
 
-    // Broadcast typing stop
+    // Broadcast typing stop — include username so clients can remove the indicator by name
     const broadcastEvent: ChatEvent = {
       type: 'typing:stop',
       chatroomId,
-      payload: { userId: ws.userId },
+      payload: { userId: ws.userId, username: ws.username },
       timestamp: Date.now(),
     };
 

@@ -1149,6 +1149,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
           case 'message:new':
             console.log('💬 WhatsApp Chat: New message received, chatType:', data.chatType, 'chatroomId:', data.chatroomId, 'expected chatType:', chatType, 'expected chatId:', chatId);
+            // Clear typing indicator for the sender as soon as their message arrives
+            if (data.payload?.sender?.username) {
+              setTypingUsers(prev => { const s = new Set(prev); s.delete(data.payload.sender.username); return s; });
+            }
             if (data.chatType === chatType) {
               if (chatType === 'dm') {
                 const payload = data.payload || {};
