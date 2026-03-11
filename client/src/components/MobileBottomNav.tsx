@@ -206,6 +206,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
         {navItems.slice(0, 2).map((item, index) => {
           const isActive = item.path ? (location === item.path || (item.path === '/' && location === '/')) : false;
           const Icon = item.icon;
+          const isActivityItem = item.label === "Activity";
           return (
             <button
               key={item.path || item.action || index}
@@ -233,18 +234,43 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
+                overflow: 'visible',
               }}
               aria-label={item.label}
             >
-              <Icon 
-                style={{ 
-                  width: '26px', 
-                  height: '26px', 
-                  marginBottom: '3px',
-                  color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
-                  strokeWidth: isActive ? 2.5 : 1.8,
-                }}
-              />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '32px', overflow: 'visible' }}>
+                <Icon 
+                  style={{ 
+                    width: '26px', 
+                    height: '26px', 
+                    marginBottom: '3px',
+                    color: isDark ? (isActive ? '#f97316' : '#8e8e93') : (isActive ? lightNavActive : lightNavInactive),
+                    strokeWidth: isActive ? 2.5 : 1.8,
+                    flexShrink: 0,
+                  }}
+                />
+                {isActivityItem && unreadNotifCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '-6px',
+                    right: '-10px',
+                    minWidth: '18px',
+                    height: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#f97316',
+                    color: 'white',
+                    borderRadius: '9999px',
+                    padding: '0 4px',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                  }}>
+                    {unreadNotifCount > 99 ? '99+' : unreadNotifCount}
+                  </span>
+                )}
+              </div>
               <span style={{ 
                 fontSize: '12px', 
                 lineHeight: '14px', 
