@@ -14,7 +14,7 @@ import EventCard from "@/components/event-card";
 import { Calendar, UserPlus } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { authStorage } from "@/lib/auth";
-import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, ALL_INTERESTS, ALL_ACTIVITIES, TOP_CHOICES } from "@shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, ALL_INTERESTS, ALL_ACTIVITIES, TOP_CHOICES, PRIVATE_INTERESTS_BY_CATEGORY } from "@shared/base-options";
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, MILITARY_STATUS_OPTIONS } from "@/lib/formConstants";
 import { InterestPills } from "@/components/InterestPills";
 
@@ -46,7 +46,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
     newToTown: false,
     travelingWithChildren: false,
     commonFriends: false,
-    hostelName: "" // Hostel search filter
+    hostelName: "",
+    privateInterests: [] as string[]
   });
 
   // Location filter state for SmartLocationInput
@@ -67,7 +68,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
     activities: false,
     events: false,
     militaryStatus: false,
-    newToTown: false
+    newToTown: false,
+    privateInterests: false
   });
 
   // State for search results
@@ -131,6 +133,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       if (advancedFilters.travelingWithChildren) params.append('travelingWithChildren', 'true');
       if (advancedFilters.commonFriends) params.append('commonFriends', 'true');
       if (advancedFilters.hostelName) params.append('hostelName', advancedFilters.hostelName);
+      if (advancedFilters.privateInterests.length > 0) params.append('privateInterests', advancedFilters.privateInterests.join(','));
       if (currentUser?.id) params.append('currentUserId', currentUser.id.toString());
 
       console.log('🔍 Search params:', params.toString());
@@ -185,7 +188,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       newToTown: false,
       travelingWithChildren: false,
       commonFriends: false,
-      hostelName: ""
+      hostelName: "",
+      privateInterests: []
     });
     setLocationFilter({
       country: "",
@@ -569,6 +573,48 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                     );
                   })}
                 </div>
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* Lifestyle Interests Filter */}
+            <Collapsible open={expandedSections.privateInterests} onOpenChange={() => toggleSection('privateInterests')}>
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" className="w-full justify-between">
+                  <span>🔒 Lifestyle Interests {advancedFilters.privateInterests.length > 0 && `(${advancedFilters.privateInterests.length})`}</span>
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-3 pt-2">
+                <p className="text-xs text-gray-500 dark:text-gray-400 italic px-1">Only matches people who have selected these in their own private lifestyle preferences.</p>
+                {Object.entries(PRIVATE_INTERESTS_BY_CATEGORY).map(([category, options]) => (
+                  <div key={category}>
+                    <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5 px-1">{category}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {options.map((option) => {
+                        const isSelected = advancedFilters.privateInterests.includes(option);
+                        return (
+                          <button
+                            key={option}
+                            type="button"
+                            onClick={() => setAdvancedFilters(prev => ({
+                              ...prev,
+                              privateInterests: isSelected
+                                ? prev.privateInterests.filter(p => p !== option)
+                                : [...prev.privateInterests, option]
+                            }))}
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                              isSelected
+                                ? "bg-purple-600 text-white border-purple-600"
+                                : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-purple-400"
+                            }`}
+                          >
+                            {option}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </CollapsibleContent>
             </Collapsible>
 
