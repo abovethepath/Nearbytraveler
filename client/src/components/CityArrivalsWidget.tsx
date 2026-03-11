@@ -204,7 +204,17 @@ export function CityArrivalsWidget({ cityName }: Props) {
     );
   }
 
-  if (!data || total === 0) return null;
+  if (!data || total === 0) return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-orange-200 dark:border-orange-900/40 p-4 shadow-sm">
+      <div className="flex items-center gap-2 mb-3">
+        <Plane className="w-4 h-4 text-orange-500 flex-shrink-0" />
+        <h3 className="text-sm font-bold text-gray-900 dark:text-white leading-tight">
+          Coming to {cityName}
+        </h3>
+      </div>
+      <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-3">No travelers arriving in the next 3 days</p>
+    </div>
+  );
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-orange-200 dark:border-orange-900/40 p-4 shadow-sm">
