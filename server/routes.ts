@@ -16914,7 +16914,7 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/quick-meetup-chatrooms/:meetupId", async (req, res) => {
     try {
       const meetupId = parseInt(req.params.meetupId || '0');
-      const userId = req.headers['x-user-id'];
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!meetupId) return res.status(400).json({ message: "Invalid meetup ID" });
       if (!userId) return res.status(401).json({ message: "User ID required" });
 
