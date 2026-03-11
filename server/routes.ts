@@ -23752,7 +23752,7 @@ Questions? Just reply to this message. Welcome aboard!
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
       const uid = Number(userId);
 
-      const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
+      const now = new Date();
 
       // 1) Available Now chatrooms where I'm the host
       const mySessions = await db.select({ id: availableNow.id })
@@ -23802,7 +23802,8 @@ Questions? Just reply to this message. Welcome aboard!
         .from(meetupChatrooms)
         .where(and(
           or(...conditions),
-          gte(meetupChatrooms.expiresAt, fortyEightHoursAgo)
+          eq(meetupChatrooms.isActive, true),
+          gt(meetupChatrooms.expiresAt, now)
         ))
         .orderBy(desc(meetupChatrooms.createdAt));
 

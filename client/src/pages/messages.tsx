@@ -55,17 +55,6 @@ function getInitialMeetupChatId(): number | null {
   return null;
 }
 
-function formatCountdown(expiresAt: string | Date): string {
-  const now = new Date().getTime();
-  const expires = new Date(expiresAt).getTime();
-  const diff = expires - now;
-  if (diff <= 0) return "Expired";
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  if (hours > 0) return `${hours}h ${minutes}m left`;
-  return `${minutes}m left`;
-}
-
 function getStoredUser() {
   return null;
 }
@@ -780,18 +769,13 @@ export default function Messages() {
                   </div>
                   {(meetupChatrooms as any[])
                     .filter((mc: any) => {
-                      if (mc.expiresAt) {
-                        const expiredMs = Date.now() - new Date(mc.expiresAt).getTime();
-                        // Keep chatrooms visible for 30 days after expiry so message
-                        // history remains accessible (was 48 hours — too aggressive)
-                        if (expiredMs > 30 * 24 * 60 * 60 * 1000) return false;
-                      }
+                      // Expired chatrooms are not returned by the API;
+                      // this client-side filter handles any edge-case clock skew
+                      if (mc.expiresAt && new Date(mc.expiresAt) <= new Date()) return false;
                       return !connectionSearch ||
                         (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase());
                     })
                     .map((mc: any) => {
-                      const isExpired = mc.isExpired || (mc.expiresAt && new Date(mc.expiresAt) < new Date());
-                      const countdown = mc.expiresAt ? formatCountdown(mc.expiresAt) : null;
                       const isSelected = selectedMeetupChat === mc.id;
                       return (
                         <div
@@ -799,9 +783,7 @@ export default function Messages() {
                           className={`${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
                             isSelected
                               ? 'bg-gradient-to-r from-orange-500 to-orange-600 border-l-4 border-l-orange-300 shadow-lg text-white'
-                              : isExpired
-                                ? 'opacity-60 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                : 'hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-l-4 hover:border-l-orange-400'
+                              : 'hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-l-4 hover:border-l-orange-400'
                           }`}
                           onClick={() => {
                             if (window.innerWidth < 1024) {

@@ -5,6 +5,7 @@ import WhatsAppChat from "@/components/WhatsAppChat";
 import { useAuth } from "@/App";
 import { ChatPageSkeleton } from "@/components/ui/chat-page-skeleton";
 import { getApiBaseUrl } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function MeetupChatroomChat() {
   const [, params] = useRoute<{ chatroomId: string }>("/meetup-chatroom-chat/:chatroomId");
@@ -38,6 +39,7 @@ export default function MeetupChatroomChat() {
     retry: false,
   });
 
+  const { toast } = useToast();
   const title = chatroomInfo?.chatroomName || titleFromUrl;
   const isExpired = chatroomInfo?.isExpired ?? false;
 
@@ -47,6 +49,16 @@ export default function MeetupChatroomChat() {
     }
     return () => document.body.classList.remove("is-chat-page");
   }, []);
+
+  useEffect(() => {
+    if (isExpired) {
+      toast({
+        title: "Meetup ended",
+        description: "This meetup chat has expired and is no longer available.",
+      });
+      navigate("/messages");
+    }
+  }, [isExpired, navigate, toast]);
 
   if (!chatroomId) {
     navigate("/messages");
