@@ -702,6 +702,10 @@ export default function Home() {
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
 
+  // Auto-hide the hero only on mobile (after 5 visits).
+  // On desktop the hero always shows unless the user manually dismisses it.
+  const effectiveHeroVisible = isMobile ? isHeroVisible : (isHeroVisible || autoHidden);
+
 
   // Use static hero image to prevent caching issues - try URL encoding for space
 
@@ -1645,7 +1649,7 @@ export default function Home() {
 )}
 
 {/* Hero Toggle Button & Theme Toggle (when hero is hidden) */}
-{!isNativeIOSApp() && !isHeroVisible && (
+{!isNativeIOSApp() && !effectiveHeroVisible && (
   <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
     <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       {autoHidden ? (
@@ -1674,7 +1678,7 @@ export default function Home() {
 )}
 
 {/* HERO SECTION — Standardized Layout */}
-{!isNativeIOSApp() && isHeroVisible && (
+{!isNativeIOSApp() && effectiveHeroVisible && (
 <section className="relative py-4 sm:py-6 lg:py-3 overflow-hidden bg-white dark:bg-gray-900">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
     <button

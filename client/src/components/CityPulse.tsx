@@ -39,13 +39,13 @@ export function CityPulse({ city }: CityPulseProps) {
       emoji: "👋",
       count: data.newTravelers,
       label: "new travelers today",
-      onClick: () => setLocation("/search"),
+      onClick: () => setLocation("/discover"),
     },
     {
       emoji: "🟢",
       count: data.openToMeet,
       label: "open to meet now",
-      onClick: () => setLocation("/search?sort=available_now"),
+      onClick: () => setLocation("/meetups"),
     },
     {
       emoji: "📅",
@@ -63,13 +63,13 @@ export function CityPulse({ city }: CityPulseProps) {
       emoji: "🤝",
       count: data.connectionsToday,
       label: "new connections today",
-      onClick: () => setLocation("/search"),
+      onClick: () => setLocation("/discover"),
     },
     {
       emoji: "👥",
       count: data.newMembersToday,
       label: `joined today in ${data.city}`,
-      onClick: () => setLocation("/search?sort=newest"),
+      onClick: () => setLocation("/discover"),
     },
   ];
 
