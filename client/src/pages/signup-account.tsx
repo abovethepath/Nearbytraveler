@@ -23,7 +23,6 @@ export default function SignupAccount() {
     contactName: "", // Business only: name of contact person
     username: "",
     email: "",
-    confirmEmail: "",
     phoneNumber: "",
     password: ""
   });
@@ -166,17 +165,6 @@ export default function SignupAccount() {
       return;
     }
 
-    if (formData.email !== formData.confirmEmail) {
-      const errorMsg = "Email and confirm email must match.";
-      setCurrentError(errorMsg);
-      toast({
-        title: "Email mismatch",
-        description: errorMsg,
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
 
     if (formData.password.length < 8) {
       const errorMsg = "Password must be at least 8 characters.";
@@ -225,7 +213,6 @@ export default function SignupAccount() {
       lastName: userType !== 'business' ? lastName : undefined,
       username: formData.username,
       email: formData.email.toLowerCase().trim(),
-      confirmEmail: formData.confirmEmail.toLowerCase().trim(),
       phoneNumber: formData.phoneNumber,
       password: formData.password,
       userType: userType,
@@ -275,8 +262,6 @@ export default function SignupAccount() {
     formData.username.trim() !== "" &&
     formData.username.length >= 6 &&
     formData.email.trim() !== "" &&
-    formData.confirmEmail.trim() !== "" &&
-    formData.email === formData.confirmEmail &&
     formData.phoneNumber.trim() !== "" &&
     formData.password.trim() !== "" &&
     formData.password.length >= 8 &&
@@ -434,21 +419,6 @@ export default function SignupAccount() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="your@email.com"
-                  className="text-base py-3"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="confirmEmail" className="text-base font-medium text-gray-900 dark:text-white">
-                  Confirm Email *
-                </Label>
-                <Input
-                  id="confirmEmail"
-                  type="email"
-                  value={formData.confirmEmail}
-                  onChange={(e) => setFormData({ ...formData, confirmEmail: e.target.value })}
-                  placeholder="Confirm your email"
                   className="text-base py-3"
                   required
                 />

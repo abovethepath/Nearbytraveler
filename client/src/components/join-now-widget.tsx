@@ -19,7 +19,6 @@ export default function JoinNowWidget() {
     name: "",
     username: "",
     email: "",
-    confirmEmail: "",
     password: ""
   });
 
@@ -75,7 +74,7 @@ export default function JoinNowWidget() {
 
   const handleCreateAccount = () => {
     // Validate all fields
-    if (!formData.name || !formData.username || !formData.email || !formData.confirmEmail || !formData.password) {
+    if (!formData.name || !formData.username || !formData.email || !formData.password) {
       toast({
         title: "Missing information",
         description: "Please fill in all fields.",
@@ -103,14 +102,6 @@ export default function JoinNowWidget() {
       return;
     }
 
-    if (formData.email !== formData.confirmEmail) {
-      toast({
-        title: "Email mismatch",
-        description: "Email addresses don't match.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     // Store account data for profile completion form
     const accountData = {
@@ -221,40 +212,6 @@ export default function JoinNowWidget() {
                   required
                   className=""
                 />
-              </div>
-              
-              <div>
-                <Label htmlFor="confirmEmail" className="text-gray-900 dark:text-white">Confirm Email *</Label>
-                <div className="relative">
-                  <Input
-                    id="confirmEmail"
-                    type="email"
-                    value={formData.confirmEmail}
-                    onChange={(e) => setFormData({ ...formData, confirmEmail: e.target.value })}
-                    placeholder="Confirm your email"
-                    required
-                    className={`pr-10 ${
-                      formData.confirmEmail && formData.email ? (
-                        formData.email === formData.confirmEmail ? 'border-green-500' : 'border-red-500'
-                      ) : ''
-                    }`}
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                    {formData.confirmEmail && formData.email && (
-                      formData.email === formData.confirmEmail ? (
-                        <span className="text-green-500">✓</span>
-                      ) : (
-                        <span className="text-red-500">✗</span>
-                      )
-                    )}
-                  </div>
-                </div>
-                {formData.confirmEmail && formData.email && formData.email !== formData.confirmEmail && (
-                  <p className="text-red-500 text-xs mt-1">Emails don't match</p>
-                )}
-                {formData.confirmEmail && formData.email && formData.email === formData.confirmEmail && (
-                  <p className="text-green-500 text-xs mt-1">Emails match</p>
-                )}
               </div>
               
               <div>
