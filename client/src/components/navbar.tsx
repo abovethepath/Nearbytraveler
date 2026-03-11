@@ -590,6 +590,18 @@ function Navbar() {
                     <MessageCircle className="mr-2 h-4 w-4" />
                     <span>Messages</span>
                   </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setLocation("/events");
+                      setTimeout(
+                        () => window.scrollTo({ top: 0, behavior: "smooth" }),
+                        100,
+                      );
+                    }}
+                  >
+                    <Calendar className="mr-2 h-4 w-4" />
+                    <span>Events</span>
+                  </DropdownMenuItem>
 
                   {directUser?.userType === "business" && (
                     <>
