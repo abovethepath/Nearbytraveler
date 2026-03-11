@@ -98,7 +98,7 @@ export default function WhatsAppChatroom() {
   if (isMember) {
     const isPrivateDM = chatroom.city === 'Private' && chatroom.country === 'DM';
     return (
-      <div className="flex overflow-hidden h-full max-w-[850px] mx-auto w-full">
+      <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
         <WhatsAppChat
           chatId={chatroomId}
           chatType="chatroom"

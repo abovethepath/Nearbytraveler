@@ -74,7 +74,7 @@ export default function MeetupChatroomChat() {
   if (isDesktop) {
     return (
       <div
-        className="flex overflow-hidden max-w-[850px] mx-auto w-full"
+        className="flex overflow-hidden max-w-[1100px] mx-auto w-full"
         style={{ height: "calc(100vh - 56px - 80px)" }}
       >
         <WhatsAppChat
@@ -105,7 +105,7 @@ export default function MeetupChatroomChat() {
         zIndex: 50,
       }}
     >
-      <div className="flex overflow-hidden h-full max-w-[850px] mx-auto w-full">
+      <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
         <WhatsAppChat
           chatId={chatroomId}
           chatType="meetup"

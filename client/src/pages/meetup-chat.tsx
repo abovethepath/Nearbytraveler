@@ -60,7 +60,7 @@ export default function MeetupChat() {
   }
 
   return (
-    <div className="flex overflow-hidden h-full max-w-[850px] mx-auto w-full">
+    <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
       <WhatsAppChat
         chatId={meetupId}
         chatType="meetup"
