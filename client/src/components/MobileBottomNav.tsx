@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useLocation } from "wouter";
-import { Home, Plus, MessageSquare, User, Calendar, Search, X, MapPin, Zap, Users, Compass } from "lucide-react";
+import { Home, Plus, MessageSquare, User, Calendar, Search, MapPin, Zap, Users, Activity } from "lucide-react";
 import { AuthContext } from "@/App";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/queryClient";
@@ -65,24 +65,64 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
   });
 
   const unreadCount = (unreadData as any)?.unreadCount || 0;
+
+  // Notification count for Activity tab badge
+  const { data: activityNotifications = [] } = useQuery<any[]>({
+    queryKey: ['/api/notifications', user?.id],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/notifications/${user.id}`, {
+        credentials: 'include',
+        headers: user?.id ? { 'x-user-id': user.id.toString() } : {},
+      });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!user?.id,
+    refetchInterval: 30000,
+  });
+
+  const { data: connectionRequests = [] } = useQuery<any[]>({
+    queryKey: ['/api/connections', user?.id, 'requests'],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/connections/${user.id}/requests`, {
+        credentials: 'include',
+        headers: user?.id ? { 'x-user-id': user.id.toString() } : {},
+      });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!user?.id,
+    refetchInterval: 30000,
+  });
+
+  const unreadNotifCount = (activityNotifications.filter((n: any) => !n.isRead).length) + connectionRequests.length;
+
   const queryClientInst = useQueryClient();
 
-  // Real-time: invalidate unread count whenever a new message or notification arrives
+  // Real-time: invalidate counts whenever a new message or notification arrives
   const qcRef = useRef(queryClientInst);
   qcRef.current = queryClientInst;
   const userIdRef = useRef(user?.id);
   userIdRef.current = user?.id;
   useEffect(() => {
-    const refresh = () => {
+    const refreshMessages = () => {
       if (userIdRef.current) {
         qcRef.current.invalidateQueries({ queryKey: ['/api/messages', userIdRef.current, 'unread-count'] });
       }
     };
-    websocketService.on('instant_message_received', refresh);
-    websocketService.on('notification', refresh);
+    const refreshActivity = () => {
+      if (userIdRef.current) {
+        qcRef.current.invalidateQueries({ queryKey: ['/api/notifications', userIdRef.current] });
+        qcRef.current.invalidateQueries({ queryKey: ['/api/connections', userIdRef.current, 'requests'] });
+      }
+    };
+    websocketService.on('instant_message_received', refreshMessages);
+    websocketService.on('notification', refreshActivity);
+    websocketService.on('connection_request', refreshActivity);
     return () => {
-      websocketService.off('instant_message_received', refresh);
-      websocketService.off('notification', refresh);
+      websocketService.off('instant_message_received', refreshMessages);
+      websocketService.off('notification', refreshActivity);
+      websocketService.off('connection_request', refreshActivity);
     };
   }, []);
 
@@ -100,7 +140,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
     { icon: User, label: "Profile", path: profilePath },
   ] : [
     { icon: Home, label: "Home", path: "/" },
-    { icon: Compass, label: "Explore", path: "/explore" },
+    { icon: Activity, label: "Activity", path: "/activity" },
     { icon: MessageSquare, label: "Messages", path: "/messages" },
     { icon: User, label: "Profile", path: profilePath },
   ];
@@ -258,6 +298,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
           const isActive = item.path ? (location === item.path || location === item.path + '/' || (item.path === '/messages' && location.startsWith('/messages')) || (item.path === '/business-dashboard' && location.startsWith('/business-dashboard')) || (item.path.startsWith('/profile') && location.startsWith('/profile'))) : false;
           const Icon = item.icon;
           const isMessagesItem = item.label === "Messages";
+          const isActivityItem = item.label === "Activity";
           const handleNavClick = (e: React.MouseEvent) => {
             e.preventDefault();
             e.stopPropagation();
@@ -327,6 +368,27 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
                     boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
                   }}>
                     {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+                {isActivityItem && unreadNotifCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '-6px',
+                    right: '-10px',
+                    minWidth: '18px',
+                    height: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#f97316',
+                    color: 'white',
+                    borderRadius: '9999px',
+                    padding: '0 4px',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                  }}>
+                    {unreadNotifCount > 99 ? '99+' : unreadNotifCount}
                   </span>
                 )}
               </div>

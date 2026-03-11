@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Globe,
-  Bell,
   Settings,
   LogOut,
   Users,
@@ -35,7 +34,6 @@ import {
 } from "lucide-react";
 import Logo from "@/components/logo";
 import ConnectModal from "@/components/connect-modal";
-import NotificationBell from "@/components/notification-bell";
 import { useTheme } from "@/components/theme-provider";
 import { AdaptiveThemeToggle } from "@/components/adaptive-theme-toggle";
 import { authStorage } from "@/lib/auth";
@@ -507,8 +505,6 @@ function Navbar() {
               </nav>
 
               <div className="flex items-center space-x-2 md:space-x-3">
-                {directUser?.id && <NotificationBell userId={directUser.id} />}
-
                 {!directUser?.id && (
                   <>
                     <Link href="/signin">
