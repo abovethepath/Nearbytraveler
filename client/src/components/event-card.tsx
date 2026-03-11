@@ -411,7 +411,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 </Button>
               </>
             ) : hasJoinedOrInterested ? (
-              // Joined or Interested: Leave + Open Chat
+              // Joined or Interested: Leave + View Event + Open Chat
               <>
                 <Button
                   size="sm"
@@ -422,6 +422,14 @@ export default function EventCard({ event, compact = false, featured = false }: 
                   data-testid="button-leave"
                 >
                   {leaveEventMutation.isPending ? "..." : "Leave"}
+                </Button>
+                <Button
+                  size="sm"
+                  className="flex-1 text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                  onClick={() => setLocation(`/events/${event.id}`)}
+                  data-testid="button-view"
+                >
+                  View Event
                 </Button>
                 <Button
                   size="sm"
