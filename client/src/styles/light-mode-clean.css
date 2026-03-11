@@ -590,6 +590,12 @@
   background-color: revert !important;
 }
 
+/* PROTECT: Available Now badge on user cards — always full green in both modes */
+:root:not(.dark) span.status-badge[class*="bg-green-"] {
+  background-color: #22c55e !important;
+  color: #ffffff !important;
+}
+
 /* Green status indicators */
 :root:not(.dark) span[class*="bg-green-"][class*="text-green-"] {
   background-color: revert !important;
