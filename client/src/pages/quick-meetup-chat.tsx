@@ -135,7 +135,7 @@ export default function QuickMeetupChat() {
 
   if (isDesktop) {
     return (
-      <div className="flex overflow-hidden max-w-[850px] mx-auto w-full" style={{ height: 'calc(100vh - 56px - 80px)' }}>
+      <div className="flex overflow-hidden max-w-[978px] mx-auto w-full" style={{ height: 'calc(100dvh - 56px - 60px)' }}>
         <WhatsAppChat
           chatId={chatroom.id}
           chatType="meetup"

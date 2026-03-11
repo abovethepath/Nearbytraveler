@@ -75,7 +75,7 @@ export default function MeetupChatroomChat() {
     return (
       <div
         className="flex overflow-hidden max-w-[1100px] mx-auto w-full"
-        style={{ height: "calc(100vh - 56px - 80px)" }}
+        style={{ height: "calc(100dvh - 56px - 60px)" }}
       >
         <WhatsAppChat
           chatId={chatroomId}
