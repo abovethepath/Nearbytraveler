@@ -2690,18 +2690,21 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <>
                         {countriesVisited.length > 0 ? (
                           <div className="flex flex-wrap gap-2">
-                            {countriesVisited.map((country: string, index: number) => (
-                              <div 
-                                key={country} 
-                                className={
-                                  isMobileWeb
-                                    ? "pill-interests bg-white dark:bg-white text-gray-900 dark:text-black border border-gray-200 dark:border-gray-200 shadow-none"
-                                    : "pill-interests"
-                                }
-                              >
-                                {country}
-                              </div>
-                            ))}
+                            {countriesVisited.map((country: string, index: number) => {
+                              const countryPillColors = [
+                                "pill-interests bg-blue-50 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-700/50 shadow-none",
+                                "pill-interests bg-orange-50 dark:bg-orange-900/60 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-700/50 shadow-none",
+                                "pill-interests bg-purple-50 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200 border border-purple-200 dark:border-purple-700/50 shadow-none",
+                                "pill-interests bg-teal-50 dark:bg-teal-900/60 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-700/50 shadow-none",
+                                "pill-interests bg-amber-50 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-700/50 shadow-none",
+                                "pill-interests bg-rose-50 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-700/50 shadow-none",
+                              ];
+                              return (
+                                <div key={country} className={countryPillColors[index % countryPillColors.length]}>
+                                  {country}
+                                </div>
+                              );
+                            })}
                           </div>
                         ) : (
                           <p className="text-gray-500 dark:text-white text-sm">No countries visited yet</p>
@@ -4327,11 +4330,11 @@ export function ProfileTabs(props: ProfilePageProps) {
                       {tempCountries.length > 0 && (
                         <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                           {tempCountries.map((country) => (
-                            <div key={country} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-white text-black border border-black">
+                            <div key={country} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-50 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-700/50">
                               {country}
                               <button
                                 onClick={() => setTempCountries(tempCountries.filter(c => c !== country))}
-                                className="ml-2 text-green-200 hover:text-white"
+                                className="ml-2 text-blue-400 dark:text-blue-300 hover:text-blue-700 dark:hover:text-white"
                               >
                                 ✕
                               </button>
@@ -4353,14 +4356,21 @@ export function ProfileTabs(props: ProfilePageProps) {
                     <>
                       {countriesVisited.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
-                          {countriesVisited.map((country: string, index: number) => (
-                            <div 
-                              key={country} 
-                              className="pill-interests bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 shadow-none"
-                            >
-                              {country}
-                            </div>
-                          ))}
+                          {countriesVisited.map((country: string, index: number) => {
+                            const countryPillColors = [
+                              "pill-interests bg-blue-50 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-700/50 shadow-none",
+                              "pill-interests bg-orange-50 dark:bg-orange-900/60 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-700/50 shadow-none",
+                              "pill-interests bg-purple-50 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200 border border-purple-200 dark:border-purple-700/50 shadow-none",
+                              "pill-interests bg-teal-50 dark:bg-teal-900/60 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-700/50 shadow-none",
+                              "pill-interests bg-amber-50 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-700/50 shadow-none",
+                              "pill-interests bg-rose-50 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-700/50 shadow-none",
+                            ];
+                            return (
+                              <div key={country} className={countryPillColors[index % countryPillColors.length]}>
+                                {country}
+                              </div>
+                            );
+                          })}
                         </div>
                       ) : (
                         <p className="text-gray-500 dark:text-white text-sm">No countries visited yet</p>
