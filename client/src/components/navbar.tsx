@@ -602,6 +602,18 @@ function Navbar() {
                     <Calendar className="mr-2 h-4 w-4" />
                     <span>Events</span>
                   </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setLocation("/explore");
+                      setTimeout(
+                        () => window.scrollTo({ top: 0, behavior: "smooth" }),
+                        100,
+                      );
+                    }}
+                  >
+                    <Zap className="mr-2 h-4 w-4" />
+                    <span>Explore</span>
+                  </DropdownMenuItem>
 
                   {directUser?.userType === "business" && (
                     <>
