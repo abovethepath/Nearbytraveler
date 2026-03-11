@@ -270,7 +270,7 @@ export default function TravelersLanding() {
         </div>
 
         {/* Founder Story */}
-        <div className="max-w-4xl mx-auto mb-12 text-center px-4">
+        <div className="max-w-4xl mx-auto mb-6 text-center px-4">
           <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">From the Founder</h2>
           <blockquote className="text-lg italic text-gray-700 dark:text-gray-300 mb-4">
             "After hosting 400+ travelers from 50 countries, I learned that one connection can change everything. Travelers spend billions on flights and hotels, yet the most valuable part—the people you meet—is left to chance. I built the solution I wished existed."
@@ -329,7 +329,7 @@ export default function TravelersLanding() {
         </div>
 
         {/* Community Events Section */}
-        <div className="max-w-6xl mx-auto mb-12">
+        <div className="max-w-6xl mx-auto mb-6">
           <h2 className="text-3xl font-bold text-center mb-4 text-gray-900 dark:text-white">
             Join Authentic Experiences Every Week
           </h2>
@@ -356,7 +356,7 @@ export default function TravelersLanding() {
         </div>
 
         {/* Perfect For Section */}
-        <div className="max-w-6xl mx-auto mb-12">
+        <div className="max-w-6xl mx-auto mb-6">
           <h3 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">Perfect For</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-sm border border-gray-200 dark:border-white/10">

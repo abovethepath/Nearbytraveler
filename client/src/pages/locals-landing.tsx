@@ -218,7 +218,7 @@ export default function LocalsLanding() {
       {/* Live Local Experiences Section */}
       <div className="py-6 sm:py-12 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12 animate-slide-in-left">
+          <div className="text-center mb-6 animate-slide-in-left">
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 dark:text-white mb-4 leading-tight px-2">
               Build Your Local Community & Welcome Travelers
             </h2>
@@ -344,7 +344,7 @@ export default function LocalsLanding() {
           </div>
           
           {/* Perfect For Section */}
-          <div className="mt-16 mb-12">
+          <div className="mt-8 mb-6">
             <h3 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">Perfect For</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
@@ -371,7 +371,7 @@ export default function LocalsLanding() {
           </div>
 
           {/* Another CTA */}
-          <div className="text-center mt-16">
+          <div className="text-center mt-8">
             <Button
               onClick={() => setLocation('/launching-soon')}
               size="lg"
@@ -389,12 +389,12 @@ BECOME A NEARBY LOCAL NOW
       </div>
 
       {/* Final Power CTA Section */}
-      <div className="py-20 bg-gray-100 dark:bg-gradient-to-r dark:from-blue-600 dark:via-purple-600 dark:to-orange-600">
+      <div className="py-10 bg-gray-100 dark:bg-gradient-to-r dark:from-blue-600 dark:via-purple-600 dark:to-orange-600">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-5xl font-black text-black mb-6">
             Ready to Share Your City?
           </h2>
-          <p className="text-2xl text-black mb-12 leading-relaxed">
+          <p className="text-2xl text-black mb-6 leading-relaxed">
             Be part of a new way for locals to build global friendships while sharing what they love about their city.
           </p>
           
