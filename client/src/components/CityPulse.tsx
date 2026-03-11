@@ -77,7 +77,7 @@ export function CityPulse({ city }: CityPulseProps) {
   if (visiblePills.length === 0) return null;
 
   return (
-    <div className="w-full bg-gray-900 dark:bg-gray-950 border-b border-gray-800">
+    <div className="w-full bg-orange-50/80 dark:bg-gray-950 border-b border-orange-100 dark:border-gray-800">
       <div className="max-w-7xl mx-auto">
         <div
           className="flex gap-3 px-4 py-2.5 overflow-x-auto"
@@ -87,15 +87,15 @@ export function CityPulse({ city }: CityPulseProps) {
             <button
               key={pill.label}
               onClick={pill.onClick}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-800 dark:bg-gray-800/80 border border-gray-700 whitespace-nowrap shrink-0 transition-colors hover:border-gray-500"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-gray-800/80 border border-orange-200 dark:border-gray-700 whitespace-nowrap shrink-0 transition-colors hover:border-orange-300 dark:hover:border-gray-500 shadow-sm"
             >
               <span className={pill.emoji === "🟢" ? "city-pulse-live-dot" : ""}>
                 {pill.emoji}
               </span>
-              <span style={{ color: "#FF6B35", fontWeight: 700, fontSize: "13px" }}>
+              <span className="font-bold text-[13px] text-orange-500 dark:text-[#FF6B35]">
                 {pill.count}
               </span>
-              <span style={{ color: "rgba(255,255,255,0.7)", fontSize: "12px", fontWeight: 500 }}>
+              <span className="text-[12px] font-medium text-gray-500 dark:text-white/70">
                 {pill.label}
               </span>
             </button>
