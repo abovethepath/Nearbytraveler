@@ -411,14 +411,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     <Card className="overflow-hidden shadow-lg rounded-2xl bg-white border border-gray-200 dark:border-0 dark:bg-gray-800 relative z-20">
       <div className="p-4">
         {myStatus ? (
-          <div className="mb-4 overflow-hidden"
-            style={{
-              background: '#ECFDF5',
-              border: '1px solid #6EE7B7',
-              borderRadius: '16px',
-              padding: '14px 16px',
-            }}
-          >
+          <div className="mb-4 overflow-hidden rounded-2xl p-4 bg-emerald-50 border border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-700">
             <div
               className="cursor-pointer"
               onClick={() => setLiveExpanded(!liveExpanded)}
@@ -426,8 +419,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               <div className="flex flex-wrap items-center gap-2">
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-lg shadow-green-400/50 flex-shrink-0" />
-                  <span className="flex-shrink-0" style={{ fontSize: '15px', fontWeight: 700, color: '#065F46' }}>You're Live</span>
-                  <span className="px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-1" style={{ fontSize: '10px', fontWeight: 600, color: '#065F46', background: 'rgba(16,185,129,0.15)' }}>
+                  <span className="flex-shrink-0 text-emerald-800 dark:text-emerald-300" style={{ fontSize: '15px', fontWeight: 700 }}>You're Live</span>
+                  <span className="px-2 py-0.5 rounded-full flex-shrink-0 flex items-center gap-1 text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-800/40" style={{ fontSize: '10px', fontWeight: 600 }}>
                     <Clock className="w-2.5 h-2.5" />
                     {getTimeRemaining(myStatus.expiresAt)}
                   </span>
