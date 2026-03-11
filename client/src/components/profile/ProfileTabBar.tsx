@@ -102,12 +102,12 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
   const firstTabPulseClass = "";
 
   return (
-    <div>
+    <div className="w-full min-w-0">
       <div
         className={`profile-tabbar ${isHero ? "profile-tabbar-hero" : "profile-tabbar-standalone"} flex ${
           isDesktopHero
             ? "flex-nowrap"
-            : (isHero && isMobileWeb ? "flex-nowrap overflow-x-auto overflow-y-hidden" : "flex-wrap")
+            : (isHero && isMobileWeb ? "flex-nowrap overflow-x-auto" : "flex-wrap")
         } items-end ${isDesktopHero ? "gap-2 sm:gap-2 lg:gap-3" : "gap-4 sm:gap-5"} ${
           isHero ? "pt-4 mt-4" : ""
         } ${isDesktopWeb ? (isHero ? "border-b border-white/30 pb-1" : "border-b border-gray-200 dark:border-white/15 pb-1") : ""}`}
@@ -127,44 +127,20 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           </button>
         )}
 
-        <div style={{ position: 'relative', display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-          {showHint && (
-            <span
-              style={{
-                position: 'absolute',
-                bottom: '100%',
-                left: 0,
-                marginBottom: '4px',
-                fontSize: '11px',
-                fontWeight: 700,
-                fontStyle: 'italic',
-                whiteSpace: 'nowrap',
-                color: isHero ? '#ffffff' : '#111827',
-                textShadow: isHero ? '0 1px 4px rgba(0,0,0,0.9)' : 'none',
-                background: isHero ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.9)',
-                padding: '2px 8px',
-                borderRadius: '20px',
-                pointerEvents: 'none',
-              }}
-            >
-              {isMobileWeb ? 'Tap a tab 👇' : 'Click a tab 👇'}
-            </span>
-          )}
-          <button
-            role="tab"
-            aria-selected={activeTab === "contacts"}
-            aria-controls="panel-contacts"
-            onClick={() => handleTabClick("contacts")}
-            className={`${btn(activeTab === "contacts")} inline-flex items-center gap-1 ${!showAboutTab ? firstTabPulseClass : ""}`}
-            data-testid="tab-contacts"
-            style={heroTextStyle}
-          >
-            Contacts
-            <span className={badgeClass} style={badgeStyle}>
-              {userConnections?.length || 0}
-            </span>
-          </button>
-        </div>
+        <button
+          role="tab"
+          aria-selected={activeTab === "contacts"}
+          aria-controls="panel-contacts"
+          onClick={() => handleTabClick("contacts")}
+          className={`${btn(activeTab === "contacts")} inline-flex items-center gap-1 ${!showAboutTab ? firstTabPulseClass : ""}`}
+          data-testid="tab-contacts"
+          style={heroTextStyle}
+        >
+          Contacts
+          <span className={badgeClass} style={badgeStyle}>
+            {userConnections?.length || 0}
+          </span>
+        </button>
 
         <button
           role="tab"
@@ -303,6 +279,48 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           </Button>
         )}
       </div>
+      {showHint && isMobileWeb && (
+        <div
+          style={{
+            marginTop: '6px',
+            paddingLeft: '2px',
+            fontSize: '11px',
+            fontWeight: 700,
+            fontStyle: 'italic',
+            whiteSpace: 'nowrap',
+            color: isHero ? '#ffffff' : '#111827',
+            textShadow: isHero ? '0 1px 4px rgba(0,0,0,0.9)' : 'none',
+            background: isHero ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.9)',
+            padding: '3px 10px',
+            borderRadius: '20px',
+            display: 'inline-block',
+            pointerEvents: 'none',
+          }}
+        >
+          Tap a tab &amp; scroll 👉
+        </div>
+      )}
+      {showHint && !isMobileWeb && (
+        <div
+          style={{
+            marginTop: '6px',
+            paddingLeft: '2px',
+            fontSize: '11px',
+            fontWeight: 700,
+            fontStyle: 'italic',
+            whiteSpace: 'nowrap',
+            color: isHero ? '#ffffff' : '#111827',
+            textShadow: isHero ? '0 1px 4px rgba(0,0,0,0.9)' : 'none',
+            background: isHero ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.9)',
+            padding: '3px 10px',
+            borderRadius: '20px',
+            display: 'inline-block',
+            pointerEvents: 'none',
+          }}
+        >
+          Click a tab 👆
+        </div>
+      )}
     </div>
   );
 }
