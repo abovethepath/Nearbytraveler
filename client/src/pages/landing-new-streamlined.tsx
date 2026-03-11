@@ -565,7 +565,7 @@ export default function LandingStreamlined() {
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Share your city and meet the world</p>
               </div>
               <div className="bg-white dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
-                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">New in Town</h3>
+                <h3 className="text-base sm:text-lg font-bold mb-2 text-green-600 dark:text-white">New in Town</h3>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Find your tribe fast</p>
               </div>
               <div className="bg-white dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
