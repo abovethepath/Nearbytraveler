@@ -620,7 +620,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                       setLocation(`/profile/${currentUser.id}?tab=about&edit=interests`);
                                       e.preventDefault();
                                     }}
-                                    className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
+                                    className="text-[10px] text-white/70 hover:text-white transition-colors"
                                   >
                                     + Add more interests & activities to improve your matches
                                   </a>
@@ -695,7 +695,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 setLocation(`/profile/${currentUser.id}?tab=about&edit=interests`);
                                 e.preventDefault();
                               }}
-                              className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
+                              className="text-[10px] text-white/70 hover:text-white transition-colors"
                             >
                               + Add more interests & activities to improve your matches
                             </a>
