@@ -364,8 +364,10 @@ export default function CityPage({ cityName }: CityPageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 xl:col-span-3">
-              {/* Who's Coming to Town */}
-              <CityArrivalsWidget cityName={parsedCityName} />
+              {/* Who's Coming to Town — mobile only (also in sidebar for desktop) */}
+              <div className="lg:hidden mb-4">
+                <CityArrivalsWidget cityName={parsedCityName} />
+              </div>
 
               {/* Discover and Connect Section */}
               <div id="people-section" className="mb-6 sm:mb-8">
@@ -649,6 +651,10 @@ export default function CityPage({ cityName }: CityPageProps) {
               isLAArea ? 'lg:col-span-1 xl:col-span-1' : ''
             }`}>
               <div className={isLAArea ? 'space-y-6' : 'space-y-4 sm:space-y-6'}>
+                {/* Who's Coming to Town — desktop sidebar */}
+                <div className="hidden lg:block">
+                  <CityArrivalsWidget cityName={parsedCityName} />
+                </div>
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
                   <WeatherWidget 
                     city={parsedCityName === 'Los Angeles Metro' ? 'Los Angeles' : parsedCityName} 

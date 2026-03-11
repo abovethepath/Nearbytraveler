@@ -3050,4 +3050,19 @@ export const insertActivityLogSchema = createInsertSchema(activityLog).omit({
 export type ActivityLog = typeof activityLog.$inferSelect;
 export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
 
+// Saved Travelers - users who hearted a traveler to be reminded when they arrive
+export const savedTravelers = pgTable("saved_travelers", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  savedUserId: integer("saved_user_id").notNull(),
+  cityName: text("city_name"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  unique().on(table.userId, table.savedUserId, table.cityName),
+  index("idx_saved_travelers_user").on(table.userId),
+  index("idx_saved_travelers_saved_user").on(table.savedUserId),
+]);
+export const insertSavedTravelerSchema = createInsertSchema(savedTravelers).omit({ id: true, createdAt: true });
+export type SavedTraveler = typeof savedTravelers.$inferSelect;
+
 

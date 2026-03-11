@@ -92,7 +92,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers } from "../shared/schema";
 import { writeActivityLog } from "./services/activityLogService";
 import { alias } from "drizzle-orm/pg-core";
 
@@ -2824,6 +2824,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   app.get("/api/cities/:city/arrivals", async (req: any, res) => {
     try {
       const city = decodeURIComponent(req.params.city);
+      const currentUserId = req.session?.user?.id || req.headers['x-user-id'];
+      const uid = currentUserId ? Number(currentUserId) : null;
       const now = new Date();
       const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
       const todayEnd = new Date(now); todayEnd.setHours(23, 59, 59, 999);
@@ -2850,6 +2852,18 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         ))
         .orderBy(travelPlans.startDate);
 
+      // Fetch which users the current user has hearted for this city
+      let savedSet = new Set<number>();
+      if (uid) {
+        const saved = await db.select({ savedUserId: savedTravelers.savedUserId })
+          .from(savedTravelers)
+          .where(and(
+            eq(savedTravelers.userId, uid),
+            sql`LOWER(${savedTravelers.cityName}) = LOWER(${city})`
+          ));
+        savedSet = new Set(saved.map(s => s.savedUserId));
+      }
+
       const hereNow: any[] = [];
       const arrivingToday: any[] = [];
       const arrivingSoon: any[] = [];
@@ -2857,6 +2871,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       for (const r of rows) {
         if (seenUsers.has(r.userId)) continue;
+        // Don't show the current user in the list
+        if (uid && r.userId === uid) { seenUsers.add(r.userId); continue; }
         const start = r.startDate ? new Date(r.startDate) : null;
         const end = r.endDate ? new Date(r.endDate) : null;
         const user = {
@@ -2869,6 +2885,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           hometownCountry: r.hometownCountry,
           startDate: r.startDate,
           endDate: r.endDate,
+          saved: savedSet.has(r.userId),
         };
         if (start && end && start <= now && end >= now) {
           hereNow.push(user);
@@ -2884,6 +2901,44 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     } catch (error: any) {
       console.error("City arrivals error:", error);
       res.json({ hereNow: [], arrivingToday: [], arrivingSoon: [] });
+    }
+  });
+
+  // POST /api/saved-travelers - Heart / save a traveler for a city
+  app.post("/api/saved-travelers", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const { savedUserId, cityName } = req.body;
+      if (!savedUserId) return res.status(400).json({ error: "savedUserId required" });
+      await db.insert(savedTravelers).values({
+        userId: Number(userId),
+        savedUserId: Number(savedUserId),
+        cityName: cityName || null,
+      }).onConflictDoNothing();
+      res.json({ ok: true });
+    } catch (error: any) {
+      console.error("Save traveler error:", error);
+      res.status(500).json({ error: "Failed to save traveler" });
+    }
+  });
+
+  // DELETE /api/saved-travelers/:savedUserId - Unheart a traveler
+  app.delete("/api/saved-travelers/:savedUserId", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const { cityName } = req.query;
+      await db.delete(savedTravelers)
+        .where(and(
+          eq(savedTravelers.userId, Number(userId)),
+          eq(savedTravelers.savedUserId, Number(req.params.savedUserId)),
+          cityName ? sql`LOWER(${savedTravelers.cityName}) = LOWER(${cityName as string})` : isNull(savedTravelers.cityName)
+        ));
+      res.json({ ok: true });
+    } catch (error: any) {
+      console.error("Unsave traveler error:", error);
+      res.status(500).json({ error: "Failed to unsave traveler" });
     }
   });
 
