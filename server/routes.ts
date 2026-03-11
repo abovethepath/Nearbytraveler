@@ -23257,6 +23257,14 @@ Questions? Just reply to this message. Welcome aboard!
               message: `@${requesterName} joined the quick meet! 🎉`,
               messageType: 'system',
             });
+
+            // Ensure requester is in chatroomMembers (same as Quick Meets)
+            await db.insert(chatroomMembers).values({
+              chatroomId: existingChatroom.id,
+              userId: updated.fromUserId,
+              role: 'member',
+              isActive: true,
+            }).onConflictDoNothing();
           } else {
             const activityLabels: Record<string, string> = {
               coffee: "Coffee", food: "Food", drinks: "Drinks", explore: "Explore",
@@ -23292,6 +23300,12 @@ Questions? Just reply to this message. Welcome aboard!
               message: `Group chat created! @${acceptorName} and @${requesterName} are meeting up. Everyone accepted will join here automatically. 🤝`,
               messageType: 'system',
             });
+
+            // Seed chatroomMembers for both host and requester (same as Quick Meets)
+            await db.insert(chatroomMembers).values([
+              { chatroomId: newChatroom.id, userId: Number(userId), role: 'admin', isActive: true },
+              { chatroomId: newChatroom.id, userId: updated.fromUserId, role: 'member', isActive: true },
+            ]).onConflictDoNothing();
           }
         }
 
@@ -23310,6 +23324,14 @@ Questions? Just reply to this message. Welcome aboard!
             if (fallbackChatroom) {
               groupChatroomId = fallbackChatroom.id;
               console.log(`[MEET ACCEPT] Found existing chatroom ${fallbackChatroom.id} from session ${anySession.id} (possibly expired)`);
+
+              // Ensure requester can access fallback chatroom
+              await db.insert(chatroomMembers).values({
+                chatroomId: fallbackChatroom.id,
+                userId: updated.fromUserId,
+                role: 'member',
+                isActive: true,
+              }).onConflictDoNothing();
             }
           }
         }
@@ -23847,10 +23869,86 @@ Questions? Just reply to this message. Welcome aboard!
           .where(inArray(meetupChatrooms.id, expiredIds));
       }
 
-      res.json({ cleaned: expiredChatrooms.length });
+      // Expire available_now sessions past their expiresAt (same timing contract as chatrooms)
+      const expiredAvailableNow = await db.update(availableNow)
+        .set({ isAvailable: false })
+        .where(and(
+          eq(availableNow.isAvailable, true),
+          lte(availableNow.expiresAt, now)
+        ))
+        .returning({ id: availableNow.id });
+
+      // Expire quick meetups past their expiresAt
+      const expiredQuickMeets = await db.update(quickMeetups)
+        .set({ isActive: false })
+        .where(and(
+          eq(quickMeetups.isActive, true),
+          lte(quickMeetups.expiresAt, now)
+        ))
+        .returning({ id: quickMeetups.id });
+
+      res.json({
+        cleanedChatrooms: expiredChatrooms.length,
+        cleanedAvailableNow: expiredAvailableNow.length,
+        cleanedQuickMeets: expiredQuickMeets.length,
+      });
     } catch (error: any) {
       console.error("Error cleaning expired chatrooms:", error);
       res.status(500).json({ error: "Failed to cleanup" });
+    }
+  });
+
+  // One-time backfill: seed chatroomMembers for legacy Available Now chatrooms
+  // that were created before the unified chatroomMembers approach was adopted.
+  app.post("/api/meetup-chatrooms/backfill-members", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      // Find all Available Now chatrooms that have no chatroomMembers entries
+      const anChatrooms = await db.select({
+        id: meetupChatrooms.id,
+        availableNowId: meetupChatrooms.availableNowId,
+      })
+        .from(meetupChatrooms)
+        .where(and(
+          isNotNull(meetupChatrooms.availableNowId),
+        ));
+
+      let seeded = 0;
+      for (const chatroom of anChatrooms) {
+        if (!chatroom.availableNowId) continue;
+
+        // Get the host
+        const [session] = await db.select({ userId: availableNow.userId })
+          .from(availableNow)
+          .where(eq(availableNow.id, chatroom.availableNowId))
+          .limit(1);
+        if (!session) continue;
+
+        // Get all accepted requesters
+        const accepted = await db.select({ fromUserId: availableNowRequests.fromUserId })
+          .from(availableNowRequests)
+          .where(and(
+            eq(availableNowRequests.toUserId, session.userId),
+            eq(availableNowRequests.status, 'accepted')
+          ));
+
+        const members = [
+          { chatroomId: chatroom.id, userId: session.userId, role: 'admin' as const, isActive: true },
+          ...accepted.map(r => ({ chatroomId: chatroom.id, userId: r.fromUserId, role: 'member' as const, isActive: true })),
+        ];
+
+        if (members.length > 0) {
+          await db.insert(chatroomMembers).values(members).onConflictDoNothing();
+          seeded += members.length;
+        }
+      }
+
+      res.json({ chatroomsProcessed: anChatrooms.length, membersSeeded: seeded });
+    } catch (error: any) {
+      console.error("Error backfilling chatroom members:", error);
+      res.status(500).json({ error: "Failed to backfill" });
     }
   });
 

@@ -1293,16 +1293,26 @@ export class ChatWebSocketService {
       return !!participant;
     }
     
-    // For meetup (hangout) chatrooms stored in meetupChatrooms, check via
-    // the linked availableNow session: organizer OR accepted requester.
+    // For meetup chatrooms (Available Now or Quick Meet), chatroomMembers is the
+    // single source of truth. Both systems now seed chatroomMembers on creation/join.
+    // Legacy Available Now chatrooms (no chatroomMembers row) fall back to the old tables.
     if (chatType === 'meetup') {
+      const member = await db.query.chatroomMembers.findFirst({
+        where: and(
+          eq(chatroomMembers.chatroomId, chatroomId),
+          eq(chatroomMembers.userId, userId),
+          eq(chatroomMembers.isActive, true)
+        ),
+      });
+      if (member) return true;
+
+      // Legacy fallback: Available Now chatrooms created before the chatroomMembers migration
       const [chatroom] = await db.select({ availableNowId: meetupChatrooms.availableNowId })
         .from(meetupChatrooms)
         .where(eq(meetupChatrooms.id, chatroomId))
         .limit(1);
 
       if (chatroom?.availableNowId) {
-        // Is the user the organizer?
         const [session] = await db.select({ userId: availableNow.userId })
           .from(availableNow)
           .where(eq(availableNow.id, chatroom.availableNowId))
@@ -1310,7 +1320,6 @@ export class ChatWebSocketService {
 
         if (session?.userId === userId) return true;
 
-        // Is the user an accepted participant?
         const [accepted] = await db.select({ id: availableNowRequests.id })
           .from(availableNowRequests)
           .where(and(
@@ -1320,9 +1329,10 @@ export class ChatWebSocketService {
           ))
           .limit(1);
 
-        return !!accepted;
+        if (accepted) return true;
       }
-      // Fallback: check chatroomMembers if no availableNowId (shouldn't happen)
+
+      return false;
     }
 
     // For regular city chatrooms, check chatroomMembers table
