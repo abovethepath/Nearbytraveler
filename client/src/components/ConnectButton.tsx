@@ -189,10 +189,10 @@ export default function ConnectButton({
     const isGhost = appearance === "ghost";
     if (connectionStatus?.status === 'accepted') {
       return {
-        text: 'Connected',
+        text: '✓ Connected',
         disabled: true,
         variant: 'default' as const,
-        className: 'bg-gray-500/60 text-white border-0 cursor-default opacity-75'
+        className: 'bg-[#ECFDF5] text-[#065F46] border border-[#6EE7B7] cursor-default'
       };
     }
     if (connectionStatus?.status === 'pending') {
