@@ -47,7 +47,7 @@ export class ChatWebSocketService {
   // leaving the original app-level connection orphaned.
   private connectedUsers = new Map<number, Set<AuthenticatedWebSocket>>();
   private chatroomMembers = new Map<number, Set<number>>(); // chatroomId -> Set of userIds
-  private typingUsers = new Map<string, { userId: number; expiresAt: number }>(); // chatroomId:userId -> expiry
+  private typingUsers = new Map<string, { userId: number; username: string; expiresAt: number }>(); // chatroomId:userId -> expiry
 
   // Send an already-serialised string (or object) to every open connection for a user
   private sendToUser(userId: number, data: string): void {
@@ -886,6 +886,7 @@ export class ChatWebSocketService {
     
     this.typingUsers.set(typingKey, {
       userId: ws.userId!,
+      username: ws.username!,
       expiresAt: Date.now() + 5000, // 5 second expiry
     });
 
@@ -1330,12 +1331,22 @@ export class ChatWebSocketService {
     return !!member;
   }
 
-  // Clean up expired typing indicators
-  private cleanupExpiredTyping() {
+  // Clean up expired typing indicators and broadcast typing:stop so clients clear stale names
+  private async cleanupExpiredTyping() {
     const now = Date.now();
     for (const [key, typing] of this.typingUsers.entries()) {
       if (typing.expiresAt < now) {
         this.typingUsers.delete(key);
+        const [chatroomIdStr] = key.split(':');
+        const chatroomId = Number(chatroomIdStr);
+        if (typing.username && chatroomId) {
+          await this.broadcastToChatroom(chatroomId, {
+            type: 'typing:stop',
+            chatroomId,
+            payload: { userId: typing.userId, username: typing.username },
+            timestamp: now,
+          }, typing.userId);
+        }
       }
     }
   }
