@@ -149,9 +149,9 @@ export default function CouchsurfingLanding() {
         <LandingCTA />
 
         {/* FOR EXPERIENCED HOSTS SECTION */}
-        <section className="py-16 sm:py-24 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl mb-16">
+        <section className="py-8 sm:py-12 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl mb-6">
           <div className="px-6 sm:px-8">
-            <div className="text-center mb-12">
+            <div className="text-center mb-6">
               <div className="inline-block bg-blue-100 dark:bg-blue-900/50 px-4 py-2 rounded-full text-sm font-medium text-blue-700 dark:text-blue-400 mb-4">
                 FOR EXPERIENCED HOSTS
               </div>
@@ -166,8 +166,8 @@ export default function CouchsurfingLanding() {
         </section>
 
         {/* NOW WE CAN ALL CONNECT SECTION */}
-        <section className="py-16 sm:py-24 mb-16">
-          <div className="text-center mb-12">
+        <section className="py-8 sm:py-12 mb-6">
+          <div className="text-center mb-6">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
               Now We Can All Connect
             </h2>
@@ -190,9 +190,9 @@ export default function CouchsurfingLanding() {
         </section>
 
         {/* SOMETIMES WE JUST GROW OUT OF IT SECTION */}
-        <section className="py-16 sm:py-24 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900/20 dark:to-blue-900/20 rounded-2xl mb-16">
+        <section className="py-8 sm:py-12 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900/20 dark:to-blue-900/20 rounded-2xl mb-6">
           <div className="px-6 sm:px-8">
-            <div className="text-center mb-12">
+            <div className="text-center mb-6">
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
                 Sometimes We Just Grow Out of It
               </h2>
@@ -209,8 +209,8 @@ export default function CouchsurfingLanding() {
         </section>
 
         {/* CONNECT WHEN YOU CAN'T HOST SECTION */}
-        <section className="py-16 sm:py-24 mb-16">
-          <div className="text-center mb-12">
+        <section className="py-8 sm:py-12 mb-6">
+          <div className="text-center mb-6">
             <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
               <Users className="w-8 h-8 text-white" />
             </div>
@@ -224,9 +224,9 @@ export default function CouchsurfingLanding() {
         </section>
 
         {/* WHAT YOU'VE LOVED ABOUT HOSTING SECTION */}
-        <section className="py-16 sm:py-24 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl mb-16">
+        <section className="py-8 sm:py-12 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl mb-6">
           <div className="px-6 sm:px-8">
-            <div className="text-center mb-12">
+            <div className="text-center mb-6">
               <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Heart className="w-8 h-8 text-white" />
               </div>
@@ -282,9 +282,9 @@ export default function CouchsurfingLanding() {
         </section>
 
         {/* BUT HOSTING CAN BE CHALLENGING SECTION */}
-        <section className="py-16 sm:py-24 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl mb-16">
+        <section className="py-8 sm:py-12 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl mb-6">
           <div className="px-6 sm:px-8">
-            <div className="text-center mb-12">
+            <div className="text-center mb-6">
               <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Home className="w-8 h-8 text-white" />
               </div>
@@ -340,9 +340,9 @@ export default function CouchsurfingLanding() {
         </section>
 
         {/* WHAT YOU'VE LOVED ABOUT SURFING SECTION */}
-        <section className="py-16 sm:py-24 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl mb-16">
+        <section className="py-8 sm:py-12 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl mb-6">
           <div className="px-6 sm:px-8">
-            <div className="text-center mb-12">
+            <div className="text-center mb-6">
               <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Plane className="w-8 h-8 text-white" />
               </div>
@@ -391,9 +391,9 @@ export default function CouchsurfingLanding() {
         </section>
 
         {/* BUT SURFING CAN BE CHALLENGING SECTION */}
-        <section className="py-16 sm:py-24 bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-2xl mb-16">
+        <section className="py-8 sm:py-12 bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-2xl mb-6">
           <div className="px-6 sm:px-8">
-            <div className="text-center mb-12">
+            <div className="text-center mb-6">
               <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
                 <ShieldCheck className="w-8 h-8 text-white" />
               </div>
@@ -435,7 +435,7 @@ export default function CouchsurfingLanding() {
         </section>
 
         {/* THE BEST OF BOTH WORLDS SECTION */}
-        <section className="py-16 sm:py-24 mb-16">
+        <section className="py-8 sm:py-12 mb-6">
           <div className="max-w-4xl mx-auto">
             <div className="bg-gradient-to-r from-orange-500 to-blue-600 rounded-2xl p-8 text-center text-white">
               <h2 className="text-3xl sm:text-4xl font-bold mb-6">The Best of Both Worlds</h2>
@@ -450,9 +450,9 @@ export default function CouchsurfingLanding() {
         </section>
 
         {/* FOR EXPERIENCED SURFERS SECTION */}
-        <section className="py-16 sm:py-24 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl mb-16">
+        <section className="py-8 sm:py-12 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl mb-6">
           <div className="px-6 sm:px-8">
-            <div className="text-center mb-12">
+            <div className="text-center mb-6">
               <div className="inline-block bg-indigo-100 dark:bg-indigo-900/50 px-4 py-2 rounded-full text-sm font-medium text-indigo-700 dark:text-indigo-400 mb-4">
                 FOR EXPERIENCED SURFERS
               </div>
