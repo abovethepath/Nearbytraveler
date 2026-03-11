@@ -31,6 +31,21 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
 
   const [hasClickedTab, setHasClickedTab] = React.useState(false);
 
+  const HINT_KEY = 'nt_tab_hint_views';
+  const HINT_MAX = 10;
+
+  const [hintViewCount, setHintViewCount] = React.useState<number>(() => {
+    try { return parseInt(localStorage.getItem(HINT_KEY) || '0', 10); } catch { return 0; }
+  });
+
+  React.useEffect(() => {
+    try {
+      const next = hintViewCount + 1;
+      setHintViewCount(next);
+      localStorage.setItem(HINT_KEY, String(next));
+    } catch {}
+  }, []);
+
   const handleTabClick = React.useCallback((tab: string) => {
     setHasClickedTab(true);
     openTab(tab);
@@ -98,7 +113,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         color: isDarkMode ? "#FFFFFF" : "#000000",
       } as React.CSSProperties;
 
-  const showHint = !isOwnProfile && !hasClickedTab;
+  const showHint = !hasClickedTab && hintViewCount <= HINT_MAX;
   const firstTabPulseClass = "";
 
   return (
@@ -110,7 +125,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
             : (isHero && isMobileWeb ? "flex-nowrap overflow-x-auto" : "flex-wrap")
         } items-end ${isDesktopHero ? "gap-2 sm:gap-2 lg:gap-3" : "gap-4 sm:gap-5"} ${
           isHero ? "pt-4 mt-4" : ""
-        } ${isDesktopWeb ? (isHero ? "border-b border-white/30 pb-1" : "border-b border-gray-200 dark:border-white/15 pb-1") : ""}`}
+        } ${(isDesktopWeb && !isMobileWeb) ? (isHero ? "border-b border-white/30 pb-1" : "border-b border-gray-200 dark:border-white/15 pb-1") : ""}`}
         style={isHero && isMobileWeb ? { WebkitOverflowScrolling: "touch" } : undefined}
       >
         {showAboutTab && (
@@ -282,8 +297,8 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
       {showHint && isMobileWeb && (
         <div
           style={{
-            marginTop: '6px',
-            paddingLeft: '2px',
+            marginTop: '4px',
+            marginBottom: '2px',
             fontSize: '11px',
             fontWeight: 700,
             fontStyle: 'italic',
@@ -297,29 +312,16 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
             pointerEvents: 'none',
           }}
         >
-          Tap a tab &amp; scroll 👉
+          Tap a tab to open or scroll 👉
         </div>
       )}
-      {showHint && !isMobileWeb && (
+      {isMobileWeb && (
         <div
           style={{
-            marginTop: '6px',
-            paddingLeft: '2px',
-            fontSize: '11px',
-            fontWeight: 700,
-            fontStyle: 'italic',
-            whiteSpace: 'nowrap',
-            color: isHero ? '#ffffff' : '#111827',
-            textShadow: isHero ? '0 1px 4px rgba(0,0,0,0.9)' : 'none',
-            background: isHero ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.9)',
-            padding: '3px 10px',
-            borderRadius: '20px',
-            display: 'inline-block',
-            pointerEvents: 'none',
+            borderBottom: isHero ? '1px solid rgba(255,255,255,0.30)' : '1px solid rgba(209,213,219,0.8)',
+            marginTop: showHint ? '4px' : '0',
           }}
-        >
-          Click a tab 👆
-        </div>
+        />
       )}
     </div>
   );
