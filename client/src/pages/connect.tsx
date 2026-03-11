@@ -23,6 +23,7 @@ import { format } from "date-fns";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { getAllInterests, getAllActivities, getAllLanguages, validateSelections, getMostPopularInterests } from "../../../shared/base-options";
 import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
+import { isLAMetroCity } from "../../../shared/constants";
 import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
 import { SEXUAL_PREFERENCE_OPTIONS } from "@/lib/formConstants";
 
@@ -602,7 +603,7 @@ export default function ConnectPage() {
                 {searchResults.length > 0 && (
                   <ResponsiveUserGrid 
                     users={searchResults as any}
-                    title={`Found ${searchResults.length} ${searchResults.length === 1 ? 'person' : 'people'} in ${searchLocation}`}
+                    title={`Found ${searchResults.length} ${searchResults.length === 1 ? 'person' : 'people'} in ${isLAMetroCity(searchLocation) ? 'Los Angeles Metro Area' : searchLocation}`}
                     currentUserId={user?.id}
                     connectionDegreesMap={connectionDegreesData?.degrees}
                   />

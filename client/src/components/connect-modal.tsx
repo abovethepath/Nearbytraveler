@@ -24,6 +24,7 @@ import { getAllInterests, getAllActivities, getAllLanguages } from "../../../sha
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, USER_TYPE_OPTIONS, TRAVELER_TYPE_OPTIONS, MILITARY_STATUS_OPTIONS } from "@/lib/formConstants";
 import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
 import ConnectButton from "@/components/ConnectButton";
+import { isLAMetroCity } from "../../../shared/constants";
 
 interface User {
   id: number;
@@ -780,7 +781,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                     } else {
                       return "people";
                     }
-                  })()} in {searchLocation}
+                  })()} in {isLAMetroCity(searchLocation) ? 'Los Angeles Metro Area' : searchLocation}
                   {startDate && endDate && (
                     <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
                       ({format(startDate, "MMM d")} - {format(endDate, "MMM d")})
@@ -813,7 +814,11 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                               <h4 className="text-lg sm:text-xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-gray-900 dark:text-white mb-2">{user.username}</h4>
                               <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-3 leading-relaxed line-clamp-3">{user.bio}</p>
                               <div className="flex items-center justify-center sm:justify-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                <MapPin className="w-4 h-4" />
+                                {user.currentTravelDestination ? (
+                                  <Plane className="w-4 h-4 text-blue-500" />
+                                ) : (
+                                  <MapPin className="w-4 h-4" />
+                                )}
                                 <span className="font-medium">{user.location}</span>
                               </div>
                             </div>
