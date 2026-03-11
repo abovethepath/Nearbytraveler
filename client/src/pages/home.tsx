@@ -68,6 +68,7 @@ import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
 import LocationSortedEvents from "@/components/LocationSortedEvents";
 import NearbyTravelerSearchWidget from "@/components/NearbyTravelerSearchWidget";
 import { CityArrivalsWidget } from "@/components/CityArrivalsWidget";
+import { isLAMetroCity } from "@shared/constants";
 
 
 // Import centralized constants for consistency
@@ -2151,9 +2152,10 @@ export default function Home() {
 
             {/* Who's Coming to Town */}
             {effectiveUser && (() => {
-              const arrivalsCity = effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination
+              const rawCity = effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination
                 ? String(effectiveUser.travelDestination).split(',')[0]?.trim()
                 : effectiveUser.hometownCity;
+              const arrivalsCity = rawCity && isLAMetroCity(rawCity) ? 'Los Angeles' : rawCity;
               return arrivalsCity ? <CityArrivalsWidget cityName={arrivalsCity} /> : null;
             })()}
 
