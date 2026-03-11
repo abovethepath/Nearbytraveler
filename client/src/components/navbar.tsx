@@ -413,7 +413,7 @@ function Navbar() {
       { path: "/match-in-city", label: "City Plans", icon: "🎯" },
       { path: "/plan-trip", label: "Trip Planning", icon: "🧭" },
       { path: "/connect", label: "Connect", icon: "💝" },
-      { path: "/activity", label: "Activity", icon: "📋" },
+      { path: "/discover", label: "Explore", icon: "🌐" },
     ];
   };
 
