@@ -11107,6 +11107,32 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // DELETE connection between current user and target user
+  app.delete("/api/connections/:targetUserId", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const targetUserId = parseInt(req.params.targetUserId);
+      if (!targetUserId) return res.status(400).json({ message: "Invalid target user" });
+
+      const deleted = await db
+        .delete(connections)
+        .where(
+          or(
+            and(eq(connections.requesterId, userId), eq(connections.receiverId, targetUserId)),
+            and(eq(connections.requesterId, targetUserId), eq(connections.receiverId, userId))
+          )
+        )
+        .returning();
+
+      if (!deleted.length) return res.status(404).json({ message: "Connection not found" });
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error deleting connection:", error);
+      return res.status(500).json({ message: "Failed to remove connection", error: error.message });
+    }
+  });
+
   // CRITICAL: Get ALL messages for user (needed for full conversation history) with JOIN for user data
   app.get("/api/messages/:userId", async (req, res) => {
     try {
