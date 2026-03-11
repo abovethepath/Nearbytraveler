@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useLocation } from "wouter";
-import { Home, Plus, MessageSquare, User, Calendar, Search, MapPin, Zap, Users, Activity } from "lucide-react";
+import { Home, Plus, MessageSquare, User, Calendar, Search, MapPin, Zap, Users } from "lucide-react";
 import { AuthContext } from "@/App";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/queryClient";
@@ -140,7 +140,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
     { icon: User, label: "Profile", path: profilePath },
   ] : [
     { icon: Home, label: "Home", path: "/" },
-    { icon: Activity, label: "Activity", path: "/activity" },
+    { icon: Search, label: "Explore", path: "/discover" },
     { icon: MessageSquare, label: "Messages", path: "/messages" },
     { icon: User, label: "Profile", path: profilePath },
   ];
