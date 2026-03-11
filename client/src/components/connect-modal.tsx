@@ -516,6 +516,33 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                   <span className="truncate">Locals from {getUserBucketLocation('permanent_locals_from_my_area') ? getUserBucketLocation('permanent_locals_from_my_area').split(',')[0] : 'my area'}</span>
                 </Button>
                 
+                {/* LA METRO BUTTON: Show when user's hometown or current location is in LA metro */}
+                {(() => {
+                  const activeUser = currentUser || authStorage.getUser();
+                  if (!activeUser) return null;
+                  const hometownCity = activeUser.hometownCity || '';
+                  const currentLocation = getUserBucketLocation('who_is_here_now') || '';
+                  const showMetroButton = isLAMetroCity(hometownCity) || isLAMetroCity(currentLocation);
+                  if (!showMetroButton) return null;
+                  return (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSearchLocation('Los Angeles');
+                        setTimeout(() => {
+                          setIsSearching(true);
+                          searchMutation.mutate();
+                        }, 100);
+                      }}
+                      className="flex items-center gap-1 text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2"
+                    >
+                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="truncate">Los Angeles Metro</span>
+                    </Button>
+                  );
+                })()}
+
                 {/* Travel Plans */}
                 {(currentUser || authStorage.getUser())?.userType !== 'business' && (
                   travelPlans && travelPlans.length > 0 ? (
