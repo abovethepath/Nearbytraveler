@@ -941,6 +941,7 @@ export default function Messages() {
               <WhatsAppChat
                 chatId={selectedMeetupChat}
                 chatType="meetup"
+                meetupId={activeMeetup?.meetupId || undefined}
                 title={activeMeetup?.chatroomName || 'Meetup Chat'}
                 subtitle={activeMeetup?.city || 'Group chat'}
                 currentUserId={userId!}

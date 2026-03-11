@@ -650,13 +650,15 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
   // Fetch members using the same source as the header participant count.
   // - Event chats: use event participants (not event-chatroom membership).
-  // - Quick meetup chats: use quick meet participants (meetupId required).
-  // - City chatrooms: use chatroom members.
+  // - Quick meetup chats (with meetupId): use quick meet participants table.
+  // - Available Now meetup chats (no meetupId) + City chatrooms: use chatroom_members table.
   const membersEndpoint =
     chatType === 'event'
       ? (eventId ? `/api/events/${eventId}/participants` : `/api/event-chatrooms/${chatId}/members`)
       : chatType === 'meetup'
-        ? (typeof meetupId === 'number' && meetupId > 0 ? `/api/quick-meets/${meetupId}/participants` : null)
+        ? (typeof meetupId === 'number' && meetupId > 0
+            ? `/api/quick-meets/${meetupId}/participants`
+            : `/api/chatrooms/${chatId}/members`)
         : chatType === 'chatroom'
           ? `/api/chatrooms/${chatId}/members`
           : null;

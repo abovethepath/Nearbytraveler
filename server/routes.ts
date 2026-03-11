@@ -16396,7 +16396,29 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log(`👥 GETTING PARTICIPANTS FOR QUICK MEET ${meetupId}`);
       
       const participants = await storage.getQuickMeetupParticipants(meetupId);
-      if (process.env.NODE_ENV === 'development') console.log(`👥 FOUND ${participants.length} PARTICIPANTS:`, participants.map(p => p.user?.username));
+
+      // Also include the organizer (they are never in quick_meetup_participants)
+      const meetup = await storage.getQuickMeetupById(meetupId);
+      if (meetup?.organizerId) {
+        const alreadyIn = participants.some((p: any) => p.userId === meetup.organizerId || p.user?.id === meetup.organizerId);
+        if (!alreadyIn) {
+          const [organizerUser] = await db.select({
+            id: users.id, username: users.username, name: users.name, profileImage: users.profileImage
+          }).from(users).where(eq(users.id, meetup.organizerId)).limit(1);
+          if (organizerUser) {
+            participants.unshift({
+              id: 0,
+              meetupId,
+              userId: meetup.organizerId,
+              status: 'organizer',
+              joinedAt: meetup.createdAt || new Date(),
+              user: organizerUser,
+            });
+          }
+        }
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`👥 FOUND ${participants.length} PARTICIPANTS (incl. organizer):`, participants.map((p: any) => p.user?.username));
       
       return res.json(participants);
     } catch (error: any) {
