@@ -25805,6 +25805,165 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // ---------- EVENT CHATROOM ROUTES ----------
+
+  // Get messages for an event chatroom (by chatroom ID)
+  app.get("/api/event-chatrooms/:chatroomId/messages", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      if (!chatroomId) return res.status(400).json({ error: "Invalid chatroom ID" });
+
+      const chatMessages = await db.select({
+        id: meetupChatroomMessages.id,
+        meetupChatroomId: meetupChatroomMessages.meetupChatroomId,
+        userId: meetupChatroomMessages.userId,
+        username: meetupChatroomMessages.username,
+        message: meetupChatroomMessages.message,
+        messageType: meetupChatroomMessages.messageType,
+        sentAt: meetupChatroomMessages.sentAt,
+        replyToId: meetupChatroomMessages.replyToId,
+        reactions: meetupChatroomMessages.reactions,
+        userProfileImage: users.profileImage,
+      })
+        .from(meetupChatroomMessages)
+        .leftJoin(users, eq(meetupChatroomMessages.userId, users.id))
+        .where(eq(meetupChatroomMessages.meetupChatroomId, chatroomId))
+        .orderBy(asc(meetupChatroomMessages.sentAt))
+        .limit(200);
+
+      res.json(chatMessages);
+    } catch (error: any) {
+      console.error("Error fetching event chatroom messages:", error);
+      res.status(500).json({ error: "Failed to fetch messages" });
+    }
+  });
+
+  // Send message to an event chatroom
+  app.post("/api/event-chatrooms/:chatroomId/messages", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      if (!chatroomId) return res.status(400).json({ error: "Invalid chatroom ID" });
+      const { message, replyToId } = req.body;
+      if (!message?.trim()) return res.status(400).json({ error: "Message is required" });
+
+      const [chatroom] = await db.select({ id: meetupChatrooms.id, isActive: meetupChatrooms.isActive })
+        .from(meetupChatrooms)
+        .where(eq(meetupChatrooms.id, chatroomId))
+        .limit(1);
+      if (!chatroom) return res.status(404).json({ error: "Chatroom not found" });
+
+      const [user] = await db.select({ username: users.username })
+        .from(users).where(eq(users.id, Number(userId)));
+
+      const [newMessage] = await db.insert(meetupChatroomMessages).values({
+        meetupChatroomId: chatroomId,
+        userId: Number(userId),
+        username: user?.username || 'Anonymous',
+        message: message.trim(),
+        messageType: 'text',
+        replyToId: replyToId ? Number(replyToId) : null,
+      }).returning();
+
+      res.json(newMessage);
+    } catch (error: any) {
+      console.error("Error sending event chatroom message:", error);
+      res.status(500).json({ error: "Failed to send message" });
+    }
+  });
+
+  // Get members of an event chatroom
+  app.get("/api/event-chatrooms/:chatroomId/members", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      if (!chatroomId) return res.status(400).json({ error: "Invalid chatroom ID" });
+
+      // Get chatroom to find its eventId
+      const [chatroom] = await db.select({ eventId: meetupChatrooms.eventId })
+        .from(meetupChatrooms).where(eq(meetupChatrooms.id, chatroomId)).limit(1);
+
+      if (!chatroom?.eventId) return res.json([]);
+
+      // Return event participants as members
+      const participants = await db.select({
+        id: users.id,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+        avatarColor: users.avatarColor,
+      })
+        .from(eventParticipants)
+        .leftJoin(users, eq(eventParticipants.userId, users.id))
+        .where(eq(eventParticipants.eventId, chatroom.eventId));
+
+      res.json(participants);
+    } catch (error: any) {
+      console.error("Error fetching event chatroom members:", error);
+      res.status(500).json({ error: "Failed to fetch members" });
+    }
+  });
+
+  // Mark event chatroom as read (no-op ack, kept for client compatibility)
+  app.post("/api/event-chatrooms/:chatroomId/mark-read", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to mark as read" });
+    }
+  });
+
+  // Get or create event chatroom by event ID
+  app.get("/api/event-chatrooms/:eventId", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const eventId = parseInt(req.params.eventId || '0');
+      if (!eventId) return res.status(400).json({ error: "Invalid event ID" });
+
+      // Ensure the event exists
+      const event = await storage.getEvent(eventId);
+      if (!event) return res.status(404).json({ error: "Event not found" });
+
+      // Get or create the chatroom
+      const chatroom = await storage.ensureEventChatroom(eventId);
+      if (!chatroom) return res.status(500).json({ error: "Failed to create chatroom" });
+
+      // Auto-add the requesting user as a member
+      try {
+        const uid = Number(userId);
+        const existing = await db.select({ id: chatroomMembers.id })
+          .from(chatroomMembers)
+          .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.userId, uid)))
+          .limit(1);
+        if (existing.length === 0) {
+          await db.insert(chatroomMembers).values({
+            chatroomId: chatroom.id,
+            userId: uid,
+            role: 'member',
+          }).onConflictDoNothing();
+        }
+      } catch (memberErr) {
+        console.error('Error adding user to event chatroom members:', memberErr);
+      }
+
+      res.json({
+        id: chatroom.id,
+        eventId: chatroom.eventId,
+        chatroomName: chatroom.chatroomName,
+      });
+    } catch (error: any) {
+      console.error("Error fetching event chatroom:", error);
+      res.status(500).json({ error: "Failed to fetch event chatroom" });
+    }
+  });
+
   // Return the configured HTTP server with WebSocket support  
   return httpServer;
 }
