@@ -286,7 +286,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
   return (
     <>
-      <article className="event-card rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 cursor-pointer text-left"
+      <article className="event-card rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 cursor-pointer text-left flex flex-col h-full"
                onClick={() => setLocation(`/events/${event.id}`)}>
         {event.imageUrl && (
           <div className="relative overflow-hidden h-[180px] md:h-[200px] lg:h-[220px]">
@@ -299,7 +299,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
           </div>
         )}
 
-        <div className="p-4 md:p-5 space-y-3">
+        <div className="p-4 md:p-5 flex flex-col flex-1 gap-3">
           <h3 className="text-gray-900 dark:text-white text-lg font-semibold leading-snug line-clamp-2 break-normal">
             {event.title}
           </h3>
@@ -387,8 +387,8 @@ export default function EventCard({ event, compact = false, featured = false }: 
             </div>
           )}
 
-          {/* Action buttons — single row, evenly spaced */}
-          <div className="flex gap-2 pt-2" onClick={(e) => e.stopPropagation()}>
+          {/* Action buttons — single row, evenly spaced, always at bottom */}
+          <div className="flex gap-2 pt-2 mt-auto" onClick={(e) => e.stopPropagation()}>
             {/* Interested */}
             {!isOrganizer && (
               isInterested ? (
