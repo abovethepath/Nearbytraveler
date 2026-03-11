@@ -3780,6 +3780,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   });
 
   const [adminTab, setAdminTab] = useState<'all' | 'ambassadors' | 'cold'>('all');
+  const [adminSearch, setAdminSearch] = useState('');
   const [expandedUserId, setExpandedUserId] = useState<number | null>(null);
   const [noteDrafts, setNoteDrafts] = useState<Record<number, string>>({});
   const [savingNote, setSavingNote] = useState<number | null>(null);
@@ -3992,9 +3993,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     const newToday = all.filter(u => isNewToday(u.createdAt)).length;
     const newThisWeek = all.filter(u => isNewThisWeek(u.createdAt)).length;
 
-    const filtered = adminTab === 'ambassadors' ? ambassadors
+    const tabFiltered = adminTab === 'ambassadors' ? ambassadors
       : adminTab === 'cold' ? coldUsers
       : all;
+
+    const searchLower = adminSearch.trim().toLowerCase();
+    const filtered = searchLower
+      ? tabFiltered.filter(u =>
+          u.username.toLowerCase().includes(searchLower) ||
+          (u.name || '').toLowerCase().includes(searchLower) ||
+          (u.firstName || '').toLowerCase().includes(searchLower) ||
+          (u.lastName || '').toLowerCase().includes(searchLower) ||
+          (u.email || '').toLowerCase().includes(searchLower) ||
+          (u.hometownCity || '').toLowerCase().includes(searchLower)
+        )
+      : tabFiltered;
 
     const typeColor: Record<string, string> = {
       traveler: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
@@ -4055,6 +4068,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               ))}
             </div>
           </CardHeader>
+
+          {/* Search bar */}
+          <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-800">
+            <input
+              type="text"
+              placeholder="Search by username, name, email, city…"
+              value={adminSearch}
+              onChange={e => setAdminSearch(e.target.value)}
+              className="w-full h-8 px-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+            />
+          </div>
 
           {/* Filter tabs */}
           <div className="flex border-b border-gray-100 dark:border-gray-800">
