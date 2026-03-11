@@ -464,19 +464,6 @@ function QuickMeetupsPage() {
           </div>
 
           <div className={`flex gap-2 ${useFlexLayout ? 'flex-shrink-0 mt-auto' : ''}`}>
-            <Button 
-              size="sm"
-              variant="outline" 
-              className="text-xs h-7 border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 bg-white dark:bg-gray-800"
-              onClick={() => {
-                setLocation(`/quick-meetup-chat/${meetup.id}`);
-              }}
-            >
-              <MessageCircle className="w-3 h-3 mr-1" />
-              Chat
-            </Button>
-            
-            
             {/* DO NOT REMOVE: creator guard — meetup organizer should never see Join button */}
             {isOwn ? (
               isExpired ? (
