@@ -67,6 +67,7 @@ import CityMap from "@/components/CityMap";
 import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
 import LocationSortedEvents from "@/components/LocationSortedEvents";
 import NearbyTravelerSearchWidget from "@/components/NearbyTravelerSearchWidget";
+import { CityArrivalsWidget } from "@/components/CityArrivalsWidget";
 
 
 // Import centralized constants for consistency
@@ -2147,7 +2148,15 @@ export default function Home() {
 
           {/* Right Sidebar - Weather, Messages, Quick Meetups, Events */}
           <div className="col-span-1 space-y-6 sm:space-y-8 md:space-y-10 min-w-0 overflow-x-hidden max-w-full w-full">
-            
+
+            {/* Who's Coming to Town */}
+            {effectiveUser && (() => {
+              const arrivalsCity = effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination
+                ? String(effectiveUser.travelDestination).split(',')[0]?.trim()
+                : effectiveUser.hometownCity;
+              return arrivalsCity ? <CityArrivalsWidget cityName={arrivalsCity} /> : null;
+            })()}
+
             {/* Available Now Widget - Hangout Mode (desktop sidebar only, mobile version is at top of main content) */}
             {!shouldDeferSecondarySections && effectiveUser?.userType !== 'business' && (
               <div className="hidden lg:block">
