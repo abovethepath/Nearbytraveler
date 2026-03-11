@@ -1285,6 +1285,80 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
   }, [messagesLoaded, isWsConnected]);
 
+  // Polling safety net: fetch new messages every 8 seconds to catch anything
+  // missed by WebSocket (e.g. after a reconnect or multi-connection edge cases).
+  useEffect(() => {
+    if (!messagesLoaded || !currentUserId) return;
+
+    const pollMessages = async () => {
+      try {
+        let user: any = {};
+        try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('current_user') || '{}'); } catch { user = {}; }
+        const uidNum = Number(currentUserId || user.id || 0);
+        const uid = uidNum.toString();
+        const headers: Record<string, string> = { 'x-user-id': uid };
+        if (user?.id) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name });
+        const chatroomsChatTypeParam = chatType === "chatroom" ? "city" : chatType;
+        const url =
+          chatType === "event"
+            ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
+            : chatType === "meetup"
+              ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
+              : (chatType === "dm" && isMobileWeb)
+                ? `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=dm&format=whatsapp`
+                : chatType === "dm"
+                  ? `${getApiBaseUrl()}/api/messages/${uidNum}`
+                  : `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatroomsChatTypeParam}&format=whatsapp`;
+
+        const response = await fetch(url, { headers, credentials: 'include' });
+        if (!response.ok) return;
+        const data = await response.json();
+
+        // Extract messages array from response
+        let incoming: any[] = [];
+        if (chatType === 'dm' && data?.messages && Array.isArray(data.messages)) {
+          incoming = data.messages;
+        } else if (chatType === 'dm' && Array.isArray(data)) {
+          const uidNumLocal = Number(currentUserId);
+          const cidNumLocal = Number(chatId);
+          incoming = data.filter((m: any) => {
+            const s = m?.senderId; const r = m?.receiverId;
+            return (s == uidNumLocal && r == cidNumLocal) || (s == cidNumLocal && r == uidNumLocal);
+          }).reverse();
+        } else if (chatType === 'meetup' && Array.isArray(data)) {
+          incoming = data.map((m: any) => ({
+            id: m?.id,
+            senderId: m?.userId ?? m?.senderId,
+            content: m?.message ?? m?.content ?? '',
+            messageType: m?.messageType || 'text',
+            createdAt: m?.sentAt || m?.createdAt || new Date().toISOString(),
+            sender: m?.sender || null,
+          }));
+        } else if (Array.isArray(data)) {
+          incoming = data;
+        } else if (data?.messages && Array.isArray(data.messages)) {
+          incoming = data.messages;
+        }
+
+        if (incoming.length === 0) return;
+
+        // Merge: only add messages whose ID is not already in state
+        setMessages(prev => {
+          const existingIds = new Set(prev.map(m => m.id));
+          const newMsgs = incoming.filter((m: any) => m?.id != null && !existingIds.has(m.id));
+          if (newMsgs.length === 0) return prev;
+          scrollToBottom();
+          return [...prev, ...newMsgs];
+        });
+      } catch {
+        // Silent — polling is a best-effort safety net
+      }
+    };
+
+    const interval = setInterval(pollMessages, 8000);
+    return () => clearInterval(interval);
+  }, [messagesLoaded, currentUserId, chatId, chatType]);
+
   const scrollToBottom = (behavior: ScrollBehavior = "smooth", delay = 100) => {
     setTimeout(() => {
       if (messagesEndRef.current) {

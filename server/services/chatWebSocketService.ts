@@ -41,9 +41,22 @@ export interface AuthenticatedWebSocket extends WebSocket {
 }
 
 export class ChatWebSocketService {
-  private connectedUsers = new Map<number, AuthenticatedWebSocket>();
+  // Store ALL open connections per user (not just the latest one).
+  // This prevents the "lost delivery" bug that occurred when WhatsAppChat opened
+  // a second WS connection, overwrote the first, then closed and deleted the entry,
+  // leaving the original app-level connection orphaned.
+  private connectedUsers = new Map<number, Set<AuthenticatedWebSocket>>();
   private chatroomMembers = new Map<number, Set<number>>(); // chatroomId -> Set of userIds
   private typingUsers = new Map<string, { userId: number; expiresAt: number }>(); // chatroomId:userId -> expiry
+
+  // Send an already-serialised string (or object) to every open connection for a user
+  private sendToUser(userId: number, data: string): void {
+    const wsSet = this.connectedUsers.get(userId);
+    if (!wsSet) return;
+    wsSet.forEach(ws => {
+      if (ws.readyState === WebSocket.OPEN) ws.send(data);
+    });
+  }
 
   constructor() {
     // Clean up expired typing indicators every 2 seconds
@@ -77,6 +90,16 @@ export class ChatWebSocketService {
     return Array.from(this.connectedUsers.keys());
   }
 
+  // Check if a user has any open connection
+  isUserConnected(userId: number): boolean {
+    const wsSet = this.connectedUsers.get(userId);
+    if (!wsSet) return false;
+    for (const ws of wsSet) {
+      if (ws.readyState === WebSocket.OPEN) return true;
+    }
+    return false;
+  }
+
   // Authenticate WebSocket connection
   async authenticateConnection(ws: AuthenticatedWebSocket, authData: { userId: number; username: string }) {
     const { userId, username } = authData;
@@ -94,9 +117,12 @@ export class ChatWebSocketService {
     ws.userId = userId;
     ws.username = username;
     ws.isAuthenticated = true;
-    this.connectedUsers.set(userId, ws);
+    if (!this.connectedUsers.has(userId)) {
+      this.connectedUsers.set(userId, new Set());
+    }
+    this.connectedUsers.get(userId)!.add(ws);
 
-    console.log(`🟢 User ${username} (${userId}) connected to chat WebSocket`);
+    console.log(`🟢 User ${username} (${userId}) connected to chat WebSocket (${this.connectedUsers.get(userId)!.size} total connections)`);
     return true;
   }
 
@@ -252,28 +278,14 @@ export class ChatWebSocketService {
 
       console.log('📨 DM: Sending message from', ws.userId, 'to', receiverId, '- message ID:', newMessage.id);
 
-      // Send to receiver
-      const receiverWs = this.connectedUsers.get(receiverId);
-      if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
-        receiverWs.send(JSON.stringify(dmEvent));
-        console.log('📨 DM: Delivered to receiver', receiverId);
-      } else {
-        console.log('📨 DM: Receiver', receiverId, 'not online');
-      }
+      const dmEventStr = JSON.stringify(dmEvent);
+      // Send to all receiver connections
+      this.sendToUser(receiverId, dmEventStr);
+      console.log('📨 DM: Delivered to receiver', receiverId);
 
-      // Echo back to sender - try direct ws first, then fall back to connectedUsers map
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify(dmEvent));
-        console.log('📨 DM: Echoed to sender via direct ws');
-      } else {
-        const senderWs = this.connectedUsers.get(ws.userId!);
-        if (senderWs && senderWs.readyState === WebSocket.OPEN) {
-          senderWs.send(JSON.stringify(dmEvent));
-          console.log('📨 DM: Echoed to sender via connectedUsers map');
-        } else {
-          console.log('⚠️ DM: Could not echo to sender - no open connection');
-        }
-      }
+      // Echo back to all sender connections (sendToUser already covers all their WS including ws)
+      this.sendToUser(ws.userId!, dmEventStr);
+      console.log('📨 DM: Echoed to sender', ws.userId);
 
       return;
     }
@@ -479,16 +491,9 @@ export class ChatWebSocketService {
         timestamp: Date.now(),
       };
 
-      // Send to receiver
-      const receiverWs = this.connectedUsers.get(receiverId);
-      if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
-        receiverWs.send(JSON.stringify(editEvent));
-      }
-
-      // Echo back to sender
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify(editEvent));
-      }
+      const editEventStr = JSON.stringify(editEvent);
+      this.sendToUser(receiverId, editEventStr);
+      this.sendToUser(ws.userId!, editEventStr);
 
       console.log('✅ DM message edited and broadcast');
       return;
@@ -629,16 +634,9 @@ export class ChatWebSocketService {
         timestamp: Date.now(),
       };
 
-      // Send to receiver
-      const receiverWs = this.connectedUsers.get(receiverId);
-      if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
-        receiverWs.send(JSON.stringify(deleteEvent));
-      }
-
-      // Echo back to sender
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify(deleteEvent));
-      }
+      const deleteEventStr = JSON.stringify(deleteEvent);
+      this.sendToUser(receiverId, deleteEventStr);
+      this.sendToUser(ws.userId!, deleteEventStr);
 
       console.log('✅ DM message deleted and broadcast');
       return;
@@ -776,16 +774,9 @@ export class ChatWebSocketService {
         timestamp: Date.now(),
       };
 
-      // Send to receiver
-      const receiverWs = this.connectedUsers.get(receiverId);
-      if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
-        receiverWs.send(JSON.stringify(reactionEvent));
-      }
-
-      // Echo back to sender
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify(reactionEvent));
-      }
+      const reactionEventStr = JSON.stringify(reactionEvent);
+      this.sendToUser(receiverId, reactionEventStr);
+      this.sendToUser(ws.userId!, reactionEventStr);
 
       return;
     }
@@ -1226,14 +1217,10 @@ export class ChatWebSocketService {
 
     const eventStr = JSON.stringify(event);
 
-    // Send to locally connected users
+    // Send to all locally connected WS instances for each member
     members.forEach(member => {
       if (member.userId === excludeUserId) return;
-      
-      const userWs = this.connectedUsers.get(member.userId);
-      if (userWs && userWs.readyState === WebSocket.OPEN) {
-        userWs.send(eventStr);
-      }
+      this.sendToUser(member.userId, eventStr);
     });
 
     // Publish to Redis for users connected to other instances (multi-instance scaling)
@@ -1253,11 +1240,7 @@ export class ChatWebSocketService {
 
     memberIds.forEach(userId => {
       if (userId === excludeUserId) return;
-      
-      const userWs = this.connectedUsers.get(userId);
-      if (userWs && userWs.readyState === WebSocket.OPEN) {
-        userWs.send(eventStr);
-      }
+      this.sendToUser(userId, eventStr);
     });
   }
 
@@ -1366,17 +1349,21 @@ export class ChatWebSocketService {
     }));
   }
 
-  // Handle user disconnect - only remove if the disconnecting WS is the current one
+  // Handle user disconnect - remove this specific WS from the user's set.
+  // The user stays in connectedUsers as long as any other connection remains open.
   handleDisconnect(userId: number, ws?: AuthenticatedWebSocket) {
-    if (ws) {
-      const currentWs = this.connectedUsers.get(userId);
-      if (currentWs === ws) {
-        this.connectedUsers.delete(userId);
+    const wsSet = this.connectedUsers.get(userId);
+    if (wsSet) {
+      if (ws) {
+        wsSet.delete(ws);
       }
-    } else {
-      this.connectedUsers.delete(userId);
+      if (!ws || wsSet.size === 0) {
+        this.connectedUsers.delete(userId);
+        console.log(`🔴 User ${userId} fully disconnected from chat WebSocket`);
+      } else {
+        console.log(`🟡 User ${userId} closed one WS connection; ${wsSet.size} remaining`);
+      }
     }
-    console.log(`🔴 User ${userId} disconnected from chat WebSocket`);
   }
 
   // Get connected users count
