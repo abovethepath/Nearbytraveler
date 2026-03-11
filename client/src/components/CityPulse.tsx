@@ -45,7 +45,7 @@ export function CityPulse({ city }: CityPulseProps) {
       emoji: "🟢",
       count: data.openToMeet,
       label: "open to meet now",
-      onClick: () => setLocation("/meetups"),
+      onClick: () => setLocation("/quick-meetups"),
     },
     {
       emoji: "📅",
@@ -63,7 +63,7 @@ export function CityPulse({ city }: CityPulseProps) {
       emoji: "🤝",
       count: data.connectionsToday,
       label: "new connections today",
-      onClick: () => setLocation("/discover"),
+      onClick: () => setLocation("/connect"),
     },
     {
       emoji: "👥",
