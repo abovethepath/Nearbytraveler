@@ -705,6 +705,14 @@
   color: #6b7280 !important;
 }
 
+/* Buttons inside available-now cards must keep white text even though .text-white is overridden above */
+:root:not(.dark) [data-testid="available-now-entry-card"] button[class~="bg-orange-500"],
+:root:not(.dark) [data-testid="available-now-entry-card"] button[class~="bg-orange-500"] *,
+:root:not(.dark) [data-testid="available-now-entry-card"] button[class~="bg-orange-500"] .text-white {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
 /* Gray subdued text */
 :root:not(.dark) [data-testid="available-now-entry-card"] .text-gray-400,
 :root:not(.dark) [data-testid="available-now-entry-card"] [class*="text-gray-4"] {

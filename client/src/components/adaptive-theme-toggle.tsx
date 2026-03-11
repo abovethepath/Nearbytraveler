@@ -60,7 +60,7 @@ export function AdaptiveThemeToggle() {
           onClick={() => setTheme("light")}
           className={cn(
             "cursor-pointer text-gray-900 dark:text-gray-100",
-            theme === "light" && "bg-blue-100 dark:bg-blue-900/30"
+            theme === "light" && "font-semibold dark:bg-blue-900/30"
           )}
         >
           <Sun className="mr-2 h-4 w-4" />
@@ -74,7 +74,7 @@ export function AdaptiveThemeToggle() {
           onClick={() => setTheme("dark")}
           className={cn(
             "cursor-pointer text-gray-900 dark:text-gray-100",
-            theme === "dark" && "bg-blue-100 dark:bg-blue-900/30"
+            theme === "dark" && "font-semibold dark:bg-blue-900/30"
           )}
         >
           <Moon className="mr-2 h-4 w-4" />
@@ -88,7 +88,7 @@ export function AdaptiveThemeToggle() {
           onClick={() => setTheme("system")}
           className={cn(
             "cursor-pointer text-gray-900 dark:text-gray-100",
-            theme === "system" && "bg-blue-100 dark:bg-blue-900/30"
+            theme === "system" && "font-semibold dark:bg-blue-900/30"
           )}
         >
           <Monitor className="mr-2 h-4 w-4" />
