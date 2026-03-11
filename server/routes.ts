@@ -2820,6 +2820,73 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // GET /api/cities/:city/arrivals - Who's coming to town / here now
+  app.get("/api/cities/:city/arrivals", async (req: any, res) => {
+    try {
+      const city = decodeURIComponent(req.params.city);
+      const now = new Date();
+      const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date(now); todayEnd.setHours(23, 59, 59, 999);
+      const threeDaysOut = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+
+      const rows = await db.select({
+        userId: travelPlans.userId,
+        startDate: travelPlans.startDate,
+        endDate: travelPlans.endDate,
+        destination: travelPlans.destination,
+        username: users.username,
+        firstName: users.firstName,
+        profileImage: users.profileImage,
+        userType: users.userType,
+        hometownCity: users.hometownCity,
+        hometownCountry: users.hometownCountry,
+      })
+        .from(travelPlans)
+        .innerJoin(users, eq(travelPlans.userId, users.id))
+        .where(and(
+          sql`LOWER(${travelPlans.destinationCity}) = LOWER(${city})`,
+          gte(travelPlans.endDate, now),
+          lte(travelPlans.startDate, threeDaysOut)
+        ))
+        .orderBy(travelPlans.startDate);
+
+      const hereNow: any[] = [];
+      const arrivingToday: any[] = [];
+      const arrivingSoon: any[] = [];
+      const seenUsers = new Set<number>();
+
+      for (const r of rows) {
+        if (seenUsers.has(r.userId)) continue;
+        const start = r.startDate ? new Date(r.startDate) : null;
+        const end = r.endDate ? new Date(r.endDate) : null;
+        const user = {
+          userId: r.userId,
+          username: r.username,
+          firstName: r.firstName,
+          profileImage: r.profileImage,
+          userType: r.userType,
+          hometownCity: r.hometownCity,
+          hometownCountry: r.hometownCountry,
+          startDate: r.startDate,
+          endDate: r.endDate,
+        };
+        if (start && end && start <= now && end >= now) {
+          hereNow.push(user);
+        } else if (start && start >= todayStart && start <= todayEnd) {
+          arrivingToday.push(user);
+        } else if (start && start > now && start <= threeDaysOut) {
+          arrivingSoon.push(user);
+        }
+        seenUsers.add(r.userId);
+      }
+
+      res.json({ hereNow, arrivingToday, arrivingSoon });
+    } catch (error: any) {
+      console.error("City arrivals error:", error);
+      res.json({ hereNow: [], arrivingToday: [], arrivingSoon: [] });
+    }
+  });
+
   // GET /api/cities/:city/overview - Get city overview data
   app.get("/api/cities/:city/overview", async (req, res) => {
     try {

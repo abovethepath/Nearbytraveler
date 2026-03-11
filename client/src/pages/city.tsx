@@ -20,6 +20,7 @@ import { CityStatsWidget } from "@/components/CityStatsWidget";
 import { CityMap } from "@/components/CityMap";
 import { SecretExperiencesWidget } from "@/components/SecretExperiencesWidget";
 import { AICityGuideWidget } from "@/components/AICityGuideWidget";
+import { CityArrivalsWidget } from "@/components/CityArrivalsWidget";
 import { useAuth } from "@/App";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import type { User, Event } from "@shared/schema";
@@ -363,6 +364,9 @@ export default function CityPage({ cityName }: CityPageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 xl:col-span-3">
+              {/* Who's Coming to Town */}
+              <CityArrivalsWidget cityName={parsedCityName} />
+
               {/* Discover and Connect Section */}
               <div id="people-section" className="mb-6 sm:mb-8">
                 <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row justify-between items-start sm:items-center mb-6">
