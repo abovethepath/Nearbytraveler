@@ -387,33 +387,64 @@ export default function EventCard({ event, compact = false, featured = false }: 
             </div>
           )}
 
-          {/* Action buttons — single row, evenly spaced, always at bottom */}
+          {/* Action buttons — always at bottom */}
           <div className="flex gap-2 pt-2 mt-auto" onClick={(e) => e.stopPropagation()}>
-            {/* Interested */}
-            {!isOrganizer && (
-              isInterested ? (
+            {isOrganizer ? (
+              // Organizer: View Event + Open Chat
+              <>
                 <Button
                   size="sm"
-                  className="flex-1 bg-[#2563EB] text-white border-0 hover:bg-blue-700"
-                  onClick={() => leaveEventMutation.mutate()}
-                  disabled={leaveEventMutation.isPending}
-                  data-testid="button-interested"
+                  className="flex-1 text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                  onClick={() => setLocation(`/events/${event.id}`)}
+                  data-testid="button-view"
                 >
-                  <Check className="h-3 w-3 mr-1" />
-                  {leaveEventMutation.isPending ? "..." : "Interested"}
+                  View Event
                 </Button>
-              ) : isGoing ? (
                 <Button
                   size="sm"
-                  className="flex-1 bg-[#E85D2F] text-white border-0 hover:bg-orange-700"
+                  className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
+                  onClick={() => setLocation(`/event-chat/${event.id}`)}
+                  data-testid="button-chat"
+                >
+                  <MessageCircle className="h-3 w-3 mr-1" />
+                  Open Chat
+                </Button>
+              </>
+            ) : hasJoinedOrInterested ? (
+              // Joined or Interested: Leave + Open Chat
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/30"
                   onClick={() => leaveEventMutation.mutate()}
                   disabled={leaveEventMutation.isPending}
-                  data-testid="button-going"
+                  data-testid="button-leave"
                 >
-                  <Check className="h-3 w-3 mr-1" />
-                  {leaveEventMutation.isPending ? "..." : "Joined"}
+                  {leaveEventMutation.isPending ? "..." : "Leave"}
                 </Button>
-              ) : (
+                <Button
+                  size="sm"
+                  className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
+                  onClick={() => setLocation(`/event-chat/${event.id}`)}
+                  data-testid="button-chat"
+                >
+                  <MessageCircle className="h-3 w-3 mr-1" />
+                  Open Chat
+                </Button>
+              </>
+            ) : (
+              // Not joined: Join + Interested + View Event
+              <>
+                <Button
+                  size="sm"
+                  className="flex-1 text-white border-0 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+                  onClick={() => handleJoinEvent('going')}
+                  disabled={joinEventMutation.isPending}
+                  data-testid="button-join"
+                >
+                  {joinEventMutation.isPending ? "..." : "Join"}
+                </Button>
                 <Button
                   size="sm"
                   variant="outline"
@@ -424,30 +455,16 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 >
                   {joinEventMutation.isPending ? "..." : "Interested"}
                 </Button>
-              )
+                <Button
+                  size="sm"
+                  className="flex-1 text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                  onClick={() => setLocation(`/events/${event.id}`)}
+                  data-testid="button-view"
+                >
+                  View Event
+                </Button>
+              </>
             )}
-
-            {/* View Event */}
-            <Button
-              size="sm"
-              className="flex-1 text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
-              onClick={() => setLocation(`/events/${event.id}`)}
-              data-testid="button-view"
-            >
-              View Event
-            </Button>
-
-            {/* Open Chat */}
-            <Button
-              size="sm"
-              className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
-              onClick={() => setLocation(`/event-chat/${event.id}`)}
-              disabled={!hasJoinedOrInterested && !isOrganizer}
-              data-testid="button-chat"
-            >
-              <MessageCircle className="h-3 w-3 mr-1" />
-              Open Chat
-            </Button>
           </div>
         </div>
       </article>
