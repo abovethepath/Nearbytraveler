@@ -204,12 +204,12 @@ export default function LandingStreamlined() {
                 
                 {/* Main Headline */}
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-white mb-6 sm:mb-8">
-                  Connect with <span className="text-transparent dark:text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400 dark:from-blue-400 dark:to-orange-400">Locals & Travelers</span> Worldwide
+                  Connect with <span className="landing-gradient-text text-transparent dark:text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400 dark:from-blue-400 dark:to-orange-400">Locals & Travelers</span> Worldwide
                 </h1>
                 
                 {/* Subheadline */}
                 <p className="text-lg sm:text-xl md:text-2xl text-white mb-10 sm:mb-12 leading-relaxed max-w-4xl">
-                  Nearby Traveler connects travelers and locals through <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400 font-semibold">shared interests, activities, and events</span>. We also let you know when you cross paths with friends in another city — making it easy to meet people, reconnect, and build friendships that last a lifetime.
+                  Nearby Traveler connects travelers and locals through <span className="landing-gradient-text text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400 font-semibold">shared interests, activities, and events</span>. We also let you know when you cross paths with friends in another city — making it easy to meet people, reconnect, and build friendships that last a lifetime.
                 </p>
                 
                 {/* Waitlist Signup */}

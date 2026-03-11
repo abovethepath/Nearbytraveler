@@ -155,15 +155,32 @@
 
 /* ──────────────────────────────────────────────────────────────
    4. GRADIENT TEXT HEADINGS → solid black
+   EXCEPTION: Landing page hero elements keep their brand colors
    ────────────────────────────────────────────────────────────── */
 
-:root:not(.dark) [class*="bg-gradient-to"][class*="bg-clip-text"][class*="text-transparent"] {
+:root:not(.dark) [class*="bg-gradient-to"][class*="bg-clip-text"][class*="text-transparent"]:not(.landing-gradient-text) {
   background: none !important;
   background-image: none !important;
   -webkit-background-clip: unset !important;
   background-clip: unset !important;
   -webkit-text-fill-color: #000000 !important;
   color: #000000 !important;
+}
+
+/* PROTECT: Landing page rotating quote — always orange */
+:root:not(.dark) p.landing-quote,
+:root:not(.dark) .landing-quote {
+  color: #f97316 !important;
+  -webkit-text-fill-color: #f97316 !important;
+}
+
+/* PROTECT: Landing page gradient spans — always blue-to-orange */
+:root:not(.dark) span.landing-gradient-text {
+  background: linear-gradient(to right, #60a5fa, #fb923c) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
 }
 
 :root:not(.dark) h1[class*="text-orange-"],

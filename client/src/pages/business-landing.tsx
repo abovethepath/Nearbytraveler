@@ -63,7 +63,7 @@ export default function BusinessLanding() {
                 </div>
                 
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6 sm:mb-8">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500">Turn Travelers Into Customers</span>
+                  <span className="landing-gradient-text text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500">Turn Travelers Into Customers</span>
                 </h1>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   Direct access to travelers seeking your services. Connect with potential customers before they even arrive.
