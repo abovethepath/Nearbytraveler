@@ -23967,9 +23967,16 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
+      // Only return pending requests where the host's Available Now session is still active
+      const now = new Date();
       const requests = await db.select()
         .from(availableNowRequests)
         .innerJoin(users, eq(availableNowRequests.fromUserId, users.id))
+        .innerJoin(availableNow, and(
+          eq(availableNow.userId, availableNowRequests.toUserId),
+          eq(availableNow.isAvailable, true),
+          gte(availableNow.expiresAt, now)
+        ))
         .where(and(
           eq(availableNowRequests.toUserId, Number(userId)),
           eq(availableNowRequests.status, "pending")
@@ -24024,6 +24031,26 @@ Questions? Just reply to this message. Welcome aboard!
       const { status } = req.body;
       if (!["accepted", "declined"].includes(status)) {
         return res.status(400).json({ error: "Invalid status" });
+      }
+
+      // If accepting, verify the host's Available Now session is still active.
+      // Prevent stale acceptances after the session has expired.
+      if (status === "accepted") {
+        const [activeSession] = await db.select({ id: availableNow.id })
+          .from(availableNow)
+          .where(and(
+            eq(availableNow.userId, Number(userId)),
+            eq(availableNow.isAvailable, true),
+            gte(availableNow.expiresAt, new Date())
+          ))
+          .limit(1);
+        if (!activeSession) {
+          // Auto-mark as declined so it disappears from the requester's view too
+          await db.update(availableNowRequests)
+            .set({ status: "declined" })
+            .where(eq(availableNowRequests.id, Number(requestId)));
+          return res.status(400).json({ error: "Your Available Now session has expired. This meet request can no longer be accepted." });
+        }
       }
 
       const [updated] = await db.update(availableNowRequests)

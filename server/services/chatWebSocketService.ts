@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
 import { db } from '../db';
-import { chatroomMessages, chatroomMembers, users, messages, meetupChatroomMessages, meetupChatrooms, eventParticipants } from '../../shared/schema';
-import { eq, and, desc, gt, or } from 'drizzle-orm';
+import { chatroomMessages, chatroomMembers, users, messages, meetupChatroomMessages, meetupChatrooms, eventParticipants, availableNow, availableNowRequests } from '../../shared/schema';
+import { eq, and, desc, gt, or, gte } from 'drizzle-orm';
 import { redisPubSub } from './redisPubSub';
 
 // WebSocket event types for WhatsApp-style chat
@@ -1293,7 +1293,39 @@ export class ChatWebSocketService {
       return !!participant;
     }
     
-    // For regular city/meetup chatrooms, check chatroomMembers table
+    // For meetup (hangout) chatrooms stored in meetupChatrooms, check via
+    // the linked availableNow session: organizer OR accepted requester.
+    if (chatType === 'meetup') {
+      const [chatroom] = await db.select({ availableNowId: meetupChatrooms.availableNowId })
+        .from(meetupChatrooms)
+        .where(eq(meetupChatrooms.id, chatroomId))
+        .limit(1);
+
+      if (chatroom?.availableNowId) {
+        // Is the user the organizer?
+        const [session] = await db.select({ userId: availableNow.userId })
+          .from(availableNow)
+          .where(eq(availableNow.id, chatroom.availableNowId))
+          .limit(1);
+
+        if (session?.userId === userId) return true;
+
+        // Is the user an accepted participant?
+        const [accepted] = await db.select({ id: availableNowRequests.id })
+          .from(availableNowRequests)
+          .where(and(
+            eq(availableNowRequests.fromUserId, userId),
+            eq(availableNowRequests.toUserId, session?.userId ?? -1),
+            eq(availableNowRequests.status, 'accepted')
+          ))
+          .limit(1);
+
+        return !!accepted;
+      }
+      // Fallback: check chatroomMembers if no availableNowId (shouldn't happen)
+    }
+
+    // For regular city chatrooms, check chatroomMembers table
     const member = await db.query.chatroomMembers.findFirst({
       where: and(
         eq(chatroomMembers.chatroomId, chatroomId),

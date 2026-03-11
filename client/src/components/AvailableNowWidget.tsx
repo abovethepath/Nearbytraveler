@@ -249,7 +249,14 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     onError: (error: any) => {
       console.error(`[MEET ACCEPT] onError:`, error);
       setPendingRequestId(null);
-      toast({ title: "Couldn't process request", description: error?.message || "Please try again.", variant: "destructive" });
+      const msg: string = error?.message || "";
+      if (msg.includes("expired") || msg.includes("Expired")) {
+        // Session expired — refresh the list so the stale notification disappears
+        queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
+        toast({ title: "Session expired", description: "Your Available Now session has ended. This meet request is no longer valid.", variant: "destructive" });
+      } else {
+        toast({ title: "Couldn't process request", description: msg || "Please try again.", variant: "destructive" });
+      }
     },
   });
 
