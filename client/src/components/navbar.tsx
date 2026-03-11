@@ -31,6 +31,7 @@ import {
   Mail,
   Moon,
   Sun,
+  Heart,
 } from "lucide-react";
 import Logo from "@/components/logo";
 import ConnectModal from "@/components/connect-modal";
@@ -698,6 +699,19 @@ function Navbar() {
                       </DropdownMenuItem>
                     </>
                   )}
+
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setLocation("/donate");
+                      setTimeout(
+                        () => window.scrollTo({ top: 0, behavior: "smooth" }),
+                        100,
+                      );
+                    }}
+                  >
+                    <Heart className="mr-2 h-4 w-4 text-red-500" />
+                    <span>Support Us ❤️</span>
+                  </DropdownMenuItem>
 
                   <DropdownMenuItem
                     onClick={() => {
