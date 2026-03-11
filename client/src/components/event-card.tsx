@@ -1,7 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, Instagram, Check, Phone, MessageCircle, X } from "lucide-react";
+import { Calendar, MapPin, Users, Check, Phone, MessageCircle } from "lucide-react";
 import { useLocation } from "wouter";
 import type { Event } from "@shared/schema";
 import ConnectionCelebration from "./connection-celebration";
@@ -10,7 +9,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import ImageLoader from "./ImageLoader";
-import { InstagramShare } from "./InstagramShare";
 import { SimpleAvatar } from "./simple-avatar";
 
 function deduplicateParts(parts: string[]): string {
@@ -355,117 +353,101 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 </a>
               </div>
             )}
-            <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+            {/* Attendee avatars + count */}
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <Users className="h-4 w-4 shrink-0" />
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-1">
                 {attendeeUsers.length > 0 && (
                   <div className="flex -space-x-2">
                     {attendeeUsers.map((u: any, i: number) => (
-                      <div key={u.id} className="w-6 h-6 rounded-full border-2 border-white dark:border-gray-800 overflow-hidden" style={{ zIndex: attendeeUsers.length - i }}>
-                        <SimpleAvatar user={u} size="xs" className="w-full h-full" />
+                      <div
+                        key={u.id}
+                        className="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800 overflow-hidden"
+                        style={{ zIndex: attendeeUsers.length - i }}
+                      >
+                        <SimpleAvatar user={u} size="sm" className="w-full h-full" />
                       </div>
                     ))}
                   </div>
                 )}
-                <span className="min-w-0 truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                <span className="text-xs">
                   {totalAttendees || (event as any).participantCount || 0} attending
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 pt-2">
-            {isOrganizer ? (
+          {/* Organizer badge */}
+          {isOrganizer && (
+            <div className="pt-1">
               <Badge className="flex items-center gap-1 bg-gradient-to-r from-[#2563EB] to-[#E85D2F] text-white px-3 py-1">
                 <Users className="h-3 w-3" />
                 Organizer
               </Badge>
-            ) : hasJoinedOrInterested ? (
-              <>
-                {isGoing && (
-                  <Badge className="flex items-center gap-1 bg-[#E85D2F] text-white px-3 py-1">
-                    <Check className="h-3 w-3" />
-                    Joined ✓
-                  </Badge>
-                )}
-                {isInterested && (
-                  <Badge className="flex items-center gap-1 bg-[#2563EB] text-white px-3 py-1">
-                    <Check className="h-3 w-3" />
-                    Interested ✓
-                  </Badge>
-                )}
-                <Button 
-                  size="sm" 
-                  className="flex-shrink-0 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setLocation(`/event-chat/${event.id}`);
-                  }}
-                  data-testid="button-chat"
-                >
-                  <MessageCircle className="h-3 w-3 mr-1" />
-                  Chat
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="ghost"
-                  className="flex-shrink-0 text-gray-500 hover:text-red-500"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    leaveEventMutation.mutate();
-                  }}
+            </div>
+          )}
+
+          {/* Action buttons — single row, evenly spaced */}
+          <div className="flex gap-2 pt-2" onClick={(e) => e.stopPropagation()}>
+            {/* Interested */}
+            {!isOrganizer && (
+              isInterested ? (
+                <Button
+                  size="sm"
+                  className="flex-1 bg-[#2563EB] text-white border-0 hover:bg-blue-700"
+                  onClick={() => leaveEventMutation.mutate()}
                   disabled={leaveEventMutation.isPending}
-                  data-testid="button-leave"
+                  data-testid="button-interested"
                 >
-                  {leaveEventMutation.isPending ? "..." : "Leave"}
+                  <Check className="h-3 w-3 mr-1" />
+                  {leaveEventMutation.isPending ? "..." : "Interested"}
                 </Button>
-              </>
-            ) : (
-              <>
-                <Button 
-                  size="sm" 
-                  className="flex-1 min-w-[60px] text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleJoinEvent('going');
-                  }}
-                  disabled={joinEventMutation.isPending}
+              ) : isGoing ? (
+                <Button
+                  size="sm"
+                  className="flex-1 bg-[#E85D2F] text-white border-0 hover:bg-orange-700"
+                  onClick={() => leaveEventMutation.mutate()}
+                  disabled={leaveEventMutation.isPending}
                   data-testid="button-going"
                 >
-                  {joinEventMutation.isPending ? "..." : "Join"}
+                  <Check className="h-3 w-3 mr-1" />
+                  {leaveEventMutation.isPending ? "..." : "Joined"}
                 </Button>
-                <Button 
-                  size="sm" 
+              ) : (
+                <Button
+                  size="sm"
                   variant="outline"
-                  className="flex-1 min-w-[80px]"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleJoinEvent('interested');
-                  }}
+                  className="flex-1"
+                  onClick={() => handleJoinEvent('interested')}
                   disabled={joinEventMutation.isPending}
                   data-testid="button-interested"
                 >
                   {joinEventMutation.isPending ? "..." : "Interested"}
                 </Button>
-              </>
+              )
             )}
-            
-            <div onClick={(e) => e.stopPropagation()} className="flex-shrink-0">
-              <InstagramShare 
-                event={event} 
-                trigger={
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1 px-2"
-                    data-testid="button-share-instagram"
-                  >
-                    <Instagram className="h-4 w-4" />
-                    <span className="hidden sm:inline">Share</span>
-                  </Button>
-                }
-              />
-            </div>
+
+            {/* View Event */}
+            <Button
+              size="sm"
+              className="flex-1 text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+              onClick={() => setLocation(`/events/${event.id}`)}
+              data-testid="button-view"
+            >
+              View Event
+            </Button>
+
+            {/* Open Chat */}
+            <Button
+              size="sm"
+              className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
+              onClick={() => setLocation(`/event-chat/${event.id}`)}
+              disabled={!hasJoinedOrInterested && !isOrganizer}
+              data-testid="button-chat"
+            >
+              <MessageCircle className="h-3 w-3 mr-1" />
+              Open Chat
+            </Button>
           </div>
         </div>
       </article>
