@@ -100,6 +100,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [hasConnectedBefore, setHasConnectedBefore] = useState(false);
   const [messagesLoaded, setMessagesLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [isMembersAccessDenied, setIsMembersAccessDenied] = useState(false);
   const [swipingMessageId, setSwipingMessageId] = useState<number | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSendingPhoto, setIsSendingPhoto] = useState(false);
@@ -830,16 +831,13 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
   });
 
-  // Show error toast if members fetch fails
+  // If members fetch fails for a meetup/chatroom, treat the room as expired (closed).
+  // Don't show a red toast — silently switch to read-only mode with a gentle banner.
   useEffect(() => {
-    if (membersError) {
-      toast({
-        title: "Unable to load members",
-        description: "You may not have access to view this chatroom's members.",
-        variant: "destructive"
-      });
+    if (membersError && (chatType === 'meetup' || chatType === 'chatroom')) {
+      setIsMembersAccessDenied(true);
     }
-  }, [membersError, toast]);
+  }, [membersError, chatType]);
 
   // Filter members based on search
   const filteredMembers = members.filter(member => {
@@ -1912,7 +1910,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             />
           </div>
           <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
-            {filteredMembers.length === 0 ? (
+            {isMembersAccessDenied ? (
+              <div className="text-center py-6 px-4">
+                <p className="text-amber-400 text-sm font-medium mb-1">Meetup has ended</p>
+                <p className="text-gray-500 text-xs">This room is closed. Chat history is preserved but new messages are disabled.</p>
+              </div>
+            ) : filteredMembers.length === 0 ? (
               <p className="text-center text-gray-500 py-4 text-sm">No members found</p>
             ) : (
               filteredMembers.map((member) => (
@@ -2039,7 +2042,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                       />
                     </div>
                     <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-180px)]">
-                      {filteredMembers.length === 0 ? (
+                      {isMembersAccessDenied ? (
+                        <div className="text-center py-6 px-4">
+                          <p className="text-amber-400 text-sm font-medium mb-1">Meetup has ended</p>
+                          <p className="text-gray-500 text-xs">This room is closed. Chat history is preserved but new messages are disabled.</p>
+                        </div>
+                      ) : filteredMembers.length === 0 ? (
                         <p className="text-center text-gray-400 py-4">No members found</p>
                       ) : (
                         filteredMembers.map((member) => (
@@ -2265,7 +2273,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 />
               </div>
               <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-180px)]">
-                {filteredMembers.length === 0 ? (
+                {isMembersAccessDenied ? (
+                  <div className="text-center py-6 px-4">
+                    <p className="text-amber-400 text-sm font-medium mb-1">Meetup has ended</p>
+                    <p className="text-gray-500 text-xs">This room is closed. Chat history is preserved but new messages are disabled.</p>
+                  </div>
+                ) : filteredMembers.length === 0 ? (
                   <p className="text-center text-gray-400 py-4">No members found</p>
                 ) : (
                   filteredMembers.map((member) => (
@@ -2636,13 +2649,20 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         )}
 
         {/* Input box — native app: no bottom nav; mobile web: safe area only (no nav overlap since nav hidden on chat); desktop: small pb-3 since container already stops above bottom nav */}
-        {readOnly ? (
+        {(readOnly || isMembersAccessDenied) ? (
           <div
-            className={`chat-input-area flex items-center justify-center gap-2 px-4 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : isMobileWeb ? 'pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]' : 'pb-3'}`}
+            className={`chat-input-area flex flex-col items-center justify-center gap-1 px-4 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : isMobileWeb ? 'pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]' : 'pb-3'}`}
             style={{ minHeight: 56 }}
           >
-            <Lock className="w-4 h-4 text-gray-500 flex-shrink-0" />
-            <span className="text-gray-400 text-sm">This hangout has ended — messages are read-only</span>
+            <div className="flex items-center gap-2">
+              <Lock className="w-4 h-4 text-amber-500 flex-shrink-0" />
+              <span className="text-amber-400 text-sm font-medium">
+                {isMembersAccessDenied ? 'This meetup room has closed' : 'This hangout has ended — messages are read-only'}
+              </span>
+            </div>
+            {isMembersAccessDenied && (
+              <span className="text-gray-500 text-xs">Chat history is preserved. The room will be removed shortly.</span>
+            )}
           </div>
         ) : (
         <div className={`chat-input-area px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : isMobileWeb ? 'pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]' : 'pb-3'}`}>
