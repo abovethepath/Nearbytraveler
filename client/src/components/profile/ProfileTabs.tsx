@@ -1883,13 +1883,12 @@ export function ProfileTabs(props: ProfilePageProps) {
                             <span>Secret things I would do if my closest friends came to town</span>
                           </h4>
                           <div
-                            className="whitespace-pre-wrap break-words text-sm"
+                            className="whitespace-pre-wrap break-words text-sm text-gray-900 dark:text-white"
                             style={{
                               background: 'rgba(255, 107, 53, 0.15)',
                               border: '1px solid rgba(255, 107, 53, 0.4)',
                               borderRadius: '10px',
                               padding: '10px 14px',
-                              color: '#FFFFFF',
                               fontWeight: 600,
                             }}
                             data-testid="text-secret-activities"

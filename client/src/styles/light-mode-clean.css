@@ -42,44 +42,44 @@
   background-image: none !important;
 }
 
-:root:not(.dark) button[class*="bg-orange-5"],
-:root:not(.dark) button[class*="bg-orange-6"],
-:root:not(.dark) button[class*="bg-orange-7"] {
+:root:not(.dark) button[class~="bg-orange-500"],
+:root:not(.dark) button[class~="bg-orange-600"],
+:root:not(.dark) button[class~="bg-orange-700"] {
   background-color: #000000 !important;
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
 }
 
-:root:not(.dark) button[class*="bg-blue-5"],
-:root:not(.dark) button[class*="bg-blue-6"],
-:root:not(.dark) button[class*="bg-blue-7"] {
+:root:not(.dark) button[class~="bg-blue-500"],
+:root:not(.dark) button[class~="bg-blue-600"],
+:root:not(.dark) button[class~="bg-blue-700"] {
   background-color: #000000 !important;
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
 }
 
-:root:not(.dark) button[class*="bg-orange-5"]:hover,
-:root:not(.dark) button[class*="bg-orange-6"]:hover,
-:root:not(.dark) button[class*="bg-orange-7"]:hover,
-:root:not(.dark) button[class*="bg-blue-5"]:hover,
-:root:not(.dark) button[class*="bg-blue-6"]:hover,
-:root:not(.dark) button[class*="bg-blue-7"]:hover {
+:root:not(.dark) button[class~="bg-orange-500"]:hover,
+:root:not(.dark) button[class~="bg-orange-600"]:hover,
+:root:not(.dark) button[class~="bg-orange-700"]:hover,
+:root:not(.dark) button[class~="bg-blue-500"]:hover,
+:root:not(.dark) button[class~="bg-blue-600"]:hover,
+:root:not(.dark) button[class~="bg-blue-700"]:hover {
   background-color: #1a1a1a !important;
 }
 
-:root:not(.dark) a[class*="bg-orange-5"],
-:root:not(.dark) a[class*="bg-orange-6"],
-:root:not(.dark) a[class*="bg-blue-5"],
-:root:not(.dark) a[class*="bg-blue-6"] {
+:root:not(.dark) a[class~="bg-orange-500"],
+:root:not(.dark) a[class~="bg-orange-600"],
+:root:not(.dark) a[class~="bg-blue-500"],
+:root:not(.dark) a[class~="bg-blue-600"] {
   background-color: #000000 !important;
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
 }
 
-:root:not(.dark) a[class*="bg-orange-5"]:hover,
-:root:not(.dark) a[class*="bg-orange-6"]:hover,
-:root:not(.dark) a[class*="bg-blue-5"]:hover,
-:root:not(.dark) a[class*="bg-blue-6"]:hover {
+:root:not(.dark) a[class~="bg-orange-500"]:hover,
+:root:not(.dark) a[class~="bg-orange-600"]:hover,
+:root:not(.dark) a[class~="bg-blue-500"]:hover,
+:root:not(.dark) a[class~="bg-blue-600"]:hover {
   background-color: #1a1a1a !important;
 }
 
@@ -94,9 +94,9 @@
 /* CRITICAL: Force white text on ANY black/dark background button */
 :root:not(.dark) button[style*="background: #000"],
 :root:not(.dark) button[style*="background-color: #000"],
-:root:not(.dark) button[class*="bg-black"],
-:root:not(.dark) button[class*="bg-gray-900"],
-:root:not(.dark) button[class*="bg-gray-800"] {
+:root:not(.dark) button[class~="bg-black"],
+:root:not(.dark) button[class~="bg-gray-900"],
+:root:not(.dark) button[class~="bg-gray-800"] {
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
 }
@@ -108,12 +108,12 @@
 :root:not(.dark) button[class*="from-blue-"][class*="to-blue-"] *,
 :root:not(.dark) button[class*="from-purple-"][class*="to-pink-"] *,
 :root:not(.dark) button[class*="from-orange-"][class*="to-pink-"] *,
-:root:not(.dark) button[class*="bg-orange-5"] *,
-:root:not(.dark) button[class*="bg-orange-6"] *,
-:root:not(.dark) button[class*="bg-orange-7"] *,
-:root:not(.dark) button[class*="bg-blue-5"] *,
-:root:not(.dark) button[class*="bg-blue-6"] *,
-:root:not(.dark) button[class*="bg-blue-7"] * {
+:root:not(.dark) button[class~="bg-orange-500"] *,
+:root:not(.dark) button[class~="bg-orange-600"] *,
+:root:not(.dark) button[class~="bg-orange-700"] *,
+:root:not(.dark) button[class~="bg-blue-500"] *,
+:root:not(.dark) button[class~="bg-blue-600"] *,
+:root:not(.dark) button[class~="bg-blue-700"] * {
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
 }

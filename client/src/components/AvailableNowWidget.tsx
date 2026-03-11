@@ -464,7 +464,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               </div>
             </div>
             {liveExpanded && (
-              <div className="pt-3 mt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="pt-3 mt-3 border-t border-gray-200 dark:border-white/[0.08]">
                 <div className="flex flex-wrap gap-1.5">
                   {ACTIVITY_OPTIONS.map(({ label, icon: Icon, value }) => {
                     const isActive = myStatus.activities?.includes(value);
@@ -483,9 +483,9 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                         className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
                           isActive
                             ? "text-white shadow-sm"
-                            : "text-gray-500"
+                            : "text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-white/[0.08]"
                         }`}
-                        style={isActive ? { backgroundColor: '#FF6B35' } : { backgroundColor: 'rgba(255,255,255,0.08)' }}
+                        style={isActive ? { backgroundColor: '#FF6B35' } : undefined}
                       >
                         <Icon className="w-3 h-3" />
                         {label}
@@ -506,11 +506,10 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             {allGroupChats.length > 0 && allGroupChats.map((chat: any) => (
               <div
                 key={chat.id}
-                className="flex items-center gap-2 pt-3 mt-3"
-                style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
+                className="flex items-center gap-2 pt-3 mt-3 border-t border-gray-200 dark:border-white/[0.08]"
               >
                 <MessageCircle className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                <span className="text-xs text-gray-300 flex-1 min-w-0 truncate">{chat.chatroomName} ({chat.participantCount} people)</span>
+                <span className="text-xs text-gray-600 dark:text-gray-300 flex-1 min-w-0 truncate">{chat.chatroomName} ({chat.participantCount} people)</span>
                 <button
                   type="button"
                   onClick={() => setLocation(`/meetup-chatroom-chat/${chat.id}?title=${encodeURIComponent(chat.chatroomName || 'Meetup Chat')}`)}
