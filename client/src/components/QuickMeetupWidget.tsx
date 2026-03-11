@@ -787,7 +787,7 @@ export function QuickMeetupWidget({
       {compactOnly && allActiveMeetups.length > 0 && (
         <div className="mb-4 relative">
           <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl blur-md opacity-40 animate-pulse"></div>
-          <Card className="relative bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 border-2 border-green-400 dark:border-green-500 shadow-xl">
+          <Card className="relative bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-800 border-2 border-green-400 dark:border-green-600 shadow-xl">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
