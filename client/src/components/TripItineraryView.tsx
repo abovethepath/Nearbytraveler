@@ -285,11 +285,12 @@ export default function TripItineraryView({
   });
 
   const { data: userMeetups = [] } = useQuery<any[]>({
-    queryKey: ['/api/quick-meetups/user', userId],
+    queryKey: ['/api/quick-meets', userId],
     queryFn: async () => {
-      const response = await fetch(`${getApiBaseUrl()}/api/quick-meetups/user/${userId}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/quick-meets?userId=${userId}`);
       if (!response.ok) return [];
-      return response.json();
+      const data = await response.json();
+      return data.meetups || [];
     },
     enabled: isOwnProfile
   });

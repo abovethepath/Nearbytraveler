@@ -33,7 +33,7 @@ export function MeetupAlertBanner({ userId }: MeetupAlertBannerProps) {
   });
 
   const { data: quickMeetupsData } = useQuery<{ meetups: any[] }>({
-    queryKey: ['/api/quick-meetups'],
+    queryKey: ['/api/quick-meets'],
     enabled: !!userId,
     refetchInterval: 60000,
   });

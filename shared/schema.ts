@@ -1070,35 +1070,6 @@ export const vouches = pgTable("vouches", {
   unique().on(table.voucherUserId, table.vouchedUserId, table.vouchCategory), // One vouch per category per user pair
 ]);
 
-// Local hangouts table (spontaneous meetups)
-export const hangouts = pgTable("hangouts", {
-  id: serial("id").primaryKey(),
-  hostId: integer("host_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  category: text("category").notNull(), // 'coffee', 'drinks', 'food', 'sightseeing', 'nightlife', 'outdoor', 'cultural', 'sports'
-  location: text("location").notNull(),
-  meetingPoint: text("meeting_point").notNull(),
-  datetime: timestamp("datetime").notNull(),
-  maxParticipants: integer("max_participants").notNull().default(4),
-  currentParticipants: integer("current_participants").default(1), // Host counts as first participant
-  isPublic: boolean("is_public").default(true),
-  requirements: text("requirements"),
-  costEstimate: text("cost_estimate"),
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// Hangout participants table
-export const hangoutParticipants = pgTable("hangout_participants", {
-  id: serial("id").primaryKey(),
-  hangoutId: integer("hangout_id").notNull().references(() => hangouts.id, { onDelete: "cascade" }),
-  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  status: text("status").default("joined"), // 'joined', 'left', 'pending'
-  joinedAt: timestamp("joined_at").defaultNow(),
-}, (table) => [
-  unique().on(table.hangoutId, table.userId), // One participation record per user per hangout
-]);
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
