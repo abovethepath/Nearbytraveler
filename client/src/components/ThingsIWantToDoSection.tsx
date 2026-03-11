@@ -573,22 +573,6 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   // Display: city name only, no labels like "Hometown" or "My Hometown"
   const hometownDisplayName = consolidateCity(userProfile?.hometownCity || hometownCityKey || (isOwnProfile ? 'Add your city' : ''));
 
-  // Current destination - only when user is actively traveling (startDate <= now <= endDate)
-  const { isCurrentlyTraveling, currentDestination } = useMemo(() => {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    for (const dest of travelDestinations) {
-      const start = new Date(dest.startDate);
-      const end = new Date(dest.endDate);
-      end.setHours(23, 59, 59, 999);
-      if (start <= now && end >= now && !dest.isPast) {
-        return { isCurrentlyTraveling: true, currentDestination: dest };
-      }
-    }
-    return { isCurrentlyTraveling: false, currentDestination: null };
-  }, [travelDestinations]);
-
-  const currentDestCityKey = currentDestination ? consolidateCity(currentDestination.cityName) : '';
 
   if (loadingCityActivities || loadingJoinedEvents || loadingEventInterests || loadingTravelPlans || loadingProfile) {
     return (
@@ -831,10 +815,26 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   } else {
     rowsToShow.push({ key: '', displayName: hometownDisplayName, isDestination: false });
   }
-  // Row 2: Current destination - only if currently traveling (and not same as hometown)
-  if (isCurrentlyTraveling && currentDestCityKey && !addedKeys.has(currentDestCityKey)) {
-    rowsToShow.push({ key: currentDestCityKey, displayName: consolidateCity(currentDestination!.cityName), isDestination: true });
-    addedKeys.add(currentDestCityKey);
+  // Row 2+: All non-past travel destinations (current AND upcoming), even if empty,
+  // so users can add plans for their destination before/during their trip.
+  // Sort: currently-active trips first, then upcoming by start date.
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const nonPastDests = travelDestinations
+    .filter(dest => !dest.isPast)
+    .sort((a, b) => {
+      const aActive = new Date(a.startDate) <= now;
+      const bActive = new Date(b.startDate) <= now;
+      if (aActive && !bActive) return -1;
+      if (!aActive && bActive) return 1;
+      return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+    });
+  for (const dest of nonPastDests) {
+    const key = consolidateCity(dest.cityName);
+    if (key && !addedKeys.has(key)) {
+      rowsToShow.push({ key, displayName: consolidateCity(dest.cityName), isDestination: true });
+      addedKeys.add(key);
+    }
   }
   // Rows 3+: All other cities with activities or events (future trips, past trips, etc.)
   cities.forEach(cityKey => {
