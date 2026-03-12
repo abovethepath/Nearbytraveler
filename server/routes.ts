@@ -24829,7 +24829,7 @@ Questions? Just reply to this message. Welcome aboard!
       // and only those that are still active and not yet expired.
       // This prevents: (a) showing expired rooms, (b) showing rooms the user
       // was never a member of, (c) bleeding old conversations into new sessions.
-      const memberRows = await db.select({ chatroomId: chatroomMembers.chatroomId })
+      const memberRows = await db.select({ chatroomId: chatroomMembers.chatroomId, lastReadAt: chatroomMembers.lastReadAt })
         .from(chatroomMembers)
         .where(and(
           eq(chatroomMembers.userId, uid),
@@ -24837,6 +24837,11 @@ Questions? Just reply to this message. Welcome aboard!
         ));
 
       const myChatroomIds = memberRows.map(r => r.chatroomId);
+      // Build lastReadAt lookup per chatroom for this user
+      const lastReadByRoom: Record<number, Date> = {};
+      for (const row of memberRows) {
+        lastReadByRoom[row.chatroomId] = row.lastReadAt ?? new Date(0);
+      }
 
       if (myChatroomIds.length === 0) {
         return res.json([]);
@@ -24873,6 +24878,21 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
+      // Count unread messages per chatroom (messages sent after user's lastReadAt)
+      const unreadByRoom: Record<number, number> = {};
+      if (chatroomIds.length > 0) {
+        await Promise.all(chatroomIds.map(async (cid) => {
+          const lastRead = lastReadByRoom[cid] ?? new Date(0);
+          const [row] = await db.select({ count: sql<number>`count(*)` })
+            .from(meetupChatroomMessages)
+            .where(and(
+              eq(meetupChatroomMessages.meetupChatroomId, cid),
+              gt(meetupChatroomMessages.sentAt, lastRead),
+            ));
+          unreadByRoom[cid] = Number(row?.count ?? 0);
+        }));
+      }
+
       const result = chatrooms.map(c => {
         const isExpired = c.expiresAt && new Date(c.expiresAt) < new Date();
         const latest = latestMessages[c.id];
@@ -24884,6 +24904,7 @@ Questions? Just reply to this message. Welcome aboard!
           lastMessageUsername: latest?.username || null,
           lastMessageTime: latest?.sentAt || c.createdAt,
           lastMessageType: latest?.messageType || null,
+          unreadCount: unreadByRoom[c.id] ?? 0,
         };
       });
 
@@ -24913,6 +24934,28 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error("Error dismissing chatroom:", error);
       return res.status(500).json({ error: "Failed to dismiss chatroom" });
+    }
+  });
+
+  // Mark all messages in a meetup chatroom as read for the current user
+  app.post("/api/meetup-chatrooms/:chatroomId/mark-read", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      if (!chatroomId) return res.status(400).json({ error: "Invalid chatroom ID" });
+
+      await db.update(chatroomMembers)
+        .set({ lastReadAt: new Date() })
+        .where(and(
+          eq(chatroomMembers.chatroomId, chatroomId),
+          eq(chatroomMembers.userId, Number(userId))
+        ));
+
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error marking chatroom as read:", error);
+      return res.status(500).json({ error: "Failed to mark as read" });
     }
   });
 

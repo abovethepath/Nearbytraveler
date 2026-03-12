@@ -837,9 +837,16 @@ export default function Messages() {
                           className={`group ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
                             isSelected
                               ? 'bg-gradient-to-r from-orange-500 to-orange-600 border-l-4 border-l-orange-300 shadow-lg text-white'
-                              : 'hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-l-4 hover:border-l-orange-400'
+                              : mc.unreadCount > 0
+                                ? 'bg-white/70 dark:bg-gray-800/40 border-l-4 border-l-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20'
+                                : 'hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-l-4 hover:border-l-orange-400'
                           }`}
                           onClick={() => {
+                            // Optimistically clear unread badge in cache, then confirm via server
+                            queryClient.setQueryData(['/api/meetup-chatrooms/mine'], (old: any[]) =>
+                              Array.isArray(old) ? old.map(r => r.id === mc.id ? { ...r, unreadCount: 0 } : r) : old
+                            );
+                            apiRequest('POST', `/api/meetup-chatrooms/${mc.id}/mark-read`).catch(() => {});
                             if (window.innerWidth < 1024) {
                               navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`);
                             } else {
@@ -857,11 +864,18 @@ export default function Messages() {
                             </div>
                             <div className="flex-1 min-w-0 overflow-hidden">
                               <div className="flex items-center gap-2 min-w-0">
-                                <h3 className={`text-sm truncate font-semibold ${
-                                  isSelected ? 'text-white' : 'text-gray-900 dark:text-white'
+                                <h3 className={`text-sm truncate ${
+                                  isSelected ? 'text-white font-semibold' : mc.unreadCount > 0 ? 'text-gray-900 dark:text-white font-extrabold' : 'text-gray-900 dark:text-white font-semibold'
                                 }`}>
                                   {mc.chatroomName || 'Meetup Chat'}
                                 </h3>
+                                {mc.unreadCount > 0 && !isSelected && (
+                                  <span
+                                    className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 shrink-0"
+                                    aria-label="Unread messages"
+                                    title="Unread messages"
+                                  />
+                                )}
                                 <span className={`text-[10px] px-2 py-0.5 rounded-full shrink-0 font-bold text-white shadow-sm ${
                                   isSelected
                                     ? 'bg-white/20'
