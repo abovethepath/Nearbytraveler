@@ -323,6 +323,26 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           }}
         />
       )}
+      {showHint && isDesktopHero && (
+        <div
+          style={{
+            marginTop: '6px',
+            fontSize: '11px',
+            fontWeight: 700,
+            fontStyle: 'italic',
+            whiteSpace: 'nowrap',
+            color: '#ffffff',
+            textShadow: '0 1px 4px rgba(0,0,0,0.9)',
+            background: 'rgba(0,0,0,0.45)',
+            padding: '3px 12px',
+            borderRadius: '20px',
+            display: 'inline-block',
+            pointerEvents: 'none',
+          }}
+        >
+          ↑ Click a tab to open
+        </div>
+      )}
     </div>
   );
 }
