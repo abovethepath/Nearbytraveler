@@ -2379,14 +2379,21 @@ export function ProfileDialogs(props: ProfilePageProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Expanded Profile Photo Modal - Only for viewing other users' profiles */}
+      {/* Expanded Profile Photo Modal */}
       <Dialog open={showExpandedPhoto} onOpenChange={setShowExpandedPhoto}>
-        <DialogContent className="max-w-[90vw] sm:max-w-2xl md:max-w-3xl lg:max-w-4xl max-h-[90vh] overflow-y-auto p-2 sm:p-4 bg-black/95 border-gray-700">
+        <DialogContent
+          className="max-w-[90vw] sm:max-w-2xl md:max-w-3xl lg:max-w-4xl max-h-[90vh] overflow-y-auto p-2 sm:p-4 bg-black/95 border-gray-700"
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onInteractOutside={(e) => e.preventDefault()}
+        >
           <DialogHeader className="sr-only">
             <DialogTitle>Profile Photo</DialogTitle>
             <DialogDescription>Enlarged view of {user?.username}'s profile photo</DialogDescription>
           </DialogHeader>
-          <div className="flex items-center justify-center w-full">
+          <div
+            className="flex items-center justify-center w-full cursor-pointer"
+            onClick={() => setShowExpandedPhoto(false)}
+          >
             {user?.profileImage ? (
               <img
                 src={user.profileImage}
@@ -2403,6 +2410,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
           </div>
           <div className="text-center mt-2">
             <p className="text-white text-lg font-semibold">@{user?.username}</p>
+            <p className="text-white/50 text-xs mt-1">Tap photo or press X to close</p>
           </div>
         </DialogContent>
       </Dialog>
