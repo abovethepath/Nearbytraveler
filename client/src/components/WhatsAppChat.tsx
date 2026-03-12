@@ -1057,14 +1057,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           console.warn('⚠️ WhatsApp Chat: Immediate HTTP load failed for DM with status:', response.status);
           setMessagesLoaded(true);
         } else {
-          console.warn('⚠️ WhatsApp Chat: Immediate HTTP load failed with status:', response.status);
-          setLoadError((prev) => prev || `Couldn't load this chat (HTTP ${response.status}).`);
+          // Immediate load failed — silently let WebSocket take over, don't flash an error
+          console.warn('⚠️ WhatsApp Chat: Immediate HTTP load failed with status:', response.status, '— WebSocket will retry');
         }
       } catch (error) {
+        // Immediate load failed — silently let WebSocket take over, don't flash an error
         console.warn('⚠️ WhatsApp Chat: Immediate HTTP load failed, will use WebSocket:', error);
-        if (chatType !== 'dm') {
-          setLoadError((prev) => prev || "Couldn't load this chat. Please try again.");
-        }
         if (chatType === 'dm') {
           // DM-specific resilience: allow user to type/send even if history fetch fails
           setMessagesLoaded(true);
