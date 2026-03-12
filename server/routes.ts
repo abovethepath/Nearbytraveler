@@ -2154,49 +2154,20 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const startTime = Date.now();
       if (process.env.NODE_ENV === 'development') console.log("⚡ OPTIMIZED CITY STATS: Starting fast query...");
 
-      // PERFORMANCE FIX: Single optimized query that gets all cities with their state/country in ONE query
-      // This replaces the slow UNION + N queries per city approach
+      // city_pages is the single authoritative source for the city grid.
+      // Removing the secondary UNIONs from users/travel_plans prevents deleted
+      // cities from reappearing just because a user has that city as their hometown
+      // or travel destination.  Admins control the list via city_pages only.
       const citiesWithLocation = await db.execute(sql`
-        WITH city_data AS (
-          -- Get all cities from city_pages (most reliable source for state/country)
-          SELECT DISTINCT 
-            city as city_name,
-            state,
-            country
-          FROM city_pages
-          WHERE city IS NOT NULL 
-            AND city != '' 
-            AND city NOT IN ('Test City', 'Global', 'test city', 'global')
-          
-          UNION
-          
-          -- Get cities from users table where no city_pages entry exists
-          SELECT DISTINCT 
-            hometown_city as city_name,
-            hometown_state as state,
-            hometown_country as country
-          FROM users
-          WHERE hometown_city IS NOT NULL 
-            AND hometown_city != ''
-            AND hometown_city NOT IN ('Test City', 'Global', 'test city', 'global')
-            AND hometown_city NOT IN (SELECT city FROM city_pages WHERE city IS NOT NULL)
-          
-          UNION
-          
-          -- Get cities from travel_plans (user's planned destinations)
-          SELECT DISTINCT 
-            destination_city as city_name,
-            destination_state as state,
-            destination_country as country
-          FROM travel_plans
-          WHERE destination_city IS NOT NULL 
-            AND destination_city != ''
-            AND destination_city NOT IN ('Test City', 'Global', 'test city', 'global')
-        )
-        SELECT city_name, state, country
-        FROM city_data
-        WHERE city_name IS NOT NULL AND city_name != ''
-        ORDER BY city_name
+        SELECT DISTINCT 
+          city  AS city_name,
+          state,
+          country
+        FROM city_pages
+        WHERE city IS NOT NULL 
+          AND city != '' 
+          AND city NOT IN ('Test City', 'Global', 'test city', 'global')
+        ORDER BY city
       `);
 
       if (citiesWithLocation.rows.length === 0) {
@@ -21439,6 +21410,9 @@ Questions? Just reply to this message. Welcome aboard!
         results.push(`✅ Sofia: ${inserted}/${activityNames.length} city interests added for ${cityName}`);
       }
 
+      // Clear the city-stats cache so the grid reflects the updated city_pages list immediately
+      await cache.delete("city-stats:all");
+
       res.json({ success: true, results });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -21513,7 +21487,19 @@ Questions? Just reply to this message. Welcome aboard!
           results.push(`❌ ${cityName}: ${err.message}`);
         }
       }
+      // Clear city-stats cache so the discover grid picks up the refreshed data
+      await cache.delete("city-stats:all");
       res.json({ results });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // POST flush city-stats cache (admin utility — call after manually editing city_pages)
+  app.post("/api/admin/flush-city-cache", async (req, res) => {
+    try {
+      await cache.delete("city-stats:all");
+      res.json({ success: true, message: "city-stats:all cache cleared — next /api/city-stats request will rebuild from city_pages" });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
