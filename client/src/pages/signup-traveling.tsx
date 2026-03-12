@@ -344,12 +344,25 @@ export default function SignupTraveling() {
           const errorMsg = data.message || "Unknown server error";
           setDebugError("API ERROR: " + errorMsg);
           setDebugStatus("Registration failed - see error above");
-          alert('Registration failed: ' + errorMsg);
-          toast({
-            title: "Registration failed",
-            description: errorMsg,
-            variant: "destructive",
-          });
+
+          // If the error is email-related, send them back to the account step with the error highlighted
+          const isEmailError = /email/i.test(errorMsg) || /already.*use/i.test(errorMsg) || /exist/i.test(errorMsg);
+          if (isEmailError) {
+            sessionStorage.setItem('emailError', 'This email is already in use. Please enter a different email address.');
+            toast({
+              title: "Email already in use",
+              description: "Taking you back to update your email…",
+              variant: "destructive",
+            });
+            await new Promise(r => setTimeout(r, 800));
+            setLocation('/signup/account');
+          } else {
+            toast({
+              title: "Registration failed",
+              description: errorMsg,
+              variant: "destructive",
+            });
+          }
         }
       } catch (error: any) {
         console.error('❌ Registration error:', error);

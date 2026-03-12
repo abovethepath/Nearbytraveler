@@ -35,6 +35,7 @@ export default function SignupAccount() {
   const [phoneChecking, setPhoneChecking] = useState(false);
   const [phoneInUse, setPhoneInUse] = useState(false);
   const [phoneLastCheckedDigits, setPhoneLastCheckedDigits] = useState<string>("");
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   useEffect(() => {
     // Check for QR code flow first (intendedUserType), then regular flow (selectedUserType)
@@ -48,6 +49,28 @@ export default function SignupAccount() {
       return;
     }
     setUserType(effectiveUserType);
+
+    // If we were bounced back here due to an email error, restore the email and show the error
+    const pendingEmailError = sessionStorage.getItem('emailError');
+    if (pendingEmailError) {
+      sessionStorage.removeItem('emailError');
+      setEmailError(pendingEmailError);
+      // Restore the email that was already entered
+      const storedAccount = sessionStorage.getItem('accountData');
+      if (storedAccount) {
+        try {
+          const acc = JSON.parse(storedAccount);
+          if (acc.email) {
+            setFormData(prev => ({ ...prev, email: acc.email }));
+          }
+        } catch (_) {}
+      }
+      // Scroll to email field
+      setTimeout(() => {
+        document.getElementById('email')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('email')?.focus();
+      }, 300);
+    }
   }, [setLocation]);
 
   const checkUsernameAvailability = async (username: string) => {
@@ -417,11 +440,19 @@ export default function SignupAccount() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                    if (emailError) setEmailError(null);
+                  }}
                   placeholder="your@email.com"
-                  className="text-base py-3"
+                  className={`text-base py-3 ${emailError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                   required
                 />
+                {emailError && (
+                  <p className="mt-1.5 text-sm text-red-600 dark:text-red-400 flex items-center gap-1.5">
+                    <span>⚠️</span> {emailError}
+                  </p>
+                )}
               </div>
 
               <div>
