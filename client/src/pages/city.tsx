@@ -21,6 +21,7 @@ import { CityMap } from "@/components/CityMap";
 import { SecretExperiencesWidget } from "@/components/SecretExperiencesWidget";
 import { AICityGuideWidget } from "@/components/AICityGuideWidget";
 import { CityArrivalsWidget } from "@/components/CityArrivalsWidget";
+import { CityLiveFeed } from "@/components/CityLiveFeed";
 import { useAuth } from "@/App";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import type { User, Event } from "@shared/schema";
@@ -369,6 +370,11 @@ export default function CityPage({ cityName }: CityPageProps) {
                 <CityArrivalsWidget cityName={parsedCityName} />
               </div>
 
+              {/* City Live Feed — mobile only (also in sidebar for desktop) */}
+              <div className="lg:hidden mb-4">
+                <CityLiveFeed cityName={parsedCityName} />
+              </div>
+
               {/* Discover and Connect Section */}
               <div id="people-section" className="mb-6 sm:mb-8">
                 <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row justify-between items-start sm:items-center mb-6">
@@ -655,6 +661,12 @@ export default function CityPage({ cityName }: CityPageProps) {
                 <div className="hidden lg:block">
                   <CityArrivalsWidget cityName={parsedCityName} />
                 </div>
+
+                {/* City Live Feed — desktop sidebar */}
+                <div className="hidden lg:block">
+                  <CityLiveFeed cityName={parsedCityName} />
+                </div>
+
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
                   <WeatherWidget 
                     city={parsedCityName === 'Los Angeles Metro' ? 'Los Angeles' : parsedCityName} 

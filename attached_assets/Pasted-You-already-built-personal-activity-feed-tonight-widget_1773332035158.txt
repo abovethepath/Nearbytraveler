@@ -1,0 +1,177 @@
+You already built:
+
+personal activity feed
+
+tonight widget
+
+arrivals
+
+saved traveler system
+
+available now
+
+events
+
+But you do NOT yet have a true public “City Live Feed.”
+
+So here is the next single prompt you should give Replit.
+
+Just use this. Nothing else.
+
+✅ Replit Prompt — Build City Live Feed
+I want to build a lightweight MVP “City Live Feed” feature in Nearby Traveler.
+
+IMPORTANT:
+First inspect the current codebase before building.
+Do not refactor unrelated code.
+Reuse existing activity_log, events, travel_plans, and available_now infrastructure.
+Keep MVP simple, safe, and mobile-first.
+
+GOAL:
+Make city pages and the home page feel alive by showing recent real activity happening in the user’s current city.
+
+This is NOT the personal ActivityFeed.
+This is a PUBLIC city activity stream.
+
+Examples of feed items:
+- A traveler just arrived in the city
+- Someone created an event
+- Someone went Available Now
+- Someone joined an event
+- Someone new joined the city community
+
+==================================================
+STEP 1 — AUDIT EXISTING ACTIVITY DATA
+==================================================
+
+First inspect and report:
+
+1. What activity is already written into activity_log
+2. Whether activity_log entries include city or can infer city
+3. Where writeActivityLog is currently called
+4. Which useful actions are NOT yet logged:
+   - event creation
+   - travel plan creation
+   - available now activation
+   - city community join
+5. Whether events, travel plans, and available_now tables already contain city data usable for feed display
+
+Do not build yet until audit is complete.
+
+==================================================
+STEP 2 — ENRICH ACTIVITY LOGGING (LIGHT TOUCH)
+==================================================
+
+Add writeActivityLog calls ONLY where safe and simple:
+
+- When an event is created
+- When a user creates or updates a travel plan
+- When a user goes Available Now
+
+Each log entry should include:
+- action type (event_created, travel_plan_created, went_available_now)
+- title / short description
+- relatedId if available
+- linkUrl to event/profile if route exists
+- city (explicit column if activity_log already has one, otherwise include in description for MVP)
+
+Do NOT redesign activity_log schema unless absolutely necessary.
+
+==================================================
+STEP 3 — CREATE CITY FEED ENDPOINT
+==================================================
+
+Create a new backend endpoint:
+
+GET /api/city-live-feed/:city
+
+This endpoint should:
+
+- Return recent activity in that city from the last 24 hours
+- Combine activity_log entries and optionally direct event/travel queries if needed
+- Limit results to around 20 items
+- Sort newest first
+- Gracefully handle no data
+
+If activity_log does not store city explicitly,
+infer city using:
+- event city
+- travel plan destination city
+- available_now city
+
+Reuse existing query utilities where possible.
+
+==================================================
+STEP 4 — BUILD CityLiveFeed COMPONENT
+==================================================
+
+Create a new frontend component:
+CityLiveFeed.tsx
+
+Design:
+- compact scrolling feed
+- each item shows:
+  - avatar
+  - short action text (example: “Mike just arrived from Austin”)
+  - small timestamp
+  - optional click navigation to profile or event
+
+Behavior:
+- show feed if items exist
+- hide cleanly if empty
+- mobile-friendly vertical cards or list
+- poll every 5 minutes (no websocket needed for MVP)
+
+==================================================
+STEP 5 — PLACEMENT
+==================================================
+
+Place CityLiveFeed:
+
+Primary:
+- On city page near the top, below arrivals widget or stats section
+
+Optional secondary:
+- Small version on home page under “Tonight in [City]”
+
+Do NOT move or refactor large existing homepage sections.
+
+==================================================
+STEP 6 — DELIVERABLES
+==================================================
+
+After building, tell me:
+
+1. files changed
+2. what actions are now logged
+3. how city scoping works
+4. where the feed appears
+5. any limitations due to current schema
+6. suggestions for phase-2 real-time improvements
+
+==================================================
+RULES
+==================================================
+
+- Inspect first, then build
+- Keep MVP lightweight
+- No big schema redesign
+- No unrelated refactors
+- No fake activity data
+- Clean empty states
+⭐ What this will do for your product
+
+This is the feature that will:
+
+make cities feel alive
+
+create scroll behavior
+
+show social proof
+
+increase session time
+
+make new users think
+👉 “oh wow things are actually happening here”
+
+It is one of the most important remaining product upgrades.

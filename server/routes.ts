@@ -3180,6 +3180,104 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   });
 
   // City Pulse - real-time activity stats for a city
+  // ── City Live Feed ────────────────────────────────────────────────────────
+  // Returns a blended stream of real activity happening in a city (last 24h).
+  // Sources: event_created (activity_log), traveler_arrived (travel_plans),
+  //          went_available_now (available_now), event_rsvp (activity_log + events).
+  app.get("/api/city-live-feed/:city", async (req, res) => {
+    try {
+      const city = decodeURIComponent(req.params.city || '').trim();
+      if (!city) return res.status(400).json({ message: "city required" });
+
+      const rows = await db.execute(sql`
+        WITH feed AS (
+          -- Source 1: Events created in this city (last 24 h)
+          SELECT
+            'event_created'::text        AS feed_type,
+            e.id                         AS related_id,
+            e.title                      AS related_title,
+            e.organizer_id               AS user_id,
+            e.created_at                 AS created_at,
+            '/events/' || e.id           AS link_url
+          FROM events e
+          WHERE lower(e.city) = lower(${city})
+            AND e.created_at > now() - interval '24 hours'
+            AND e.is_active = true
+            AND e.is_public = true
+
+          UNION ALL
+
+          -- Source 2: Traveler arrivals (travel plans starting within last 48 h)
+          SELECT
+            'traveler_arrived'::text                         AS feed_type,
+            tp.id                                            AS related_id,
+            COALESCE(tp.destination, tp.destination_city)    AS related_title,
+            tp.user_id                                       AS user_id,
+            COALESCE(tp.start_date, tp.created_at)           AS created_at,
+            '/profile/' || tp.user_id                        AS link_url
+          FROM travel_plans tp
+          WHERE lower(tp.destination_city) = lower(${city})
+            AND tp.start_date >= now() - interval '48 hours'
+            AND tp.start_date <= now() + interval '24 hours'
+
+          UNION ALL
+
+          -- Source 3: Available Now activations in this city (still active, created last 24 h)
+          SELECT
+            'went_available_now'::text   AS feed_type,
+            an.id                        AS related_id,
+            an.custom_note               AS related_title,
+            an.user_id                   AS user_id,
+            an.created_at                AS created_at,
+            '/quick-meetups'             AS link_url
+          FROM available_now an
+          WHERE lower(an.city) = lower(${city})
+            AND an.is_available = true
+            AND an.expires_at > now()
+            AND an.created_at > now() - interval '24 hours'
+
+          UNION ALL
+
+          -- Source 4: Event RSVPs for events in this city (last 24 h)
+          SELECT
+            al.action::text              AS feed_type,
+            al.related_id                AS related_id,
+            al.related_title             AS related_title,
+            al.user_id                   AS user_id,
+            al.created_at                AS created_at,
+            al.link_url                  AS link_url
+          FROM activity_log al
+          JOIN events e ON al.related_id = e.id
+          WHERE al.action IN ('event_rsvp', 'event_interested')
+            AND lower(e.city) = lower(${city})
+            AND al.created_at > now() - interval '24 hours'
+        )
+        SELECT
+          f.feed_type,
+          f.related_id,
+          f.related_title,
+          f.user_id,
+          f.created_at,
+          f.link_url,
+          u.username,
+          u.profile_image,
+          u.user_type,
+          u.name,
+          u.first_name
+        FROM feed f
+        JOIN users u ON f.user_id = u.id
+        WHERE u.id != 2
+        ORDER BY f.created_at DESC
+        LIMIT 20
+      `);
+
+      res.json(rows.rows || []);
+    } catch (err: any) {
+      console.error("[city-live-feed] error:", err.message);
+      res.status(500).json({ error: "Failed to load city live feed" });
+    }
+  });
+
   app.get("/api/city-pulse", async (req, res) => {
     try {
       const city = (req.query.city as string || '').trim();
@@ -9264,7 +9362,24 @@ Questions? Just reply to this message. Welcome aboard!
       } catch (auraError) {
         if (process.env.NODE_ENV === 'development') console.error('Error awarding aura for travel plan:', auraError);
       }
-      
+
+      // Log travel plan creation to activity feed (used by city live feed)
+      try {
+        if (newTravelPlan.destinationCity) {
+          writeActivityLog({
+            userId: travelPlanData.userId,
+            action: "travel_plan_created",
+            category: "all",
+            title: `Planning a trip to ${newTravelPlan.destinationCity}`,
+            description: `Heading to ${newTravelPlan.destination || newTravelPlan.destinationCity}`,
+            relatedId: newTravelPlan.id,
+            relatedType: "travel_plan",
+            relatedTitle: newTravelPlan.destinationCity,
+            linkUrl: `/profile/${travelPlanData.userId}`,
+          });
+        }
+      } catch {}
+
       // Automatically set up city infrastructure for travel destination using new ensure endpoint
       if (travelPlanData.destinationCity && travelPlanData.destinationCountry) {
         try {
@@ -14173,6 +14288,21 @@ Questions? Just reply to this message. Welcome aboard!
       
       // Award 1 aura point for creating an event
       await awardAuraPoints(newEvent.organizerId, 1, 'creating an event');
+
+      // Log event creation to activity feed (used by city live feed)
+      try {
+        writeActivityLog({
+          userId: newEvent.organizerId,
+          action: "event_created",
+          category: "events",
+          title: `Created an event: ${newEvent.title}`,
+          description: `New event in ${newEvent.city}`,
+          relatedId: newEvent.id,
+          relatedType: "event",
+          relatedTitle: newEvent.title,
+          linkUrl: `/events/${newEvent.id}`,
+        });
+      } catch {}
 
       // Ambassador program: award points for creating an event (ambassadors only)
       try {
