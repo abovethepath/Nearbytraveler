@@ -596,16 +596,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               </button>
                             )}
 
-                            {currentUser?.id && user?.id && currentUser.id !== user.id && (
-                              <VouchButton
-                                currentUserId={currentUser.id}
-                                targetUserId={user.id}
-                                targetUsername={user.username}
-                                hideWhenDisabled={true}
-                                appearance="ghost"
-                                className="rounded-lg shadow-sm px-5 h-8 text-[13px] font-bold"
-                              />
-                            )}
                           </div>
 
                         </div>
@@ -1208,9 +1198,19 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   <span>{isSaved ? "Saved" : "Save"}</span>
                                 </button>
                               )}
-                              {/* Other user's profile: share + report — desktop only (mobile has these in the About section below) */}
+                              {/* Other user's profile: vouch + share + report — desktop only (mobile has these in the About section below) */}
                               {!isMobileWeb && (
                                 <>
+                                  {currentUser?.id && user?.id && (
+                                    <VouchButton
+                                      currentUserId={currentUser.id}
+                                      targetUserId={user.id}
+                                      targetUsername={user.username}
+                                      hideWhenDisabled={true}
+                                      appearance="ghost"
+                                      className="rounded-lg px-3 h-7 text-[12px] font-semibold"
+                                    />
+                                  )}
                                   {shareButton(true)}
                                   {user && (
                                     currentUser ? (

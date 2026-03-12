@@ -743,6 +743,14 @@ export function ProfileTabs(props: ProfilePageProps) {
 
                   {!isOwnProfile && user && currentUser && (
                     <div className="flex items-center gap-3 shrink-0">
+                      <VouchButton
+                        currentUserId={currentUser.id}
+                        targetUserId={user.id}
+                        targetUsername={user.username}
+                        hideWhenDisabled={true}
+                        appearance="ghost"
+                        className="rounded-lg px-3 h-7 text-[12px] font-semibold"
+                      />
                       <button
                         type="button"
                         onClick={() => {
