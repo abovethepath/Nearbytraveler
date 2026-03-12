@@ -1,0 +1,220 @@
+I want you to build the BEST next engagement feature for Nearby Traveler based on the audit you just completed.
+
+We are NOT doing a big refactor.
+We are NOT rebuilding the entire feed system.
+We are going for the highest retention lift with the lowest engineering effort.
+
+Build these in this exact order:
+
+PHASE 1
+1. Tonight in [City] widget
+2. Available Now in your city push notification
+
+PHASE 2
+3. People You Almost Met
+
+IMPORTANT RULES:
+- Reuse existing code and queries wherever possible
+- Do not refactor unrelated code
+- Do not break current widgets
+- Keep MVP lightweight and mobile-first
+- Use actual existing architecture from the audit
+- Handle empty states cleanly
+- Keep copy polished and user-friendly
+- Build safely and incrementally
+
+==================================================
+PHASE 1A — BUILD "TONIGHT IN [CITY]" WIDGET
+==================================================
+
+Goal:
+Create a focused home-page widget that makes the city feel alive right now.
+
+This should NOT just duplicate the general events feed.
+It should feel urgent, time-sensitive, and action-oriented.
+
+Use existing data sources identified in the audit:
+- events table
+- available_now table
+- travel_plans table
+- any existing city utility/query logic already used by CityPulse and CityArrivalsWidget
+
+Create:
+
+New backend endpoint:
+GET /api/tonight/:city
+
+Return:
+- tonightEvents: up to 5 events happening tonight in that city
+- availableNowCount: count of users currently open to meet now in that city
+- hereNowTravelers: up to 8 travelers currently in that city now
+
+Definitions:
+- “Tonight” should be time-sensitive and based on current local date/time logic already used in app if available
+- If no local city timezone logic exists yet, use the app’s current date handling and keep implementation simple/safe
+- “Here now” = travel_plans where current date is between startDate and endDate
+
+Frontend:
+Create a new component:
+TonightWidget.tsx
+
+Widget sections:
+1. Header:
+- “Tonight in [City]”
+- subtext like: “See what’s happening right now”
+
+2. Events Tonight
+- show up to 5
+- each item links to event detail if route exists
+
+3. Open to Meet Right Now
+- show count as a prominent pill/card
+- CTA button to Available Now / Quick Meetups area or existing relevant route
+
+4. Here Right Now
+- avatar strip or compact user row from current travelers in city
+- clicking should go to profile if route exists
+
+Placement:
+- Put this high on the home page, above lower-priority widgets
+- It should feel like a primary urgency widget, not buried below the fold if possible
+
+Behavior:
+- show widget if any one of the three sections has data
+- if all are empty, hide the widget cleanly
+- reuse existing card styles / UI system / spacing / theme
+- poll or refetch every 10 minutes max
+- no websocket needed for MVP
+
+Empty state behavior:
+- If only one or two sections have data, still show the widget
+- Do not show ugly empty boxes
+
+==================================================
+PHASE 1B — ADD "AVAILABLE NOW IN YOUR CITY" PUSH TRIGGER
+==================================================
+
+Goal:
+If someone goes Available Now in a user’s city, nearby users who opted into city activity alerts should get a push notification.
+
+Use:
+- existing push notification service
+- existing expo push token logic
+- existing cityActivityAlerts setting
+- existing available_now creation flow
+
+When a user becomes Available Now:
+- find other relevant users in the same city
+- only include users with:
+  - cityActivityAlerts enabled
+  - valid expoPushToken
+  - not the same user who created the availability
+- send push notification like:
+  “Someone is available to meet in [City] right now.”
+  or
+  “[FirstName] is available to meet in [City] right now.”
+Use whichever is safer and consistent with privacy patterns already in app
+
+Important:
+- do not spam
+- avoid duplicate pushes
+- keep MVP simple
+- if there is already anti-duplication logic, use it
+- if not, add minimal guardrails if easy
+
+Also:
+- write activity_log entry when a user goes Available Now
+This will help future city feed improvements
+
+==================================================
+PHASE 2 — BUILD "PEOPLE YOU ALMOST MET"
+==================================================
+
+Goal:
+Create an emotionally sticky missed-connection style module.
+
+Build ONLY the easiest MVP version from the audit:
+- same destination city
+- overlapping travel dates
+- not already connected
+
+Backend:
+Create endpoint:
+GET /api/people-almost-met
+
+Authenticated endpoint using current session user
+
+Logic:
+- find current user’s travel plans
+- match other users with overlapping travel plans in the same destination city
+- exclude current user
+- exclude users already connected
+- exclude duplicates
+- join users table for profile info
+
+Return for each result:
+- user id
+- username / display name
+- profile image
+- shared city
+- overlap date range or month label
+- hometown if easily available
+- any existing commonality fields if already safe/easy
+
+Frontend:
+Create component:
+PeopleAlmostMet.tsx
+
+Design:
+- compact cards
+- avatar
+- name
+- message like:
+  “You were both in Barcelona in March”
+  or
+  “You overlapped in Austin for 3 days”
+- CTA: View Profile / Connect
+
+Placement:
+- home page below Tonight widget or below arrivals widget
+- only show if results exist
+- mobile-friendly horizontal scroll or stacked cards
+
+MVP RULES:
+- do NOT use geolocation overlap
+- do NOT build event-attendance overlap yet
+- do NOT add schema changes unless absolutely necessary
+- no heavy analytics or ranking system for v1
+
+==================================================
+IMPLEMENTATION REQUIREMENTS
+==================================================
+
+Before coding:
+- inspect the actual files from your audit and reuse the best existing patterns
+- identify exact components/pages/routes to modify
+
+Likely relevant existing pieces from your audit:
+- CityPulse
+- CityArrivalsWidget
+- AvailableNowWidget
+- QuickMeetupWidget
+- ActivityFeed
+- writeActivityLog
+- notifications / push service
+- server/routes.ts
+- travel_plans / available_now / events / connections tables
+
+After building, give me:
+
+1. exact files changed
+2. what each new endpoint does
+3. where each new widget appears
+4. what existing code was reused
+5. any limitations or follow-up recommendations
+
+IMPORTANT:
+- Do not over-engineer
+- Do not create a whole new feed system
+- Do not redesign unrelated home page sections
+- Build the MVP version first and make it work cleanly

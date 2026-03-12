@@ -68,6 +68,8 @@ import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
 import LocationSortedEvents from "@/components/LocationSortedEvents";
 import NearbyTravelerSearchWidget from "@/components/NearbyTravelerSearchWidget";
 import { CityArrivalsWidget } from "@/components/CityArrivalsWidget";
+import { TonightWidget } from "@/components/TonightWidget";
+import { PeopleAlmostMet } from "@/components/PeopleAlmostMet";
 import { isLAMetroCity } from "@shared/constants";
 
 
@@ -2150,6 +2152,15 @@ export default function Home() {
           {/* Right Sidebar - Weather, Messages, Quick Meetups, Events */}
           <div className="col-span-1 space-y-6 sm:space-y-8 md:space-y-10 min-w-0 overflow-x-hidden max-w-full w-full">
 
+            {/* Tonight in [City] */}
+            {effectiveUser && (() => {
+              const rawCity = effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination
+                ? String(effectiveUser.travelDestination).split(',')[0]?.trim()
+                : effectiveUser.hometownCity;
+              const tonightCity = rawCity && isLAMetroCity(rawCity) ? 'Los Angeles' : rawCity;
+              return tonightCity ? <TonightWidget city={tonightCity} /> : null;
+            })()}
+
             {/* Who's Coming to Town */}
             {effectiveUser && (() => {
               const rawCity = effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination
@@ -2158,6 +2169,9 @@ export default function Home() {
               const arrivalsCity = rawCity && isLAMetroCity(rawCity) ? 'Los Angeles' : rawCity;
               return arrivalsCity ? <CityArrivalsWidget cityName={arrivalsCity} /> : null;
             })()}
+
+            {/* People You Almost Met */}
+            {effectiveUser?.userType !== 'business' && <PeopleAlmostMet />}
 
             {/* Available Now Widget - Hangout Mode (desktop sidebar only, mobile version is at top of main content) */}
             {!shouldDeferSecondarySections && effectiveUser?.userType !== 'business' && (

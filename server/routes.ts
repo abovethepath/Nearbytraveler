@@ -2941,6 +2941,81 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // GET /api/people-almost-met - Users who were in the same city at the same time but aren't connected
+  app.get("/api/people-almost-met", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const uid = Number(userId);
+
+      // Find travel plans from other users that overlap city + dates with the current user
+      const rows = await db.execute(sql`
+        SELECT DISTINCT
+          tp2.user_id AS "userId",
+          u.username,
+          u.first_name AS "firstName",
+          u.profile_image AS "profileImage",
+          u.hometown_city AS "hometownCity",
+          u.hometown_country AS "hometownCountry",
+          tp2.destination_city AS "sharedCity",
+          GREATEST(tp1.start_date, tp2.start_date) AS "overlapStart",
+          LEAST(tp1.end_date, tp2.end_date) AS "overlapEnd"
+        FROM travel_plans tp1
+        JOIN travel_plans tp2
+          ON LOWER(tp1.destination_city) = LOWER(tp2.destination_city)
+          AND tp1.start_date <= tp2.end_date
+          AND tp1.end_date >= tp2.start_date
+          AND tp2.user_id != ${uid}
+        JOIN users u ON tp2.user_id = u.id
+        LEFT JOIN connections c
+          ON (c.requester_id = ${uid} AND c.receiver_id = tp2.user_id)
+          OR (c.receiver_id = ${uid} AND c.requester_id = tp2.user_id)
+        WHERE tp1.user_id = ${uid}
+          AND c.id IS NULL
+          AND u.is_active = true
+        ORDER BY "overlapStart" DESC
+        LIMIT 15
+      `);
+
+      const results = ((rows as any).rows || []).map((r: any) => {
+        const overlapStart = r.overlapStart ? new Date(r.overlapStart) : null;
+        const overlapEnd = r.overlapEnd ? new Date(r.overlapEnd) : null;
+
+        let overlapLabel = r.sharedCity;
+        if (overlapStart) {
+          const month = overlapStart.toLocaleDateString(undefined, { month: "long" });
+          const year = overlapStart.getFullYear();
+          const now = new Date();
+          overlapLabel = year === now.getFullYear()
+            ? `${r.sharedCity} in ${month}`
+            : `${r.sharedCity} in ${month} ${year}`;
+        }
+
+        let daysOverlap: number | null = null;
+        if (overlapStart && overlapEnd) {
+          daysOverlap = Math.max(1, Math.round((overlapEnd.getTime() - overlapStart.getTime()) / (1000 * 60 * 60 * 24)));
+        }
+
+        return {
+          userId: r.userId,
+          username: r.username,
+          firstName: r.firstName,
+          profileImage: r.profileImage,
+          hometownCity: r.hometownCity,
+          hometownCountry: r.hometownCountry,
+          sharedCity: r.sharedCity,
+          overlapLabel,
+          daysOverlap,
+        };
+      });
+
+      res.json(results);
+    } catch (error: any) {
+      console.error("People almost met error:", error);
+      res.status(500).json({ error: "Failed to fetch people almost met" });
+    }
+  });
+
   // GET /api/cities/:city/overview - Get city overview data
   app.get("/api/cities/:city/overview", async (req, res) => {
     try {
@@ -3121,6 +3196,87 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     } catch (error: any) {
       console.error("Error fetching city pulse:", error);
       res.status(500).json({ message: "Failed to fetch city pulse" });
+    }
+  });
+
+  // Tonight in [City] endpoint
+  app.get("/api/tonight/:city", async (req, res) => {
+    try {
+      const city = decodeURIComponent(req.params.city).trim();
+      if (!city) return res.status(400).json({ message: "city required" });
+
+      const cacheKey = `tonight:${city.toLowerCase()}`;
+      const cached = await cache.get<any>(cacheKey);
+      if (cached) return res.json(cached);
+
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+      const cityLower = city.toLowerCase();
+
+      const [tonightEventsRows, availableCountRows, hereNowRows] = await Promise.all([
+        // Events happening today in this city
+        db.select({
+          id: events.id,
+          title: events.title,
+          date: events.date,
+          category: events.category,
+          venueName: events.venueName,
+          location: events.location,
+          imageUrl: events.imageUrl,
+        })
+          .from(events)
+          .where(and(
+            sql`LOWER(${events.city}) = ${cityLower}`,
+            gte(events.date, todayStart),
+            lt(events.date, todayEnd),
+            eq(events.isActive, true),
+          ))
+          .orderBy(events.date)
+          .limit(5),
+
+        // Count users currently open to meet
+        db.execute(sql`
+          SELECT COUNT(*)::int AS count FROM available_now
+          WHERE LOWER(city) = ${cityLower}
+            AND is_available = true
+            AND expires_at > ${now.toISOString()}
+        `),
+
+        // Travelers here right now (active travel plan)
+        db.select({
+          userId: travelPlans.userId,
+          username: users.username,
+          firstName: users.firstName,
+          profileImage: users.profileImage,
+          hometownCity: users.hometownCity,
+          hometownCountry: users.hometownCountry,
+          startDate: travelPlans.startDate,
+          endDate: travelPlans.endDate,
+        })
+          .from(travelPlans)
+          .innerJoin(users, eq(travelPlans.userId, users.id))
+          .where(and(
+            sql`LOWER(${travelPlans.destinationCity}) = ${cityLower}`,
+            lte(travelPlans.startDate, now),
+            gte(travelPlans.endDate, now),
+          ))
+          .limit(8),
+      ]);
+
+      const result = {
+        city,
+        tonightEvents: tonightEventsRows,
+        availableNowCount: (availableCountRows as any).rows?.[0]?.count || 0,
+        hereNowTravelers: hereNowRows,
+      };
+
+      // Cache for 10 minutes
+      await cache.set(cacheKey, result, 10 * 60);
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error fetching tonight data:", error);
+      res.status(500).json({ message: "Failed to fetch tonight data" });
     }
   });
 
@@ -23410,7 +23566,70 @@ Questions? Just reply to this message. Welcome aboard!
         expiresAt,
       }).returning();
 
+      // Respond immediately so the user doesn't wait on background tasks
       res.json(entry);
+
+      // Background: log activity + notify nearby users (fire-and-forget)
+      (async () => {
+        try {
+          // Get the user's display name for the push copy
+          const [actor] = await db.select({ firstName: users.firstName, username: users.username })
+            .from(users).where(eq(users.id, Number(userId)));
+          const displayName = actor?.firstName || (actor?.username ? `@${actor.username}` : null);
+
+          // Write activity log
+          writeActivityLog({
+            userId: Number(userId),
+            action: "went_available_now",
+            category: "all",
+            title: "You're open to meet",
+            description: `You marked yourself as available to meet in ${city}`,
+            linkUrl: "/quick-meetups",
+          });
+
+          // Find other users in the same city who want city activity alerts
+          const cityLower = city.toLowerCase();
+          const recipientRows = await db.execute(sql`
+            SELECT u.id, u.expo_push_token
+            FROM users u
+            LEFT JOIN user_notification_settings uns ON uns.user_id = u.id
+            WHERE u.id != ${Number(userId)}
+              AND u.expo_push_token IS NOT NULL
+              AND u.expo_push_token != ''
+              AND (uns.city_activity_alerts IS NULL OR uns.city_activity_alerts = true)
+              AND (
+                LOWER(u.hometown_city) = ${cityLower}
+                OR EXISTS (
+                  SELECT 1 FROM travel_plans tp
+                  WHERE tp.user_id = u.id
+                    AND LOWER(tp.destination_city) = ${cityLower}
+                    AND tp.start_date <= NOW()
+                    AND tp.end_date >= NOW()
+                )
+              )
+            LIMIT 50
+          `);
+
+          const recipients = (recipientRows as any).rows || [];
+          if (recipients.length > 0) {
+            const { sendPushNotification } = await import('./services/pushNotificationService');
+            const pushBody = displayName
+              ? `${displayName} is available to meet in ${city} right now.`
+              : `Someone is available to meet in ${city} right now.`;
+            for (const r of recipients) {
+              await sendPushNotification(
+                r.id,
+                "Open to meet nearby 🟢",
+                pushBody,
+                { type: "available_now", city },
+                { priority: "normal" }
+              ).catch(() => {});
+            }
+          }
+        } catch (bgErr) {
+          console.error("Available now background task error:", bgErr);
+        }
+      })();
     } catch (error: any) {
       console.error("Error setting available now:", error);
       res.status(500).json({ error: "Failed to set availability" });
