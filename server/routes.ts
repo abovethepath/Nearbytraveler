@@ -20948,7 +20948,8 @@ Questions? Just reply to this message. Welcome aboard!
       const results: string[] = [];
 
       const ALLOWED_CITIES = [
-        'Los Angeles', 'Los Angeles Metro', 'New York City', 'San Francisco', 'Austin', 'Chicago',
+        'Los Angeles', 'Los Angeles Metro', 'New York City', 'Brooklyn', 'Queens',
+        'San Francisco', 'Austin', 'Chicago',
         'Miami', 'New Orleans', 'Tokyo', 'Paris', 'London', 'Rome',
         'Barcelona', 'Amsterdam', 'Bangkok', 'Singapore', 'Dubai', 'Istanbul',
         'Nashville', 'Las Vegas', 'Berlin', 'Edinburgh', 'Lisbon', 'Stockholm',
@@ -20959,7 +20960,8 @@ Questions? Just reply to this message. Welcome aboard!
       const deleteResult = await db.execute(sql`
         DELETE FROM city_pages
         WHERE city NOT IN (
-          'Los Angeles','Los Angeles Metro','New York City','San Francisco','Austin','Chicago',
+          'Los Angeles','Los Angeles Metro','New York City','Brooklyn','Queens',
+          'San Francisco','Austin','Chicago',
           'Miami','New Orleans','Tokyo','Paris','London','Rome','Barcelona','Amsterdam',
           'Bangkok','Singapore','Dubai','Istanbul','Nashville','Las Vegas','Berlin','Edinburgh',
           'Lisbon','Stockholm','Vienna','Sydney','São Paulo','Mexico City'
@@ -20974,6 +20976,8 @@ Questions? Just reply to this message. Welcome aboard!
         'Los Angeles': { state: 'California', country: 'United States' },
         'Los Angeles Metro': { state: 'California', country: 'United States' },
         'New York City': { state: 'New York', country: 'United States' },
+        'Brooklyn': { state: 'New York', country: 'United States' },
+        'Queens': { state: 'New York', country: 'United States' },
         'San Francisco': { state: 'California', country: 'United States' },
         'Austin': { state: 'Texas', country: 'United States' },
         'Chicago': { state: 'Illinois', country: 'United States' },
@@ -21014,26 +21018,38 @@ Questions? Just reply to this message. Welcome aboard!
       }
       results.push(`✅ Ensured all ${ALLOWED_CITIES.length} launch cities exist in city_pages`);
 
-      // Step 3: Seed Mexico City activities
-      try {
-        await ensureCityHasActivities('Mexico City', null, 'Mexico', 2);
-        const featuredActivities = getFeaturedActivitiesForCity('Mexico City');
-        if (featuredActivities.length > 0) {
-          await db.update(cityActivities)
-            .set({ isFeatured: false, source: 'static' })
-            .where(and(eq(cityActivities.cityName, 'Mexico City'), eq(cityActivities.isFeatured, true)));
-          let updated = 0;
-          for (const featured of featuredActivities) {
-            const result = await db.update(cityActivities)
-              .set({ isFeatured: true, source: 'featured', rank: featured.rank })
-              .where(and(eq(cityActivities.cityName, 'Mexico City'), eq(cityActivities.activityName, featured.name)))
-              .returning();
-            if (result.length > 0) updated++;
+      // Step 3: Seed new city activities (Mexico City, Brooklyn, Queens)
+      const newCitiesToSeed = [
+        { city: 'Mexico City', state: null, country: 'Mexico' },
+        { city: 'Brooklyn', state: 'New York', country: 'United States' },
+        { city: 'Queens', state: 'New York', country: 'United States' },
+      ];
+      for (const { city, state, country } of newCitiesToSeed) {
+        try {
+          await ensureCityHasActivities(city, state, country, 2);
+          // For Brooklyn/Queens, use borough-only activities (not the merged NYC set) for seeding
+          let featuredActivities = getFeaturedActivitiesForCity(city);
+          if (['Brooklyn', 'Queens'].includes(city)) {
+            // Only seed borough-specific activities (rank <= 30), not the appended NYC ones (rank > 50)
+            featuredActivities = featuredActivities.filter(a => a.rank <= 30);
           }
-          results.push(`✅ Mexico City: ${updated}/${featuredActivities.length} activities featured`);
+          if (featuredActivities.length > 0) {
+            await db.update(cityActivities)
+              .set({ isFeatured: false, source: 'static' })
+              .where(and(eq(cityActivities.cityName, city), eq(cityActivities.isFeatured, true)));
+            let updated = 0;
+            for (const featured of featuredActivities) {
+              const result = await db.update(cityActivities)
+                .set({ isFeatured: true, source: 'featured', rank: featured.rank })
+                .where(and(eq(cityActivities.cityName, city), eq(cityActivities.activityName, featured.name)))
+                .returning();
+              if (result.length > 0) updated++;
+            }
+            results.push(`✅ ${city}: ${updated}/${featuredActivities.length} activities featured`);
+          }
+        } catch (err: any) {
+          results.push(`❌ ${city} activities: ${err.message}`);
         }
-      } catch (err: any) {
-        results.push(`❌ Mexico City activities: ${err.message}`);
       }
 
       // Step 4: Seed Sofia's (user_id=161) user_city_interests for LA and Mexico City

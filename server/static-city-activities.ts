@@ -566,6 +566,53 @@ export const FEATURED_CITY_ACTIVITIES: Record<string, Array<{name: string, descr
     { name: "Museu de Arte Contemporânea (MAC)", description: "Oscar Niemeyer's modernist gem at Ibirapuera with Brazilian contemporary art", category: "culture", rank: 16 },
     { name: "Embu das Artes Day Trip", description: "Colonial craft town 30km from the city with antiques, leather, and ceramics", category: "daytrip", rank: 17 },
   ],
+
+  // ===== NYC METRO BOROUGHS =====
+  "Brooklyn": [
+    { name: "Brooklyn Bridge Park", description: "85-acre waterfront park under the bridge with Manhattan skyline views", category: "outdoor", rank: 1 },
+    { name: "DUMBO Neighborhood", description: "Cobblestone streets, art galleries, and the iconic Manhattan Bridge archway photo", category: "culture", rank: 2 },
+    { name: "Brooklyn Heights Promenade", description: "The best unobstructed Manhattan skyline view in all of New York City", category: "outdoor", rank: 3 },
+    { name: "Williamsburg Waterfront & Bars", description: "NYC's coolest waterfront strip with rooftop bars and Smorgasburg market", category: "culture", rank: 4 },
+    { name: "Prospect Park", description: "Olmsted and Vaux's 526-acre park — many say it's better than Central Park", category: "outdoor", rank: 5 },
+    { name: "Brooklyn Museum", description: "One of America's largest art museums with Egyptian mummies and feminist art", category: "culture", rank: 6 },
+    { name: "Brooklyn Botanic Garden", description: "52-acre garden with Japanese Hill-and-Pond Garden and stunning cherry blossoms", category: "outdoor", rank: 7 },
+    { name: "Barclays Center", description: "Home of the Brooklyn Nets — also major concerts and boxing events", category: "sports", rank: 8 },
+    { name: "Coney Island & Nathan's Famous", description: "Classic American boardwalk, Luna Park, and the original hot dog since 1916", category: "entertainment", rank: 9 },
+    { name: "Smorgasburg Food Market", description: "100-vendor outdoor food market every Saturday — NYC's most iconic food gathering", category: "food", rank: 10 },
+    { name: "Bedford Avenue (Williamsburg)", description: "The spine of hipster Brooklyn — vintage shops, cafes, and indie music", category: "culture", rank: 11 },
+    { name: "Green-Wood Cemetery", description: "Victorian garden cemetery with Leonard Bernstein, Jean-Michel Basquiat, and Civil War generals", category: "history", rank: 12 },
+    { name: "Bushwick Collective Street Art", description: "Open-air gallery of massive murals along the streets of Bushwick", category: "culture", rank: 13 },
+    { name: "Red Hook Waterfront", description: "Industrial neighborhood with kayak tours, Red Hook Lobster Pound, and harbor views", category: "outdoor", rank: 14 },
+    { name: "Brooklyn Flea Market", description: "Beloved weekend vintage and antiques market in Fort Greene and Williamsburg", category: "shopping", rank: 15 },
+    { name: "Park Slope Brownstones", description: "NYC's most beautiful brownstone neighborhood and the legendary Park Slope Food Coop", category: "culture", rank: 16 },
+    { name: "Brighton Beach (Little Odessa)", description: "NYC's Russian community — authentic borscht, piroshki, and boardwalk life", category: "culture", rank: 17 },
+    { name: "Industry City", description: "Waterfront creative campus with artisan food, galleries, and maker studios", category: "entertainment", rank: 18 },
+    { name: "Crown Heights & Vanderbilt Ave", description: "Brooklyn's most vibrant dining corridor with Caribbean culture", category: "food", rank: 19 },
+    { name: "Brooklyn Navy Yard", description: "Industrial creative campus with rooftop farms, studios, and Harbor Lights tours", category: "culture", rank: 20 },
+  ],
+
+  "Queens": [
+    { name: "Flushing Chinatown", description: "The most authentic Chinese food in America — better than Manhattan's Chinatown", category: "food", rank: 1 },
+    { name: "Queens Night Market", description: "80+ vendors celebrating the borough's incredible diversity every Saturday", category: "food", rank: 2 },
+    { name: "Astoria Park & Greek Neighborhood", description: "NYC's largest outdoor pool, Hell Gate Bridge, and the best Greek food in America", category: "outdoor", rank: 3 },
+    { name: "MoMA PS1", description: "MoMA's contemporary art partner in a converted schoolhouse — free with MoMA membership", category: "culture", rank: 4 },
+    { name: "Noguchi Museum", description: "Japanese-American sculptor Isamu Noguchi's studio and garden museum", category: "culture", rank: 5 },
+    { name: "US Open at USTA Billie Jean King Center", description: "Arthur Ashe Stadium — one of sport's most electric venues", category: "sports", rank: 6 },
+    { name: "Jackson Heights Diversity Walk", description: "The most ethnically diverse urban area on earth — Indian, Bangladeshi, Colombian on one block", category: "culture", rank: 7 },
+    { name: "Rockaway Beach", description: "NYC's only surfing beach — 7 miles of barrier island and Far Rockaway boardwalk", category: "beach", rank: 8 },
+    { name: "Flushing Meadows-Corona Park & Unisphere", description: "12-story stainless steel globe — Queens Museum and 1964 World's Fair legacy", category: "landmarks", rank: 9 },
+    { name: "Long Island City Waterfront", description: "East River waterfront with Manhattan skyline views and Gantry Plaza State Park", category: "outdoor", rank: 10 },
+    { name: "Silvercup Studios Tour", description: "The Sopranos, 30 Rock, and Girls were all filmed in this Long Island City complex", category: "culture", rank: 11 },
+    { name: "Elmhurst Thai Town", description: "The most authentic Thai restaurants outside of Thailand — on Whitney and 82nd Street", category: "food", rank: 12 },
+    { name: "Forest Hills & West Side Tennis Club", description: "Stunning planned English garden neighborhood with historic tennis roots", category: "culture", rank: 13 },
+    { name: "Ridgewood Neighborhood", description: "Brooklyn-Queens border neighborhood emerging as NYC's coolest arts district", category: "culture", rank: 14 },
+    { name: "Kew Gardens Hills & Jamaica", description: "Diverse neighborhoods with authentic cuisine from every corner of the world", category: "food", rank: 15 },
+    { name: "Queens Botanical Garden", description: "39-acre sustainable garden with eco-friendly visitor center", category: "outdoor", rank: 16 },
+    { name: "Museum of the Moving Image", description: "The only US museum dedicated to film and TV art, history, and technology", category: "culture", rank: 17 },
+    { name: "Bayside Marina & Little Neck Bay", description: "Waterfront dining and sailing on the Long Island Sound side of Queens", category: "outdoor", rank: 18 },
+    { name: "Sunnyside & Woodside", description: "Irish and Colombian heritage neighborhoods — authentic pubs and arepas", category: "culture", rank: 19 },
+    { name: "Queens International Night Market", description: "Weekend night market at Citi Field celebrating global street food", category: "food", rank: 20 },
+  ],
 };
 
 // City name variations for mapping metro/alternate names to canonical keys in FEATURED_CITY_ACTIVITIES
@@ -604,11 +651,57 @@ export function getFeaturedActivitiesForCity(cityName: string): Array<{name: str
        'Malibu', 'Manhattan Beach', 'Hermosa Beach', 'Redondo Beach', 'Long Beach', 'Pasadena'].includes(normalizedCity)) {
     return FEATURED_CITY_ACTIVITIES['Los Angeles'] || [];
   }
+
+  // NYC Metro boroughs: return borough-specific activities PLUS NYC-wide activities
+  // This lets Brooklyn/Queens travelers be matched on both borough and Manhattan experiences
+  if (['Brooklyn', 'Queens'].includes(normalizedCity)) {
+    const boroughActivities = FEATURED_CITY_ACTIVITIES[normalizedCity] || [];
+    const nycActivities = (FEATURED_CITY_ACTIVITIES['New York City'] || []).map(a => ({
+      ...a,
+      rank: a.rank + 50
+    }));
+    return [...boroughActivities, ...nycActivities];
+  }
   
   return [];
 }
 
 export const STATIC_CITY_ACTIVITIES: Record<string, Array<{name: string, description: string, category: string}>> = {
+  "Brooklyn": [
+    { name: "Brooklyn Bridge Walk", description: "Walk the full pedestrian span of the iconic 1883 bridge to Manhattan", category: "landmarks" },
+    { name: "DUMBO First Thursday", description: "Monthly art gallery opening night in the arts district", category: "culture" },
+    { name: "Prospect Park Boathouse", description: "Kayak and rowboat rentals on the Prospect Park lake", category: "outdoor" },
+    { name: "Nitehawk Cinema", description: "Williamsburg's independent cinema with food and drinks at your seat", category: "entertainment" },
+    { name: "Brooklyn Brewery Tour", description: "Tour and tasting at the craft brewery that helped spark Brooklyn's revival", category: "food" },
+    { name: "Roberta's Pizza", description: "Legendary wood-fired pizza in a converted Bushwick warehouse", category: "food" },
+    { name: "Peter Luger Steak House", description: "NYC's most legendary steakhouse since 1887 in Williamsburg", category: "food" },
+    { name: "Brooklyn Grange Rooftop Farm", description: "World's largest rooftop soil farm growing organic vegetables in Brooklyn", category: "outdoor" },
+    { name: "Maison Premiere", description: "New Orleans-inspired oyster bar and cocktail den in Williamsburg", category: "food" },
+    { name: "McCarren Park", description: "Williamsburg's great lawn with summer concerts and a vintage pool", category: "outdoor" },
+    { name: "East River Ferry", description: "NYC Ferry connecting Brooklyn waterfront to Manhattan — scenic alternative to subway", category: "transport" },
+    { name: "Sahadi's Fine Foods", description: "Middle Eastern grocery institution in Brooklyn Heights since 1948", category: "food" },
+    { name: "Fort Greene Park", description: "Beloved hilltop park with farmers market and stunning brownstone backdrop", category: "outdoor" },
+    { name: "Brooklyn Public Library", description: "Art Deco central branch on Grand Army Plaza — stunning architecture", category: "culture" },
+    { name: "BAM (Brooklyn Academy of Music)", description: "NYC's most prestigious performing arts venue outside Manhattan", category: "entertainment" },
+  ],
+
+  "Queens": [
+    { name: "Citi Field (New York Mets)", description: "The Mets' ballpark in Flushing Meadows — great sight lines and food", category: "sports" },
+    { name: "Flushing Meadows Boathouse", description: "Rowboat and paddleboat rentals on Meadow Lake", category: "outdoor" },
+    { name: "Kaufman Astoria Studios Tour", description: "Historic film studio where Marx Brothers and W.C. Fields worked", category: "culture" },
+    { name: "Queens Zoo", description: "Compact, beautiful zoo focused on American animals — free with NYC ID", category: "family" },
+    { name: "Gantry Plaza State Park", description: "Historic gantry cranes over the East River with Pepsi sign and Midtown views", category: "outdoor" },
+    { name: "Roosevelt Island Aerial Tram", description: "Only commuter cable car in North America — $2.90 subway fare, incredible views", category: "transport" },
+    { name: "Little Sri Lanka (Staten Island adjunct — Tompkins Ave)", description: "Authentic Sri Lankan roti, hoppers, and curry on a single street in Sunnyside", category: "food" },
+    { name: "Astoria Seafood", description: "No-frills warehouse seafood market where you choose your fish and they cook it", category: "food" },
+    { name: "The Welling Court Mural Project", description: "Astoria neighborhood with over 50 street art murals by international artists", category: "culture" },
+    { name: "Flushing Town Hall", description: "Historic venue with world music, jazz, and multicultural performing arts", category: "entertainment" },
+    { name: "Queens County Farm Museum", description: "47-acre working farm — the oldest continuously farmed land in New York State", category: "nature" },
+    { name: "Rockaway Beach Boardwalk", description: "Summer destination with food vendors, the Far Rockaway scene, and surf culture", category: "beach" },
+    { name: "Lemon Ice King of Corona", description: "Legendary Italian ice stand open since 1944 — a Queens institution", category: "food" },
+    { name: "Alley Pond Park", description: "Queens' largest park with ancient kettlehole pond and 350-year-old tulip tree", category: "outdoor" },
+  ],
+
   "New York City": [
     { name: "Empire State Building Tour", description: "Visit the iconic Art Deco skyscraper and observation deck", category: "landmarks" },
     { name: "High Line Walk", description: "Stroll along the elevated urban park built on former railway", category: "outdoor" },
