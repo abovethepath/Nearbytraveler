@@ -62,6 +62,7 @@ import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { AvailableNowWidget } from "@/components/AvailableNowWidget";
 import { MeetupAlertBanner } from "@/components/MeetupAlertBanner";
 import { CityPulse } from "@/components/CityPulse";
+import RecentlyJoined from "@/components/RecentlyJoined";
 import { ContextualEventRecommendations } from "@/components/ContextualEventRecommendations";
 import CityMap from "@/components/CityMap";
 import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
@@ -1839,6 +1840,11 @@ export default function Home() {
             {/* Meetup Alert Banner - Shows when there are new meetups nearby */}
             {effectiveUser?.id && effectiveUser?.userType !== 'business' && (
               <MeetupAlertBanner userId={effectiveUser.id} />
+            )}
+
+            {/* Recently Joined — global new members strip */}
+            {effectiveUser?.userType !== 'business' && (
+              <RecentlyJoined currentUserId={effectiveUser?.id} />
             )}
 
             <div className="home-discover-people relative z-10 bg-white dark:bg-gray-900 rounded-3xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 shadow-sm">

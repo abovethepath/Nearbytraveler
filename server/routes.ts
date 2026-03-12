@@ -3831,6 +3831,41 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   });
 
   // General user search endpoint for tagging functionality
+  app.get("/api/users/recently-joined", async (req, res) => {
+    try {
+      const limit = Math.min(parseInt(req.query.limit as string || '30'), 50);
+      const days = parseInt(req.query.days as string || '14');
+      const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+      const results = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          firstName: users.firstName,
+          name: users.name,
+          profileImage: users.profileImage,
+          hometownCity: users.hometownCity,
+          hometownCountry: users.hometownCountry,
+          userType: users.userType,
+          createdAt: users.createdAt,
+        })
+        .from(users)
+        .where(
+          and(
+            gte(users.createdAt, cutoff),
+            ne(users.userType, 'business'),
+            isNotNull(users.username),
+            ne(users.username, ''),
+          )
+        )
+        .orderBy(desc(users.createdAt))
+        .limit(limit);
+      res.json(results);
+    } catch (error: any) {
+      console.error("Error fetching recently joined users:", error);
+      res.status(500).json({ message: "Failed to fetch recently joined users" });
+    }
+  });
+
   app.get("/api/users/search", async (req, res) => {
     try {
       const query = req.query.q as string;
