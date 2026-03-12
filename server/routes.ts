@@ -2816,7 +2816,29 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .from(travelPlans)
         .innerJoin(users, eq(travelPlans.userId, users.id))
         .where(and(
-          sql`LOWER(${travelPlans.destinationCity}) = LOWER(${city})`,
+          (() => {
+            // Build the full set of city names to match (metro expansion)
+            const metroCities = getMetroCities(city);
+            let allCities: string[];
+            if (metroCities.length > 0) {
+              // Querying a metro area name — include all suburb cities too
+              allCities = [city, ...metroCities];
+            } else {
+              // Querying a suburb — expand upward to include metro siblings
+              const metroName = getMetroAreaName(city);
+              allCities = metroName !== city
+                ? [city, metroName, ...getMetroCities(metroName)]
+                : [city];
+            }
+            // Match on destination_city when set; fall back to the destination text
+            // field (which may be "Redondo Beach, CA, US" or just "Redondo Beach").
+            const conditions = allCities.flatMap(c => [
+              sql`LOWER(${travelPlans.destinationCity}) = LOWER(${c})`,
+              sql`LOWER(${travelPlans.destination}) = LOWER(${c})`,
+              sql`LOWER(${travelPlans.destination}) LIKE LOWER(${c}) || ',%'`,
+            ]);
+            return or(...conditions)!;
+          })(),
           gte(travelPlans.endDate, now),
           lte(travelPlans.startDate, threeDaysOut)
         ))
@@ -5683,6 +5705,9 @@ Questions? Just reply to this message!
             const travelPlanData = {
               userId: user.id,
               destination: destination,
+              destinationCity: user.destinationCity || null,
+              destinationState: user.destinationState || null,
+              destinationCountry: user.destinationCountry || null,
               startDate: user.travelStartDate || new Date().toISOString().split('T')[0],
               endDate: user.travelEndDate || new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
               status: 'active' as const,
