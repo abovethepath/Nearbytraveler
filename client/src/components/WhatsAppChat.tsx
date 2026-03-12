@@ -678,9 +678,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       const id = Number((src as any)?.id ?? (item as any)?.userId ?? (item as any)?.id);
       if (Number.isFinite(id) && id > 0) ids.push(id);
     }
+    // Also include sender IDs from messages that are missing embedded sender data
+    // (handles users who left the chatroom but have historical messages)
+    for (const msg of messages) {
+      if (!msg.sender?.id && msg.senderId) {
+        const id = Number(msg.senderId);
+        if (Number.isFinite(id) && id > 0) ids.push(id);
+      }
+    }
     // unique + stable
     return Array.from(new Set(ids)).sort((a, b) => a - b);
-  }, [membersRaw]);
+  }, [membersRaw, messages]);
 
   const { data: memberProfilesById = {} } = useQuery<Record<number, any>>({
     queryKey: ["member-profiles", memberIdsNeedingProfiles],
@@ -2440,22 +2448,25 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               // Use == for type-coerced comparison since currentUserId from localStorage may be string
               const isOwnMessage = message.senderId == currentUserId;
               const showAvatar = index === 0 || messages[index - 1].senderId !== message.senderId;
+              // Resolve sender: use embedded sender data, fall back to memberProfilesById cache
+              const resolvedSender = message.sender?.id
+                ? message.sender
+                : (memberProfilesById[message.senderId] || null);
               
               return (
                 <div key={message.id} className={`flex gap-1.5 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
                   {!isOwnMessage && (
-                    <div className={`flex-shrink-0 rounded-full ${(message.sender as any)?.ambassadorStatus === 'active' ? 'ring-2 ring-amber-400 ring-offset-1' : ''}`}>
+                    <div className={`flex-shrink-0 rounded-full ${(resolvedSender as any)?.ambassadorStatus === 'active' ? 'ring-2 ring-amber-400 ring-offset-1' : ''}`}>
                       <Avatar 
                         className={`w-7 h-7 ${showAvatar ? 'visible' : 'invisible'} cursor-pointer hover:ring-2 hover:ring-green-400 transition-all`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (message.sender?.id) {
-                            navigate(`/profile/${message.sender.id}`);
-                          }
+                          const profileId = resolvedSender?.id || message.senderId;
+                          if (profileId) navigate(`/profile/${profileId}`);
                         }}
                       >
-                        <AvatarImage src={getProfileImageUrl(message.sender) || undefined} />
-                        <AvatarFallback className="text-xs">{message.sender?.name?.[0] || '?'}</AvatarFallback>
+                        <AvatarImage src={getProfileImageUrl(resolvedSender) || undefined} />
+                        <AvatarFallback className="text-xs">{resolvedSender?.username?.[0]?.toUpperCase() || resolvedSender?.name?.[0] || '?'}</AvatarFallback>
                       </Avatar>
                     </div>
                   )}
@@ -2562,12 +2573,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                             style={{ color: '#4ade80' }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (message.sender?.id) {
-                                navigate(`/profile/${message.sender.id}`);
-                              }
+                              const profileId = resolvedSender?.id || message.senderId;
+                              if (profileId) navigate(`/profile/${profileId}`);
                             }}
                           >
-                            {getFirstName(message.sender?.name, message.sender?.username)}
+                            {getFirstName(resolvedSender?.name, resolvedSender?.username)}
                           </p>
                         )}
                         {(() => {
