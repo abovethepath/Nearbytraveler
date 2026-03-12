@@ -679,9 +679,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   >
                                     {sharedContactsCount === 1 ? 'Connection' : 'Connections'} in Common · {sharedContactsCount}
                                   </button>
-                                ) : (
-                                  <span className="text-xs text-gray-400">Connections in Common · 0</span>
-                                )}
+                                ) : null}
                                 {allSharedTags.length > 10 && (
                                   <button
                                     type="button"
