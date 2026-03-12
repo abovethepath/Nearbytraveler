@@ -2192,19 +2192,19 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Build consolidated city map
       const consolidatedCityMap = new Map<string, Array<{city: string, state: string, country: string}>>();
       
+      // Each city_pages entry is shown as its own card — no metro consolidation for the grid.
+      // Dedup by city name (in case city_pages has duplicate rows for the same city).
+      const seenCities = new Set<string>();
       for (const row of citiesWithLocation.rows) {
         const cityData = row as any;
         const cityName = cityData.city_name;
         const state = cityData.state || '';
         const country = cityData.country || 'United States';
-        
-        // Consolidate to metro area
-        const consolidatedCity = consolidateToMetropolitanArea(cityName, state, country);
-        
-        if (!consolidatedCityMap.has(consolidatedCity)) {
-          consolidatedCityMap.set(consolidatedCity, []);
+
+        if (!seenCities.has(cityName)) {
+          seenCities.add(cityName);
+          consolidatedCityMap.set(cityName, [{city: cityName, state, country}]);
         }
-        consolidatedCityMap.get(consolidatedCity)!.push({city: cityName, state, country});
       }
 
       // PERFORMANCE FIX: Get ALL stats in ONE batch query using CASE expressions
