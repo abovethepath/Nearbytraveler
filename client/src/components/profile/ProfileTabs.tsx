@@ -1231,7 +1231,12 @@ export function ProfileTabs(props: ProfilePageProps) {
                           setEditFormData({
                             interests: allInterests,
                             activities: allActivities,
-                            subInterests: user?.subInterests || []
+                            subInterests: user?.subInterests || [],
+                            privateInterests: Array.isArray((user as any)?.privateInterests)
+                              ? (user as any).privateInterests
+                              : Array.isArray((user as any)?.private_interests)
+                                ? (user as any).private_interests
+                                : []
                           });
                         }}
                         size="sm"
@@ -1907,6 +1912,30 @@ export function ProfileTabs(props: ProfilePageProps) {
                               <span>{subInterest}</span>
                             </div>
                           ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* PRIVATE / LIFESTYLE INTERESTS — owner-only view */}
+                    {isOwnProfile && user?.userType !== 'business' && Array.isArray((user as any)?.privateInterests) && (user as any).privateInterests.length > 0 && (
+                      <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div className="rounded-xl border border-red-200/70 dark:border-red-800/40 bg-red-50/60 dark:bg-red-950/25 p-4">
+                          <h4 className="font-semibold text-red-800 dark:text-red-300 mb-1 flex items-center gap-2 text-sm">
+                            <Eye className="w-4 h-4" />
+                            Lifestyle &amp; Private Interests
+                            <span className="ml-auto text-xs font-normal text-red-600 dark:text-red-400 italic">Only visible to you</span>
+                          </h4>
+                          <p className="text-xs text-red-600/80 dark:text-red-400/70 mb-3">Never shown publicly — only matched with members who share the same interests.</p>
+                          <div className="flex flex-wrap gap-2">
+                            {((user as any).privateInterests as string[]).map((item: string, idx: number) => (
+                              <span
+                                key={idx}
+                                className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-700/50"
+                              >
+                                {item}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     )}
