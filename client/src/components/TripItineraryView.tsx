@@ -13,6 +13,8 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { SkeletonList } from '@/components/ui/skeleton-loaders';
 import { TravelCrew } from './TravelCrew';
+import { ShareModal } from '@/components/ShareModal';
+import { getTripShareText, getTripRedditText } from '@/lib/shareUtils';
 import {
   Calendar,
   Clock,
@@ -509,37 +511,18 @@ export default function TripItineraryView({
             </div>
           )}
 
-          <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
-            <DialogTrigger asChild>
+          <ShareModal
+            title={`Share trip to ${travelPlan.destinationCity || travelPlan.destination}`}
+            url={`${typeof window !== 'undefined' ? window.location.origin : 'https://nearbytraveler.org'}/trip/${travelPlan.id}`}
+            shareText={getTripShareText(travelPlan, `${typeof window !== 'undefined' ? window.location.origin : 'https://nearbytraveler.org'}/trip/${travelPlan.id}`)}
+            redditText={getTripRedditText(travelPlan, `${typeof window !== 'undefined' ? window.location.origin : 'https://nearbytraveler.org'}/trip/${travelPlan.id}`)}
+            trigger={
               <Button variant="outline" className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20">
                 <Share2 className="w-4 h-4 mr-2" />
                 Share
               </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-              <DialogHeader>
-                <DialogTitle className="text-gray-900 dark:text-white">Share Itinerary</DialogTitle>
-              </DialogHeader>
-              <div className="grid grid-cols-2 gap-3 pt-4">
-                <Button onClick={copyLink} variant="outline" className="flex flex-col items-center gap-2 h-auto py-4">
-                  <Copy className="w-6 h-6 text-blue-500" />
-                  <span>Copy Link</span>
-                </Button>
-                <Button onClick={copyItinerary} variant="outline" className="flex flex-col items-center gap-2 h-auto py-4">
-                  <Copy className="w-6 h-6 text-purple-500" />
-                  <span>Copy Text</span>
-                </Button>
-                <Button onClick={shareViaEmail} variant="outline" className="flex flex-col items-center gap-2 h-auto py-4">
-                  <Mail className="w-6 h-6 text-red-500" />
-                  <span>Email</span>
-                </Button>
-                <Button onClick={shareViaText} variant="outline" className="flex flex-col items-center gap-2 h-auto py-4">
-                  <MessageSquare className="w-6 h-6 text-green-500" />
-                  <span>Text Message</span>
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+            }
+          />
 
           {isOwnProfile && (
             <Dialog open={showAddItem} onOpenChange={setShowAddItem}>

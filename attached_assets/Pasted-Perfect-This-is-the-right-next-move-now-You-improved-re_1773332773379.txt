@@ -1,0 +1,199 @@
+Perfect 👍
+This is the **right next move now.**
+
+You improved:
+
+* retention mechanics
+* city energy
+* emotional hooks
+
+Now we work on:
+👉 **growth mechanics / virality**
+
+And the MOST important first step is:
+
+⭐ **Upgrade sharing so users can easily post Nearby Traveler moments to Reddit / text / WhatsApp / etc**
+
+Right now you said:
+👉 share mostly just copies a link
+That is weak virality.
+
+We need:
+👉 **story-driven share content**
+
+---
+
+# ✅ Next Replit Prompt — Viral Share System
+
+Just give Replit this.
+
+```text
+I want to upgrade Nearby Traveler’s sharing system to support viral, story-driven sharing.
+
+IMPORTANT:
+First inspect the existing share implementation before building.
+Reuse current share logic where possible.
+Do not refactor unrelated code.
+Keep MVP clean, lightweight, and mobile-first.
+
+GOAL:
+When users tap Share on a profile, event, or trip, they should get a polished share experience that generates compelling text they can paste into Reddit, WhatsApp, SMS, or social posts.
+
+This should feel emotional and natural, not like marketing spam.
+
+==================================================
+STEP 1 — AUDIT CURRENT SHARE FUNCTION
+==================================================
+
+First inspect and report:
+
+1. Where share is currently implemented
+   - files
+   - components
+   - utilities
+   - routes involved
+
+2. What share currently does
+   - only copies raw link?
+   - uses navigator.share?
+   - has any share modal?
+   - works on mobile and desktop?
+
+3. Confirm public URLs exist for:
+   - user profiles
+   - events
+   - trips / travel plans
+   - city pages
+
+4. Confirm whether OG meta tags exist for previews.
+
+Do not build yet until audit is complete.
+
+==================================================
+STEP 2 — BUILD A REUSABLE SHARE MODAL
+==================================================
+
+Create a reusable ShareModal (or ShareSheet) component.
+
+When a user taps Share, show:
+
+- Title: “Share this profile” / “Share this event” / “Share this trip”
+- Editable text preview area with generated share message
+- Copy Link button
+- Copy Text + Link button
+- Native Share button (navigator.share if supported)
+- “Copy Reddit Post” helper button
+- small success toast after copy
+
+Fallback gracefully if navigator.share not supported.
+
+==================================================
+STEP 3 — GENERATE VIRAL SHARE TEXT
+==================================================
+
+Automatically generate emotional, natural share text.
+
+Examples:
+
+PROFILE:
+“I’m using NearbyTraveler.org to meet locals and travelers in [City]. Here’s my profile if anyone wants to connect.”
+
+EVENT:
+“I found this meetup on NearbyTraveler.org — looks like a fun way to meet travelers and locals. Anyone else going?”
+
+TRIP:
+“I’m visiting [City] on [Dates] and trying NearbyTraveler.org to meet people. Anyone around?”
+
+Use real page data where available:
+- destination city
+- event name
+- dates
+- user name
+
+Gracefully fallback if data missing.
+
+Keep text concise and authentic.
+
+==================================================
+STEP 4 — REDDIT HELPER
+==================================================
+
+Add a button:
+
+“Copy Reddit Post”
+
+This copies:
+- Reddit-friendly message
+- plus deep link
+
+Example:
+
+“Solo traveler heading to Lisbon next week and trying NearbyTraveler.org to meet locals and other travelers. Curious if anyone here has used it — or wants to hang?”
+
+No Reddit API integration needed.
+
+==================================================
+STEP 5 — TECH REQUIREMENTS
+==================================================
+
+- Keep existing copy-link functionality as fallback
+- Mobile-first design
+- No browser alert popups
+- Reuse existing modal/toast UI system
+- No heavy dependencies
+- Ensure links work on mobile and desktop
+- Handle null/undefined data safely
+
+==================================================
+STEP 6 — DELIVERABLES
+==================================================
+
+After building, tell me:
+
+1. files changed
+2. where share now appears
+3. what share flows are supported
+4. limitations
+5. best phase-2 improvements (share image cards, referral tracking, etc.)
+
+==================================================
+RULES
+==================================================
+
+- Inspect first, then build
+- Keep MVP lightweight
+- Do not break existing share behavior
+- No unrelated refactors
+```
+
+---
+
+# ⭐ Why this is huge
+
+This will:
+
+* create **external growth channels**
+* help users tell real travel stories
+* generate organic Reddit posts
+* increase inbound traffic
+* create referral behavior
+
+This is how apps like:
+
+* Timeleft
+* Couchsurfing
+* Luma
+* Geneva
+
+grow early.
+
+---
+
+After Replit audits or builds,
+paste the response here and I’ll tell you:
+
+👉 if the share psychology is strong enough
+👉 what copy tweaks will increase virality
+👉 what the next growth feature should be
+
+You are now shifting from **product building → growth engineering.**

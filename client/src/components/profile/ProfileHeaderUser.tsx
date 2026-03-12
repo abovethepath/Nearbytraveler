@@ -18,6 +18,8 @@ import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoi
 import { ProfileTabBar } from "./ProfileTabBar";
 import type { ProfilePageProps } from "./profile-complete-types";
 import { resolveAndJoinHostelChatroom } from "@/lib/hostelChatrooms";
+import { ShareModal } from "@/components/ShareModal";
+import { getProfileShareText, getProfileRedditText } from "@/lib/shareUtils";
 
 export function ProfileHeaderUser(props: ProfilePageProps) {
   const {
@@ -137,36 +139,57 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     }
   };
 
-  const shareButton = (inline = false) => (
-    <button
-      type="button"
-      onClick={async () => {
-        const fullMessage = shareText.replace(/\n\n/g, " - ");
-        if (navigator.share) {
-          try {
-            await navigator.share({
-              title: `@${user?.username} on NearbyTraveler`,
-              text: fullMessage,
-              url: profileUrl,
-            });
-          } catch (e) {}
-        } else {
-          await navigator.clipboard.writeText(fullMessage);
-          toast?.({ title: "Profile link copied!", description: "You can now paste it anywhere." });
+  // Build share modal data lazily so it always uses current user/travel state
+  const buildShareModal = () => {
+    const viralText = getProfileShareText(
+      {
+        username: user?.username || "nearbytraveler",
+        firstName: (user as any)?.firstName || null,
+        userType: (user as any)?.userType || null,
+        city: (user as any)?.city || null,
+        currentTravelDestination: hasValidTravelDestination ? currentTravelPlan : null,
+      },
+      profileUrl
+    );
+    const redditText = getProfileRedditText(
+      {
+        username: user?.username || "nearbytraveler",
+        firstName: (user as any)?.firstName || null,
+        userType: (user as any)?.userType || null,
+        city: (user as any)?.city || null,
+        currentTravelDestination: hasValidTravelDestination ? currentTravelPlan : null,
+      },
+      profileUrl
+    );
+    return { viralText, redditText };
+  };
+
+  const shareButton = (inline = false) => {
+    const { viralText, redditText } = buildShareModal();
+    return (
+      <ShareModal
+        title={`Share ${(user as any)?.firstName || user?.username || "this profile"}`}
+        url={profileUrl}
+        shareText={viralText}
+        redditText={redditText}
+        trigger={
+          <button
+            type="button"
+            className={
+              inline
+                ? "p-2 rounded-full bg-[#374151] hover:bg-[#4B5563] transition-colors inline-flex items-center justify-center shrink-0 ring-1 ring-black/20 shadow-md"
+                : "absolute top-4 right-4 z-20 p-2 rounded-full bg-[#374151] hover:bg-[#4B5563] transition-colors ring-1 ring-black/20 shadow-md"
+            }
+            style={{ touchAction: "manipulation" }}
+            title="Share profile"
+            data-testid="button-share-profile"
+          >
+            <Share2 className="w-4 h-4 !text-white" />
+          </button>
         }
-      }}
-      className={
-        inline
-          ? "p-2 rounded-full bg-[#374151] hover:bg-[#4B5563] transition-colors inline-flex items-center justify-center shrink-0 ring-1 ring-black/20 shadow-md"
-          : "absolute top-4 right-4 z-20 p-2 rounded-full bg-[#374151] hover:bg-[#4B5563] transition-colors ring-1 ring-black/20 shadow-md"
-      }
-      style={{ touchAction: 'manipulation' }}
-      title="Share profile"
-      data-testid="button-share-profile"
-    >
-      <Share2 className="w-4 h-4 !text-white" />
-    </button>
-  );
+      />
+    );
+  };
 
   const isDesktopOwnProfile = !isNativeIOSApp() && isOwnProfile;
 
