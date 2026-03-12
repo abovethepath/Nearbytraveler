@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Bell, MessageCircle, UserPlus, Zap, Users, Handshake } from "lucide-react";
+import { Bell, MessageCircle, UserPlus, Zap, Users, Handshake, Plane } from "lucide-react";
 import websocketService from "@/services/websocketService";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -136,6 +136,12 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     (n) => !n.isRead && n.type === 'new_message'
   );
 
+  // Catch-all: any other unread notification type not handled by a specific group above
+  const HANDLED_TYPES = new Set(['quick_meetup_nearby', 'quick_meetup_joined', 'available_now_meet_request', 'new_message']);
+  const generalNotifications = notifications.filter(
+    (n) => !n.isRead && !HANDLED_TYPES.has(n.type)
+  );
+
   const respondToConnectionRequestMutation = useMutation({
     mutationFn: async ({ connectionId, status }: { connectionId: number; status: "accepted" | "rejected" }) => {
       return await apiRequest("PUT", `/api/connections/${connectionId}`, { status });
@@ -152,7 +158,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
   // Avoid double-counting: if we have new_message notifications, use those for the message count
   const rawUnreadCount = messageNotifications.length > 0 ? 0 : unreadMessages.length;
   const totalNotifications = rawUnreadCount + unreadNotificationCount;
-  const hasAnyDropdownItems = totalNotifications > 0 || connectionRequests.length > 0;
+  const hasAnyDropdownItems = totalNotifications > 0 || connectionRequests.length > 0 || generalNotifications.length > 0;
 
   // Real-time: when server pushes a notification via WebSocket, refetch so bell updates immediately
   const queryClientRef = useRef(queryClient);
@@ -450,6 +456,45 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                 </DropdownMenuItem>
               );
             })}
+
+            {/* General notifications (saved_traveler_arrived + any future types) */}
+            {generalNotifications.length > 0 && (
+              <>
+                <DropdownMenuSeparator />
+                {generalNotifications.map((notification) => {
+                  let notifData: Record<string, any> = {};
+                  try { notifData = notification.data ? JSON.parse(notification.data) : {}; } catch {}
+                  const isTravelerArrival = notification.type === 'saved_traveler_arrived';
+                  return (
+                    <DropdownMenuItem
+                      key={notification.id}
+                      className="cursor-pointer p-3 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                      onClick={() => {
+                        markAsReadMutation.mutate(notification.id);
+                        if (isTravelerArrival && notifData.savedUserId) {
+                          setLocation(`/profile/${notifData.savedUserId}`);
+                        }
+                      }}
+                    >
+                      <div className="flex items-center gap-3 w-full">
+                        <Plane className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            {notification.title}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-300 truncate">
+                            {notification.message}
+                          </p>
+                        </div>
+                        <Badge variant="secondary" className="ml-auto bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                          New
+                        </Badge>
+                      </div>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </>
+            )}
 
             {/* Fallback: raw unread count when no new_message notifications exist yet */}
             {messageNotifications.length === 0 && unreadMessages.length > 0 && (
