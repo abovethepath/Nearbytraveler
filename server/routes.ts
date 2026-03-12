@@ -2332,10 +2332,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // Featured cities that should appear first (have curated "Popular" activities)
       const FEATURED_CITIES = [
-        'Los Angeles', 'Los Angeles Metro', 'San Francisco', 'New York City', 
+        'Los Angeles', 'Los Angeles Metro', 'San Francisco', 'New York City',
         'Austin', 'New Orleans', 'Miami', 'Chicago',
-        'Paris', 'London', 'Rome', 'Barcelona', 'Tokyo', 
-        'Dubai', 'Bangkok', 'Singapore', 'Istanbul', 'Amsterdam'
+        'Paris', 'London', 'Rome', 'Barcelona', 'Tokyo',
+        'Dubai', 'Bangkok', 'Singapore', 'Istanbul', 'Amsterdam',
+        'Nashville', 'Las Vegas', 'Berlin', 'Edinburgh', 'Lisbon', 'Stockholm', 'Vienna', 'Sydney', 'São Paulo'
       ];
       
       // Sort: featured cities first (in order), then by total activity
@@ -2738,7 +2739,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Check if city page already exists
       const existingCity = await db.select().from(cityPages)
         .where(and(
-          eq(cityPages.cityName, city),
+          eq(cityPages.city, city),
           eq(cityPages.state, state || ''),
           eq(cityPages.country, country || '')
         )).limit(1);
@@ -2746,13 +2747,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (existingCity.length === 0) {
         // Create city page
         await db.insert(cityPages).values({
-          cityName: city,
+          city: city,
           state: state || '',
           country: country || '',
           description: `Discover ${city} and connect with locals and travelers`,
-          heroImage: null,
-          createdAt: new Date(),
-          updatedAt: new Date()
+          createdById: 2,
         });
         
         if (process.env.NODE_ENV === 'development') console.log(`🏙️ CREATED CITY PAGE: ${city}`);
@@ -20938,6 +20937,81 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error('Error seeding city activities:', error);
       res.status(500).json({ error: 'Failed to seed city activities' });
+    }
+  });
+
+  // POST seed launch city pages for cities that don't have city_pages rows yet
+  app.post("/api/admin/seed-launch-city-pages", async (req, res) => {
+    try {
+      const launchCities = [
+        { city: 'Bangkok', state: null, country: 'Thailand' },
+        { city: 'Singapore', state: null, country: 'Singapore' },
+        { city: 'Dubai', state: null, country: 'United Arab Emirates' },
+        { city: 'Istanbul', state: null, country: 'Turkey' },
+        { city: 'Sydney', state: 'New South Wales', country: 'Australia' },
+      ];
+      const results: string[] = [];
+      for (const c of launchCities) {
+        try {
+          await db.execute(sql`
+            INSERT INTO city_pages (city, state, country, created_by_id, description)
+            VALUES (${c.city}, ${c.state}, ${c.country}, 2, ${'Discover ' + c.city + ' and connect with locals and travelers'})
+            ON CONFLICT DO NOTHING
+          `);
+          results.push(`✅ ${c.city}`);
+        } catch (err: any) {
+          results.push(`❌ ${c.city}: ${err.message}`);
+        }
+      }
+      res.json({ results });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // POST refresh featured activities for ALL launch cities (run once after deploying new featured city data)
+  app.post("/api/admin/refresh-all-featured-cities", async (req, res) => {
+    try {
+      const { getFeaturedActivitiesForCity } = await import('./static-city-activities.js');
+      const { ensureCityHasActivities } = await import('./auto-city-setup.js');
+      const allLaunchCities = [
+        'Nashville', 'Las Vegas', 'Berlin', 'Edinburgh', 'Lisbon', 'Stockholm',
+        'Vienna', 'Sydney', 'São Paulo', 'Bangkok', 'Singapore', 'Dubai', 'Istanbul',
+        'Amsterdam', 'Chicago', 'New York City', 'London', 'Paris', 'Rome', 'Barcelona',
+        'Tokyo', 'Austin', 'Miami', 'New Orleans', 'San Francisco', 'Los Angeles'
+      ];
+      const results: string[] = [];
+      for (const cityName of allLaunchCities) {
+        try {
+          // 1. Ensure city has static activities seeded
+          await ensureCityHasActivities(cityName, '', 'United States', 1);
+          // 2. Get featured list
+          const featuredActivities = getFeaturedActivitiesForCity(cityName);
+          if (featuredActivities.length === 0) {
+            results.push(`⚠️ ${cityName}: no featured list`);
+            continue;
+          }
+          // 3. Unflag old featured activities
+          await db.update(cityActivities)
+            .set({ isFeatured: false, source: 'static' })
+            .where(and(eq(cityActivities.cityName, cityName), eq(cityActivities.isFeatured, true)));
+          // 4. Flag correct featured activities
+          let updated = 0;
+          for (const featured of featuredActivities) {
+            const result = await db.update(cityActivities)
+              .set({ isFeatured: true, source: 'featured', rank: featured.rank })
+              .where(and(eq(cityActivities.cityName, cityName), eq(cityActivities.activityName, featured.name)))
+              .returning();
+            if (result.length > 0) updated++;
+          }
+          results.push(`✅ ${cityName}: ${updated}/${featuredActivities.length} featured`);
+        } catch (err: any) {
+          results.push(`❌ ${cityName}: ${err.message}`);
+        }
+      }
+      res.json({ results });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
   });
 

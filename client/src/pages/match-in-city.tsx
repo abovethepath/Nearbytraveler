@@ -434,7 +434,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const LAUNCH_CITY_NAMES = [
     'Los Angeles', 'Los Angeles Metro', 'New York City', 'San Francisco', 'Austin', 'Chicago',
     'Miami', 'New Orleans', 'Tokyo', 'Paris', 'London', 'Rome',
-    'Barcelona', 'Amsterdam', 'Bangkok', 'Singapore', 'Dubai', 'Istanbul'
+    'Barcelona', 'Amsterdam', 'Bangkok', 'Singapore', 'Dubai', 'Istanbul',
+    'Nashville', 'Las Vegas', 'Berlin', 'Edinburgh', 'Lisbon', 'Stockholm', 'Vienna', 'Sydney', 'São Paulo'
   ];
 
   // Default to showing only user's hometown and travel destinations, with fallback to all cities
