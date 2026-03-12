@@ -10886,7 +10886,15 @@ Questions? Just reply to this message. Welcome aboard!
           CASE 
             WHEN c.requester_id = ${userId} THEN receiver.hometown_city
             ELSE requester.hometown_city
-          END as "hometownCity"
+          END as "hometownCity",
+          CASE 
+            WHEN c.requester_id = ${userId} THEN receiver.travel_destination
+            ELSE requester.travel_destination
+          END as "travelDestination",
+          CASE 
+            WHEN c.requester_id = ${userId} THEN receiver.is_currently_traveling
+            ELSE requester.is_currently_traveling
+          END as "isCurrentlyTraveling"
         FROM connections c
         LEFT JOIN users receiver ON c.receiver_id = receiver.id
         LEFT JOIN users requester ON c.requester_id = requester.id
@@ -10908,7 +10916,9 @@ Questions? Just reply to this message. Welcome aboard!
           location: conn.location,
           currentCity: conn.currentCity,
           city: conn.city,
-          hometownCity: conn.hometownCity || conn.location?.split(',')[0]?.trim() || ''
+          hometownCity: conn.hometownCity || conn.location?.split(',')[0]?.trim() || '',
+          travelDestination: conn.travelDestination || null,
+          isCurrentlyTraveling: !!conn.isCurrentlyTraveling
         }
       }));
 

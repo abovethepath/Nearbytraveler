@@ -466,6 +466,8 @@ export default function Messages() {
           username: connectedUser?.username || connectedUser?.name || `User ${connectedUserId}`,
           profileImage: connectedUser?.profileImage,
           location: connectedUser?.currentCity || connectedUser?.destinationCity || connectedUser?.city || connectedUser?.hometownCity || connectedUser?.location || '',
+          hometownCity: connectedUser?.hometownCity || '',
+          travelDestination: connectedUser?.isCurrentlyTraveling ? (connectedUser?.travelDestination || null) : null,
           lastMessage: '', // Don't show message preview in connections list
           lastMessageTime: connection.createdAt,
           unreadCount: 0, // Initialize unread count
@@ -482,6 +484,8 @@ export default function Messages() {
           username: targetUser?.username || targetUser?.name || `User ${targetUserId}`,
           profileImage: targetUser?.profileImage,
           location: targetUser?.currentCity || targetUser?.destinationCity || targetUser?.city || targetUser?.hometownCity || targetUser?.location || '',
+          hometownCity: targetUser?.hometownCity || '',
+          travelDestination: targetUser?.isCurrentlyTraveling ? (targetUser?.travelDestination || null) : null,
           lastMessage: 'Start a conversation...',
           lastMessageTime: new Date().toISOString(),
         });
@@ -521,6 +525,8 @@ export default function Messages() {
             username: otherUser?.username || otherUser?.name || `User ${otherUserId}`,
             profileImage: otherUser?.profileImage,
             location: otherUser?.currentCity || otherUser?.destinationCity || otherUser?.city || otherUser?.hometownCity || otherUser?.location || '',
+            hometownCity: otherUser?.hometownCity || '',
+            travelDestination: otherUser?.isCurrentlyTraveling ? (otherUser?.travelDestination || null) : null,
             lastMessage: message.content,
             lastMessageTime: message.createdAt,
             unreadCount: unreadCount,
@@ -981,7 +987,11 @@ export default function Messages() {
                               ? 'text-gray-700 dark:text-gray-300 font-medium'
                               : 'text-gray-600 dark:text-gray-500'
                         }`}>
-                          {conv.location || ''}
+                          {(conv as any).hometownCity
+                            ? (conv as any).travelDestination
+                              ? `${(conv as any).hometownCity} → ${(conv as any).travelDestination.split(',')[0]?.trim()}`
+                              : (conv as any).hometownCity
+                            : conv.location || ''}
                         </div>
                       </div>
                       {selectedConversation === conv.userId && (
@@ -1330,7 +1340,9 @@ export default function Messages() {
                         @{contact.username}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                        {contact.hometownCity || contact.location || 'Location unknown'}
+                        {contact.travelDestination && contact.isCurrentlyTraveling
+                          ? `${contact.hometownCity || contact.location || ''} → ${contact.travelDestination.split(',')[0]?.trim()}`
+                          : contact.hometownCity || contact.location || 'Location unknown'}
                       </p>
                     </div>
                   </div>
