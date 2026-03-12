@@ -14,8 +14,8 @@ export default function Donate() {
     {
       id: "supporter",
       name: "Community Supporter",
-      amount: "$15",
-      period: "year",
+      amount: "$5",
+      period: "month",
       description: "Help keep our community thriving",
       features: [
         "Support platform maintenance",
@@ -27,8 +27,8 @@ export default function Donate() {
     {
       id: "explorer",
       name: "Travel Explorer",
-      amount: "$20",
-      period: "year", 
+      amount: "$10",
+      period: "month", 
       description: "Power authentic travel connections",
       features: [
         "Everything in Community Supporter",
@@ -40,8 +40,8 @@ export default function Donate() {
     {
       id: "ambassador",
       name: "Travel Ambassador", 
-      amount: "$30",
-      period: "year",
+      amount: "$15",
+      period: "month",
       description: "Become a champion of meaningful travel",
       features: [
         "Everything in Travel Explorer",
@@ -155,7 +155,7 @@ export default function Donate() {
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   style={{ transition: 'none' }}
                 >
-                  Support {tier.amount}/year
+                  Support {tier.amount}/month
                 </Button>
               </CardContent>
             </Card>
