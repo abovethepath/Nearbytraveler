@@ -2336,7 +2336,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         'Austin', 'New Orleans', 'Miami', 'Chicago',
         'Paris', 'London', 'Rome', 'Barcelona', 'Tokyo',
         'Dubai', 'Bangkok', 'Singapore', 'Istanbul', 'Amsterdam',
-        'Nashville', 'Las Vegas', 'Berlin', 'Edinburgh', 'Lisbon', 'Stockholm', 'Vienna', 'Sydney', 'São Paulo'
+        'Nashville', 'Las Vegas', 'Berlin', 'Edinburgh', 'Lisbon', 'Stockholm', 'Vienna', 'Sydney', 'São Paulo', 'Mexico City'
       ];
       
       // Sort: featured cities first (in order), then by total activity
@@ -20940,7 +20940,148 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // POST seed launch city pages for cities that don't have city_pages rows yet
+  // POST clean up city_pages to match LAUNCH_CITY_NAMES exactly, seed Mexico City, and fix Sofia's city interests
+  app.post("/api/admin/sync-city-pages", async (req, res) => {
+    try {
+      const { getFeaturedActivitiesForCity, getStaticActivitiesForCity } = await import('./static-city-activities.js');
+      const { ensureCityHasActivities } = await import('./auto-city-setup.js');
+      const results: string[] = [];
+
+      const ALLOWED_CITIES = [
+        'Los Angeles', 'Los Angeles Metro', 'New York City', 'San Francisco', 'Austin', 'Chicago',
+        'Miami', 'New Orleans', 'Tokyo', 'Paris', 'London', 'Rome',
+        'Barcelona', 'Amsterdam', 'Bangkok', 'Singapore', 'Dubai', 'Istanbul',
+        'Nashville', 'Las Vegas', 'Berlin', 'Edinburgh', 'Lisbon', 'Stockholm',
+        'Vienna', 'Sydney', 'São Paulo', 'Mexico City'
+      ];
+
+      // Step 1: Delete city_pages rows NOT in the allowed list
+      const deleteResult = await db.execute(sql`
+        DELETE FROM city_pages
+        WHERE city NOT IN (
+          'Los Angeles','Los Angeles Metro','New York City','San Francisco','Austin','Chicago',
+          'Miami','New Orleans','Tokyo','Paris','London','Rome','Barcelona','Amsterdam',
+          'Bangkok','Singapore','Dubai','Istanbul','Nashville','Las Vegas','Berlin','Edinburgh',
+          'Lisbon','Stockholm','Vienna','Sydney','São Paulo','Mexico City'
+        )
+        RETURNING city
+      `);
+      const deletedCities = (deleteResult.rows as any[]).map(r => r.city);
+      results.push(`🗑️ Deleted ${deletedCities.length} non-launch city_pages: ${deletedCities.join(', ') || 'none'}`);
+
+      // Step 2: Ensure all allowed cities exist in city_pages
+      const cityDefaults: Record<string, { state: string | null; country: string }> = {
+        'Los Angeles': { state: 'California', country: 'United States' },
+        'Los Angeles Metro': { state: 'California', country: 'United States' },
+        'New York City': { state: 'New York', country: 'United States' },
+        'San Francisco': { state: 'California', country: 'United States' },
+        'Austin': { state: 'Texas', country: 'United States' },
+        'Chicago': { state: 'Illinois', country: 'United States' },
+        'Miami': { state: 'Florida', country: 'United States' },
+        'New Orleans': { state: 'Louisiana', country: 'United States' },
+        'Nashville': { state: 'Tennessee', country: 'United States' },
+        'Las Vegas': { state: 'Nevada', country: 'United States' },
+        'Tokyo': { state: null, country: 'Japan' },
+        'Paris': { state: null, country: 'France' },
+        'London': { state: null, country: 'United Kingdom' },
+        'Rome': { state: null, country: 'Italy' },
+        'Barcelona': { state: null, country: 'Spain' },
+        'Amsterdam': { state: null, country: 'Netherlands' },
+        'Bangkok': { state: null, country: 'Thailand' },
+        'Singapore': { state: null, country: 'Singapore' },
+        'Dubai': { state: null, country: 'United Arab Emirates' },
+        'Istanbul': { state: null, country: 'Turkey' },
+        'Berlin': { state: null, country: 'Germany' },
+        'Edinburgh': { state: 'Scotland', country: 'United Kingdom' },
+        'Lisbon': { state: null, country: 'Portugal' },
+        'Stockholm': { state: null, country: 'Sweden' },
+        'Vienna': { state: null, country: 'Austria' },
+        'Sydney': { state: 'New South Wales', country: 'Australia' },
+        'São Paulo': { state: null, country: 'Brazil' },
+        'Mexico City': { state: null, country: 'Mexico' },
+      };
+      for (const city of ALLOWED_CITIES) {
+        const { state, country } = cityDefaults[city] || { state: null, country: 'Unknown' };
+        try {
+          await db.execute(sql`
+            INSERT INTO city_pages (city, state, country, created_by_id, description)
+            VALUES (${city}, ${state}, ${country}, 2, ${'Discover ' + city + ' — connect with locals and travelers'})
+            ON CONFLICT DO NOTHING
+          `);
+        } catch (err: any) {
+          results.push(`❌ city_pages insert ${city}: ${err.message}`);
+        }
+      }
+      results.push(`✅ Ensured all ${ALLOWED_CITIES.length} launch cities exist in city_pages`);
+
+      // Step 3: Seed Mexico City activities
+      try {
+        await ensureCityHasActivities('Mexico City', null, 'Mexico', 2);
+        const featuredActivities = getFeaturedActivitiesForCity('Mexico City');
+        if (featuredActivities.length > 0) {
+          await db.update(cityActivities)
+            .set({ isFeatured: false, source: 'static' })
+            .where(and(eq(cityActivities.cityName, 'Mexico City'), eq(cityActivities.isFeatured, true)));
+          let updated = 0;
+          for (const featured of featuredActivities) {
+            const result = await db.update(cityActivities)
+              .set({ isFeatured: true, source: 'featured', rank: featured.rank })
+              .where(and(eq(cityActivities.cityName, 'Mexico City'), eq(cityActivities.activityName, featured.name)))
+              .returning();
+            if (result.length > 0) updated++;
+          }
+          results.push(`✅ Mexico City: ${updated}/${featuredActivities.length} activities featured`);
+        }
+      } catch (err: any) {
+        results.push(`❌ Mexico City activities: ${err.message}`);
+      }
+
+      // Step 4: Seed Sofia's (user_id=161) user_city_interests for LA and Mexico City
+      const sofiaId = 161;
+      const sofiaActivityNames = {
+        'Los Angeles': [
+          'Griffith Observatory', 'Hollywood Bowl', 'Grand Central Market', 'The Broad Museum',
+          'Santa Monica Pier', 'Getty Center', 'LACMA', 'Venice Beach Boardwalk',
+          'Little Tokyo', 'Hollywood Sign Hike'
+        ],
+        'Mexico City': [
+          'National Museum of Anthropology', 'Frida Kahlo Museum (Casa Azul)',
+          'Chapultepec Park & Castle', 'Roma Norte & Condesa',
+          'Street Food Tour', 'Coyoacán Market', 'Palacio de Bellas Artes',
+          'Xochimilco Floating Gardens', 'Lucha Libre Wrestling', 'Mezcal & Tequila Bars'
+        ]
+      };
+
+      for (const [cityName, activityNames] of Object.entries(sofiaActivityNames)) {
+        let inserted = 0;
+        for (const name of activityNames) {
+          try {
+            const activity = await db.select().from(cityActivities)
+              .where(and(eq(cityActivities.cityName, cityName), sql`LOWER(${cityActivities.activityName}) = LOWER(${name})`))
+              .limit(1);
+            if (activity.length === 0) {
+              results.push(`⚠️ ${cityName} activity not found: ${name}`);
+              continue;
+            }
+            await db.execute(sql`
+              INSERT INTO user_city_interests (user_id, city_name, activity_id, activity_name, is_active)
+              VALUES (${sofiaId}, ${cityName}, ${activity[0].id}, ${activity[0].activityName}, true)
+              ON CONFLICT DO NOTHING
+            `);
+            inserted++;
+          } catch (err: any) {
+            results.push(`❌ Sofia ${cityName} activity ${name}: ${err.message}`);
+          }
+        }
+        results.push(`✅ Sofia: ${inserted}/${activityNames.length} city interests added for ${cityName}`);
+      }
+
+      res.json({ success: true, results });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.post("/api/admin/seed-launch-city-pages", async (req, res) => {
     try {
       const launchCities = [
@@ -20976,7 +21117,7 @@ Questions? Just reply to this message. Welcome aboard!
       const { ensureCityHasActivities } = await import('./auto-city-setup.js');
       const allLaunchCities = [
         'Nashville', 'Las Vegas', 'Berlin', 'Edinburgh', 'Lisbon', 'Stockholm',
-        'Vienna', 'Sydney', 'São Paulo', 'Bangkok', 'Singapore', 'Dubai', 'Istanbul',
+        'Vienna', 'Sydney', 'São Paulo', 'Mexico City', 'Bangkok', 'Singapore', 'Dubai', 'Istanbul',
         'Amsterdam', 'Chicago', 'New York City', 'London', 'Paris', 'Rome', 'Barcelona',
         'Tokyo', 'Austin', 'Miami', 'New Orleans', 'San Francisco', 'Los Angeles'
       ];

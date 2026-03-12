@@ -380,6 +380,20 @@ export const FEATURED_CITY_ACTIVITIES: Record<string, Array<{name: string, descr
     { name: "Surry Hills & Newtown", description: "Trendy neighborhoods with cafes, galleries, and live music", category: "culture", rank: 11 },
     { name: "Hunter Valley Wine Tour", description: "Award-winning wineries two hours from Sydney", category: "daytrip", rank: 12 },
   ],
+  "Mexico City": [
+    { name: "National Museum of Anthropology", description: "World-class museum with the Aztec Sun Stone and Mayan treasures", category: "culture", rank: 1 },
+    { name: "Teotihuacán Pyramids", description: "Ancient sun and moon pyramids 30 miles from the city", category: "landmarks", rank: 2 },
+    { name: "Frida Kahlo Museum (Casa Azul)", description: "The iconic Blue House where Frida Kahlo was born and lived", category: "culture", rank: 3 },
+    { name: "Zócalo & Historic Center", description: "Massive central plaza surrounded by colonial and Aztec monuments", category: "landmarks", rank: 4 },
+    { name: "Chapultepec Park & Castle", description: "Vast urban park with a hilltop castle and multiple world-class museums", category: "outdoor", rank: 5 },
+    { name: "Roma Norte & Condesa", description: "Trendy Art Deco neighborhoods with cafes, galleries, and nightlife", category: "culture", rank: 6 },
+    { name: "Palacio de Bellas Artes", description: "Stunning Art Nouveau opera house with Diego Rivera murals", category: "culture", rank: 7 },
+    { name: "Xochimilco Floating Gardens", description: "Ancient canal system with colorful trajinera boats and mariachi music", category: "nature", rank: 8 },
+    { name: "Lucha Libre Wrestling", description: "Flamboyant masked wrestling spectacle at Arena México", category: "entertainment", rank: 9 },
+    { name: "Street Food Tour", description: "Tacos al pastor, tamales, tlayudas — the world's best street food scene", category: "food", rank: 10 },
+    { name: "Coyoacán Market & Cobblestones", description: "Bohemian neighborhood of Frida and Trotsky with vibrant market", category: "culture", rank: 11 },
+    { name: "Mezcal & Tequila Bars", description: "Explore Mexico City's world-class mezcalería scene", category: "nightlife", rank: 12 },
+  ],
   "São Paulo": [
     { name: "São Paulo Museum of Art (MASP)", description: "Latin America's most important art museum on Paulista Avenue", category: "culture", rank: 1 },
     { name: "Ibirapuera Park", description: "Sprawling urban park with museums and cultural events", category: "outdoor", rank: 2 },
@@ -856,6 +870,24 @@ export const STATIC_CITY_ACTIVITIES: Record<string, Array<{name: string, descrip
     { name: "Albertina Museum", description: "Graphic arts from Dürer to Monet to Picasso", category: "culture" },
     { name: "Spanish Riding School", description: "Centuries-old equestrian art with Lipizzaner horses", category: "culture" },
     { name: "Vienna Philharmonic", description: "World-renowned orchestra at the Musikverein", category: "entertainment" }
+  ],
+
+  "Mexico City": [
+    { name: "National Museum of Anthropology", description: "World-class museum with the Aztec Sun Stone and Mayan artifacts", category: "culture" },
+    { name: "Teotihuacán Pyramids", description: "Ancient pyramids of the Sun and Moon, 30 miles from the city", category: "landmarks" },
+    { name: "Frida Kahlo Museum (Casa Azul)", description: "The Blue House where Frida Kahlo was born and lived", category: "culture" },
+    { name: "Zócalo & Historic Center", description: "Massive central plaza surrounded by colonial monuments", category: "landmarks" },
+    { name: "Chapultepec Park & Castle", description: "Vast urban park with hilltop castle and multiple museums", category: "outdoor" },
+    { name: "Roma Norte & Condesa", description: "Trendy Art Deco neighborhoods with cafes and galleries", category: "culture" },
+    { name: "Palacio de Bellas Artes", description: "Stunning opera house with Diego Rivera murals", category: "culture" },
+    { name: "Xochimilco Floating Gardens", description: "Ancient canal system with trajinera boats and mariachi", category: "nature" },
+    { name: "Lucha Libre Wrestling", description: "Flamboyant masked wrestling at Arena México", category: "entertainment" },
+    { name: "Street Food Tour", description: "Tacos al pastor, tamales, and tlayudas — world-class street food", category: "food" },
+    { name: "Coyoacán Market", description: "Bohemian neighborhood with vibrant market and cobblestone streets", category: "culture" },
+    { name: "Mercado de La Merced", description: "Enormous traditional market with every ingredient of Mexican cooking", category: "food" },
+    { name: "Mezcal & Tequila Bars", description: "World-class mezcalerías and craft cocktail bars", category: "nightlife" },
+    { name: "Tepito & Barrio Bravo", description: "Authentic working-class neighborhood with street culture", category: "culture" },
+    { name: "Torre Latinoamericana", description: "Iconic skyscraper with observation deck and city views", category: "landmarks" }
   ],
 
   "São Paulo": [
