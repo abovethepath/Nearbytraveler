@@ -1650,26 +1650,20 @@ export function ProfileTabs(props: ProfilePageProps) {
                       </div>
                     )}
 
-                    {/* Lifestyle Welcome one-time dialog */}
+                    {/* Lifestyle Welcome — compact inline notice */}
                     {showLifestyleWelcome && (
-                      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <div className="fixed inset-0 bg-black/95" onClick={() => setShowLifestyleWelcome(false)} />
-                        <div className="relative bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-sm w-full p-6 space-y-4">
-                          <div className="flex items-center gap-2 text-red-700 dark:text-red-400">
-                            <Eye className="w-5 h-5" />
-                            <h3 className="font-semibold text-base">Lifestyle Interests are Private</h3>
-                          </div>
-                          <p className="text-sm text-gray-700 dark:text-gray-300">Your lifestyle interests are <strong>completely private</strong>. Never shown publicly. Only shared with mutually matched members.</p>
-                          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3 text-xs text-yellow-800 dark:text-yellow-300">
-                            Only people who also select matching lifestyle interests will discover you through those filters.
-                          </div>
-                          <button
-                            onClick={() => setShowLifestyleWelcome(false)}
-                            className="w-full py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium text-sm"
-                          >
-                            Got it
-                          </button>
+                      <div className="rounded-lg border border-red-200 dark:border-red-800/60 bg-red-50 dark:bg-red-950/40 p-3 flex flex-col sm:flex-row sm:items-start gap-2 text-sm">
+                        <Eye className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-red-800 dark:text-red-300 text-xs mb-0.5">Lifestyle interests are private</p>
+                          <p className="text-red-700 dark:text-red-400 text-xs leading-snug">Never shown publicly — only shared with mutually matched members who select the same interests.</p>
                         </div>
+                        <button
+                          onClick={() => setShowLifestyleWelcome(false)}
+                          className="shrink-0 self-start sm:self-center px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-medium"
+                        >
+                          Got it
+                        </button>
                       </div>
                     )}
 
