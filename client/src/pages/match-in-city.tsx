@@ -2468,95 +2468,108 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-2">🎯 Group 1: Things to Do in {selectedCity}</h3>
                         <p className="text-gray-400 text-xs sm:text-sm">Curated top spots and experiences — tap to add to your plans</p>
                         <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-yellow-500 to-orange-500 mx-auto rounded-full mt-2"></div>
-                        {/* Inline text box: add custom "thing I want to do" — editable/deletable by all */}
-                        <div className="flex flex-col sm:flex-row gap-2 mt-4 max-w-xl mx-auto">
-                          <input
-                            type="text"
-                            placeholder="Type something you want to do in this city..."
-                            value={customActivityText}
-                            onChange={(e) => setCustomActivityText(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                (document.querySelector('[data-add-custom-activity]') as HTMLButtonElement)?.click();
-                              }
-                            }}
-                            className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-gray-100 text-sm placeholder-gray-500 dark:placeholder-gray-400"
-                          />
-                          <Button
-                            data-add-custom-activity
-                            size="sm"
-                            disabled={!customActivityText.trim() || addingCustomActivity}
-                            onClick={async () => {
-                              if (!customActivityText.trim()) return;
-                              const stored = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
-                              const u = user || (stored ? JSON.parse(stored) : null);
-                              const uid = u?.id;
-                              if (!uid) {
-                                toast({ title: "Error", description: "Please log in to add activities", variant: "destructive" });
-                                return;
-                              }
-                              setAddingCustomActivity(true);
-                              try {
-                                const apiBase = getApiBaseUrl();
-                                const res = await fetch(`${apiBase}/api/city-activities`, {
-                                  method: 'POST',
-                                  headers: { 'Content-Type': 'application/json', 'x-user-id': String(uid) },
-                                  body: JSON.stringify({
-                                    cityName: selectedCity,
-                                    activityName: customActivityText.trim(),
-                                    description: `User-created: ${customActivityText.trim()} in ${selectedCity}`,
-                                    category: 'other',
-                                    state: '',
-                                    country: 'United States',
-                                    createdByUserId: uid
-                                  })
-                                });
-                                if (res.ok) {
-                                  const newActivity = await res.json();
-                                  const addedName = customActivityText.trim();
-                                  setCityActivities(prev => {
-                                    if (prev.some((a: any) => a?.id === newActivity?.id)) return prev;
-                                    return [...prev, newActivity];
-                                  });
-
-                                  // Auto-select immediately so it appears in "Things I Want to Do in..."
-                                  const interestResponse = await fetch(`${apiBase}/api/user-city-interests`, {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json', 'x-user-id': String(uid) },
-                                    body: JSON.stringify({ activityId: newActivity.id, cityName: selectedCity }),
-                                  });
-                                  if (interestResponse.ok) {
-                                    const newUserActivity = await interestResponse.json();
-                                    setUserActivities(prev => prev.concat(newUserActivity));
-                                    queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${uid}`] });
-                                  } else {
-                                    const err = await interestResponse.json().catch(() => ({} as any));
-                                    toast({
-                                      title: "Created, but not selected",
-                                      description: err?.error || err?.message || "We couldn't auto-select this plan. Please tap it to select.",
-                                      variant: "destructive",
-                                    });
-                                  }
-
-                                  setCustomActivityText('');
-                                  toast({ title: "Added & Selected", description: `"${addedName}" added to your plans for ${selectedCity}` });
-                                  fetchCityActivities();
-                                  fetchUserActivities();
-                                  fetchMatchingUsers();
-                                } else {
-                                  const err = await res.json();
-                                  toast({ title: "Error", description: err.error || "Failed to add", variant: "destructive" });
-                                }
-                              } finally {
-                                setAddingCustomActivity(false);
-                              }
-                            }}
-                          >
-                            {addingCustomActivity ? 'Adding…' : 'Add'}
-                          </Button>
-                        </div>
-                      </div>
+                        {/* Standout "Add your plans" card — helps others match with you */}
+                        <div className="mt-5 max-w-xl mx-auto">
+                          <div className="relative rounded-2xl overflow-hidden border-2 border-orange-400/60 dark:border-orange-500/50 shadow-lg shadow-orange-200/30 dark:shadow-orange-900/30">
+                            {/* gradient background */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-amber-50/60 to-blue-50/40 dark:from-orange-950/60 dark:via-slate-900 dark:to-blue-950/40 pointer-events-none" />
+                            <div className="relative p-4">
+                              <div className="flex items-center gap-2 mb-3">
+                                <span className="text-xl">🤝</span>
+                                <div className="text-left">
+                                  <p className="text-sm font-bold text-gray-900 dark:text-white leading-tight">Add something you're doing here</p>
+                                  <p className="text-xs text-orange-600 dark:text-orange-400 font-medium">So others doing the same thing can match with you</p>
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  placeholder="e.g. surfing, street food tour, hiking..."
+                                  value={customActivityText}
+                                  onChange={(e) => setCustomActivityText(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      e.preventDefault();
+                                      (document.querySelector('[data-add-custom-activity]') as HTMLButtonElement)?.click();
+                                    }
+                                  }}
+                                  className="flex-1 px-4 py-2.5 rounded-xl border-2 border-orange-200 dark:border-orange-600/50 bg-white dark:bg-slate-800/80 text-gray-900 dark:text-gray-100 text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-orange-400 dark:focus:border-orange-400 transition-colors"
+                                />
+                                <Button
+                                  data-add-custom-activity
+                                  size="sm"
+                                  disabled={!customActivityText.trim() || addingCustomActivity}
+                                  className="px-5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 rounded-xl font-semibold shadow-sm disabled:opacity-50"
+                                  onClick={async () => {
+                                    if (!customActivityText.trim()) return;
+                                    const stored = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
+                                    const u = user || (stored ? JSON.parse(stored) : null);
+                                    const uid = u?.id;
+                                    if (!uid) {
+                                      toast({ title: "Error", description: "Please log in to add activities", variant: "destructive" });
+                                      return;
+                                    }
+                                    setAddingCustomActivity(true);
+                                    try {
+                                      const apiBase = getApiBaseUrl();
+                                      const res = await fetch(`${apiBase}/api/city-activities`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json', 'x-user-id': String(uid) },
+                                        body: JSON.stringify({
+                                          cityName: selectedCity,
+                                          activityName: customActivityText.trim(),
+                                          description: `User-created: ${customActivityText.trim()} in ${selectedCity}`,
+                                          category: 'other',
+                                          state: '',
+                                          country: 'United States',
+                                          createdByUserId: uid
+                                        })
+                                      });
+                                      if (res.ok) {
+                                        const newActivity = await res.json();
+                                        const addedName = customActivityText.trim();
+                                        setCityActivities(prev => {
+                                          if (prev.some((a: any) => a?.id === newActivity?.id)) return prev;
+                                          return [...prev, newActivity];
+                                        });
+                                        const interestResponse = await fetch(`${apiBase}/api/user-city-interests`, {
+                                          method: 'POST',
+                                          headers: { 'Content-Type': 'application/json', 'x-user-id': String(uid) },
+                                          body: JSON.stringify({ activityId: newActivity.id, cityName: selectedCity }),
+                                        });
+                                        if (interestResponse.ok) {
+                                          const newUserActivity = await interestResponse.json();
+                                          setUserActivities(prev => prev.concat(newUserActivity));
+                                          queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${uid}`] });
+                                        } else {
+                                          const err = await interestResponse.json().catch(() => ({} as any));
+                                          toast({
+                                            title: "Created, but not selected",
+                                            description: err?.error || err?.message || "We couldn't auto-select this plan. Please tap it to select.",
+                                            variant: "destructive",
+                                          });
+                                        }
+                                        setCustomActivityText('');
+                                        toast({ title: "Added & Selected", description: `"${addedName}" added to your plans for ${selectedCity}` });
+                                        fetchCityActivities();
+                                        fetchUserActivities();
+                                        fetchMatchingUsers();
+                                      } else {
+                                        const err = await res.json();
+                                        toast({ title: "Error", description: err.error || "Failed to add", variant: "destructive" });
+                                      }
+                                    } finally {
+                                      setAddingCustomActivity(false);
+                                    }
+                                  }}
+                                >
+                                  {addingCustomActivity ? 'Adding…' : 'Add'}
+                                </Button>
+                              </div>{/* end flex gap-2 */}
+                            </div>{/* end relative p-4 */}
+                          </div>{/* end rounded-2xl card */}
+                        </div>{/* end mt-5 max-w-xl */}
+                      </div>{/* end text-center mb-6 */}
                       <div className="flex flex-wrap gap-2">
                         {displayedGroup1.length > 0 && displayedGroup1.map((activity) => {
                           const isSelected = userActivities.some(ua => 
