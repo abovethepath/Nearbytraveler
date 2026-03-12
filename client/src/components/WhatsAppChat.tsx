@@ -1232,13 +1232,13 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             break;
 
           case 'typing:start':
-            if (data.payload.userId !== currentUserId) {
+            if (data.payload.userId !== currentUserId && data.chatroomId == chatId) {
               setTypingUsers(prev => new Set([...prev, data.payload.username]));
             }
             break;
 
           case 'typing:stop':
-            if (data.payload.userId !== currentUserId) {
+            if (data.payload.userId !== currentUserId && data.chatroomId == chatId) {
               setTypingUsers(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(data.payload.username);
