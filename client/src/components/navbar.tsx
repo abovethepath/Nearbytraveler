@@ -457,6 +457,20 @@ function Navbar() {
     enabled: !!directUser?.id && showConnectModal,
   });
 
+  // Unread DM count for navbar avatar badge
+  const { data: unreadMsgData } = useQuery<{ unreadCount: number }>({
+    queryKey: ["/api/messages", directUser?.id, "unread-count"],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/messages/${directUser?.id}/unread-count`, { credentials: "include" });
+      if (!res.ok) return { unreadCount: 0 };
+      return res.json();
+    },
+    enabled: !!directUser?.id,
+    staleTime: 30 * 1000,
+    refetchInterval: 30 * 1000,
+  });
+  const unreadMessageCount = unreadMsgData?.unreadCount ?? 0;
+
   // Activity feed unread count for navbar badge
   const { data: activityFeedData } = useQuery<{ unreadCount: number }>({
     queryKey: ["/api/activity-feed", directUser?.id],
@@ -563,6 +577,11 @@ function Navbar() {
                       className="border-2 border-white shadow-sm pointer-events-none"
                       clickable={false}
                     />
+                    {unreadMessageCount > 0 && (
+                      <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 pointer-events-none">
+                        {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
+                      </span>
+                    )}
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -605,6 +624,11 @@ function Navbar() {
                   >
                     <MessageCircle className="mr-2 h-4 w-4" />
                     <span>Messages</span>
+                    {unreadMessageCount > 0 && (
+                      <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                        {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
+                      </span>
+                    )}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => {
