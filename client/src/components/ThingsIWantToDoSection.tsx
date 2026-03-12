@@ -590,7 +590,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   const openPrefilledDmForCity = (cityLabel: string) => {
     const city = String(cityLabel || "").split(",")[0]?.trim() || "this city";
-    const prefilledMessage = `Hey! I noticed you haven't filled out your plans for ${city} yet — what are you hoping to do there?`;
+    const prefilledMessage = `Hey! I noticed you haven't filled out your plans for ${city} yet — what are you hoping to do?`;
     setLocation(`/messages?userId=${encodeURIComponent(String(userId))}&prefill=${encodeURIComponent(prefilledMessage)}`);
   };
 
