@@ -94,9 +94,16 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  const userCity = currentUser?.hometownCity || currentUser?.city || "";
-  const userState = currentUser?.hometownState || currentUser?.state || "";
-  const userCountry = currentUser?.hometownCountry || currentUser?.country || "USA";
+  // For travelers: use their active travel destination so they see nearby available users
+  // at wherever they currently are, not at their hometown.
+  const isTraveling = (currentUser as any)?.isCurrentlyTraveling;
+  const destCity    = (currentUser as any)?.destinationCity || (currentUser as any)?.destination_city;
+  const destState   = (currentUser as any)?.destinationState || (currentUser as any)?.destination_state;
+  const destCountry = (currentUser as any)?.destinationCountry || (currentUser as any)?.destination_country;
+
+  const userCity    = (isTraveling && destCity)    ? destCity    : (currentUser?.hometownCity    || currentUser?.city    || "");
+  const userState   = (isTraveling && destState)   ? destState   : (currentUser?.hometownState   || currentUser?.state   || "");
+  const userCountry = (isTraveling && destCountry) ? destCountry : (currentUser?.hometownCountry || currentUser?.country || "USA");
 
   const { data: myStatus } = useQuery<MyStatus | null>({
     queryKey: ["/api/available-now/my-status"],
