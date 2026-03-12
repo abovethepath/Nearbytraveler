@@ -581,7 +581,8 @@ export default function SignupTraveling() {
                 
                 <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/30 rounded-lg p-3 border border-blue-200 dark:border-blue-700">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                    Pick at least 7 — the more you choose, the better your matches
+                    What do you like to do in your hometown? What about while traveling?<br />
+                    <span className="text-xs font-normal text-gray-500 dark:text-gray-400">Fill out as many as possible — the more you pick, the better your matches</span>
                   </span>
                   <span className={`text-sm font-bold px-3 py-1 rounded-full ${
                     getTotalInterestsCount() >= 7 
