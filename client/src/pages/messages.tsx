@@ -7,6 +7,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { ChatInput } from '@/components/ui/chat-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MessageCircle, Send, Users, ArrowLeft, Heart, Reply, Copy, Edit2, Trash2, Check, X, ThumbsUp, Clock, Zap } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import WhatsAppChat from '@/components/WhatsAppChat';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
@@ -97,6 +107,10 @@ export default function Messages() {
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editText, setEditText] = useState('');
+  const [dismissTarget, setDismissTarget] = useState<{ type: 'meetup' | 'dm'; id: number; name: string } | null>(null);
+  const [dismissedDMs, setDismissedDMs] = useState<number[]>(() => {
+    try { return JSON.parse(localStorage.getItem('nt_dismissed_dms') || '[]'); } catch { return []; }
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -253,6 +267,40 @@ export default function Messages() {
       toast({ title: "Message failed to send", variant: "destructive" });
     },
   });
+
+  const dismissMeetupChatMutation = useMutation({
+    mutationFn: async (chatroomId: number) => {
+      const res = await fetch(`${getApiBaseUrl()}/api/meetup-chatrooms/${chatroomId}/dismiss`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'x-user-id': String(userId) },
+      });
+      if (!res.ok) throw new Error('Failed to dismiss');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/meetup-chatrooms/mine'] });
+      setDismissTarget(null);
+      toast({ title: "Chat removed from your inbox" });
+    },
+    onError: () => {
+      toast({ title: "Failed to remove chat", variant: "destructive" });
+    },
+  });
+
+  const confirmDismiss = () => {
+    if (!dismissTarget) return;
+    if (dismissTarget.type === 'meetup') {
+      dismissMeetupChatMutation.mutate(dismissTarget.id);
+    } else {
+      const updated = [...dismissedDMs, dismissTarget.id];
+      setDismissedDMs(updated);
+      try { localStorage.setItem('nt_dismissed_dms', JSON.stringify(updated)); } catch {}
+      if (selectedConversation === dismissTarget.id) setSelectedConversation(null);
+      setDismissTarget(null);
+      toast({ title: "Conversation removed from your inbox" });
+    }
+  };
 
   useEffect(() => {
     if (!selectedMeetupChat || (meetupChatrooms as any[]).length === 0) return;
@@ -780,7 +828,7 @@ export default function Messages() {
                       return (
                         <div
                           key={`mc-${mc.id}`}
-                          className={`${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
+                          className={`group ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
                             isSelected
                               ? 'bg-gradient-to-r from-orange-500 to-orange-600 border-l-4 border-l-orange-300 shadow-lg text-white'
                               : 'hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-l-4 hover:border-l-orange-400'
@@ -830,6 +878,19 @@ export default function Messages() {
                                 )}
                               </div>
                             </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDismissTarget({ type: 'meetup', id: mc.id, name: mc.chatroomName || 'Meetup Chat' });
+                              }}
+                              className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
+                                isSelected ? 'text-white/70 hover:text-white hover:bg-white/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+                              }`}
+                              title="Remove from inbox"
+                              aria-label="Remove chatroom"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         </div>
                       );
@@ -845,14 +906,15 @@ export default function Messages() {
               )}
               {conversations
                 .filter((conv: any) => 
-                  !connectionSearch || 
-                  conv.username.toLowerCase().includes(connectionSearch.toLowerCase())
+                  !dismissedDMs.includes(conv.userId) &&
+                  (!connectionSearch || 
+                  conv.username.toLowerCase().includes(connectionSearch.toLowerCase()))
                 )
                 .map((conv: any) => (
                   <div
                     key={conv.userId}
                     data-conversation-id={conv.userId}
-                    className={`${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
+                    className={`group ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
                       selectedConversation === conv.userId 
                         ? 'bg-gradient-to-r from-blue-600 to-blue-700 border-l-4 border-l-blue-400 shadow-lg text-white' 
                         : conv.unreadCount > 0
@@ -925,6 +987,21 @@ export default function Messages() {
                       {selectedConversation === conv.userId && (
                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                       )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDismissTarget({ type: 'dm', id: conv.userId, name: conv.username });
+                        }}
+                        className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
+                          selectedConversation === conv.userId
+                            ? 'text-white/70 hover:text-white hover:bg-white/20'
+                            : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        }`}
+                        title="Remove from inbox"
+                        aria-label="Remove conversation"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -1394,6 +1471,27 @@ export default function Messages() {
         </>,
         document.body
       )}
+      <AlertDialog open={!!dismissTarget} onOpenChange={(open) => !open && setDismissTarget(null)}>
+        <AlertDialogContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-black dark:text-white">Remove from inbox?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+              Are you sure you want to remove <strong className="text-black dark:text-white">"{dismissTarget?.name}"</strong> from your inbox? This only removes it from your view — other members are unaffected.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDismiss}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -24015,6 +24015,28 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Dismiss a meetup chatroom from the user's list (sets their membership inactive)
+  app.post("/api/meetup-chatrooms/:chatroomId/dismiss", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      if (!chatroomId) return res.status(400).json({ error: "Invalid chatroom ID" });
+
+      await db.update(chatroomMembers)
+        .set({ isActive: false })
+        .where(and(
+          eq(chatroomMembers.chatroomId, chatroomId),
+          eq(chatroomMembers.userId, Number(userId))
+        ));
+
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error dismissing chatroom:", error);
+      return res.status(500).json({ error: "Failed to dismiss chatroom" });
+    }
+  });
+
   app.post("/api/meetup-chatrooms/cleanup-expired", async (req: any, res) => {
     try {
       const userId = req.session?.user?.id || req.headers['x-user-id'];
