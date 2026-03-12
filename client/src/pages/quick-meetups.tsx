@@ -62,6 +62,10 @@ interface MeetupParticipant {
 function QuickMeetupsPage() {
   const { user } = useAuth();
   const actualUser = user || authStorage.getUser();
+  // Quick Meetups are location-based: show the city you're physically in right now
+  const _isTraveling = (actualUser as any)?.isCurrentlyTraveling;
+  const _destCity    = (actualUser as any)?.destinationCity || (actualUser as any)?.destination_city;
+  const effectiveCity = (_isTraveling && _destCity) ? _destCity : (actualUser?.hometownCity || '');
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -1019,7 +1023,7 @@ function QuickMeetupsPage() {
               <DialogTitle>{createSimilarData ? 'Create Similar Quick Meet' : 'Create Quick Meet'}</DialogTitle>
             </DialogHeader>
             <QuickMeetupWidget
-              city={actualUser?.hometownCity || ''}
+              city={effectiveCity}
               initialShowCreateForm={true}
               preFillData={createSimilarData}
               onCreateSuccess={() => { setShowCreateForm(false); setCreateSimilarData(null); }}

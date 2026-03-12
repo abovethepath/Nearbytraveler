@@ -94,20 +94,16 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  // For travelers: they are considered in 2 places — hometown AND destination.
-  // We fetch Available Now from both and merge results.
+  // Available Now is location-based: show who's available in the city you're physically in RIGHT NOW.
+  // Travelers see their destination city. Locals see their hometown. Never both.
   const isTraveling = (currentUser as any)?.isCurrentlyTraveling;
   const destCity    = (currentUser as any)?.destinationCity || (currentUser as any)?.destination_city;
   const destState   = (currentUser as any)?.destinationState || (currentUser as any)?.destination_state;
   const destCountry = (currentUser as any)?.destinationCountry || (currentUser as any)?.destination_country;
 
-  // Primary city used for activation (where they physically are)
   const userCity    = (isTraveling && destCity)    ? destCity    : (currentUser?.hometownCity    || currentUser?.city    || "");
   const userState   = (isTraveling && destState)   ? destState   : (currentUser?.hometownState   || currentUser?.state   || "");
   const userCountry = (isTraveling && destCountry) ? destCountry : (currentUser?.hometownCountry || currentUser?.country || "USA");
-
-  // Hometown (always shown, even while traveling)
-  const hometownCity = currentUser?.hometownCity || currentUser?.city || "";
 
   const { data: myStatus } = useQuery<MyStatus | null>({
     queryKey: ["/api/available-now/my-status"],
@@ -115,32 +111,10 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   });
 
   const { data: availableUsers } = useQuery<AvailableEntry[]>({
-    queryKey: ["/api/available-now", userCity, isTraveling ? hometownCity : null],
+    queryKey: ["/api/available-now", userCity],
     queryFn: async () => {
-      // Fetch from primary city (destination when traveling, hometown when not)
       const res = await fetch(`/api/available-now?city=${encodeURIComponent(userCity)}`);
-      const primaryResults: AvailableEntry[] = await res.json();
-
-      // If traveling, ALSO fetch from hometown and merge (travelers appear in both places)
-      if (isTraveling && hometownCity && hometownCity !== userCity) {
-        try {
-          const hometownRes = await fetch(`/api/available-now?city=${encodeURIComponent(hometownCity)}`);
-          const hometownResults: AvailableEntry[] = await hometownRes.json();
-          // Merge and deduplicate by userId
-          const seen = new Set(primaryResults.map(u => u.userId));
-          const merged = [...primaryResults];
-          for (const entry of hometownResults) {
-            if (!seen.has(entry.userId)) {
-              seen.add(entry.userId);
-              merged.push(entry);
-            }
-          }
-          return merged;
-        } catch {
-          return primaryResults;
-        }
-      }
-      return primaryResults;
+      return res.json();
     },
     enabled: !!userCity,
     refetchInterval: 60000,

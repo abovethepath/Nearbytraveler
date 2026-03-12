@@ -2956,7 +2956,9 @@ export function ProfileTabs(props: ProfilePageProps) {
             {isOwnProfile && user && user.userType !== 'business' && (
               <div className="mt-6" data-testid="quick-meet-widget">
                 <QuickMeetupWidget 
-                  city={user?.hometownCity ?? ''} 
+                  city={((user as any)?.isCurrentlyTraveling && ((user as any)?.destinationCity || (user as any)?.destination_city))
+                    ? ((user as any)?.destinationCity || (user as any)?.destination_city)
+                    : (user?.hometownCity ?? '')} 
                   profileUserId={user?.id}
                   triggerCreate={triggerQuickMeetup}
                 />

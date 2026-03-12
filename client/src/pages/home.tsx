@@ -2071,7 +2071,15 @@ export default function Home() {
                 {/* Quick Meetup Widget - "Let's Meet Now" - MOVED HERE for better visibility - HIDE FOR BUSINESS USERS */}
                 {loadedSections.has('quickMeets') && effectiveUser?.userType !== 'business' && (
                   <div className="mb-8">
-                    <QuickMeetupWidget currentUser={effectiveUser} compactOnly />
+                    <QuickMeetupWidget
+                      currentUser={effectiveUser}
+                      compactOnly
+                      city={
+                        effectiveUser?.isCurrentlyTraveling
+                          ? ((effectiveUser as any)?.destinationCity || (effectiveUser as any)?.travelDestination?.split(',')[0]?.trim() || effectiveUser?.hometownCity || '')
+                          : (effectiveUser?.hometownCity || '')
+                      }
+                    />
                   </div>
                 )}
                 

@@ -16804,14 +16804,14 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      // Add city filtering if specified
+      // Add city filtering if specified — with metro area expansion
       if (city && typeof city === 'string') {
         const cityName = city.toString().split(',')[0].trim();
         if (process.env.NODE_ENV === 'development') console.log(`QUICK MEETS: Filtering by city: ${cityName}`);
         
-        const searchCities = [cityName];
+        const searchCities = getExpandedCityList(cityName);
         
-        if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETS: Searching single city:`, searchCities);
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETS: Searching cities (metro-expanded):`, searchCities);
         
         const cityConditions = searchCities.map(searchCity => 
           or(
