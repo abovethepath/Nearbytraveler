@@ -2654,12 +2654,37 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         conditions.push(eq(users.userType, userType));
       }
       
-      const results = await db.select().from(users).where(and(...conditions));
-      
-      const safeResults = results.map(({ password, ...rest }) => rest);
+      const localResults = await db.select().from(users).where(and(...conditions));
+
+      // Also include users who are ACTIVELY TRAVELING to this city (travelers appear in both hometown + destination)
+      const now = new Date();
+      const activelyTravelingHere = await db
+        .select({ user: users })
+        .from(travelPlans)
+        .innerJoin(users, eq(travelPlans.userId, users.id))
+        .where(and(
+          or(
+            ...expandedCities.map(c => metroAwareCityFilter(travelPlans.destinationCity, c)),
+            ...expandedCities.map(c => ilike(travelPlans.destination, `%${c}%`))
+          ),
+          lte(travelPlans.startDate, now),
+          gte(travelPlans.endDate, now),
+          ...(userType && userType !== 'all' ? [eq(users.userType, userType)] : [])
+        ));
+
+      // Merge locals + travelers, deduplicate by user ID
+      const seenIds = new Set(localResults.map((u: any) => u.id));
+      const combinedResults = [...localResults];
+      for (const { user } of activelyTravelingHere) {
+        if (user && !seenIds.has(user.id)) {
+          seenIds.add(user.id);
+          combinedResults.push(user);
+        }
+      }
+
+      const safeResults = combinedResults.map(({ password, ...rest }: any) => rest);
       
       // Enrich with travel status + Available Now for user card badges
-      const now = new Date();
       const availableNowResults = await db.select({ userId: availableNow.userId })
         .from(availableNow)
         .where(and(eq(availableNow.isAvailable, true), gte(availableNow.expiresAt, now)));
@@ -3656,6 +3681,37 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       }
       
+      // Also include users ACTIVELY TRAVELING to this city (they appear in both hometown + destination)
+      // Note: local var `users` shadows the Drizzle table here, so we query travel plans → user IDs separately
+      try {
+        const travelSearchCities = getExpandedCityList(searchCity);
+        const nowForTravel = new Date();
+        // Step 1: get user IDs with active plans to this city
+        const activePlanRows = await db
+          .select({ userId: travelPlans.userId })
+          .from(travelPlans)
+          .where(and(
+            or(
+              ...travelSearchCities.map(c => metroAwareCityFilter(travelPlans.destinationCity, c)),
+              ...travelSearchCities.map(c => ilike(travelPlans.destination, `%${c}%`))
+            ),
+            lte(travelPlans.startDate, nowForTravel),
+            gte(travelPlans.endDate, nowForTravel)
+          ));
+        // Step 2: fetch those users who aren't already in results
+        const existingUserIds = new Set(users.map((u: any) => u.id));
+        const newTravelerIds = activePlanRows.map(r => r.userId).filter(id => !existingUserIds.has(id));
+        if (newTravelerIds.length > 0) {
+          for (const uid of newTravelerIds) {
+            const travelerUser = await storage.getUser(uid);
+            if (travelerUser) users.push(travelerUser);
+          }
+          if (process.env.NODE_ENV === 'development') console.log(`✈️ TRAVELERS: Added ${newTravelerIds.length} active travelers to ${searchCity} results`);
+        }
+      } catch (travelErr) {
+        if (process.env.NODE_ENV === 'development') console.error('Error fetching active travelers for search-by-location:', travelErr);
+      }
+
       if (process.env.NODE_ENV === 'development') console.log(`CONNECTIONS FIXED: Found ${users.length} users for location: ${finalSearchLocation}, type: ${userType}`);
       
       // STEALTH MODE: Filter out users who have hidden themselves from the current searcher
