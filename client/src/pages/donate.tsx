@@ -39,13 +39,13 @@ export default function Donate() {
     },
     {
       id: "ambassador",
-      name: "Travel Ambassador", 
+      name: "Travel Champion", 
       amount: "$15",
       period: "month",
       description: "Become a champion of meaningful travel",
       features: [
         "Everything in Travel Explorer",
-        "Ambassador badge with cute flair"
+        "Champion badge with exclusive flair"
       ],
       icon: <Star className="w-8 h-8 text-orange-500" />,
       popular: false
