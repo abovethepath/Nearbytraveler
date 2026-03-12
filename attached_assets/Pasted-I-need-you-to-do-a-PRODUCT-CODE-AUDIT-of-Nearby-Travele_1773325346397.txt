@@ -1,0 +1,159 @@
+I need you to do a PRODUCT + CODE AUDIT of Nearby Traveler and tell me which engagement/retention features already exist, which partially exist, and which are missing.
+
+IMPORTANT:
+Do not start building yet.
+First inspect the current codebase and give me a structured audit.
+I want you to analyze existing frontend, backend, database, and notification logic related to engagement features.
+
+My goal:
+Make Nearby Traveler feel more alive, habit-forming, and viral, with real-time energy on the home page and city pages.
+
+Please audit these specific feature ideas and tell me whether each one is:
+1. Already exists
+2. Partially exists
+3. Missing
+4. Exists but is hidden / not surfaced well
+5. Exists but needs better UX or better placement
+
+FEATURES TO AUDIT:
+
+1. Live Activity Feed
+Examples:
+- user just arrived in a city
+- user created an event
+- user joined an event
+- users connected
+- someone updated travel dates
+- someone became “available now”
+
+Check:
+- Is there already any activity feed, city feed, event feed, or home feed that does this?
+- Is it truly chronological/live, or just static cards?
+- What exact data sources power it?
+- Is there backend support for activity objects, or only event/user queries?
+- Can it be expanded into a dedicated “live activity” feed without major refactor?
+
+2. Tonight in This City
+Examples:
+- 12 users available tonight
+- 3 events tonight
+- 5 travelers arriving soon
+- users free now / this evening
+
+Check:
+- Does the home page or city page already effectively do this through existing event feed or available-now logic?
+- Is there already enough data to create a dedicated “Tonight in [City]” module?
+- What queries would be needed?
+- Would this be redundant with current feed, or would it add something meaningfully different?
+
+3. People You Almost Met
+Examples:
+- you were recently in same city
+- you were at same event
+- you overlapped travel dates
+- you were nearby but did not connect
+
+Check:
+- Do we already store enough data for:
+  - city/date overlap
+  - event attendance overlap
+  - geolocation overlap
+  - last active overlap
+- Is there existing code that calculates commonality, overlap, or travel timing?
+- Can this be built safely and simply from current data?
+- Which version is easiest MVP:
+  A. same city + overlapping dates
+  B. same event but not connected
+  C. nearby location overlap
+
+4. Travel Timeline Map
+Examples:
+- show where friends / connections / network are traveling now or next
+- show upcoming arrivals by city
+- global movement view
+
+Check:
+- Do we already store enough structured travel plan data for this?
+- Is there a travelPlans table or equivalent?
+- Are lat/lng values already available for cities or users?
+- Is there already any map component or map library in project?
+- What would be the lightest MVP version:
+  A. city list/timeline only
+  B. map with pins
+  C. connections-only map
+
+5. Available Now / Spontaneous Plans
+This may already exist.
+
+Check:
+- What exactly already exists?
+- Is it only a button, or does full workflow exist?
+- Can users create spontaneous plans, browse them, join them, and chat?
+- Is it visible enough?
+- Is it working on mobile and iOS?
+- Is it strong enough to drive habit loops, or does it need UX improvements?
+
+6. Existing Home Feed / City Feed / Event Feed
+Check:
+- What feeds already exist?
+- What is shown on home page today?
+- What is shown on city pages today?
+- What is redundant across them?
+- Which feed is most engaging already?
+- Which feed feels dead or repetitive?
+- What should be merged, promoted, or redesigned?
+
+7. Notifications / Retention Hooks
+Check:
+- Do we already have push, in-app, badges, or notification center logic that could support:
+  - someone arrived in your city
+  - someone you may want to meet is nearby
+  - event happening tonight
+  - someone available now
+- What exists today vs what is stubbed vs broken?
+
+DELIVERABLE FORMAT:
+
+PART 1 — Feature Audit Table
+For each feature above, provide:
+- Status: Exists / Partial / Missing
+- Where it exists in code (file names, components, routes, DB tables)
+- What it currently does
+- What is missing
+- Whether it is worth improving or not
+
+PART 2 — Reuse Opportunities
+Tell me:
+- which of these ideas are already 70% built and just need better UI placement
+- which ones can be created quickly from existing data
+- which ones require new backend tables or new tracking
+- which ones would create the biggest engagement lift for the least engineering effort
+
+PART 3 — Best Next 3 Features
+Recommend the top 3 engagement features to build next based on:
+- highest retention impact
+- least engineering effort
+- least redundancy with current home/event feeds
+- strongest fit with Nearby Traveler’s core use case
+
+PART 4 — Technical Build Plan
+For the top 3 recommended features, give:
+- backend changes needed
+- frontend changes needed
+- DB changes needed
+- whether real-time updates are needed
+- safest MVP version first
+
+IMPORTANT RULES:
+- Do not refactor unrelated code
+- Do not build anything yet
+- Do not guess — inspect actual code first
+- Be specific with filenames, routes, tables, hooks, and components
+- Flag anything broken, duplicate, dead, or half-built
+- Tell me if the current event feed already makes one of these ideas redundant
+- Tell me if an idea sounds good conceptually but is not worth building yet
+
+At the end, give me:
+1. “Already have and should improve”
+2. “Easy new wins”
+3. “Later / more complex ideas”
