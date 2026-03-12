@@ -23771,6 +23771,20 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
+      // Expire stale pending requests FROM OTHER USERS to this host.
+      // The requests table has no session ID, so any old pending requests would
+      // re-appear for the new session (the requests endpoint only checks that the
+      // host has AN active session, not which session the request belongs to).
+      // Expire them so the new session starts with a truly clean request slate.
+      if (!preserveChatrooms) {
+        await db.update(availableNowRequests)
+          .set({ status: "declined" })
+          .where(and(
+            eq(availableNowRequests.toUserId, Number(userId)),
+            eq(availableNowRequests.status, "pending")
+          ));
+      }
+
       const [entry] = await db.insert(availableNow).values({
         userId: Number(userId),
         isAvailable: true,
@@ -24346,9 +24360,40 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
-      // Find recent Available Now sessions for this user (active OR expired within last 24h)
+      const now = new Date();
+
+      // First, check if the user has a CURRENT active session.
+      // If they do, only show the chatroom tied to THAT session — never bleed
+      // in chatrooms from yesterday's session even if they are still "active".
+      const [activeSession] = await db.select({ id: availableNow.id })
+        .from(availableNow)
+        .where(and(
+          eq(availableNow.userId, Number(userId)),
+          eq(availableNow.isAvailable, true),
+          gte(availableNow.expiresAt, now)
+        ))
+        .orderBy(desc(availableNow.createdAt))
+        .limit(1);
+
+      if (activeSession) {
+        // User is live — return only their current session's chatroom
+        const [chatroom] = await db.select()
+          .from(meetupChatrooms)
+          .where(and(
+            eq(meetupChatrooms.availableNowId, activeSession.id),
+            eq(meetupChatrooms.isActive, true)
+          ))
+          .orderBy(desc(meetupChatrooms.createdAt))
+          .limit(1);
+        return res.json({ chatroom: chatroom || null });
+      }
+
+      // User is NOT currently live — allow them to still see the chatroom from
+      // their most recent session for up to 24 h (so the chat isn't lost immediately
+      // after their session expires).  We still require isActive so deactivated
+      // (old-session) chatrooms are excluded.
       const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-      const recentSessions = await db.select()
+      const recentSessions = await db.select({ id: availableNow.id })
         .from(availableNow)
         .where(and(
           eq(availableNow.userId, Number(userId)),
@@ -24398,13 +24443,17 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json({ chatrooms: [] });
       }
 
-      // Find only ACTIVE Available Now sessions (not expired) — expired hangouts do not show on home page
+      // Find only ACTIVE Available Now sessions — must be both isAvailable=true AND
+      // not yet expired by timestamp.  Checking only expiresAt is not enough because
+      // a session can be manually ended (isAvailable=false) while expiresAt is still
+      // in the future, which would leak old chatrooms into a new session.
       const hostUserIds = acceptedRequests.map(r => r.toUserId);
       const rightNow = new Date();
       const activeSessions = await db.select()
         .from(availableNow)
         .where(and(
           inArray(availableNow.userId, hostUserIds),
+          eq(availableNow.isAvailable, true),
           gte(availableNow.expiresAt, rightNow)
         ));
 
