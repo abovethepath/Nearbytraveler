@@ -1474,9 +1474,9 @@ export default function Messages() {
       <AlertDialog open={!!dismissTarget} onOpenChange={(open) => !open && setDismissTarget(null)}>
         <AlertDialogContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-black dark:text-white">Remove from inbox?</AlertDialogTitle>
+            <AlertDialogTitle className="text-black dark:text-white">Delete this chat?</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
-              Are you sure you want to remove <strong className="text-black dark:text-white">"{dismissTarget?.name}"</strong> from your inbox? This only removes it from your view — other members are unaffected.
+              Are you sure you want to delete this chat? This only removes it from your view — other members are unaffected.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
