@@ -104,8 +104,7 @@ export async function checkSavedTravelerArrivals(): Promise<void> {
           title: pushTitle,
           message: pushBody,
           data: notifData,
-          isRead: false,
-        });
+        } as any);
       } catch (insertErr: any) {
         console.warn(
           `[savedTravelerArrival] Skipping — notification already recorded for saver ${row.saverUserId} / plan ${row.travelPlanId}`

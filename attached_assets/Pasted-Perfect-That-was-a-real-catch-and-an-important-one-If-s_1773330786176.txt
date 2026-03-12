@@ -1,0 +1,218 @@
+Perfect. That was a real catch, and an important one.
+
+If saved_traveler_arrived showed in the badge but not in the dropdown, users would feel like the app was buggy. Fixing that before deploy was the right move.
+
+Where you are now
+
+You’ve now got these engagement pieces either built or effectively ready:
+
+Tonight in [City]
+
+People You Almost Met
+
+Available Now city push
+
+Saved traveler arrival push
+
+Notification bell rendering fix
+
+That means the next prompts from earlier should shift from core retention plumbing to usage and growth.
+
+Best next prompts now
+1. Surface the save/heart feature better
+
+This should probably be next, because you just built the saved traveler arrival loop. Now users need to actually use it.
+
+Use this prompt:
+
+I want to improve discoverability and usage of the saved traveler / heart feature in Nearby Traveler.
+
+We already have:
+- saved_travelers infrastructure
+- saved traveler arrival notifications
+- notification bell rendering for saved_traveler_arrived
+
+Now inspect the current UI and audit whether users are likely to notice, understand, and use the save/heart feature.
+
+First audit:
+1. where the heart/save action currently appears
+2. whether it appears on home page cards, arrivals widgets, profile pages, city pages, or all of the above
+3. whether there is any dedicated Saved Travelers page or section
+4. whether users can review who they saved
+5. whether the value of saving someone is explained anywhere
+6. whether the save action is strong enough on mobile
+7. whether business users can see it by mistake
+
+Then implement the smallest high-value MVP improvement.
+
+Best options to consider:
+- add a small “Saved Travelers” widget on home page
+- add helper text near heart/save button: “Save travelers to get notified when they arrive”
+- add a small section in arrivals/cards for “Saved by you”
+- add a page or drawer to review saved travelers if infrastructure already partially exists
+
+Requirements:
+- no big redesign
+- no unrelated refactors
+- mobile-first
+- reuse existing save logic/routes/tables
+- keep copy clean and simple
+
+After building, tell me:
+1. files changed
+2. what was added or improved
+3. where users now see the save feature more clearly
+4. whether users can now review saved travelers
+5. any follow-up recommendations
+2. Upgrade sharing / Reddit virality
+
+This is still one of the best growth prompts left.
+
+Upgrade Nearby Traveler’s share feature.
+
+Right now share mostly just copies a raw link. I want you to turn it into a polished viral share experience for profiles, events, and trips.
+
+First inspect existing share code and reuse it if possible.
+
+Then build:
+- reusable ShareModal / ShareSheet
+- dynamic share text for profile, event, and trip
+- Copy Link
+- Copy Text + Link
+- Native Share via navigator.share when available
+- Copy Reddit Post button that copies a Reddit-friendly message + link
+- lightweight toast confirmation after copy
+- graceful fallbacks on desktop/mobile/iOS
+
+Use real page data where available:
+- profile
+- event
+- trip city/dates
+
+Example trip share text:
+“I’m visiting [CITY] on [DATES] and using NearbyTraveler.org to meet locals and travelers. Anyone around?”
+
+Requirements:
+- mobile-first
+- no ugly alerts
+- keep existing copy-link fallback
+- no major refactors
+- do not break current share behavior
+- handle missing data safely
+
+After building, tell me:
+1. files changed
+2. exactly where share now works
+3. any limitations
+4. best phase-2 improvements
+3. Surface ActivityFeed better
+
+Because your audit showed it already exists but is hidden.
+
+I want you to improve discoverability of the existing ActivityFeed in Nearby Traveler.
+
+First inspect the current ActivityFeed implementation, /activity page, nav structure, and any existing home page widgets related to activity.
+
+Then propose and implement the smallest safe MVP to surface it better.
+
+Goals:
+- make activity feel visible and alive
+- improve retention without a big refactor
+- reuse the existing ActivityFeed and endpoint
+- do not build a full public city feed yet
+
+Audit first:
+1. where ActivityFeed is implemented
+2. how users currently reach it
+3. whether it is linked in bottom nav, top nav, or home page
+4. whether any existing widgets already overlap with it
+5. best small placement win
+
+Then build the best MVP option, such as:
+- add Activity to nav
+- add a home page card linking into activity
+- add a small “Recent Activity” preview widget on home
+- improve the /activity page header/context if needed
+
+Requirements:
+- do not refactor unrelated home widgets
+- keep it lightweight
+- mobile-first
+- no schema changes
+- reuse existing feed filters if possible
+
+After building, tell me:
+1. files changed
+2. what surfacing changes were made
+3. why that option was chosen
+4. any future city-feed follow-up ideas
+4. Where your connections are going
+
+This is the lighter version of the travel map idea you liked.
+
+Build the lightest MVP of a “Where Your Connections Are Going” feature for Nearby Traveler.
+
+Do not build a full global map yet.
+Start with a simple list/timeline version using existing travel plan data.
+
+Goal:
+Show users where their connections or saved travelers are traveling now or next.
+
+First inspect:
+1. travel_plans schema
+2. connections table
+3. saved_travelers table
+4. whether current profile/home pages already expose any future trip info
+5. best place to surface this
+
+Then build the safest MVP:
+- query active and upcoming travel plans for a user’s accepted connections
+- optionally include saved travelers if easy
+- show city + dates + avatar/name
+- group by:
+  - Here now
+  - Arriving soon
+  - Upcoming trips
+
+Frontend:
+Create a compact widget for home page or discover page.
+
+Requirements:
+- no geocoding
+- no map pins yet
+- no major refactors
+- mobile-first
+- hide cleanly if no data
+
+After building, tell me:
+1. files changed
+2. whether it includes connections, saved travelers, or both
+3. where it appears
+4. best phase-2 path toward a real travel timeline map
+My recommendation now
+
+The best order from here is:
+
+Deploy what’s done
+
+Save/heart feature surfacing
+
+Share / Reddit upgrade
+
+ActivityFeed surfacing
+
+Where your connections are going
+
+That gives you:
+
+retention loop completion
+
+then higher usage of the loop
+
+then growth
+
+then polish
+
+then product depth
+
+The smartest immediate next one is save/heart surfacing, because you just finished the back-end mechanics for it.

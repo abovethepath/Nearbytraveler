@@ -70,6 +70,7 @@ import NearbyTravelerSearchWidget from "@/components/NearbyTravelerSearchWidget"
 import { CityArrivalsWidget } from "@/components/CityArrivalsWidget";
 import { TonightWidget } from "@/components/TonightWidget";
 import { PeopleAlmostMet } from "@/components/PeopleAlmostMet";
+import { SavedTravelersWidget } from "@/components/SavedTravelersWidget";
 import { isLAMetroCity } from "@shared/constants";
 
 
@@ -2169,6 +2170,9 @@ export default function Home() {
               const arrivalsCity = rawCity && isLAMetroCity(rawCity) ? 'Los Angeles' : rawCity;
               return arrivalsCity ? <CityArrivalsWidget cityName={arrivalsCity} /> : null;
             })()}
+
+            {/* Saved Travelers */}
+            {effectiveUser?.userType !== 'business' && <SavedTravelersWidget />}
 
             {/* People You Almost Met */}
             {effectiveUser?.userType !== 'business' && <PeopleAlmostMet />}

@@ -2903,6 +2903,67 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // GET /api/saved-travelers - List saved travelers for current user, with latest trip info
+  app.get("/api/saved-travelers", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const rows = await db.execute(sql`
+        SELECT
+          st.id,
+          st.saved_user_id     AS "savedUserId",
+          st.city_name         AS "cityName",
+          u.username,
+          u.first_name         AS "firstName",
+          u.profile_image      AS "profileImage",
+          u.hometown_city      AS "hometownCity",
+          u.hometown_country   AS "hometownCountry",
+          tp.destination_city  AS "destinationCity",
+          tp.start_date        AS "startDate",
+          tp.end_date          AS "endDate",
+          CASE
+            WHEN tp.start_date <= NOW() AND tp.end_date >= NOW() THEN 'here_now'
+            WHEN tp.start_date  > NOW() AND tp.start_date <= NOW() + INTERVAL '7 days' THEN 'arriving_soon'
+            WHEN tp.start_date  > NOW() THEN 'upcoming'
+            ELSE NULL
+          END AS "tripStatus"
+        FROM saved_travelers st
+        JOIN users u ON u.id = st.saved_user_id
+        LEFT JOIN LATERAL (
+          SELECT destination_city, start_date, end_date
+          FROM travel_plans
+          WHERE user_id = st.saved_user_id AND end_date >= NOW()
+          ORDER BY start_date ASC
+          LIMIT 1
+        ) tp ON true
+        WHERE st.user_id = ${Number(userId)}
+        ORDER BY tp.start_date ASC NULLS LAST, u.first_name ASC NULLS LAST
+      `);
+      res.json((rows as any).rows || []);
+    } catch (error: any) {
+      console.error("Get saved travelers error:", error);
+      res.status(500).json({ error: "Failed to fetch saved travelers" });
+    }
+  });
+
+  // GET /api/saved-travelers/check/:targetUserId - Is a specific user saved?
+  app.get("/api/saved-travelers/check/:targetUserId", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.json({ saved: false });
+      const rows = await db.select({ id: savedTravelers.id })
+        .from(savedTravelers)
+        .where(and(
+          eq(savedTravelers.userId, Number(userId)),
+          eq(savedTravelers.savedUserId, Number(req.params.targetUserId))
+        ))
+        .limit(1);
+      res.json({ saved: rows.length > 0 });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to check saved status" });
+    }
+  });
+
   // POST /api/saved-travelers - Heart / save a traveler for a city
   app.post("/api/saved-travelers", async (req: any, res) => {
     try {

@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette } from "lucide-react";
+import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette, Heart } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { ReportUserButton } from "@/components/report-user-button";
@@ -72,6 +74,39 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const isNewToTown = !!(user?.isNewToTown && user?.newToTownUntil && new Date(user.newToTownUntil) > new Date());
 
   const { resolvedTheme, setTheme } = useTheme();
+
+  // Save / heart state for other users' profiles
+  const qc = useQueryClient();
+  const { data: savedStatus } = useQuery<{ saved: boolean }>({
+    queryKey: ["/api/saved-travelers/check", user?.id],
+    enabled: !isOwnProfile && !!currentUser?.id && !!user?.id,
+    staleTime: 2 * 60 * 1000,
+  });
+  const [optimisticSaved, setOptimisticSaved] = useState<boolean | null>(null);
+  const isSaved = optimisticSaved !== null ? optimisticSaved : (savedStatus?.saved ?? false);
+
+  const saveMutation = useMutation({
+    mutationFn: async (save: boolean) => {
+      if (save) {
+        await apiRequest("POST", "/api/saved-travelers", { savedUserId: user?.id });
+      } else {
+        await apiRequest("DELETE", `/api/saved-travelers/${user?.id}`);
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["/api/saved-travelers/check", user?.id] });
+      qc.invalidateQueries({ queryKey: ["/api/saved-travelers"] });
+    },
+    onError: () => setOptimisticSaved(null),
+  });
+
+  const handleSaveTraveler = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const next = !isSaved;
+    setOptimisticSaved(next);
+    saveMutation.mutate(next);
+  };
 
   const [shareWithFriendsOpen, setShareWithFriendsOpen] = React.useState(false);
   const [seeAllCommonOpen, setSeeAllCommonOpen] = React.useState(false);
@@ -1079,6 +1114,21 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
         />
       )}
     </div>
+    {currentUser && (
+      <button
+        type="button"
+        onClick={handleSaveTraveler}
+        title={isSaved ? "Saved — tap to remove" : "Save to get notified when they arrive"}
+        className={`flex items-center gap-1 px-2 h-8 rounded-lg text-[12px] font-medium transition-colors border ${
+          isSaved
+            ? "text-rose-500 border-rose-200 dark:border-rose-800 hover:bg-rose-50 dark:hover:bg-rose-900/20"
+            : "text-gray-400 border-gray-200 dark:border-gray-700 hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-800"
+        }`}
+      >
+        <Heart className="w-3.5 h-3.5" fill={isSaved ? "currentColor" : "none"} />
+        <span>{isSaved ? "Saved" : "Save"}</span>
+      </button>
+    )}
   </>
                           ) : (
                             <>
@@ -1109,6 +1159,21 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   appearance="default"
                                   className="rounded-lg shadow-md transition-all shrink-0 px-4 py-1.5 text-sm font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
                                 />
+                              )}
+                              {currentUser && (
+                                <button
+                                  type="button"
+                                  onClick={handleSaveTraveler}
+                                  title={isSaved ? "Saved — tap to remove" : "Save to get notified when they arrive"}
+                                  className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-[12px] font-medium transition-colors border shrink-0 ${
+                                    isSaved
+                                      ? "text-rose-500 border-rose-200 dark:border-rose-800 hover:bg-rose-50 dark:hover:bg-rose-900/20"
+                                      : "text-gray-400 border-gray-200 dark:border-gray-700 hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-800"
+                                  }`}
+                                >
+                                  <Heart className="w-3.5 h-3.5" fill={isSaved ? "currentColor" : "none"} />
+                                  <span>{isSaved ? "Saved" : "Save"}</span>
+                                </button>
                               )}
                               {/* Other user's profile: share + report — desktop only (mobile has these in the About section below) */}
                               {!isMobileWeb && (
