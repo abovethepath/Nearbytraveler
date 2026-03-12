@@ -1140,10 +1140,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
         type="button"
         onClick={handleSaveTraveler}
         title={isSaved ? "Saved — tap to remove" : "Save to get notified when they arrive"}
-        className={`flex items-center gap-1 px-2 h-8 rounded-lg text-[12px] font-medium transition-colors border ${
+        className={`flex items-center gap-1.5 px-3 h-8 rounded-lg text-[12px] font-semibold transition-colors border ${
           isSaved
-            ? "text-rose-500 border-rose-200 dark:border-rose-800 hover:bg-rose-50 dark:hover:bg-rose-900/20"
-            : "text-gray-400 border-gray-200 dark:border-gray-700 hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-800"
+            ? "bg-rose-50 dark:bg-rose-900/30 text-rose-500 border-rose-300 dark:border-rose-700 hover:bg-rose-100 dark:hover:bg-rose-900/50"
+            : "bg-rose-50/60 dark:bg-rose-950/40 text-rose-400 dark:text-rose-400 border-rose-200 dark:border-rose-800/60 hover:bg-rose-100 dark:hover:bg-rose-900/40 hover:text-rose-500 hover:border-rose-300"
         }`}
       >
         <Heart className="w-3.5 h-3.5" fill={isSaved ? "currentColor" : "none"} />
@@ -1186,10 +1186,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   type="button"
                                   onClick={handleSaveTraveler}
                                   title={isSaved ? "Saved — tap to remove" : "Save to get notified when they arrive"}
-                                  className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-[12px] font-medium transition-colors border shrink-0 ${
+                                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-colors border shrink-0 ${
                                     isSaved
-                                      ? "text-rose-500 border-rose-200 dark:border-rose-800 hover:bg-rose-50 dark:hover:bg-rose-900/20"
-                                      : "text-gray-400 border-gray-200 dark:border-gray-700 hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-800"
+                                      ? "bg-rose-50 dark:bg-rose-900/30 text-rose-500 border-rose-300 dark:border-rose-700 hover:bg-rose-100 dark:hover:bg-rose-900/50"
+                                      : "bg-rose-50/60 dark:bg-rose-950/40 text-rose-400 dark:text-rose-400 border-rose-200 dark:border-rose-800/60 hover:bg-rose-100 dark:hover:bg-rose-900/40 hover:text-rose-500 hover:border-rose-300"
                                   }`}
                                 >
                                   <Heart className="w-3.5 h-3.5" fill={isSaved ? "currentColor" : "none"} />
