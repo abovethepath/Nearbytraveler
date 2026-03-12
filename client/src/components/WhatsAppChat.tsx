@@ -1174,9 +1174,14 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   (msgSenderId == chatId && (msgReceiverId == currentUserId || msgChatroomId == chatId));
 
                 if (isForThisDm && payload?.id != null) {
+                  // Normalize senderId: payload.senderId may be null if ws.userId was unset
+                  // at insert time, but data.senderId (top-level event field) is always set.
+                  const normalizedPayload = (payload.senderId != null)
+                    ? payload
+                    : { ...payload, senderId: msgSenderId };
                   setMessages((prev) => {
-                    if (prev.some((m) => m.id == payload.id)) return prev;
-                    return [...prev, payload];
+                    if (prev.some((m) => m.id == normalizedPayload.id)) return prev;
+                    return [...prev, normalizedPayload];
                   });
                   scrollToBottom();
                 } else if (import.meta.env.DEV) {
@@ -1231,14 +1236,24 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             ));
             break;
 
-          case 'typing:start':
-            if (data.payload.userId !== currentUserId && data.chatroomId == chatId) {
+          case 'typing:start': {
+            // For DMs: chatroomId in the event is the RECEIVER's userId (current user),
+            // so check that the SENDER (payload.userId) is the person we're chatting with.
+            // For chatrooms/meetups: chatroomId matches chatId directly.
+            const isTypingForThisChat = (data.chatType === 'dm')
+              ? data.payload.userId == chatId
+              : data.chatroomId == chatId;
+            if (data.payload.userId !== currentUserId && isTypingForThisChat) {
               setTypingUsers(prev => new Set([...prev, data.payload.username]));
             }
             break;
+          }
 
-          case 'typing:stop':
-            if (data.payload.userId !== currentUserId && data.chatroomId == chatId) {
+          case 'typing:stop': {
+            const isTypingStopForThisChat = (data.chatType === 'dm')
+              ? data.payload.userId == chatId
+              : data.chatroomId == chatId;
+            if (data.payload.userId !== currentUserId && isTypingStopForThisChat) {
               setTypingUsers(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(data.payload.username);
@@ -1246,6 +1261,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               });
             }
             break;
+          }
 
           case 'system:error':
             console.error('❌ WhatsApp Chat: Error:', data.payload.message);

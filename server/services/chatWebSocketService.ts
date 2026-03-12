@@ -881,7 +881,7 @@ export class ChatWebSocketService {
 
   // Handle typing start
   private async handleTypingStart(ws: AuthenticatedWebSocket, event: ChatEvent) {
-    const { chatroomId } = event;
+    const { chatroomId, chatType } = event;
     const typingKey = `${chatroomId}:${ws.userId}`;
     
     this.typingUsers.set(typingKey, {
@@ -894,16 +894,24 @@ export class ChatWebSocketService {
     const broadcastEvent: ChatEvent = {
       type: 'typing:start',
       chatroomId,
+      chatType,
       payload: { userId: ws.userId, username: ws.username },
       timestamp: Date.now(),
     };
 
-    await this.broadcastToChatroom(chatroomId, broadcastEvent, ws.userId);
+    // For DMs, chatroomId is the OTHER user's ID — use sendToUser directly
+    // (broadcastToChatroom queries chatroomMembers by chatroom ID which won't match a user ID)
+    if (chatType === 'dm') {
+      const receiverId = chatroomId;
+      this.sendToUser(receiverId, JSON.stringify(broadcastEvent));
+    } else {
+      await this.broadcastToChatroom(chatroomId, broadcastEvent, ws.userId);
+    }
   }
 
   // Handle typing stop
   private async handleTypingStop(ws: AuthenticatedWebSocket, event: ChatEvent) {
-    const { chatroomId } = event;
+    const { chatroomId, chatType } = event;
     const typingKey = `${chatroomId}:${ws.userId}`;
     
     this.typingUsers.delete(typingKey);
@@ -912,11 +920,18 @@ export class ChatWebSocketService {
     const broadcastEvent: ChatEvent = {
       type: 'typing:stop',
       chatroomId,
+      chatType,
       payload: { userId: ws.userId, username: ws.username },
       timestamp: Date.now(),
     };
 
-    await this.broadcastToChatroom(chatroomId, broadcastEvent, ws.userId);
+    // For DMs, chatroomId is the OTHER user's ID — use sendToUser directly
+    if (chatType === 'dm') {
+      const receiverId = chatroomId;
+      this.sendToUser(receiverId, JSON.stringify(broadcastEvent));
+    } else {
+      await this.broadcastToChatroom(chatroomId, broadcastEvent, ws.userId);
+    }
   }
 
   // Handle read receipt
