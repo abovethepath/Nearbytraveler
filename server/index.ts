@@ -1052,6 +1052,14 @@ app.use((req, res, next) => {
           } catch (error) {
             console.error("⚠️ Scheduled travel status check failed:", error);
           }
+
+          // Saved traveler arrivals — piggyback on hourly cadence
+          try {
+            const { checkSavedTravelerArrivals } = await import("./services/savedTravelerArrivalService");
+            await checkSavedTravelerArrivals();
+          } catch (error) {
+            console.error("⚠️ Saved traveler arrival check failed:", error);
+          }
         }, TRAVEL_STATUS_CHECK_INTERVAL);
 
         // Ambassador status: run on the 1st of every month at midnight (server local time).

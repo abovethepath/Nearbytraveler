@@ -1,0 +1,80 @@
+Let me inspect the exact insertion points before writing a single line of code.
+
+Good. Now let me check the exact schema for the push/settings tables before writing the backend:
+
+Now let me check the exact line after the city-pulse endpoint ends to find the insertion point:
+
+I have everything I need. Building all three features now — backend first, then components, then home page wiring.
+
+Step 1 — GET /api/tonight/:city endpoint:
+
+Check that lt is imported in routes.ts:
+
+Good — lt already imported. Now Phase 1B — wire up the activity log + push notification in the available-now POST route:
+
+Now Phase 2 backend — GET /api/people-almost-met. I'll add it right after the city arrivals endpoint:
+
+Backend is done. Now the frontend components. Let me build TonightWidget.tsx first:
+
+Now PeopleAlmostMet.tsx:
+
+Now wire both components into home.tsx — imports first, then placement:
+
+Now place both widgets in the right sidebar — TonightWidget above arrivals, PeopleAlmostMet below it:
+
+Let me check the logs for any compile errors now:
+
+Server running cleanly. Let me do a quick smoke test on the new endpoints:
+
+Both endpoints working perfectly. The tonight endpoint returns the right shape (empty on dev DB is correct), people-almost-met returns 401 as expected (auth required). Let me verify no TypeScript errors in the new components:
+
+Everything is clean. Here's exactly what was built:
+
+What was built
+Phase 1A — Tonight in [City] widget
+New endpoint: GET /api/tonight/:city
+Runs 3 parallel queries: events happening today, current available_now count, and travelers with active travel plans. Cached 10 minutes. Returns nothing for empty cities — no fake data.
+
+New component: client/src/components/TonightWidget.tsx
+Three sections that each appear only if they have data:
+
+🟢 Open to Meet — green pill showing live count, taps to /quick-meetups
+📅 Events Tonight — up to 5 events with time + venue, each links to the event detail page
+✈️ Travelers Here Now — avatar strip for up to 6 people, tappable to profiles, "+N more" overflow button
+The widget shows itself only when at least one section has data. If tonight is empty everywhere, it hides completely.
+
+Placement: Top of the right sidebar on the home page, above CityArrivalsWidget, above Available Now. It's the first thing you see in the sidebar when something is happening tonight.
+
+Phase 1B — Available Now push notification + activity log
+Modified: POST /api/available-now in server/routes.ts
+
+After the response is sent (non-blocking, fire-and-forget):
+
+Writes an activity_log entry (went_available_now) — enriches the feed for future city-feed work
+Finds users in the same city who have cityActivityAlerts = true and a valid Expo push token — using either hometown match or active travel plan
+Sends a push: "[FirstName] is available to meet in [City] right now." (or anonymous if no first name)
+Capped at 50 recipients, errors swallowed per-user so one bad token doesn't stop others
+No spam risk — the existing available_now flow already clears prior sessions before creating a new one, so a user can only trigger one push batch per activation.
+
+Phase 2 — People You Almost Met
+New endpoint: GET /api/people-almost-met (authenticated)
+Single SQL query joining travel_plans on matching city + overlapping dates, left-joining connections to exclude already-connected users. Returns up to 15 results with: name, photo, shared city, overlap label (e.g. "Barcelona in March"), days of overlap, hometown.
+
+New component: client/src/components/PeopleAlmostMet.tsx
+Compact card list showing:
+
+Avatar + name
+Orange line: "You were both in Barcelona in March"
+Hometown (if available)
+Connect button (sends connection request inline, no page nav needed)
+Shows up to 5 cards with a "See X more" button. Hides completely if no results. Only shown to non-business users.
+
+Placement: Right sidebar, below CityArrivalsWidget.
+
+Files changed
+File	What changed
+server/routes.ts	Added GET /api/tonight/:city, GET /api/people-almost-met, modified POST /api/available-now
+client/src/components/TonightWidget.tsx	New — created
+client/src/components/PeopleAlmostMet.tsx	New — created
+client/src/pages/home.tsx	Added imports + placed both widgets in right sidebar
+No schema changes. All features use existing tables.

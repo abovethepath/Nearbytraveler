@@ -1,0 +1,176 @@
+Build the next lightweight retention feature for Nearby Traveler:
+
+SAVED TRAVELER ARRIVAL PUSH NOTIFICATIONS
+
+Goal:
+If a user has saved / hearted a traveler, and that traveler’s trip to the relevant city starts today (or they are now considered “here now”), send a push notification to the saver so they know the traveler has arrived.
+
+IMPORTANT:
+- First inspect the existing code before changing anything
+- Reuse existing tables, routes, and push notification infrastructure
+- Do not refactor unrelated code
+- Keep MVP simple and safe
+- Avoid spam or duplicate notifications
+- Respect user notification settings if a relevant setting already exists
+- No schema changes unless absolutely necessary
+
+==================================================
+STEP 1 — AUDIT EXISTING INFRASTRUCTURE
+==================================================
+
+First inspect and report:
+
+1. Where the saved traveler / heart functionality currently exists
+- file names
+- components
+- routes
+- DB tables
+- current save / unsave logic
+
+2. Confirm the table structure for saved_travelers
+- who saved whom
+- whether city is stored
+- whether timestamps exist
+
+3. Confirm where traveler arrival / here-now logic currently exists
+- CityArrivalsWidget
+- travel_plans queries
+- any “arriving today” / “here now” logic already in backend
+
+4. Confirm push notification infrastructure to reuse
+- push service
+- expo push token
+- settings tables / flags
+- any existing anti-duplication patterns
+
+Do not build until audit is complete.
+
+==================================================
+STEP 2 — MVP BEHAVIOR
+==================================================
+
+Build the safest MVP version:
+
+When a traveler that I saved becomes “arriving today” or “here now” in a city relevant to their saved trip,
+send me a push notification.
+
+Push examples:
+- “[FirstName] just arrived in Los Angeles.”
+- “A traveler you saved just arrived in Barcelona.”
+- “[FirstName] is now in town.”
+
+Choose the safest version based on current privacy patterns already used in the app.
+
+MVP scope:
+- only notify once per arrival/trip window
+- do not send repeated pushes every time the query runs
+- do not send pushes for old trips
+- do not notify the traveler about themselves
+- do not notify users without valid push tokens
+- respect notification preferences if a relevant flag already exists
+- if no dedicated setting exists, use the closest existing relevant setting and tell me what you used
+
+==================================================
+STEP 3 — TRIGGER STRATEGY
+==================================================
+
+Choose the LIGHTEST reliable implementation after inspecting the codebase.
+
+Possible options:
+A. Trigger during existing arrivals / here-now query flow
+B. Trigger from travel plan creation/update if trip starts today
+C. Trigger from a scheduled/background-style check already present in app
+D. Trigger from a server route that already runs frequently enough
+
+Pick the smallest safe option that works with the current architecture.
+
+IMPORTANT:
+Do NOT build a heavy cron system unless one already exists.
+Do NOT add major infrastructure if avoidable.
+
+==================================================
+STEP 4 — DUPLICATE PREVENTION
+==================================================
+
+This is critical.
+
+You must prevent duplicate pushes for the same saved traveler + same trip.
+
+Use the smallest safe method available, such as:
+- existing tracker table if one exists
+- existing activity log patterns if appropriate
+- or a tiny new tracker table only if absolutely necessary
+
+If you believe a tiny tracker table is required, explain why and keep it minimal.
+
+Need to uniquely prevent:
+- same saver
+- same traveler
+- same trip / same arrival window
+- repeated rechecks
+
+==================================================
+STEP 5 — FRONTEND / PRODUCT SURFACE
+==================================================
+
+If useful and easy, also add a subtle in-app notification entry using the existing notifications system so the user can see:
+- “[FirstName] just arrived in [City]”
+
+Do not build a new UI for saved travelers unless it already exists and needs a tiny tweak.
+This feature is mainly about retention via push/in-app notification.
+
+==================================================
+STEP 6 — DELIVERABLES
+==================================================
+
+After building, tell me:
+
+1. Exact files changed
+2. What trigger strategy you chose and why
+3. How duplicate prevention works
+4. Which notification setting you used
+5. Any limitations or follow-up recommendations
+6. Whether this works for both locals saving travelers and travelers saving other travelers
+
+==================================================
+IMPORTANT RULES
+==================================================
+
+- Inspect first, then build
+- Reuse existing infrastructure
+- No unrelated refactors
+- No spammy notifications
+- No fake data
+- Keep MVP small, reliable, and production-safe
+
+If you want a tighter version to reduce drift, use this one instead:
+
+Build saved traveler arrival push notifications.
+
+Goal:
+When a user has saved/hearted a traveler, and that traveler arrives today / becomes here-now for a trip, notify the saver with a push and in-app notification if possible.
+
+First inspect existing:
+- saved traveler logic and table
+- CityArrivalsWidget / arrival queries
+- travel_plans structure
+- push notification service
+- notification settings
+- any duplicate-prevention patterns
+
+Then build the lightest safe MVP:
+- one push per saver + traveler + trip
+- no duplicate spam
+- respect notification settings
+- no major refactors
+- no heavy new infrastructure unless absolutely necessary
+
+Use existing architecture wherever possible.
+
+After building, tell me:
+1. files changed
+2. trigger strategy chosen
+3. duplicate prevention method
+4. limitations
+
+The next thing after that is probably a small nav/home surfacing fix for ActivityFeed, because your audit showed it already exists but is basically hidden.
