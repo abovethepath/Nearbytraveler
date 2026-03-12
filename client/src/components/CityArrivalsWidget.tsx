@@ -37,10 +37,12 @@ function formatDate(dateStr: string | null): string {
 function ArrivalCard({
   user,
   cityName,
+  alreadyHere,
   onProfileClick,
 }: {
   user: ArrivalUser;
   cityName: string;
+  alreadyHere?: boolean;
   onProfileClick: () => void;
 }) {
   const auth = useAuth();
@@ -103,7 +105,7 @@ function ArrivalCard({
           </p>
         )}
       </button>
-      {isLoggedIn && (
+      {isLoggedIn && !alreadyHere && (
         <button
           type="button"
           onClick={handleHeart}
@@ -130,6 +132,7 @@ function Section({
   sublabel,
   users,
   cityName,
+  alreadyHere,
   onProfileClick,
 }: {
   dot: string;
@@ -137,6 +140,7 @@ function Section({
   sublabel?: string;
   users: ArrivalUser[];
   cityName: string;
+  alreadyHere?: boolean;
   onProfileClick: (id: number) => void;
 }) {
   if (users.length === 0) return null;
@@ -159,6 +163,7 @@ function Section({
           key={u.userId}
           user={u}
           cityName={cityName}
+          alreadyHere={alreadyHere}
           onProfileClick={() => onProfileClick(u.userId)}
         />
       ))}
@@ -216,6 +221,8 @@ export function CityArrivalsWidget({ cityName }: Props) {
     </div>
   );
 
+  const hasArriving = (data.arrivingToday.length + data.arrivingSoon.length) > 0;
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-orange-200 dark:border-orange-900/40 p-4 shadow-sm">
       <div className="flex items-center gap-2 mb-3">
@@ -233,6 +240,7 @@ export function CityArrivalsWidget({ cityName }: Props) {
         label="Here Now"
         users={data.hereNow}
         cityName={cityName}
+        alreadyHere={true}
         onProfileClick={(id) => setLocation(`/profile/${id}`)}
       />
       <Section
@@ -251,9 +259,11 @@ export function CityArrivalsWidget({ cityName }: Props) {
         onProfileClick={(id) => setLocation(`/profile/${id}`)}
       />
 
-      <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2 text-center">
-        ♥ to get reminded when they arrive
-      </p>
+      {hasArriving && (
+        <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2 text-center">
+          ♥ to get reminded when they arrive
+        </p>
+      )}
     </div>
   );
 }
