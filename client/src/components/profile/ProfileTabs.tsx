@@ -1846,7 +1846,25 @@ export function ProfileTabs(props: ProfilePageProps) {
                         // Filter out city-prefixed activities (like "Los Angeles Metro: WALKING GROUPS") 
                         // since they're already shown in "Things I Want to Do" section below
                         const rawActivities = [...(user?.activities || []), ...(user?.customActivities ? user.customActivities.split(',').map(s => s.trim()).filter(Boolean) : [])];
-                        const allActivities = rawActivities.filter(activity => !activity.includes(':'));
+
+                        // Build a normalised set of all interests already displayed above
+                        // so we can suppress activities that duplicate them.
+                        const allShownInterests = [
+                          ...(user?.interests || []),
+                          ...(user?.customInterests ? user.customInterests.split(',').map((s: string) => s.trim()).filter(Boolean) : []),
+                        ].map((s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, ''));
+
+                        // Returns true if this activity is already covered by an interest tag.
+                        // Uses an exact-normalised match AND a "contains" check so that
+                        // "Live music shows" is suppressed when "Live Music" is already displayed.
+                        const isDuplicateOfInterest = (activity: string) => {
+                          const norm = activity.toLowerCase().replace(/[^a-z0-9]/g, '');
+                          return allShownInterests.some(i => i === norm || norm.includes(i) || i.includes(norm));
+                        };
+
+                        const allActivities = rawActivities.filter(
+                          activity => !activity.includes(':') && !isDuplicateOfInterest(activity)
+                        );
                         
                         return allActivities.length > 0 ? (
                           <div className="flex flex-wrap gap-2">
