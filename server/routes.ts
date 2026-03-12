@@ -23238,6 +23238,9 @@ Questions? Just reply to this message. Welcome aboard!
         vouchCategory: vouchCategory || 'general'
       });
 
+      // Bust the profile-bundle cache for the vouched user so the next fetch returns fresh vouch data
+      cache.deletePattern(`profile-bundle:${vouchedUserId}:viewer:*`).catch(() => {/* non-fatal */});
+
       res.status(201).json(newVouch);
     } catch (error: any) {
       console.error('Error creating vouch:', error);

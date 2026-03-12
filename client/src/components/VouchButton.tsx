@@ -59,12 +59,8 @@ export function VouchButton({ currentUserId, targetUserId, targetUsername, hideW
       });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}/vouches`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}`] });
-      queryClient.invalidateQueries({
-        predicate: (query) => {
-          const key = query.queryKey;
-          return Array.isArray(key) && typeof key[0] === 'string' && key[0].includes(`/api/users/${targetUserId}/profile-bundle`);
-        }
-      });
+      // Prefix match — invalidates all profile-bundle variants (any viewer ID) so the vouch count updates immediately
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}/profile-bundle`] });
       
       setShowVouchDialog(false);
       setVouchMessage("");
