@@ -2829,13 +2829,27 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Use getExpandedCityList — battle-tested metro expansion used everywhere else
       const allCities = getExpandedCityList(city);
 
+      // Build city match conditions for each query arm
+      const tpCityConditions = allCities.flatMap(c => [
+        sql`LOWER(tp.destination_city) = LOWER(${c})`,
+        sql`tp.destination ILIKE ${c}`,
+        sql`tp.destination ILIKE ${c + ',%'}`,
+        sql`tp.destination ILIKE ${'%' + c + '%'}`,
+      ]);
+      const uCityConditions = allCities.flatMap(c => [
+        sql`LOWER(u.destination_city) = LOWER(${c})`,
+        sql`u.travel_destination ILIKE ${c}`,
+        sql`u.travel_destination ILIKE ${c + ',%'}`,
+        sql`u.travel_destination ILIKE ${'%' + c + '%'}`,
+      ]);
+
       const rows = await db.execute(sql`
+        -- ARM 1: users with explicit travel_plans rows
         SELECT
           tp.user_id        AS "userId",
           tp.start_date     AS "startDate",
           tp.end_date       AS "endDate",
-          tp.destination,
-          tp.destination_city AS "destinationCity",
+          tp.destination    AS destination,
           u.username,
           u.first_name      AS "firstName",
           u.profile_image   AS "profileImage",
@@ -2847,18 +2861,44 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         WHERE
           tp.end_date >= ${now}
           AND tp.start_date <= ${threeDaysOut}
-          AND (
-            ${sql.join(
-              allCities.flatMap(c => [
-                sql`LOWER(tp.destination_city) = LOWER(${c})`,
-                sql`LOWER(tp.destination) = LOWER(${c})`,
-                sql`tp.destination ILIKE ${c + ',%'}`,
-                sql`tp.destination ILIKE ${'%' + c + '%'}`,
-              ]),
-              sql` OR `
-            )}
+          AND (${sql.join(tpCityConditions, sql` OR `)})
+
+        UNION
+
+        -- ARM 2: users who signed up as "currently traveling" (no travel_plans row)
+        SELECT
+          u.id              AS "userId",
+          COALESCE(u.travel_start_date, ${now}) AS "startDate",
+          COALESCE(u.travel_end_date, ${threeDaysOut}) AS "endDate",
+          u.travel_destination AS destination,
+          u.username,
+          u.first_name      AS "firstName",
+          u.profile_image   AS "profileImage",
+          u.user_type       AS "userType",
+          u.hometown_city   AS "hometownCity",
+          u.hometown_country AS "hometownCountry"
+        FROM users u
+        WHERE
+          u.is_currently_traveling = true
+          AND (u.travel_end_date IS NULL OR u.travel_end_date >= ${now})
+          AND (${sql.join(uCityConditions, sql` OR `)})
+          AND NOT EXISTS (
+            SELECT 1 FROM travel_plans tp2
+            WHERE tp2.user_id = u.id
+              AND tp2.end_date >= ${now}
+              AND tp2.start_date <= ${threeDaysOut}
+              AND (${sql.join(
+                allCities.flatMap(c => [
+                  sql`LOWER(tp2.destination_city) = LOWER(${c})`,
+                  sql`tp2.destination ILIKE ${c}`,
+                  sql`tp2.destination ILIKE ${c + ',%'}`,
+                  sql`tp2.destination ILIKE ${'%' + c + '%'}`,
+                ]),
+                sql` OR `
+              )})
           )
-        ORDER BY tp.start_date ASC
+
+        ORDER BY "startDate" ASC
       `);
 
       const rawRows: any[] = (rows as any).rows || [];
