@@ -2304,10 +2304,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Featured cities that should appear first (have curated "Popular" activities)
       const FEATURED_CITIES = [
         'Los Angeles', 'Los Angeles Metro', 'San Francisco', 'New York City',
-        'Austin', 'New Orleans', 'Miami', 'Chicago',
+        'Austin', 'New Orleans', 'Miami',
         'Paris', 'London', 'Rome', 'Barcelona', 'Tokyo',
         'Dubai', 'Bangkok', 'Singapore', 'Istanbul', 'Amsterdam',
-        'Nashville', 'Las Vegas', 'Berlin', 'Edinburgh', 'Lisbon', 'Stockholm', 'Vienna', 'Sydney', 'São Paulo', 'Mexico City'
+        'Nashville', 'Las Vegas', 'Berlin', 'Lisbon', 'Stockholm', 'Vienna', 'Sydney', 'São Paulo', 'Mexico City'
       ];
       
       // Sort: featured cities first (in order), then by total activity
@@ -21001,7 +21001,6 @@ Questions? Just reply to this message. Welcome aboard!
         { city: 'Los Angeles Metro', state: 'California', country: 'United States' },
         { city: 'New York City', state: 'New York', country: 'United States' },
         { city: 'Miami', state: 'Florida', country: 'United States' },
-        { city: 'Chicago', state: 'Illinois', country: 'United States' },
         { city: 'Las Vegas', state: 'Nevada', country: 'United States' },
         { city: 'Austin', state: 'Texas', country: 'United States' }
       ];
@@ -21392,10 +21391,10 @@ Questions? Just reply to this message. Welcome aboard!
 
       const ALLOWED_CITIES = [
         'Los Angeles', 'Los Angeles Metro', 'New York City', 'Brooklyn', 'Queens',
-        'San Francisco', 'Austin', 'Chicago',
+        'San Francisco', 'Austin',
         'Miami', 'New Orleans', 'Tokyo', 'Paris', 'London', 'Rome',
         'Barcelona', 'Amsterdam', 'Bangkok', 'Singapore', 'Dubai', 'Istanbul',
-        'Nashville', 'Las Vegas', 'Berlin', 'Edinburgh', 'Lisbon', 'Stockholm',
+        'Nashville', 'Las Vegas', 'Berlin', 'Lisbon', 'Stockholm',
         'Vienna', 'Sydney', 'São Paulo', 'Mexico City'
       ];
 
@@ -21404,15 +21403,26 @@ Questions? Just reply to this message. Welcome aboard!
         DELETE FROM city_pages
         WHERE city NOT IN (
           'Los Angeles','Los Angeles Metro','New York City','Brooklyn','Queens',
-          'San Francisco','Austin','Chicago',
+          'San Francisco','Austin',
           'Miami','New Orleans','Tokyo','Paris','London','Rome','Barcelona','Amsterdam',
-          'Bangkok','Singapore','Dubai','Istanbul','Nashville','Las Vegas','Berlin','Edinburgh',
+          'Bangkok','Singapore','Dubai','Istanbul','Nashville','Las Vegas','Berlin',
           'Lisbon','Stockholm','Vienna','Sydney','São Paulo','Mexico City'
         )
         RETURNING city
       `);
       const deletedCities = (deleteResult.rows as any[]).map(r => r.city);
       results.push(`🗑️ Deleted ${deletedCities.length} non-launch city_pages: ${deletedCities.join(', ') || 'none'}`);
+
+      // Step 1.5: Deduplicate — keep only the lowest-id row for each city name
+      const dedupResult = await db.execute(sql`
+        DELETE FROM city_pages
+        WHERE id NOT IN (
+          SELECT MIN(id) FROM city_pages GROUP BY city
+        )
+        RETURNING city
+      `);
+      const dedupedCities = (dedupResult.rows as any[]).map(r => r.city);
+      results.push(`🔁 Removed ${dedupedCities.length} duplicate city_pages rows: ${[...new Set(dedupedCities)].join(', ') || 'none'}`);
 
       // Step 2: Ensure all allowed cities exist in city_pages
       const cityDefaults: Record<string, { state: string | null; country: string }> = {
@@ -21423,7 +21433,6 @@ Questions? Just reply to this message. Welcome aboard!
         'Queens': { state: 'New York', country: 'United States' },
         'San Francisco': { state: 'California', country: 'United States' },
         'Austin': { state: 'Texas', country: 'United States' },
-        'Chicago': { state: 'Illinois', country: 'United States' },
         'Miami': { state: 'Florida', country: 'United States' },
         'New Orleans': { state: 'Louisiana', country: 'United States' },
         'Nashville': { state: 'Tennessee', country: 'United States' },
@@ -21439,7 +21448,6 @@ Questions? Just reply to this message. Welcome aboard!
         'Dubai': { state: null, country: 'United Arab Emirates' },
         'Istanbul': { state: null, country: 'Turkey' },
         'Berlin': { state: null, country: 'Germany' },
-        'Edinburgh': { state: 'Scotland', country: 'United Kingdom' },
         'Lisbon': { state: null, country: 'Portugal' },
         'Stockholm': { state: null, country: 'Sweden' },
         'Vienna': { state: null, country: 'Austria' },
