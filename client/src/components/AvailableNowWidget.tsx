@@ -141,6 +141,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       queryClient.invalidateQueries({ queryKey: ["/api/available-now"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-status"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/active-ids"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
       setShowSetup(false);
       toast({ title: "You're Available Now!", description: "Others in your city can see you're ready to hang out." });
     },
@@ -159,6 +160,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         state: userState,
         country: userCountry,
         durationHours: 4,
+        preserveChatrooms: true,
       });
       return res.json();
     },
@@ -177,6 +179,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       queryClient.invalidateQueries({ queryKey: ["/api/available-now"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-status"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/active-ids"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
       toast({ title: "Availability cleared" });
     },
     onError: (error: any) => {

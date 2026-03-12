@@ -23733,18 +23733,43 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
-      const { activities, customNote, city, state, country, durationHours } = req.body;
+      const { activities, customNote, city, state, country, durationHours, preserveChatrooms } = req.body;
       if (!city || !country) return res.status(400).json({ error: "City and country are required" });
 
       const hours = Math.min(Math.max(Number(durationHours) || 4, 1), 12);
       const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000);
 
-      await db.update(availableNow)
+      // Deactivate previous sessions and capture their IDs so we can also
+      // kill their linked meetup chatrooms (prevents old chatrooms bleeding into
+      // the new session and showing up with old participants).
+      // When preserveChatrooms=true (activity-only updates), skip chatroom teardown
+      // so existing meetup chats aren't destroyed mid-conversation.
+      const oldSessions = await db.update(availableNow)
         .set({ isAvailable: false })
         .where(and(
           eq(availableNow.userId, Number(userId)),
           eq(availableNow.isAvailable, true)
-        ));
+        ))
+        .returning({ id: availableNow.id });
+
+      if (oldSessions.length > 0 && !preserveChatrooms) {
+        const oldSessionIds = oldSessions.map(s => s.id);
+        const killedChatrooms = await db.update(meetupChatrooms)
+          .set({ isActive: false })
+          .where(and(
+            inArray(meetupChatrooms.availableNowId, oldSessionIds),
+            eq(meetupChatrooms.isActive, true)
+          ))
+          .returning({ id: meetupChatrooms.id });
+
+        // Also deactivate chatroom membership so those rooms vanish from /mine
+        if (killedChatrooms.length > 0) {
+          const killedIds = killedChatrooms.map(c => c.id);
+          await db.update(chatroomMembers)
+            .set({ isActive: false })
+            .where(inArray(chatroomMembers.chatroomId, killedIds));
+        }
+      }
 
       const [entry] = await db.insert(availableNow).values({
         userId: Number(userId),
@@ -23832,12 +23857,32 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
-      await db.update(availableNow)
+      const endedSessions = await db.update(availableNow)
         .set({ isAvailable: false })
         .where(and(
           eq(availableNow.userId, Number(userId)),
           eq(availableNow.isAvailable, true)
-        ));
+        ))
+        .returning({ id: availableNow.id });
+
+      // Kill associated meetup chatrooms so they vanish from the UI immediately
+      if (endedSessions.length > 0) {
+        const endedIds = endedSessions.map(s => s.id);
+        const killedChatrooms = await db.update(meetupChatrooms)
+          .set({ isActive: false })
+          .where(and(
+            inArray(meetupChatrooms.availableNowId, endedIds),
+            eq(meetupChatrooms.isActive, true)
+          ))
+          .returning({ id: meetupChatrooms.id });
+
+        if (killedChatrooms.length > 0) {
+          const killedIds = killedChatrooms.map(c => c.id);
+          await db.update(chatroomMembers)
+            .set({ isActive: false })
+            .where(inArray(chatroomMembers.chatroomId, killedIds));
+        }
+      }
 
       res.json({ ok: true });
     } catch (error: any) {
