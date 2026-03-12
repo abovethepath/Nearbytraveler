@@ -738,7 +738,14 @@ export function ProfileTabs(props: ProfilePageProps) {
                   <CardTitle className="text-base sm:text-lg lg:text-xl font-bold break-words text-left leading-tight flex-1 pr-2 text-gray-900 dark:text-white">
                     {user?.userType === 'business'
                       ? `About our business`
-                      : `About ${user?.username || 'User'}`}
+                      : (
+                        <span>
+                          @{user?.username || 'User'}
+                          {(user as any)?.firstName && (
+                            <span className="font-normal text-gray-500 dark:text-gray-400"> · aka {(user as any).firstName}</span>
+                          )}
+                        </span>
+                      )}
                   </CardTitle>
 
                   {!isOwnProfile && user && currentUser && (
