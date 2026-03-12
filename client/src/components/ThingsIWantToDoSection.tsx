@@ -891,19 +891,26 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
             )}
           </div>
           {isOwnProfile && (
-            <div className="mb-4 flex items-center gap-2" data-testid="location-visibility-toggle-row">
-              <div className="flex items-center gap-2 min-w-0">
-                <MapPin className={localLocationSharingEnabled ? "w-4 h-4 text-green-600 dark:text-green-400" : "w-4 h-4 text-gray-500 dark:text-gray-400"} />
-                <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
-                  Make myself visible
-                </span>
+            <div className="mb-4">
+              <div className="flex items-center gap-2" data-testid="location-visibility-toggle-row">
+                <div className="flex items-center gap-2 min-w-0">
+                  <MapPin className={localLocationSharingEnabled ? "w-4 h-4 text-green-600 dark:text-green-400" : "w-4 h-4 text-gray-400 dark:text-gray-500"} />
+                  <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
+                    Make myself visible
+                  </span>
+                </div>
+                <Switch
+                  checked={!!localLocationSharingEnabled}
+                  onCheckedChange={handleLocationVisibilityToggle}
+                  disabled={updateLocationSharingMutation.isPending}
+                  className="scale-[0.7] origin-left shrink-0"
+                />
               </div>
-              <Switch
-                checked={!!localLocationSharingEnabled}
-                onCheckedChange={handleLocationVisibilityToggle}
-                disabled={updateLocationSharingMutation.isPending}
-                className="scale-[0.7] origin-left shrink-0"
-              />
+              {!localLocationSharingEnabled && (
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                  <span>👻</span> You are invisible here — other members cannot find you in this city.
+                </p>
+              )}
             </div>
           )}
           <div className="space-y-0">
@@ -945,19 +952,26 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
             )}
           </div>
           {isOwnProfile && (
-            <div className="mb-4 flex items-center gap-2" data-testid="location-visibility-toggle-row">
-              <div className="flex items-center gap-2 min-w-0">
-                <MapPin className={localLocationSharingEnabled ? "w-4 h-4 text-green-600 dark:text-green-400" : "w-4 h-4 text-gray-500 dark:text-gray-400"} />
-                <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
-                  Make myself visible
-                </span>
+            <div className="mb-4">
+              <div className="flex items-center gap-2" data-testid="location-visibility-toggle-row">
+                <div className="flex items-center gap-2 min-w-0">
+                  <MapPin className={localLocationSharingEnabled ? "w-4 h-4 text-green-600 dark:text-green-400" : "w-4 h-4 text-gray-400 dark:text-gray-500"} />
+                  <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
+                    Make myself visible
+                  </span>
+                </div>
+                <Switch
+                  checked={!!localLocationSharingEnabled}
+                  onCheckedChange={handleLocationVisibilityToggle}
+                  disabled={updateLocationSharingMutation.isPending}
+                  className="scale-[0.7] origin-left shrink-0"
+                />
               </div>
-              <Switch
-                checked={!!localLocationSharingEnabled}
-                onCheckedChange={handleLocationVisibilityToggle}
-                disabled={updateLocationSharingMutation.isPending}
-                className="scale-[0.7] origin-left shrink-0"
-              />
+              {!localLocationSharingEnabled && (
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                  <span>👻</span> You are invisible here — other members cannot find you in this city.
+                </p>
+              )}
             </div>
           )}
           {isOwnProfile ? (
