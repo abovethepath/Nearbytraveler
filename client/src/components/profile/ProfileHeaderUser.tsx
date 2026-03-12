@@ -56,6 +56,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
   const invalidDestinations = ['unknown', '—', '–', '-', '--', 'n/a', 'null', ''];
   const hasValidTravelDestination = currentTravelPlan && typeof currentTravelPlan === 'string' && currentTravelPlan.trim().length > 0 && !invalidDestinations.includes(currentTravelPlan.trim().toLowerCase()) && !/^[\s\-—–]+$/.test(currentTravelPlan);
+
+  const upcomingTrip = React.useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const plans = (travelPlans || []) as any[];
+    const future = plans
+      .filter((p: any) => p.startDate && p.destination && new Date(p.startDate) >= today)
+      .sort((a: any, b: any) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+    return future[0] || null;
+  }, [travelPlans]);
   const connectionsCount = (userConnections as any[])?.length ?? 0;
   const mutedOrange = "#e8834a";
   const mutedOrangeHover = "#d4703a";
@@ -509,6 +519,22 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 appearance="default"
                                 className="rounded-lg shadow-sm transition-all px-5 h-8 text-[13px] font-bold !bg-[#2563EB] hover:!bg-[#1D4ED8] !text-white !border-0"
                               />
+                            )}
+
+                            {upcomingTrip && (
+                              <button
+                                type="button"
+                                className="inline-flex items-center justify-center gap-1.5 rounded-lg transition-all font-bold cursor-pointer px-4 h-8 text-[13px] bg-white/20 hover:bg-white/30 text-white border border-white/40 shadow-sm backdrop-blur-sm"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  openTab?.('travel');
+                                }}
+                                data-testid="button-upcoming-trip"
+                              >
+                                <Plane className="w-3.5 h-3.5" />
+                                <span>Upcoming Trip</span>
+                              </button>
                             )}
                           </div>
 
