@@ -2826,48 +2826,42 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const todayEnd = new Date(now); todayEnd.setHours(23, 59, 59, 999);
       const threeDaysOut = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
 
-      const rows = await db.select({
-        userId: travelPlans.userId,
-        startDate: travelPlans.startDate,
-        endDate: travelPlans.endDate,
-        destination: travelPlans.destination,
-        username: users.username,
-        firstName: users.firstName,
-        profileImage: users.profileImage,
-        userType: users.userType,
-        hometownCity: users.hometownCity,
-        hometownCountry: users.hometownCountry,
-      })
-        .from(travelPlans)
-        .innerJoin(users, eq(travelPlans.userId, users.id))
-        .where(and(
-          (() => {
-            // Build the full set of city names to match (metro expansion)
-            const metroCities = getMetroCities(city);
-            let allCities: string[];
-            if (metroCities.length > 0) {
-              // Querying a metro area name — include all suburb cities too
-              allCities = [city, ...metroCities];
-            } else {
-              // Querying a suburb — expand upward to include metro siblings
-              const metroName = getMetroAreaName(city);
-              allCities = metroName !== city
-                ? [city, metroName, ...getMetroCities(metroName)]
-                : [city];
-            }
-            // Match on destination_city when set; fall back to the destination text
-            // field (which may be "Redondo Beach, CA, US" or just "Redondo Beach").
-            const conditions = allCities.flatMap(c => [
-              sql`LOWER(${travelPlans.destinationCity}) = LOWER(${c})`,
-              sql`LOWER(${travelPlans.destination}) = LOWER(${c})`,
-              sql`LOWER(${travelPlans.destination}) LIKE LOWER(${c}) || ',%'`,
-            ]);
-            return or(...conditions)!;
-          })(),
-          gte(travelPlans.endDate, now),
-          lte(travelPlans.startDate, threeDaysOut)
-        ))
-        .orderBy(travelPlans.startDate);
+      // Use getExpandedCityList — battle-tested metro expansion used everywhere else
+      const allCities = getExpandedCityList(city);
+
+      const rows = await db.execute(sql`
+        SELECT
+          tp.user_id        AS "userId",
+          tp.start_date     AS "startDate",
+          tp.end_date       AS "endDate",
+          tp.destination,
+          tp.destination_city AS "destinationCity",
+          u.username,
+          u.first_name      AS "firstName",
+          u.profile_image   AS "profileImage",
+          u.user_type       AS "userType",
+          u.hometown_city   AS "hometownCity",
+          u.hometown_country AS "hometownCountry"
+        FROM travel_plans tp
+        INNER JOIN users u ON tp.user_id = u.id
+        WHERE
+          tp.end_date >= ${now}
+          AND tp.start_date <= ${threeDaysOut}
+          AND (
+            ${sql.join(
+              allCities.flatMap(c => [
+                sql`LOWER(tp.destination_city) = LOWER(${c})`,
+                sql`LOWER(tp.destination) = LOWER(${c})`,
+                sql`tp.destination ILIKE ${c + ',%'}`,
+                sql`tp.destination ILIKE ${'%' + c + '%'}`,
+              ]),
+              sql` OR `
+            )}
+          )
+        ORDER BY tp.start_date ASC
+      `);
+
+      const rawRows: any[] = (rows as any).rows || [];
 
       // Fetch which users the current user has hearted for this city
       let savedSet = new Set<number>();
@@ -2886,7 +2880,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const arrivingSoon: any[] = [];
       const seenUsers = new Set<number>();
 
-      for (const r of rows) {
+      for (const r of rawRows) {
         if (seenUsers.has(r.userId)) continue;
         // Don't show the current user in the list
         if (uid && r.userId === uid) { seenUsers.add(r.userId); continue; }
