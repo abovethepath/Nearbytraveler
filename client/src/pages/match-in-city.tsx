@@ -115,7 +115,8 @@ import {
   MoreHorizontal,
   RotateCcw,
   ExternalLink,
-  Check
+  Check,
+  Globe
 } from "lucide-react";
 
 interface MatchInCityProps {
@@ -198,6 +199,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [realEvents, setRealEvents] = useState<any[]>([]);
   const [realEventsLoading, setRealEventsLoading] = useState(false);
   const [showAllEvents, setShowAllEvents] = useState(false);
+  const [showAllLaunchCities, setShowAllLaunchCities] = useState(false);
   const [selectedEventIds, setSelectedEventIds] = useState<Set<string>>(new Set());
   
   // Sub-Interests State (monetizable specific interests like Pickleball, Yoga, etc.)
@@ -1964,6 +1966,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           {!citySearchTerm && (() => {
             const launchCities = getLaunchCities();
             if (launchCities.length === 0) return null;
+            const INITIAL_CITY_COUNT = 4;
+            const visibleCities = showAllLaunchCities ? launchCities : launchCities.slice(0, INITIAL_CITY_COUNT);
+            const hiddenCount = launchCities.length - INITIAL_CITY_COUNT;
             return (
               <div className="mt-12">
                 <div className="text-center mb-6">
@@ -1971,7 +1976,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   <p className="text-gray-600 dark:text-white/70">Browse curated activities in cities we've launched</p>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                  {launchCities.map((city, index) => (
+                  {visibleCities.map((city, index) => (
                     <div 
                       key={`launch-${index}`}
                       className="relative overflow-hidden rounded-xl cursor-pointer transition-transform hover:scale-105 shadow-lg group"
@@ -1992,6 +1997,27 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     </div>
                   ))}
                 </div>
+                {!showAllLaunchCities && hiddenCount > 0 && (
+                  <div className="text-center mt-6">
+                    <button
+                      onClick={() => setShowAllLaunchCities(true)}
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-gray-300 dark:border-white/20 text-gray-700 dark:text-white/80 hover:bg-gray-50 dark:hover:bg-white/5 font-medium transition-colors"
+                    >
+                      <Globe className="w-4 h-4" />
+                      See {hiddenCount} more cities
+                    </button>
+                  </div>
+                )}
+                {showAllLaunchCities && (
+                  <div className="text-center mt-6">
+                    <button
+                      onClick={() => setShowAllLaunchCities(false)}
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-gray-300 dark:border-white/20 text-gray-700 dark:text-white/80 hover:bg-gray-50 dark:hover:bg-white/5 font-medium transition-colors"
+                    >
+                      Show fewer cities
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })()}
