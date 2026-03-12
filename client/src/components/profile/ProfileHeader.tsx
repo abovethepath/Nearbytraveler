@@ -5,7 +5,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, Camera, Globe, MapPin, MessageCircle, MessageSquare, Phone, Mail, Share2, Shield, Users, Building2, Calendar, Plane } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
-import { VouchButton } from "@/components/VouchButton";
 import { ReportUserButton } from "@/components/report-user-button";
 import { formatLocationCompact, getCurrentTravelDestination } from "@/lib/dateUtils";
 import type { ProfilePageProps } from "./profile-complete-types";

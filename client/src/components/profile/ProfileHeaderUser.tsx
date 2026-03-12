@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette, Heart } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
+import { VouchButton } from "@/components/VouchButton";
 import { ReportUserButton } from "@/components/report-user-button";
 import { formatLocationCompact, formatTravelDestinationShort, getCurrentTravelDestination } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
@@ -593,6 +594,17 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 <Plane className="w-3.5 h-3.5" />
                                 <span>Upcoming Trip</span>
                               </button>
+                            )}
+
+                            {currentUser?.id && user?.id && currentUser.id !== user.id && (
+                              <VouchButton
+                                currentUserId={currentUser.id}
+                                targetUserId={user.id}
+                                targetUsername={user.username}
+                                hideWhenDisabled={true}
+                                appearance="ghost"
+                                className="rounded-lg shadow-sm px-5 h-8 text-[13px] font-bold"
+                              />
                             )}
                           </div>
 
