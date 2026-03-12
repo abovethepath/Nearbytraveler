@@ -10887,13 +10887,47 @@ Questions? Just reply to this message. Welcome aboard!
             WHEN c.requester_id = ${userId} THEN receiver.hometown_city
             ELSE requester.hometown_city
           END as "hometownCity",
-          CASE 
-            WHEN c.requester_id = ${userId} THEN receiver.travel_destination
-            ELSE requester.travel_destination
+          CASE
+            WHEN c.requester_id = ${userId} THEN (
+              SELECT CONCAT(
+                tp.destination_city,
+                CASE WHEN tp.destination_state IS NOT NULL AND tp.destination_state != '' THEN CONCAT(', ', tp.destination_state) ELSE '' END,
+                CASE WHEN tp.destination_country IS NOT NULL AND tp.destination_country != '' THEN CONCAT(', ', tp.destination_country) ELSE '' END
+              )
+              FROM travel_plans tp
+              WHERE tp.user_id = receiver.id
+                AND tp.start_date <= CURRENT_DATE
+                AND tp.end_date >= CURRENT_DATE
+              ORDER BY tp.start_date DESC LIMIT 1
+            )
+            ELSE (
+              SELECT CONCAT(
+                tp.destination_city,
+                CASE WHEN tp.destination_state IS NOT NULL AND tp.destination_state != '' THEN CONCAT(', ', tp.destination_state) ELSE '' END,
+                CASE WHEN tp.destination_country IS NOT NULL AND tp.destination_country != '' THEN CONCAT(', ', tp.destination_country) ELSE '' END
+              )
+              FROM travel_plans tp
+              WHERE tp.user_id = requester.id
+                AND tp.start_date <= CURRENT_DATE
+                AND tp.end_date >= CURRENT_DATE
+              ORDER BY tp.start_date DESC LIMIT 1
+            )
           END as "travelDestination",
-          CASE 
-            WHEN c.requester_id = ${userId} THEN receiver.is_currently_traveling
-            ELSE requester.is_currently_traveling
+          CASE
+            WHEN c.requester_id = ${userId} THEN (
+              SELECT true FROM travel_plans tp
+              WHERE tp.user_id = receiver.id
+                AND tp.start_date <= CURRENT_DATE
+                AND tp.end_date >= CURRENT_DATE
+              LIMIT 1
+            ) IS NOT NULL
+            ELSE (
+              SELECT true FROM travel_plans tp
+              WHERE tp.user_id = requester.id
+                AND tp.start_date <= CURRENT_DATE
+                AND tp.end_date >= CURRENT_DATE
+              LIMIT 1
+            ) IS NOT NULL
           END as "isCurrentlyTraveling"
         FROM connections c
         LEFT JOIN users receiver ON c.receiver_id = receiver.id
