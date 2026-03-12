@@ -179,7 +179,7 @@ export function TonightWidget({ city }: Props) {
               ))}
               {data!.hereNowTravelers.length > 6 && (
                 <button
-                  onClick={() => setLocation("/discover")}
+                  onClick={() => setLocation(`/city/${encodeURIComponent(displayCity)}`)}
                   className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-gray-900 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                 >
                   <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">
@@ -189,7 +189,7 @@ export function TonightWidget({ city }: Props) {
               )}
               {user && (
                 <button
-                  onClick={() => setLocation("/discover")}
+                  onClick={() => setLocation(`/city/${encodeURIComponent(displayCity)}`)}
                   className="ml-auto text-[11px] font-semibold text-orange-500 dark:text-orange-400 hover:underline flex-shrink-0"
                 >
                   View all
