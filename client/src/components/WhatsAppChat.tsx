@@ -678,10 +678,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       const id = Number((src as any)?.id ?? (item as any)?.userId ?? (item as any)?.id);
       if (Number.isFinite(id) && id > 0) ids.push(id);
     }
-    // Also include sender IDs from messages that are missing embedded sender data
+    // Also include sender IDs from messages that are missing embedded sender data OR
+    // have a sender with id but no displayable name (e.g. username=null from incomplete JOIN)
     // (handles users who left the chatroom but have historical messages)
     for (const msg of messages) {
-      if (!msg.sender?.id && msg.senderId) {
+      const senderMissingOrUnnamed = !msg.sender?.id || !(msg.sender?.username || msg.sender?.name);
+      if (senderMissingOrUnnamed && msg.senderId) {
         const id = Number(msg.senderId);
         if (Number.isFinite(id) && id > 0) ids.push(id);
       }
@@ -2448,10 +2450,16 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               // Use == for type-coerced comparison since currentUserId from localStorage may be string
               const isOwnMessage = message.senderId == currentUserId;
               const showAvatar = index === 0 || messages[index - 1].senderId !== message.senderId;
-              // Resolve sender: use embedded sender data, fall back to memberProfilesById cache
-              const resolvedSender = message.sender?.id
+              // Resolve sender: embedded data → memberProfilesById cache → DM partner props fallback
+              // Check for DISPLAYABLE name (not just id) — sender objects can have id but null username+name
+              const senderHasName = !!(message.sender?.username || message.sender?.name);
+              const resolvedSender = senderHasName
                 ? message.sender
-                : (memberProfilesById[message.senderId] || null);
+                : memberProfilesById[message.senderId]
+                  ? memberProfilesById[message.senderId]
+                  : (chatType === 'dm' && message.senderId == chatId && props.otherUserUsername)
+                    ? { id: chatId, username: props.otherUserUsername, name: null, profileImage: props.otherUserProfileImage ?? null }
+                    : null;
               
               return (
                 <div key={message.id} className={`flex gap-1.5 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
