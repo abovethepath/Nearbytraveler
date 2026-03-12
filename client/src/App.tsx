@@ -181,6 +181,7 @@ import NotFound from "@/pages/not-found";
 import Itinerary from "@/pages/itinerary";
 import SharedTrip from "@/pages/shared-trip";
 import JoinTrip from "@/pages/join-trip";
+import JoinChat from "@/pages/join-chat";
 import TravelBlog from "@/pages/travel-blog";
 import QuickLogin from "@/pages/quick-login";
 import SignOutPage from "@/pages/signout";
@@ -581,6 +582,7 @@ function Router() {
     // Invite / join flows
     if (normalizedPath.startsWith("/invite/")) return true;
     if (normalizedPath.startsWith("/join-trip/")) return true;
+    if (normalizedPath.startsWith("/join/")) return true;
 
     return false;
   }, [normalizedPath]);
@@ -1417,6 +1419,9 @@ function Router() {
       if (location.startsWith('/join-trip/') || location.startsWith('/invite/')) {
         return <JoinTrip />;
       }
+      if (location.startsWith('/join/')) {
+        return <JoinChat />;
+      }
       if (location === '/business-card') {
         console.log('Returning BusinessCard component for /business-card - PUBLIC ACCESS');
         return <BusinessCardPage />;
@@ -1651,6 +1656,10 @@ function Router() {
 
     if (location.startsWith('/join-trip/') || location.startsWith('/invite/')) {
       return <JoinTrip />;
+    }
+
+    if (location.startsWith('/join/')) {
+      return <JoinChat />;
     }
 
     if (location.startsWith('/deals/')) {

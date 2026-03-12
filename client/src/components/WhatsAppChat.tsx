@@ -11,7 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp, Camera, User as UserIcon, ShieldAlert, Share2, LogOut, Lock } from "lucide-react";
+import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp, Camera, User as UserIcon, ShieldAlert, Share2, LogOut, Lock, UserPlus } from "lucide-react";
+import ChatroomInvitePanel from "@/components/ChatroomInvitePanel";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
@@ -93,6 +94,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [selectedMember, setSelectedMember] = useState<ChatMember | null>(null);
   const [muteReason, setMuteReason] = useState("");
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [showInvitePanel, setShowInvitePanel] = useState(false);
   const [notificationsMuted, setNotificationsMuted] = useState(false);
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
@@ -2186,6 +2188,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); setShowMembers(true); }}>
                           <Users className="w-5 h-5" /><span className="font-semibold">View Members</span>
                         </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-green-300" onClick={() => { setMoreMenuOpen(false); setShowInvitePanel(true); }}>
+                          <UserPlus className="w-5 h-5" /><span className="font-semibold">Add People / Invite Link</span>
+                        </button>
                         <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); toggleNotificationsMuted(); }}>
                           {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
                           <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
@@ -2436,6 +2441,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   <DropdownMenuItem onClick={() => setShowMembers(true)}>
                     <Users className="w-4 h-4 mr-2" />
                     View Members
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="text-green-400 focus:text-green-300" onClick={() => setShowInvitePanel(true)}>
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Add People / Invite Link
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={toggleNotificationsMuted}>
                     {(notificationsMuted ? <Volume2 className="w-4 h-4 mr-2" /> : <VolumeX className="w-4 h-4 mr-2" />)}
@@ -2952,6 +2961,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           </div>
         </>,
         document.body
+      )}
+
+      {/* Invite Panel — for meetup/event chatrooms */}
+      {showInvitePanel && (chatType === 'meetup' || chatType === 'event') && currentUserId && (
+        <ChatroomInvitePanel
+          open={showInvitePanel}
+          onClose={() => setShowInvitePanel(false)}
+          chatroomId={chatId}
+          chatroomName={title}
+          currentUserId={currentUserId}
+        />
       )}
     </div>
   );

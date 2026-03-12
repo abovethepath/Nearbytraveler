@@ -1203,6 +1203,9 @@ export const meetupChatrooms = pgTable("meetup_chatrooms", {
   expiresAt: timestamp("expires_at").notNull(),
   participantCount: integer("participant_count").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow(),
+  inviteToken: text("invite_token").unique(), // shareable invite token, generated on demand
+  groupType: text("group_type"), // null = meetup/event/available_now, 'group_dm' = group chat created from a DM
+  createdByUserId: integer("created_by_user_id"), // for group_dm chatrooms
 });
 
 export const meetupChatroomMessages = pgTable("meetup_chatroom_messages", {

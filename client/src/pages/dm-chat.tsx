@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import WhatsAppChat from "@/components/WhatsAppChat";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MapPin, User, Plane, Users, Star, X } from "lucide-react";
+import { ArrowLeft, MapPin, User, Plane, Users, Star, X, UserPlus } from "lucide-react";
+import GroupDMDialog from "@/components/GroupDMDialog";
 import { AuthContext } from "@/App";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { ChatPageSkeleton } from "@/components/ui/chat-page-skeleton";
@@ -54,6 +55,7 @@ export default function DMChat() {
   const [resolvedUser, setResolvedUser] = useState<any>(contextUser ?? {});
   const [showThingsModal, setShowThingsModal] = useState(false);
   const [showContactsModal, setShowContactsModal] = useState(false);
+  const [showGroupDialog, setShowGroupDialog] = useState(false);
 
   useEffect(() => {
     if (contextUser?.id) {
@@ -258,6 +260,15 @@ export default function DMChat() {
             View Full Profile
           </Button>
 
+          <Button
+            onClick={() => setShowGroupDialog(true)}
+            variant="outline"
+            className="w-full gap-2 text-sm border-green-800 text-green-400 hover:border-green-500 hover:text-green-300 hover:bg-green-900/20 transition-colors"
+          >
+            <UserPlus className="w-4 h-4" />
+            Add People to Chat
+          </Button>
+
           <hr className="w-full border-gray-700" />
 
           <div className="flex justify-center gap-3 w-full">
@@ -342,6 +353,22 @@ export default function DMChat() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Group DM creator */}
+      {showGroupDialog && user && (
+        <GroupDMDialog
+          open={showGroupDialog}
+          onClose={() => setShowGroupDialog(false)}
+          currentUserId={user.id}
+          initialUser={{
+            id: otherUserId,
+            username: otherUser.username,
+            firstName: (otherUser as any).firstName,
+            name: otherUser.name,
+            profileImage: otherUser.profileImage,
+          }}
+        />
+      )}
     </div>
   );
 }
