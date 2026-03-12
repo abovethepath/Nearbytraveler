@@ -414,6 +414,7 @@ function Navbar() {
       { path: "/match-in-city", label: "City Plans", icon: "🎯" },
       { path: "/plan-trip", label: "Trip Planning", icon: "🧭" },
       { path: "/connect", label: "Connect", icon: "💝" },
+      { path: "/activity", label: "Activity", icon: "🔔" },
       { path: "/discover", label: "Explore", icon: "🌐" },
     ];
   };
@@ -456,6 +457,21 @@ function Navbar() {
     enabled: !!directUser?.id && showConnectModal,
   });
 
+  // Activity feed unread count for navbar badge
+  const { data: activityFeedData } = useQuery<{ unreadCount: number }>({
+    queryKey: ["/api/activity-feed", directUser?.id],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/activity-feed/${directUser?.id}`, { credentials: "include" });
+      if (!res.ok) return { unreadCount: 0 };
+      return res.json();
+    },
+    enabled: !!directUser?.id,
+    staleTime: 60 * 1000,
+    refetchInterval: 60 * 1000,
+    select: (data: any) => ({ unreadCount: data?.unreadCount ?? 0 }),
+  });
+  const activityUnreadCount = activityFeedData?.unreadCount ?? 0;
+
   // Check if profile needs completion (bio, gender, sexual preference)
   // Business users are excluded - they complete different fields during signup
   return (
@@ -492,7 +508,7 @@ function Navbar() {
                     <Link
                       key={item.path}
                       href={item.path!}
-                      className={`transition-colors font-medium hover:underline ${
+                      className={`transition-colors font-medium hover:underline relative ${
                         location === item.path
                           ? "text-gray-900 dark:text-white font-semibold"
                           : "text-gray-700 dark:text-white hover:text-travel-blue"
@@ -500,6 +516,9 @@ function Navbar() {
                       onClick={() => console.log(`Navigating to ${item.path}`)}
                     >
                       {item.label}
+                      {item.path === "/activity" && activityUnreadCount > 0 && (
+                        <span className="absolute -top-1 -right-2 h-2 w-2 rounded-full bg-orange-500" />
+                      )}
                     </Link>
                   )
                 )}
@@ -781,7 +800,7 @@ function Navbar() {
                   <Link
                     key={item.path}
                     href={item.path}
-                    className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+                    className={`flex items-center py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
                       location === item.path
                         ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
                         : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -792,7 +811,12 @@ function Navbar() {
                     }}
                   >
                     <span className="mr-3">{item.icon}</span>
-                    {item.label}
+                    <span className="relative">
+                      {item.label}
+                      {item.path === "/activity" && activityUnreadCount > 0 && (
+                        <span className="absolute -top-1 -right-3 h-2 w-2 rounded-full bg-orange-500" />
+                      )}
+                    </span>
                   </Link>
                 ))}
 
