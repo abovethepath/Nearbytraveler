@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { Plane } from "lucide-react";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import { abbreviateCity } from "@/lib/displayName";
 import { truncateBioToSentences } from "@/lib/bioPreview";
 import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
 import { prefetchedNav } from "@/lib/navigation";
@@ -190,13 +191,15 @@ export default function UserCard({
       return match?.abbreviation || v;
     };
 
+    const abbrevCity = abbreviateCity(city);
+
     // If country is provided and is not USA, show "City, Country" (max 2 parts)
-    if (country && !isUsaCountry(country)) return `${city}, ${country}`;
+    if (country && !isUsaCountry(country)) return `${abbrevCity}, ${country}`;
 
     // Otherwise, treat as USA-style formatting: "City, ST" (abbreviated state) or just "City"
     const st = toStateAbbrev(state);
-    if (st) return `${city}, ${st}`;
-    return city;
+    if (st) return `${abbrevCity}, ${st}`;
+    return abbrevCity;
   })();
 
   const handle = `@${user.username}`;

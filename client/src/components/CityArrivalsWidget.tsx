@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Heart, MapPin, Calendar, Home, Plane, Clock } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
+import { abbreviateCity } from "@/lib/displayName";
 import { getApiBaseUrl, apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/App";
 
@@ -74,6 +75,7 @@ function PersonCard({
   const displayName = user.firstName || `@${user.username}`;
   let from = user.hometownCity || user.hometownCountry || null;
   if (from && from.includes(",")) from = from.split(",")[0].trim();
+  if (from) from = abbreviateCity(from);
 
   const config = {
     local: {

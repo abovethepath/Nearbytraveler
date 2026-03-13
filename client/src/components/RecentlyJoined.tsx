@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { getProfileImageUrl } from "@/components/simple-avatar";
 import { UserPlus, MessageCircle } from "lucide-react";
+import { abbreviateCity } from "@/lib/displayName";
 
 function timeAgo(dateStr: string): string {
   const ms = Date.now() - new Date(dateStr).getTime();
@@ -17,10 +18,8 @@ function timeAgo(dateStr: string): string {
 function cityLabel(user: any): string {
   const city = user.hometownCity || "";
   // Extract only the city name if the field contains a full location string (e.g., "Lisbon, Portugal")
-  if (city.includes(",")) {
-    return city.split(",")[0].trim();
-  }
-  return city;
+  const cityOnly = city.includes(",") ? city.split(",")[0].trim() : city;
+  return abbreviateCity(cityOnly);
 }
 
 function displayName(user: any): string {

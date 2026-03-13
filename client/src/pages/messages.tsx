@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { createPortal } from 'react-dom';
+import { abbreviateCity } from '@/lib/displayName';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -1017,9 +1018,9 @@ export default function Messages() {
                         }`}>
                           {(conv as any).hometownCity
                             ? (conv as any).travelDestination
-                              ? `${(conv as any).hometownCity} → ${(conv as any).travelDestination.split(',')[0]?.trim()}`
-                              : (conv as any).hometownCity
-                            : conv.location || ''}
+                              ? `${abbreviateCity((conv as any).hometownCity)} → ${abbreviateCity((conv as any).travelDestination.split(',')[0]?.trim())}`
+                              : abbreviateCity((conv as any).hometownCity)
+                            : abbreviateCity(conv.location) || ''}
                         </div>
                       </div>
                       {selectedConversation === conv.userId && (
@@ -1369,8 +1370,8 @@ export default function Messages() {
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                         {contact.travelDestination && contact.isCurrentlyTraveling
-                          ? `${contact.hometownCity || contact.location || ''} → ${contact.travelDestination.split(',')[0]?.trim()}`
-                          : contact.hometownCity || contact.location || 'Location unknown'}
+                          ? `${abbreviateCity(contact.hometownCity || contact.location || '')} → ${abbreviateCity(contact.travelDestination.split(',')[0]?.trim())}`
+                          : abbreviateCity(contact.hometownCity || contact.location) || 'Location unknown'}
                       </p>
                     </div>
                   </div>
