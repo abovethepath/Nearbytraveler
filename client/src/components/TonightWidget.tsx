@@ -96,9 +96,10 @@ export function TonightWidget({ city }: Props) {
             </div>
             <button
               onClick={() => {
-                const section =
-                  document.getElementById('available-now-section') ||
-                  document.getElementById('available-now-section-desktop');
+                const mobile = document.getElementById('available-now-section');
+                const desktop = document.getElementById('available-now-section-desktop');
+                // offsetParent is null when element is hidden via display:none (e.g. lg:hidden)
+                const section = (mobile && mobile.offsetParent !== null) ? mobile : (desktop || mobile);
                 if (section) {
                   section.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 } else {
