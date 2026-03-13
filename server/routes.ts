@@ -24532,9 +24532,9 @@ Questions? Just reply to this message. Welcome aboard!
               availableNowId: activeSession.id,
               chatroomName,
               description: `Group chat for everyone meeting up with @${acceptorName} — ${activitiesStr}`,
-              city: activeSession.city,
-              state: activeSession.state || '',
-              country: activeSession.country,
+              city: activeSession.city || 'Unknown',
+              state: activeSession.state || null,
+              country: activeSession.country || 'USA',
               activityType: primaryActivity || null,
               isActive: true,
               expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
@@ -24638,8 +24638,8 @@ Questions? Just reply to this message. Welcome aboard!
       }
       res.json({ ...updated, otherUserId: updated?.fromUserId, groupChatroomId: groupChatroomId || null, chatroomName, participantCount, activityType, chatroomCity, chatroomState });
     } catch (error: any) {
-      console.error("Error updating request:", error);
-      res.status(500).json({ error: "Failed to update request" });
+      console.error("[MEET ACCEPT] Error updating request:", error?.message || error, error?.stack?.split('\n').slice(0, 5).join(' | '));
+      res.status(500).json({ error: "Failed to update request", detail: error?.message || String(error) });
     }
   });
 
@@ -25451,10 +25451,23 @@ Questions? Just reply to this message. Welcome aboard!
         ))
         .returning({ id: quickMeetups.id });
 
+      // Delete stale declined/pending Available Now requests older than 6 hours
+      // Declined: host already said no — requester should not know. Purge silently.
+      // Pending with expired host session: cleaned up naturally by the GET endpoint
+      // filter, but delete the rows to keep the table tidy.
+      const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
+      const purgedDeclined = await db.delete(availableNowRequests)
+        .where(and(
+          eq(availableNowRequests.status, "declined"),
+          lte(availableNowRequests.createdAt, sixHoursAgo)
+        ))
+        .returning({ id: availableNowRequests.id });
+
       res.json({
         cleanedChatrooms: expiredChatrooms.length,
         cleanedAvailableNow: expiredAvailableNow.length,
         cleanedQuickMeets: expiredQuickMeets.length,
+        purgedDeclinedRequests: purgedDeclined.length,
       });
     } catch (error: any) {
       console.error("Error cleaning expired chatrooms:", error);
