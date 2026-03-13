@@ -23968,6 +23968,7 @@ Questions? Just reply to this message. Welcome aboard!
         user: {
           id: r.users.id,
           username: r.users.username,
+          firstName: r.users.firstName,
           fullName: r.users.fullName,
           profilePhoto: r.users.profileImage,
           displayNamePreference: r.users.displayNamePreference,
@@ -24299,6 +24300,7 @@ Questions? Just reply to this message. Welcome aboard!
         fromUser: {
           id: r.users.id,
           username: r.users.username,
+          firstName: r.users.firstName,
           fullName: r.users.fullName,
           profileImage: r.users.profileImage,
         }

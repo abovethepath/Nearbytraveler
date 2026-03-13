@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { getDisplayName } from "@/lib/displayName";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -597,7 +598,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                      @{req.fromUser?.username}
+                      {getDisplayName(req.fromUser) || `@${req.fromUser?.username}`}
                     </p>
                     {req.message && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{req.message}</p>
@@ -704,7 +705,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                         onClick={() => handleCardClick(entry.user.id)}
                         className="text-sm font-semibold text-white hover:text-orange-400 truncate block text-left"
                       >
-                        @{entry.user?.username}
+                        {getDisplayName(entry.user) || `@${entry.user?.username}`}
                       </button>
                       {entry.activities?.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
