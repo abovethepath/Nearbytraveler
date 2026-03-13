@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { Plane, Heart, MapPin, Calendar } from "lucide-react";
+import { Heart, MapPin, Calendar, Home, Plane, Clock } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { getApiBaseUrl, apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/App";
 
-interface ArrivalUser {
+interface CityUser {
   userId: number;
   username: string;
   firstName: string | null;
@@ -19,10 +19,10 @@ interface ArrivalUser {
   saved: boolean;
 }
 
-interface ArrivalsData {
-  hereNow: ArrivalUser[];
-  arrivingToday: ArrivalUser[];
-  arrivingSoon: ArrivalUser[];
+interface CityPeopleData {
+  locals: CityUser[];
+  hereNow: CityUser[];
+  comingSoon: CityUser[];
 }
 
 interface Props {
@@ -34,17 +34,15 @@ function formatDate(dateStr: string | null): string {
   return new Date(dateStr).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-function ArrivalCard({
+function PersonCard({
   user,
+  group,
   cityName,
-  alreadyHere,
-  status,
   onProfileClick,
 }: {
-  user: ArrivalUser;
+  user: CityUser;
+  group: "local" | "here" | "soon";
   cityName: string;
-  alreadyHere?: boolean;
-  status: "here" | "today" | "soon";
   onProfileClick: () => void;
 }) {
   const auth = useAuth();
@@ -75,16 +73,25 @@ function ArrivalCard({
 
   const displayName = user.firstName || `@${user.username}`;
   let from = user.hometownCity || user.hometownCountry || null;
-  // Extract only city name if hometownCity contains full location (e.g., "Lisbon, Portugal")
-  if (from && from.includes(",")) {
-    from = from.split(",")[0].trim();
-  }
+  if (from && from.includes(",")) from = from.split(",")[0].trim();
 
-  const statusConfig = {
-    here:  { dot: "bg-emerald-400", badge: "Here now",      badgeCls: "text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800" },
-    today: { dot: "bg-amber-400",   badge: "Arriving today", badgeCls: "text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-800" },
-    soon:  { dot: "bg-sky-400",     badge: "Coming soon",    badgeCls: "text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-900/40 border border-sky-200 dark:border-sky-800" },
-  }[status];
+  const config = {
+    local: {
+      dot: "bg-blue-400",
+      badge: "Lives here",
+      badgeCls: "text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800",
+    },
+    here: {
+      dot: "bg-emerald-400",
+      badge: "Here now",
+      badgeCls: "text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800",
+    },
+    soon: {
+      dot: "bg-sky-400",
+      badge: "Coming soon",
+      badgeCls: "text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-900/40 border border-sky-200 dark:border-sky-800",
+    },
+  }[group];
 
   return (
     <div
@@ -96,7 +103,7 @@ function ArrivalCard({
           user={{ id: user.userId, username: user.username, profileImage: user.profileImage }}
           size="md"
         />
-        <span className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-gray-900 ${statusConfig.dot}`} />
+        <span className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-gray-900 ${config.dot}`} />
       </div>
 
       <div className="flex-1 min-w-0">
@@ -104,17 +111,17 @@ function ArrivalCard({
           {displayName}
         </p>
         <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-          <span className={`inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${statusConfig.badgeCls}`}>
-            {statusConfig.badge}
+          <span className={`inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${config.badgeCls}`}>
+            {config.badge}
           </span>
-          {from && (
+          {group !== "local" && from && (
             <span className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-0.5">
               <MapPin className="w-2.5 h-2.5 flex-shrink-0" />
               {from}
             </span>
           )}
         </div>
-        {(user.startDate || user.endDate) && (
+        {group === "soon" && (user.startDate || user.endDate) && (
           <p className="text-[10px] text-gray-400 dark:text-gray-500 flex items-center gap-0.5 mt-1 leading-tight">
             <Calendar className="w-2.5 h-2.5 flex-shrink-0" />
             {formatDate(user.startDate)}{user.endDate ? ` – ${formatDate(user.endDate)}` : ""}
@@ -122,7 +129,7 @@ function ArrivalCard({
         )}
       </div>
 
-      {isLoggedIn && !alreadyHere && (
+      {group !== "local" && isLoggedIn && (
         <button
           type="button"
           onClick={handleHeart}
@@ -140,31 +147,82 @@ function ArrivalCard({
   );
 }
 
+function GroupSection({
+  title,
+  icon,
+  users,
+  group,
+  cityName,
+  onProfileClick,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  users: CityUser[];
+  group: "local" | "here" | "soon";
+  cityName: string;
+  onProfileClick: (id: number) => void;
+}) {
+  if (users.length === 0) return null;
+  const shown = users.slice(0, 5);
+  const extra = users.length - shown.length;
+
+  return (
+    <div>
+      <div className="flex items-center gap-1.5 mb-2 px-1">
+        {icon}
+        <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          {title}
+        </span>
+        <span className="ml-auto text-[11px] text-gray-400 dark:text-gray-500 font-semibold">
+          {users.length}
+        </span>
+      </div>
+      <div className="space-y-1.5">
+        {shown.map((u) => (
+          <PersonCard
+            key={u.userId}
+            user={u}
+            group={group}
+            cityName={cityName}
+            onProfileClick={() => onProfileClick(u.userId)}
+          />
+        ))}
+        {extra > 0 && (
+          <p className="text-[11px] text-gray-400 dark:text-gray-500 text-center py-1">
+            +{extra} more
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function CityArrivalsWidget({ cityName }: Props) {
   const [, setLocation] = useLocation();
+  const { user: currentUser } = useAuth();
 
-  const { data, isLoading } = useQuery<ArrivalsData>({
+  const { data, isLoading } = useQuery<CityPeopleData>({
     queryKey: ["/api/cities", cityName, "arrivals"],
     queryFn: async () => {
       const res = await fetch(`${getApiBaseUrl()}/api/cities/${encodeURIComponent(cityName)}/arrivals`, {
         credentials: "include",
       });
-      if (!res.ok) return { hereNow: [], arrivingToday: [], arrivingSoon: [] };
+      if (!res.ok) return { locals: [], hereNow: [], comingSoon: [] };
       return res.json();
     },
     staleTime: 3 * 60 * 1000,
     enabled: !!cityName,
   });
 
-  const total =
-    (data?.hereNow.length ?? 0) +
-    (data?.arrivingToday.length ?? 0) +
-    (data?.arrivingSoon.length ?? 0);
+  const locals = data?.locals ?? [];
+  const hereNow = data?.hereNow ?? [];
+  const comingSoon = data?.comingSoon ?? [];
+  const total = locals.length + hereNow.length + comingSoon.length;
 
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse">
-        <div className="h-12 bg-gradient-to-r from-orange-400 to-amber-400 opacity-60" />
+        <div className="h-12 bg-gradient-to-r from-blue-400 to-orange-400 opacity-60" />
         <div className="bg-white dark:bg-gray-900 p-3 space-y-2">
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
@@ -182,20 +240,44 @@ export function CityArrivalsWidget({ cityName }: Props) {
 
   if (!data || total === 0) return null;
 
-  const hasArriving = (data.arrivingToday.length + data.arrivingSoon.length) > 0;
+  // Determine if current user is a local here — show travelers first for locals
+  const currentUserHometown = ((currentUser as any)?.hometownCity || "").toLowerCase();
+  const cityLower = cityName.toLowerCase();
+  const isCurrentUserLocal = currentUserHometown === cityLower || currentUserHometown.startsWith(cityLower + ",");
+
+  const sections: Array<{
+    key: string;
+    title: string;
+    icon: React.ReactNode;
+    users: CityUser[];
+    group: "local" | "here" | "soon";
+  }> = isCurrentUserLocal
+    ? [
+        { key: "here",  title: "Here Now",           icon: <Plane className="w-3.5 h-3.5 text-emerald-500" />, users: hereNow,    group: "here"  },
+        { key: "soon",  title: "Coming Soon",         icon: <Clock className="w-3.5 h-3.5 text-sky-500"     />, users: comingSoon, group: "soon"  },
+        { key: "local", title: `Locals in ${cityName}`, icon: <Home  className="w-3.5 h-3.5 text-blue-500"    />, users: locals,     group: "local" },
+      ]
+    : [
+        { key: "local", title: `Locals in ${cityName}`, icon: <Home  className="w-3.5 h-3.5 text-blue-500"    />, users: locals,     group: "local" },
+        { key: "here",  title: "Here Now",           icon: <Plane className="w-3.5 h-3.5 text-emerald-500" />, users: hereNow,    group: "here"  },
+        { key: "soon",  title: "Coming Soon",         icon: <Clock className="w-3.5 h-3.5 text-sky-500"     />, users: comingSoon, group: "soon"  },
+      ];
 
   return (
-    <div className="rounded-2xl border border-orange-200 dark:border-orange-900/40 shadow-sm overflow-hidden">
-      {/* Gradient header bar */}
-      <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-400 px-4 py-3 flex items-center gap-2.5">
+    <div className="rounded-2xl border border-blue-200 dark:border-blue-900/40 shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-500 via-indigo-500 to-orange-400 px-4 py-3 flex items-center gap-2.5">
         <div className="bg-white/25 rounded-lg p-1.5 flex-shrink-0">
-          <Plane className="w-4 h-4 text-white" />
+          <Home className="w-4 h-4 text-white" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-white font-bold text-sm leading-tight">Coming to {cityName}</p>
+          <p className="text-white font-bold text-sm leading-tight">People in {cityName}</p>
           <p className="text-white/75 text-[10px] leading-tight">
-            {data.hereNow.length > 0 && `${data.hereNow.length} here now · `}
-            {hasArriving && `${data.arrivingToday.length + data.arrivingSoon.length} arriving`}
+            {[
+              locals.length > 0 && `${locals.length} locals`,
+              hereNow.length > 0 && `${hereNow.length} here now`,
+              comingSoon.length > 0 && `${comingSoon.length} coming soon`,
+            ].filter(Boolean).join(" · ")}
           </p>
         </div>
         <span className="bg-white/25 text-white text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0">
@@ -203,38 +285,21 @@ export function CityArrivalsWidget({ cityName }: Props) {
         </span>
       </div>
 
-      {/* Cards */}
-      <div className="bg-white dark:bg-gray-900 p-3 space-y-2">
-        {data.hereNow.map((u) => (
-          <ArrivalCard
-            key={u.userId}
-            user={u}
+      {/* Groups */}
+      <div className="bg-white dark:bg-gray-900 p-3 space-y-4">
+        {sections.map((s) => (
+          <GroupSection
+            key={s.key}
+            title={s.title}
+            icon={s.icon}
+            users={s.users}
+            group={s.group}
             cityName={cityName}
-            alreadyHere={true}
-            status="here"
-            onProfileClick={() => setLocation(`/profile/${u.userId}`)}
-          />
-        ))}
-        {data.arrivingToday.map((u) => (
-          <ArrivalCard
-            key={u.userId}
-            user={u}
-            cityName={cityName}
-            status="today"
-            onProfileClick={() => setLocation(`/profile/${u.userId}`)}
-          />
-        ))}
-        {data.arrivingSoon.map((u) => (
-          <ArrivalCard
-            key={u.userId}
-            user={u}
-            cityName={cityName}
-            status="soon"
-            onProfileClick={() => setLocation(`/profile/${u.userId}`)}
+            onProfileClick={(id) => setLocation(`/profile/${id}`)}
           />
         ))}
 
-        {hasArriving && (
+        {comingSoon.length > 0 && (
           <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center pt-1">
             ♥ save a traveler to be notified when they arrive
           </p>

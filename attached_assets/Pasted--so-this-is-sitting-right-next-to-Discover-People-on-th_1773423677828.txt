@@ -1,0 +1,21 @@
+ so this is sitting right next to Discover People on the home page. In that case locals absolutely need to be there because that's your primary discovery surface.
+The home page should show all three together as one cohesive section — think of it as "People in Your City" with three groups. Tell Replit:
+
+On the home page, next to Discover People, the city section currently shows "Tonight in [City]" and "Coming to [City]" but is missing locals entirely. Add a third group called "Locals in [City]" — users whose hometown matches the current city.
+Locals should appear first, above Tonight and Coming To, since they are the most valuable connection for travelers. If the current user IS a local, show travelers first instead.
+Also consolidate the "Tonight" and "Coming to" sections — anyone with a travel plan currently active shows as "Here Now", anyone arriving in the next 30 days shows as "Coming Soon". Remove the duplication of the same user appearing in both sections.
+Final order on home page:
+
+Locals in [City] — people who live here
+Here Now — travelers currently visiting
+Coming Soon — travelers arriving within 30 days
+
+the sort sort of does this, we have recently active, available now, proximity search... but this prompt stands out better righ?10:40 AMYes — what you have now is filter-based (you go looking), what this prompt describes is context-aware (it surfaces the right people automatically based on who you are and where you are).
+The difference is:
+
+Current: User has to know to click "Recently Active" or "Available Now" to find relevant people
+Proposed: Landing on the home page immediately shows you Locals → Here Now → Coming Soon without any effort
+
+For a travel app that's the right approach. A traveler landing on the LA page shouldn't have to filter — they should instantly see "these are the locals who want to meet you, these people are here right now, these people are arriving soon." It tells a story.
+Your existing filters are still useful as a secondary layer for power users who want to narrow down further. But the home page default view should be the contextual three-group layout — it's a much stronger first impression for new users during testing.
+Keep the prompt as written and send it.

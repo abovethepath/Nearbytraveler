@@ -2822,9 +2822,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const currentUserId = req.session?.user?.id || req.headers['x-user-id'];
       const uid = currentUserId ? Number(currentUserId) : null;
       const now = new Date();
-      const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
-      const todayEnd = new Date(now); todayEnd.setHours(23, 59, 59, 999);
-      const threeDaysOut = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+      const thirtyDaysOut = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
       // Use getExpandedCityList — battle-tested metro expansion used everywhere else
       const allCities = getExpandedCityList(city);
@@ -2842,7 +2840,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         sql`u.travel_destination ILIKE ${c + ',%'}`,
         sql`u.travel_destination ILIKE ${'%' + c + '%'}`,
       ]);
+      const hometownConditions = allCities.flatMap(c => [
+        sql`LOWER(u.hometown_city) = LOWER(${c})`,
+        sql`u.hometown_city ILIKE ${c + ',%'}`,
+        sql`u.hometown_city ILIKE ${'%,' + c}`,
+      ]);
 
+      // Query travelers (here now + coming soon within 30 days)
       const rows = await db.execute(sql`
         -- ARM 1: users with explicit travel_plans rows
         SELECT
@@ -2860,7 +2864,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         INNER JOIN users u ON tp.user_id = u.id
         WHERE
           tp.end_date >= ${now}
-          AND tp.start_date <= ${threeDaysOut}
+          AND tp.start_date <= ${thirtyDaysOut}
+          AND u.user_type != 'business'
           AND (${sql.join(tpCityConditions, sql` OR `)})
 
         UNION
@@ -2869,7 +2874,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         SELECT
           u.id              AS "userId",
           COALESCE(u.travel_start_date, ${now}) AS "startDate",
-          COALESCE(u.travel_end_date, ${threeDaysOut}) AS "endDate",
+          COALESCE(u.travel_end_date, ${thirtyDaysOut}) AS "endDate",
           u.travel_destination AS destination,
           u.username,
           u.first_name      AS "firstName",
@@ -2881,12 +2886,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         WHERE
           u.is_currently_traveling = true
           AND (u.travel_end_date IS NULL OR u.travel_end_date >= ${now})
+          AND u.user_type != 'business'
           AND (${sql.join(uCityConditions, sql` OR `)})
           AND NOT EXISTS (
             SELECT 1 FROM travel_plans tp2
             WHERE tp2.user_id = u.id
               AND tp2.end_date >= ${now}
-              AND tp2.start_date <= ${threeDaysOut}
+              AND tp2.start_date <= ${thirtyDaysOut}
               AND (${sql.join(
                 allCities.flatMap(c => [
                   sql`LOWER(tp2.destination_city) = LOWER(${c})`,
@@ -2901,7 +2907,27 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         ORDER BY "startDate" ASC
       `);
 
+      // Query locals — users whose hometown matches this city, not currently traveling elsewhere
+      const localRows = await db.execute(sql`
+        SELECT
+          u.id              AS "userId",
+          u.username,
+          u.first_name      AS "firstName",
+          u.profile_image   AS "profileImage",
+          u.user_type       AS "userType",
+          u.hometown_city   AS "hometownCity",
+          u.hometown_country AS "hometownCountry"
+        FROM users u
+        WHERE
+          u.user_type != 'business'
+          AND (u.is_currently_traveling = false OR u.is_currently_traveling IS NULL)
+          AND (${sql.join(hometownConditions, sql` OR `)})
+        ORDER BY u.last_active DESC NULLS LAST
+        LIMIT 20
+      `);
+
       const rawRows: any[] = (rows as any).rows || [];
+      const rawLocalRows: any[] = (localRows as any).rows || [];
 
       // Fetch which users the current user has hearted for this city
       let savedSet = new Set<number>();
@@ -2915,14 +2941,33 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         savedSet = new Set(saved.map(s => s.savedUserId));
       }
 
+      const locals: any[] = [];
       const hereNow: any[] = [];
-      const arrivingToday: any[] = [];
-      const arrivingSoon: any[] = [];
+      const comingSoon: any[] = [];
       const seenUsers = new Set<number>();
 
+      // Process locals
+      for (const r of rawLocalRows) {
+        if (seenUsers.has(r.userId)) continue;
+        if (uid && r.userId === uid) { seenUsers.add(r.userId); continue; }
+        locals.push({
+          userId: r.userId,
+          username: r.username,
+          firstName: r.firstName,
+          profileImage: r.profileImage,
+          userType: r.userType,
+          hometownCity: r.hometownCity,
+          hometownCountry: r.hometownCountry,
+          startDate: null,
+          endDate: null,
+          saved: false,
+        });
+        seenUsers.add(r.userId);
+      }
+
+      // Process travelers
       for (const r of rawRows) {
         if (seenUsers.has(r.userId)) continue;
-        // Don't show the current user in the list
         if (uid && r.userId === uid) { seenUsers.add(r.userId); continue; }
         const start = r.startDate ? new Date(r.startDate) : null;
         const end = r.endDate ? new Date(r.endDate) : null;
@@ -2940,18 +2985,16 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         };
         if (start && end && start <= now && end >= now) {
           hereNow.push(user);
-        } else if (start && start >= todayStart && start <= todayEnd) {
-          arrivingToday.push(user);
-        } else if (start && start > now && start <= threeDaysOut) {
-          arrivingSoon.push(user);
+        } else if (start && start > now && start <= thirtyDaysOut) {
+          comingSoon.push(user);
         }
         seenUsers.add(r.userId);
       }
 
-      res.json({ hereNow, arrivingToday, arrivingSoon });
+      res.json({ locals, hereNow, comingSoon, arrivingToday: [], arrivingSoon: comingSoon });
     } catch (error: any) {
       console.error("City arrivals error:", error);
-      res.json({ hereNow: [], arrivingToday: [], arrivingSoon: [] });
+      res.json({ locals: [], hereNow: [], comingSoon: [], arrivingToday: [], arrivingSoon: [] });
     }
   });
 
