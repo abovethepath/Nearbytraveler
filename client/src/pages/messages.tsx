@@ -19,6 +19,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import WhatsAppChat from '@/components/WhatsAppChat';
+import TypingIndicator from '@/components/instant-messaging/TypingIndicator';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
 import { SimpleAvatar, getProfileImageUrl } from '@/components/simple-avatar';
@@ -103,7 +104,6 @@ export default function Messages() {
   const [connectionSearch, setConnectionSearch] = useState('');
   const [countdownTick, setCountdownTick] = useState(0);
   const [instantMessages, setInstantMessages] = useState<any[]>([]);
-  const [typingUsers, setTypingUsers] = useState<{ [userId: number]: boolean }>({});
   const [replyingTo, setReplyingTo] = useState<any | null>(null);
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
@@ -402,20 +402,11 @@ export default function Messages() {
       setTimeout(() => refetchMessages(), 300);
     };
 
-    const handleTypingIndicator = (data: any) => {
-      setTypingUsers(prev => ({
-        ...prev,
-        [data.userId]: data.isTyping
-      }));
-    };
-
     // Register event handlers
     websocketService.on('instant_message_received', handleInstantMessage);
-    websocketService.on('typing_indicator', handleTypingIndicator);
 
     return () => {
       websocketService.off('instant_message_received', handleInstantMessage);
-      websocketService.off('typing_indicator', handleTypingIndicator);
     };
   }, [userId, refetchMessages]);
 
@@ -662,6 +653,10 @@ export default function Messages() {
       replyToId: replyingTo?.id || undefined,
     });
     
+    // Stop typing indicator on send
+    if (websocketService.isConnected()) {
+      websocketService.sendTypingIndicator(selectedConversation, false);
+    }
     // Clear reply state after sending
     setReplyingTo(null);
   };
@@ -1276,6 +1271,13 @@ export default function Messages() {
                   </div>
                 )}
                 
+                {selectedConversation && (
+                  <TypingIndicator
+                    conversationUserId={selectedConversation}
+                    displayName={selectedUser?.firstName || selectedUser?.username}
+                  />
+                )}
+
                 <div className="flex items-center gap-2 max-w-4xl mx-auto">
                   <Input
                     value={newMessage}
