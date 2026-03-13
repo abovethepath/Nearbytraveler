@@ -335,6 +335,30 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
     },
   });
 
+  const deleteEventMutation = useMutation({
+    mutationFn: async () => {
+      const resolvedEventId = event?.id ?? parseInt(eventId);
+      if (!currentUser?.id || !resolvedEventId) throw new Error("Missing user or event ID");
+      const response = await fetch(`${getApiBaseUrl()}/api/events/${resolvedEventId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id.toString() },
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to delete event');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Event Deleted", description: "Your event has been deleted." });
+      setLocation('/events');
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Failed to delete event", variant: "destructive" });
+    },
+  });
+
   const currentParticipant = participants.find(p => p.userId === currentUser?.id);
   const isParticipant = !!currentParticipant;
   const participantStatus = currentParticipant?.status;
@@ -668,6 +692,47 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                     </Button>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Organizer controls — only shown to the host/co-organizer */}
+          {!!currentUser?.id && isOrganizer && !viewAsGuest && (
+            <Card className="border border-gray-200 dark:border-gray-700 shadow-lg bg-white dark:bg-gray-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-gray-900 dark:text-white">Manage Your Event</CardTitle>
+                <p className="text-sm text-gray-600 dark:text-gray-300">You're the host of this event</p>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0"
+                  onClick={() => setLocation(`/event-chat/${event?.id ?? eventId}`)}
+                  data-testid="host-button-open-chat"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Open Chat
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full border-blue-300 text-blue-700 hover:bg-blue-50 dark:border-blue-600 dark:text-blue-300 dark:hover:bg-blue-900/20"
+                  onClick={() => setLocation(`/manage-event/${event?.id ?? eventId}`)}
+                  data-testid="host-button-edit"
+                >
+                  Edit Event
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full border-red-300 text-red-600 hover:bg-red-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
+                  disabled={deleteEventMutation.isPending}
+                  onClick={() => {
+                    if (window.confirm("Are you sure you want to delete this event? This cannot be undone.")) {
+                      deleteEventMutation.mutate();
+                    }
+                  }}
+                  data-testid="host-button-delete"
+                >
+                  {deleteEventMutation.isPending ? "Deleting..." : "Delete Event"}
+                </Button>
               </CardContent>
             </Card>
           )}
