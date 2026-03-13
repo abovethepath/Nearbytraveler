@@ -3209,7 +3209,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <span className="hidden sm:inline">Vouches</span>
                       <span className="sm:hidden">Vouches {(vouches?.length || 0) === 0 ? ' • Get vouched by community' : ''}</span>
                     </span>
-                    <span className="font-semibold text-blue-600 dark:text-blue-400">{vouches?.length || 0}</span>
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">{vouches?.length || '—'}</span>
                   </div>
                   {(vouches?.length || 0) === 0 && (
                     <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6 hidden sm:block">

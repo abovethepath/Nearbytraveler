@@ -250,7 +250,7 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId, variant = 'de
               Vouches
             </div>
             <div className="text-xs font-semibold text-gray-900 dark:text-white">
-              {vouches.length}
+              {vouches.length || '—'}
             </div>
           </div>
         </CardContent>
@@ -268,12 +268,20 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId, variant = 'de
       </CardHeader>
       <CardContent>
         <div className="text-center py-6">
-          <div className="text-4xl font-bold text-blue-900 dark:text-blue-100 mb-2">
-            {vouches.length}
-          </div>
-          <div className="text-lg text-gray-700 dark:text-gray-200 mb-4">
-            Total Vouches
-          </div>
+          {vouches.length > 0 ? (
+            <>
+              <div className="text-4xl font-bold text-blue-900 dark:text-blue-100 mb-2">
+                {vouches.length}
+              </div>
+              <div className="text-lg text-gray-700 dark:text-gray-200 mb-4">
+                Total Vouches
+              </div>
+            </>
+          ) : (
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              No vouches yet
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
