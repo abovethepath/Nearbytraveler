@@ -20778,6 +20778,32 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // GET /api/ui/hero-dismissed — returns list of page keys whose hero the user has permanently dismissed
+  app.get("/api/ui/hero-dismissed", async (req: any, res) => {
+    const userId = req.session?.user?.id || req.headers['x-user-id'];
+    if (!userId) return res.json({ dismissed: [] });
+    try {
+      const [row] = await db.select({ notificationSettings: users.notificationSettings }).from(users).where(eq(users.id, Number(userId)));
+      const dismissed: string[] = (row?.notificationSettings as any)?.heroDismissals || [];
+      res.json({ dismissed });
+    } catch { res.json({ dismissed: [] }); }
+  });
+
+  // POST /api/ui/hero-dismiss — permanently dismisses a hero for the current user (syncs across devices)
+  app.post("/api/ui/hero-dismiss", async (req: any, res) => {
+    const userId = req.session?.user?.id || req.headers['x-user-id'];
+    if (!userId) return res.status(401).json({ error: 'Not authenticated' });
+    const { pageKey } = req.body;
+    if (!pageKey) return res.status(400).json({ error: 'pageKey required' });
+    try {
+      const [row] = await db.select({ notificationSettings: users.notificationSettings }).from(users).where(eq(users.id, Number(userId)));
+      const existing = (row?.notificationSettings as any) || {};
+      const dismissed: string[] = Array.from(new Set([...(existing.heroDismissals || []), pageKey]));
+      await db.update(users).set({ notificationSettings: { ...existing, heroDismissals: dismissed } }).where(eq(users.id, Number(userId)));
+      res.json({ dismissed });
+    } catch (e: any) { res.status(500).json({ error: 'Failed to save' }); }
+  });
+
   app.put("/api/users/status", async (req, res) => {
     try {
       const userId = (req.session as any)?.user?.id || 1; // Default to nearbytraveler
