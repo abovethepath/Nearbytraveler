@@ -80,7 +80,7 @@ type BusinessSignupData = z.infer<typeof businessSignupSchema>;
 export default function SignupBusinessSimple() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { user, isAuthenticated, login } = useAuth();
+  const { user, isAuthenticated, login, startAuthenticating } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
@@ -294,6 +294,8 @@ export default function SignupBusinessSimple() {
         const sid = (response as any).sessionId || document.cookie.split(';').find(c => c.trim().startsWith('nt.sid='))?.split('=')[1]?.trim();
         (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: 'SIGNUP_COMPLETE', user: response.user, sessionId: sid }));
       }
+      // Trigger auth transition spinner BEFORE redirecting
+      startAuthenticating();
       // Keep user on signup page while profile builds — calm transition
       setIsRedirecting(true);
       setTimeout(() => setLocation('/business-dashboard'), 1800);

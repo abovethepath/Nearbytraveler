@@ -18,7 +18,7 @@ import { getDateInputConstraints } from "@/lib/ageUtils";
 export default function SignupTraveling() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { setUser } = useAuth();
+  const { setUser, startAuthenticating } = useAuth();
 
   const [formData, setFormData] = useState({
     // Basic info (from account signup)
@@ -334,6 +334,8 @@ export default function SignupTraveling() {
             const sid = (data as any).sessionId || document.cookie.split(';').find(c => c.trim().startsWith('nt.sid='))?.split('=')[1]?.trim();
             (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: 'SIGNUP_COMPLETE', user: data.user, sessionId: sid }));
           }
+          // Trigger auth transition spinner BEFORE redirecting
+          startAuthenticating();
           const username = data.user?.username;
           // Keep user on signup page while profile builds — calm transition
           await new Promise((r) => setTimeout(r, 1800));
