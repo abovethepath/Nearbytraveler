@@ -807,6 +807,7 @@ app.use((req, res, next) => {
       sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS contact_role TEXT`,
     );
     // Ambassador program: status, activity window, admin override
+    await db.execute(sql`ALTER TABLE available_now_requests ADD COLUMN IF NOT EXISTS chatroom_id INTEGER`);
     await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_status TEXT`);
     await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_enrolled_at TIMESTAMP`);
     await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_last_earned_at TIMESTAMP`);

@@ -137,6 +137,14 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     refetchInterval: 5000,
   });
 
+  const { data: acceptedRequestsData } = useQuery<{ acceptedChatroomMap: Record<number, number> }>({
+    queryKey: ["/api/available-now/accepted-requests"],
+    enabled: !!currentUser?.id,
+    refetchInterval: 5000,
+  });
+
+  const acceptedChatroomMap: Record<number, number> = acceptedRequestsData?.acceptedChatroomMap || {};
+
   // Merge DB-loaded sent requests with locally tracked ones for instant UI feedback
   const pendingToUserIds: Set<number> = new Set([
     ...(sentRequestsData?.sentToUserIds ?? []),
@@ -238,6 +246,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       console.log(`[MEET ACCEPT] onSuccess fired`, { data, variables });
       setPendingRequestId(null);
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/accepted-requests"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/activity-feed"] });
@@ -393,6 +402,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       if (notification?.action === 'meet_request_accepted') {
         queryClient.invalidateQueries({ queryKey: ["/api/available-now/sent-requests"] });
         queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/available-now/accepted-requests"] });
         queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
         const chatroomId = notification.groupChatroomId;
         if (chatroomId) {
@@ -770,6 +780,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                   <div className="px-3 pb-3">
                     {(() => {
                       const existingChat = allGroupChats.find((chat: any) => chat.availableNowId === entry.id);
+                      const acceptedChatroomId = acceptedChatroomMap[entry.userId];
                       if (existingChat) {
                         return (
                           <Button
@@ -782,26 +793,39 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                           </Button>
                         );
                       }
-                      return null;
+                      if (acceptedChatroomId) {
+                        return (
+                          <Button
+                            size="sm"
+                            className="w-full text-xs bg-emerald-600 hover:bg-emerald-700 text-white border-0 font-bold"
+                            onClick={() => setLocation(`/meetup-chatroom-chat/${acceptedChatroomId}?title=${encodeURIComponent('Meetup Chat')}`)}
+                          >
+                            <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
+                            Go to Chat
+                          </Button>
+                        );
+                      }
+                      if (pendingToUserIds.has(entry.userId)) {
+                        return (
+                          <Button
+                            size="sm"
+                            disabled
+                            className="w-full text-xs bg-gray-700 text-gray-400 border-0 cursor-not-allowed"
+                          >
+                            Pending ⏳
+                          </Button>
+                        );
+                      }
+                      return (
+                        <Button
+                          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm py-2 border-0"
+                          onClick={() => sendRequestMutation.mutate({ toUserId: entry.userId })}
+                          disabled={sendRequestMutation.isPending}
+                        >
+                          Join
+                        </Button>
+                      );
                     })()}
-                    {!allGroupChats.find((chat: any) => chat.availableNowId === entry.id) && (
-                    pendingToUserIds.has(entry.userId) ? (
-                      <Button
-                        size="sm"
-                        disabled
-                        className="w-full text-xs bg-gray-700 text-gray-400 border-0 cursor-not-allowed"
-                      >
-                        Pending ⏳
-                      </Button>
-                    ) : (
-                      <Button
-                        className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm py-2 border-0"
-                        onClick={() => sendRequestMutation.mutate({ toUserId: entry.userId })}
-                        disabled={sendRequestMutation.isPending}
-                      >
-                        Join
-                      </Button>
-                    ))}
                   </div>
                 </div>
               ))}

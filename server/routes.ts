@@ -24406,6 +24406,41 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  app.get("/api/available-now/accepted-requests", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const uid = Number(userId);
+
+      const now = new Date();
+      const accepted = await db.select({
+        id: availableNowRequests.id,
+        toUserId: availableNowRequests.toUserId,
+        chatroomId: availableNowRequests.chatroomId,
+      })
+        .from(availableNowRequests)
+        .innerJoin(availableNow, and(
+          eq(availableNow.userId, availableNowRequests.toUserId),
+          eq(availableNow.isAvailable, true),
+          gte(availableNow.expiresAt, now)
+        ))
+        .where(and(
+          eq(availableNowRequests.fromUserId, uid),
+          eq(availableNowRequests.status, "accepted"),
+          isNotNull(availableNowRequests.chatroomId),
+        ));
+
+      const map: Record<number, number> = {};
+      for (const r of accepted) {
+        if (r.chatroomId) map[r.toUserId] = r.chatroomId;
+      }
+      res.json({ acceptedChatroomMap: map });
+    } catch (error: any) {
+      console.error("Error fetching accepted requests:", error);
+      res.status(500).json({ error: "Failed to fetch accepted requests" });
+    }
+  });
+
   app.patch("/api/available-now/requests/:requestId", async (req: any, res) => {
     try {
       const userId = req.session?.user?.id || req.headers['x-user-id'];
@@ -24615,6 +24650,17 @@ Questions? Just reply to this message. Welcome aboard!
         // NOTE: No fallback to old/expired chatrooms. If there is no active
         // session at accept-time, groupChatroomId stays null. A new session on
         // a future day will create its own fresh chatroom when someone accepts.
+
+        // Persist the chatroom ID directly on the request row so it survives sign-out/in.
+        if (groupChatroomId && updated?.id) {
+          try {
+            await db.update(availableNowRequests)
+              .set({ chatroomId: groupChatroomId })
+              .where(eq(availableNowRequests.id, updated.id));
+          } catch (persistErr) {
+            console.error('[MEET ACCEPT] Failed to persist chatroomId on request (non-fatal):', persistErr);
+          }
+        }
 
         // Send a real-time WebSocket notification to the requester so their widget
         // clears "Pending" immediately and shows a "Join Chat" prompt.

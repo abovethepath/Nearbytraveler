@@ -2721,6 +2721,7 @@ export const availableNowRequests = pgTable("available_now_requests", {
   toUserId: integer("to_user_id").notNull().references(() => users.id),
   message: text("message"),
   status: text("status").notNull().default("pending"),
+  chatroomId: integer("chatroom_id"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
