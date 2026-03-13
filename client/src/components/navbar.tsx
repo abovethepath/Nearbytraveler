@@ -529,6 +529,9 @@ function Navbar() {
                       onClick={() => console.log(`Navigating to ${item.path}`)}
                     >
                       {item.label}
+                      {item.path === "/messages" && unreadMessageCount > 0 && (
+                        <span className="absolute -top-1 -right-2 h-2 w-2 rounded-full bg-orange-500" />
+                      )}
                       {item.path === "/activity" && activityUnreadCount > 0 && (
                         <span className="absolute -top-1 -right-2 h-2 w-2 rounded-full bg-orange-500" />
                       )}
@@ -576,11 +579,6 @@ function Navbar() {
                       className="border-2 border-white shadow-sm pointer-events-none"
                       clickable={false}
                     />
-                    {unreadMessageCount > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 pointer-events-none">
-                        {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
-                      </span>
-                    )}
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -836,6 +834,9 @@ function Navbar() {
                     <span className="mr-3">{item.icon}</span>
                     <span className="relative">
                       {item.label}
+                      {item.path === "/messages" && unreadMessageCount > 0 && (
+                        <span className="absolute -top-1 -right-3 h-2 w-2 rounded-full bg-orange-500" />
+                      )}
                       {item.path === "/activity" && activityUnreadCount > 0 && (
                         <span className="absolute -top-1 -right-3 h-2 w-2 rounded-full bg-orange-500" />
                       )}
