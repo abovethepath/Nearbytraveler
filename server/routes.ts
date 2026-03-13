@@ -24537,9 +24537,6 @@ Questions? Just reply to this message. Welcome aboard!
       let groupChatroomId: number | null = null;
 
       if (status === "accepted" && updated) {
-        // Wrap chatroom creation in its own try/catch so a chatroom error does NOT
-        // kill the accept response — the request was already marked accepted above.
-        try {
           const [acceptor] = await db.select({ username: users.username })
             .from(users).where(eq(users.id, Number(userId)));
           const acceptorName = acceptor?.username || "Someone";
@@ -24641,11 +24638,6 @@ Questions? Just reply to this message. Welcome aboard!
           } else {
             console.log(`[MEET ACCEPT] No active session found for userId=${userId} — skipping chatroom creation`);
           }
-        } catch (chatroomErr: any) {
-          // Log the error but do NOT fail the whole accept — the request is already accepted in the DB.
-          console.error(`[MEET ACCEPT] Chatroom creation failed (non-fatal):`, chatroomErr?.message, chatroomErr?.stack?.split('\n').slice(0,3).join(' | '));
-          groupChatroomId = null;
-        }
 
         // NOTE: No fallback to old/expired chatrooms. If there is no active
         // session at accept-time, groupChatroomId stays null. A new session on
