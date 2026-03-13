@@ -24612,32 +24612,9 @@ Questions? Just reply to this message. Welcome aboard!
           groupChatroomId = null;
         }
 
-        // Fallback: if chatroom creation failed or no active session, try to find
-        // any existing meetup chatroom where BOTH users are already members.
-        if (!groupChatroomId && updated?.fromUserId) {
-          try {
-            const myRooms = await db.select({ chatroomId: chatroomMembers.chatroomId })
-              .from(chatroomMembers)
-              .where(and(eq(chatroomMembers.userId, Number(userId)), eq(chatroomMembers.isActive, true)));
-            const myRoomIds = myRooms.map(r => r.chatroomId);
-            if (myRoomIds.length > 0) {
-              const [sharedRow] = await db.select({ chatroomId: chatroomMembers.chatroomId })
-                .from(chatroomMembers)
-                .where(and(
-                  eq(chatroomMembers.userId, updated.fromUserId),
-                  eq(chatroomMembers.isActive, true),
-                  inArray(chatroomMembers.chatroomId, myRoomIds)
-                ))
-                .limit(1);
-              if (sharedRow) {
-                groupChatroomId = sharedRow.chatroomId;
-                console.log(`[MEET ACCEPT] Fallback found shared chatroom: ${groupChatroomId}`);
-              }
-            }
-          } catch (fallbackErr) {
-            console.error('[MEET ACCEPT] Fallback chatroom lookup failed (non-fatal):', fallbackErr);
-          }
-        }
+        // NOTE: No fallback to old/expired chatrooms. If there is no active
+        // session at accept-time, groupChatroomId stays null. A new session on
+        // a future day will create its own fresh chatroom when someone accepts.
 
         // Send a real-time WebSocket notification to the requester so their widget
         // clears "Pending" immediately and shows a "Join Chat" prompt.
