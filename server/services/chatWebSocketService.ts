@@ -58,6 +58,13 @@ export class ChatWebSocketService {
     });
   }
 
+  // Public: send a notification payload to a specific user's open WebSocket connections.
+  // The client's websocketService handles messages of type "notification" and emits them
+  // as 'notification' events that components can subscribe to.
+  public sendNotificationToUser(userId: number, payload: Record<string, unknown>): void {
+    this.sendToUser(userId, JSON.stringify({ type: 'notification', payload }));
+  }
+
   constructor() {
     // Clean up expired typing indicators every 2 seconds
     setInterval(() => this.cleanupExpiredTyping(), 2000);

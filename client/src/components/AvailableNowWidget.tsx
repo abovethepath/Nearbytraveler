@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, Beer, ChevronDown, ChevronUp, Mountain, Bike, Waves, Compass, MessageCircle, Users, LogOut, ThumbsUp, Reply, Heart } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { useToast } from "@/hooks/use-toast";
+import { websocketService } from "@/services/websocketService";
 
 interface AvailableEntry {
   id: number;
@@ -133,7 +134,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const { data: sentRequestsData } = useQuery<{ sentToUserIds: number[] }>({
     queryKey: ["/api/available-now/sent-requests"],
     enabled: !!currentUser?.id,
-    refetchInterval: 60000,
+    refetchInterval: 5000,
   });
 
   // Merge DB-loaded sent requests with locally tracked ones for instant UI feedback
@@ -247,7 +248,11 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         if (data?.groupChatroomId) {
           toast({ title: "It's a meet!", description: "Opening the group chat..." });
           queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
-          setLocation(`/messages?meetupChat=${data.groupChatroomId}`);
+          // Navigate directly to the meetup chatroom page (NOT messages) so it
+          // always opens the correct group chat regardless of current page state.
+          const title = encodeURIComponent(data.chatroomName || 'Meetup Chat');
+          const subtitle = encodeURIComponent(data.chatroomCity || 'Group chat');
+          setLocation(`/meetup-chatroom-chat/${data.groupChatroomId}?title=${title}&subtitle=${subtitle}`);
         } else {
           const otherUserId = data?.otherUserId || variables.fromUserId;
           if (otherUserId) {
@@ -378,6 +383,35 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [groupChatMessages, showGroupChat]);
+
+  // Listen for meet_request_accepted WebSocket notifications so the requester's
+  // "Pending" button clears immediately and they're prompted to join the chatroom.
+  useEffect(() => {
+    const handleNotification = (notification: any) => {
+      if (notification?.action === 'meet_request_accepted') {
+        // Immediately clear the pending state for the requester
+        queryClient.invalidateQueries({ queryKey: ["/api/available-now/sent-requests"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
+        const chatroomId = notification.groupChatroomId;
+        if (chatroomId) {
+          toast({
+            title: "Meet request accepted! 🤝",
+            description: "Tap to open the group chat",
+            action: {
+              altText: "Open chat",
+              onClick: () => setLocation(`/meetup-chatroom-chat/${chatroomId}?title=${encodeURIComponent('Meetup Chat')}`),
+            } as any,
+            duration: 10000,
+          });
+        } else {
+          toast({ title: "Meet request accepted! 🤝", description: "Check your messages." });
+        }
+      }
+    };
+    websocketService.on('notification', handleNotification);
+    return () => { websocketService.off('notification', handleNotification); };
+  }, [toast, setLocation]);
 
   const toggleActivity = (value: string) => {
     setSelectedActivities(prev =>

@@ -24616,6 +24616,19 @@ Questions? Just reply to this message. Welcome aboard!
         // session at accept-time, groupChatroomId stays null. A new session on
         // a future day will create its own fresh chatroom when someone accepts.
 
+        // Send a real-time WebSocket notification to the requester so their widget
+        // clears "Pending" immediately and shows a "Join Chat" prompt.
+        try {
+          const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+          chatWebSocketService.sendNotificationToUser(updated.fromUserId, {
+            action: 'meet_request_accepted',
+            fromUserId: Number(userId),
+            groupChatroomId: groupChatroomId || null,
+          });
+        } catch (wsErr) {
+          console.error('[MEET ACCEPT] WS notification failed (non-fatal):', wsErr);
+        }
+
         // Send a single DM so the requester sees the acceptance (guard against duplicate PATCH calls)
         const acceptanceContent = groupChatroomId
           ? `Hey! I accepted your meet request — check the group chat to coordinate! 🤝`
