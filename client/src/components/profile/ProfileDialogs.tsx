@@ -2311,7 +2311,14 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   }}
                 >
                   <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                    {(chatroom.name || 'C').charAt(0).toUpperCase()}
+                    {(() => {
+                      const name = chatroom.name || 'C';
+                      if (name.startsWith('Welcome to ')) {
+                        const city = name.replace('Welcome to ', '').trim();
+                        return city.split(' ').filter((w: string) => w.length > 0).map((w: string) => w[0].toUpperCase()).join('').slice(0, 3);
+                      }
+                      return name.charAt(0).toUpperCase();
+                    })()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-gray-900 dark:text-white text-base leading-tight">

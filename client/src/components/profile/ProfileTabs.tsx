@@ -2818,7 +2818,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <div className="space-y-2">
                         {userChatrooms.map((chatroom: any) => {
                           const displayName = chatroom.name || chatroom.cityName || 'Chatroom';
-                          const initial = displayName[0]?.toUpperCase() || '?';
+                          const initial = (() => {
+                            if (displayName.startsWith('Welcome to ')) {
+                              const city = displayName.replace('Welcome to ', '').trim();
+                              return city.split(' ').filter((w: string) => w.length > 0).map((w: string) => w[0].toUpperCase()).join('').slice(0, 3);
+                            }
+                            return displayName[0]?.toUpperCase() || '?';
+                          })();
                           const gradientIndex = (displayName.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0) % 7);
                           const gradients = [
                             'from-blue-500 to-orange-500',
