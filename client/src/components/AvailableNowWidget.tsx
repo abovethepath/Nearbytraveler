@@ -97,9 +97,15 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   // Available Now is location-based: show who's available in the city you're physically in RIGHT NOW.
   // Travelers see their destination city. Locals see their hometown. Never both.
   const isTraveling = (currentUser as any)?.isCurrentlyTraveling;
-  const destCity    = (currentUser as any)?.destinationCity || (currentUser as any)?.destination_city;
-  const destState   = (currentUser as any)?.destinationState || (currentUser as any)?.destination_state;
-  const destCountry = (currentUser as any)?.destinationCountry || (currentUser as any)?.destination_country;
+
+  // effectiveUser from home.tsx stores the destination as a combined "City, State" string in
+  // `travelDestination`. Raw DB user records use separate `destinationCity` / `destination_city`
+  // fields. We need to handle both shapes so a freshly-created trip works immediately.
+  const rawTravelDest = (currentUser as any)?.travelDestination || "";
+  const rawDestParts  = rawTravelDest ? rawTravelDest.split(',') : [];
+  const destCity    = (currentUser as any)?.destinationCity   || (currentUser as any)?.destination_city   || rawDestParts[0]?.trim() || null;
+  const destState   = (currentUser as any)?.destinationState  || (currentUser as any)?.destination_state  || rawDestParts[1]?.trim() || null;
+  const destCountry = (currentUser as any)?.destinationCountry || (currentUser as any)?.destination_country || rawDestParts[2]?.trim() || null;
 
   const userCity    = (isTraveling && destCity)    ? destCity    : (currentUser?.hometownCity    || currentUser?.city    || "");
   const userState   = (isTraveling && destState)   ? destState   : (currentUser?.hometownState   || currentUser?.state   || "");
