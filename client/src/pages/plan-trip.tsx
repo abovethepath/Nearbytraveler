@@ -465,6 +465,8 @@ export default function PlanTrip() {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id || 1}`] });
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/search-by-location"] });
+      // Invalidate profile bundle so tab counts update immediately
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id || 1}/profile-bundle`] });
       
       if (isEditMode) {
         // For edit mode, show toast and go to profile

@@ -2271,6 +2271,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // Invalidate matches page data since travel plans affect matching
       queryClient.invalidateQueries({ queryKey: ["/api/matches"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/search-by-location"] });
+      // Invalidate profile bundle so tab counts update immediately
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
       
       // Force immediate refetch
       refetchUser();
@@ -3030,6 +3032,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // Invalidate matches page data since travel plans affect matching
       queryClient.invalidateQueries({ queryKey: ["/api/matches"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/search-by-location"] });
+      // Invalidate profile bundle so tab counts update immediately
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
       // CRITICAL: Invalidate all event queries since changing travel destination changes which events are shown
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
       
