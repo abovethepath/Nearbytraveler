@@ -186,12 +186,11 @@ function MeetRequestModal({
         toast({ title: "It's a meet!", description: `Opening chat with @${displayName}...` });
         onClose();
         if (_data?.groupChatroomId) {
-          setLocation(`/messages?meetupChat=${_data.groupChatroomId}`);
+          const title = encodeURIComponent(_data.chatroomName || 'Meetup Chat');
+          const subtitle = encodeURIComponent(_data.chatroomCity || 'Group chat');
+          setLocation(`/meetup-chatroom-chat/${_data.groupChatroomId}?title=${title}&subtitle=${subtitle}`);
         } else {
-          const chatUserId = _data?.otherUserId || actorId;
-          if (chatUserId) {
-            setLocation(`/messages?user=${chatUserId}`);
-          }
+          toast({ title: "It's a meet!", description: "Check your messages for the meetup chat." });
         }
       } else {
         toast({ title: "Meet request declined", description: "The request has been removed from your feed." });

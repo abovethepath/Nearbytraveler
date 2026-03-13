@@ -254,14 +254,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
           const subtitle = encodeURIComponent(data.chatroomCity || 'Group chat');
           setLocation(`/meetup-chatroom-chat/${data.groupChatroomId}?title=${title}&subtitle=${subtitle}`);
         } else {
-          const otherUserId = data?.otherUserId || variables.fromUserId;
-          if (otherUserId) {
-            toast({ title: "It's a meet!", description: "Opening chat..." });
-            setLocation(`/messages?user=${otherUserId}`);
-          } else {
-            toast({ title: "It's a meet!", description: "Check your Messages for the meetup chat." });
-            setLocation('/messages');
-          }
+          toast({ title: "It's a meet!", description: "Check your Messages for the meetup chat." });
         }
       } else {
         toast({ title: "Request declined" });
