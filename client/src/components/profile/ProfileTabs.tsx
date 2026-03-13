@@ -3646,10 +3646,81 @@ export function ProfileTabs(props: ProfilePageProps) {
                                   {connection.connectedUser?.username}
                                 </p>
                                 {isOwnProfile && (
-                                  <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
-                                    <span className="font-medium">How we met:</span>{" "}
-                                    {connection.connectionNote ? connection.connectionNote : "—"}
-                                  </p>
+                                  <div className="mt-1">
+                                    {editingConnectionNote === connection.id ? (
+                                      <div className="space-y-1.5">
+                                        <Input
+                                          value={connectionNoteText}
+                                          onChange={(e) => setConnectionNoteText(e.target.value)}
+                                          placeholder="How or where did we meet?"
+                                          className="text-xs h-7 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700"
+                                          autoFocus
+                                          onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                              apiRequest('PATCH', `/api/connections/${connection.id}/note`, {
+                                                connectionNote: connectionNoteText
+                                              }).then(() => {
+                                                queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
+                                                setEditingConnectionNote(null);
+                                                setConnectionNoteText('');
+                                              }).catch(console.error);
+                                            } else if (e.key === 'Escape') {
+                                              setEditingConnectionNote(null);
+                                              setConnectionNoteText('');
+                                            }
+                                          }}
+                                        />
+                                        <div className="flex gap-1">
+                                          <Button
+                                            size="sm"
+                                            onClick={() => {
+                                              apiRequest('PATCH', `/api/connections/${connection.id}/note`, {
+                                                connectionNote: connectionNoteText
+                                              }).then(() => {
+                                                queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
+                                                setEditingConnectionNote(null);
+                                                setConnectionNoteText('');
+                                              }).catch(console.error);
+                                            }}
+                                            className="h-6 px-2 text-xs"
+                                          >
+                                            Save
+                                          </Button>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => {
+                                              setEditingConnectionNote(null);
+                                              setConnectionNoteText('');
+                                            }}
+                                            className="h-6 px-2 text-xs"
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div
+                                        className="cursor-pointer text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700/50 rounded px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors border border-dashed border-gray-300 dark:border-gray-600 inline-flex items-center gap-1"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setEditingConnectionNote(connection.id);
+                                          setConnectionNoteText(connection.connectionNote || '');
+                                        }}
+                                        title="Click to add/edit how you met"
+                                      >
+                                        {connection.connectionNote ? (
+                                          <>
+                                            <span className="font-medium text-black dark:text-white">How we met:</span>{" "}
+                                            <span>{connection.connectionNote}</span>
+                                            <span className="text-gray-400 ml-1">✏️</span>
+                                          </>
+                                        ) : (
+                                          <span className="text-gray-500 dark:text-gray-400">+ How we met</span>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
                                 )}
                               </div>
                               <Button
