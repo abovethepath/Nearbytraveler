@@ -198,11 +198,16 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
 
   const getUserLocationFromProfile = () => {
     const now = new Date();
-    const hasActiveTrip =
-      !!currentUser?.isCurrentlyTraveling &&
+    // hasActiveTrip: either the flag is set, OR they have a destination city with
+    // travel dates that cover today (catches cases where isCurrentlyTraveling isn't synced)
+    const hasTravelDates =
       !!(currentUser?.destinationCity || currentUser?.travelDestination) &&
       (!currentUser?.travelEndDate || new Date(currentUser.travelEndDate) >= now) &&
       (!currentUser?.travelStartDate || new Date(currentUser.travelStartDate) <= now);
+    const hasActiveTrip = hasTravelDates || (
+      !!currentUser?.isCurrentlyTraveling &&
+      !!(currentUser?.destinationCity || currentUser?.travelDestination)
+    );
 
     if (hasActiveTrip) {
       const city =
@@ -1306,7 +1311,12 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                       });
                     }}
                   >
-                    📍 Use My Location
+                    {(() => {
+                      const loc = getUserLocationFromProfile();
+                      return loc.label === "your travel destination"
+                        ? "✈️ Use travel destination"
+                        : "📍 Use My Location";
+                    })()}
                   </Button>
                 </div>
                 <SmartLocationInput
