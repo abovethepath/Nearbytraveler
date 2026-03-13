@@ -401,6 +401,51 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
               </CollapsibleContent>
             </Collapsible>
 
+            {/* Lifestyle & Private Interests Filter */}
+            <Collapsible open={expandedSections.privateInterests} onOpenChange={() => toggleSection('privateInterests')}>
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" className="w-full justify-between border-red-300 dark:border-red-700 hover:border-red-400">
+                  <span className="flex items-center gap-1.5">
+                    <span>🔒</span>
+                    <span>Lifestyle &amp; Private Interests {advancedFilters.privateInterests.length > 0 && `(${advancedFilters.privateInterests.length})`}</span>
+                  </span>
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-3 pt-2">
+                <p className="text-xs text-gray-500 dark:text-gray-400 italic px-1">Only matches members who have also selected these in their own private lifestyle preferences.</p>
+                {Object.entries(PRIVATE_INTERESTS_BY_CATEGORY).map(([category, options]) => (
+                  <div key={category}>
+                    <p className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide mb-1.5 px-1">{category}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {(options as string[]).map((option) => {
+                        const isSelected = advancedFilters.privateInterests.includes(option);
+                        return (
+                          <button
+                            key={option}
+                            type="button"
+                            onClick={() => setAdvancedFilters(prev => ({
+                              ...prev,
+                              privateInterests: isSelected
+                                ? prev.privateInterests.filter(p => p !== option)
+                                : [...prev.privateInterests, option]
+                            }))}
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                              isSelected
+                                ? "bg-red-600 text-white border-red-600"
+                                : "bg-transparent border border-red-200 dark:border-red-800 text-gray-600 dark:text-white/70 hover:border-red-500"
+                            }`}
+                          >
+                            {option}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </CollapsibleContent>
+            </Collapsible>
+
             {/* Gender Filter */}
             <Collapsible open={expandedSections.gender} onOpenChange={() => toggleSection('gender')}>
               <CollapsibleTrigger asChild>
@@ -573,48 +618,6 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                     );
                   })}
                 </div>
-              </CollapsibleContent>
-            </Collapsible>
-
-            {/* Lifestyle Interests Filter */}
-            <Collapsible open={expandedSections.privateInterests} onOpenChange={() => toggleSection('privateInterests')}>
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
-                  <span>🔒 Lifestyle Interests {advancedFilters.privateInterests.length > 0 && `(${advancedFilters.privateInterests.length})`}</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-3 pt-2">
-                <p className="text-xs text-gray-500 dark:text-gray-400 italic px-1">Only matches people who have selected these in their own private lifestyle preferences.</p>
-                {Object.entries(PRIVATE_INTERESTS_BY_CATEGORY).map(([category, options]) => (
-                  <div key={category}>
-                    <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5 px-1">{category}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {options.map((option) => {
-                        const isSelected = advancedFilters.privateInterests.includes(option);
-                        return (
-                          <button
-                            key={option}
-                            type="button"
-                            onClick={() => setAdvancedFilters(prev => ({
-                              ...prev,
-                              privateInterests: isSelected
-                                ? prev.privateInterests.filter(p => p !== option)
-                                : [...prev.privateInterests, option]
-                            }))}
-                            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
-                              isSelected
-                                ? "bg-purple-600 text-white border-purple-600"
-                                : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-purple-400"
-                            }`}
-                          >
-                            {option}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
               </CollapsibleContent>
             </Collapsible>
 
