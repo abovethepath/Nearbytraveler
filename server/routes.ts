@@ -3464,12 +3464,56 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (cached) return res.json(cached);
 
       const now = new Date();
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
       const cityLower = city.toLowerCase();
 
+      // Map cities to IANA timezones so "today" is correct for the city, not UTC.
+      const CITY_TZ: Record<string, string> = {
+        "los angeles": "America/Los_Angeles",
+        "playa del rey": "America/Los_Angeles",
+        "santa monica": "America/Los_Angeles",
+        "venice": "America/Los_Angeles",
+        "culver city": "America/Los_Angeles",
+        "new york": "America/New_York",
+        "chicago": "America/Chicago",
+        "miami": "America/New_York",
+        "houston": "America/Chicago",
+        "dallas": "America/Chicago",
+        "denver": "America/Denver",
+        "phoenix": "America/Phoenix",
+        "seattle": "America/Los_Angeles",
+        "san francisco": "America/Los_Angeles",
+        "portland": "America/Los_Angeles",
+        "london": "Europe/London",
+        "paris": "Europe/Paris",
+        "madrid": "Europe/Madrid",
+        "lisbon": "Europe/Lisbon",
+        "rome": "Europe/Rome",
+        "berlin": "Europe/Berlin",
+        "tokyo": "Asia/Tokyo",
+        "sydney": "Australia/Sydney",
+      };
+      const tz = CITY_TZ[cityLower] || "UTC";
+
+      // Compute start/end of "today" in the city's local timezone.
+      // Strategy: get elapsed milliseconds since midnight in the city's timezone,
+      // then subtract from now to find the UTC moment of that local midnight.
+      const timeParts = new Intl.DateTimeFormat("en-US", {
+        timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
+      }).formatToParts(now);
+      const cityH = parseInt(timeParts.find(p => p.type === "hour")!.value) % 24;
+      const cityMin = parseInt(timeParts.find(p => p.type === "minute")!.value);
+      const citySec = parseInt(timeParts.find(p => p.type === "second")!.value);
+      const msFromMidnight = (cityH * 3600 + cityMin * 60 + citySec) * 1000 + now.getMilliseconds();
+      const todayStart = new Date(now.getTime() - msFromMidnight);
+      const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+
+      // LA Metro: searching "los angeles" also covers nearby metro cities
+      const cityMatchSql = cityLower === "los angeles"
+        ? sql`LOWER(${events.city}) IN ('los angeles', 'santa monica', 'venice', 'culver city', 'playa del rey', 'west hollywood', 'marina del rey', 'brentwood', 'pacific palisades')`
+        : sql`LOWER(${events.city}) = ${cityLower}`;
+
       const [tonightEventsRows, availableCountRows, hereNowRows] = await Promise.all([
-        // Events happening today in this city
+        // Events happening today in this city (using city-local timezone window)
         db.select({
           id: events.id,
           title: events.title,
@@ -3478,10 +3522,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           venueName: events.venueName,
           location: events.location,
           imageUrl: events.imageUrl,
+          timeZone: events.timeZone,
         })
           .from(events)
           .where(and(
-            sql`LOWER(${events.city}) = ${cityLower}`,
+            cityMatchSql,
             gte(events.date, todayStart),
             lt(events.date, todayEnd),
             eq(events.isActive, true),

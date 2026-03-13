@@ -250,11 +250,22 @@ function EventsWidget({ userId }: EventsWidgetProps) {
                   <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 space-x-4">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
-                      {formatDateForDisplay(event.date, "UTC")} at{" "}
-                      {new Date(event.date).toLocaleTimeString([], { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
+                      {(() => {
+                        const tz = (event as any).timeZone || undefined;
+                        const d = new Date(event.date);
+                        return d.toLocaleDateString([], {
+                          month: 'short', day: 'numeric', year: 'numeric',
+                          ...(tz ? { timeZone: tz } : {}),
+                        });
+                      })()} at{" "}
+                      {(() => {
+                        const tz = (event as any).timeZone || undefined;
+                        const d = new Date(event.date);
+                        return d.toLocaleTimeString([], {
+                          hour: '2-digit', minute: '2-digit',
+                          ...(tz ? { timeZone: tz } : {}),
+                        });
+                      })()}
                       {event.endDate && (
                         <>
                           {" - "}

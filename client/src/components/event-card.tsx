@@ -180,9 +180,8 @@ export default function EventCard({ event, compact = false, featured = false }: 
   const formatEventDate = (date: Date | string) => {
     const eventDate = new Date(date);
     const now = new Date();
-    const diffTime = eventDate.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     const tz = (event as any)?.timeZone as string | undefined;
+
     const timeOpts: Intl.DateTimeFormatOptions = {
       hour: 'numeric',
       minute: '2-digit',
@@ -195,13 +194,31 @@ export default function EventCard({ event, compact = false, featured = false }: 
       ...timeOpts,
     };
 
-    if (diffDays === 0) {
-      return `Today, ${eventDate.toLocaleTimeString([], timeOpts)}`;
-    } else if (diffDays === 1) {
+    // Compare calendar dates in the event's stored timezone (or viewer's local timezone).
+    // Using Math.ceil on a time-diff gives wrong results when the event is only hours away.
+    const calOpts: Intl.DateTimeFormatOptions = {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      ...(tz ? { timeZone: tz } : {}),
+    };
+    const eventDateStr = eventDate.toLocaleDateString('en-CA', calOpts); // YYYY-MM-DD
+    const todayStr = now.toLocaleDateString('en-CA', calOpts);
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const tomorrowStr = tomorrow.toLocaleDateString('en-CA', calOpts);
+
+    if (eventDateStr === todayStr) {
+      const hour = tz
+        ? parseInt(new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', hour12: false }).format(eventDate))
+        : eventDate.getHours();
+      const label = hour >= 17 ? 'Tonight' : 'Today';
+      return `${label}, ${eventDate.toLocaleTimeString([], timeOpts)}`;
+    } else if (eventDateStr === tomorrowStr) {
       return `Tomorrow, ${eventDate.toLocaleTimeString([], timeOpts)}`;
-    } else if (diffDays < 7) {
-      return eventDate.toLocaleDateString([], dateTimeOpts);
     } else {
+      // More than 1 day away
+      const diffDays = Math.round((eventDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      if (diffDays < 7) {
+        return eventDate.toLocaleDateString([], dateTimeOpts);
+      }
       return tz
         ? eventDate.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric', timeZone: tz })
         : eventDate.toLocaleDateString();
