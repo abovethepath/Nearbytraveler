@@ -31,6 +31,19 @@ import { isNativeIOSApp } from '@/lib/nativeApp';
 import { AuthContext } from '@/App';
 import { FullPageSkeleton } from '@/components/FullPageSkeleton';
 
+/** Returns the active travel destination city for a user, or null if not traveling.
+ *  Uses date-based detection so it works even when isCurrentlyTraveling flag isn't synced.
+ *  Prefers destinationCity over the less-reliable travelDestination text field. */
+function getActiveTravelDest(user: any): string | null {
+  if (!user) return null;
+  const dest = user.destinationCity || user.travelDestination?.split(',')[0]?.trim() || null;
+  if (!dest) return null;
+  const now = new Date();
+  if (user.travelEndDate && new Date(user.travelEndDate) < now) return null;
+  if (user.travelStartDate && new Date(user.travelStartDate) > now) return null;
+  return dest;
+}
+
 function getReplyPreviewText(msg: any): string {
   if (!msg) return '';
   const raw =
@@ -459,7 +472,7 @@ export default function Messages() {
           profileImage: connectedUser?.profileImage,
           location: connectedUser?.currentCity || connectedUser?.destinationCity || connectedUser?.city || connectedUser?.hometownCity || connectedUser?.location || '',
           hometownCity: connectedUser?.hometownCity || '',
-          travelDestination: connectedUser?.isCurrentlyTraveling ? (connectedUser?.travelDestination || null) : null,
+          travelDestination: getActiveTravelDest(connectedUser),
           lastMessage: '', // Don't show message preview in connections list
           lastMessageTime: connection.createdAt,
           unreadCount: 0, // Initialize unread count
@@ -477,7 +490,7 @@ export default function Messages() {
           profileImage: targetUser?.profileImage,
           location: targetUser?.currentCity || targetUser?.destinationCity || targetUser?.city || targetUser?.hometownCity || targetUser?.location || '',
           hometownCity: targetUser?.hometownCity || '',
-          travelDestination: targetUser?.isCurrentlyTraveling ? (targetUser?.travelDestination || null) : null,
+          travelDestination: getActiveTravelDest(targetUser),
           lastMessage: 'Start a conversation...',
           lastMessageTime: new Date().toISOString(),
         });
@@ -528,7 +541,7 @@ export default function Messages() {
             profileImage: otherUser?.profileImage,
             location: otherUser?.currentCity || otherUser?.destinationCity || otherUser?.city || otherUser?.hometownCity || otherUser?.location || '',
             hometownCity: otherUser?.hometownCity || '',
-            travelDestination: otherUser?.isCurrentlyTraveling ? (otherUser?.travelDestination || null) : null,
+            travelDestination: getActiveTravelDest(otherUser),
             lastMessage: isOpener ? null : (message.content || (message.mediaUrl ? '📷 Photo' : '')),
             lastMessageTime: message.createdAt,
             unreadCount,
@@ -1021,7 +1034,7 @@ export default function Messages() {
                         }`}>
                           {(conv as any).hometownCity
                             ? (conv as any).travelDestination
-                              ? `${abbreviateCity((conv as any).hometownCity)} → ${abbreviateCity((conv as any).travelDestination.split(',')[0]?.trim())}`
+                              ? `${abbreviateCity((conv as any).hometownCity)} → ${abbreviateCity((conv as any).travelDestination)}`
                               : abbreviateCity((conv as any).hometownCity)
                             : abbreviateCity(conv.location) || ''}
                         </div>
@@ -1379,9 +1392,13 @@ export default function Messages() {
                         @{contact.username}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                        {contact.travelDestination && contact.isCurrentlyTraveling
-                          ? `${abbreviateCity(contact.hometownCity || contact.location || '')} → ${abbreviateCity(contact.travelDestination.split(',')[0]?.trim())}`
-                          : abbreviateCity(contact.hometownCity || contact.location) || 'Location unknown'}
+                        {(() => {
+                          const dest = getActiveTravelDest(contact);
+                          const home = abbreviateCity(contact.hometownCity || contact.location || '');
+                          return dest
+                            ? `${home} → ${abbreviateCity(dest)}`
+                            : home || 'Location unknown';
+                        })()}
                       </p>
                     </div>
                   </div>
