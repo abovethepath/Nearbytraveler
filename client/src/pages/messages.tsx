@@ -209,7 +209,7 @@ export default function Messages() {
       return res.json();
     },
     enabled: !!userId,
-    staleTime: 60000,
+    staleTime: 0,
     gcTime: 300000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -516,18 +516,23 @@ export default function Messages() {
           });
         } else {
           // Use embedded user from message (e.g. from meet-request DMs) so thread appears in inbox even if not in allUsers
-          const fromMessage = senderId === userId ? message.receiverUser : message.senderUser;
+          const fromMessageRaw = senderId === userId ? message.receiverUser : message.senderUser;
+          // Only trust fromMessage if it has a valid id — a join that returned null gives an object of all-nulls
+          const fromMessage = (fromMessageRaw?.id && (fromMessageRaw?.username || fromMessageRaw?.name)) ? fromMessageRaw : null;
           const otherUser = fromMessage || (allUsers as any[]).find((u: any) => u.id === otherUserId);
-          // Skip ghost/deleted users with no real identity
-          if (!otherUser?.username && !otherUser?.name) return;
+          // Skip truly ghost/deleted users: no real identity AND no message content
+          // But if we have actual message content, always show the thread (user data may just be missing temporarily)
+          const hasRealIdentity = !!(otherUser?.username || otherUser?.name);
+          const hasMessageContent = !!(message.content || message.mediaUrl);
+          if (!hasRealIdentity && !hasMessageContent) return;
           conversationMap.set(otherUserId, {
             userId: otherUserId,
-            username: otherUser?.username || otherUser?.name || `User ${otherUserId}`,
+            username: otherUser?.username || otherUser?.name || `DM ${otherUserId}`,
             profileImage: otherUser?.profileImage,
             location: otherUser?.currentCity || otherUser?.destinationCity || otherUser?.city || otherUser?.hometownCity || otherUser?.location || '',
             hometownCity: otherUser?.hometownCity || '',
             travelDestination: otherUser?.isCurrentlyTraveling ? (otherUser?.travelDestination || null) : null,
-            lastMessage: message.content,
+            lastMessage: message.content || (message.mediaUrl ? '📷 Photo' : ''),
             lastMessageTime: message.createdAt,
             unreadCount: unreadCount,
           });
@@ -537,10 +542,13 @@ export default function Messages() {
 
     return Array.from(conversationMap.values())
       .filter((conv: any) => {
-        // Remove ghost users: username is the numeric fallback pattern "User {id}"
-        if (conv.username === `User ${conv.userId}`) return false;
         // Only show conversations with actual messages (or the target user from URL)
-        return conv.lastMessage !== '' || (targetUserId && conv.userId === parseInt(targetUserId));
+        // Never filter out a thread that has real message content — user data may just be temporarily missing
+        const hasMessages = conv.lastMessage !== '' && conv.lastMessage != null;
+        if (hasMessages) return true;
+        if (targetUserId && conv.userId === parseInt(targetUserId)) return true;
+        // For connections with NO messages, skip ghost/placeholder users
+        return conv.username !== `User ${conv.userId}` && conv.username !== `DM ${conv.userId}`;
       })
       .sort((a: any, b: any) => 
         new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
@@ -548,6 +556,7 @@ export default function Messages() {
   }, [connections, messages, allUsers, targetUserId, userId]);
 
   // Auto-select target conversation from URL and scroll it into view
+  // Also auto-select the first unread conversation when landing without a specific target
   useEffect(() => {
     if (targetUserId && conversations.length > 0) {
       const targetUserIdNum = parseInt(targetUserId);
@@ -568,8 +577,13 @@ export default function Messages() {
           }
         }, 500);
       }
-    } else if (!targetUserId && !getInitialMeetupChatId()) {
-      setSelectedConversation(null);
+    } else if (!targetUserId && !getInitialMeetupChatId() && !selectedConversation && conversations.length > 0) {
+      // Auto-select the first conversation that has unread messages so the badge click is useful
+      const firstUnread = conversations.find((conv: any) => conv.unreadCount > 0);
+      if (firstUnread) {
+        setSelectedConversation(firstUnread.userId);
+        console.log(`📬 Auto-selected first unread conversation:`, firstUnread.username);
+      }
     }
   }, [targetUserId, conversations]);
 

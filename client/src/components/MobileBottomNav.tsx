@@ -108,6 +108,8 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
     const refreshMessages = () => {
       if (userIdRef.current) {
         qcRef.current.invalidateQueries({ queryKey: ['/api/messages', userIdRef.current, 'unread-count'] });
+        // Also invalidate the full messages list so conversation sidebar updates in real-time
+        qcRef.current.invalidateQueries({ queryKey: ['/api/messages', userIdRef.current] });
       }
     };
     const refreshActivity = () => {
