@@ -266,22 +266,24 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       console.error(`[MEET ACCEPT] onError:`, error);
       setPendingRequestId(null);
       const msg: string = error?.message || "";
-      // Try to extract the server's `detail` field from the JSON payload in the error message
       let detail = "";
+      let serverError = "";
       try {
         const jsonStart = msg.indexOf("{");
         if (jsonStart !== -1) {
           const parsed = JSON.parse(msg.slice(jsonStart));
           detail = parsed?.detail || "";
+          serverError = parsed?.error || "";
         }
       } catch {}
-      console.error(`[MEET ACCEPT] server detail:`, detail || "(none)");
-      if (msg.includes("expired") || msg.includes("Expired")) {
-        // Session expired — refresh the list so the stale notification disappears
+      console.error(`[MEET ACCEPT] server error: "${serverError}" detail: "${detail || "(none)"}"`);
+      if (msg.includes("expired") || msg.includes("Expired") || serverError.includes("expired")) {
         queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
         toast({ title: "Session expired", description: "Your Available Now session has ended. This meet request is no longer valid.", variant: "destructive" });
+      } else if (msg.includes("not found") || msg.includes("not yours")) {
+        toast({ title: "Request not found", description: "This meet request may have already been handled.", variant: "destructive" });
       } else {
-        toast({ title: "Couldn't process request", description: "Please try again.", variant: "destructive" });
+        toast({ title: "Couldn't process request", description: detail || serverError || "Please try again.", variant: "destructive" });
       }
     },
   });

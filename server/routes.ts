@@ -24456,96 +24456,114 @@ Questions? Just reply to this message. Welcome aboard!
       let groupChatroomId: number | null = null;
 
       if (status === "accepted" && updated) {
-        const [acceptor] = await db.select({ username: users.username })
-          .from(users).where(eq(users.id, Number(userId)));
-        const acceptorName = acceptor?.username || "Someone";
+        // Wrap chatroom creation in its own try/catch so a chatroom error does NOT
+        // kill the accept response — the request was already marked accepted above.
+        try {
+          const [acceptor] = await db.select({ username: users.username })
+            .from(users).where(eq(users.id, Number(userId)));
+          const acceptorName = acceptor?.username || "Someone";
 
-        const [requester] = await db.select({ username: users.username })
-          .from(users).where(eq(users.id, updated.fromUserId));
-        const requesterName = requester?.username || "Someone";
+          const [requester] = await db.select({ username: users.username })
+            .from(users).where(eq(users.id, updated.fromUserId));
+          const requesterName = requester?.username || "Someone";
 
-        const [activeSession] = await db.select()
-          .from(availableNow)
-          .where(and(
-            eq(availableNow.userId, Number(userId)),
-            eq(availableNow.isAvailable, true),
-            gte(availableNow.expiresAt, new Date())
-          ))
-          .orderBy(desc(availableNow.createdAt))
-          .limit(1);
-
-        if (activeSession) {
-          const [existingChatroom] = await db.select()
-            .from(meetupChatrooms)
+          console.log(`[MEET ACCEPT] Looking up active session for host userId=${userId}`);
+          const [activeSession] = await db.select()
+            .from(availableNow)
             .where(and(
-              eq(meetupChatrooms.availableNowId, activeSession.id),
-              eq(meetupChatrooms.isActive, true)
+              eq(availableNow.userId, Number(userId)),
+              eq(availableNow.isAvailable, true),
+              gte(availableNow.expiresAt, new Date())
             ))
+            .orderBy(desc(availableNow.createdAt))
             .limit(1);
 
-          if (existingChatroom) {
-            groupChatroomId = existingChatroom.id;
-            await db.update(meetupChatrooms)
-              .set({ participantCount: sql`${meetupChatrooms.participantCount} + 1` })
-              .where(eq(meetupChatrooms.id, existingChatroom.id));
+          console.log(`[MEET ACCEPT] activeSession=${activeSession?.id}, city=${activeSession?.city}, country=${activeSession?.country}`);
 
-            await db.insert(meetupChatroomMessages).values({
-              meetupChatroomId: existingChatroom.id,
-              userId: updated.fromUserId,
-              username: requesterName,
-              message: `@${requesterName} joined the quick meet! 🎉`,
-              messageType: 'system',
-            });
+          if (activeSession) {
+            const [existingChatroom] = await db.select()
+              .from(meetupChatrooms)
+              .where(and(
+                eq(meetupChatrooms.availableNowId, activeSession.id),
+                eq(meetupChatrooms.isActive, true)
+              ))
+              .limit(1);
 
-            // Ensure requester is in chatroomMembers (same as Quick Meets)
-            await db.insert(chatroomMembers).values({
-              chatroomId: existingChatroom.id,
-              userId: updated.fromUserId,
-              role: 'member',
-              isActive: true,
-            }).onConflictDoNothing();
+            if (existingChatroom) {
+              console.log(`[MEET ACCEPT] Joining existing chatroom ${existingChatroom.id}`);
+              groupChatroomId = existingChatroom.id;
+              await db.update(meetupChatrooms)
+                .set({ participantCount: sql`${meetupChatrooms.participantCount} + 1` })
+                .where(eq(meetupChatrooms.id, existingChatroom.id));
+
+              await db.insert(meetupChatroomMessages).values({
+                meetupChatroomId: existingChatroom.id,
+                userId: updated.fromUserId,
+                username: requesterName,
+                message: `@${requesterName} joined the quick meet! 🎉`,
+                messageType: 'system',
+              });
+
+              await db.insert(chatroomMembers).values({
+                chatroomId: existingChatroom.id,
+                userId: updated.fromUserId,
+                role: 'member',
+                isActive: true,
+              }).onConflictDoNothing();
+            } else {
+              const activityLabels: Record<string, string> = {
+                coffee: "Coffee", food: "Food", drinks: "Drinks", explore: "Explore",
+                music: "Music", fitness: "Fitness", hike: "Hike", bike: "Bike",
+                beach: "Beach", sightseeing: "Sightseeing"
+              };
+              const sessionActivities = activeSession.activities || [];
+              const primaryActivity = sessionActivities.length > 0 ? sessionActivities[0] : null;
+              const activityLabel = primaryActivity ? (activityLabels[primaryActivity] || primaryActivity) : null;
+              const chatroomName = activityLabel
+                ? `${activityLabel} with @${acceptorName}`
+                : `Hangout with @${acceptorName}`;
+              const activitiesStr = sessionActivities.map((a: string) => activityLabels[a] || a).join(', ') || 'Quick Meet';
+
+              const chatroomCity = (activeSession.city || 'Unknown').trim() || 'Unknown';
+              const chatroomCountry = (activeSession.country || 'USA').trim() || 'USA';
+
+              console.log(`[MEET ACCEPT] Creating new chatroom: name="${chatroomName}", city="${chatroomCity}", country="${chatroomCountry}"`);
+              const [newChatroom] = await db.insert(meetupChatrooms).values({
+                availableNowId: activeSession.id,
+                chatroomName,
+                description: `Group chat for everyone meeting up with @${acceptorName} — ${activitiesStr}`,
+                city: chatroomCity,
+                state: activeSession.state || null,
+                country: chatroomCountry,
+                activityType: primaryActivity || null,
+                isActive: true,
+                expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
+                participantCount: 2,
+              }).returning();
+
+              groupChatroomId = newChatroom.id;
+              console.log(`[MEET ACCEPT] Created chatroom ${newChatroom.id}`);
+
+              await db.insert(meetupChatroomMessages).values({
+                meetupChatroomId: newChatroom.id,
+                userId: Number(userId),
+                username: acceptorName,
+                message: `Group chat created! @${acceptorName} and @${requesterName} are meeting up. Everyone accepted will join here automatically. 🤝`,
+                messageType: 'system',
+              });
+
+              await db.insert(chatroomMembers).values([
+                { chatroomId: newChatroom.id, userId: Number(userId), role: 'admin', isActive: true },
+                { chatroomId: newChatroom.id, userId: updated.fromUserId, role: 'member', isActive: true },
+              ]).onConflictDoNothing();
+            }
           } else {
-            const activityLabels: Record<string, string> = {
-              coffee: "Coffee", food: "Food", drinks: "Drinks", explore: "Explore",
-              music: "Music", fitness: "Fitness", hike: "Hike", bike: "Bike",
-              beach: "Beach", sightseeing: "Sightseeing"
-            };
-            const sessionActivities = activeSession.activities || [];
-            const primaryActivity = sessionActivities.length > 0 ? sessionActivities[0] : null;
-            const activityLabel = primaryActivity ? (activityLabels[primaryActivity] || primaryActivity) : null;
-            const chatroomName = activityLabel
-              ? `${activityLabel} with @${acceptorName}`
-              : `Hangout with @${acceptorName}`;
-            const activitiesStr = sessionActivities.map((a: string) => activityLabels[a] || a).join(', ') || 'Quick Meet';
-            const [newChatroom] = await db.insert(meetupChatrooms).values({
-              availableNowId: activeSession.id,
-              chatroomName,
-              description: `Group chat for everyone meeting up with @${acceptorName} — ${activitiesStr}`,
-              city: activeSession.city || 'Unknown',
-              state: activeSession.state || null,
-              country: activeSession.country || 'USA',
-              activityType: primaryActivity || null,
-              isActive: true,
-              expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
-              participantCount: 2,
-            }).returning();
-
-            groupChatroomId = newChatroom.id;
-
-            await db.insert(meetupChatroomMessages).values({
-              meetupChatroomId: newChatroom.id,
-              userId: Number(userId),
-              username: acceptorName,
-              message: `Group chat created! @${acceptorName} and @${requesterName} are meeting up. Everyone accepted will join here automatically. 🤝`,
-              messageType: 'system',
-            });
-
-            // Seed chatroomMembers for both host and requester (same as Quick Meets)
-            await db.insert(chatroomMembers).values([
-              { chatroomId: newChatroom.id, userId: Number(userId), role: 'admin', isActive: true },
-              { chatroomId: newChatroom.id, userId: updated.fromUserId, role: 'member', isActive: true },
-            ]).onConflictDoNothing();
+            console.log(`[MEET ACCEPT] No active session found for userId=${userId} — skipping chatroom creation`);
           }
+        } catch (chatroomErr: any) {
+          // Log the error but do NOT fail the whole accept — the request is already accepted in the DB.
+          console.error(`[MEET ACCEPT] Chatroom creation failed (non-fatal):`, chatroomErr?.message, chatroomErr?.stack?.split('\n').slice(0,3).join(' | '));
+          groupChatroomId = null;
         }
 
         // NOTE: No fallback to old/expired chatrooms. If there is no active
