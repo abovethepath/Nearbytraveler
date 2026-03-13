@@ -3507,9 +3507,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const todayStart = new Date(now.getTime() - msFromMidnight);
       const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
 
-      // LA Metro: searching "los angeles" also covers nearby metro cities
-      const cityMatchSql = cityLower === "los angeles"
-        ? sql`LOWER(${events.city}) IN ('los angeles', 'santa monica', 'venice', 'culver city', 'playa del rey', 'west hollywood', 'marina del rey', 'brentwood', 'pacific palisades')`
+      // Use the same battle-tested metro expansion used everywhere else on the platform
+      const expandedCities = getExpandedCityList(city).map(c => c.toLowerCase());
+      const cityMatchSql = expandedCities.length > 1
+        ? or(...expandedCities.map(c => sql`LOWER(${events.city}) = ${c}`))
         : sql`LOWER(${events.city}) = ${cityLower}`;
 
       const [tonightEventsRows, availableCountRows, hereNowRows] = await Promise.all([
