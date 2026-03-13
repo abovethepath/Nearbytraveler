@@ -117,7 +117,7 @@ export default function Welcome() {
               <Button 
                 onClick={handleEnterApp}
                 size="lg"
-                className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 w-full text-lg font-semibold shadow-lg transition-colors duration-200"
+                className="bg-white dark:bg-gray-800 text-blue-600 hover:bg-gray-100 dark:hover:bg-gray-700 px-8 py-3 w-full text-lg font-semibold shadow-lg transition-colors duration-200"
                 data-testid="button-enter-app"
               >
                 Complete My Profile

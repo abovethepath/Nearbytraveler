@@ -1133,8 +1133,7 @@ p, span, div, button, input, textarea, select {
 
 :root {
   color-scheme: light;
-  /* Light mode canvas (page background): softer off-white */
-  --background: 36 24% 94%;
+  --background: #ffffff;
   --foreground: 222.2 84% 4.9%;
   --card: 36 24% 98%;
   --card-foreground: 222.2 84% 4.9%;
@@ -1260,7 +1259,7 @@ p, span, div, button, input, textarea, select {
 
 .dark {
   color-scheme: dark;
-  --background: 225 21% 7%;
+  --background: #0f1117;
   --foreground: 210 40% 98%;
   --card: 217 33% 15%;
   --card-foreground: 210 40% 98%;
@@ -1796,7 +1795,7 @@ p, span, div, button, input, textarea, select {
 
 /* Fix select dropdown visibility */
 [data-radix-select-content] {
-  background: hsl(var(--background)) !important;
+  background: var(--background) !important;
   border: 1px solid hsl(var(--border)) !important;
   border-radius: 6px !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
@@ -1818,7 +1817,7 @@ p, span, div, button, input, textarea, select {
 
 /* Dark mode select fixes */
 .dark [data-radix-select-content] {
-  background: hsl(var(--background)) !important;
+  background: var(--background) !important;
   border-color: hsl(var(--border)) !important;
 }
 

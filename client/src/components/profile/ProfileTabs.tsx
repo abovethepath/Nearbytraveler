@@ -2102,7 +2102,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Interests</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allInterests.map((interest, index) => (
-                                  <div key={`interest-${index}`} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium leading-none whitespace-nowrap overflow-visible bg-white text-black border border-black appearance-none select-none gap-1.5">
+                                  <div key={`interest-${index}`} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium leading-none whitespace-nowrap overflow-visible bg-white dark:bg-gray-800 text-black dark:text-white border border-black dark:border-gray-600 appearance-none select-none gap-1.5">
                                     {interest}
                                   </div>
                                 ))}
@@ -2114,7 +2114,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Activities</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allActivities.map((activity, index) => (
-                                  <div key={`activity-${index}`} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium leading-none whitespace-nowrap overflow-visible bg-white text-black border border-black appearance-none select-none gap-1.5">
+                                  <div key={`activity-${index}`} className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium leading-none whitespace-nowrap overflow-visible bg-white dark:bg-gray-800 text-black dark:text-white border border-black dark:border-gray-600 appearance-none select-none gap-1.5">
                                     {activity}
                                   </div>
                                 ))}
@@ -2307,7 +2307,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                 {customInterests.map((interest, index) => (
                                   <span
                                     key={`custom-interest-${index}`}
-                                    className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5"
+                                    className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-800 text-black dark:text-white border border-black dark:border-gray-600 appearance-none select-none gap-1.5"
                                   >
                                     {interest}
                                     <button
@@ -2408,7 +2408,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                 {(Array.isArray(editFormData.activities) ? editFormData.activities.filter(activity => !safeGetAllActivities().includes(activity)) : []).map((activity, index) => (
                                   <span
                                     key={`custom-activity-${index}`}
-                                    className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5"
+                                    className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-800 text-black dark:text-white border border-black dark:border-gray-600 appearance-none select-none gap-1.5"
                                   >
                                     {activity}
                                     <button
@@ -2568,7 +2568,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       </Button>
                       <Button 
                         size="sm" 
-                        className="bg-white text-black hover:bg-blue-600 border-blue-500 flex-1 sm:flex-none text-xs sm:text-sm"
+                        className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-blue-600 border-blue-500 flex-1 sm:flex-none text-xs sm:text-sm"
                         onClick={() => document.getElementById('photo-upload')?.click()}
                         disabled={uploadingPhoto}
                       >
@@ -2851,7 +2851,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                             <button
                               key={chatroom.id}
                               onClick={() => setLocation(`/chatroom/${chatroom.id}`)}
-                              className={`w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white md:hover:bg-gray-50 md:hover:border-gray-300 md:hover:shadow-sm transition-all duration-200 text-left ${
+                              className={`w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 md:hover:bg-gray-50 dark:md:hover:bg-gray-700 md:hover:border-gray-300 md:hover:shadow-sm transition-all duration-200 text-left ${
                                 isMobileWeb
                                   ? "dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                                   : "dark:bg-gray-800 dark:border-gray-700 md:dark:hover:bg-gray-700 md:dark:hover:border-gray-600"
@@ -3940,7 +3940,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                     {tempLanguages.length > 0 && (
                       <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                         {tempLanguages.map((language) => (
-                          <div key={language} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-white text-black border border-black">
+                          <div key={language} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-white dark:bg-gray-800 text-black dark:text-white border border-black dark:border-gray-600">
                             {language}
                             <button
                               onClick={() => setTempLanguages(tempLanguages.filter(l => l !== language))}

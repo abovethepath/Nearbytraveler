@@ -185,7 +185,7 @@ export default function AmbassadorInfo() {
             </p>
             {user && (
               <a href={`mailto:ambassadors@nearbytraveler.org?subject=Ambassador Program Application - ${user.username}&body=Hi Aaron,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Ambassador.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${user.name || 'N/A'}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be an Ambassador:%0D%0A%0D%0A%0D%0AHow I plan to help grow the community:%0D%0A%0D%0A`}>
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg">
+                <Button size="lg" className="bg-white dark:bg-gray-800 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 font-semibold shadow-lg">
                   Apply to Become an Ambassador
                 </Button>
               </a>

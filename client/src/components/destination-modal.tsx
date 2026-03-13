@@ -193,7 +193,7 @@ export default function DestinationModal({ isOpen, onComplete, onClose, user }: 
                 className="w-full"
               />
               {showSuggestions && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-40 overflow-y-auto">
                   {popularDestinations
                     .filter(dest => 
                       dest.toLowerCase().includes(destination.toLowerCase()) ||

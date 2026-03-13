@@ -535,7 +535,7 @@ export default function AmbassadorLanding() {
                 <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
                   <Button
                     onClick={() => setLocation("/home")}
-                    className="bg-white text-gray-900 hover:bg-gray-100"
+                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     Open the App
                   </Button>

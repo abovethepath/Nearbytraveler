@@ -574,7 +574,7 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-3 py-2 border rounded-md bg-white text-black"
+          className="px-3 py-2 border rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
         >
           {categories.map((category: string) => (
             <option key={category} value={category}>
@@ -586,7 +586,7 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as "date" | "confidence")}
-          className="px-3 py-2 border rounded-md bg-white text-black"
+          className="px-3 py-2 border rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
         >
           <option value="date">Sort by Date</option>
           <option value="confidence">Sort by AI Confidence</option>

@@ -140,7 +140,7 @@ export default function BusinessCard() {
               {/* QR Code section */}
               <div className="text-center">
                 {qrCodeUrl && (
-                  <div className="bg-white p-3 rounded-lg">
+                  <div className="bg-white dark:bg-gray-800 p-3 rounded-lg">
                     <img 
                       src={qrCodeUrl} 
                       alt="QR Code for signup" 

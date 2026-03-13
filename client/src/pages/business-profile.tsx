@@ -78,7 +78,7 @@ export default function BusinessProfile() {
       </div>
       
       {/* Business Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white dark:bg-gray-900 shadow-sm border-b dark:border-gray-700">
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Business Info */}

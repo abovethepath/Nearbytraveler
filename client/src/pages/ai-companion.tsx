@@ -381,15 +381,15 @@ function AICompanionPaused() {
           <div className="lg:col-span-2">
             <Tabs defaultValue="all" className="w-full">
               <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-blue-100 to-orange-100 p-1 rounded-lg">
-                <TabsTrigger value="chat" className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-blue-600">
+                <TabsTrigger value="chat" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-md data-[state=active]:text-blue-600">
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Chat
                 </TabsTrigger>
-                <TabsTrigger value="all" className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-orange-600">
+                <TabsTrigger value="all" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-md data-[state=active]:text-orange-600">
                   <Sparkles className="w-4 h-4 mr-2" />
                   Recommendations
                 </TabsTrigger>
-                <TabsTrigger value="bookmarked" className="data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-blue-600">
+                <TabsTrigger value="bookmarked" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-md data-[state=active]:text-blue-600">
                   <Heart className="w-4 h-4 mr-2" />
                   Bookmarked
                 </TabsTrigger>

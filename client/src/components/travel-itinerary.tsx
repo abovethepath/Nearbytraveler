@@ -110,7 +110,7 @@ export default function TravelItinerary({ userId, destination, startDate, endDat
               <Calendar className="w-5 h-5 text-blue-600" />
               <span>Event Archive</span>
             </div>
-            <Badge variant="outline" className="bg-white">
+            <Badge variant="outline" className="bg-white dark:bg-gray-800">
               {itineraryEvents.length} total events
             </Badge>
           </CardTitle>

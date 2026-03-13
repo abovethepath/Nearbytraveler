@@ -391,7 +391,7 @@ export default function TravelersLanding() {
             <Button
               onClick={() => setLocation('/launching-soon')}
               size="lg"
-              className="bg-white hover:bg-gray-100 text-orange-600 font-bold px-8 py-3 rounded-lg"
+              className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-orange-600 font-bold px-8 py-3 rounded-lg"
               data-testid="button-get-started"
             >
               Join Now

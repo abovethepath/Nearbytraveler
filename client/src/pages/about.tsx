@@ -14,7 +14,7 @@ export default function About() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
       {!isNativeIOSApp() && (
-        <header className="bg-white shadow-sm border-b border-gray-200">
+        <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-full mx-auto">
             <div className="flex justify-between items-center h-24">
               <Logo variant="navbar" />
@@ -47,11 +47,11 @@ export default function About() {
       </section>
 
       {/* Mission Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-full mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">About Nearby Traveler</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">About Nearby Traveler</h2>
               <p className="text-lg text-gray-600 mb-6">
                 At Nearby Traveler, we believe travel is about more than just ticking off landmarks and tourist attractions— 
                 it's about forging real connections, discovering local hidden gems, and creating unforgettable memories with 
@@ -142,10 +142,10 @@ export default function About() {
       </section>
 
       {/* What Makes Us Different */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">What Makes Us Different</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">What Makes Us Different</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               We're not just another travel app. We're a community-driven platform focused on authentic connections.
             </p>
@@ -216,9 +216,9 @@ export default function About() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Ready to Transform Your Travel?</h2>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Ready to Transform Your Travel?</h2>
           <p className="text-lg text-gray-600 mb-8">
             Join travelers and locals who are creating meaningful connections starting in Los Angeles.
           </p>

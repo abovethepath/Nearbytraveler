@@ -555,7 +555,7 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                           <Calendar className="w-5 h-5 mr-2" />
                           {formatDate(date)}
                         </h3>
-                        <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+                        <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4">
                           {items.map((item: ItineraryItem, index) => (
                             <div key={item.id} className="flex items-start gap-4 py-3 border-b border-gray-200 last:border-b-0">
                               <div className="flex-1">

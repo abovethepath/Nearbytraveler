@@ -116,7 +116,7 @@ export default function WorldMap({ visitedCountries }: WorldMapProps) {
           </p>
         </div>
         
-        <div className="relative bg-white rounded-2xl p-8 shadow-lg border border-gray-200 max-w-7xl mx-auto">
+        <div className="relative bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 max-w-7xl mx-auto">
           {/* Enhanced World Map SVG */}
           <svg
             viewBox="0 0 100 50"

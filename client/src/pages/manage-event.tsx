@@ -1266,7 +1266,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                       
                       {/* Social Media Preview */}
                       {showSocialPreview && (
-                        <div className="mt-4 p-4 bg-white border rounded-lg shadow-sm">
+                        <div className="mt-4 p-4 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-sm">
                           <h5 className="font-medium text-sm mb-2">Instagram Preview:</h5>
                           <div className="bg-gray-50 border rounded-lg p-3 text-sm">
                             <div className="flex items-center gap-2 mb-2">

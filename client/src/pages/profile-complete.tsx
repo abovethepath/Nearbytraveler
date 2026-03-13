@@ -4287,7 +4287,7 @@ class ProfileErrorBoundary extends React.Component<
       return (
         <div className="min-h-screen bg-gray-50 p-4">
           <div className="max-w-4xl mx-auto pt-20">
-            <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
               <h2 className="text-2xl font-bold text-red-600 mb-4">Profile Page Error</h2>
               <p className="text-gray-600 mb-6">The profile page encountered a rendering error.</p>
               

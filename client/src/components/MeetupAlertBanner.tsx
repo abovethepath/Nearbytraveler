@@ -128,7 +128,7 @@ export function MeetupAlertBanner({ userId }: MeetupAlertBannerProps) {
           <Button
             size="sm"
             variant="secondary"
-            className="bg-white text-orange-600 hover:bg-orange-50 text-xs px-3"
+            className="bg-white dark:bg-gray-800 text-orange-600 hover:bg-orange-50 dark:hover:bg-gray-700 text-xs px-3"
             onClick={handleViewMeetups}
           >
             View <ArrowRight className="w-3 h-3 ml-1" />

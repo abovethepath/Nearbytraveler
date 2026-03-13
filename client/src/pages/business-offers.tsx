@@ -343,7 +343,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
                 </div>
                 <Button
                   onClick={() => setLocation('/business-dashboard')}
-                  className="bg-white text-orange-600 hover:bg-orange-50 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
+                  className="bg-white dark:bg-gray-800 text-orange-600 hover:bg-orange-50 dark:hover:bg-gray-700 font-bold text-lg px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
                   size="lg"
                   data-testid="create-deal-cta"
                 >

@@ -24,7 +24,7 @@ export default function EventsListResponsive() {
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {events.map((ev) => (
-            <article key={ev.id} className="rounded-2xl border overflow-hidden bg-white hover:shadow-md transition-shadow">
+            <article key={ev.id} className="rounded-2xl border overflow-hidden bg-white dark:bg-gray-800 hover:shadow-md transition-shadow">
               <div className="aspect-[16/9] w-full overflow-hidden">
                 <img src={ev.img} alt={ev.title} className="h-full w-full object-cover" />
               </div>

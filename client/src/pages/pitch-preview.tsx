@@ -49,7 +49,7 @@ export function PitchPreview() {
                   </div>
 
                   {/* Main Card */}
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-5 h-5 bg-gray-400 rounded"></div>
                       <h2 className="text-base font-semibold text-gray-900">Display Name Preference</h2>
@@ -65,7 +65,7 @@ export function PitchPreview() {
                         <span className="text-xs font-medium text-blue-900">Preview</span>
                       </div>
                       <p className="text-sm font-semibold text-blue-900">
-                        Others will see you as: <span className="bg-white px-2 py-1 rounded border text-blue-800">
+                        Others will see you as: <span className="bg-white dark:bg-gray-800 px-2 py-1 rounded border text-blue-800 dark:text-blue-300">
                           nearbytrav
                         </span>
                       </p>

@@ -1766,7 +1766,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
                     {selectedTravelPlan.startDate ? formatDateForDisplay(selectedTravelPlan.startDate, user?.currentCity || 'UTC') : 'Start date TBD'} - {selectedTravelPlan.endDate ? formatDateForDisplay(selectedTravelPlan.endDate, user?.currentCity || 'UTC') : 'End date TBD'}
                   </p>
                 </div>
-                <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5">
+                <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-800 text-black dark:text-white border border-black dark:border-gray-600 appearance-none select-none gap-1.5">
                   Trip Details
                 </div>
               </div>
@@ -1790,12 +1790,12 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.interests.slice(0, 9).map((interest) => (
-                      <div key={interest} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5">
+                      <div key={interest} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-800 text-black dark:text-white border border-black dark:border-gray-600 appearance-none select-none gap-1.5">
                         {interest}
                       </div>
                     ))}
                     {selectedTravelPlan.interests.length > 9 && (
-                      <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5">
+                      <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-800 text-black dark:text-white border border-black dark:border-gray-600 appearance-none select-none gap-1.5">
                         +{selectedTravelPlan.interests.length - 9} more
                       </div>
                     )}
@@ -1812,7 +1812,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.activities.map((activity) => (
-                      <div key={activity} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5">
+                      <div key={activity} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-800 text-black dark:text-white border border-black dark:border-gray-600 appearance-none select-none gap-1.5">
                         {activity}
                       </div>
                     ))}
@@ -1829,7 +1829,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.events.map((event) => (
-                      <div key={event} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5">
+                      <div key={event} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-800 text-black dark:text-white border border-black dark:border-gray-600 appearance-none select-none gap-1.5">
                         {event}
                       </div>
                     ))}
@@ -1846,7 +1846,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {selectedTravelPlan.travelStyle.map((style) => (
-                      <div key={style} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5">
+                      <div key={style} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-800 text-black dark:text-white border border-black dark:border-gray-600 appearance-none select-none gap-1.5">
                         {style}
                       </div>
                     ))}

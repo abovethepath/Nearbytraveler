@@ -449,7 +449,7 @@ export default function EventsLanding() {
             <Button
               onClick={() => setLocation('/launching-soon')}
               size="lg"
-              className="bg-white hover:bg-gray-100 text-orange-600 font-bold px-10 py-3 rounded-lg transition-all duration-200"
+              className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-orange-600 font-bold px-10 py-3 rounded-lg transition-all duration-200"
             >
               Join Now
             </Button>
