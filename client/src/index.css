@@ -1302,12 +1302,6 @@ p, span, div, button, input, textarea, select {
   --msg-focus-ring: 217.2 91.2% 59.8%;
 }
 
-/* Global Dark Mode Fix - Ensures all text is visible in dark mode */
-.dark {
-  /* Force minimum contrast for all text elements */
-  color: rgb(var(--nt-text-primary)) !important;
-}
-
 /* ============================================================
    DARK MODE READABILITY (site-wide, web + iOS WebView)
    - Brighter placeholders on iPhone
@@ -1328,8 +1322,7 @@ p, span, div, button, input, textarea, select {
   --nt-text-tertiary: 156 163 175;  /* #9CA3AF */
 }
 
-/* Default foreground in dark mode should be primary white */
-.dark,
+/* Foreground utility — scoped to the class only, NOT the bare .dark root */
 .dark .text-foreground {
   color: rgb(var(--nt-text-primary)) !important;
 }
