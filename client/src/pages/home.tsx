@@ -1826,7 +1826,7 @@ export default function Home() {
 
             {/* Available Now Widget - FIRST THING on mobile, always visible at top */}
             {effectiveUser?.userType !== 'business' && (
-              <div className="lg:hidden">
+              <div className="lg:hidden" id="available-now-section">
                 <AvailableNowWidget currentUser={effectiveUser} onSortByAvailableNow={() => {
                   setSortBy('available_now');
                   setTimeout(() => {
@@ -2193,7 +2193,7 @@ export default function Home() {
 
             {/* Available Now Widget - Hangout Mode (desktop sidebar only, mobile version is at top of main content) */}
             {!shouldDeferSecondarySections && effectiveUser?.userType !== 'business' && (
-              <div className="hidden lg:block">
+              <div className="hidden lg:block" id="available-now-section-desktop">
                 <AvailableNowWidget currentUser={effectiveUser} onSortByAvailableNow={() => {
                   setSortBy('available_now');
                   setTimeout(() => {
