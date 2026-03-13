@@ -15,11 +15,7 @@ function timeAgo(dateStr: string): string {
 }
 
 function cityLabel(user: any): string {
-  if (user.hometownCity && user.hometownCountry) {
-    if (user.hometownCountry === "United States") return user.hometownCity;
-    return `${user.hometownCity}, ${user.hometownCountry}`;
-  }
-  return user.hometownCity || user.hometownCountry || "";
+  return user.hometownCity || "";
 }
 
 function displayName(user: any): string {

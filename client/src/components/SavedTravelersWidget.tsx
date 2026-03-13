@@ -163,8 +163,8 @@ export function SavedTravelersWidget() {
               <button
                 type="button"
                 onClick={(e) => handleUnsave(e, traveler.savedUserId)}
-                title="Remove from saved"
-                className="flex-shrink-0 p-2 rounded-full text-rose-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all"
+                title="Click to remove from saved travelers"
+                className="flex-shrink-0 p-2.5 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-500 hover:bg-rose-200 dark:hover:bg-rose-900/60 hover:text-rose-600 transition-all active:scale-90"
               >
                 <Heart className="w-4 h-4" fill="currentColor" />
               </button>
