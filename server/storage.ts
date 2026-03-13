@@ -9921,29 +9921,19 @@ export class DatabaseStorage implements IStorage {
         date: event.date
       });
 
-      // Validate required fields before attempting insert
-      if (!event.city) {
-        throw new Error(`Event ${eventId} missing required city field`);
-      }
-      if (!event.country) {
-        throw new Error(`Event ${eventId} missing required country field`);
-      }
-      if (!event.date) {
-        throw new Error(`Event ${eventId} missing required date field`);
-      }
-
-      // Set expiry 1 year after event date — event chat history must persist
-      // long after the event ends, not expire on the event day itself
-      const eventDate = new Date(event.date);
+      // Use fallback values for missing fields so events without full location data still get chatrooms
+      const city = event.city || event.location || 'Unknown';
+      const country = event.country || 'United States';
+      const eventDate = event.date ? new Date(event.date) : new Date();
       const expiresAt = new Date(eventDate.getTime() + 365 * 24 * 60 * 60 * 1000);
 
       const [chatroom] = await db.insert(meetupChatrooms).values({
         eventId: eventId,
         chatroomName: `${event.title} - Group Chat`,
         description: `Group chat for ${event.title}`,
-        city: event.city,
+        city,
         state: event.state || '',
-        country: event.country || 'United States',
+        country,
         isActive: true,
         expiresAt,
         participantCount: 0
