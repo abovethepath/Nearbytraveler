@@ -32,7 +32,6 @@ body[data-scroll-locked="1"] {
   --sal: env(safe-area-inset-left);
   --sar: env(safe-area-inset-right);
   --ios-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', system-ui, sans-serif;
-  --background: #0f1117;
 }
 
 /* iOS-style base body */
@@ -1261,7 +1260,7 @@ p, span, div, button, input, textarea, select {
 
 .dark {
   color-scheme: dark;
-  --background: #0f1117;
+  --background: 225 21% 7%;
   --foreground: 210 40% 98%;
   --card: 217 33% 15%;
   --card-foreground: 210 40% 98%;
