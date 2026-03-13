@@ -128,7 +128,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const { data: pendingRequests } = useQuery<MeetRequest[]>({
     queryKey: ["/api/available-now/requests"],
     enabled: !!currentUser?.id,
-    refetchInterval: 30000,
+    refetchInterval: 4000,
   });
 
   const { data: sentRequestsData } = useQuery<{ sentToUserIds: number[] }>({
@@ -377,12 +377,20 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     }
   }, [groupChatMessages, showGroupChat]);
 
-  // Listen for meet_request_accepted WebSocket notifications so the requester's
-  // "Pending" button clears immediately and they're prompted to join the chatroom.
+  // Listen for WebSocket notifications to instantly react to meet request events
+  // (both incoming requests for the host AND accepted/declined for the requester).
   useEffect(() => {
     const handleNotification = (notification: any) => {
+      // HOST side: a new meet request just arrived — invalidate immediately so
+      // the pending-requests panel refreshes without waiting for the poll.
+      if (notification?.type === 'available_now_meet_request') {
+        queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/available-now", userCity] });
+        return;
+      }
+
+      // REQUESTER side: the host accepted or declined our request.
       if (notification?.action === 'meet_request_accepted') {
-        // Immediately clear the pending state for the requester
         queryClient.invalidateQueries({ queryKey: ["/api/available-now/sent-requests"] });
         queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
         queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
@@ -404,7 +412,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     };
     websocketService.on('notification', handleNotification);
     return () => { websocketService.off('notification', handleNotification); };
-  }, [toast, setLocation]);
+  }, [toast, setLocation, userCity]);
 
   const toggleActivity = (value: string) => {
     setSelectedActivities(prev =>
