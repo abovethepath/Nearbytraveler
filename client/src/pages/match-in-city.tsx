@@ -2167,8 +2167,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     onClick={() => {
                       fetchMatchingUsers();
                       toast({ title: "Plans saved!", description: `Finding matches in ${selectedCity}...` });
-                      const matchSection = document.querySelector('[data-testid="matching-users-section"]');
-                      if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      setTimeout(() => setLocation('/'), 300);
                     }}
                     className="text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg bg-gradient-to-r from-blue-500 to-blue-300 hover:from-blue-600 hover:to-blue-400 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600"
                   >
@@ -2826,8 +2825,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     onClick={() => {
                       fetchMatchingUsers();
                       toast({ title: "Plans saved!", description: `Finding matches in ${selectedCity}...` });
-                      const matchSection = document.querySelector('[data-testid="matching-users-section"]');
-                      if (matchSection) matchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      setTimeout(() => setLocation('/'), 300);
                     }}
                     className="text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg bg-gradient-to-r from-blue-500 to-blue-300 hover:from-blue-600 hover:to-blue-400 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600"
                   >
