@@ -105,8 +105,8 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
                 w-full relative overflow-hidden rounded-xl p-4 text-left transition-all duration-200
                 flex items-center gap-4
                 ${isSelected 
-                  ? `${selectedBg} text-white shadow-xl scale-[1.02] ring-4 ${ringColor} ring-white/20`
-                  : `${unselectedBg} text-white shadow-md hover:shadow-lg hover:scale-[1.01] border border-white/10 hover:border-white/20`
+                  ? `${bgLight} dark:${selectedBg} dark:text-white shadow-xl scale-[1.02] ring-4 ${ringColor} dark:ring-white/20 text-gray-900`
+                  : `${bgLight} dark:${unselectedBg} dark:text-white shadow-md hover:shadow-lg hover:scale-[1.01] border border-gray-300 dark:border-white/10 dark:hover:border-white/20 text-gray-900`
                 }
               `}
               data-testid={`button-select-${type}`}
@@ -114,25 +114,25 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
               <div className={`
                 flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center
                 ${isSelected 
-                  ? "bg-white/20" 
-                  : "bg-white/15"
+                  ? "bg-gray-200 dark:bg-white/20" 
+                  : "bg-gray-100 dark:bg-white/15"
                 }
               `}>
-                <Icon className={`w-6 h-6 ${isSelected ? "text-white" : "text-white"}`} />
+                <Icon className={`w-6 h-6 text-gray-700 dark:text-white`} />
               </div>
               
               <div className="flex-grow">
-                <div className={`text-lg font-bold ${isSelected ? "text-white" : "text-white"}`}>
+                <div className={`text-lg font-bold text-gray-900 dark:text-white`}>
                   {title}
                 </div>
-                <div className={`text-sm ${isSelected ? "text-white/90" : "text-white/85"}`}>
+                <div className={`text-sm text-gray-600 dark:text-white/85`}>
                   {subtitle}
                 </div>
               </div>
               
               {isSelected && (
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/30 flex items-center justify-center">
-                  <Check className="w-5 h-5 text-white" />
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-300 dark:bg-white/30 flex items-center justify-center">
+                  <Check className="w-5 h-5 text-gray-700 dark:text-white" />
                 </div>
               )}
             </button>
