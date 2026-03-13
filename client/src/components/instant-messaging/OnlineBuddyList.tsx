@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Users, MessageCircle, Minimize2, Maximize2, User } from "lucide-react";
 import websocketService from "@/services/websocketService";
 import { useLocation } from "wouter";
+import { apiRequest } from "@/lib/queryClient";
+import { authStorage } from "@/lib/auth";
 
 interface OnlineFriend {
   id: number;
@@ -77,7 +79,10 @@ export default function OnlineBuddyList() {
   };
 
   const handleMessageFriend = (friend: OnlineFriend) => {
-    // Navigate to messages and open conversation with this friend
+    const currentUserId = authStorage.getUser()?.id;
+    if (currentUserId) {
+      apiRequest('POST', '/api/conversations/open', { senderId: currentUserId, targetUserId: friend.id }).catch(() => {});
+    }
     setLocation(`/messages?user=${friend.id}`);
   };
 

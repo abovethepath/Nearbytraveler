@@ -507,35 +507,41 @@ export default function Messages() {
           !m.isRead
         ).length;
         
+        const isOpener = message.messageType === 'conversation_opened';
         if (existing) {
-          const isNewer = !existing.lastMessageTime || new Date(message.createdAt).getTime() > new Date(existing.lastMessageTime).getTime();
-          conversationMap.set(otherUserId, {
-            ...existing,
-            lastMessage: isNewer ? message.content : existing.lastMessage,
-            lastMessageTime: isNewer ? message.createdAt : existing.lastMessageTime,
-            unreadCount: unreadCount,
-          });
+          // For opener markers: mark the flag but don't clobber a real lastMessage
+          if (isOpener) {
+            conversationMap.set(otherUserId, { ...existing, conversationOpened: true, unreadCount });
+          } else {
+            const isNewer = !existing.lastMessageTime || new Date(message.createdAt).getTime() > new Date(existing.lastMessageTime).getTime();
+            conversationMap.set(otherUserId, {
+              ...existing,
+              lastMessage: isNewer ? (message.content || (message.mediaUrl ? '📷 Photo' : '')) : existing.lastMessage,
+              lastMessageTime: isNewer ? message.createdAt : existing.lastMessageTime,
+              unreadCount,
+            });
+          }
         } else {
           // Use embedded user from message (e.g. from meet-request DMs) so thread appears in inbox even if not in allUsers
           const fromMessageRaw = senderId === userId ? message.receiverUser : message.senderUser;
           // Only trust fromMessage if it has a valid id — a join that returned null gives an object of all-nulls
           const fromMessage = (fromMessageRaw?.id && (fromMessageRaw?.username || fromMessageRaw?.name)) ? fromMessageRaw : null;
           const otherUser = fromMessage || (allUsers as any[]).find((u: any) => u.id === otherUserId);
-          // Skip truly ghost/deleted users: no real identity AND no message content
-          // But if we have actual message content, always show the thread (user data may just be missing temporarily)
           const hasRealIdentity = !!(otherUser?.username || otherUser?.name);
-          const hasMessageContent = !!(message.content || message.mediaUrl);
+          const hasMessageContent = !!(message.content || message.mediaUrl) || isOpener;
           if (!hasRealIdentity && !hasMessageContent) return;
           conversationMap.set(otherUserId, {
             userId: otherUserId,
-            username: otherUser?.username || otherUser?.name || `DM ${otherUserId}`,
+            username: otherUser?.username || otherUser?.name || otherUser?.firstName || `DM ${otherUserId}`,
+            firstName: otherUser?.firstName || null,
             profileImage: otherUser?.profileImage,
             location: otherUser?.currentCity || otherUser?.destinationCity || otherUser?.city || otherUser?.hometownCity || otherUser?.location || '',
             hometownCity: otherUser?.hometownCity || '',
             travelDestination: otherUser?.isCurrentlyTraveling ? (otherUser?.travelDestination || null) : null,
-            lastMessage: message.content || (message.mediaUrl ? '📷 Photo' : ''),
+            lastMessage: isOpener ? null : (message.content || (message.mediaUrl ? '📷 Photo' : '')),
             lastMessageTime: message.createdAt,
-            unreadCount: unreadCount,
+            unreadCount,
+            conversationOpened: isOpener,
           });
         }
       }
@@ -543,12 +549,12 @@ export default function Messages() {
 
     return Array.from(conversationMap.values())
       .filter((conv: any) => {
-        // Only show conversations with actual messages (or the target user from URL)
-        // Never filter out a thread that has real message content — user data may just be temporarily missing
+        // Always show if there are real messages or if the conversation was explicitly opened
         const hasMessages = conv.lastMessage !== '' && conv.lastMessage != null;
         if (hasMessages) return true;
+        if (conv.conversationOpened) return true;
         if (targetUserId && conv.userId === parseInt(targetUserId)) return true;
-        // For connections with NO messages, skip ghost/placeholder users
+        // For connections with NO messages and not opened, skip ghost/placeholder users
         return conv.username !== `User ${conv.userId}` && conv.username !== `DM ${conv.userId}`;
       })
       .sort((a: any, b: any) => 
@@ -591,8 +597,10 @@ export default function Messages() {
   // Get messages for selected conversation (simplified to avoid duplication)
   const conversationMessages = selectedConversation 
     ? (messages as any[]).filter((message: any) => 
-        (Number(message.senderId) === userId && Number(message.receiverId) === selectedConversation) ||
-        (Number(message.receiverId) === userId && Number(message.senderId) === selectedConversation)
+        message.messageType !== 'conversation_opened' && (
+          (Number(message.senderId) === userId && Number(message.receiverId) === selectedConversation) ||
+          (Number(message.receiverId) === userId && Number(message.senderId) === selectedConversation)
+        )
       ).sort((a: any, b: any) => 
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       )

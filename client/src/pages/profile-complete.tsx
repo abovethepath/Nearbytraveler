@@ -3691,7 +3691,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Removed old shared connectMutation - now using individual ConnectButton components
 
   const handleMessage = async () => {
-    if (!user?.id) return;
+    if (!user?.id || !currentUser?.id) return;
+    // Signal the conversation open to both sides — creates a DB record so both
+    // users' DM pages show the thread immediately, before any typed message.
+    apiRequest('POST', '/api/conversations/open', {
+      senderId: currentUser.id,
+      targetUserId: user.id,
+    }).catch(() => {});
     const handled = await openPrivateChatWithUser(user.id, setLocation, {
       currentUserId: currentUser?.id,
       toast,

@@ -307,8 +307,12 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
 
   const handleMessage = async (userId: number) => {
     onClose();
+    const currentUserId = (currentUser || authStorage.getUser())?.id;
+    if (currentUserId) {
+      apiRequest('POST', '/api/conversations/open', { senderId: currentUserId, targetUserId: userId }).catch(() => {});
+    }
     const handled = await openPrivateChatWithUser(userId, setLocation, {
-      currentUserId: (currentUser || authStorage.getUser())?.id,
+      currentUserId,
       toast,
     });
     if (!handled) {

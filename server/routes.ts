@@ -12122,6 +12122,59 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Open a conversation between two users — creates an invisible "conversation_opened" marker
+  // so the thread appears on BOTH users' DM pages immediately, before any typed message.
+  app.post("/api/conversations/open", async (req, res) => {
+    try {
+      let senderId: number | null = null;
+      if (req.headers['x-user-id']) senderId = parseInt(req.headers['x-user-id'] as string);
+      if (!senderId && req.body?.senderId) senderId = parseInt(req.body.senderId);
+      if (!senderId && (req as any).session?.user?.id) senderId = (req as any).session.user.id;
+      const targetId = parseInt(req.body?.targetUserId || '0');
+      if (!senderId || !targetId || senderId === targetId) {
+        return res.status(400).json({ message: "Valid sender and target required" });
+      }
+
+      // If a conversation already exists (any message either direction), nothing to do
+      const existing = await db.select({ id: messages.id }).from(messages)
+        .where(or(
+          and(eq(messages.senderId, senderId), eq(messages.receiverId, targetId)),
+          and(eq(messages.senderId, targetId), eq(messages.receiverId, senderId))
+        ))
+        .limit(1);
+      if (existing.length > 0) {
+        return res.json({ existed: true });
+      }
+
+      // Insert the invisible marker
+      const [marker] = await db.insert(messages).values({
+        senderId,
+        receiverId: targetId,
+        content: '',
+        messageType: 'conversation_opened',
+        isRead: true,
+        createdAt: new Date(),
+      }).returning();
+
+      // Notify the target via WebSocket so their messages page refreshes immediately
+      try {
+        const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (d: string) => void; readyState: number }> | undefined;
+        const targetWs = wsMap?.get(targetId);
+        if (targetWs && targetWs.readyState === 1) {
+          targetWs.send(JSON.stringify({
+            type: 'instant_message_received',
+            payload: { message: { id: marker.id, senderId, receiverId: targetId, content: '', messageType: 'conversation_opened', createdAt: marker.createdAt } }
+          }));
+        }
+      } catch {}
+
+      return res.json({ existed: false, markerId: marker.id });
+    } catch (error: any) {
+      console.error("Error opening conversation:", error);
+      return res.status(500).json({ message: "Failed to open conversation" });
+    }
+  });
+
   // CRITICAL: Send message for IM system (handles offline message delivery)
   app.post("/api/messages", async (req, res) => {
     try {
