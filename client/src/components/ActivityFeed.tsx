@@ -345,9 +345,24 @@ function MeetRequestModal({
                 <Button
                   type="button"
                   className="w-full h-12 text-base font-bold bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
-                  onClick={() => {
-                    onClose();
-                    setLocation(`/messages?user=${actorId}`);
+                  onClick={async () => {
+                    try {
+                      const res = await fetch(`${getApiBaseUrl()}/api/meetup-chatrooms/shared/${actorId}`, {
+                        credentials: 'include',
+                        headers: { 'x-user-id': String(currentUserId) },
+                      });
+                      const data = await res.json();
+                      if (data?.chatroom?.id) {
+                        onClose();
+                        const title = encodeURIComponent(data.chatroom.chatroomName || 'Meetup Chat');
+                        const subtitle = encodeURIComponent(data.chatroom.city || 'Group chat');
+                        setLocation(`/meetup-chatroom-chat/${data.chatroom.id}?title=${title}&subtitle=${subtitle}`);
+                      } else {
+                        toast({ title: "Chat not found", description: "The meetup chat could not be located.", variant: "destructive" });
+                      }
+                    } catch {
+                      toast({ title: "Chat not found", description: "Unable to open chat. Please try again.", variant: "destructive" });
+                    }
                   }}
                 >
                   <MessageSquare className="h-5 w-5 mr-2" />

@@ -24612,9 +24612,32 @@ Questions? Just reply to this message. Welcome aboard!
           groupChatroomId = null;
         }
 
-        // NOTE: No fallback to old/expired chatrooms. If there is no active
-        // session at accept-time, groupChatroomId stays null. A new session on
-        // a future day will create its own fresh chatroom when someone accepts.
+        // Fallback: if chatroom creation failed or no active session, try to find
+        // any existing meetup chatroom where BOTH users are already members.
+        if (!groupChatroomId && updated?.fromUserId) {
+          try {
+            const myRooms = await db.select({ chatroomId: chatroomMembers.chatroomId })
+              .from(chatroomMembers)
+              .where(and(eq(chatroomMembers.userId, Number(userId)), eq(chatroomMembers.isActive, true)));
+            const myRoomIds = myRooms.map(r => r.chatroomId);
+            if (myRoomIds.length > 0) {
+              const [sharedRow] = await db.select({ chatroomId: chatroomMembers.chatroomId })
+                .from(chatroomMembers)
+                .where(and(
+                  eq(chatroomMembers.userId, updated.fromUserId),
+                  eq(chatroomMembers.isActive, true),
+                  inArray(chatroomMembers.chatroomId, myRoomIds)
+                ))
+                .limit(1);
+              if (sharedRow) {
+                groupChatroomId = sharedRow.chatroomId;
+                console.log(`[MEET ACCEPT] Fallback found shared chatroom: ${groupChatroomId}`);
+              }
+            }
+          } catch (fallbackErr) {
+            console.error('[MEET ACCEPT] Fallback chatroom lookup failed (non-fatal):', fallbackErr);
+          }
+        }
 
         // Send a real-time WebSocket notification to the requester so their widget
         // clears "Pending" immediately and shows a "Join Chat" prompt.
@@ -25166,6 +25189,43 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error("Error fetching my meetup chatrooms:", error);
       res.status(500).json({ error: "Failed to fetch meetup chatrooms" });
+    }
+  });
+
+  // Find a meetup chatroom shared between the current user and another user (for "Go to Chat" redirect)
+  app.get("/api/meetup-chatrooms/shared/:otherUserId", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const uid = Number(userId);
+      const otherUid = Number(req.params.otherUserId);
+      if (!otherUid) return res.status(400).json({ error: "Invalid user ID" });
+
+      const myRooms = await db.select({ chatroomId: chatroomMembers.chatroomId })
+        .from(chatroomMembers)
+        .where(and(eq(chatroomMembers.userId, uid), eq(chatroomMembers.isActive, true)));
+      const myRoomIds = myRooms.map(r => r.chatroomId);
+      if (myRoomIds.length === 0) return res.json({ chatroom: null });
+
+      const [sharedRow] = await db.select({ chatroomId: chatroomMembers.chatroomId })
+        .from(chatroomMembers)
+        .where(and(
+          eq(chatroomMembers.userId, otherUid),
+          eq(chatroomMembers.isActive, true),
+          inArray(chatroomMembers.chatroomId, myRoomIds)
+        ))
+        .limit(1);
+      if (!sharedRow) return res.json({ chatroom: null });
+
+      const [chatroom] = await db.select()
+        .from(meetupChatrooms)
+        .where(and(eq(meetupChatrooms.id, sharedRow.chatroomId), eq(meetupChatrooms.isActive, true)))
+        .limit(1);
+
+      return res.json({ chatroom: chatroom || null });
+    } catch (error: any) {
+      console.error("[SHARED CHATROOM] Error:", error);
+      return res.status(500).json({ error: "Failed to find shared chatroom" });
     }
   });
 
