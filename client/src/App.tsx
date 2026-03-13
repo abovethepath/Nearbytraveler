@@ -883,14 +883,15 @@ function Router() {
   }, []);
 
   // Prevent protected-route redirect/layout flashes while auth is hydrating/validating (web).
+  // CRITICAL: Show spinner while authLoading is true (regardless of route type), except during signup/auth flows.
   // Only decide "redirect to /auth" once loading is complete.
   const shouldGateAuthenticatedRendering =
     !isNativeIOSApp() &&
-    // Only gate during initial hydration/first validation; don't block UI for background re-checks.
+    // Only gate during initial hydration; don't block UI for background re-checks.
     (authLoading || !authInitialized || isLoading) &&
-    // Gate protected routes, and also gate "/" so we don't render logged-out vs logged-in UI
-    // before the session check completes.
-    (!isPublicRoute || normalizedPath === "/");
+    // Don't gate signup or auth routes — they should render immediately
+    !isSignupRoute &&
+    !isAuthRoute;
 
   // Initialize WebSocket connection for authenticated users
   useEffect(() => {
