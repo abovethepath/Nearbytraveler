@@ -654,7 +654,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                     <Button
                       size="sm"
                       variant="outline"
-                      className="h-7 text-xs"
+                      className="h-7 text-xs bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
                       onClick={() => respondRequestMutation.mutate({ requestId: req.id, status: "declined" })}
                       disabled={pendingRequestId === req.id}
                     >
