@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -82,8 +81,6 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [customNote, setCustomNote] = useState("");
   const [duration, setDuration] = useState("4");
-  const [showMeetRequest, setShowMeetRequest] = useState<number | null>(null);
-  const [meetMessage, setMeetMessage] = useState("");
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [localPendingUserIds, setLocalPendingUserIds] = useState<Set<number>>(new Set());
   const [pendingRequestId, setPendingRequestId] = useState<number | null>(null);
@@ -207,8 +204,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   });
 
   const sendRequestMutation = useMutation({
-    mutationFn: async ({ toUserId, message }: { toUserId: number; message: string }) => {
-      const res = await apiRequest("POST", "/api/available-now/request", { toUserId, message });
+    mutationFn: async ({ toUserId }: { toUserId: number }) => {
+      const res = await apiRequest("POST", "/api/available-now/request", { toUserId, message: "" });
       if (res.status === 409) {
         // Already sent — treat as success so the button updates to Pending
         return { alreadySent: true, toUserId };
@@ -219,11 +216,9 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       // Immediately mark this user as pending in local state for instant UI feedback
       setLocalPendingUserIds(prev => new Set([...prev, variables.toUserId]));
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/sent-requests"] });
-      setShowMeetRequest(null);
-      setMeetMessage("");
       const alreadySent = (_data as any)?.alreadySent;
       toast({
-        title: alreadySent ? "Already requested" : "Meet request sent!",
+        title: alreadySent ? "Already requested" : "Join request sent!",
         description: alreadySent ? "You already sent a request to this person." : "They'll be notified right away.",
       });
     },
@@ -610,9 +605,6 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                     <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                       {getDisplayName(req.fromUser) || `@${req.fromUser?.username}`}
                     </p>
-                    {req.message && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{req.message}</p>
-                    )}
                   </div>
                   <div className="flex gap-1">
                     <Button
@@ -764,47 +756,13 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                       >
                         Pending ⏳
                       </Button>
-                    ) : showMeetRequest === entry.userId ? (
-                      <div className="w-full space-y-2">
-                        <Textarea
-                          placeholder="Say hi or suggest a place..."
-                          value={meetMessage}
-                          onChange={(e) => setMeetMessage(e.target.value)}
-                          className="w-full min-h-[4rem] text-sm resize-y bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400"
-                          rows={3}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" && !e.shiftKey) {
-                              e.preventDefault();
-                              sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage });
-                            }
-                          }}
-                        />
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold"
-                            onClick={() => sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage })}
-                            disabled={sendRequestMutation.isPending}
-                          >
-                            <Send className="w-3.5 h-3.5 mr-1.5" />
-                            Send
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="text-gray-400 hover:text-white px-2"
-                            onClick={() => { setShowMeetRequest(null); setMeetMessage(""); }}
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
                     ) : (
                       <Button
                         className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm py-2 border-0"
-                        onClick={() => setShowMeetRequest(entry.userId)}
+                        onClick={() => sendRequestMutation.mutate({ toUserId: entry.userId })}
+                        disabled={sendRequestMutation.isPending}
                       >
-                        Meet Up
+                        Join
                       </Button>
                     ))}
                   </div>

@@ -24497,17 +24497,6 @@ Questions? Just reply to this message. Welcome aboard!
               messageType: 'system',
             });
 
-            // Post requester's original intro message so it appears in the chatroom
-            if (updated.message?.trim()) {
-              await db.insert(meetupChatroomMessages).values({
-                meetupChatroomId: existingChatroom.id,
-                userId: updated.fromUserId,
-                username: requesterName,
-                message: updated.message.trim(),
-                messageType: 'text',
-              });
-            }
-
             // Ensure requester is in chatroomMembers (same as Quick Meets)
             await db.insert(chatroomMembers).values({
               chatroomId: existingChatroom.id,
@@ -24550,17 +24539,6 @@ Questions? Just reply to this message. Welcome aboard!
               message: `Group chat created! @${acceptorName} and @${requesterName} are meeting up. Everyone accepted will join here automatically. 🤝`,
               messageType: 'system',
             });
-
-            // Post requester's original intro message so it appears at the top of the new chatroom
-            if (updated.message?.trim()) {
-              await db.insert(meetupChatroomMessages).values({
-                meetupChatroomId: newChatroom.id,
-                userId: updated.fromUserId,
-                username: requesterName,
-                message: updated.message.trim(),
-                messageType: 'text',
-              });
-            }
 
             // Seed chatroomMembers for both host and requester (same as Quick Meets)
             await db.insert(chatroomMembers).values([
