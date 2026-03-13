@@ -473,7 +473,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 <Button
                   size="sm"
                   variant="outline"
-                  className="flex-1"
+                  className="flex-1 dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:hover:bg-gray-600"
                   onClick={() => handleJoinEvent('interested')}
                   disabled={joinEventMutation.isPending}
                   data-testid="button-interested"
