@@ -74,7 +74,11 @@ function ArrivalCard({
   };
 
   const displayName = user.firstName || `@${user.username}`;
-  const from = user.hometownCity || user.hometownCountry || null;
+  let from = user.hometownCity || user.hometownCountry || null;
+  // Extract only city name if hometownCity contains full location (e.g., "Lisbon, Portugal")
+  if (from && from.includes(",")) {
+    from = from.split(",")[0].trim();
+  }
 
   const statusConfig = {
     here:  { dot: "bg-emerald-400", badge: "Here now",      badgeCls: "text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800" },

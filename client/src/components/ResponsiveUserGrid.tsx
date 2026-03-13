@@ -59,11 +59,16 @@ export default function ResponsiveUserGrid({
 
   const getLocation = (user: User) => {
     // ALWAYS use hometownCity - never fall back to location field (which contains metro area)
-    if (user.hometownCity && user.hometownCountry) {
-      return `${user.hometownCity}, ${user.hometownCountry}`;
+    // Extract only city name if hometownCity contains full location (e.g., "Lisbon, Portugal")
+    let city = user.hometownCity || "";
+    if (city && city.includes(",")) {
+      city = city.split(",")[0].trim();
     }
-    if (user.hometownCity) {
-      return user.hometownCity;
+    if (city && user.hometownCountry) {
+      return `${city}, ${user.hometownCountry}`;
+    }
+    if (city) {
+      return city;
     }
     return "Location not set";
   };

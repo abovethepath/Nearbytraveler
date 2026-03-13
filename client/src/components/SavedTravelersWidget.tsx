@@ -109,7 +109,11 @@ export function SavedTravelersWidget() {
         {saved.map((traveler) => {
           const cfg = getStatusConfig(traveler.tripStatus, traveler.destinationCity);
           const displayName = traveler.firstName || `@${traveler.username}`;
-          const from = traveler.hometownCity || traveler.hometownCountry || null;
+          let from = traveler.hometownCity || traveler.hometownCountry || null;
+          // Extract only city name if hometownCity contains full location (e.g., "Lisbon, Portugal")
+          if (from && from.includes(",")) {
+            from = from.split(",")[0].trim();
+          }
           const isRemoving = removingIds.has(traveler.savedUserId);
 
           return (

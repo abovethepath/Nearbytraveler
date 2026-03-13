@@ -15,7 +15,12 @@ function timeAgo(dateStr: string): string {
 }
 
 function cityLabel(user: any): string {
-  return user.hometownCity || "";
+  const city = user.hometownCity || "";
+  // Extract only the city name if the field contains a full location string (e.g., "Lisbon, Portugal")
+  if (city.includes(",")) {
+    return city.split(",")[0].trim();
+  }
+  return city;
 }
 
 function displayName(user: any): string {
