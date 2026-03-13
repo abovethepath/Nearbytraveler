@@ -23879,16 +23879,25 @@ Questions? Just reply to this message. Welcome aboard!
       const { city } = req.query;
       if (!city) return res.status(400).json({ error: "City is required" });
 
+      // Normalize city: strip state/country suffix (e.g. "Los Angeles, CA" → "Los Angeles")
+      const normalizedCity = (city as string).split(',')[0].trim();
+
       const now = new Date();
-      const metroDetection = detectMetroArea(city as string);
+      const metroDetection = detectMetroArea(normalizedCity);
       let cityCondition;
       if (metroDetection.isMetroCity && metroDetection.metroAreaName) {
         const metroCities = getMetroCities(metroDetection.metroAreaName);
         cityCondition = or(
-          ...metroCities.map(mc => ilike(availableNow.city, mc))
+          ...metroCities.flatMap(mc => [
+            ilike(availableNow.city, mc),
+            ilike(availableNow.city, `${mc},%`),
+          ])
         );
       } else {
-        cityCondition = ilike(availableNow.city, city as string);
+        cityCondition = or(
+          ilike(availableNow.city, normalizedCity),
+          ilike(availableNow.city, `${normalizedCity},%`),
+        );
       }
 
       const results = await db.select()
@@ -23967,8 +23976,10 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
-      const { activities, customNote, city, state, country, durationHours, preserveChatrooms } = req.body;
-      if (!city || !country) return res.status(400).json({ error: "City and country are required" });
+      const { activities, customNote, city: rawCity, state, country, durationHours, preserveChatrooms } = req.body;
+      if (!rawCity || !country) return res.status(400).json({ error: "City and country are required" });
+      // Normalize city: strip state/country suffix so "Los Angeles, CA" → "Los Angeles"
+      const city = (rawCity as string).split(',')[0].trim();
 
       const hours = Math.min(Math.max(Number(durationHours) || 4, 1), 12);
       const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000);

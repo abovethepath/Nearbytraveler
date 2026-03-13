@@ -110,14 +110,14 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     enabled: !!currentUser?.id,
   });
 
-  const { data: availableUsers } = useQuery<AvailableEntry[]>({
+  const { data: availableUsers, refetch: refetchAvailableUsers } = useQuery<AvailableEntry[]>({
     queryKey: ["/api/available-now", userCity],
     queryFn: async () => {
       const res = await fetch(`/api/available-now?city=${encodeURIComponent(userCity)}`);
       return res.json();
     },
     enabled: !!userCity,
-    refetchInterval: 60000,
+    refetchInterval: 20000,
   });
 
   const { data: pendingRequests } = useQuery<MeetRequest[]>({
@@ -547,7 +547,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               <Button
                 size="sm"
                 className="available-now-secondary-cta w-full mt-3 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 font-semibold text-xs py-2 rounded-full dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white dark:border-transparent"
-                onClick={onSortByAvailableNow}
+                onClick={() => { refetchAvailableUsers(); onSortByAvailableNow(); }}
               >
                 🟢 See Who Else is Available Now
               </Button>
