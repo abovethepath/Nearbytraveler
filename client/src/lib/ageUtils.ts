@@ -89,18 +89,45 @@ export function validateDateInput(dateString: string): { isValid: boolean; messa
 }
 
 /**
- * Get date input constraints for HTML date inputs
+ * Validate that a date of birth string belongs to someone 18 or older.
+ * Returns { isValid, message } — message is empty string when valid.
+ */
+export function validate18Plus(dateString: string): { isValid: boolean; message: string } {
+  if (!dateString) {
+    return { isValid: false, message: "Date of birth is required." };
+  }
+
+  const birthDate = new Date(dateString);
+  if (isNaN(birthDate.getTime())) {
+    return { isValid: false, message: "Please enter a valid date of birth." };
+  }
+
+  if (birthDate > new Date()) {
+    return { isValid: false, message: "Date of birth cannot be in the future." };
+  }
+
+  const age = calculateAge(birthDate);
+  if (age === null || age < 18) {
+    return { isValid: false, message: "You must be at least 18 years old to join Nearby Traveler." };
+  }
+
+  return { isValid: true, message: "" };
+}
+
+/**
+ * Get date input constraints for HTML date inputs.
+ * max is capped at 18 years ago so the date picker itself prevents underage entry.
  */
 export function getDateInputConstraints(): { min: string; max: string } {
   const today = new Date();
   const currentYear = today.getFullYear();
   
   // Minimum date: 99 years ago
-  const minYear = currentYear - 99;
-  const min = `${minYear}-01-01`;
+  const min = `${currentYear - 99}-01-01`;
   
-  // Maximum date: today
-  const max = today.toISOString().split('T')[0];
+  // Maximum date: exactly 18 years ago today (enforces 18+ at the picker level)
+  const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+  const max = maxDate.toISOString().split('T')[0];
   
   return { min, max };
 }

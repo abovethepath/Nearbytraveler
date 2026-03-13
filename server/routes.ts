@@ -5097,7 +5097,7 @@ Questions? Just reply to this message!
         processedData.dateOfBirth = new Date(processedData.dateOfBirth);
       }
       
-      // SAFETY: Enforce 17+ minimum age requirement
+      // SAFETY: Enforce 18+ minimum age requirement
       if (processedData.dateOfBirth) {
         const today = new Date();
         const birthDate = new Date(processedData.dateOfBirth);
@@ -5106,8 +5106,8 @@ Questions? Just reply to this message!
         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
           age--;
         }
-        if (age < 17) {
-          return res.status(400).json({ message: "You must be 17 or older to use this app" });
+        if (age < 18) {
+          return res.status(400).json({ message: "You must be at least 18 years old to join Nearby Traveler." });
         }
       }
       
@@ -5480,7 +5480,7 @@ Questions? Just reply to this message!
         processedData.travelEndDate = new Date(processedData.travelEndDate);
       }
 
-      // SAFETY: Enforce 17+ minimum age requirement (for non-business users)
+      // SAFETY: Enforce 18+ minimum age requirement (for non-business users)
       if (processedData.dateOfBirth && processedData.userType !== 'business') {
         const today = new Date();
         const birthDate = new Date(processedData.dateOfBirth);
@@ -5489,8 +5489,8 @@ Questions? Just reply to this message!
         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
           age--;
         }
-        if (age < 17) {
-          return res.status(400).json({ message: "You must be 17 or older to use this app" });
+        if (age < 18) {
+          return res.status(400).json({ message: "You must be at least 18 years old to join Nearby Traveler." });
         }
       }
 

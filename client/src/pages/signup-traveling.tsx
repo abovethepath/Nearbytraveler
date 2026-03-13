@@ -13,7 +13,7 @@ import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { InterestSelector } from "@/components/InterestSelector";
 import { authStorage } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
-import { getDateInputConstraints } from "@/lib/ageUtils";
+import { getDateInputConstraints, validate18Plus } from "@/lib/ageUtils";
 
 export default function SignupTraveling() {
   const [, setLocation] = useLocation();
@@ -219,7 +219,12 @@ export default function SignupTraveling() {
       if (!registrationData.username) errors.push("Username is required.");
       if (!registrationData.email) errors.push("Email is required.");
       if (!registrationData.password) errors.push("Password is required.");
-      if (!registrationData.dateOfBirth) errors.push("Date of birth is required.");
+      if (!registrationData.dateOfBirth) {
+        errors.push("Date of birth is required.");
+      } else {
+        const ageCheck = validate18Plus(registrationData.dateOfBirth);
+        if (!ageCheck.isValid) errors.push(ageCheck.message);
+      }
       if (!registrationData.hometownCity || !registrationData.hometownCountry) {
         errors.push("Hometown city and country are required.");
       }
