@@ -8,14 +8,17 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { getProfileImageUrl } from "@/components/simple-avatar";
-import { Copy, Check, Link2, UserPlus, Search, X, Users } from "lucide-react";
+import { Check, UserPlus, Search, X, Users, Loader2 } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface ChatroomInvitePanelProps {
   open: boolean;
   onClose: () => void;
+  chatroomType: string;
   chatroomId: number;
   chatroomName: string;
   currentUserId: number;
+  dmPartnerId?: number;
 }
 
 interface UserResult {
@@ -28,23 +31,47 @@ interface UserResult {
   userType?: string;
 }
 
+interface Connection {
+  id: number;
+  connectedUser?: {
+    id: number;
+    username: string;
+    firstName?: string;
+    name?: string;
+    profileImage?: string;
+    hometownCity?: string;
+    userType?: string;
+  };
+}
+
 export default function ChatroomInvitePanel({
   open,
   onClose,
+  chatroomType,
   chatroomId,
   chatroomName,
   currentUserId,
+  dmPartnerId,
 }: ChatroomInvitePanelProps) {
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<UserResult[]>([]);
-  const [inviteUrl, setInviteUrl] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
 
   const displayName = (u: UserResult) =>
     u.firstName || u.name?.split(" ")[0] || u.username;
 
-  // Search users
+  // Load user's connections (primary source)
+  const { data: connectionsRaw = [], isLoading: connectionsLoading } = useQuery<Connection[]>({
+    queryKey: [`/api/connections/${currentUserId}`],
+    enabled: open && !!currentUserId,
+  });
+
+  const connections: UserResult[] = connectionsRaw
+    .map((c) => c.connectedUser)
+    .filter((u): u is NonNullable<Connection['connectedUser']> => !!u && u.id !== currentUserId);
+
+  // Search fallback for non-connections
   const { data: searchResults = [], isFetching } = useQuery<UserResult[]>({
     queryKey: ["/api/users/search", searchQuery],
     queryFn: async () => {
@@ -59,50 +86,51 @@ export default function ChatroomInvitePanel({
     enabled: searchQuery.trim().length >= 2,
   });
 
-  // Generate invite link
-  const inviteMutation = useMutation({
-    mutationFn: async () => {
+  const displayList: UserResult[] = searchQuery.trim().length >= 2
+    ? searchResults.filter((u) => u.id !== currentUserId)
+    : connections;
+
+  // Add people — for DM type, creates a new group chatroom
+  const addMutation = useMutation({
+    mutationFn: async (userIds: number[]) => {
+      if (chatroomType === "dm") {
+        // Combine: current user + DM partner + selected users
+        const allIds = Array.from(new Set([
+          ...(dmPartnerId ? [dmPartnerId] : []),
+          ...userIds,
+        ]));
+        const res = await apiRequest("POST", "/api/meetup-chatrooms/group-dm", {
+          name: chatroomName || "Group Chat",
+          userIds: allIds,
+        });
+        return { ...(await res.json()), isGroupDm: true };
+      }
       const res = await apiRequest(
         "POST",
-        `/api/meetup-chatrooms/${chatroomId}/invite-token`
+        `/api/chatrooms/${chatroomType}/${chatroomId}/add-members`,
+        { userIds }
       );
       return res.json();
     },
-    onSuccess: (data) => setInviteUrl(data.inviteUrl),
-    onError: () =>
-      toast({ title: "Couldn't generate link", variant: "destructive" }),
-  });
-
-  const handleCopyLink = async () => {
-    if (!inviteUrl) return;
-    try {
-      await navigator.clipboard.writeText(inviteUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-      toast({ title: "Link copied!", description: "Share it with anyone." });
-    } catch {
-      toast({ title: "Couldn't copy", variant: "destructive" });
-    }
-  };
-
-  // Add selected users directly
-  const addMutation = useMutation({
-    mutationFn: async (userIds: number[]) => {
-      const res = await apiRequest("POST", `/api/meetup-chatrooms/${chatroomId}/add-members`, {
-        userIds,
-      });
-      return res.json();
-    },
     onSuccess: (data) => {
-      toast({
-        title: `${data.added} ${data.added === 1 ? "person" : "people"} added`,
-        description: "They can now chat in this group.",
-      });
-      setSelectedUsers([]);
-      setSearchQuery("");
+      if (data.isGroupDm) {
+        toast({
+          title: "Group chat created!",
+          description: "A new group chat has been started with everyone.",
+        });
+        onClose();
+        navigate(`/meetup-chatroom-chat/${data.chatroomId}?title=${encodeURIComponent(data.name)}&subtitle=Group+chat`);
+      } else {
+        const added = data.added ?? selectedUsers.length;
+        toast({
+          title: `${added} ${added === 1 ? "person" : "people"} added`,
+          description: "They can now chat in this group.",
+        });
+        setSelectedUsers([]);
+        setSearchQuery("");
+      }
     },
-    onError: () =>
-      toast({ title: "Couldn't add people", variant: "destructive" }),
+    onError: () => toast({ title: "Couldn't add people", variant: "destructive" }),
   });
 
   const toggleUser = (user: UserResult) => {
@@ -115,160 +143,133 @@ export default function ChatroomInvitePanel({
 
   const isSelected = (id: number) => selectedUsers.some((u) => u.id === id);
 
-  const filtered = searchResults.filter(
-    (u) => u.id !== currentUserId && !isSelected(u.id)
-  );
+  const filtered = displayList.filter((u) => !isSelected(u.id));
+
+  const isDm = chatroomType === "dm";
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) { setSelectedUsers([]); setSearchQuery(""); onClose(); } }}>
       <DialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 max-w-md w-full max-h-[90vh] flex flex-col p-0 overflow-hidden">
         <DialogHeader className="px-5 pt-5 pb-3 shrink-0 border-b border-gray-100 dark:border-gray-800">
           <DialogTitle className="text-gray-900 dark:text-white flex items-center gap-2">
             <Users className="w-5 h-5 text-orange-500" />
-            Invite to "{chatroomName}"
+            {isDm ? "Start group chat" : `Add people to "${chatroomName}"`}
           </DialogTitle>
+          {isDm && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              The original DM stays untouched. A new group chat will be created.
+            </p>
+          )}
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-5 pt-4">
-          {/* ── Invite Link ─────────────────────────────────── */}
-          <div>
-            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1.5">
-              <Link2 className="w-4 h-4" />
-              Invite link
-            </p>
-            {inviteUrl ? (
-              <div className="flex gap-2">
-                <Input
-                  readOnly
-                  value={inviteUrl}
-                  className="text-xs bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 flex-1"
-                />
-                <Button
-                  size="sm"
-                  onClick={handleCopyLink}
-                  className="bg-orange-500 hover:bg-orange-600 text-white shrink-0"
+        <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-4 pt-4">
+          {/* Selected chips */}
+          {selectedUsers.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {selectedUsers.map((u) => (
+                <Badge
+                  key={u.id}
+                  className="bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 gap-1 pl-2 pr-1 py-0.5"
                 >
-                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                </Button>
-              </div>
-            ) : (
-              <Button
-                variant="outline"
-                className="w-full border-orange-400 text-orange-600 dark:text-orange-400 dark:border-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                onClick={() => inviteMutation.mutate()}
-                disabled={inviteMutation.isPending}
-              >
-                <Link2 className="w-4 h-4 mr-2" />
-                {inviteMutation.isPending ? "Generating…" : "Create invite link"}
-              </Button>
-            )}
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
-              Anyone with this link can join the chat.
-            </p>
-          </div>
-
-          {/* ── Add People ──────────────────────────────────── */}
-          <div>
-            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1.5">
-              <UserPlus className="w-4 h-4" />
-              Add people directly
-            </p>
-
-            {/* Selected chips */}
-            {selectedUsers.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-2">
-                {selectedUsers.map((u) => (
-                  <Badge
-                    key={u.id}
-                    className="bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 gap-1 pl-2 pr-1 py-0.5"
-                  >
-                    {displayName(u)}
-                    <button onClick={() => toggleUser(u)} className="ml-0.5 hover:text-orange-900 dark:hover:text-orange-100">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-            )}
-
-            <div className="relative mb-2">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input
-                placeholder="Search by name or username…"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white"
-              />
+                  {displayName(u)}
+                  <button onClick={() => toggleUser(u)} className="ml-0.5 hover:text-orange-900 dark:hover:text-orange-100">
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              ))}
             </div>
+          )}
 
-            {/* Results */}
-            {searchQuery.trim().length >= 2 && (
-              <div className="space-y-1 max-h-48 overflow-y-auto rounded-lg border border-gray-100 dark:border-gray-800">
-                {isFetching && (
-                  <p className="text-sm text-gray-400 px-3 py-2">Searching…</p>
-                )}
-                {!isFetching && filtered.length === 0 && (
-                  <p className="text-sm text-gray-400 px-3 py-2">No users found.</p>
-                )}
-                {filtered.map((u) => (
-                  <button
-                    key={u.id}
-                    onClick={() => toggleUser(u)}
-                    className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
-                  >
-                    <Avatar className="w-8 h-8 shrink-0">
-                      <AvatarImage src={getProfileImageUrl(u) || undefined} />
-                      <AvatarFallback className="bg-orange-500 text-white text-xs">
-                        {displayName(u)[0]?.toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                        {displayName(u)}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                        @{u.username}{u.hometownCity ? ` · ${u.hometownCity}` : ""}
-                      </p>
-                    </div>
-                    {isSelected(u.id) && <Check className="w-4 h-4 text-orange-500 shrink-0" />}
-                  </button>
-                ))}
-                {selectedUsers.map((u) => (
-                  <button
-                    key={`sel-${u.id}`}
-                    onClick={() => toggleUser(u)}
-                    className="w-full flex items-center gap-3 px-3 py-2 bg-orange-50 dark:bg-orange-900/20 transition-colors text-left"
-                  >
-                    <Avatar className="w-8 h-8 shrink-0">
-                      <AvatarImage src={getProfileImageUrl(u) || undefined} />
-                      <AvatarFallback className="bg-orange-500 text-white text-xs">
-                        {displayName(u)[0]?.toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-orange-700 dark:text-orange-300 truncate">
-                        {displayName(u)}
-                      </p>
-                    </div>
-                    <Check className="w-4 h-4 text-orange-500 shrink-0" />
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {selectedUsers.length > 0 && (
-              <Button
-                className="w-full mt-3 bg-orange-500 hover:bg-orange-600 text-white"
-                onClick={() => addMutation.mutate(selectedUsers.map((u) => u.id))}
-                disabled={addMutation.isPending}
-              >
-                <UserPlus className="w-4 h-4 mr-2" />
-                {addMutation.isPending
-                  ? "Adding…"
-                  : `Add ${selectedUsers.length} ${selectedUsers.length === 1 ? "person" : "people"}`}
-              </Button>
-            )}
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder={connections.length > 0 ? "Search connections or anyone…" : "Search by name or username…"}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white"
+            />
           </div>
+
+          {/* Section label */}
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+            {searchQuery.trim().length >= 2 ? "Search results" : "Your connections"}
+          </p>
+
+          {/* User list */}
+          {connectionsLoading && searchQuery.trim().length < 2 ? (
+            <div className="flex items-center justify-center py-6">
+              <Loader2 className="w-5 h-5 animate-spin text-orange-500" />
+            </div>
+          ) : isFetching && searchQuery.trim().length >= 2 ? (
+            <p className="text-sm text-gray-400 px-1 py-2">Searching…</p>
+          ) : (
+            <div className="space-y-1 max-h-60 overflow-y-auto rounded-lg border border-gray-100 dark:border-gray-800">
+              {filtered.length === 0 && (
+                <p className="text-sm text-gray-400 px-3 py-3">
+                  {searchQuery.trim().length >= 2 ? "No users found." : "No connections yet."}
+                </p>
+              )}
+              {filtered.map((u) => (
+                <button
+                  key={u.id}
+                  onClick={() => toggleUser(u)}
+                  className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
+                >
+                  <Avatar className="w-8 h-8 shrink-0">
+                    <AvatarImage src={getProfileImageUrl(u) || undefined} />
+                    <AvatarFallback className="bg-orange-500 text-white text-xs">
+                      {displayName(u)[0]?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                      {displayName(u)}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                      @{u.username}{u.hometownCity ? ` · ${u.hometownCity}` : ""}
+                    </p>
+                  </div>
+                  {isSelected(u.id) && <Check className="w-4 h-4 text-orange-500 shrink-0" />}
+                </button>
+              ))}
+              {selectedUsers.map((u) => (
+                <button
+                  key={`sel-${u.id}`}
+                  onClick={() => toggleUser(u)}
+                  className="w-full flex items-center gap-3 px-3 py-2 bg-orange-50 dark:bg-orange-900/20 transition-colors text-left"
+                >
+                  <Avatar className="w-8 h-8 shrink-0">
+                    <AvatarImage src={getProfileImageUrl(u) || undefined} />
+                    <AvatarFallback className="bg-orange-500 text-white text-xs">
+                      {displayName(u)[0]?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-orange-700 dark:text-orange-300 truncate">
+                      {displayName(u)}
+                    </p>
+                  </div>
+                  <Check className="w-4 h-4 text-orange-500 shrink-0" />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {selectedUsers.length > 0 && (
+            <Button
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={() => addMutation.mutate(selectedUsers.map((u) => u.id))}
+              disabled={addMutation.isPending}
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              {addMutation.isPending
+                ? isDm ? "Creating group…" : "Adding…"
+                : isDm
+                  ? `Create group with ${selectedUsers.length + 1} ${selectedUsers.length + 1 === 1 ? "person" : "people"}`
+                  : `Add ${selectedUsers.length} ${selectedUsers.length === 1 ? "person" : "people"}`}
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

@@ -1208,6 +1208,17 @@ export const meetupChatrooms = pgTable("meetup_chatrooms", {
   createdByUserId: integer("created_by_user_id"), // for group_dm chatrooms
 });
 
+// Universal invite tokens for any chatroom type (meetup | event | chatroom | dm)
+export const chatroomInviteTokens = pgTable("chatroom_invite_tokens", {
+  id: serial("id").primaryKey(),
+  token: text("token").notNull().unique(),
+  chatroomType: text("chatroom_type").notNull(), // 'meetup' | 'event' | 'chatroom' | 'dm'
+  chatroomId: integer("chatroom_id").notNull(),
+  createdBy: integer("created_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  isActive: boolean("is_active").notNull().default(true),
+});
+
 export const meetupChatroomMessages = pgTable("meetup_chatroom_messages", {
   id: serial("id").primaryKey(),
   meetupChatroomId: integer("meetup_chatroom_id").notNull().references(() => meetupChatrooms.id),

@@ -7,10 +7,11 @@ import { Users, MessageCircle, ArrowRight, Loader2, AlertCircle } from "lucide-r
 
 interface ChatroomPreview {
   id: number;
+  chatroomType?: string;
   name: string;
   description?: string;
-  city: string;
-  country: string;
+  city?: string;
+  country?: string;
   activityType?: string;
   groupType?: string;
   memberCount: number;
@@ -53,7 +54,17 @@ export default function JoinChat() {
     },
     onSuccess: (data) => {
       toast({ title: "Joined!", description: `Welcome to "${data.name}".` });
-      navigate(`/meetup-chat/${data.chatroomId}`);
+      const type = data.chatroomType || 'meetup';
+      const name = encodeURIComponent(data.name || 'Chat');
+      if (type === 'event') {
+        navigate(`/event-chat/${data.chatroomId}`);
+      } else if (type === 'chatroom') {
+        navigate(`/chatroom/${data.chatroomId}`);
+      } else if (type === 'dm') {
+        navigate(`/messages`);
+      } else {
+        navigate(`/meetup-chatroom-chat/${data.chatroomId}?title=${name}&subtitle=Group+chat`);
+      }
     },
     onError: (err: Error) => {
       if (err.message.toLowerCase().includes("authenticated")) {

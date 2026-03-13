@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp, Camera, User as UserIcon, ShieldAlert, Share2, LogOut, Lock, UserPlus } from "lucide-react";
 import ChatroomInvitePanel from "@/components/ChatroomInvitePanel";
+import ShareChatroomSheet from "@/components/ShareChatroomSheet";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
@@ -94,6 +95,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [selectedMember, setSelectedMember] = useState<ChatMember | null>(null);
   const [muteReason, setMuteReason] = useState("");
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [showShareSheet, setShowShareSheet] = useState(false);
   const [showInvitePanel, setShowInvitePanel] = useState(false);
   const [notificationsMuted, setNotificationsMuted] = useState(false);
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
@@ -2129,6 +2131,28 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   </SheetContent>
                 </Sheet>
               )}
+              {/* Add People + Share buttons — visible in header on all chatroom types */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowInvitePanel(true)}
+                className="text-white hover:bg-gray-700 h-9 w-9 touch-target shrink-0"
+                title="Add people"
+                data-testid="button-add-people"
+              >
+                <UserPlus className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowShareSheet(true)}
+                className="text-white hover:bg-gray-700 h-9 w-9 touch-target shrink-0"
+                title="Share chatroom"
+                data-testid="button-share-chatroom"
+              >
+                <Share2 className="w-4 h-4" />
+              </Button>
+
               <Sheet open={moreMenuOpen} onOpenChange={setMoreMenuOpen}>
                 <SheetTrigger asChild>
                   <button
@@ -2379,6 +2403,32 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             </SheetContent>
           </Sheet>
         )}
+        {/* Add People + Share buttons — desktop header */}
+        {!isMobile && (
+          <>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowInvitePanel(true)}
+              className="text-white hover:bg-gray-700 h-8 w-8"
+              title="Add people"
+              data-testid="button-add-people-desktop"
+            >
+              <UserPlus className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowShareSheet(true)}
+              className="text-white hover:bg-gray-700 h-8 w-8"
+              title="Share chatroom"
+              data-testid="button-share-chatroom-desktop"
+            >
+              <Share2 className="w-4 h-4" />
+            </Button>
+          </>
+        )}
+
         {/* 3-dot menu: dropdown on desktop (mobile uses SheetContent below via shared moreMenuOpen state) */}
         {!isMobile && (
           <DropdownMenu>
@@ -2963,11 +3013,25 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         document.body
       )}
 
-      {/* Invite Panel — for meetup/event chatrooms */}
-      {showInvitePanel && (chatType === 'meetup' || chatType === 'event') && currentUserId && (
+      {/* Invite Panel — all chatroom types */}
+      {showInvitePanel && currentUserId && (
         <ChatroomInvitePanel
           open={showInvitePanel}
           onClose={() => setShowInvitePanel(false)}
+          chatroomType={chatType}
+          chatroomId={chatId}
+          chatroomName={title}
+          currentUserId={currentUserId}
+          dmPartnerId={chatType === 'dm' ? chatId : undefined}
+        />
+      )}
+
+      {/* Share Chatroom Sheet — all chatroom types */}
+      {showShareSheet && currentUserId && (
+        <ShareChatroomSheet
+          open={showShareSheet}
+          onClose={() => setShowShareSheet(false)}
+          chatroomType={chatType}
           chatroomId={chatId}
           chatroomName={title}
           currentUserId={currentUserId}

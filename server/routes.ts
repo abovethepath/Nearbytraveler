@@ -92,7 +92,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens } from "../shared/schema";
 import { writeActivityLog } from "./services/activityLogService";
 import { alias } from "drizzle-orm/pg-core";
 
@@ -25229,6 +25229,120 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // ── Generic invite-link generator (all chatroom types) ────────────────────
+  app.post("/api/chatrooms/:type/:id/invite-link", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const { type, id } = req.params;
+      const chatroomId = parseInt(id);
+      if (isNaN(chatroomId)) return res.status(400).json({ error: "Invalid chatroom ID" });
+      const validTypes = ['meetup', 'event', 'chatroom', 'dm'];
+      if (!validTypes.includes(type)) return res.status(400).json({ error: "Invalid chatroom type" });
+
+      const { randomUUID } = await import('crypto');
+
+      // For meetup type: also update the legacy inviteToken column so existing join flow still works
+      if (type === 'meetup') {
+        const chatroom = await db.query.meetupChatrooms.findFirst({ where: eq(meetupChatrooms.id, chatroomId) });
+        if (!chatroom) return res.status(404).json({ error: "Chatroom not found" });
+        let token = chatroom.inviteToken;
+        if (!token) {
+          token = randomUUID().replace(/-/g, '');
+          await db.update(meetupChatrooms).set({ inviteToken: token }).where(eq(meetupChatrooms.id, chatroomId));
+        }
+        const baseUrl = process.env.APP_BASE_URL || `https://${req.headers.host}`;
+        return res.json({ token, inviteUrl: `${baseUrl}/join/${token}` });
+      }
+
+      // For all other types: use chatroomInviteTokens table
+      const existing = await db.query.chatroomInviteTokens.findFirst({
+        where: and(
+          eq(chatroomInviteTokens.chatroomType, type),
+          eq(chatroomInviteTokens.chatroomId, chatroomId),
+          eq(chatroomInviteTokens.isActive, true)
+        )
+      });
+      let token = existing?.token;
+      if (!token) {
+        token = randomUUID().replace(/-/g, '');
+        await db.insert(chatroomInviteTokens).values({
+          token,
+          chatroomType: type,
+          chatroomId,
+          createdBy: Number(userId),
+          isActive: true,
+        });
+      }
+      const baseUrl = process.env.APP_BASE_URL || `https://${req.headers.host}`;
+      return res.json({ token, inviteUrl: `${baseUrl}/join/${token}` });
+    } catch (error) {
+      console.error("[INVITE LINK] Error:", error);
+      return res.status(500).json({ error: "Failed to generate invite link" });
+    }
+  });
+
+  // ── Generic add-members (all chatroom types) ───────────────────────────────
+  app.post("/api/chatrooms/:type/:id/add-members", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const { type, id } = req.params;
+      const chatroomId = parseInt(id);
+      if (isNaN(chatroomId)) return res.status(400).json({ error: "Invalid chatroom ID" });
+      const { userIds } = req.body as { userIds: number[] };
+      if (!Array.isArray(userIds) || userIds.length === 0) {
+        return res.status(400).json({ error: "userIds must be a non-empty array" });
+      }
+
+      // meetup type: delegate to existing add-members logic
+      if (type === 'meetup') {
+        let added = 0;
+        const chatroom = await db.query.meetupChatrooms.findFirst({ where: eq(meetupChatrooms.id, chatroomId) });
+        if (!chatroom) return res.status(404).json({ error: "Chatroom not found" });
+        for (const targetUserId of userIds) {
+          const existing = await db.query.chatroomMembers.findFirst({
+            where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId))
+          });
+          if (!existing) {
+            await db.insert(chatroomMembers).values({ chatroomId, userId: targetUserId, role: 'member', isActive: true });
+            added++;
+          } else if (!existing.isActive) {
+            await db.update(chatroomMembers).set({ isActive: true }).where(eq(chatroomMembers.id, existing.id));
+            added++;
+          }
+        }
+        if (added > 0) {
+          await db.update(meetupChatrooms).set({ participantCount: chatroom.participantCount + added }).where(eq(meetupChatrooms.id, chatroomId));
+        }
+        return res.json({ added, chatroomId });
+      }
+
+      // event / chatroom types: use chatroomMembers table directly
+      if (type === 'event' || type === 'chatroom') {
+        let added = 0;
+        for (const targetUserId of userIds) {
+          const existing = await db.query.chatroomMembers.findFirst({
+            where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId))
+          });
+          if (!existing) {
+            await db.insert(chatroomMembers).values({ chatroomId, userId: targetUserId, role: 'member', isActive: true });
+            added++;
+          } else if (!existing.isActive) {
+            await db.update(chatroomMembers).set({ isActive: true }).where(eq(chatroomMembers.id, existing.id));
+            added++;
+          }
+        }
+        return res.json({ added, chatroomId });
+      }
+
+      return res.status(400).json({ error: "Unsupported chatroom type for direct member addition" });
+    } catch (error) {
+      console.error("[ADD MEMBERS] Error:", error);
+      return res.status(500).json({ error: "Failed to add members" });
+    }
+  });
+
   // Dismiss a meetup chatroom from the user's list (sets their membership inactive)
   app.post("/api/meetup-chatrooms/:chatroomId/dismiss", async (req: any, res) => {
     try {
@@ -25320,28 +25434,51 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/chatroom-join/:token", async (req: any, res) => {
     try {
       const { token } = req.params;
-      const chatroom = await db.query.meetupChatrooms.findFirst({
+
+      // Try meetupChatrooms.inviteToken first (legacy + meetup type)
+      const meetupChatroom = await db.query.meetupChatrooms.findFirst({
         where: eq(meetupChatrooms.inviteToken, token)
       });
-      if (!chatroom) return res.status(404).json({ error: "Invalid or expired invite link" });
-      if (!chatroom.isActive) return res.status(410).json({ error: "This chat is no longer active" });
+      if (meetupChatroom) {
+        if (!meetupChatroom.isActive) return res.status(410).json({ error: "This chat is no longer active" });
+        const members = await db.query.chatroomMembers.findMany({
+          where: and(eq(chatroomMembers.chatroomId, meetupChatroom.id), eq(chatroomMembers.isActive, true))
+        });
+        return res.json({
+          id: meetupChatroom.id,
+          chatroomType: 'meetup',
+          name: meetupChatroom.chatroomName,
+          description: meetupChatroom.description,
+          city: meetupChatroom.city,
+          country: meetupChatroom.country,
+          activityType: meetupChatroom.activityType,
+          groupType: meetupChatroom.groupType,
+          memberCount: members.length,
+        });
+      }
 
-      // Count members
+      // Try universal token table for event/chatroom/dm types
+      const universalToken = await db.query.chatroomInviteTokens.findFirst({
+        where: and(eq(chatroomInviteTokens.token, token), eq(chatroomInviteTokens.isActive, true))
+      });
+      if (!universalToken) return res.status(404).json({ error: "Invalid or expired invite link" });
+
       const members = await db.query.chatroomMembers.findMany({
-        where: and(
-          eq(chatroomMembers.chatroomId, chatroom.id),
-          eq(chatroomMembers.isActive, true)
-        )
+        where: and(eq(chatroomMembers.chatroomId, universalToken.chatroomId), eq(chatroomMembers.isActive, true))
       });
 
+      // Fetch chatroom name based on type
+      let name = "Group Chat";
+      let city = "";
+      if (universalToken.chatroomType === 'meetup') {
+        const c = await db.query.meetupChatrooms.findFirst({ where: eq(meetupChatrooms.id, universalToken.chatroomId) });
+        if (c) { name = c.chatroomName; city = c.city; }
+      }
       return res.json({
-        id: chatroom.id,
-        name: chatroom.chatroomName,
-        description: chatroom.description,
-        city: chatroom.city,
-        country: chatroom.country,
-        activityType: chatroom.activityType,
-        groupType: chatroom.groupType,
+        id: universalToken.chatroomId,
+        chatroomType: universalToken.chatroomType,
+        name,
+        city,
         memberCount: members.length,
       });
     } catch (error) {
@@ -25357,39 +25494,46 @@ Questions? Just reply to this message. Welcome aboard!
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
       const { token } = req.params;
 
-      const chatroom = await db.query.meetupChatrooms.findFirst({
+      // Try meetupChatrooms.inviteToken first
+      const meetupChatroom = await db.query.meetupChatrooms.findFirst({
         where: eq(meetupChatrooms.inviteToken, token)
       });
-      if (!chatroom) return res.status(404).json({ error: "Invalid or expired invite link" });
-      if (!chatroom.isActive) return res.status(410).json({ error: "This chat is no longer active" });
-
-      // Check if already a member
-      const existing = await db.query.chatroomMembers.findFirst({
-        where: and(
-          eq(chatroomMembers.chatroomId, chatroom.id),
-          eq(chatroomMembers.userId, userId)
-        )
-      });
-
-      if (existing) {
-        if (!existing.isActive) {
-          await db.update(chatroomMembers)
-            .set({ isActive: true })
-            .where(eq(chatroomMembers.id, existing.id));
-        }
-      } else {
-        await db.insert(chatroomMembers).values({
-          chatroomId: chatroom.id,
-          userId,
-          role: 'member',
-          isActive: true,
+      if (meetupChatroom) {
+        if (!meetupChatroom.isActive) return res.status(410).json({ error: "This chat is no longer active" });
+        const existing = await db.query.chatroomMembers.findFirst({
+          where: and(eq(chatroomMembers.chatroomId, meetupChatroom.id), eq(chatroomMembers.userId, userId))
         });
-        await db.update(meetupChatrooms)
-          .set({ participantCount: chatroom.participantCount + 1 })
-          .where(eq(meetupChatrooms.id, chatroom.id));
+        if (existing) {
+          if (!existing.isActive) await db.update(chatroomMembers).set({ isActive: true }).where(eq(chatroomMembers.id, existing.id));
+        } else {
+          await db.insert(chatroomMembers).values({ chatroomId: meetupChatroom.id, userId, role: 'member', isActive: true });
+          await db.update(meetupChatrooms).set({ participantCount: meetupChatroom.participantCount + 1 }).where(eq(meetupChatrooms.id, meetupChatroom.id));
+        }
+        return res.json({ chatroomId: meetupChatroom.id, chatroomType: 'meetup', name: meetupChatroom.chatroomName });
       }
 
-      return res.json({ chatroomId: chatroom.id, name: chatroom.chatroomName });
+      // Try universal token table
+      const universalToken = await db.query.chatroomInviteTokens.findFirst({
+        where: and(eq(chatroomInviteTokens.token, token), eq(chatroomInviteTokens.isActive, true))
+      });
+      if (!universalToken) return res.status(404).json({ error: "Invalid or expired invite link" });
+
+      const { chatroomId, chatroomType } = universalToken;
+      const existing = await db.query.chatroomMembers.findFirst({
+        where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, userId))
+      });
+      if (existing) {
+        if (!existing.isActive) await db.update(chatroomMembers).set({ isActive: true }).where(eq(chatroomMembers.id, existing.id));
+      } else {
+        await db.insert(chatroomMembers).values({ chatroomId, userId, role: 'member', isActive: true });
+      }
+
+      let name = "Group Chat";
+      if (chatroomType === 'meetup') {
+        const c = await db.query.meetupChatrooms.findFirst({ where: eq(meetupChatrooms.id, chatroomId) });
+        if (c) name = c.chatroomName;
+      }
+      return res.json({ chatroomId, chatroomType, name });
     } catch (error) {
       console.error("Error joining chatroom via invite:", error);
       return res.status(500).json({ error: "Failed to join chatroom" });
