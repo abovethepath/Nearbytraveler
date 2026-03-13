@@ -24832,45 +24832,40 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
-      // Find all accepted requests FROM this user
-      const acceptedRequests = await db.select({
-        toUserId: availableNowRequests.toUserId,
-      })
-        .from(availableNowRequests)
-        .where(and(
-          eq(availableNowRequests.fromUserId, Number(userId)),
-          eq(availableNowRequests.status, "accepted")
-        ));
-
-      if (acceptedRequests.length === 0) {
-        return res.json({ chatrooms: [] });
-      }
-
-      // Find only ACTIVE Available Now sessions — must be both isAvailable=true AND
-      // not yet expired by timestamp.  Checking only expiresAt is not enough because
-      // a session can be manually ended (isAvailable=false) while expiresAt is still
-      // in the future, which would leak old chatrooms into a new session.
-      const hostUserIds = acceptedRequests.map(r => r.toUserId);
+      // Use chatroom_members as the single source of truth (matches replit.md standard).
+      // Previously this chained through available_now sessions, which broke when:
+      //   - the chatroom was created during a race condition and the session lookup returned empty
+      //   - the host had multiple sessions and session IDs didn't match
+      // Now we directly query which active meetup chatrooms the user is a member of.
       const rightNow = new Date();
-      const activeSessions = await db.select()
-        .from(availableNow)
-        .where(and(
-          inArray(availableNow.userId, hostUserIds),
-          eq(availableNow.isAvailable, true),
-          gte(availableNow.expiresAt, rightNow)
-        ));
-
-      if (activeSessions.length === 0) {
-        return res.json({ chatrooms: [] });
-      }
-
-      const sessionIds = activeSessions.map(s => s.id);
-      const chatrooms = await db.select()
+      const chatrooms = await db
+        .select({
+          id: meetupChatrooms.id,
+          availableNowId: meetupChatrooms.availableNowId,
+          chatroomName: meetupChatrooms.chatroomName,
+          description: meetupChatrooms.description,
+          city: meetupChatrooms.city,
+          state: meetupChatrooms.state,
+          country: meetupChatrooms.country,
+          activityType: meetupChatrooms.activityType,
+          isActive: meetupChatrooms.isActive,
+          expiresAt: meetupChatrooms.expiresAt,
+          participantCount: meetupChatrooms.participantCount,
+          createdAt: meetupChatrooms.createdAt,
+        })
         .from(meetupChatrooms)
+        .innerJoin(
+          chatroomMembers,
+          and(
+            eq(chatroomMembers.chatroomId, meetupChatrooms.id),
+            eq(chatroomMembers.userId, Number(userId)),
+            eq(chatroomMembers.isActive, true),
+          )
+        )
         .where(and(
-          inArray(meetupChatrooms.availableNowId, sessionIds),
           eq(meetupChatrooms.isActive, true),
-          gt(meetupChatrooms.expiresAt, rightNow)
+          gt(meetupChatrooms.expiresAt, rightNow),
+          isNotNull(meetupChatrooms.availableNowId),
         ));
 
       res.json({ chatrooms });
