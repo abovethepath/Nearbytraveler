@@ -7625,6 +7625,17 @@ Questions? Just reply to this message. Welcome aboard!
         await awardAuraPoints(userId, 1, 'completing profile');
         if (process.env.NODE_ENV === 'development') console.log(`✨ AURA: Awarded 1 point to user ${userId} for completing profile`);
 
+        // Award referrer 5 bonus aura points when referred user completes profile
+        try {
+          const completedUser = await storage.getUserById(userId);
+          if (completedUser?.referredBy) {
+            await awardAuraPoints(completedUser.referredBy, 5, 'referred user completed profile');
+            console.log(`✨ AURA: Awarded 5 bonus points to referrer ${completedUser.referredBy} because user ${userId} completed profile`);
+          }
+        } catch (error) {
+          console.error('❌ Error awarding referral profile-completion bonus:', error);
+        }
+
         // BUSINESS WELCOME MESSAGES DISABLED - Business signup is closed
         if (false && updatedUser.userType === 'business') {
           try {

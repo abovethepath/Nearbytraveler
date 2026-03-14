@@ -3244,6 +3244,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Posting on Available Now</span><span className="font-medium text-orange-600">2 pts</span></div>
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Uploading a photo</span><span className="font-medium text-orange-600">1 pt</span></div>
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating a chatroom</span><span className="font-medium text-orange-600">2 pts</span></div>
+                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Referring someone who joins</span><span className="font-medium text-orange-600">10 pts</span></div>
+                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Referred user completes profile</span><span className="font-medium text-orange-600">5 pts</span></div>
                           </div>
                         </div>
                       </HoverCardContent>
@@ -3272,6 +3274,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Posting on Available Now</span><span className="font-medium text-orange-600">2 pts</span></div>
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Uploading a photo</span><span className="font-medium text-orange-600">1 pt</span></div>
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating a chatroom</span><span className="font-medium text-orange-600">2 pts</span></div>
+                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Referring someone who joins</span><span className="font-medium text-orange-600">10 pts</span></div>
+                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Referred user completes profile</span><span className="font-medium text-orange-600">5 pts</span></div>
                           </div>
                         </div>
                       </HoverCardContent>
