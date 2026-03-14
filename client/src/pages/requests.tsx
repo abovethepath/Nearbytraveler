@@ -227,7 +227,7 @@ export default function Requests() {
                     connectionRequests.map((request) => (
                       <div
                         key={request.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                        className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                       >
                         <div className="flex items-center gap-4 flex-1">
                           <Avatar className="w-12 h-12">
@@ -239,17 +239,17 @@ export default function Requests() {
                           
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-semibold text-gray-900">
+                              <h3 className="font-semibold text-gray-900 dark:text-white">
                                 {request.requesterUser?.username || 'Unknown User'}
                               </h3>
-                              <Badge variant="outline" className="text-xs">
+                              <Badge variant="outline" className="text-xs dark:text-gray-300 dark:border-gray-600">
                                 {request.requesterUser?.userType || 'user'}
                               </Badge>
                             </div>
-                            <p className="text-sm text-gray-600 mb-1">
+                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
                               {request.requesterUser?.bio || 'No bio available'}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
                               Requested {formatDate(request.createdAt)}
                             </p>
                           </div>
@@ -261,7 +261,7 @@ export default function Requests() {
                             variant="outline"
                             onClick={() => handleReject(request.id)}
                             disabled={rejectMutation.isPending}
-                            className="text-red-600 border-red-200 hover:bg-red-50"
+                            className="text-red-600 border-red-200 hover:bg-red-50 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/30"
                           >
                             <X className="w-4 h-4 mr-1" />
                             Reject
@@ -287,7 +287,7 @@ export default function Requests() {
 
                 {/* Outgoing (sent) requests */}
                 {outgoingRequests.length > 0 && (
-                  <div className="pt-4 border-t">
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-2 mb-3 text-sm font-medium text-gray-700 dark:text-gray-200">
                       <Clock className="w-4 h-4" />
                       Sent Requests
@@ -297,7 +297,7 @@ export default function Requests() {
                       {outgoingRequests.map((request) => (
                         <div
                           key={request.id}
-                          className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                          className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                         >
                           <div className="flex items-center gap-4 flex-1">
                             <Avatar className="w-12 h-12">
@@ -308,20 +308,20 @@ export default function Requests() {
                             </Avatar>
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-semibold text-gray-900">
+                                <h3 className="font-semibold text-gray-900 dark:text-white">
                                   {request.receiverUser?.username || 'Unknown User'}
                                 </h3>
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="outline" className="text-xs dark:text-gray-300 dark:border-gray-600">
                                   {request.receiverUser?.userType || 'user'}
                                 </Badge>
                                 <Badge variant="secondary" className="text-xs">
                                   Pending
                                 </Badge>
                               </div>
-                              <p className="text-sm text-gray-600 mb-1">
+                              <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
                                 {request.receiverUser?.bio || 'No bio available'}
                               </p>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
                                 Sent {formatDate(request.createdAt)}
                               </p>
                             </div>
