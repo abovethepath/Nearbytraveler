@@ -91,7 +91,7 @@ export function CityLiveFeed({ cityName }: Props) {
           const profileUrl = `/profile/${item.user_id}`;
           const actionUrl = item.link_url || profileUrl;
           return (
-            <li key={`${item.feed_type}-${item.related_id}-${idx}`} className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
+            <li key={`${item.feed_type}-${item.related_id}-${idx}`} className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800/40 transition-colors">
               <Link href={profileUrl}>
                 <div className="shrink-0 w-8 h-8 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 cursor-pointer">
                   {item.profile_image ? (

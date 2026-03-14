@@ -134,7 +134,7 @@ export default function LaunchingSoon() {
             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <Rocket className="w-8 h-8 text-orange-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-gray-900">
+            <CardTitle className="text-3xl font-bold text-gray-900 dark:text-white">
               We're Launching Soon!
             </CardTitle>
             <CardDescription className="text-gray-600 text-lg">

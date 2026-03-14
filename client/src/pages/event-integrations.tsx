@@ -125,7 +125,7 @@ export default function EventIntegrations() {
         </div>
 
         <div className="grid gap-4 mb-8">
-          <Card className="border border-gray-200 shadow-sm bg-white dark:bg-gray-900">
+          <Card className="border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-900">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
@@ -154,7 +154,7 @@ export default function EventIntegrations() {
             </CardContent>
           </Card>
 
-          <Card className="border border-gray-200 shadow-sm bg-white dark:bg-gray-900">
+          <Card className="border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-900">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
@@ -191,7 +191,7 @@ export default function EventIntegrations() {
             </h2>
             <div className="grid gap-3">
               {externalEvents.map((event) => (
-                <Card key={event.id} className="border border-gray-200 shadow-sm bg-white dark:bg-gray-900">
+                <Card key={event.id} className="border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-900">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
@@ -220,7 +220,7 @@ export default function EventIntegrations() {
                       </div>
                       {event.url && (
                         <a href={event.url} target="_blank" rel="noopener noreferrer"
-                          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0">
+                          className="p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-800 flex-shrink-0">
                           <ExternalLink className="w-4 h-4 text-gray-400" />
                         </a>
                       )}

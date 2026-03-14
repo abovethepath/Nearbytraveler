@@ -976,7 +976,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           )}
           {isOwnProfile ? (
             <Link href="/match-in-city">
-              <div className="text-center py-12 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors">
+              <div className="text-center py-12 cursor-pointer hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700/50 rounded-lg transition-colors">
                 <p className={`text-orange-600 dark:text-orange-500 font-semibold mb-3 ${isMobile ? 'text-base' : 'text-xl'}`}>
                   No activities or events selected yet.
                 </p>
@@ -1148,7 +1148,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                                   <button
                                     type="button"
                                     onClick={() => deleteActivity.mutate(a.id)}
-                                    className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-gray-200 dark:border-gray-700 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-gray-200 dark:border-gray-700 bg-transparent hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
                                     title="Remove"
                                     data-testid={`button-delete-thing-${a.id}`}
                                   >
@@ -1170,7 +1170,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                                   <button
                                     type="button"
                                     onClick={() => deleteEvent.mutate(e)}
-                                    className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-gray-200 dark:border-gray-700 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-gray-200 dark:border-gray-700 bg-transparent hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
                                     title="Remove"
                                   >
                                     <X className="w-4 h-4 text-gray-700 dark:text-gray-200" />

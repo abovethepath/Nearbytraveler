@@ -131,7 +131,7 @@ export default function PrivacySettingsPage() {
                 className="space-y-4"
               >
                 {/* Username Option */}
-                <div className="flex items-start space-x-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <div className="flex items-start space-x-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800/50 transition-colors">
                   <RadioGroupItem value="username" id="username" className="mt-1" data-testid="radio-username" />
                   <div className="flex-1">
                     <Label htmlFor="username" className="text-base font-medium cursor-pointer">
@@ -148,7 +148,7 @@ export default function PrivacySettingsPage() {
                 </div>
 
                 {/* First Name Option */}
-                <div className="flex items-start space-x-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <div className="flex items-start space-x-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800/50 transition-colors">
                   <RadioGroupItem value="first_name" id="first_name" className="mt-1" data-testid="radio-first-name" />
                   <div className="flex-1">
                     <Label htmlFor="first_name" className="text-base font-medium cursor-pointer">
@@ -165,7 +165,7 @@ export default function PrivacySettingsPage() {
                 </div>
 
                 {/* Full Name Option */}
-                <div className="flex items-start space-x-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <div className="flex items-start space-x-3 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800/50 transition-colors">
                   <RadioGroupItem value="full_name" id="full_name" className="mt-1" data-testid="radio-full-name" />
                   <div className="flex-1">
                     <Label htmlFor="full_name" className="text-base font-medium cursor-pointer">

@@ -211,7 +211,7 @@ export function MessagesLoader() {
                     <motion.div
                       key={dot}
                       className={`w-2 h-2 rounded-full ${
-                        i % 2 === 0 ? 'bg-gray-400' : 'bg-white'
+                        i % 2 === 0 ? 'bg-gray-400' : 'bg-white dark:bg-gray-900'
                       }`}
                       animate={{
                         scale: [1, 1.5, 1],
@@ -277,7 +277,7 @@ export function PhotoGalleryLoader() {
         
         {/* Flash Effect */}
         <motion.div
-          className="absolute inset-0 bg-white rounded-lg opacity-0"
+          className="absolute inset-0 bg-white dark:bg-gray-900 rounded-lg opacity-0"
           animate={{
             opacity: [0, 0.7, 0],
           }}
@@ -292,7 +292,7 @@ export function PhotoGalleryLoader() {
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
-            className="absolute w-8 h-6 bg-white border-2 border-gray-300 rounded"
+            className="absolute w-8 h-6 bg-white dark:bg-gray-900 border-2 border-gray-300 rounded"
             style={{
               top: `${-30 + i * 10}px`,
               left: `${80 + i * 15}px`,

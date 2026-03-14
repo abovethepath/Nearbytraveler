@@ -155,7 +155,7 @@ export default function LandmarkWidget({ city, landmarks, isLoading = false }: L
             <div key={landmark.id} className="border-l-4 border-blue-200 pl-4 py-2">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex-1">
-                  <h4 className="font-semibold text-gray-900 text-sm">{landmark.name}</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-white text-sm">{landmark.name}</h4>
                   <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
                     <MapPin className="w-3 h-3" />
                     {landmark.location}

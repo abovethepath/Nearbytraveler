@@ -20,7 +20,7 @@ export function ThemeToggle() {
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
-            className="text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="text-gray-800 dark:text-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
           >
             {isDark ? (
               <Sun className="h-[1.2rem] w-[1.2rem]" />

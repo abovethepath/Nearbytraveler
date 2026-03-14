@@ -23,7 +23,7 @@ export default function Privacy() {
             <Link href="/">
               <Button 
                 variant="outline" 
-                className="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="flex items-center gap-2 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"
                 onClick={scrollToTop}
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -199,7 +199,7 @@ export default function Privacy() {
               <p className="text-gray-700 dark:text-gray-300">
                 If you have questions about this privacy policy or our data practices, please contact us at:
               </p>
-              <div className="bg-gray-50 p-4 rounded-md mt-3">
+              <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md mt-3">
                 <p className="font-medium">Nearby Traveler, Inc</p>
                 <p>Email: privacy@nearbytraveler.org</p>
                 <p>Address: 30 Gould Street, STE R, Sheridan, Wyoming 82801</p>

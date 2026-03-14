@@ -78,7 +78,7 @@ export default function LandingNavbar() {
                 setMobileMenuOpen(!mobileMenuOpen);
               }}
               type="button" 
-              className="flex items-center justify-center rounded-xl text-gray-600 dark:text-gray-300 hover:text-gray-800 active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
+              className="flex items-center justify-center rounded-xl text-gray-600 dark:text-gray-300 hover:text-gray-800 active:bg-gray-100 dark:bg-gray-800 dark:active:bg-gray-700 transition-colors"
               style={{ width: '40px', height: '40px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             >
@@ -111,7 +111,7 @@ export default function LandingNavbar() {
               <Link 
                 key={item.href}
                 href={item.href} 
-                className="flex items-center px-4 py-3 text-[15px] text-gray-900 dark:text-white rounded-xl active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
+                className="flex items-center px-4 py-3 text-[15px] text-gray-900 dark:text-white rounded-xl active:bg-gray-100 dark:bg-gray-800 dark:active:bg-gray-700 transition-colors"
                 style={{ minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                 onClick={() => setMobileMenuOpen(false)}
               >

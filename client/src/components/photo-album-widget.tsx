@@ -442,7 +442,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
         {isOwnProfile && (
           <Button
             onClick={() => setShowCreateModal(true)}
-            className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
+            className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black dark:text-white [&>*]:text-black dark:text-white dark:[&]:text-white dark:[&>*]:text-white"
           >
             <Plus className="w-4 h-4 mr-2 text-black dark:text-white" />
             <span className="text-black dark:text-white">Create Memory</span>
@@ -467,7 +467,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
             {isOwnProfile && (
               <Button
                 onClick={() => setShowCreateModal(true)}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black dark:text-white [&>*]:text-black dark:text-white dark:[&]:text-white dark:[&>*]:text-white"
               >
                 <Plus className="w-4 h-4 mr-2 text-black dark:text-white" />
                 <span className="text-black dark:text-white">Create Your First Memory</span>
@@ -1161,7 +1161,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                     variant="outline"
                     size="sm"
                     onClick={prevPhoto}
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-900/80 hover:bg-white dark:bg-gray-900"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
@@ -1169,7 +1169,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                     variant="outline"
                     size="sm"
                     onClick={nextPhoto}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-900/80 hover:bg-white dark:bg-gray-900"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </Button>
@@ -1436,7 +1436,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
                         className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
                           isSelected 
                             ? 'border-blue-500 ring-2 ring-blue-200' 
-                            : 'border-gray-200 hover:border-gray-300'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                         }`}
                         onClick={() => {
                           setSelectedPhotosFromGallery(prev => 

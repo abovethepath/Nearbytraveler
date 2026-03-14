@@ -64,7 +64,7 @@ export function SimpleModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors"
         >
           <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
         </button>

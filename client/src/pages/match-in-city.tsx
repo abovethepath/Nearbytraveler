@@ -2002,7 +2002,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   <div className="text-center mt-6">
                     <button
                       onClick={() => setShowAllLaunchCities(true)}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-gray-300 dark:border-white/20 text-gray-700 dark:text-white/80 hover:bg-gray-50 dark:hover:bg-white/5 font-medium transition-colors"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-gray-300 dark:border-white/20 text-gray-700 dark:text-white/80 hover:bg-gray-50 dark:hover:bg-white dark:bg-gray-900/5 font-medium transition-colors"
                     >
                       <Globe className="w-4 h-4" />
                       See {hiddenCount} more cities
@@ -2013,7 +2013,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   <div className="text-center mt-6">
                     <button
                       onClick={() => setShowAllLaunchCities(false)}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-gray-300 dark:border-white/20 text-gray-700 dark:text-white/80 hover:bg-gray-50 dark:hover:bg-white/5 font-medium transition-colors"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-gray-300 dark:border-white/20 text-gray-700 dark:text-white/80 hover:bg-gray-50 dark:hover:bg-white dark:bg-gray-900/5 font-medium transition-colors"
                     >
                       Show fewer cities
                     </button>
@@ -2117,7 +2117,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     variant="outline"
                     size="sm"
                     onClick={toggleHeroVisibility}
-                    className="text-sm text-gray-600 dark:text-gray-300 border-gray-300 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
+                    className="text-sm text-gray-600 dark:text-gray-300 border-gray-300 dark:border-slate-600 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
                     data-testid="button-show-match-hero"
                   >
                     <ChevronDown className="w-4 h-4 mr-2" />
@@ -2918,7 +2918,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                           handleUnselectPick(ua.id, activityNameRaw);
                                         }
                                       }}
-                                      className="ml-1 p-0.5 rounded-full hover:bg-white/20 transition-colors"
+                                      className="ml-1 p-0.5 rounded-full hover:bg-white dark:bg-gray-900/20 transition-colors"
                                       title={isCreatedByMe ? "Delete plan" : "Remove from your plans"}
                                     >
                                       <X className="w-3.5 h-3.5" />

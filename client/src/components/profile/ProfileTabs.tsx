@@ -186,7 +186,7 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
               <span className="text-xs text-gray-400">{bioText.length}/500</span>
               <button
                 onClick={() => setIsEditingBio(false)}
-                className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 font-medium transition-colors"
+                className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 font-medium transition-colors"
               >
                 Cancel
               </button>
@@ -322,7 +322,7 @@ export function ProfileTabs(props: ProfilePageProps) {
       { label: "Shared Events", items: sharedEvents, color: "bg-orange-500 text-white shadow-sm ring-1 ring-white/20" },
       { label: "Shared City Activities", items: sharedCityActivities, color: "bg-teal-500 text-white" },
       { label: "Shared Languages", items: sharedLanguagesNonEnglish, color: "bg-indigo-500 text-white" },
-      { label: "Other", items: otherCommonalities, color: "bg-white/20 text-white" },
+      { label: "Other", items: otherCommonalities, color: "bg-white dark:bg-gray-900/20 text-white" },
     ].filter((s) => s.items.length > 0);
 
     const goToContacts = (e: React.MouseEvent) => {
@@ -390,7 +390,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 <button
                   type="button"
                   onClick={goToContacts}
-                  className="w-full flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                  className="w-full flex items-center justify-between p-2 rounded-lg bg-white dark:bg-gray-900/5 hover:bg-white dark:bg-gray-900/10 transition-colors"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-xl">👥</span>
@@ -461,7 +461,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 Contacts
                 <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                   activeTab === 'contacts' 
-                    ? 'bg-white/20 text-white' 
+                    ? 'bg-white dark:bg-gray-900/20 text-white' 
                     : 'bg-orange-500 text-white shadow-sm ring-1 ring-white/20'
                 }`}>
                   {userConnections?.length || 0}
@@ -483,7 +483,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 Photos
                 <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                   activeTab === 'photos' 
-                    ? 'bg-white/20 text-white' 
+                    ? 'bg-white dark:bg-gray-900/20 text-white' 
                     : 'bg-orange-500 text-white shadow-sm ring-1 ring-white/20'
                 }`}>
                   {photos.length + (userTravelMemories?.length || 0)}
@@ -505,7 +505,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 References
                 <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                   activeTab === 'references' 
-                    ? 'bg-white/20 text-white' 
+                    ? 'bg-white dark:bg-gray-900/20 text-white' 
                     : 'bg-orange-500 text-white shadow-sm ring-1 ring-white/20'
                 }`}>
                   {userReferences?.length || 0}
@@ -528,7 +528,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   Travel Plans
                   <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                     activeTab === 'travel' 
-                      ? 'bg-white/20 text-white' 
+                      ? 'bg-white dark:bg-gray-900/20 text-white' 
                       : 'bg-orange-500 text-white'
                   }`}>
                     {travelPlans?.length || 0}
@@ -552,7 +552,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   Countries
                   <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                     activeTab === 'countries' 
-                      ? 'bg-white/20 text-white' 
+                      ? 'bg-white dark:bg-gray-900/20 text-white' 
                       : 'bg-orange-500 text-white hover:bg-orange-600'
                   }`}>
                     {countriesVisited?.length || 0}
@@ -576,7 +576,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   Chatrooms
                   <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                     activeTab === 'chatrooms' 
-                      ? 'bg-white/20 text-white' 
+                      ? 'bg-white dark:bg-gray-900/20 text-white' 
                       : 'bg-orange-500 text-white shadow-sm ring-1 ring-white/20'
                   }`}>
                     {userChatrooms?.length || 0}
@@ -619,7 +619,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   Vouches
                   <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
                     activeTab === 'vouches' 
-                      ? 'bg-white/20 text-white' 
+                      ? 'bg-white dark:bg-gray-900/20 text-white' 
                       : 'bg-orange-500 text-white shadow-sm ring-1 ring-white/20'
                   }`}>
                     {userVouches?.length || 0}
@@ -1098,7 +1098,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                             variant="outline" 
                             size="sm"
                             onClick={() => setLocation('/deals')}
-                            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-800"
                           >
                             View All {businessDeals.length} Deals
                           </Button>
@@ -2672,9 +2672,9 @@ export function ProfileTabs(props: ProfilePageProps) {
                         Countries I've Visited ({countriesVisited.length})
                       </CardTitle>
                       {isOwnProfile && !editingCountries && (
-                        <Button size="sm" onClick={handleEditCountries} className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 text-black">
-                          <Edit className="w-4 h-4 mr-2 text-black" />
-                          <span className="text-black">Edit</span>
+                        <Button size="sm" onClick={handleEditCountries} className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 text-black dark:text-white">
+                          <Edit className="w-4 h-4 mr-2 text-black dark:text-white" />
+                          <span className="text-black dark:text-white">Edit</span>
                         </Button>
                       )}
                     </div>
@@ -2712,7 +2712,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                           : [...current, country]
                                       );
                                     }}
-                                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="cursor-pointer hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
                                   >
                                     <Check
                                       className={`mr-2 h-4 w-4 ${
@@ -2862,7 +2862,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                   {initial}
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                  <div className="font-semibold text-gray-900 dark:!text-white truncate">
+                                  <div className="font-semibold text-gray-900 dark:text-white dark:!text-white truncate">
                                     {displayName}
                                   </div>
                                   <div className="flex items-center gap-2 mt-0.5 flex-wrap">
@@ -3417,7 +3417,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 
                 {/* Filter Panel */}
                 {showConnectionFilters && userConnections.length > 0 && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg space-y-3">
+                  <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg space-y-3">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <div>
                         <label className="text-xs font-medium text-gray-700 mb-1 block">Location</label>
@@ -3605,7 +3605,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                     data-testid={`button-edit-note-${connection.id}`}
                                   >
                                     {connection.connectionNote ? (
-                                      <span className="text-black font-medium">How we met: {connection.connectionNote}</span>
+                                      <span className="text-black dark:text-white font-medium">How we met: {connection.connectionNote}</span>
                                     ) : (
                                       <span className="text-gray-500 dark:text-gray-400">How we met: —</span>
                                     )}
@@ -3627,7 +3627,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="mt-2 h-7 px-3 text-xs bg-transparent text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                              className="mt-2 h-7 px-3 text-xs bg-transparent text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"
                               onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
                             >
                               View
@@ -3736,7 +3736,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="h-8 px-3 text-xs bg-transparent text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 shrink-0"
+                                className="h-8 px-3 text-xs bg-transparent text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 shrink-0"
                                 onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
                               >
                                 View
@@ -3775,7 +3775,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                             variant="ghost"
                             size="sm"
                             onClick={() => setConnectionsDisplayCount(prev => Math.max(prev - 10, 3))}
-                            className="text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800 h-8"
+                            className="text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800 h-8"
                           >
                             Load Less
                           </Button>
@@ -3844,7 +3844,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                     <Button
                       size="sm"
                       onClick={handleEditLanguages}
-                      className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
+                      className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 [&]:text-black dark:text-white [&>*]:text-black dark:text-white dark:[&]:text-white dark:[&>*]:text-white"
                     >
                       <Edit className="w-3 h-3 text-black dark:text-white" />
                     </Button>
@@ -3885,7 +3885,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                     setTempLanguages([...tempLanguages, language]);
                                   }
                                 }}
-                                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                className="cursor-pointer hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
                               >
                                 <Check
                                   className={`mr-2 h-4 w-4 ${
@@ -4102,7 +4102,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <Button
                         size="sm"
                         onClick={() => setLocation('/travel-quiz')}
-                        className="ml-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
+                        className="ml-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 [&]:text-black dark:text-white [&>*]:text-black dark:text-white dark:[&]:text-white dark:[&>*]:text-white"
                       >
                         <Edit className="w-3 h-3 mr-1 text-black dark:text-white" />
                         <span className="text-black dark:text-white">Update</span>
@@ -4232,7 +4232,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                 <CardContent>
                   <div className="space-y-3">
                     {connectionRequests.slice(0, 5).map((request: any) => (
-                      <div key={request.id} className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                      <div key={request.id} className="flex items-center justify-between p-2 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors">
                         <div 
                           className="flex items-center gap-2 cursor-pointer flex-1 min-w-0 mr-2"
                           onClick={() => setLocation(`/profile/${request.requesterUser?.id?.toString() || ''}`)}
@@ -4345,7 +4345,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                     {outgoingConnectionRequests.slice(0, 5).map((request: any) => (
                       <div
                         key={`outgoing-${request.id}`}
-                        className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                        className="flex items-center justify-between p-2 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors"
                       >
                         <div
                           className="flex items-center gap-2 cursor-pointer flex-1 min-w-0 mr-2"
@@ -4393,8 +4393,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <span className="text-black dark:text-white">Countries I've Visited ({countriesVisited.length})</span>
                     </CardTitle>
                     {isOwnProfile && !editingCountries && (
-                      <Button size="sm" onClick={handleEditCountries} className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 text-black">
-                        <Edit className="w-3 h-3 text-black" />
+                      <Button size="sm" onClick={handleEditCountries} className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 border-0 text-black dark:text-white">
+                        <Edit className="w-3 h-3 text-black dark:text-white" />
                       </Button>
                     )}
                   </div>
@@ -4433,7 +4433,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                       setTempCountries([...tempCountries, country]);
                                     }
                                   }}
-                                  className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                  className="cursor-pointer hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
                                 >
                                   <Check
                                     className={`mr-2 h-4 w-4 ${

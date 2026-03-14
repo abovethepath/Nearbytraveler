@@ -556,7 +556,7 @@ function Navbar() {
                   className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
                     location === item.path
                       ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                      : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
                   }`}
                   onClick={() => {
                     setIsMobileMenuOpen(false);

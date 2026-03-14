@@ -232,7 +232,7 @@ function MeetRequestModal({
       >
         <div className="sticky top-0 z-10 flex items-center justify-between px-4 pt-4 pb-2 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
           <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Meet Request</h3>
-          <button type="button" onClick={onClose} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+          <button type="button" onClick={onClose} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors">
             <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>
@@ -848,7 +848,7 @@ export default function ActivityFeed() {
                     ? "border-orange-200 dark:border-orange-900/50 hover:bg-orange-50/50 dark:hover:bg-orange-950/20 hover:border-orange-300 dark:hover:border-orange-800"
                     : isChatroomAdded
                       ? "border-blue-200 dark:border-blue-900/50 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 hover:border-blue-300 dark:hover:border-blue-800"
-                      : "border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      : "border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
                 }`}>
                   <div className="flex items-start gap-3">
                     <div className="shrink-0">{left}</div>

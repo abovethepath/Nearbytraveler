@@ -624,7 +624,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
           {/* RSVP actions (keep directly above attendees list) */}
           {/* DO NOT REMOVE: organizer guard — event creator should never see the Join/RSVP section */}
           {!!currentUser?.id && !isOrganizer && (
-            <Card className="border border-gray-200 shadow-lg bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
+            <Card className="border border-gray-200 dark:border-gray-700 shadow-lg bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">{participantStatus ? 'You\'re in!' : 'Join this event'}</CardTitle>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -739,7 +739,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
 
           {/* Login prompt for logged-out visitors only */}
           {!authLoading && !currentUser?.id && (
-            <Card className="border border-gray-200 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700">
+            <Card className="border border-gray-200 dark:border-gray-700 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700">
               <CardContent className="p-4 text-center">
                 <p className="font-medium mb-2">Want to join this event?</p>
                 <Button
@@ -756,7 +756,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
           {(() => {
             // Use the already-calculated counts that include organizer
             return (
-              <Card className="border border-gray-200 shadow-lg sticky top-4">
+              <Card className="border border-gray-200 dark:border-gray-700 shadow-lg sticky top-4">
                 <CardHeader className="pb-2 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between">
                     <span className="text-lg font-bold text-blue-600 dark:text-blue-400" data-testid="badge-going-count">

@@ -179,7 +179,7 @@ export default function TravelItinerary({ userId, destination, startDate, endDat
       case 'invited': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'declined': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-gray-100 dark:bg-gray-800 text-gray-800 border-gray-200 dark:border-gray-700';
     }
   };
 
@@ -344,7 +344,7 @@ export default function TravelItinerary({ userId, destination, startDate, endDat
       </div>
 
       {/* Summary */}
-      <div className="bg-gray-50 p-3 rounded-lg border">
+      <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border">
         <div className="text-sm text-gray-600 text-center">
           <strong>{filteredEvents.length}</strong> event{filteredEvents.length > 1 ? 's' : ''} planned
           {selectedCategory && ` in ${selectedCategory}`}

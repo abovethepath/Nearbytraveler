@@ -414,7 +414,7 @@ export default function SignupSteps() {
                       className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${
                         formData.userType === type
                           ? 'border-teal-500 bg-teal-50'
-                          : 'border-gray-200 hover:border-teal-300'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-teal-300'
                       }`}
                       data-testid={`button-usertype-${type}`}
                     >
@@ -629,7 +629,7 @@ export default function SignupSteps() {
             {currentStep === 4 && (
               <>
                 <div className="text-center mb-6">
-                  <h3 className="text-xl font-semibold text-gray-900">Your Travel Preferences</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Your Travel Preferences</h3>
                   <div className="text-lg font-medium text-gray-700 mt-2">
                     The more you choose, the better your matches — select at least 7 across the lists below (top choices, interests, activities, events)
                   </div>
@@ -643,7 +643,7 @@ export default function SignupSteps() {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center">
                       <span className="text-xl mr-2">⭐</span>
-                      <h4 className="text-lg font-semibold text-gray-900">Top Choices for Most Locals and Travelers</h4>
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Top Choices for Most Locals and Travelers</h4>
                     </div>
                     <div className="flex gap-2">
                       <Button
@@ -688,7 +688,7 @@ export default function SignupSteps() {
                 </div>
 
                 <div>
-                  <h4 className="text-lg font-medium mb-3 text-gray-900">Additional Interests</h4>
+                  <h4 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">Additional Interests</h4>
                   <div className="flex flex-wrap gap-2 border rounded-lg p-3 bg-blue-50 mb-4">
                     {ADDITIONAL_INTERESTS.filter(interest => !interest.startsWith("**")).map((interest) => (
                       <button
@@ -708,7 +708,7 @@ export default function SignupSteps() {
                 </div>
 
                 <div>
-                  <h4 className="text-lg font-medium mb-3 text-gray-900">Activities</h4>
+                  <h4 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">Activities</h4>
                   <div className="flex flex-wrap gap-2 border rounded-lg p-3 bg-green-50 mb-4">
                     {getAllActivities().map((activity) => (
                       <button

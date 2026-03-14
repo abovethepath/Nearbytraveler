@@ -361,7 +361,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
       activity: 'bg-orange-100 text-orange-800 border-orange-200',
       restaurant: 'bg-red-100 text-red-800 border-red-200',
       transportation: 'bg-purple-100 text-purple-800 border-purple-200',
-      note: 'bg-gray-100 text-gray-800 border-gray-200',
+      note: 'bg-gray-100 dark:bg-gray-800 text-gray-800 border-gray-200 dark:border-gray-700',
     };
     return colors[type];
   };
@@ -719,7 +719,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
                       return acc;
                     }, {} as Record<string, { total: number; items: ItineraryItem[] }>)
                   ).map(([type, data]) => (
-                    <div key={type} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div key={type} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <div className="flex items-center gap-2">
                         {getItemIcon(type as ItineraryItem['type'])}
                         <span className="font-medium capitalize">{type}</span>

@@ -843,7 +843,7 @@ function QuickMeetupsPage() {
                       {participants.map((participant) => (
                         <div
                           key={participant.id}
-                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors"
                           data-testid={`participant-${participant.userId}`}
                         >
                           <Avatar 

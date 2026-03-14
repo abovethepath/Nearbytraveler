@@ -141,7 +141,7 @@ export function SafetyFeatures({ isOwnProfile = false }: { isOwnProfile?: boolea
       case 'high': return 'border-red-200 bg-red-50 text-red-800';
       case 'medium': return 'border-yellow-200 bg-yellow-50 text-yellow-800';
       case 'low': return 'border-blue-200 bg-blue-50 text-blue-800';
-      default: return 'border-gray-200 bg-gray-50 text-gray-800';
+      default: return 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800';
     }
   };
 

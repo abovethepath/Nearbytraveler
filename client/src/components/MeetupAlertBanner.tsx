@@ -110,7 +110,7 @@ export function MeetupAlertBanner({ userId }: MeetupAlertBannerProps) {
     <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-3 rounded-lg shadow-lg mb-4 animate-pulse-once">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="flex-shrink-0 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+          <div className="flex-shrink-0 w-10 h-10 bg-white dark:bg-gray-900/20 rounded-full flex items-center justify-center">
             <Zap className="w-5 h-5" />
           </div>
           <div className="min-w-0">
@@ -135,7 +135,7 @@ export function MeetupAlertBanner({ userId }: MeetupAlertBannerProps) {
           </Button>
           <button
             onClick={handleDismiss}
-            className="p-1 hover:bg-white/20 rounded-full transition-colors"
+            className="p-1 hover:bg-white dark:bg-gray-900/20 rounded-full transition-colors"
             aria-label="Dismiss"
           >
             <X className="w-4 h-4" />

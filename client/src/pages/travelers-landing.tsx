@@ -166,7 +166,7 @@ export default function TravelersLanding() {
                     }}
                     variant="outline"
                     size="lg"
-                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
+                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
                     data-testid="button-learn-more"
                   >
                     See How It Works
@@ -385,9 +385,9 @@ export default function TravelersLanding() {
         {/* Get Started */}
         <div className="bg-gradient-to-r from-orange-500 to-blue-600 py-12 rounded-2xl shadow-lg mb-8">
           <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-3xl font-bold mb-4 text-black">Ready to Travel Like a Local?</h2>
-            <p className="text-lg mb-6 text-black">Join thousands of travelers who've turned solo trips into lifelong friendships. Your next adventure starts with the people you'll meet.</p>
-            <p className="text-xl mb-6 text-black">Free to join • Global community</p>
+            <h2 className="text-3xl font-bold mb-4 text-black dark:text-white">Ready to Travel Like a Local?</h2>
+            <p className="text-lg mb-6 text-black dark:text-white">Join thousands of travelers who've turned solo trips into lifelong friendships. Your next adventure starts with the people you'll meet.</p>
+            <p className="text-xl mb-6 text-black dark:text-white">Free to join • Global community</p>
             <Button
               onClick={() => setLocation('/launching-soon')}
               size="lg"

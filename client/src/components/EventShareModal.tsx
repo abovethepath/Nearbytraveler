@@ -184,7 +184,7 @@ export function EventShareModal({ event, trigger }: Props) {
         <div className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 px-5 py-4">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-white">
-              <div className="bg-white/25 rounded-lg p-1.5 flex-shrink-0">
+              <div className="bg-white dark:bg-gray-900/25 rounded-lg p-1.5 flex-shrink-0">
                 <Share2 className="h-4 w-4 text-white" />
               </div>
               <div>

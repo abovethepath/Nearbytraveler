@@ -136,7 +136,7 @@ export function TonightWidget({ city }: Props) {
                 <button
                   key={ev.id}
                   onClick={() => setLocation(`/events/${ev.id}`)}
-                  className="w-full flex items-center gap-2.5 py-2 px-0.5 rounded hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-left group"
+                  className="w-full flex items-center gap-2.5 py-2 px-0.5 rounded hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800/50 transition-colors text-left group"
                 >
                   <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center overflow-hidden">
                     {ev.imageUrl ? (

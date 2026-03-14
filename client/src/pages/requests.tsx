@@ -188,7 +188,7 @@ export default function Requests() {
           </div>
         </div>
         {/* Decorative elements */}
-        <div className="absolute -top-4 -right-4 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute -top-4 -right-4 w-32 h-32 bg-white dark:bg-gray-900/10 rounded-full blur-xl"></div>
         <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-orange-400/20 rounded-full blur-lg"></div>
       </div>
       

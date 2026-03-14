@@ -185,7 +185,7 @@ export function LandmarkWidget({ city, state, country, currentUserId }: Landmark
       case "religious":
         return "bg-yellow-100 text-yellow-800";
       case "skyscraper":
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 dark:bg-gray-800 text-gray-800";
       case "bridge":
         return "bg-indigo-100 text-indigo-800";
       case "observatory":

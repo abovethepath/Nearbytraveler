@@ -125,7 +125,7 @@ export default function OnlineBuddyList() {
                 {friends.map(friend => (
                   <div
                     key={friend.id}
-                    className="flex items-center justify-between p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md group"
+                    className="flex items-center justify-between p-2 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-md group"
                   >
                     <div className="flex items-center space-x-2 flex-1">
                       <div className="relative">

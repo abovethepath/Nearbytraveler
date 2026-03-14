@@ -151,7 +151,7 @@ export function LocationAutocomplete({
     <div
       key={`${type}-${destination.id}`}
       className={`px-3 py-2 cursor-pointer flex items-center space-x-3 ${
-        selectedIndex === index ? 'bg-blue-50' : 'hover:bg-gray-50'
+        selectedIndex === index ? 'bg-blue-50' : 'hover:bg-gray-50 dark:bg-gray-800'
       }`}
       onClick={() => handleLocationSelect(destination)}
     >
@@ -171,7 +171,7 @@ export function LocationAutocomplete({
     <div
       key={suggestion.place_id}
       className={`px-3 py-2 cursor-pointer flex items-center space-x-3 ${
-        selectedIndex === index ? 'bg-blue-50' : 'hover:bg-gray-50'
+        selectedIndex === index ? 'bg-blue-50' : 'hover:bg-gray-50 dark:bg-gray-800'
       }`}
       onClick={() => handleLocationSelect(suggestion)}
     >
@@ -218,7 +218,7 @@ export function LocationAutocomplete({
             <>
               {recentDestinations.length > 0 && (
                 <>
-                  <div className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 border-b border-gray-200">
+                  <div className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     Recent Destinations
                   </div>
                   {recentDestinations.slice(0, 3).map((destination, index) =>
@@ -227,7 +227,7 @@ export function LocationAutocomplete({
                 </>
               )}
               
-              <div className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 border-b border-gray-200">
+              <div className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                 Popular Destinations
               </div>
               {popularDestinations.slice(0, 4).map((destination, index) =>
@@ -252,7 +252,7 @@ export function LocationAutocomplete({
 
               {!isLoading && suggestions.length > 0 && (
                 <>
-                  <div className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 border-b border-gray-200">
+                  <div className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     Search Results
                   </div>
                   {suggestions.map((suggestion, index) =>

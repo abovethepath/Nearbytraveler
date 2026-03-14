@@ -278,7 +278,7 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
             Discover People
           </CardTitle>
           <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-            <SelectTrigger className="w-48 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-black border-0 [&>svg]:text-black">
+            <SelectTrigger className="w-48 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-black dark:text-white border-0 [&>svg]:text-black dark:text-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

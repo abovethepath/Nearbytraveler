@@ -15,7 +15,7 @@ export default function CommunityGuidelines() {
   const homeUrl = user ? "/home" : "/";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-8">
@@ -23,7 +23,7 @@ export default function CommunityGuidelines() {
             <Link href={homeUrl}>
               <Button 
                 variant="outline" 
-                className="flex items-center gap-2 hover:bg-gray-50"
+                className="flex items-center gap-2 hover:bg-gray-50 dark:bg-gray-800"
                 onClick={scrollToTop}
                 data-testid="button-back"
               >
@@ -40,7 +40,7 @@ export default function CommunityGuidelines() {
                 <Globe className="w-8 h-8 text-white" />
               </div>
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Community Guidelines</h1>
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Community Guidelines</h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Building authentic connections through kindness, respect, and shared experiences
             </p>
@@ -50,7 +50,7 @@ export default function CommunityGuidelines() {
           <div className="bg-gradient-to-r from-blue-50 to-orange-50 p-8 rounded-lg border-2 border-blue-200 mb-12">
             <div className="text-center">
               <div className="text-4xl mb-4">🌍</div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">The NearbyTraveler Pledge</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">The NearbyTraveler Pledge</h2>
               <div className="space-y-4 text-lg text-gray-800 max-w-2xl mx-auto">
                 <p className="font-semibold">I believe in real human connection.</p>
                 <p className="font-semibold">I will show up with kindness, respect, and openness.</p>
@@ -81,7 +81,7 @@ export default function CommunityGuidelines() {
             <section>
               <div className="flex items-center gap-3 mb-6">
                 <Heart className="w-6 h-6 text-orange-500" />
-                <h2 className="text-2xl font-semibold text-gray-900">Our Core Values</h2>
+                <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Our Core Values</h2>
               </div>
               
               <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -110,7 +110,7 @@ export default function CommunityGuidelines() {
             <section>
               <div className="flex items-center gap-3 mb-6">
                 <Shield className="w-6 h-6 text-blue-500" />
-                <h2 className="text-2xl font-semibold text-gray-900">Community Standards</h2>
+                <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Community Standards</h2>
               </div>
 
               <div className="space-y-8">
@@ -239,7 +239,7 @@ export default function CommunityGuidelines() {
                   <p className="text-gray-700 mb-4">
                     When community guidelines are violated, we take appropriate action to protect our members:
                   </p>
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                  <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                     <ul className="text-gray-700 text-sm space-y-2">
                       <li className="flex items-start gap-2">
                         <span className="text-yellow-600 mt-1">⚠️</span>
@@ -282,7 +282,7 @@ export default function CommunityGuidelines() {
             {/* Closing Message */}
             <section className="text-center py-8">
               <div className="bg-gradient-to-r from-blue-50 to-orange-50 p-8 rounded-lg border border-blue-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Together, We Create Amazing Experiences</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Together, We Create Amazing Experiences</h3>
                 <p className="text-gray-700 max-w-2xl mx-auto">
                   Every connection you make, every kindness you show, and every experience you share helps build the global community we envision. Thank you for being part of NearbyTraveler and for helping us create a world where authentic human connection thrives.
                 </p>

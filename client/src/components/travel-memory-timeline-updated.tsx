@@ -438,7 +438,7 @@ export function TravelMemoryTimeline({ userId, isOwnProfile = false }: TravelMem
                       <Button
                         variant="outline"
                         size="sm"
-                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-900/80 hover:bg-white dark:bg-gray-900"
                         onClick={() => setCurrentPhotoIndex(Math.max(0, currentPhotoIndex - 1))}
                         disabled={currentPhotoIndex === 0}
                       >
@@ -447,7 +447,7 @@ export function TravelMemoryTimeline({ userId, isOwnProfile = false }: TravelMem
                       <Button
                         variant="outline"
                         size="sm"
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-900/80 hover:bg-white dark:bg-gray-900"
                         onClick={() => setCurrentPhotoIndex(Math.min(selectedMemory.photos.length - 1, currentPhotoIndex + 1))}
                         disabled={currentPhotoIndex === selectedMemory.photos.length - 1}
                       >

@@ -92,7 +92,7 @@ export function NativeAppProfileMenu({
               key={idx}
               type="button"
               onClick={() => navigate(item.path)}
-              className="w-full flex items-center gap-4 px-4 py-3 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-orange-50 dark:active:bg-orange-900/20"
+              className="w-full flex items-center gap-4 px-4 py-3 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700/50 active:bg-orange-50 dark:active:bg-orange-900/20"
               style={{ touchAction: "manipulation" }}
             >
               <Icon className="w-5 h-5 text-gray-500 dark:text-gray-400 flex-shrink-0" />

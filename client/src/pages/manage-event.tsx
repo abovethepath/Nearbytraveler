@@ -699,7 +699,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
         <Navbar />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse space-y-8">
@@ -713,7 +713,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
 
   if (!event || !isOrganizer) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
         <Navbar />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Card>
@@ -734,12 +734,12 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header with Back Button */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Manage Event</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Manage Event</h1>
             <p className="text-gray-600">Update your event details</p>
           </div>
           <Button
@@ -1268,7 +1268,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                       {showSocialPreview && (
                         <div className="mt-4 p-4 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-sm">
                           <h5 className="font-medium text-sm mb-2">Instagram Preview:</h5>
-                          <div className="bg-gray-50 border rounded-lg p-3 text-sm">
+                          <div className="bg-gray-50 dark:bg-gray-800 border rounded-lg p-3 text-sm">
                             <div className="flex items-center gap-2 mb-2">
                               <div className="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center text-white text-xs">
                                 @

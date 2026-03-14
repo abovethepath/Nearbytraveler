@@ -62,7 +62,7 @@ export default function AmbassadorDashboard() {
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <button
             onClick={() => setLocation("/profile")}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </button>
@@ -86,11 +86,11 @@ export default function AmbassadorDashboard() {
               {statusBadge(status)}
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/20 rounded-xl p-3 text-center">
+              <div className="bg-white dark:bg-gray-900/20 rounded-xl p-3 text-center">
                 <p className="text-3xl font-bold">{points.toLocaleString()}</p>
                 <p className="text-sm text-blue-100">Total Points</p>
               </div>
-              <div className="bg-white/20 rounded-xl p-3 text-center">
+              <div className="bg-white dark:bg-gray-900/20 rounded-xl p-3 text-center">
                 <p className="text-3xl font-bold">{periodPoints}</p>
                 <p className="text-sm text-blue-100">This Period</p>
               </div>

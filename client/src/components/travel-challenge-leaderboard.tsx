@@ -233,7 +233,7 @@ export default function TravelChallengeLeaderboard() {
                     )}
 
                     {userChallenge.verificationNotes && (
-                      <p className="text-sm bg-gray-50 p-2 rounded">
+                      <p className="text-sm bg-gray-50 dark:bg-gray-800 p-2 rounded">
                         {userChallenge.verificationNotes}
                       </p>
                     )}

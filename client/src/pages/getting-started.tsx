@@ -124,7 +124,7 @@ export default function SuccessTips() {
               <Link href="/">
                 <Button 
                   variant="outline" 
-                  className="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                  className="flex items-center gap-2 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
                   onClick={scrollToTop}
                 >
                   <ArrowLeft className="h-4 w-4" />

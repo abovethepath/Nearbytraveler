@@ -21,7 +21,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
           // Disabled state
           "disabled:cursor-not-allowed disabled:opacity-50",
           // File input
-          "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-gray-900 dark:file:text-gray-100",
+          "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-gray-900 dark:text-white dark:file:text-gray-100",
           // Calendar picker dark mode fix
           "dark:[&::-webkit-calendar-picker-indicator]:filter dark:[&::-webkit-calendar-picker-indicator]:invert dark:[&::-webkit-calendar-picker-indicator]:brightness-100 dark:[&::-webkit-calendar-picker-indicator]:!opacity-100",
           className

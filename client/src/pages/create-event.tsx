@@ -800,11 +800,11 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       )}
 
       <div className={isModal ? "" : "max-w-2xl mx-auto p-6"}>
-        <Card className={isModal ? "border border-gray-200 shadow-none" : ""}>
+        <Card className={isModal ? "border border-gray-200 dark:border-gray-700 shadow-none" : ""}>
           {!isModal && (
             <div className="bg-gradient-to-br from-orange-500 via-pink-500 to-blue-600 rounded-t-xl px-6 py-8 text-white">
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-2.5 bg-white/20 rounded-xl backdrop-blur-sm">
+                <div className="p-2.5 bg-white dark:bg-gray-900/20 rounded-xl backdrop-blur-sm">
                   <CalendarIcon className="w-6 h-6 text-white" />
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Create New Event</h1>
@@ -1048,7 +1048,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                                   : 'border-gray-300 dark:border-gray-600'
                               }`}>
                                 {isOriginalOrganizer === true && (
-                                  <div className="w-2 h-2 bg-white rounded-full" />
+                                  <div className="w-2 h-2 bg-white dark:bg-gray-900 rounded-full" />
                                 )}
                               </div>
                               <div>
@@ -1078,7 +1078,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                                   : 'border-gray-300 dark:border-gray-600'
                               }`}>
                                 {isOriginalOrganizer === false && (
-                                  <div className="w-2 h-2 bg-white rounded-full" />
+                                  <div className="w-2 h-2 bg-white dark:bg-gray-900 rounded-full" />
                                 )}
                               </div>
                               <div>
@@ -1875,11 +1875,11 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                           sideOffset={8}
                           style={{ zIndex: 999999 }}
                         >
-                          <SelectItem value="daily" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700">Every Day</SelectItem>
-                          <SelectItem value="weekly" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700">Every Week (same day)</SelectItem>
-                          <SelectItem value="biweekly" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700">Every 2 Weeks</SelectItem>
-                          <SelectItem value="monthly" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700">Every Month (same date)</SelectItem>
-                          <SelectItem value="monthly_weekday" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700">Every Month (same weekday)</SelectItem>
+                          <SelectItem value="daily" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 focus:bg-gray-100 dark:bg-gray-800 dark:focus:bg-gray-700">Every Day</SelectItem>
+                          <SelectItem value="weekly" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 focus:bg-gray-100 dark:bg-gray-800 dark:focus:bg-gray-700">Every Week (same day)</SelectItem>
+                          <SelectItem value="biweekly" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 focus:bg-gray-100 dark:bg-gray-800 dark:focus:bg-gray-700">Every 2 Weeks</SelectItem>
+                          <SelectItem value="monthly" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 focus:bg-gray-100 dark:bg-gray-800 dark:focus:bg-gray-700">Every Month (same date)</SelectItem>
+                          <SelectItem value="monthly_weekday" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 focus:bg-gray-100 dark:bg-gray-800 dark:focus:bg-gray-700">Every Month (same weekday)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

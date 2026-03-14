@@ -106,7 +106,7 @@ export default function BusinessNotifications({ businessId }: BusinessNotificati
       case 'high': return 'bg-red-100 text-red-800 border-red-200';
       case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-gray-100 dark:bg-gray-800 text-gray-800 border-gray-200 dark:border-gray-700';
     }
   };
 
@@ -178,7 +178,7 @@ export default function BusinessNotifications({ businessId }: BusinessNotificati
                   <div
                     key={notification.id}
                     className={`border rounded-lg p-4 transition-colors ${
-                      !notification.isRead ? 'bg-blue-50 border-blue-200' : 'bg-white'
+                      !notification.isRead ? 'bg-blue-50 border-blue-200' : 'bg-white dark:bg-gray-900'
                     }`}
                   >
                     <div className="flex justify-between items-start mb-3">

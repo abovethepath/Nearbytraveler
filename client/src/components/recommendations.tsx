@@ -165,7 +165,7 @@ export default function Recommendations({ destination, startDate, endDate }: Rec
                 className={`border rounded-lg p-4 transition-colors border-gray-200 dark:border-gray-600 ${
                   rec.type === 'event' 
                     ? 'hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer' 
-                    : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                    : 'hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700'
                 }`}
                 onClick={() => rec.type === 'event' && handleEventClick(rec)}
               >
@@ -271,7 +271,7 @@ export default function Recommendations({ destination, startDate, endDate }: Rec
               
               <p className="text-gray-700 text-lg">{selectedEvent.description}</p>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-gray-500" />
                   <div>

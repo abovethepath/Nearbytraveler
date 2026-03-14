@@ -221,7 +221,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
           <div className="space-y-4">
             {/* Image preview with crop overlay */}
             <div 
-              className="relative bg-gray-100 rounded-lg overflow-hidden select-none" 
+              className="relative bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden select-none" 
               style={{ aspectRatio: '16/9', height: '400px' }}
             >
               {cropImageSrc ? (
@@ -778,7 +778,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
                 <Button
                   variant="outline"
                   onClick={() => setPendingLocationData(null)}
-                  className="border-gray-300 hover:bg-gray-50"
+                  className="border-gray-300 hover:bg-gray-50 dark:bg-gray-800"
                 >
                   Cancel Changes
                 </Button>
@@ -2291,7 +2291,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
                 <button
                   key={chatroom.id}
                   type="button"
-                  className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors w-full text-left"
+                  className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 cursor-pointer transition-colors w-full text-left"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -2354,7 +2354,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
                       setLocation('/city-chatrooms');
                     }
                   }}
-                  className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-black"
+                  className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-black dark:text-white"
                 >
                   Browse All Chatrooms
                 </Button>
@@ -2451,7 +2451,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
             <button
               key={idx}
               onClick={() => setLocation(item.path)}
-              className="w-full flex items-center gap-3 px-4 text-left text-[15px] text-gray-900 dark:text-gray-100 active:bg-gray-100 dark:active:bg-gray-800"
+              className="w-full flex items-center gap-3 px-4 text-left text-[15px] text-gray-900 dark:text-gray-100 active:bg-gray-100 dark:bg-gray-800 dark:active:bg-gray-800"
               style={{
                 touchAction: 'manipulation',
                 WebkitTapHighlightColor: 'transparent',

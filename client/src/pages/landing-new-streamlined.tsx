@@ -215,7 +215,7 @@ export default function LandingStreamlined() {
                 {/* Waitlist Signup */}
                 <div className="w-full max-w-lg mx-auto">
                   {waitlistSubmitted ? (
-                    <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                    <div className="bg-white dark:bg-gray-900/15 backdrop-blur-md rounded-2xl p-6 border border-white/20">
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <CheckCircle className="w-6 h-6 text-green-400" />
                         <span className="text-xl font-bold text-white">You're on the list!</span>
@@ -223,7 +223,7 @@ export default function LandingStreamlined() {
                       <p className="text-white/80 text-sm">We'll notify you as soon as we launch.</p>
                     </div>
                   ) : (
-                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                    <div className="bg-white dark:bg-gray-900/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
                       <p className="text-orange-300 font-semibold text-lg mb-4">Coming Soon — Join the Waitlist</p>
                       <form onSubmit={handleWaitlistSubmit} className="space-y-3">
                         <div className="flex flex-col sm:flex-row gap-3">
@@ -233,7 +233,7 @@ export default function LandingStreamlined() {
                               placeholder="Your name"
                               value={waitlistName}
                               onChange={(e) => setWaitlistName(e.target.value)}
-                              className="pl-10 bg-white/90 dark:bg-gray-800/90 border border-gray-200 text-gray-900 dark:text-white placeholder:text-gray-500 h-12 rounded-lg"
+                              className="pl-10 bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 h-12 rounded-lg"
                               data-testid="input-hero-waitlist-name"
                             />
                           </div>
@@ -244,7 +244,7 @@ export default function LandingStreamlined() {
                               type="email"
                               value={waitlistEmail}
                               onChange={(e) => setWaitlistEmail(e.target.value)}
-                              className="pl-10 bg-white/90 dark:bg-gray-800/90 border border-gray-200 text-gray-900 dark:text-white placeholder:text-gray-500 h-12 rounded-lg"
+                              className="pl-10 bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 h-12 rounded-lg"
                               data-testid="input-hero-waitlist-email"
                             />
                           </div>
@@ -279,7 +279,7 @@ export default function LandingStreamlined() {
                     }}
                     variant="outline"
                     size="lg"
-                    className="border-2 border-white text-white hover:bg-white/20 backdrop-blur-sm px-10 py-5 rounded-xl text-xl font-medium transition-all duration-200"
+                    className="border-2 border-white text-white hover:bg-white dark:bg-gray-900/20 backdrop-blur-sm px-10 py-5 rounded-xl text-xl font-medium transition-all duration-200"
                     data-testid="button-learn-more"
                   >
                     See How It Works
@@ -527,7 +527,7 @@ export default function LandingStreamlined() {
         <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-orange-500">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 sm:mb-12">From the Founder</h2>
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10">
+            <div className="bg-white dark:bg-gray-900/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10">
               <p className="text-lg sm:text-xl lg:text-2xl leading-relaxed mb-6 sm:mb-8 italic text-white">
                 "After hosting 400+ travelers from 50 countries, I learned that one connection can change everything… I built the solution I wished existed."
               </p>

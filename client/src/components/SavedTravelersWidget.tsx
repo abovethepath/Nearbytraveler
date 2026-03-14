@@ -88,7 +88,7 @@ export function SavedTravelersWidget() {
     <div className="rounded-2xl border border-rose-200 dark:border-rose-900/40 shadow-sm overflow-hidden">
       {/* Gradient header */}
       <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-rose-400 px-4 py-3 flex items-center gap-2.5">
-        <div className="bg-white/25 rounded-lg p-1.5 flex-shrink-0">
+        <div className="bg-white dark:bg-gray-900/25 rounded-lg p-1.5 flex-shrink-0">
           <Bookmark className="w-4 h-4 text-white" />
         </div>
         <div className="flex-1 min-w-0">
@@ -99,7 +99,7 @@ export function SavedTravelersWidget() {
               : "Get notified when they arrive"}
           </p>
         </div>
-        <span className="bg-white/25 text-white text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0">
+        <span className="bg-white dark:bg-gray-900/25 text-white text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0">
           {saved.length}
         </span>
       </div>

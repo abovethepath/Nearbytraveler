@@ -223,7 +223,7 @@ export default function AnimatedPhotoUpload({
           relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 cursor-pointer
           ${isDragOver 
             ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 scale-105' 
-            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800/50'
           }
         `}
         onDragEnter={handleDragEnter}
@@ -288,7 +288,7 @@ export default function AnimatedPhotoUpload({
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
-                className="bg-blue-500 text-black p-4 rounded-full"
+                className="bg-blue-500 text-black dark:text-white p-4 rounded-full"
               >
                 <Camera className="w-8 h-8" />
               </motion.div>
@@ -326,7 +326,7 @@ export default function AnimatedPhotoUpload({
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="absolute -top-2 -right-2 bg-green-500 text-black rounded-full p-1"
+                        className="absolute -top-2 -right-2 bg-green-500 text-black dark:text-white rounded-full p-1"
                       >
                         <CheckCircle className="w-4 h-4" />
                       </motion.div>

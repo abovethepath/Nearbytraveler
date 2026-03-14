@@ -338,14 +338,14 @@ export default function SignupLocal() {
       </div>
       
       <div className="max-w-2xl mx-auto pt-16">
-        <Card className="shadow-2xl border border-gray-200 bg-white dark:bg-gray-800 overflow-hidden">
+        <Card className="shadow-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
           <CardHeader className="text-center bg-gradient-to-r from-blue-600 to-orange-500 pb-8 pt-6">
             <div className="flex justify-start mb-4">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setLocation('/join')}
-                className="bg-white/20 hover:bg-white/30 text-white border-white/50 hover:border-white font-medium backdrop-blur-sm"
+                className="bg-white dark:bg-gray-900/20 hover:bg-white dark:bg-gray-900/30 text-white border-white/50 hover:border-white font-medium backdrop-blur-sm"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back

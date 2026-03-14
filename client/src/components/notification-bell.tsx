@@ -565,7 +565,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
               return (
                 <DropdownMenuItem
                   key={notification.id}
-                  className="cursor-pointer p-3 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  className="cursor-pointer p-3 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"
                   onClick={() => {
                     markAsReadMutation.mutate(notification.id);
                     setLocation(notification.fromUserId ? `/messages/${notification.fromUserId}` : '/messages');
@@ -633,7 +633,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
             {/* Fallback: raw unread count when no new_message notifications exist yet */}
             {messageNotifications.length === 0 && unreadMessages.length > 0 && (
               <DropdownMenuItem
-                className="cursor-pointer p-3 hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="cursor-pointer p-3 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"
                 onClick={() => setLocation("/messages")}
               >
                 <div className="flex items-center gap-3 w-full">

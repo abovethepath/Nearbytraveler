@@ -311,7 +311,7 @@ export function CustomerUploadedPhotos({ businessId, isOwnProfile }: CustomerUpl
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {customerPhotos.map((photo: CustomerPhoto) => (
               <div key={photo.id} className="space-y-3">
-                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 relative">
+                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 relative">
                   <img 
                     src={photo.photoUrl} 
                     alt={photo.caption || "Customer photo"}
@@ -327,7 +327,7 @@ export function CustomerUploadedPhotos({ businessId, isOwnProfile }: CustomerUpl
                       <Button
                         size="sm"
                         variant="secondary"
-                        className="h-6 w-6 p-0 bg-white/80 hover:bg-white"
+                        className="h-6 w-6 p-0 bg-white dark:bg-gray-900/80 hover:bg-white dark:bg-gray-900"
                         onClick={() => {
                           const newCaption = prompt("Edit photo caption:", photo.caption || "");
                           if (newCaption !== null) {

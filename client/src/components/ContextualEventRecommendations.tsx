@@ -66,7 +66,7 @@ export function ContextualEventRecommendations({ userId, limit = 8 }: Contextual
     if (score >= 0.8) return 'text-green-600 bg-green-100';
     if (score >= 0.6) return 'text-blue-600 bg-blue-100';
     if (score >= 0.4) return 'text-yellow-600 bg-yellow-100';
-    return 'text-gray-600 bg-gray-100';
+    return 'text-gray-600 bg-gray-100 dark:bg-gray-800';
   };
 
   const getScoreLabel = (score: number) => {

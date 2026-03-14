@@ -492,7 +492,7 @@ function Navbar() {
     <>
       <header
         ref={headerRef}
-        className={`fixed md:sticky top-0 left-0 right-0 z-[1000] bg-white dark:bg-black shadow-sm border-b border-gray-200 desktop-navbar ${isNativeIOSApp() ? "pt-1" : ""}`}
+        className={`fixed md:sticky top-0 left-0 right-0 z-[1000] bg-white dark:bg-black shadow-sm border-b border-gray-200 dark:border-gray-700 desktop-navbar ${isNativeIOSApp() ? "pt-1" : ""}`}
         style={{ paddingTop: isNativeIOSApp() ? undefined : '0px' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -567,7 +567,7 @@ function Navbar() {
                 <button
                   type="button"
                   aria-label="Notifications"
-                  className="md:hidden relative p-2 rounded-full text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="md:hidden relative p-2 rounded-full text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-800"
                   onClick={() => setLocation("/activity")}
                 >
                   <Bell className="w-5 h-5" />
@@ -598,7 +598,7 @@ function Navbar() {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="w-56 z-[9999] bg-white dark:bg-gray-800 border border-gray-200 shadow-lg"
+                  className="w-56 z-[9999] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg"
                   align="end"
                   forceMount
                 >
@@ -840,7 +840,7 @@ function Navbar() {
                     className={`flex items-center py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
                       location === item.path
                         ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
                     }`}
                     onClick={() => {
                       
@@ -868,7 +868,7 @@ function Navbar() {
                       className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
                         location === "/discover"
                           ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                          : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                          : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
                       }`}
                       onClick={() => {
                         
@@ -882,7 +882,7 @@ function Navbar() {
                       className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
                         location === "/quick-meetups"
                           ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                          : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                          : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
                       }`}
                       onClick={() => {
                         
@@ -896,7 +896,7 @@ function Navbar() {
                       className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
                         location === "/city-chatrooms"
                           ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                          : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                          : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
                       }`}
                       onClick={() => {
                         
@@ -915,7 +915,7 @@ function Navbar() {
                     className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
                       location === "/deals"
                         ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
                     }`}
                     onClick={() => {
                       
@@ -932,7 +932,7 @@ function Navbar() {
                   className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
                     location === "/settings"
                       ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                      : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
                   }`}
                   onClick={() => {
                     

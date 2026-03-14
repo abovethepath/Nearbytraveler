@@ -261,7 +261,7 @@ export default function AICityEvents({ cityName, currentUser }: AICityEventsProp
           {(aiEventsLoading || eventsLoading) ? (
             <div className="space-y-4">
               {[1, 2, 3].map(i => (
-                <div key={i} className="animate-pulse bg-gray-100 h-32 rounded-lg" />
+                <div key={i} className="animate-pulse bg-gray-100 dark:bg-gray-800 h-32 rounded-lg" />
               ))}
             </div>
           ) : allEvents.length === 0 ? (

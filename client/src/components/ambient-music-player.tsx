@@ -288,11 +288,11 @@ export default function AmbientMusicPlayer({
       urban: 'bg-blue-100 text-blue-800',
       cultural: 'bg-blue-100 text-blue-800',
       coastal: 'bg-cyan-100 text-cyan-800',
-      mountain: 'bg-gray-100 text-gray-800',
+      mountain: 'bg-gray-100 dark:bg-gray-800 text-gray-800',
       forest: 'bg-emerald-100 text-emerald-800',
       desert: 'bg-orange-100 text-orange-800'
     };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[category as keyof typeof colors] || 'bg-gray-100 dark:bg-gray-800 text-gray-800';
   };
 
   if (availableTracks.length === 0) {
@@ -329,7 +329,7 @@ export default function AmbientMusicPlayer({
             </div>
             
             <div>
-              <h4 className="font-medium text-gray-900">{currentTrack.name}</h4>
+              <h4 className="font-medium text-gray-900 dark:text-white">{currentTrack.name}</h4>
               <p className="text-sm text-gray-500 capitalize">{currentTrack.mood} ambience</p>
             </div>
 
@@ -432,7 +432,7 @@ export default function AmbientMusicPlayer({
                     className={`w-full text-left p-2 rounded text-sm transition-colors ${
                       currentTrack?.id === track.id
                         ? 'bg-blue-50 text-blue-900 border border-blue-200'
-                        : 'hover:bg-gray-50'
+                        : 'hover:bg-gray-50 dark:bg-gray-800'
                     }`}
                   >
                     <div className="flex justify-between items-center">

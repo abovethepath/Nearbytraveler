@@ -221,7 +221,7 @@ export default function ConnectionCelebration({
                   scale: animationStage >= 2 ? 1 : 0
                 }}
                 transition={{ delay: 1 }}
-                className="mt-4 inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-orange-500 text-black px-4 py-2 rounded-full text-sm font-medium"
+                className="mt-4 inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-orange-500 text-black dark:text-white px-4 py-2 rounded-full text-sm font-medium"
               >
                 <MapPin className="w-4 h-4" />
                 {userInfo.destination}

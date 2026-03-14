@@ -202,7 +202,7 @@ export default function DestinationModal({ isOpen, onComplete, onClose, user }: 
                     .map((dest) => (
                       <div
                         key={dest}
-                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                        className="px-3 py-2 hover:bg-gray-100 dark:bg-gray-800 cursor-pointer text-sm"
                         onClick={() => {
                           setDestination(dest);
                           setShowSuggestions(false);

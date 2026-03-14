@@ -252,7 +252,7 @@ export default function TravelMoodBoard() {
                               className={`p-3 border rounded-lg text-center transition-colors ${
                                 newItem.type === type.value 
                                   ? 'border-blue-500 bg-blue-50' 
-                                  : 'border-gray-200 hover:border-gray-300'
+                                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                               }`}
                             >
                               <div className="text-2xl mb-1">{type.icon}</div>
@@ -303,7 +303,7 @@ export default function TravelMoodBoard() {
 
             {/* Canvas Area */}
             <div 
-              className="relative w-full h-96 bg-gray-50 border rounded-lg overflow-auto"
+              className="relative w-full h-96 bg-gray-50 dark:bg-gray-800 border rounded-lg overflow-auto"
               onDrop={handleDrop}
               onDragOver={(e) => e.preventDefault()}
             >

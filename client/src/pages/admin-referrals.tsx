@@ -287,7 +287,7 @@ export default function AdminReferrals() {
                         ? 'bg-gray-100 dark:bg-gray-700 border border-gray-300'
                         : index === 2
                           ? 'bg-orange-50 dark:bg-orange-900/30 border border-orange-200'
-                          : 'bg-white dark:bg-gray-800 border border-gray-200'
+                          : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -409,7 +409,7 @@ export default function AdminReferrals() {
                   <TableRow key={referral.id}>
                     <TableCell className="font-medium">{referral.referrerUsername}</TableCell>
                     <TableCell>
-                      <code className="bg-gray-100 px-2 py-1 rounded text-sm">{referral.referralCode}</code>
+                      <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm">{referral.referralCode}</code>
                     </TableCell>
                     <TableCell>
                       {referral.referredUsername || referral.referredEmail || referral.referredName || "Not signed up"}

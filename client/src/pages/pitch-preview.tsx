@@ -45,14 +45,14 @@ export function PitchPreview() {
                     <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
                       🔒
                     </div>
-                    <h1 className="text-xl font-bold text-gray-900">Privacy Settings</h1>
+                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">Privacy Settings</h1>
                   </div>
 
                   {/* Main Card */}
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-5 h-5 bg-gray-400 rounded"></div>
-                      <h2 className="text-base font-semibold text-gray-900">Display Name Preference</h2>
+                      <h2 className="text-base font-semibold text-gray-900 dark:text-white">Display Name Preference</h2>
                     </div>
                     <p className="text-xs text-gray-600 mb-4">
                       Choose how your name appears to other users across all meetups and interactions.
@@ -76,11 +76,11 @@ export function PitchPreview() {
                       {/* Username Option - Selected */}
                       <div className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                         <div className="w-4 h-4 rounded-full bg-blue-500 mt-0.5 flex items-center justify-center">
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                          <div className="w-2 h-2 bg-white dark:bg-gray-900 rounded-full"></div>
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-medium text-gray-900">Username Only</span>
+                            <span className="text-sm font-medium text-gray-900 dark:text-white">Username Only</span>
                             <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">RECOMMENDED</span>
                           </div>
                           <p className="text-xs text-gray-600 mb-2">
@@ -93,10 +93,10 @@ export function PitchPreview() {
                       </div>
 
                       {/* First Name Option */}
-                      <div className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg">
+                      <div className="flex items-start gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg">
                         <div className="w-4 h-4 rounded-full border-2 border-gray-300 mt-0.5"></div>
                         <div className="flex-1">
-                          <span className="text-sm font-medium text-gray-900">First Name</span>
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">First Name</span>
                           <p className="text-xs text-gray-600 mb-1">
                             Shows first word of your name (e.g., "Aaron")
                           </p>
@@ -107,10 +107,10 @@ export function PitchPreview() {
                       </div>
 
                       {/* Full Name Option */}
-                      <div className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg">
+                      <div className="flex items-start gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg">
                         <div className="w-4 h-4 rounded-full border-2 border-gray-300 mt-0.5"></div>
                         <div className="flex-1">
-                          <span className="text-sm font-medium text-gray-900">Full Name</span>
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">Full Name</span>
                           <p className="text-xs text-gray-600 mb-1">
                             Shows your complete name (e.g., "Aaron Lefkowitz")
                           </p>

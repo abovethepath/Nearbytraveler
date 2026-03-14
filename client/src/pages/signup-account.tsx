@@ -308,7 +308,7 @@ export default function SignupAccount() {
                 variant="outline"
                 size="sm"
                 onClick={() => setLocation('/join')}
-                className="bg-white/20 hover:bg-white/30 text-white border-white/50 hover:border-white font-medium backdrop-blur-sm"
+                className="bg-white dark:bg-gray-900/20 hover:bg-white dark:bg-gray-900/30 text-white border-white/50 hover:border-white font-medium backdrop-blur-sm"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back

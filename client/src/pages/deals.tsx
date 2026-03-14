@@ -683,7 +683,7 @@ export default function Deals() {
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(claimedDeal.businessAddress + ', ' + claimedDeal.businessLocation)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                      className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors group"
                     >
                       <MapPin className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
@@ -702,7 +702,7 @@ export default function Deals() {
                   {claimedDeal.businessPhone && (
                     <a
                       href={`tel:${claimedDeal.businessPhone}`}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors group"
                     >
                       <Phone className="w-5 h-5 text-green-500 flex-shrink-0" />
                       <div className="flex-1">
@@ -718,7 +718,7 @@ export default function Deals() {
                   {claimedDeal.businessEmail && (
                     <a
                       href={`mailto:${claimedDeal.businessEmail}`}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors group"
                     >
                       <Mail className="w-5 h-5 text-purple-500 flex-shrink-0" />
                       <div className="flex-1">
@@ -736,7 +736,7 @@ export default function Deals() {
                       href={claimedDeal.businessWebsite.startsWith('http') ? claimedDeal.businessWebsite : `https://${claimedDeal.businessWebsite}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors group"
                     >
                       <Globe className="w-5 h-5 text-blue-500 flex-shrink-0" />
                       <div className="flex-1">

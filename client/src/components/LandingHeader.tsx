@@ -8,7 +8,7 @@ export default function LandingHeader() {
   
   return (
     <div className="fixed inset-x-0 top-0 z-[100]" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-      <div className="xl:hidden bg-orange-500 text-black py-3 px-4 shadow-lg">
+      <div className="xl:hidden bg-orange-500 text-black dark:text-white py-3 px-4 shadow-lg">
         <div className="max-w-6xl mx-auto flex items-center justify-center">
           <Button
             onClick={scrollToWaitlist}
@@ -20,7 +20,7 @@ export default function LandingHeader() {
         </div>
       </div>
 
-      <div className="hidden xl:block bg-orange-500 text-black py-3 px-4 text-center">
+      <div className="hidden xl:block bg-orange-500 text-black dark:text-white py-3 px-4 text-center">
         <Button
           onClick={scrollToWaitlist}
           className="bg-black text-orange-400 font-bold text-xl px-8 py-3 rounded-xl hover:bg-gray-800 transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg"

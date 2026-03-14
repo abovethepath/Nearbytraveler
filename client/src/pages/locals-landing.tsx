@@ -112,7 +112,7 @@ export default function LocalsLanding() {
                     }}
                     variant="outline"
                     size="lg"
-                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
+                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
                     data-testid="button-learn-more"
                   >
                     See How It Works
@@ -313,7 +313,7 @@ export default function LocalsLanding() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
             <div className="text-center bg-white dark:bg-gray-800 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-              <div className="w-16 h-16 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                 1
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Create Your Local Profile</h3>
@@ -323,7 +323,7 @@ export default function LocalsLanding() {
             </div>
 
             <div className="text-center bg-white dark:bg-gray-800 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-              <div className="w-16 h-16 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                 2
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Host Experiences</h3>
@@ -333,7 +333,7 @@ export default function LocalsLanding() {
             </div>
 
             <div className="text-center bg-white dark:bg-gray-800 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-              <div className="w-16 h-16 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                 3
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Build Global Friendships</h3>
@@ -391,10 +391,10 @@ BECOME A NEARBY LOCAL NOW
       {/* Final Power CTA Section */}
       <div className="py-10 bg-gray-100 dark:bg-gradient-to-r dark:from-blue-600 dark:via-purple-600 dark:to-orange-600">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-5xl font-black text-black mb-6">
+          <h2 className="text-5xl font-black text-black dark:text-white mb-6">
             Ready to Share Your City?
           </h2>
-          <p className="text-2xl text-black mb-6 leading-relaxed">
+          <p className="text-2xl text-black dark:text-white mb-6 leading-relaxed">
             Be part of a new way for locals to build global friendships while sharing what they love about their city.
           </p>
           

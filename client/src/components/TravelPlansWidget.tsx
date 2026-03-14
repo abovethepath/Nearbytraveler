@@ -360,7 +360,7 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                     variant="ghost"
                     size="sm"
                     onClick={() => setSelectedTravelPlan(plan)}
-                    className="text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                    className="text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700/50"
                     data-testid={`button-itinerary-${plan.id}`}
                   >
                     <Calendar className="w-4 h-4 mr-1" />

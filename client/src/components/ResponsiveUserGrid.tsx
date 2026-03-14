@@ -170,7 +170,7 @@ export default function ResponsiveUserGrid({
         {isAvailable && (
           <div className="absolute top-2 right-2">
             <span className="flex items-center gap-1 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-pulse">
-              <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+              <span className="w-1.5 h-1.5 bg-white dark:bg-gray-900 rounded-full"></span>
               Available Now
             </span>
           </div>
@@ -272,7 +272,7 @@ export default function ResponsiveUserGrid({
         {isAvailable && (
           <div className="absolute top-1 right-1">
             <span className="flex items-center gap-1 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-lg animate-pulse">
-              <span className="w-1 h-1 bg-white rounded-full"></span>
+              <span className="w-1 h-1 bg-white dark:bg-gray-900 rounded-full"></span>
               Available
             </span>
           </div>

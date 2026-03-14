@@ -311,7 +311,7 @@ function ReferencesWidgetNew({ userId, currentUserId, onWriteReference }: Refere
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 bg-transparent text-xs h-7"
+                className="w-full border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 bg-transparent text-xs h-7"
                 onClick={() => setShowAllReferences(!showAllReferences)}
               >
                 {showAllReferences ? (

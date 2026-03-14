@@ -329,7 +329,7 @@ export default function UserCard({
         {showAvailableNow && (
           <div className="absolute bottom-1.5 left-1.5 right-1.5">
             <span className="status-badge animate-pulsate-green flex items-center justify-center gap-1 bg-green-500 text-white text-[10px] lg:text-[13px] font-bold px-2 lg:px-3 py-1 lg:py-1.5 rounded-full shadow-lg w-full">
-              <span className="status-badge w-1.5 h-1.5 lg:w-2 lg:h-2 bg-white rounded-full"></span>
+              <span className="status-badge w-1.5 h-1.5 lg:w-2 lg:h-2 bg-white dark:bg-gray-900 rounded-full"></span>
               Available Now
             </span>
           </div>

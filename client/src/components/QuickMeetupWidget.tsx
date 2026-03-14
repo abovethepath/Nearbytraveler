@@ -915,7 +915,7 @@ export function QuickMeetupWidget({
                                 e.stopPropagation();
                                 openDetails(meetup);
                               }}
-                              className="h-8 px-2 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                              className="h-8 px-2 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
                             >
                               See More
                             </Button>
@@ -968,7 +968,7 @@ export function QuickMeetupWidget({
                   onClick={() => {
                     setShowCreateForm(true);
                   }}
-                  className="cta-gradient w-full text-lg font-bold py-5 h-14 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-600 dark:to-orange-500 dark:hover:from-blue-700 dark:hover:to-orange-600 border-0 rounded-xl shadow-lg text-gray-900"
+                  className="cta-gradient w-full text-lg font-bold py-5 h-14 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-600 dark:to-orange-500 dark:hover:from-blue-700 dark:hover:to-orange-600 border-0 rounded-xl shadow-lg text-gray-900 dark:text-white"
                 >
                   <Plus className="h-5 w-5 mr-2" />
                   I'm Out, Come Join Me
@@ -1384,7 +1384,7 @@ export function QuickMeetupWidget({
                             variant="outline"
                             className={`flex-1 sm:flex-initial min-w-0 sm:min-w-[4.5rem] inline-flex items-center justify-center rounded-full
                                        text-xs border-green-500 text-green-700 dark:!text-white dark:[&_*]:!text-white
-                                       hover:bg-green-50 dark:hover:bg-white/10 whitespace-nowrap
+                                       hover:bg-green-50 dark:hover:bg-white dark:bg-gray-900/10 whitespace-nowrap
                                        ${!isNativeIOSApp() ? 'py-1.5 h-7 px-2 gap-1' : 'py-2 h-9 px-2.5 gap-2'}`}
                             data-testid={`button-manage-meetup-${meetup.id}`}
                           >
@@ -1402,7 +1402,7 @@ export function QuickMeetupWidget({
                             variant="outline"
                             className={`flex-1 sm:flex-initial min-w-0 sm:min-w-[4rem] inline-flex items-center justify-center rounded-full
                                        text-xs border-red-500 text-red-700 dark:!text-white dark:[&_*]:!text-white
-                                       hover:bg-red-50 dark:hover:bg-white/10 whitespace-nowrap
+                                       hover:bg-red-50 dark:hover:bg-white dark:bg-gray-900/10 whitespace-nowrap
                                        ${!isNativeIOSApp() ? 'py-1.5 h-7 px-2 gap-1' : 'py-2 h-9 px-2.5 gap-2'}`}
                             data-testid={`button-cancel-meetup-main-${meetup.id}`}
                           >

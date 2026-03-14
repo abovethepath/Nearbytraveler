@@ -97,7 +97,7 @@ export default function WelcomeBusiness() {
 
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 mb-12">
           {/* Business Features Card */}
-          <Card className="border border-gray-200 shadow-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl overflow-hidden group hover:shadow-3xl transition-all duration-500 hover:-translate-y-1">
+          <Card className="border border-gray-200 dark:border-gray-700 shadow-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl overflow-hidden group hover:shadow-3xl transition-all duration-500 hover:-translate-y-1">
             <div className="h-2 bg-gradient-to-r from-blue-500 via-orange-500 to-blue-600"></div>
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 dark:text-white text-xl">
@@ -112,7 +112,7 @@ export default function WelcomeBusiness() {
             </CardHeader>
             <CardContent className="space-y-6">
               {businessBenefits.map((benefit, index) => (
-                <div key={index} className="flex gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                <div key={index} className="flex gap-4 p-3 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700/50 transition-colors group">
                   <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg flex items-center justify-center">
                     {benefit.icon}
                   </div>
@@ -130,7 +130,7 @@ export default function WelcomeBusiness() {
           </Card>
 
           {/* Next Steps Card */}
-          <Card className="border border-gray-200 shadow-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl overflow-hidden group hover:shadow-3xl transition-all duration-500 hover:-translate-y-1">
+          <Card className="border border-gray-200 dark:border-gray-700 shadow-2xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl overflow-hidden group hover:shadow-3xl transition-all duration-500 hover:-translate-y-1">
             <div className="h-2 bg-gradient-to-r from-orange-500 via-red-500 to-pink-600"></div>
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 dark:text-white text-xl">
@@ -145,7 +145,7 @@ export default function WelcomeBusiness() {
             </CardHeader>
             <CardContent className="space-y-4">
               {nextSteps.map((step, index) => (
-                <div key={index} className="flex gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                <div key={index} className="flex gap-4 p-3 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700/50 transition-colors group">
                   <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-orange-100 to-pink-100 dark:from-orange-900/30 dark:to-pink-900/30 rounded-full flex items-center justify-center">
                     <span className="text-sm font-bold text-orange-600 dark:text-orange-400">
                       {index + 1}
@@ -162,7 +162,7 @@ export default function WelcomeBusiness() {
 
         {/* Multiple Business Info */}
         <div className="max-w-4xl mx-auto mt-8">
-          <Card className="border border-gray-200 shadow-xl bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 backdrop-blur-sm rounded-2xl overflow-hidden">
+          <Card className="border border-gray-200 dark:border-gray-700 shadow-xl bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 backdrop-blur-sm rounded-2xl overflow-hidden">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 dark:text-white text-lg">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-orange-500 rounded-lg flex items-center justify-center">

@@ -231,7 +231,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
 
   // Show "Local" for non-traveling users, "Traveler" only when actively traveling
   const getDisplayBadge = () => {
-    if (!referrer) return { color: 'bg-gray-100 text-gray-800', label: 'User' };
+    if (!referrer) return { color: 'bg-gray-100 dark:bg-gray-800 text-gray-800', label: 'User' };
     
     if (referrer.userType === 'business') {
       return { 

@@ -239,7 +239,7 @@ export function TravelMemoryTimeline({ userId, isOwnProfile = false }: TravelMem
           {isOwnProfile && (
             <Button 
               onClick={() => setShowCreateModal(true)}
-              className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
+              className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black dark:text-white [&>*]:text-black dark:text-white dark:[&]:text-white dark:[&>*]:text-white"
             >
               <Plus className="w-4 h-4 mr-2 text-black dark:text-white" />
               <span className="text-black dark:text-white">Create Memory</span>
@@ -283,7 +283,7 @@ export function TravelMemoryTimeline({ userId, isOwnProfile = false }: TravelMem
                               const target = e.currentTarget;
                               target.style.display = 'none';
                               target.parentElement!.innerHTML = `
-                                <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+                                <div class="w-full h-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                                   <div class="text-center text-gray-500">
                                     <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
@@ -303,14 +303,14 @@ export function TravelMemoryTimeline({ userId, isOwnProfile = false }: TravelMem
                           )}
                           {/* Click to view overlay */}
                           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white bg-opacity-90 px-4 py-2 rounded-full text-black font-medium">
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white dark:bg-gray-900 bg-opacity-90 px-4 py-2 rounded-full text-black dark:text-white font-medium">
                               Click to view all photos
                             </div>
                           </div>
                         </div>
                       )}
                       {(!memory.photos || memory.photos.length === 0) && (
-                        <div className="relative h-64 bg-gray-100 flex items-center justify-center">
+                        <div className="relative h-64 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                           <div className="text-center text-gray-500">
                             <Camera className="w-12 h-12 mx-auto mb-2 opacity-50" />
                             <p>No photos available</p>
@@ -378,7 +378,7 @@ export function TravelMemoryTimeline({ userId, isOwnProfile = false }: TravelMem
             {isOwnProfile && (
               <Button 
                 onClick={() => setShowCreateModal(true)}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black dark:text-white [&>*]:text-black dark:text-white dark:[&]:text-white dark:[&>*]:text-white"
               >
                 <Plus className="w-4 h-4 mr-2 text-black dark:text-white" />
                 <span className="text-black dark:text-white">Create Your First Memory</span>

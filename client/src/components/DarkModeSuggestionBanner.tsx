@@ -57,7 +57,7 @@ export function DarkModeSuggestionBanner() {
 
   return (
     <div
-      className="fixed top-0 inset-x-0 z-[1000] border-b border-gray-200 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/75"
+      className="fixed top-0 inset-x-0 z-[1000] border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/90 backdrop-blur supports-[backdrop-filter]:bg-white dark:bg-gray-900/75"
       role="region"
       aria-label="Theme suggestion"
       data-testid="banner-dark-mode-suggestion"
@@ -83,7 +83,7 @@ export function DarkModeSuggestionBanner() {
 
             <button
               type="button"
-              className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 underline underline-offset-2"
+              className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 dark:text-white underline underline-offset-2"
               onClick={() => {
                 try {
                   localStorage.setItem(STORAGE_PREFERENCE_KEY, "prefer_light");
@@ -97,7 +97,7 @@ export function DarkModeSuggestionBanner() {
 
             <button
               type="button"
-              className="ml-1 inline-flex items-center justify-center h-8 w-8 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+              className="ml-1 inline-flex items-center justify-center h-8 w-8 rounded-md text-gray-500 hover:text-gray-900 dark:text-white hover:bg-gray-100 dark:bg-gray-800"
               onClick={() => {
                 try {
                   localStorage.setItem(STORAGE_LAST_DISMISSED_AT_KEY, String(Date.now()));

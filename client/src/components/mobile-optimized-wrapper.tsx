@@ -100,7 +100,7 @@ export function MobileButton({
     primary: 'bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white',
     secondary: 'bg-gray-600 hover:bg-gray-700 text-white',
     outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20',
-    ghost: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+    ghost: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-800'
   };
 
   const sizeClasses = {

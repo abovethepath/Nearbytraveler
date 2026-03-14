@@ -4236,8 +4236,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
-  // Quick login endpoint for development
+  // Quick login endpoint for development only
   app.post("/api/quick-login/:userId", async (req, res) => {
+    if (process.env.NODE_ENV === 'production' || process.env.REPL_SLUG) {
+      return res.status(403).json({ message: "Quick login is disabled in production" });
+    }
     try {
       const userId = parseInt(req.params.userId || '0');
       const user = await storage.getUser(userId);

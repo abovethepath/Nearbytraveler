@@ -21,7 +21,7 @@ export default function About() {
               <Link href="/">
                 <Button 
                   variant="outline" 
-                  className="flex items-center gap-2 hover:bg-gray-50"
+                  className="flex items-center gap-2 hover:bg-gray-50 dark:bg-gray-800"
                   onClick={scrollToTop}
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -36,7 +36,7 @@ export default function About() {
       {/* Hero Section */}
       <section className="py-16">
         <div className="max-w-full mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
             About Nearby Traveler
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
@@ -76,21 +76,21 @@ export default function About() {
               <Card className="text-center p-6">
                 <CardContent className="pt-6">
                   <Users className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-                  <h3 className="font-semibold text-gray-900 mb-2">Connect</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Connect</h3>
                   <p className="text-sm text-gray-600">Match with like-minded people worldwide</p>
                 </CardContent>
               </Card>
               <Card className="text-center p-6">
                 <CardContent className="pt-6">
                   <Globe className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-                  <h3 className="font-semibold text-gray-900 mb-2">Explore</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Explore</h3>
                   <p className="text-sm text-gray-600">Discover authentic local experiences</p>
                 </CardContent>
               </Card>
               <Card className="text-center p-6">
                 <CardContent className="pt-6">
                   <Heart className="w-12 h-12 text-red-600 mx-auto mb-4" />
-                  <h3 className="font-semibold text-gray-900 mb-2">Experience</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Experience</h3>
                   <p className="text-sm text-gray-600">Create meaningful travel memories</p>
                 </CardContent>
               </Card>
@@ -101,10 +101,10 @@ export default function About() {
       </section>
 
       {/* How It Works */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">How Nearby Traveler Works</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">How Nearby Traveler Works</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Our intelligent matching system connects you with the right people at the right time and place.
             </p>
@@ -114,7 +114,7 @@ export default function About() {
               <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-blue-600">1</span>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Share Your Interests</h3>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Share Your Interests</h3>
               <p className="text-gray-600">
                 Tell us about your travel style, interests, activities you enjoy, and the types of experiences you're seeking.
               </p>
@@ -123,7 +123,7 @@ export default function About() {
               <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-orange-600">2</span>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Get Matched</h3>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Get Matched</h3>
               <p className="text-gray-600">
                 Our algorithm finds locals, fellow travelers, and businesses that align with your preferences and travel plans.
               </p>
@@ -132,7 +132,7 @@ export default function About() {
               <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-green-600">3</span>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Connect & Experience</h3>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Connect & Experience</h3>
               <p className="text-gray-600">
                 Message, meet up, and create unforgettable experiences together while building lasting friendships.
               </p>
@@ -153,28 +153,28 @@ export default function About() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="text-center">
               <Zap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Smart Matching</h3>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Smart Matching</h3>
               <p className="text-gray-600">
                 Advanced compatibility scoring based on interests, travel dates, and lifestyle preferences.
               </p>
             </div>
             <div className="text-center">
               <MapPin className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Location Intelligence</h3>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Location Intelligence</h3>
               <p className="text-gray-600">
                 Find people in your current city, travel destinations, or hometown - with date overlap detection.
               </p>
             </div>
             <div className="text-center">
               <Users className="w-12 h-12 text-green-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Complete Ecosystem</h3>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Complete Ecosystem</h3>
               <p className="text-gray-600">
                 Connect with travelers, locals, and authentic businesses all in one integrated platform.
               </p>
             </div>
             <div className="text-center">
               <Heart className="w-12 h-12 text-red-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Authentic Experiences</h3>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Authentic Experiences</h3>
               <p className="text-gray-600">
                 Discover secret local activities and hidden gems that only locals know about.
               </p>

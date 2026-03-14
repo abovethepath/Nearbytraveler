@@ -1540,7 +1540,7 @@ export default function BusinessDashboard() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="p-1 sm:p-2 bg-white/80 hover:bg-white text-blue-600 hover:text-blue-700"
+                              className="p-1 sm:p-2 bg-white dark:bg-gray-900/80 hover:bg-white dark:bg-gray-900 text-blue-600 hover:text-blue-700"
                               onClick={() => {
                                 const newCaption = prompt("Enter new caption:", photo.caption || "");
                                 if (newCaption !== null) {
@@ -1553,7 +1553,7 @@ export default function BusinessDashboard() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="p-1 sm:p-2 bg-white/80 hover:bg-white text-red-600 hover:text-red-700"
+                              className="p-1 sm:p-2 bg-white dark:bg-gray-900/80 hover:bg-white dark:bg-gray-900 text-red-600 hover:text-red-700"
                               onClick={() => {
                                 if (window.confirm('Are you sure you want to delete this photo?')) {
                                   deletePhotoMutation.mutate(photo.id);

@@ -734,7 +734,7 @@ export default function TripItineraryView({
             <Card key={date} className="overflow-hidden border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => toggleDay(date)}
-                className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-blue-500 flex items-center justify-center text-white font-bold">

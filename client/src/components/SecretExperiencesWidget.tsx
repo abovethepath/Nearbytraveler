@@ -156,7 +156,7 @@ export function SecretExperiencesWidget({ city, state, country }: SecretExperien
                 e.stopPropagation();
                 setShowAll(!showAll);
               }}
-              className="w-full text-xs text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600"
+              className="w-full text-xs text-black dark:text-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-600"
             >
               {showAll ? (
                 <>

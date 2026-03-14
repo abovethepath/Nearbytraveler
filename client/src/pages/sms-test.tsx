@@ -69,7 +69,7 @@ export default function SMSTest() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 p-4">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">SMS Test Panel</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">SMS Test Panel</h1>
           <p className="text-gray-600">Test SMS event notifications for Nearby Traveler</p>
         </div>
 

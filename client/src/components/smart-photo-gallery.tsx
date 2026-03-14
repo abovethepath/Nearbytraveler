@@ -333,7 +333,7 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
         transport: "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100",
         culture: "bg-pink-100 text-pink-800 dark:bg-pink-800 dark:text-pink-100"
       };
-      return colors[cat] || "bg-gray-100 text-gray-800";
+      return colors[cat] || "bg-gray-100 dark:bg-gray-800 text-gray-800";
     };
 
     return (
@@ -746,7 +746,7 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
                 {searchUsersResults.map((user: any) => (
                   <div 
                     key={user.id} 
-                    className="flex items-center justify-between p-2 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                    className="flex items-center justify-between p-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-800 cursor-pointer"
                     onClick={() => {
                       if (selectedPhotoForTagging) {
                         tagUserMutation.mutate({ 

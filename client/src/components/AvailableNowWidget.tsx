@@ -1201,7 +1201,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 <button
                   type="button"
                   onClick={() => reactToMessageMutation.mutate({ messageId: selectedMessage.id, emoji: '👍' })}
-                  className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-gray-900 dark:text-white"
+                  className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-xl text-gray-900 dark:text-white"
                 >
                   <ThumbsUp className={`w-5 h-5 ${hasLiked ? 'text-orange-500 fill-orange-500' : 'text-blue-500'}`} />
                   <span className="text-sm">{hasLiked ? 'Unlike' : 'Like'}</span>
@@ -1216,7 +1216,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 <button
                   type="button"
                   onClick={() => reactToMessageMutation.mutate({ messageId: selectedMessage.id, emoji: '❤️' })}
-                  className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-gray-900 dark:text-white"
+                  className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-xl text-gray-900 dark:text-white"
                 >
                   <Heart className={`w-5 h-5 ${hasHearted ? 'text-red-500 fill-red-500' : 'text-red-400'}`} />
                   <span className="text-sm">{hasHearted ? 'Unlove' : 'Love'}</span>
@@ -1227,7 +1227,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             <button
               type="button"
               onClick={() => { setReplyingTo(selectedMessage); setSelectedMessage(null); }}
-              className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-gray-900 dark:text-white"
+              className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-xl text-gray-900 dark:text-white"
             >
               <Reply className="w-5 h-5 text-green-500" />
               <span className="text-sm">Reply</span>

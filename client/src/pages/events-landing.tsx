@@ -116,7 +116,7 @@ export default function EventsLanding() {
                     }}
                     variant="outline"
                     size="lg"
-                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
+                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
                     data-testid="button-learn-more"
                   >
                     See How It Works
@@ -407,16 +407,16 @@ export default function EventsLanding() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
             <div className="bg-white dark:bg-orange-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-black">From $1 Taco Tours to Free Beach Parties</h3>
-              <p className="text-black text-sm leading-relaxed">Join unforgettable events created by passionate locals who know the best spots. Every experience is authentic and affordable.</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">From $1 Taco Tours to Free Beach Parties</h3>
+              <p className="text-black dark:text-white text-sm leading-relaxed">Join unforgettable events created by passionate locals who know the best spots. Every experience is authentic and affordable.</p>
             </div>
             <div className="bg-white dark:bg-blue-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-black">Meet 5-20 People Per Event</h3>
-              <p className="text-black text-sm leading-relaxed">Every event is a chance to make lifelong friendships. Small groups mean real connections, not anonymous crowds.</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Meet 5-20 People Per Event</h3>
+              <p className="text-black dark:text-white text-sm leading-relaxed">Every event is a chance to make lifelong friendships. Small groups mean real connections, not anonymous crowds.</p>
             </div>
             <div className="bg-white dark:bg-teal-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-black">Hidden Spots Locals Actually Go To</h3>
-              <p className="text-black text-sm leading-relaxed">Discover experiences that tourists never find. Access the real side of every city through insider knowledge.</p>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Hidden Spots Locals Actually Go To</h3>
+              <p className="text-black dark:text-white text-sm leading-relaxed">Discover experiences that tourists never find. Access the real side of every city through insider knowledge.</p>
             </div>
           </div>
         </div>
@@ -443,8 +443,8 @@ export default function EventsLanding() {
         {/* Get Started Section - Clean Airbnb Style */}
         <div className="bg-gradient-to-r from-orange-500 to-blue-600 py-12 rounded-2xl shadow-lg mb-6 sm:mb-8">
           <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-3xl font-bold mb-6 text-black">Ready to Join Events Only The Nearby Traveler Community Knows About?</h2>
-            <p className="text-lg mb-8 text-black">Join others already creating unforgettable experiences together.</p>
+            <h2 className="text-3xl font-bold mb-6 text-black dark:text-white">Ready to Join Events Only The Nearby Traveler Community Knows About?</h2>
+            <p className="text-lg mb-8 text-black dark:text-white">Join others already creating unforgettable experiences together.</p>
             
             <Button
               onClick={() => setLocation('/launching-soon')}

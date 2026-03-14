@@ -32,9 +32,9 @@ export const MobilePreview: React.FC<MobilePreviewProps> = ({ children }) => {
           {/* Phone Inner Frame */}
           <div className="bg-black rounded-[2.5rem] p-2">
             {/* Screen Container - iPhone 14 Pro dimensions (393x852) */}
-            <div className="bg-white rounded-[2rem] overflow-hidden relative" style={{ width: '393px', height: '852px' }}>
+            <div className="bg-white dark:bg-gray-900 rounded-[2rem] overflow-hidden relative" style={{ width: '393px', height: '852px' }}>
               {/* Status Bar */}
-              <div className="bg-white h-6 flex items-center justify-between px-6 text-black text-sm font-medium">
+              <div className="bg-white dark:bg-gray-900 h-6 flex items-center justify-between px-6 text-black dark:text-white text-sm font-medium">
                 <span>9:41</span>
                 <div className="flex items-center gap-1">
                   <div className="w-4 h-2 bg-green-500 rounded-sm"></div>
@@ -45,7 +45,7 @@ export const MobilePreview: React.FC<MobilePreviewProps> = ({ children }) => {
               </div>
               
               {/* App Content */}
-              <div className="h-full overflow-auto bg-white">
+              <div className="h-full overflow-auto bg-white dark:bg-gray-900">
                 {children}
               </div>
               

@@ -241,7 +241,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
   if (compact) {
     return (
       <div 
-        className="pl-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+        className="pl-2 py-2 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors cursor-pointer"
         onClick={() => setLocation(`/events/${event.id}`)}
       >
         <div className="flex items-start justify-between">

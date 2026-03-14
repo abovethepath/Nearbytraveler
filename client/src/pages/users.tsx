@@ -109,7 +109,7 @@ export default function UsersPage() {
 
   if ((!city && !searchParams?.get('location')) || !userType) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800 p-4">
         <Card className="max-w-md mx-auto mt-20">
           <CardContent className="p-8 text-center">
             <p className="text-gray-500">Invalid URL parameters. Please try again.</p>

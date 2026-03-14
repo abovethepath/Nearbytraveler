@@ -282,7 +282,7 @@ export function TravelMemoryTimeline({ userId, isOwnProfile = false }: TravelMem
                             key={index}
                             onClick={() => setCurrentPhotoIndex(index)}
                             className={`w-2 h-2 rounded-full transition-colors ${
-                              index === currentPhotoIndex ? 'bg-white' : 'bg-white/50'
+                              index === currentPhotoIndex ? 'bg-white dark:bg-gray-900' : 'bg-white dark:bg-gray-900/50'
                             }`}
                           />
                         ))}

@@ -39,7 +39,7 @@ export default function QRCodeGenerator() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-8">
       <div className="text-center max-w-md">
-        <h1 className="text-3xl font-bold mb-4 text-gray-900">QR Code for Business Cards</h1>
+        <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">QR Code for Business Cards</h1>
         <p className="text-gray-600 mb-8">High-resolution QR code for printing on business cards</p>
         
         {qrCodeUrl ? (

@@ -359,7 +359,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
               type="button"
               onClick={clearAdvancedFilters}
               variant="outline"
-              className="px-6 py-3 rounded-xl font-semibold text-lg border-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="px-6 py-3 rounded-xl font-semibold text-lg border-2 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-800"
               data-testid="button-clear-top"
             >
               Clear
@@ -826,7 +826,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                             <img 
                               src={user.profileImage} 
                               alt={user.username}
-                              className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                              className="w-12 h-12 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700"
                             />
                           ) : (
                             <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 flex items-center justify-center text-white font-bold text-lg">

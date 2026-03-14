@@ -257,7 +257,7 @@ export function VideoIntroPlayer({ userId, isOwnProfile, hasVideo }: VideoIntroP
                     e.stopPropagation();
                     fileInputRef.current?.click();
                   }}
-                  className="bg-white/20 hover:bg-white/30 text-white border-none"
+                  className="bg-white dark:bg-gray-900/20 hover:bg-white dark:bg-gray-900/30 text-white border-none"
                 >
                   <Upload className="w-4 h-4 mr-1" />
                   Replace

@@ -99,7 +99,7 @@ export default function AmbassadorProgram() {
                   In simple terms: <span className="font-semibold">your points ÷ total points</span> = your share of the Ambassador pool (as defined by the official terms).
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 shadow-sm p-4 mt-4">
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4 mt-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   <span className="font-semibold">Example:</span> If you earn 1,000 points and the community earns 100,000 points total, 
                   you earned 1% of the points → you receive 1% of the 4% pool (i.e., 0.04% equity), subject to the program terms.

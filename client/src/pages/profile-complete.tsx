@@ -556,7 +556,7 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3,
             ) : (
               <>
                 {selected.slice(0, maxDisplay).map((item) => (
-                  <div key={item} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-white text-black border border-gray-300 dark:border-gray-600 appearance-none select-none">
+                  <div key={item} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-white dark:bg-gray-900 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none">
                     {item}
                   </div>
                 ))}
@@ -4128,7 +4128,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div key={u.id}>
                       {/* Main row */}
                       <div
-                        className={`flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${cold && adminTab !== 'cold' ? 'border-l-2 border-red-300 dark:border-red-700' : ''}`}
+                        className={`flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800/50 transition-colors ${cold && adminTab !== 'cold' ? 'border-l-2 border-red-300 dark:border-red-700' : ''}`}
                         onClick={() => setExpandedUserId(isExpanded ? null : u.id)}
                       >
                         <Avatar className="w-9 h-9 flex-shrink-0">
@@ -4162,7 +4162,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             )}
                           </div>
                           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${typeColor[u.userType] || 'bg-gray-100 text-gray-700'}`}>
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${typeColor[u.userType] || 'bg-gray-100 dark:bg-gray-800 text-gray-700'}`}>
                               {u.userType}
                             </span>
                             {u.hometownCity && (
@@ -4285,7 +4285,7 @@ class ProfileErrorBoundary extends React.Component<
       };
 
       return (
-        <div className="min-h-screen bg-gray-50 p-4">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-800 p-4">
           <div className="max-w-4xl mx-auto pt-20">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
               <h2 className="text-2xl font-bold text-red-600 mb-4">Profile Page Error</h2>
@@ -4410,7 +4410,7 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
             <div className="flex flex-col sm:flex-row gap-2">
               <Button 
                 onClick={() => window.location.href = '/create-event'}
-                className="cta-gradient w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
+                className="cta-gradient w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-500 dark:to-orange-500 dark:hover:from-blue-600 dark:hover:to-orange-600 [&]:text-black dark:text-white [&>*]:text-black dark:text-white dark:[&]:text-white dark:[&>*]:text-white"
               >
                 <Plus className="w-4 h-4 mr-2 text-black dark:text-white" />
                 <span className="text-black dark:text-white">Create New Event</span>
@@ -4540,7 +4540,7 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
               </p>
               <Button 
                 onClick={() => window.location.href = '/create-event'}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black [&>*]:text-black dark:[&]:text-white dark:[&>*]:text-white"
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black dark:text-white [&>*]:text-black dark:text-white dark:[&]:text-white dark:[&>*]:text-white"
               >
                 <Plus className="w-4 h-4 mr-2 text-black dark:text-white" />
                 <span className="text-black dark:text-white">Create Your First Event</span>

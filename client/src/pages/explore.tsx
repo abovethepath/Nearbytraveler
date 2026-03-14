@@ -407,7 +407,7 @@ export default function Explore() {
                 size="sm"
                 variant="secondary"
                 onClick={() => setCityView("hometown")}
-                className={`${cityView === "hometown" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30 text-xs h-7`}
+                className={`${cityView === "hometown" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white dark:bg-gray-900/20 text-white hover:bg-white dark:bg-gray-900/30"} border border-white/30 text-xs h-7`}
               >
                 🏠 Hometown
               </Button>
@@ -415,7 +415,7 @@ export default function Explore() {
                 size="sm"
                 variant="secondary"
                 onClick={() => setCityView("travel")}
-                className={`${cityView === "travel" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30 text-xs h-7`}
+                className={`${cityView === "travel" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white dark:bg-gray-900/20 text-white hover:bg-white dark:bg-gray-900/30"} border border-white/30 text-xs h-7`}
               >
                 ✈️ Travel city
               </Button>
@@ -839,7 +839,7 @@ export default function Explore() {
                 <Users className="w-5 h-5 text-orange-500" />
                 <h2 className="font-bold text-lg text-gray-900 dark:text-white">People in {userCity}</h2>
                 {!loadingUsers && peopleInCity.displayedCount > 0 && (
-                  <Badge variant="secondary" className="text-xs text-gray-900 dark:!text-white dark:bg-gray-800 dark:border dark:border-gray-700">
+                  <Badge variant="secondary" className="text-xs text-gray-900 dark:text-white dark:!text-white dark:bg-gray-800 dark:border dark:border-gray-700">
                     {peopleInCity.displayedCount}
                   </Badge>
                 )}

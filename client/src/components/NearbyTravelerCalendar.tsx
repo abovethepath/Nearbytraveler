@@ -282,7 +282,7 @@ export default function NearbyTravelerCalendar({ initialCity }: NearbyTravelerCa
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">
-          <button onClick={goToPrevMonth} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+          <button onClick={goToPrevMonth} className="p-1.5 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors">
             <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           </button>
           <div className="text-center min-w-[160px]">
@@ -304,7 +304,7 @@ export default function NearbyTravelerCalendar({ initialCity }: NearbyTravelerCa
               </button>
             </div>
           </div>
-          <button onClick={goToNextMonth} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+          <button onClick={goToNextMonth} className="p-1.5 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors">
             <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           </button>
         </div>

@@ -197,7 +197,7 @@ export default function ConnectButton({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-44 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-50">
           <DropdownMenuItem
-            className="flex items-center gap-2 cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+            className="flex items-center gap-2 cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
             onClick={(e) => {
               e.stopPropagation();
               setLocation(`/profile/${targetUserId}`);

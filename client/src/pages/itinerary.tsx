@@ -551,16 +551,16 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                   <div className="space-y-8">
                     {Object.entries(groupItemsByDate(itineraryDetails.items)).map(([date, items]) => (
                       <div key={date}>
-                        <h3 className="text-xl font-semibold text-black mb-4 flex items-center">
+                        <h3 className="text-xl font-semibold text-black dark:text-white mb-4 flex items-center">
                           <Calendar className="w-5 h-5 mr-2" />
                           {formatDate(date)}
                         </h3>
                         <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4">
                           {items.map((item: ItineraryItem, index) => (
-                            <div key={item.id} className="flex items-start gap-4 py-3 border-b border-gray-200 last:border-b-0">
+                            <div key={item.id} className="flex items-start gap-4 py-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
                               <div className="flex-1">
                                 {/* Calendar format: "Tuesday 11am walking tour [address]" */}
-                                <div className="text-black font-medium text-lg leading-tight">
+                                <div className="text-black dark:text-white font-medium text-lg leading-tight">
                                   {item.startTime && (
                                     <span className="text-blue-600 font-semibold mr-2">
                                       {formatTimeForDisplay(item.startTime)}
@@ -737,11 +737,11 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <Label className="text-black">Notes</Label>
+                  <Label className="text-black dark:text-white">Notes</Label>
                   <Textarea
                     value={editingItem.notes || ""}
                     onChange={(e) => setEditingItem(prev => prev ? { ...prev, notes: e.target.value } : null)}
-                    className="text-black"
+                    className="text-black dark:text-white"
                   />
                 </div>
               </div>
@@ -757,7 +757,7 @@ export default function ItineraryPage({ travelPlanId: propTravelPlanId }: Itiner
                 <Button 
                   onClick={() => setEditingItem(null)}
                   variant="outline"
-                  className="text-black border-black"
+                  className="text-black dark:text-white border-black"
                 >
                   <X className="w-4 h-4 mr-2" />
                   Cancel

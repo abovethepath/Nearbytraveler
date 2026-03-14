@@ -334,7 +334,7 @@ export default function SignupBusinessSimple() {
                 type="button"
                 variant="outline"
                 onClick={() => setLocation('/auth?mode=register')}
-                className="flex items-center gap-2 px-4 py-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="flex items-center gap-2 px-4 py-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
                 data-testid="button-back-top"
               >
                 ← Back to Join

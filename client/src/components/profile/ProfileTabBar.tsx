@@ -90,10 +90,10 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
 
   const tabLegacyBase = "text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all";
   const tabLegacyActive = isHero
-    ? "bg-white/70 text-black border border-white/70 shadow-md"
+    ? "bg-white dark:bg-gray-900/70 text-black dark:text-white border border-white/70 shadow-md"
     : "bg-blue-600 text-white border border-blue-600 shadow-md";
   const tabLegacyInactive = isHero
-    ? "bg-white/25 border border-white/50 text-white hover:bg-white/35 hover:border-white/60 backdrop-blur-sm"
+    ? "bg-white dark:bg-gray-900/25 border border-white/50 text-white hover:bg-white dark:bg-gray-900/35 hover:border-white/60 backdrop-blur-sm"
     : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400";
 
   const btn = (active: boolean) => {

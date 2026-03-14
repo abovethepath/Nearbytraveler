@@ -719,7 +719,7 @@ export default function Events() {
             data-testid="create-event-main-cta"
           >
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
+              <div className="w-14 h-14 bg-white dark:bg-gray-900/10 rounded-full flex items-center justify-center">
                 <Plus className="w-8 h-8 text-white" />
               </div>
               <div>
@@ -735,7 +735,7 @@ export default function Events() {
             data-testid="ai-create-event-cta"
           >
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
+              <div className="w-14 h-14 bg-white dark:bg-gray-900/10 rounded-full flex items-center justify-center">
                 <Sparkles className="w-7 h-7 text-white" />
               </div>
               <div>
@@ -751,7 +751,7 @@ export default function Events() {
             data-testid="import-event-cta"
           >
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
+              <div className="w-14 h-14 bg-white dark:bg-gray-900/10 rounded-full flex items-center justify-center">
                 <Link2 className="w-7 h-7 text-white" />
               </div>
               <div>
@@ -1231,7 +1231,7 @@ export default function Events() {
                   {filteredUpcomingEvents.map((event) => (
                     <Card 
                       key={event.id} 
-                      className="cursor-pointer hover:shadow-xl transition-all duration-300 sm:hover:-translate-y-1 w-full min-w-0 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 shadow-md rounded-xl group"
+                      className="cursor-pointer hover:shadow-xl transition-all duration-300 sm:hover:-translate-y-1 w-full min-w-0 overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-xl group"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
                       {/* Image with Date Badge */}
@@ -1527,7 +1527,7 @@ export default function Events() {
                 {meetupEvents.events && meetupEvents.events.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                     {meetupEvents.events.map((event: any) => (
-                      <Card key={event.id} className="hover:shadow-lg transition-shadow duration-200 border border-gray-200 w-full overflow-hidden">
+                      <Card key={event.id} className="hover:shadow-lg transition-shadow duration-200 border border-gray-200 dark:border-gray-700 w-full overflow-hidden">
                         <CardContent className="p-6">
                           <div className="flex items-start flex-wrap gap-2 mb-3">
                             <Badge className="bg-green-100 text-green-800">

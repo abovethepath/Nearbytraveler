@@ -260,14 +260,14 @@ function AICompanionPaused() {
             <p className="text-lg text-blue-100 max-w-2xl mx-auto mb-6">
               Get personalized travel recommendations and chat with your intelligent travel assistant
             </p>
-            <Badge className="bg-white/20 backdrop-blur-sm text-white border-white/30 px-4 py-2">
+            <Badge className="bg-white dark:bg-gray-900/20 backdrop-blur-sm text-white border-white/30 px-4 py-2">
               <Bot className="w-4 h-4 mr-2" />
               Powered by Advanced AI
             </Badge>
           </div>
         </div>
         {/* Decorative elements */}
-        <div className="absolute -top-4 -right-4 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute -top-4 -right-4 w-32 h-32 bg-white dark:bg-gray-900/10 rounded-full blur-xl"></div>
         <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-orange-400/20 rounded-full blur-lg"></div>
       </div>
       
@@ -277,7 +277,7 @@ function AICompanionPaused() {
             Discover hidden gems and personalized recommendations powered by AI. 
             Get local insights tailored to your travel preferences.
           </p>
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 mt-6 max-w-2xl mx-auto shadow-sm">
+          <div className="bg-white dark:bg-gray-900/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 mt-6 max-w-2xl mx-auto shadow-sm">
             <p className="text-white text-sm">
               <strong>Note:</strong> AI recommendations are based on historical data. Please verify current business status, hours, and availability before visiting any recommended locations.
             </p>
@@ -381,15 +381,15 @@ function AICompanionPaused() {
           <div className="lg:col-span-2">
             <Tabs defaultValue="all" className="w-full">
               <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-blue-100 to-orange-100 p-1 rounded-lg">
-                <TabsTrigger value="chat" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-md data-[state=active]:text-blue-600">
+                <TabsTrigger value="chat" className="data-[state=active]:bg-white dark:bg-gray-900 dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-md data-[state=active]:text-blue-600">
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Chat
                 </TabsTrigger>
-                <TabsTrigger value="all" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-md data-[state=active]:text-orange-600">
+                <TabsTrigger value="all" className="data-[state=active]:bg-white dark:bg-gray-900 dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-md data-[state=active]:text-orange-600">
                   <Sparkles className="w-4 h-4 mr-2" />
                   Recommendations
                 </TabsTrigger>
-                <TabsTrigger value="bookmarked" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-md data-[state=active]:text-blue-600">
+                <TabsTrigger value="bookmarked" className="data-[state=active]:bg-white dark:bg-gray-900 dark:data-[state=active]:bg-gray-800 data-[state=active]:shadow-md data-[state=active]:text-blue-600">
                   <Heart className="w-4 h-4 mr-2" />
                   Bookmarked
                 </TabsTrigger>
@@ -594,7 +594,7 @@ function AICompanionPaused() {
                       <Card key={rec.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white to-pink-50">
                         <CardContent className="p-6">
                           <div className="flex justify-between items-start mb-3">
-                            <h4 className="text-lg font-semibold text-gray-900">{rec.title}</h4>
+                            <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{rec.title}</h4>
                             <div className="flex gap-1">
                               <Button
                                 variant="ghost"
@@ -677,7 +677,7 @@ function RecommendationCard({
       <CardContent className="p-6">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               {recommendation.title}
             </h3>
             <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
@@ -723,13 +723,13 @@ function RecommendationCard({
 
         <div className="space-y-3">
           <div>
-            <p className="text-sm font-medium text-gray-900 mb-1">Why AI recommends this:</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">Why AI recommends this:</p>
             <p className="text-sm text-gray-600">{recommendation.recommendationReason}</p>
           </div>
 
           {recommendation.userPreferencesMatched.length > 0 && (
             <div>
-              <p className="text-sm font-medium text-gray-900 mb-2">Matches your preferences:</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">Matches your preferences:</p>
               <div className="flex flex-wrap gap-1">
                 {recommendation.userPreferencesMatched.map((pref, index) => (
                   <div key={index} className="pill inline-flex items-center justify-center h-6 min-w-[6rem] rounded-full px-3 text-sm font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1" style={{height: '1.5rem', minWidth: '6rem', padding: '0 0.75rem', fontSize: '0.875rem'}}>

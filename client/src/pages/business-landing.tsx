@@ -89,7 +89,7 @@ export default function BusinessLanding() {
                     }}
                     variant="outline"
                     size="lg"
-                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
+                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
                     data-testid="button-learn-more"
                   >
                     See How It Works
@@ -426,10 +426,10 @@ export default function BusinessLanding() {
       {/* FINAL CTA */}
       <section className="py-8 sm:py-12 bg-gradient-to-r from-orange-500 to-blue-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-black">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-black dark:text-white">
             Ready to Connect With Travelers Who Want Your Services?
           </h2>
-          <p className="text-lg mb-8 text-black">
+          <p className="text-lg mb-8 text-black dark:text-white">
             Join local businesses already growing their customer base through authentic traveler connections.
           </p>
           

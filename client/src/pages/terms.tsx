@@ -27,7 +27,7 @@ export default function Terms() {
           <div className="mb-6">
             <Button 
               variant="outline" 
-              className="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="flex items-center gap-2 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"
               onClick={handleBack}
             >
               <ArrowLeft className="h-4 w-4" />
