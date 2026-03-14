@@ -100,7 +100,7 @@ export default function RecentlyJoined({ currentUserId }: RecentlyJoinedProps) {
               {/* City */}
               {city && (
                 <p className="text-[11px] text-gray-500 dark:text-gray-400 text-center leading-tight truncate w-full">
-                  📍 {city}
+                  {city}
                 </p>
               )}
 
