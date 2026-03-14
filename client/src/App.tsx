@@ -288,6 +288,7 @@ const SESSION_CACHE_KEY = 'nt_cached_session';
 const SESSION_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const readSessionCache = (): User | null => {
   try {
+    if (sessionStorage.getItem("nt_session_verified") !== "1") return null;
     const raw = localStorage.getItem(SESSION_CACHE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
