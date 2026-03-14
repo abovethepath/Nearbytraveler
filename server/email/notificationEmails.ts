@@ -95,7 +95,7 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
                 <li>Explore city chatrooms to meet the community</li>
               </ul>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${APP_URL}/profile/${user.username}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">Go to My Profile</a>
+                <a href="${APP_URL}/home" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">Go to My Profile</a>
               </div>
               <p style="font-size: 14px; color: #888888; margin: 30px 0 0; text-align: center;">
                 Have questions? Just reply to this email — we're here to help!
@@ -120,7 +120,7 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
     const result = await sendBrevoEmail({
       toEmail: user.email,
       subject: `You're in! Welcome to NearbyTraveler 🌍`,
-      textContent: `Hi ${displayName}! You just joined a community of travelers and locals who believe every city is better when strangers become friends. Complete your profile, find people near you, and post what you're up to — your next adventure starts now. Go to your profile: ${APP_URL}/profile/${user.username}`,
+      textContent: `Hi ${displayName}! You just joined a community of travelers and locals who believe every city is better when strangers become friends. Complete your profile, find people near you, and post what you're up to — your next adventure starts now. Go to your home feed: ${APP_URL}/home`,
       htmlContent,
     });
 
