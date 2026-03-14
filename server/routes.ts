@@ -25358,6 +25358,146 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // ── Chatroom invite (sends notification instead of directly adding) ─────────
+  app.post("/api/chatrooms/:type/:id/invite-users", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const { type, id } = req.params;
+      const chatroomId = parseInt(id);
+      if (isNaN(chatroomId)) return res.status(400).json({ error: "Invalid chatroom ID" });
+      const { userIds, chatroomName } = req.body as { userIds: number[]; chatroomName?: string };
+      if (!Array.isArray(userIds) || userIds.length === 0) {
+        return res.status(400).json({ error: "userIds must be a non-empty array" });
+      }
+
+      const callerMembership = await db.query.chatroomMembers.findFirst({
+        where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, Number(userId)), eq(chatroomMembers.isActive, true))
+      });
+      if (!callerMembership) return res.status(403).json({ error: "You must be a member of this chatroom to invite others" });
+
+      const inviter = await db.query.users.findFirst({ where: eq(users.id, Number(userId)) });
+      if (!inviter) return res.status(404).json({ error: "User not found" });
+      const inviterName = inviter.firstName || inviter.name?.split(" ")[0] || inviter.username;
+
+      let chatName = chatroomName || "a chatroom";
+      if (!chatroomName && type === 'meetup') {
+        const chatroom = await db.query.meetupChatrooms.findFirst({ where: eq(meetupChatrooms.id, chatroomId) });
+        if (chatroom) chatName = chatroom.name;
+      }
+
+      let sent = 0;
+      for (const targetUserId of userIds) {
+        if (targetUserId === Number(userId)) continue;
+        const existing = await db.query.chatroomMembers.findFirst({
+          where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId), eq(chatroomMembers.isActive, true))
+        });
+        if (existing) continue;
+
+        await storage.createNotification({
+          userId: targetUserId,
+          fromUserId: Number(userId),
+          type: "chatroom_invite",
+          title: `${inviterName} invited you to join "${chatName}"`,
+          message: `You've been personally invited to join this chat`,
+          data: JSON.stringify({
+            chatroomId,
+            chatroomType: type,
+            chatroomName: chatName,
+            inviterName,
+            inviterUsername: inviter.username,
+            inviterProfileImage: inviter.profileImage || null,
+          }),
+        });
+
+        try {
+          const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+          const targetWs = wsMap?.get(targetUserId);
+          if (targetWs && targetWs.readyState === 1) {
+            targetWs.send(JSON.stringify({ type: "notification", payload: { type: "chatroom_invite" } }));
+          }
+        } catch {}
+
+        sent++;
+      }
+
+      return res.json({ sent, chatroomId });
+    } catch (error) {
+      console.error("[CHATROOM INVITE] Error:", error);
+      return res.status(500).json({ error: "Failed to send invites" });
+    }
+  });
+
+  // ── Accept chatroom invite ─────────────────────────────────────────────────
+  app.post("/api/chatroom-invites/:notificationId/accept", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const notificationId = parseInt(req.params.notificationId);
+      if (isNaN(notificationId)) return res.status(400).json({ error: "Invalid notification ID" });
+
+      const notification = await db.query.notifications.findFirst({ where: eq(notifications.id, notificationId) });
+      if (!notification || notification.userId !== Number(userId) || notification.type !== 'chatroom_invite') {
+        return res.status(404).json({ error: "Invite not found" });
+      }
+
+      let data: any = {};
+      try { data = JSON.parse(notification.data || '{}'); } catch {}
+      const { chatroomId, chatroomType } = data;
+      if (!chatroomId) return res.status(400).json({ error: "Invalid invite data" });
+
+      const existingMember = await db.query.chatroomMembers.findFirst({
+        where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, Number(userId)))
+      });
+      if (existingMember && existingMember.isActive) {
+        await db.update(notifications).set({ isRead: true }).where(eq(notifications.id, notificationId));
+        return res.json({ success: true, alreadyMember: true, chatroomId });
+      }
+
+      if (existingMember) {
+        await db.update(chatroomMembers).set({ isActive: true }).where(eq(chatroomMembers.id, existingMember.id));
+      } else {
+        await db.insert(chatroomMembers).values({ chatroomId, userId: Number(userId), role: 'member', isActive: true });
+      }
+
+      if (chatroomType === 'meetup') {
+        const chatroom = await db.query.meetupChatrooms.findFirst({ where: eq(meetupChatrooms.id, chatroomId) });
+        if (chatroom) {
+          await db.update(meetupChatrooms).set({ participantCount: chatroom.participantCount + 1 }).where(eq(meetupChatrooms.id, chatroomId));
+        }
+      }
+
+      await db.update(notifications).set({ isRead: true }).where(eq(notifications.id, notificationId));
+
+      let chatName = data.chatroomName || "Chat";
+      return res.json({ success: true, chatroomId, chatroomName: chatName, chatroomType });
+    } catch (error) {
+      console.error("[ACCEPT CHATROOM INVITE] Error:", error);
+      return res.status(500).json({ error: "Failed to accept invite" });
+    }
+  });
+
+  // ── Decline chatroom invite ────────────────────────────────────────────────
+  app.post("/api/chatroom-invites/:notificationId/decline", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const notificationId = parseInt(req.params.notificationId);
+      if (isNaN(notificationId)) return res.status(400).json({ error: "Invalid notification ID" });
+
+      const notification = await db.query.notifications.findFirst({ where: eq(notifications.id, notificationId) });
+      if (!notification || notification.userId !== Number(userId) || notification.type !== 'chatroom_invite') {
+        return res.status(404).json({ error: "Invite not found" });
+      }
+
+      await db.update(notifications).set({ isRead: true }).where(eq(notifications.id, notificationId));
+      return res.json({ success: true });
+    } catch (error) {
+      console.error("[DECLINE CHATROOM INVITE] Error:", error);
+      return res.status(500).json({ error: "Failed to decline invite" });
+    }
+  });
+
   // Dismiss a meetup chatroom from the user's list (sets their membership inactive)
   app.post("/api/meetup-chatrooms/:chatroomId/dismiss", async (req: any, res) => {
     try {

@@ -90,11 +90,10 @@ export default function ChatroomInvitePanel({
     ? searchResults.filter((u) => u.id !== currentUserId)
     : connections;
 
-  // Add people — for DM type, creates a new group chatroom
+  // Add people — for DM type, creates a new group chatroom; otherwise sends invite notification
   const addMutation = useMutation({
     mutationFn: async (userIds: number[]) => {
       if (chatroomType === "dm") {
-        // Combine: current user + DM partner + selected users
         const allIds = Array.from(new Set([
           ...(dmPartnerId ? [dmPartnerId] : []),
           ...userIds,
@@ -107,8 +106,8 @@ export default function ChatroomInvitePanel({
       }
       const res = await apiRequest(
         "POST",
-        `/api/chatrooms/${chatroomType}/${chatroomId}/add-members`,
-        { userIds }
+        `/api/chatrooms/${chatroomType}/${chatroomId}/invite-users`,
+        { userIds, chatroomName }
       );
       return res.json();
     },
@@ -121,16 +120,16 @@ export default function ChatroomInvitePanel({
         onClose();
         navigate(`/meetup-chatroom-chat/${data.chatroomId}?title=${encodeURIComponent(data.name)}&subtitle=Group+chat`);
       } else {
-        const added = data.added ?? selectedUsers.length;
+        const invited = data.sent ?? selectedUsers.length;
         toast({
-          title: `${added} ${added === 1 ? "person" : "people"} added`,
-          description: "They can now chat in this group.",
+          title: `Invite${invited === 1 ? "" : "s"} sent!`,
+          description: `${invited} ${invited === 1 ? "person" : "people"} will see a personal invite in their notifications.`,
         });
         setSelectedUsers([]);
         setSearchQuery("");
       }
     },
-    onError: () => toast({ title: "Couldn't add people", variant: "destructive" }),
+    onError: () => toast({ title: "Couldn't send invites", variant: "destructive" }),
   });
 
   const toggleUser = (user: UserResult) => {
@@ -264,10 +263,10 @@ export default function ChatroomInvitePanel({
             >
               <UserPlus className="w-4 h-4 mr-2" />
               {addMutation.isPending
-                ? isDm ? "Creating group…" : "Adding…"
+                ? isDm ? "Creating group…" : "Sending invite…"
                 : isDm
                   ? `Create group with ${selectedUsers.length + 1} ${selectedUsers.length + 1 === 1 ? "person" : "people"}`
-                  : `Add ${selectedUsers.length} ${selectedUsers.length === 1 ? "person" : "people"}`}
+                  : `Invite ${selectedUsers.length} ${selectedUsers.length === 1 ? "person" : "people"}`}
             </Button>
           )}
         </div>

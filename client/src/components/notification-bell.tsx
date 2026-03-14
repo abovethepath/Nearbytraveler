@@ -136,8 +136,13 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     (n) => !n.isRead && n.type === 'new_message'
   );
 
+  // Filter chatroom invite notifications
+  const chatroomInviteNotifications = notifications.filter(
+    (n) => !n.isRead && n.type === 'chatroom_invite'
+  );
+
   // Catch-all: any other unread notification type not handled by a specific group above
-  const HANDLED_TYPES = new Set(['quick_meetup_nearby', 'quick_meetup_joined', 'available_now_meet_request', 'new_message']);
+  const HANDLED_TYPES = new Set(['quick_meetup_nearby', 'quick_meetup_joined', 'available_now_meet_request', 'new_message', 'chatroom_invite']);
   const generalNotifications = notifications.filter(
     (n) => !n.isRead && !HANDLED_TYPES.has(n.type)
   );
@@ -150,6 +155,21 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
       await queryClient.invalidateQueries({ queryKey: [`/api/connections/${userId}/requests`] });
       await queryClient.invalidateQueries({ queryKey: [`/api/connections/${userId}`] });
       await queryClient.invalidateQueries({ queryKey: [`/api/notifications/${userId}`] });
+    },
+  });
+
+  const respondToChatroomInviteMutation = useMutation({
+    mutationFn: async ({ notificationId, action }: { notificationId: number; action: "accept" | "decline" }) => {
+      return await apiRequest("POST", `/api/chatroom-invites/${notificationId}/${action}`);
+    },
+    onSuccess: async (res, { action }) => {
+      await queryClient.invalidateQueries({ queryKey: [`/api/notifications/${userId}`] });
+      if (action === "accept") {
+        const data = await res.json().catch(() => ({}));
+        if (data.chatroomId) {
+          setLocation(`/meetup-chatroom-chat/${data.chatroomId}?title=${encodeURIComponent(data.chatroomName || 'Chat')}&subtitle=Group+chat`);
+        }
+      }
     },
   });
 
@@ -200,7 +220,19 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
       onOpenChange={(nextOpen) => {
         setOpen(nextOpen);
         if (nextOpen && userId) {
-          markAllAsReadMutation.mutate();
+          const hasPendingInvites = notifications.some(
+            (n) => !n.isRead && n.type === 'chatroom_invite'
+          );
+          if (!hasPendingInvites) {
+            markAllAsReadMutation.mutate();
+          } else {
+            const nonActionableUnread = notifications.filter(
+              (n) => !n.isRead && n.type !== 'chatroom_invite'
+            );
+            for (const n of nonActionableUnread) {
+              markAsReadMutation.mutate(n.id);
+            }
+          }
         }
       }}
       modal={false}
@@ -413,6 +445,108 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                   </div>
                 </div>
                 {unreadMessages.length > 0 && <DropdownMenuSeparator />}
+              </>
+            )}
+
+            {/* Chatroom Invites */}
+            {chatroomInviteNotifications.length > 0 && (
+              <>
+                <div className="px-2 pt-1 pb-2">
+                  <div className="flex items-center justify-between px-1.5 pb-2">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-orange-500" />
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">Chat Invites</span>
+                    </div>
+                    <Badge variant="secondary">{chatroomInviteNotifications.length}</Badge>
+                  </div>
+
+                  <div className="space-y-2">
+                    {chatroomInviteNotifications.slice(0, 5).map((notification) => {
+                      let inviteData: Record<string, any> = {};
+                      try { inviteData = notification.data ? JSON.parse(notification.data) : {}; } catch {}
+                      const inviterName = inviteData.inviterName || "Someone";
+                      const inviterUsername = inviteData.inviterUsername || "";
+                      const chatName = inviteData.chatroomName || "a chatroom";
+                      const inviterImage = inviteData.inviterProfileImage;
+                      const timeAgo = notification.createdAt ? formatTimeAgo(notification.createdAt) : "";
+
+                      return (
+                        <DropdownMenuItem
+                          key={notification.id}
+                          className="cursor-default p-0 focus:bg-transparent"
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <div className="w-full rounded-lg border border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-900/20 p-2">
+                            <div className="flex flex-col gap-2 w-full">
+                              <div className="flex items-start gap-2 w-full">
+                                <div className="w-9 h-9 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 flex items-center justify-center overflow-hidden shrink-0">
+                                  {inviterImage ? (
+                                    <img src={inviterImage} alt={inviterName} className="w-9 h-9 object-cover" />
+                                  ) : (
+                                    <span className="text-white text-xs font-bold">
+                                      {inviterName.slice(0, 2).toUpperCase()}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <span className="text-sm font-semibold text-gray-900 dark:text-white break-all whitespace-normal">
+                                      {inviterName}
+                                    </span>
+                                    {timeAgo && (
+                                      <span className="text-xs text-gray-500 dark:text-gray-400 shrink-0 whitespace-nowrap">
+                                        {timeAgo}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-orange-700 dark:text-orange-300 font-medium">
+                                    Personal invite to "{chatName}"
+                                  </div>
+                                  {inviterUsername && (
+                                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                                      @{inviterUsername}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2 w-full">
+                                <Button
+                                  size="sm"
+                                  className="h-8 w-full bg-green-600 hover:bg-green-700 text-white"
+                                  disabled={respondToChatroomInviteMutation.isPending}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setOpen(false);
+                                    respondToChatroomInviteMutation.mutate({ notificationId: notification.id, action: "accept" });
+                                  }}
+                                >
+                                  Accept
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  className="h-8 w-full"
+                                  disabled={respondToChatroomInviteMutation.isPending}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setOpen(false);
+                                    respondToChatroomInviteMutation.mutate({ notificationId: notification.id, action: "decline" });
+                                  }}
+                                >
+                                  Decline
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </div>
+                </div>
+                {(messageNotifications.length > 0 || unreadMessages.length > 0 || generalNotifications.length > 0) && <DropdownMenuSeparator />}
               </>
             )}
 
