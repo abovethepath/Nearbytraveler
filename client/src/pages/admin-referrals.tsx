@@ -103,7 +103,10 @@ export default function AdminReferrals() {
         title: "Referral updated",
         description: "Referral status has been updated successfully.",
       });
-    }
+    },
+    onError: () => {
+      toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+    },
   });
 
   // Grant reward mutation
@@ -120,7 +123,10 @@ export default function AdminReferrals() {
         title: "Reward granted",
         description: "Reward has been granted successfully.",
       });
-    }
+    },
+    onError: () => {
+      toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+    },
   });
 
   const filteredReferrals = referrals?.filter(referral => {

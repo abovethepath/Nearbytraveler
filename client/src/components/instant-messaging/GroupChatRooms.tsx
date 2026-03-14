@@ -9,6 +9,7 @@ import { authStorage } from "@/lib/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import type { User, ChatroomMember } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
 
 interface GroupChatRoomsProps {
   onJoinRoom: (roomId: number, roomName: string, roomType: string) => void;
@@ -16,6 +17,7 @@ interface GroupChatRoomsProps {
 
 export function GroupChatRooms({ onJoinRoom }: GroupChatRoomsProps) {
   const user = authStorage.getUser();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("joined");
@@ -47,7 +49,10 @@ export function GroupChatRooms({ onJoinRoom }: GroupChatRoomsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-rooms'] });
-    }
+    },
+    onError: () => {
+      toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+    },
   });
 
   // Leave room mutation
@@ -57,7 +62,10 @@ export function GroupChatRooms({ onJoinRoom }: GroupChatRoomsProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-rooms'] });
-    }
+    },
+    onError: () => {
+      toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+    },
   });
 
   const handleJoinRoom = async (room: any) => {

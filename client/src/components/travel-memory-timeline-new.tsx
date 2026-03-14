@@ -80,7 +80,10 @@ export function TravelMemoryTimeline({ userId, isOwnProfile = false }: TravelMem
         title: "Memory Created",
         description: "Your travel memory has been saved successfully."
       });
-    }
+    },
+    onError: () => {
+      toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+    },
   });
 
 

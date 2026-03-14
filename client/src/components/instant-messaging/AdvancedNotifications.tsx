@@ -21,6 +21,7 @@ import {
 import { authStorage } from "@/lib/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface NotificationSettings {
   desktopNotifications: boolean;
@@ -45,6 +46,7 @@ interface AdvancedNotificationsProps {
 
 export function AdvancedNotifications({ isOpen, onClose }: AdvancedNotificationsProps) {
   const user = authStorage.getUser();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [settings, setSettings] = useState<NotificationSettings>({
     desktopNotifications: true,
@@ -79,7 +81,10 @@ export function AdvancedNotifications({ isOpen, onClose }: AdvancedNotifications
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-    }
+    },
+    onError: () => {
+      toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+    },
   });
 
   const handleSettingChange = (key: keyof NotificationSettings, value: any) => {

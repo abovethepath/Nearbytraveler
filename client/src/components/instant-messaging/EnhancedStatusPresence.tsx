@@ -20,6 +20,7 @@ import {
 import { authStorage } from "@/lib/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface StatusPresenceSettings {
   onlineStatus: 'online' | 'away' | 'busy' | 'invisible' | 'offline';
@@ -36,6 +37,7 @@ interface EnhancedStatusPresenceProps {
 
 export function EnhancedStatusPresence({ isOpen, onClose }: EnhancedStatusPresenceProps) {
   const user = authStorage.getUser();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [settings, setSettings] = useState<StatusPresenceSettings>({
     onlineStatus: 'online',
@@ -65,7 +67,10 @@ export function EnhancedStatusPresence({ isOpen, onClose }: EnhancedStatusPresen
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-    }
+    },
+    onError: () => {
+      toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+    },
   });
 
   const handleStatusChange = (key: keyof StatusPresenceSettings, value: any) => {

@@ -64,6 +64,9 @@ function PostReplies({ postId, currentUser }: { postId: number; currentUser: any
       queryClient.invalidateQueries({ queryKey: ["reply-counts"] });
       setReplyText("");
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   const deleteReplyMutation = useMutation({
@@ -74,6 +77,9 @@ function PostReplies({ postId, currentUser }: { postId: number; currentUser: any
       queryClient.invalidateQueries({ queryKey: ["/api/community-posts", postId, "replies"] });
       queryClient.invalidateQueries({ queryKey: ["reply-counts"] });
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   return (
@@ -215,6 +221,9 @@ export default function CommunityDetail({ communityId }: { communityId: number }
       queryClient.invalidateQueries({ queryKey: ["/api/community-tags", communityId, "posts"] });
       toast({ title: "Post deleted" });
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   const likeMutation = useMutation({

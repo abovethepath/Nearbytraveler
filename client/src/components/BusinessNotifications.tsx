@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell, User, MapPin, Calendar, Star, CheckCircle, MessageCircle, UserPlus, Eye } from "lucide-react";
 import { format } from "date-fns";
 import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 interface BusinessNotification {
   id: number;
@@ -37,6 +38,7 @@ interface BusinessNotificationsProps {
 }
 
 export default function BusinessNotifications({ businessId }: BusinessNotificationsProps) {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('unread');
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -59,7 +61,10 @@ export default function BusinessNotifications({ businessId }: BusinessNotificati
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/business-notifications/${businessId}`] });
-    }
+    },
+    onError: () => {
+      toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+    },
   });
 
   // Mark as processed mutation
@@ -70,7 +75,10 @@ export default function BusinessNotifications({ businessId }: BusinessNotificati
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/business-notifications/${businessId}`] });
-    }
+    },
+    onError: () => {
+      toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+    },
   });
 
   // Connect with user mutation
@@ -82,7 +90,10 @@ export default function BusinessNotifications({ businessId }: BusinessNotificati
     onSuccess: () => {
       // Optional: show success message
       console.log("Connection request sent successfully");
-    }
+    },
+    onError: () => {
+      toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+    },
   });
 
   const handleViewProfile = (userId: number) => {

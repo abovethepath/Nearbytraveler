@@ -315,6 +315,9 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
       setEditingItem(null);
       toast({ title: 'Success', description: 'Item updated' });
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   // Delete itinerary item mutation
@@ -327,6 +330,9 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
       queryClient.invalidateQueries({ queryKey: [`/api/travel-plans/${travelPlan.id}/itineraries`] });
       toast({ title: 'Success', description: 'Item deleted' });
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   // Share itinerary mutation
@@ -339,6 +345,9 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
     onSuccess: () => {
       toast({ title: 'Success', description: 'Itinerary shared successfully!' });
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   const getItemIcon = (type: ItineraryItem['type']) => {

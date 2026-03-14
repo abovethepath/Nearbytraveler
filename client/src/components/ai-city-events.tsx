@@ -74,6 +74,9 @@ export default function AICityEvents({ cityName, currentUser }: AICityEventsProp
         description: "Event recommendations have been refreshed with new insights",
       });
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   // Get unique categories from events

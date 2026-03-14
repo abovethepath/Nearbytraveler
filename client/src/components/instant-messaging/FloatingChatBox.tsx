@@ -7,6 +7,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import websocketService from '@/services/websocketService';
 import { authStorage } from '@/lib/auth';
+import { useToast } from "@/hooks/use-toast";
 
 interface FloatingChatBoxProps {
   targetUser: any;
@@ -16,6 +17,7 @@ interface FloatingChatBoxProps {
 }
 
 export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }: FloatingChatBoxProps) {
+  const { toast } = useToast();
   const [newMessage, setNewMessage] = useState('');
   const [instantMessages, setInstantMessages] = useState<any[]>([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -69,6 +71,9 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}/unread-count`] });
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   // Filter messages for this specific conversation
@@ -106,6 +111,9 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
       queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
       setNewMessage('');
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   // Handle instant messaging

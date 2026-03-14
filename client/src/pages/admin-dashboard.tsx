@@ -123,7 +123,10 @@ export default function AdminDashboard() {
           : "All businesses get free access"
       });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/pricing-config"] });
-    }
+    },
+    onError: () => {
+      toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+    },
   });
 
   const handlePricingSubmit = (e: React.FormEvent) => {

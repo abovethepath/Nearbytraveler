@@ -16,6 +16,7 @@ import {
 import { authStorage } from "@/lib/auth";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface RichMediaMessagingProps {
   recipientId?: number;
@@ -42,6 +43,7 @@ export function RichMediaMessaging({
   className 
 }: RichMediaMessagingProps) {
   const user = authStorage.getUser();
+  const { toast } = useToast();
   const [message, setMessage] = useState("");
   const [attachments, setAttachments] = useState<MediaAttachment[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -57,7 +59,10 @@ export function RichMediaMessaging({
       onMessageSent(data);
       setMessage("");
       setAttachments([]);
-    }
+    },
+    onError: () => {
+      toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+    },
   });
 
   // Handle image upload

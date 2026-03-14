@@ -4392,6 +4392,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
   // Test endpoint for email and notification systems
   app.post("/api/test/messaging-systems", async (req, res) => {
+    if (process.env.NODE_ENV === 'production' || process.env.REPL_SLUG) {
+      return res.status(403).json({ message: "Test endpoint disabled in production" });
+    }
     try {
       const { testType, email, username, city } = req.body;
 
@@ -6260,6 +6263,9 @@ Questions? Just reply to this message!
 
   // MANUAL WELCOME MESSAGE ENDPOINT - for businesses that missed the automatic welcome
   app.post("/api/send-manual-welcome/:userId", async (req, res) => {
+    if (process.env.NODE_ENV === 'production' || process.env.REPL_SLUG) {
+      return res.status(403).json({ message: "Test endpoint disabled in production" });
+    }
     try {
       const userId = parseInt(req.params.userId || '0');
       const user = await storage.getUser(userId);
@@ -13819,6 +13825,9 @@ Questions? Just reply to this message. Welcome aboard!
 
   // SMS Test endpoint for admin testing
   app.post("/api/sms/test", async (req, res) => {
+    if (process.env.NODE_ENV === 'production' || process.env.REPL_SLUG) {
+      return res.status(403).json({ message: "Test endpoint disabled in production" });
+    }
     try {
       const { phoneNumber, eventTitle, userName, eventDate, eventTime, eventLocation } = req.body;
       
@@ -23453,6 +23462,9 @@ Questions? Just reply to this message. Welcome aboard!
   
   // Test welcome email endpoint
   app.post("/api/test-welcome-email", async (req, res) => {
+    if (process.env.NODE_ENV === 'production' || process.env.REPL_SLUG) {
+      return res.status(403).json({ message: "Test endpoint disabled in production" });
+    }
     try {
       const { email, name, username } = req.body;
       console.log('🧪 TESTING WELCOME EMAIL for:', email);
@@ -26209,6 +26221,9 @@ Questions? Just reply to this message. Welcome aboard!
   // One-time backfill: seed chatroomMembers for legacy Available Now chatrooms
   // that were created before the unified chatroomMembers approach was adopted.
   app.post("/api/meetup-chatrooms/backfill-members", async (req: any, res) => {
+    if (process.env.NODE_ENV === 'production' || process.env.REPL_SLUG) {
+      return res.status(403).json({ message: "Test endpoint disabled in production" });
+    }
     try {
       const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!userId) return res.status(401).json({ error: "Not authenticated" });

@@ -96,6 +96,9 @@ export default function EventIntegrations() {
       queryClient.invalidateQueries({ queryKey: ["/api/integrations"] });
       queryClient.invalidateQueries({ queryKey: ["/api/external-events"] });
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   const handleConnect = () => {

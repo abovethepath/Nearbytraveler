@@ -255,6 +255,9 @@ export default function Explore() {
       queryClient.invalidateQueries({ queryKey: ["/api/live-shares/mine"] });
       toast({ title: "Live share cleared" });
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   const reactToShareMutation = useMutation({
@@ -266,6 +269,9 @@ export default function Explore() {
       queryClient.invalidateQueries({ queryKey: ["/api/live-shares"] });
       toast({ title: "Reaction sent!" });
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   const joinCommunityMutation = useMutation({
@@ -299,6 +305,9 @@ export default function Explore() {
       queryClient.invalidateQueries({ queryKey: ["/api/community-tags/mine"] });
       toast({ title: "Left community" });
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   const createCommunityMutation = useMutation({
@@ -332,6 +341,9 @@ export default function Explore() {
       setFlagReason("");
       toast({ title: "Community flagged", description: "An admin will review this community" });
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   const deleteCommunityMutation = useMutation({
@@ -344,6 +356,9 @@ export default function Explore() {
       queryClient.invalidateQueries({ queryKey: ["/api/community-tags/mine"] });
       toast({ title: "Community deleted" });
     },
+    onError: () => {
+        toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
+      },
   });
 
   const myTagIds = new Set(myCommunityTags.map((t: any) => t.id));
