@@ -62,7 +62,7 @@ export default function RecentlyJoined({ currentUserId }: RecentlyJoinedProps) {
       </div>
 
       <div
-        className="flex gap-3 px-4 pb-4 overflow-x-auto"
+        className="flex flex-nowrap gap-3 px-4 pb-4 overflow-x-auto lg:flex-wrap lg:overflow-x-visible"
         style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {filtered.map((user) => {
@@ -73,7 +73,7 @@ export default function RecentlyJoined({ currentUserId }: RecentlyJoinedProps) {
           return (
             <div
               key={user.id}
-              className="flex-shrink-0 flex flex-col items-center gap-2 w-[108px] bg-gray-50 dark:bg-gray-800 rounded-xl p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors"
+              className="flex-shrink-0 lg:flex-shrink flex flex-col items-center gap-2 w-[120px] lg:w-[108px] bg-gray-50 dark:bg-gray-800 rounded-xl p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors"
               onClick={() => setLocation(`/profile/${user.id}`)}
             >
               {/* Avatar */}
