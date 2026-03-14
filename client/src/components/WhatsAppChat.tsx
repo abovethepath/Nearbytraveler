@@ -1267,6 +1267,13 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             break;
           }
 
+          case 'member:joined':
+            if (data.chatroomId === chatId || data.chatroomId == chatId) {
+              console.log('👤 WhatsApp Chat: New member joined, refetching member list');
+              queryClient.invalidateQueries({ queryKey: [membersEndpoint] });
+            }
+            break;
+
           case 'system:error':
             console.error('❌ WhatsApp Chat: Error:', data.payload.message);
             toast({

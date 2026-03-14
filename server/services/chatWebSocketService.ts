@@ -65,6 +65,25 @@ export class ChatWebSocketService {
     this.sendToUser(userId, JSON.stringify({ type: 'notification', payload }));
   }
 
+  public async broadcastMemberUpdate(chatroomId: number, chatType: string, newMemberUserId: number, newMemberName: string): Promise<void> {
+    const members = await db.query.chatroomMembers.findMany({
+      where: and(
+        eq(chatroomMembers.chatroomId, chatroomId),
+        eq(chatroomMembers.isActive, true)
+      ),
+    });
+    const event = {
+      type: 'member:joined',
+      chatType,
+      chatroomId,
+      payload: { userId: newMemberUserId, username: newMemberName },
+    };
+    const eventStr = JSON.stringify(event);
+    members.forEach(member => {
+      this.sendToUser(member.userId, eventStr);
+    });
+  }
+
   constructor() {
     // Clean up expired typing indicators every 2 seconds
     setInterval(() => this.cleanupExpiredTyping(), 2000);

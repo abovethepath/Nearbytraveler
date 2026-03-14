@@ -24588,6 +24588,11 @@ Questions? Just reply to this message. Welcome aboard!
                 role: 'member',
                 isActive: true,
               }).onConflictDoNothing();
+
+              try {
+                const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+                await chatWebSocketService.broadcastMemberUpdate(existingChatroom.id, 'meetup', updated.fromUserId, requesterName);
+              } catch {}
             } else {
               const activityLabels: Record<string, string> = {
                 coffee: "Coffee", food: "Food", drinks: "Drinks", explore: "Explore",
@@ -25329,6 +25334,12 @@ Questions? Just reply to this message. Welcome aboard!
         }
         if (added > 0) {
           await db.update(meetupChatrooms).set({ participantCount: chatroom.participantCount + added }).where(eq(meetupChatrooms.id, chatroomId));
+          try {
+            const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+            for (const uid of userIds) {
+              await chatWebSocketService.broadcastMemberUpdate(chatroomId, 'meetup', uid, 'new member');
+            }
+          } catch {}
         }
         return res.json({ added, chatroomId });
       }
@@ -25336,6 +25347,7 @@ Questions? Just reply to this message. Welcome aboard!
       // event / chatroom types: use chatroomMembers table directly
       if (type === 'event' || type === 'chatroom') {
         let added = 0;
+        const addedIds: number[] = [];
         for (const targetUserId of userIds) {
           const existing = await db.query.chatroomMembers.findFirst({
             where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId))
@@ -25343,10 +25355,20 @@ Questions? Just reply to this message. Welcome aboard!
           if (!existing) {
             await db.insert(chatroomMembers).values({ chatroomId, userId: targetUserId, role: 'member', isActive: true });
             added++;
+            addedIds.push(targetUserId);
           } else if (!existing.isActive) {
             await db.update(chatroomMembers).set({ isActive: true }).where(eq(chatroomMembers.id, existing.id));
             added++;
+            addedIds.push(targetUserId);
           }
+        }
+        if (addedIds.length > 0) {
+          try {
+            const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+            for (const uid of addedIds) {
+              await chatWebSocketService.broadcastMemberUpdate(chatroomId, type, uid, 'new member');
+            }
+          } catch {}
         }
         return res.json({ added, chatroomId });
       }
@@ -25471,9 +25493,10 @@ Questions? Just reply to this message. Welcome aboard!
 
       let chatName = data.chatroomName || "Chat";
 
+      const accepter = await db.query.users.findFirst({ where: eq(users.id, Number(userId)) });
+      const accepterName = accepter?.firstName || accepter?.name?.split(" ")[0] || accepter?.username || "Someone";
+
       if (notification.fromUserId && notification.fromUserId !== Number(userId)) {
-        const accepter = await db.query.users.findFirst({ where: eq(users.id, Number(userId)) });
-        const accepterName = accepter?.firstName || accepter?.name?.split(" ")[0] || accepter?.username || "Someone";
         await storage.createNotification({
           userId: notification.fromUserId,
           fromUserId: Number(userId),
@@ -25488,6 +25511,11 @@ Questions? Just reply to this message. Welcome aboard!
           if (inviterWs && inviterWs.readyState === 1) inviterWs.send(JSON.stringify({ type: "notification", payload: { type: "chatroom_invite_accepted" } }));
         } catch {}
       }
+
+      try {
+        const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+        await chatWebSocketService.broadcastMemberUpdate(chatroomId, chatroomType || 'meetup', Number(userId), accepterName);
+      } catch {}
 
       return res.json({ success: true, chatroomId, chatroomName: chatName, chatroomType });
     } catch (error) {
@@ -25707,6 +25735,10 @@ Questions? Just reply to this message. Welcome aboard!
               if (hostWs && hostWs.readyState === 1) hostWs.send(JSON.stringify({ type: "notification", payload: { type: "chatroom_member_joined" } }));
             } catch {}
           }
+          try {
+            const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+            await chatWebSocketService.broadcastMemberUpdate(meetupChatroom.id, 'meetup', userId, joinerName);
+          } catch {}
         }
         return res.json({ chatroomId: meetupChatroom.id, chatroomType: 'meetup', name: meetupChatroom.chatroomName });
       }
@@ -25754,6 +25786,10 @@ Questions? Just reply to this message. Welcome aboard!
             if (hostWs && hostWs.readyState === 1) hostWs.send(JSON.stringify({ type: "notification", payload: { type: "chatroom_member_joined" } }));
           } catch {}
         }
+        try {
+          const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+          await chatWebSocketService.broadcastMemberUpdate(chatroomId, chatroomType, userId, joinerName);
+        } catch {}
       }
 
       return res.json({ chatroomId, chatroomType, name });
