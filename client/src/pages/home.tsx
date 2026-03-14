@@ -62,6 +62,7 @@ import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { AvailableNowWidget } from "@/components/AvailableNowWidget";
 import { MeetupAlertBanner } from "@/components/MeetupAlertBanner";
 import { CityPulse } from "@/components/CityPulse";
+import { ChatInviteAlertBar } from "@/components/ChatInviteAlertBar";
 import RecentlyJoined from "@/components/RecentlyJoined";
 import { ContextualEventRecommendations } from "@/components/ContextualEventRecommendations";
 import CityMap from "@/components/CityMap";
@@ -1805,6 +1806,8 @@ export default function Home() {
   </div>
 </section>
 )}
+
+      {effectiveUser && <ChatInviteAlertBar />}
 
       {effectiveUser && (
         <CityPulse city={
