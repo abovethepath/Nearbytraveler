@@ -25243,7 +25243,7 @@ Questions? Just reply to this message. Welcome aboard!
               lifecycleState = "grace";
             }
           }
-        } else if (!c.availableNowId && !c.eventId) {
+        } else if (!c.availableNowId && !c.eventId && c.groupType !== 'group_dm') {
           const isExpired = c.expiresAt && new Date(c.expiresAt) < now;
           if (isExpired) continue;
         }

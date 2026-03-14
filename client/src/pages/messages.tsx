@@ -1254,7 +1254,7 @@ export default function Messages() {
           {selectedMeetupChat ? (() => {
             const activeMeetup = (meetupChatrooms as any[]).find((c: any) => c.id === selectedMeetupChat);
             let inlineGraceBanner: string | undefined;
-            if (activeMeetup?.lifecycleState === 'grace' && activeMeetup?.expiresAt) {
+            if (activeMeetup?.chatType !== 'event' && activeMeetup?.lifecycleState === 'grace' && activeMeetup?.expiresAt) {
               const exp = new Date(activeMeetup.expiresAt);
               const closesAt = new Date(exp.getTime() + 24 * 60 * 60 * 1000);
               const hLeft = Math.max(0, Math.ceil((closesAt.getTime() - Date.now()) / (1000 * 60 * 60)));

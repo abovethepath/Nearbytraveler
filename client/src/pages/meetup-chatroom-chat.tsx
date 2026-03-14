@@ -81,7 +81,7 @@ export default function MeetupChatroomChat() {
   }
 
   let readOnlyBanner: string | undefined;
-  if (isReadOnly && deleteAt) {
+  if (!isEventChat && isReadOnly && deleteAt) {
     const deleteDate = new Date(deleteAt);
     const formatted = deleteDate.toLocaleString(undefined, {
       weekday: 'short',
@@ -94,7 +94,7 @@ export default function MeetupChatroomChat() {
   }
 
   let graceBanner: string | undefined;
-  if (lifecycleState === 'grace' && chatroomInfo?.expiresAt) {
+  if (!isEventChat && lifecycleState === 'grace' && chatroomInfo?.expiresAt) {
     const expiresAt = new Date(chatroomInfo.expiresAt);
     const chatClosesAt = new Date(expiresAt.getTime() + 24 * 60 * 60 * 1000);
     const hoursLeft = Math.max(0, Math.ceil((chatClosesAt.getTime() - Date.now()) / (1000 * 60 * 60)));
