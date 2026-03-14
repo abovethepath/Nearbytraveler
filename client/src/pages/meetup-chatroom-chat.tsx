@@ -20,18 +20,25 @@ export default function MeetupChatroomChat() {
   const titleFromUrl = searchParams.get("title") || "Meetup Chat";
   const subtitle = searchParams.get("subtitle") || "Group chat";
 
-  const { data: chatroomInfo } = useQuery<{
+  const { data: chatroomInfo, error: chatroomError } = useQuery<{
     id: number;
     chatroomName: string;
     isActive: boolean;
     expiresAt: string | null;
     isExpired: boolean;
+    lifecycleState: string;
+    deleteAt: string | null;
   }>({
-    queryKey: [`/api/meetup-chatrooms/${chatroomId}/info`],
+    queryKey: ['/api/meetup-chatrooms', chatroomId, 'info'],
     queryFn: async () => {
       const headers: Record<string, string> = {};
       if (user?.id) headers["x-user-id"] = String(user.id);
       const res = await fetch(`${getApiBaseUrl()}/api/meetup-chatrooms/${chatroomId}/info`, { headers });
+      if (res.status === 404) {
+        const body = await res.json().catch(() => ({}));
+        if (body.deleted) throw new Error("DELETED");
+        throw new Error("Not found");
+      }
       if (!res.ok) throw new Error("Not found");
       return res.json();
     },
@@ -41,7 +48,9 @@ export default function MeetupChatroomChat() {
 
   const { toast } = useToast();
   const title = chatroomInfo?.chatroomName || titleFromUrl;
-  const isExpired = chatroomInfo?.isExpired ?? false;
+  const lifecycleState = chatroomInfo?.lifecycleState ?? "active";
+  const isReadOnly = lifecycleState === "readonly";
+  const deleteAt = chatroomInfo?.deleteAt ?? null;
 
   useEffect(() => {
     if (window.innerWidth < 768) {
@@ -51,14 +60,14 @@ export default function MeetupChatroomChat() {
   }, []);
 
   useEffect(() => {
-    if (isExpired) {
+    if (chatroomError && chatroomError.message === "DELETED") {
       toast({
-        title: "Meetup ended",
-        description: "This meetup chat has expired and is no longer available.",
+        title: "Chat expired",
+        description: "This chat has expired and been deleted",
       });
       navigate("/messages");
     }
-  }, [isExpired, navigate, toast]);
+  }, [chatroomError, navigate, toast]);
 
   if (!chatroomId) {
     navigate("/messages");
@@ -67,6 +76,19 @@ export default function MeetupChatroomChat() {
 
   if (authLoading || !user?.id) {
     return <ChatPageSkeleton variant="dark" />;
+  }
+
+  let readOnlyBanner: string | undefined;
+  if (isReadOnly && deleteAt) {
+    const deleteDate = new Date(deleteAt);
+    const formatted = deleteDate.toLocaleString(undefined, {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+    readOnlyBanner = `This meetup chat has ended. Exchange contact info before this chat is deleted on ${formatted}.`;
   }
 
   const isDesktop = window.innerWidth >= 768;
@@ -84,7 +106,8 @@ export default function MeetupChatroomChat() {
           subtitle={subtitle}
           currentUserId={user.id}
           onBack={() => navigate("/messages")}
-          readOnly={isExpired}
+          readOnly={isReadOnly}
+          readOnlyBanner={readOnlyBanner}
         />
       </div>
     );
@@ -113,7 +136,8 @@ export default function MeetupChatroomChat() {
           subtitle={subtitle}
           currentUserId={user.id}
           onBack={() => navigate("/messages")}
-          readOnly={isExpired}
+          readOnly={isReadOnly}
+          readOnlyBanner={readOnlyBanner}
         />
       </div>
     </div>

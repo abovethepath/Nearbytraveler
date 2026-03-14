@@ -25102,9 +25102,37 @@ Questions? Just reply to this message. Welcome aboard!
         meetupId: meetupChatrooms.meetupId,
         availableNowId: meetupChatrooms.availableNowId,
       }).from(meetupChatrooms).where(eq(meetupChatrooms.id, chatroomId)).limit(1);
-      if (!chatroom) return res.status(404).json({ error: "Chatroom not found" });
-      const isExpired = chatroom.expiresAt ? new Date(chatroom.expiresAt) < new Date() : false;
-      res.json({ ...chatroom, isExpired });
+      if (!chatroom) return res.status(404).json({ error: "Chatroom not found", deleted: true });
+
+      let sessionEndedAt: Date | null = null;
+      if (chatroom.availableNowId) {
+        const [session] = await db.select({ expiresAt: availableNow.expiresAt, isAvailable: availableNow.isAvailable })
+          .from(availableNow).where(eq(availableNow.id, chatroom.availableNowId)).limit(1);
+        if (session) {
+          if (!session.isAvailable || session.expiresAt < new Date()) {
+            sessionEndedAt = session.expiresAt;
+          }
+        }
+      }
+
+      const now = new Date();
+      let lifecycleState = "active";
+      let deleteAt: string | null = null;
+
+      if (sessionEndedAt) {
+        const hoursSinceEnd = (now.getTime() - sessionEndedAt.getTime()) / (1000 * 60 * 60);
+        if (hoursSinceEnd >= 168) {
+          return res.status(404).json({ error: "Chatroom not found", deleted: true });
+        } else if (hoursSinceEnd >= 24) {
+          lifecycleState = "readonly";
+          deleteAt = new Date(sessionEndedAt.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+        } else {
+          lifecycleState = "grace";
+        }
+      }
+
+      const isExpired = lifecycleState === "readonly";
+      res.json({ ...chatroom, isExpired, lifecycleState, deleteAt });
     } catch (error: any) {
       console.error("Error fetching chatroom info:", error);
       res.status(500).json({ error: "Failed to fetch chatroom info" });
@@ -25146,11 +25174,9 @@ Questions? Just reply to this message. Welcome aboard!
 
       const chatrooms = await db.select()
         .from(meetupChatrooms)
-        .where(and(
-          inArray(meetupChatrooms.id, myChatroomIds),
-          eq(meetupChatrooms.isActive, true),
-          gt(meetupChatrooms.expiresAt, now)
-        ))
+        .where(
+          inArray(meetupChatrooms.id, myChatroomIds)
+        )
         .orderBy(desc(meetupChatrooms.createdAt));
 
       // Get latest message for each chatroom
@@ -25190,20 +25216,52 @@ Questions? Just reply to this message. Welcome aboard!
         }));
       }
 
-      const result = chatrooms.map(c => {
-        const isExpired = c.expiresAt && new Date(c.expiresAt) < new Date();
+      const anSessionCache: Record<number, { expiresAt: Date; isAvailable: boolean } | null> = {};
+      const anIds = chatrooms.filter(c => c.availableNowId).map(c => c.availableNowId!);
+      if (anIds.length > 0) {
+        const sessions = await db.select({ id: availableNow.id, expiresAt: availableNow.expiresAt, isAvailable: availableNow.isAvailable })
+          .from(availableNow).where(inArray(availableNow.id, anIds));
+        for (const s of sessions) anSessionCache[s.id] = s;
+      }
+
+      const result: any[] = [];
+      for (const c of chatrooms) {
+        let lifecycleState = "active";
+        let deleteAt: string | null = null;
+        if (c.availableNowId && anSessionCache[c.availableNowId]) {
+          const session = anSessionCache[c.availableNowId]!;
+          let sessionEndedAt: Date | null = null;
+          if (!session.isAvailable || session.expiresAt < now) {
+            sessionEndedAt = session.expiresAt;
+          }
+          if (sessionEndedAt) {
+            const hoursSinceEnd = (now.getTime() - sessionEndedAt.getTime()) / (1000 * 60 * 60);
+            if (hoursSinceEnd >= 168) continue;
+            else if (hoursSinceEnd >= 24) {
+              lifecycleState = "readonly";
+              deleteAt = new Date(sessionEndedAt.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+            } else {
+              lifecycleState = "grace";
+            }
+          }
+        } else if (!c.availableNowId) {
+          const isExpired = c.expiresAt && new Date(c.expiresAt) < now;
+          if (isExpired) continue;
+        }
         const latest = latestMessages[c.id];
-        return {
+        result.push({
           ...c,
-          isExpired,
+          isExpired: lifecycleState === "readonly",
+          lifecycleState,
+          deleteAt,
           chatType: c.availableNowId ? "available_now" : c.meetupId ? "quick_meetup" : "meetup",
           lastMessage: latest?.message || null,
           lastMessageUsername: latest?.username || null,
           lastMessageTime: latest?.sentAt || c.createdAt,
           lastMessageType: latest?.messageType || null,
           unreadCount: unreadByRoom[c.id] ?? 0,
-        };
-      });
+        });
+      }
 
       res.json(result);
     } catch (error: any) {
@@ -25926,62 +25984,103 @@ Questions? Just reply to this message. Welcome aboard!
 
   // ────────────────────────────────────────────────────────────────────────────
 
+  async function runAvailableNowChatroomCleanup() {
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    const anChatrooms = await db.select({
+      id: meetupChatrooms.id,
+      availableNowId: meetupChatrooms.availableNowId,
+      isActive: meetupChatrooms.isActive,
+    }).from(meetupChatrooms).where(isNotNull(meetupChatrooms.availableNowId));
+
+    let markedReadOnly = 0;
+    let deletedChatrooms = 0;
+    let deletedMessages = 0;
+
+    for (const chatroom of anChatrooms) {
+      if (!chatroom.availableNowId) continue;
+      const [session] = await db.select({ expiresAt: availableNow.expiresAt, isAvailable: availableNow.isAvailable })
+        .from(availableNow).where(eq(availableNow.id, chatroom.availableNowId)).limit(1);
+      if (!session) continue;
+
+      let sessionEndedAt: Date | null = null;
+      if (!session.isAvailable || session.expiresAt < now) {
+        sessionEndedAt = session.expiresAt;
+      }
+      if (!sessionEndedAt) continue;
+
+      if (sessionEndedAt <= sevenDaysAgo) {
+        const deleted = await db.delete(meetupChatroomMessages)
+          .where(eq(meetupChatroomMessages.meetupChatroomId, chatroom.id))
+          .returning({ id: meetupChatroomMessages.id });
+        deletedMessages += deleted.length;
+        await db.delete(chatroomMembers)
+          .where(and(eq(chatroomMembers.chatroomId, chatroom.id)));
+        await db.delete(chatroomInviteTokens)
+          .where(and(
+            eq(chatroomInviteTokens.chatroomType, 'meetup'),
+            eq(chatroomInviteTokens.chatroomId, chatroom.id)
+          ));
+        await db.delete(meetupChatrooms).where(eq(meetupChatrooms.id, chatroom.id));
+        deletedChatrooms++;
+      } else if (sessionEndedAt <= twentyFourHoursAgo && chatroom.isActive) {
+        await db.update(meetupChatrooms)
+          .set({ isActive: false })
+          .where(eq(meetupChatrooms.id, chatroom.id));
+        markedReadOnly++;
+      }
+    }
+
+    const expiredAvailableNow = await db.update(availableNow)
+      .set({ isAvailable: false })
+      .where(and(
+        eq(availableNow.isAvailable, true),
+        lte(availableNow.expiresAt, now)
+      ))
+      .returning({ id: availableNow.id });
+
+    const expiredQuickMeets = await db.update(quickMeetups)
+      .set({ isActive: false })
+      .where(and(
+        eq(quickMeetups.isActive, true),
+        lte(quickMeetups.expiresAt, now)
+      ))
+      .returning({ id: quickMeetups.id });
+
+    const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
+    const purgedDeclined = await db.delete(availableNowRequests)
+      .where(and(
+        eq(availableNowRequests.status, "declined"),
+        lte(availableNowRequests.createdAt, sixHoursAgo)
+      ))
+      .returning({ id: availableNowRequests.id });
+
+    console.log(`[Cleanup] AN chatrooms: ${markedReadOnly} marked read-only, ${deletedChatrooms} deleted (${deletedMessages} msgs), ${expiredAvailableNow.length} sessions expired, ${expiredQuickMeets.length} quick meets expired`);
+
+    return {
+      markedReadOnly,
+      deletedChatrooms,
+      deletedMessages,
+      cleanedAvailableNow: expiredAvailableNow.length,
+      cleanedQuickMeets: expiredQuickMeets.length,
+      purgedDeclinedRequests: purgedDeclined.length,
+    };
+  }
+
+  runAvailableNowChatroomCleanup().catch(err => console.error('[Cleanup] Startup cleanup failed:', err));
+  setInterval(() => {
+    runAvailableNowChatroomCleanup().catch(err => console.error('[Cleanup] Scheduled cleanup failed:', err));
+  }, 24 * 60 * 60 * 1000);
+
   app.post("/api/meetup-chatrooms/cleanup-expired", async (req: any, res) => {
     try {
       const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
-      const now = new Date();
-      const expiredChatrooms = await db.select({ id: meetupChatrooms.id })
-        .from(meetupChatrooms)
-        .where(and(
-          eq(meetupChatrooms.isActive, true),
-          lte(meetupChatrooms.expiresAt, now)
-        ));
-
-      if (expiredChatrooms.length > 0) {
-        const expiredIds = expiredChatrooms.map(c => c.id);
-        await db.update(meetupChatrooms)
-          .set({ isActive: false })
-          .where(inArray(meetupChatrooms.id, expiredIds));
-      }
-
-      // Expire available_now sessions past their expiresAt (same timing contract as chatrooms)
-      const expiredAvailableNow = await db.update(availableNow)
-        .set({ isAvailable: false })
-        .where(and(
-          eq(availableNow.isAvailable, true),
-          lte(availableNow.expiresAt, now)
-        ))
-        .returning({ id: availableNow.id });
-
-      // Expire quick meetups past their expiresAt
-      const expiredQuickMeets = await db.update(quickMeetups)
-        .set({ isActive: false })
-        .where(and(
-          eq(quickMeetups.isActive, true),
-          lte(quickMeetups.expiresAt, now)
-        ))
-        .returning({ id: quickMeetups.id });
-
-      // Delete stale declined/pending Available Now requests older than 6 hours
-      // Declined: host already said no — requester should not know. Purge silently.
-      // Pending with expired host session: cleaned up naturally by the GET endpoint
-      // filter, but delete the rows to keep the table tidy.
-      const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
-      const purgedDeclined = await db.delete(availableNowRequests)
-        .where(and(
-          eq(availableNowRequests.status, "declined"),
-          lte(availableNowRequests.createdAt, sixHoursAgo)
-        ))
-        .returning({ id: availableNowRequests.id });
-
-      res.json({
-        cleanedChatrooms: expiredChatrooms.length,
-        cleanedAvailableNow: expiredAvailableNow.length,
-        cleanedQuickMeets: expiredQuickMeets.length,
-        purgedDeclinedRequests: purgedDeclined.length,
-      });
+      const result = await runAvailableNowChatroomCleanup();
+      res.json(result);
     } catch (error: any) {
       console.error("Error cleaning expired chatrooms:", error);
       res.status(500).json({ error: "Failed to cleanup" });
