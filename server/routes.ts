@@ -25470,6 +25470,25 @@ Questions? Just reply to this message. Welcome aboard!
       await db.update(notifications).set({ isRead: true }).where(eq(notifications.id, notificationId));
 
       let chatName = data.chatroomName || "Chat";
+
+      if (notification.fromUserId && notification.fromUserId !== Number(userId)) {
+        const accepter = await db.query.users.findFirst({ where: eq(users.id, Number(userId)) });
+        const accepterName = accepter?.firstName || accepter?.name?.split(" ")[0] || accepter?.username || "Someone";
+        await storage.createNotification({
+          userId: notification.fromUserId,
+          fromUserId: Number(userId),
+          type: "chatroom_invite_accepted",
+          title: `${accepterName} accepted your invite`,
+          message: `${accepterName} joined "${chatName}"`,
+          data: JSON.stringify({ chatroomId, chatroomType, chatroomName: chatName, accepterName, accepterUsername: accepter?.username, accepterProfileImage: accepter?.profileImage }),
+        });
+        try {
+          const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+          const inviterWs = wsMap?.get(notification.fromUserId);
+          if (inviterWs && inviterWs.readyState === 1) inviterWs.send(JSON.stringify({ type: "notification", payload: { type: "chatroom_invite_accepted" } }));
+        } catch {}
+      }
+
       return res.json({ success: true, chatroomId, chatroomName: chatName, chatroomType });
     } catch (error) {
       console.error("[ACCEPT CHATROOM INVITE] Error:", error);
@@ -25649,6 +25668,9 @@ Questions? Just reply to this message. Welcome aboard!
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
       const { token } = req.params;
 
+      const joiner = await db.query.users.findFirst({ where: eq(users.id, userId) });
+      const joinerName = joiner?.firstName || joiner?.name?.split(" ")[0] || joiner?.username || "Someone";
+
       // Try meetupChatrooms.inviteToken first
       const meetupChatroom = await db.query.meetupChatrooms.findFirst({
         where: eq(meetupChatrooms.inviteToken, token)
@@ -25658,11 +25680,33 @@ Questions? Just reply to this message. Welcome aboard!
         const existing = await db.query.chatroomMembers.findFirst({
           where: and(eq(chatroomMembers.chatroomId, meetupChatroom.id), eq(chatroomMembers.userId, userId))
         });
+        let isNewMember = false;
         if (existing) {
-          if (!existing.isActive) await db.update(chatroomMembers).set({ isActive: true }).where(eq(chatroomMembers.id, existing.id));
+          if (!existing.isActive) { await db.update(chatroomMembers).set({ isActive: true }).where(eq(chatroomMembers.id, existing.id)); isNewMember = true; }
         } else {
           await db.insert(chatroomMembers).values({ chatroomId: meetupChatroom.id, userId, role: 'member', isActive: true });
           await db.update(meetupChatrooms).set({ participantCount: meetupChatroom.participantCount + 1 }).where(eq(meetupChatrooms.id, meetupChatroom.id));
+          isNewMember = true;
+        }
+        if (isNewMember) {
+          const hostMember = await db.query.chatroomMembers.findFirst({
+            where: and(eq(chatroomMembers.chatroomId, meetupChatroom.id), eq(chatroomMembers.role, 'admin'), eq(chatroomMembers.isActive, true))
+          });
+          if (hostMember && hostMember.userId !== userId) {
+            await storage.createNotification({
+              userId: hostMember.userId,
+              fromUserId: userId,
+              type: "chatroom_member_joined",
+              title: `${joinerName} joined "${meetupChatroom.chatroomName}"`,
+              message: `${joinerName} joined your chatroom via invite link`,
+              data: JSON.stringify({ chatroomId: meetupChatroom.id, chatroomType: 'meetup', chatroomName: meetupChatroom.chatroomName, joinerName, joinerUsername: joiner?.username, joinerProfileImage: joiner?.profileImage }),
+            });
+            try {
+              const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+              const hostWs = wsMap?.get(hostMember.userId);
+              if (hostWs && hostWs.readyState === 1) hostWs.send(JSON.stringify({ type: "notification", payload: { type: "chatroom_member_joined" } }));
+            } catch {}
+          }
         }
         return res.json({ chatroomId: meetupChatroom.id, chatroomType: 'meetup', name: meetupChatroom.chatroomName });
       }
@@ -25677,10 +25721,12 @@ Questions? Just reply to this message. Welcome aboard!
       const existing = await db.query.chatroomMembers.findFirst({
         where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, userId))
       });
+      let isNewMember = false;
       if (existing) {
-        if (!existing.isActive) await db.update(chatroomMembers).set({ isActive: true }).where(eq(chatroomMembers.id, existing.id));
+        if (!existing.isActive) { await db.update(chatroomMembers).set({ isActive: true }).where(eq(chatroomMembers.id, existing.id)); isNewMember = true; }
       } else {
         await db.insert(chatroomMembers).values({ chatroomId, userId, role: 'member', isActive: true });
+        isNewMember = true;
       }
 
       let name = "Group Chat";
@@ -25688,6 +25734,28 @@ Questions? Just reply to this message. Welcome aboard!
         const c = await db.query.meetupChatrooms.findFirst({ where: eq(meetupChatrooms.id, chatroomId) });
         if (c) name = c.chatroomName;
       }
+
+      if (isNewMember) {
+        const hostMember = await db.query.chatroomMembers.findFirst({
+          where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.role, 'admin'), eq(chatroomMembers.isActive, true))
+        });
+        if (hostMember && hostMember.userId !== userId) {
+          await storage.createNotification({
+            userId: hostMember.userId,
+            fromUserId: userId,
+            type: "chatroom_member_joined",
+            title: `${joinerName} joined "${name}"`,
+            message: `${joinerName} joined your chatroom via invite link`,
+            data: JSON.stringify({ chatroomId, chatroomType, chatroomName: name, joinerName, joinerUsername: joiner?.username, joinerProfileImage: joiner?.profileImage }),
+          });
+          try {
+            const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+            const hostWs = wsMap?.get(hostMember.userId);
+            if (hostWs && hostWs.readyState === 1) hostWs.send(JSON.stringify({ type: "notification", payload: { type: "chatroom_member_joined" } }));
+          } catch {}
+        }
+      }
+
       return res.json({ chatroomId, chatroomType, name });
     } catch (error) {
       console.error("Error joining chatroom via invite:", error);
