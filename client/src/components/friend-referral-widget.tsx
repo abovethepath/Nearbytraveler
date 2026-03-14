@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Copy, Users, Mail, Send, Loader2, Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { SITE_URL } from "@/lib/constants";
 
 export default function FriendReferralWidget() {
   const { toast } = useToast();
@@ -38,8 +39,8 @@ export default function FriendReferralWidget() {
   // Build referral URL with user's unique code
   const referralCode = qrData?.referralCode || '';
   const signupUrl = referralCode 
-    ? `https://nearbytraveler.org/qr-signup?code=${referralCode}`
-    : 'https://nearbytraveler.org';
+    ? `${SITE_URL}/qr-signup?code=${referralCode}`
+    : SITE_URL;
   
   const generatePersonalMessage = () => {
     return `Hey ${emailForm.friendName || 'there'}!

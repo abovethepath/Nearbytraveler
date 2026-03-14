@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Copy, Gift, Mail, Send, Loader2, TrendingUp, Users, Award } from "lucide-react";
+import { SITE_URL } from "@/lib/constants";
 
 interface ReferralData {
   id: number;
@@ -116,7 +117,7 @@ export default function ReferralWidget() {
     }
   };
 
-  const shareUrl = `https://nearbytraveler.org/signup-business`;
+  const shareUrl = `${SITE_URL}/signup-business`;
 
   const getStatusBadge = (status: string) => {
     const statusColors = {

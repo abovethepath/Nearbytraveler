@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { AuthContext } from "@/App";
 import { useToast } from "@/hooks/use-toast";
+import { SITE_URL } from "@/lib/constants";
 
 const POINT_ACTIONS = [
   { action: "Refer a friend who signs up", points: "+50 pts" },
@@ -38,7 +39,7 @@ export default function AmbassadorDashboard() {
   const status = (user as any)?.ambassadorStatus as string | null | undefined;
   const referralCode = (user as any)?.referralCode as string | null | undefined;
   const referralLink = referralCode
-    ? `https://nearbytraveler.org/join?ref=${referralCode}`
+    ? `${SITE_URL}/join?ref=${referralCode}`
     : null;
 
   const PERIOD_GOAL = 50;

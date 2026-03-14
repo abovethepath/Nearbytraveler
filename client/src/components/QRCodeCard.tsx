@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Copy, Share, Download, CheckCircle, User, Link2 } from "lucide-react";
 import QRCode from "qrcode";
+import { SITE_URL } from "@/lib/constants";
 
 interface User {
   id: number;
@@ -60,7 +61,7 @@ export default function QRCodeCard() {
             if (cacheAge < ONE_DAY && code) {
               console.log('📦 QR: Using cached referral code');
               // Always use production domain for QR codes
-              const baseUrl = 'https://nearbytraveler.org';
+              const baseUrl = SITE_URL;
               const url = `${baseUrl}/signup/qr/${code}`;
               setShareUrl(url);
               setLoading(false);
@@ -119,7 +120,7 @@ export default function QRCodeCard() {
 
         // Build the signup URL (route: /signup/qr/:code)
         // Always use production domain for QR codes to ensure they work consistently
-        const baseUrl = 'https://nearbytraveler.org';
+        const baseUrl = SITE_URL;
         const url = `${baseUrl}/signup/qr/${data.referralCode}`;
         console.log('🔗 QR: Share URL:', url);
         setShareUrl(url);

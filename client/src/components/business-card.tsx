@@ -3,11 +3,12 @@ import QRCode from 'qrcode';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download, Share, Globe } from 'lucide-react';
+import { SITE_URL } from "@/lib/constants";
 
 export default function BusinessCard() {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
   // Always use production domain for QR codes
-  const signupUrl = 'https://nearbytraveler.org/join';
+  const signupUrl = `${SITE_URL}/join`;
 
   useEffect(() => {
     // Generate QR code for the signup URL

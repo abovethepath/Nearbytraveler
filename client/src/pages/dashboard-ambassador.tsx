@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/App";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { SITE_URL } from "@/lib/constants";
 
 function formatDateTime(value: any) {
   if (!value) return "—";
@@ -50,7 +51,7 @@ export default function AmbassadorDashboardPage() {
   const referralCode = qrData?.referralCode || "";
   const referralUrl =
     qrData?.signupUrl ||
-    (referralCode ? `https://nearbytraveler.org/signup/qr/${referralCode}` : "https://nearbytraveler.org");
+    (referralCode ? `${SITE_URL}/signup/qr/${referralCode}` : SITE_URL);
 
   const openPublicLanding = React.useCallback(() => {
     // Use `public=1` to avoid redirecting back to this dashboard when logged in.

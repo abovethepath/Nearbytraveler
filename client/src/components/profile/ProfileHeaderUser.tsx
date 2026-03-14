@@ -21,6 +21,7 @@ import type { ProfilePageProps } from "./profile-complete-types";
 import { resolveAndJoinHostelChatroom } from "@/lib/hostelChatrooms";
 import { ShareModal } from "@/components/ShareModal";
 import { getProfileShareText, getProfileRedditText } from "@/lib/shareUtils";
+import { SITE_URL } from "@/lib/constants";
 
 export function ProfileHeaderUser(props: ProfilePageProps) {
   const {
@@ -120,7 +121,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     return () => window.removeEventListener('open-common-modal', handler);
   }, []);
 
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://nearbytraveler.org";
+  const origin = typeof window !== "undefined" ? window.location.origin : SITE_URL;
   const profileUrl = user?.username ? `${origin}/profile/${user.username}` : `${origin}/profile`;
   const shareText = `Check out this profile on NearbyTraveler: @${user?.username || "nearbytraveler"}\n\n${profileUrl}`;
 

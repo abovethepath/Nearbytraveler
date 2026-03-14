@@ -36,6 +36,7 @@ import { ReportUserButton } from "@/components/report-user-button";
 import type { ProfilePageProps } from "./profile-complete-types";
 import { profileEditButtonClass } from "@/components/profile/editButtonClass";
 import { useQuery as useTanstackQuery } from "@tanstack/react-query";
+import { SITE_URL } from "@/lib/constants";
 
 function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profileImage }: {
   userId: number;
@@ -70,7 +71,7 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
   });
 
   const referralCode = qrData?.referralCode || '';
-  const referralUrl = referralCode ? `https://nearbytraveler.org/qr-signup?code=${referralCode}` : 'https://nearbytraveler.org';
+  const referralUrl = referralCode ? `${SITE_URL}/qr-signup?code=${referralCode}` : SITE_URL;
 
   const sinceDate = info?.ambassadorEnrolledAt || info?.createdAt || enrolledAt;
   const sinceDateFormatted = sinceDate

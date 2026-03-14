@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { SITE_URL } from "@/lib/constants";
 
 export default function QRSimplePage() {
   const [qrUrl, setQrUrl] = useState('');
@@ -6,7 +7,7 @@ export default function QRSimplePage() {
   useEffect(() => {
     // Always use production URL for QR codes - window.location.origin would be localhost/replit
     // which fails when scanned from a phone (Safari cannot connect to server)
-    const signupUrl = 'https://nearbytraveler.org/join';
+    const signupUrl = `${SITE_URL}/join`;
     const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(signupUrl)}`;
     setQrUrl(qrApiUrl);
   }, []);

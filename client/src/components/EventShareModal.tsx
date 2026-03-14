@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Copy, Check, Share2, Send, Facebook, Twitter, Mail, MessageCircle, Download, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { SITE_URL } from "@/lib/constants";
 import {
   ShareEventLike,
   getEmailShareUrl,
@@ -51,8 +52,8 @@ export function EventShareModal({ event, trigger }: Props) {
   const [copiedCaption, setCopiedCaption] = useState(false);
   const [generatingImage, setGeneratingImage] = useState(false);
 
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://nearbytraveler.org";
-  const eventUrl = typeof window !== "undefined" ? getEventUrl(event.id, origin) : `https://nearbytraveler.org/events/${event.id}`;
+  const origin = typeof window !== "undefined" ? window.location.origin : SITE_URL;
+  const eventUrl = typeof window !== "undefined" ? getEventUrl(event.id, origin) : `${SITE_URL}/events/${event.id}`;
   const shareText = typeof window !== "undefined" ? getEventShareMessage(event, origin) : `Check out this event: ${event.title}`;
   const igCaption = typeof window !== "undefined" ? getInstagramCaption(event, origin) : shareText;
 

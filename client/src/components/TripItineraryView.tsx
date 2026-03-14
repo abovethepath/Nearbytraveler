@@ -16,6 +16,7 @@ import { TravelCrew } from './TravelCrew';
 import { ShareModal } from '@/components/ShareModal';
 import { getTripShareText, getTripRedditText } from '@/lib/shareUtils';
 import {
+import { SITE_URL } from "@/lib/constants";
   Calendar,
   Clock,
   MapPin,
@@ -513,9 +514,9 @@ export default function TripItineraryView({
 
           <ShareModal
             title={`Share trip to ${travelPlan.destinationCity || travelPlan.destination}`}
-            url={`${typeof window !== 'undefined' ? window.location.origin : 'https://nearbytraveler.org'}/trip/${travelPlan.id}`}
-            shareText={getTripShareText(travelPlan, `${typeof window !== 'undefined' ? window.location.origin : 'https://nearbytraveler.org'}/trip/${travelPlan.id}`)}
-            redditText={getTripRedditText(travelPlan, `${typeof window !== 'undefined' ? window.location.origin : 'https://nearbytraveler.org'}/trip/${travelPlan.id}`)}
+            url={`${typeof window !== 'undefined' ? window.location.origin : SITE_URL}/trip/${travelPlan.id}`}
+            shareText={getTripShareText(travelPlan, `${typeof window !== 'undefined' ? window.location.origin : SITE_URL}/trip/${travelPlan.id}`)}
+            redditText={getTripRedditText(travelPlan, `${typeof window !== 'undefined' ? window.location.origin : SITE_URL}/trip/${travelPlan.id}`)}
             trigger={
               <Button variant="outline" className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20">
                 <Share2 className="w-4 h-4 mr-2" />
