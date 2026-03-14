@@ -110,6 +110,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSendingPhoto, setIsSendingPhoto] = useState(false);
   const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editNameValue, setEditNameValue] = useState(title);
+  const [displayTitle, setDisplayTitle] = useState(title);
+  useEffect(() => { setDisplayTitle(title); }, [title]);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -803,7 +807,31 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   // Check if current user is admin (use == for type coercion since currentUserId may be string)
   const currentMember = members.find(m => m.id == currentUserId);
   const isCurrentUserAdmin = currentMember?.isAdmin || false;
-  
+  const editNameInputRef = useRef<HTMLInputElement>(null);
+
+  const renameChatroomMutation = useMutation({
+    mutationFn: async (newName: string) => {
+      const res = await fetch(`${getApiBaseUrl()}/api/meetup-chatrooms/${chatId}/name`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name: newName }),
+      });
+      if (!res.ok) throw new Error('Failed to rename');
+      return res.json();
+    },
+    onSuccess: (data) => {
+      setDisplayTitle(data.name);
+      setIsEditingName(false);
+      toast({ title: "Chat renamed" });
+    },
+    onError: () => {
+      toast({ title: "Could not rename chat", variant: "destructive" });
+      setEditNameValue(displayTitle);
+      setIsEditingName(false);
+    },
+  });
+
   // Mute user mutation
   const muteMutation = useMutation({
     mutationFn: async ({ targetUserId, reason }: { targetUserId: number, reason?: string }) => {
@@ -1268,6 +1296,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             break;
           }
 
+          case 'chatroom_renamed':
+            if (data.chatroomId === chatId && data.name) {
+              setDisplayTitle(data.name);
+            }
+            break;
           case 'member:joined':
             if (data.chatroomId === chatId || data.chatroomId == chatId) {
               console.log('👤 WhatsApp Chat: New member joined, refetching member list');
@@ -2049,7 +2082,53 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className={`${chatType === 'dm' ? 'text-base' : 'text-[13px]'} font-semibold text-white truncate`}>{title || 'Chat'}</span>
+                {isEditingName && isCurrentUserAdmin && chatType !== 'dm' ? (
+                  <form
+                    className="flex items-center gap-1 flex-1 min-w-0"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const trimmed = editNameValue.trim();
+                      if (trimmed && trimmed !== displayTitle) {
+                        renameChatroomMutation.mutate(trimmed);
+                      } else {
+                        setIsEditingName(false);
+                        setEditNameValue(displayTitle);
+                      }
+                    }}
+                  >
+                    <input
+                      ref={editNameInputRef}
+                      type="text"
+                      value={editNameValue}
+                      onChange={(e) => setEditNameValue(e.target.value)}
+                      onBlur={() => {
+                        const trimmed = editNameValue.trim();
+                        if (trimmed && trimmed !== displayTitle) {
+                          renameChatroomMutation.mutate(trimmed);
+                        } else {
+                          setIsEditingName(false);
+                          setEditNameValue(displayTitle);
+                        }
+                      }}
+                      maxLength={100}
+                      className="bg-gray-700 text-white text-[13px] font-semibold px-2 py-0.5 rounded border border-gray-500 focus:border-blue-400 outline-none flex-1 min-w-0"
+                      autoFocus
+                    />
+                  </form>
+                ) : (
+                  <span
+                    className={`${chatType === 'dm' ? 'text-base' : 'text-[13px]'} font-semibold text-white truncate ${isCurrentUserAdmin && chatType !== 'dm' ? 'cursor-pointer hover:underline' : ''}`}
+                    onClick={() => {
+                      if (isCurrentUserAdmin && chatType !== 'dm') {
+                        setEditNameValue(displayTitle);
+                        setIsEditingName(true);
+                        setTimeout(() => editNameInputRef.current?.focus(), 50);
+                      }
+                    }}
+                  >
+                    {displayTitle || 'Chat'}
+                  </span>
+                )}
                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${messagesLoaded || isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
               </div>
               {subtitle && <p className={`text-gray-400 truncate ${chatType === 'dm' ? 'text-xs' : 'text-[10px]'} leading-tight`}>{subtitle}</p>}
@@ -2291,14 +2370,56 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         
         <div className="flex-1 min-w-0 overflow-hidden">
           <div className="flex items-start gap-1.5 min-w-0">
-            <div
-              className="text-sm font-semibold min-w-0 line-clamp-2 leading-tight flex-1"
-              title={title || 'Chat'}
-              role="heading"
-              aria-level={1}
-            >
-              {title || 'Chat'}
-            </div>
+            {isEditingName && isCurrentUserAdmin && chatType !== 'dm' ? (
+              <form
+                className="flex items-center gap-1 flex-1 min-w-0"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const trimmed = editNameValue.trim();
+                  if (trimmed && trimmed !== displayTitle) {
+                    renameChatroomMutation.mutate(trimmed);
+                  } else {
+                    setIsEditingName(false);
+                    setEditNameValue(displayTitle);
+                  }
+                }}
+              >
+                <input
+                  ref={editNameInputRef}
+                  type="text"
+                  value={editNameValue}
+                  onChange={(e) => setEditNameValue(e.target.value)}
+                  onBlur={() => {
+                    const trimmed = editNameValue.trim();
+                    if (trimmed && trimmed !== displayTitle) {
+                      renameChatroomMutation.mutate(trimmed);
+                    } else {
+                      setIsEditingName(false);
+                      setEditNameValue(displayTitle);
+                    }
+                  }}
+                  maxLength={100}
+                  className="bg-gray-700 text-white text-sm font-semibold px-2 py-0.5 rounded border border-gray-500 focus:border-blue-400 outline-none flex-1 min-w-0"
+                  autoFocus
+                />
+              </form>
+            ) : (
+              <div
+                className={`text-sm font-semibold min-w-0 line-clamp-2 leading-tight flex-1 ${isCurrentUserAdmin && chatType !== 'dm' ? 'cursor-pointer hover:underline' : ''}`}
+                title={displayTitle || 'Chat'}
+                role="heading"
+                aria-level={1}
+                onClick={() => {
+                  if (isCurrentUserAdmin && chatType !== 'dm') {
+                    setEditNameValue(displayTitle);
+                    setIsEditingName(true);
+                    setTimeout(() => editNameInputRef.current?.focus(), 50);
+                  }
+                }}
+              >
+                {displayTitle || 'Chat'}
+              </div>
+            )}
             <span className={`w-2 h-2 rounded-full flex-shrink-0 mt-1 ${
               messagesLoaded || isWsConnected 
                 ? 'bg-green-500' 

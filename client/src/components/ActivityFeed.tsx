@@ -562,7 +562,7 @@ export default function ActivityFeed() {
       ) : filtered.length === 0 ? (
         <Card className="p-6 text-center bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
           <div className="text-gray-700 dark:text-gray-200 font-semibold">{emptyLabel}</div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">No activity yet — start exploring to connect with travelers near you!</div>
+          <div className="text-sm mt-2" style={{ color: 'var(--activity-timestamp-color, #6b7280)' }}>No activity yet — start exploring to connect with travelers near you!</div>
           <Button
             type="button"
             className="mt-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
@@ -612,6 +612,15 @@ export default function ActivityFeed() {
               }
 
               if (type === "chatroom_invite") {
+                return;
+              }
+
+              if (type === "chatroom_added") {
+                const d = n.data;
+                if (d?.chatroomId) {
+                  const chatName = d.chatroomName || "Chat";
+                  setLocation(`/meetup-chatroom-chat/${d.chatroomId}?title=${encodeURIComponent(chatName)}&subtitle=${encodeURIComponent("Group chat")}`);
+                }
                 return;
               }
 
@@ -713,7 +722,7 @@ export default function ActivityFeed() {
             const rightSide = (
               <div className="flex items-center gap-2 shrink-0">
                 {unread && <span className="h-2 w-2 rounded-full bg-[#2563EB]" aria-label="Unread" />}
-                <span className="text-xs text-gray-500 dark:text-gray-400 tabular-nums">{timestamp}</span>
+                <span className="text-xs tabular-nums" style={{ color: 'var(--activity-timestamp-color, #6b7280)' }}>{timestamp}</span>
               </div>
             );
 
@@ -736,6 +745,7 @@ export default function ActivityFeed() {
             })();
 
             const isChatroomInvite = item.kind === "notification" && String((item as ActivityNotificationItem).type) === "chatroom_invite";
+            const isChatroomAdded = item.kind === "notification" && String((item as ActivityNotificationItem).type) === "chatroom_added";
 
             const chatroomInviteActions = (() => {
               if (!isChatroomInvite) return null;
@@ -836,18 +846,20 @@ export default function ActivityFeed() {
                 <Card className={`p-4 bg-white dark:bg-gray-900 border transition-colors ${
                   isMeetRequest || isChatroomInvite
                     ? "border-orange-200 dark:border-orange-900/50 hover:bg-orange-50/50 dark:hover:bg-orange-950/20 hover:border-orange-300 dark:hover:border-orange-800"
-                    : "border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    : isChatroomAdded
+                      ? "border-blue-200 dark:border-blue-900/50 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 hover:border-blue-300 dark:hover:border-blue-800"
+                      : "border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
                 }`}>
                   <div className="flex items-start gap-3">
                     <div className="shrink-0">{left}</div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <div className="font-bold text-gray-900 dark:text-gray-100 leading-snug truncate">
+                          <div className="font-bold leading-snug truncate" style={{ color: 'var(--activity-title-color, #111827)' }}>
                             {item.title}
                           </div>
                           {item.preview ? (
-                            <div className="mt-0.5 text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                            <div className="mt-0.5 text-sm line-clamp-2" style={{ color: 'var(--activity-preview-color, #4b5563)' }}>
                               {item.preview}
                               {item.kind === "event_chat" && (item.moreCount || 0) > 0 ? (
                                 <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
@@ -861,6 +873,28 @@ export default function ActivityFeed() {
                       </div>
                       {meetRequestBadge}
                       {chatroomInviteActions}
+                      {isChatroomAdded && (() => {
+                        const n = item as ActivityNotificationItem;
+                        const d = n.data;
+                        if (!d?.chatroomId) return null;
+                        return (
+                          <div className="mt-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              className="h-8 bg-blue-600 hover:bg-blue-700 text-white"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const chatName = d.chatroomName || "Chat";
+                                setLocation(`/meetup-chatroom-chat/${d.chatroomId}?title=${encodeURIComponent(chatName)}&subtitle=${encodeURIComponent("Group chat")}`);
+                              }}
+                            >
+                              Open Chat
+                            </Button>
+                          </div>
+                        );
+                      })()}
                       {connectionActions}
                     </div>
                   </div>

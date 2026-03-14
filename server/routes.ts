@@ -25254,7 +25254,7 @@ Questions? Just reply to this message. Welcome aboard!
           isExpired: lifecycleState === "readonly",
           lifecycleState,
           deleteAt,
-          chatType: c.availableNowId ? "available_now" : c.meetupId ? "quick_meetup" : "meetup",
+          chatType: c.groupType === 'group_dm' ? "group_dm" : c.availableNowId ? "available_now" : c.meetupId ? "quick_meetup" : "meetup",
           lastMessage: latest?.message || null,
           lastMessageUsername: latest?.username || null,
           lastMessageTime: latest?.sentAt || c.createdAt,
@@ -25373,12 +25373,22 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ error: "userIds must be a non-empty array" });
       }
 
+      const callerMembership = await db.query.chatroomMembers.findFirst({
+        where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, Number(userId)), eq(chatroomMembers.isActive, true))
+      });
+      if (!callerMembership) return res.status(403).json({ error: "You must be a member of this chatroom to add others" });
+
+      const adder = await db.query.users.findFirst({ where: eq(users.id, Number(userId)) });
+      const adderName = adder?.firstName || adder?.name?.split(" ")[0] || adder?.username || "Someone";
+
       // meetup type: delegate to existing add-members logic
       if (type === 'meetup') {
         let added = 0;
         const chatroom = await db.query.meetupChatrooms.findFirst({ where: eq(meetupChatrooms.id, chatroomId) });
         if (!chatroom) return res.status(404).json({ error: "Chatroom not found" });
+        const chatName = chatroom.chatroomName || "a chatroom";
         for (const targetUserId of userIds) {
+          if (targetUserId === Number(userId)) continue;
           const existing = await db.query.chatroomMembers.findFirst({
             where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId))
           });
@@ -25388,7 +25398,24 @@ Questions? Just reply to this message. Welcome aboard!
           } else if (!existing.isActive) {
             await db.update(chatroomMembers).set({ isActive: true }).where(eq(chatroomMembers.id, existing.id));
             added++;
+          } else {
+            continue;
           }
+          await storage.createNotification({
+            userId: targetUserId,
+            fromUserId: Number(userId),
+            type: "chatroom_added",
+            title: `${adderName} added you to "${chatName}"`,
+            message: `You've been added to this chat`,
+            data: JSON.stringify({ chatroomId, chatroomType: type, chatroomName: chatName }),
+          });
+          try {
+            const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+            const targetWs = wsMap?.get(targetUserId);
+            if (targetWs && targetWs.readyState === 1) {
+              targetWs.send(JSON.stringify({ type: "notification", payload: { type: "chatroom_added" } }));
+            }
+          } catch {}
         }
         if (added > 0) {
           await db.update(meetupChatrooms).set({ participantCount: chatroom.participantCount + added }).where(eq(meetupChatrooms.id, chatroomId));
@@ -25407,6 +25434,7 @@ Questions? Just reply to this message. Welcome aboard!
         let added = 0;
         const addedIds: number[] = [];
         for (const targetUserId of userIds) {
+          if (targetUserId === Number(userId)) continue;
           const existing = await db.query.chatroomMembers.findFirst({
             where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId))
           });
@@ -25421,6 +25449,26 @@ Questions? Just reply to this message. Welcome aboard!
           }
         }
         if (addedIds.length > 0) {
+          const chatName = type === 'event'
+            ? (await db.query.events.findFirst({ where: eq(events.id, chatroomId) }))?.title || "a chatroom"
+            : "a chatroom";
+          for (const tid of addedIds) {
+            await storage.createNotification({
+              userId: tid,
+              fromUserId: Number(userId),
+              type: "chatroom_added",
+              title: `${adderName} added you to "${chatName}"`,
+              message: `You've been added to this chat`,
+              data: JSON.stringify({ chatroomId, chatroomType: type, chatroomName: chatName }),
+            });
+            try {
+              const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+              const targetWs = wsMap?.get(tid);
+              if (targetWs && targetWs.readyState === 1) {
+                targetWs.send(JSON.stringify({ type: "notification", payload: { type: "chatroom_added" } }));
+              }
+            } catch {}
+          }
           try {
             const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
             for (const uid of addedIds) {
@@ -25870,7 +25918,6 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ error: "userIds must be a non-empty array" });
       }
 
-      // Must be a member
       const membership = await db.query.chatroomMembers.findFirst({
         where: and(
           eq(chatroomMembers.chatroomId, chatroomId),
@@ -25885,8 +25932,13 @@ Questions? Just reply to this message. Welcome aboard!
       });
       if (!chatroom) return res.status(404).json({ error: "Chatroom not found" });
 
+      const adder = await db.query.users.findFirst({ where: eq(users.id, userId) });
+      const adderName = adder?.firstName || adder?.name?.split(" ")[0] || adder?.username || "Someone";
+      const chatName = chatroom.chatroomName || "a chatroom";
+
       let added = 0;
       for (const targetUserId of userIds) {
+        if (targetUserId === userId) continue;
         const existing = await db.query.chatroomMembers.findFirst({
           where: and(
             eq(chatroomMembers.chatroomId, chatroomId),
@@ -25906,7 +25958,24 @@ Questions? Just reply to this message. Welcome aboard!
             .set({ isActive: true })
             .where(eq(chatroomMembers.id, existing.id));
           added++;
+        } else {
+          continue;
         }
+        await storage.createNotification({
+          userId: targetUserId,
+          fromUserId: userId,
+          type: "chatroom_added",
+          title: `${adderName} added you to "${chatName}"`,
+          message: `You've been added to this chat`,
+          data: JSON.stringify({ chatroomId, chatroomType: 'meetup', chatroomName: chatName }),
+        });
+        try {
+          const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+          const targetWs = wsMap?.get(targetUserId);
+          if (targetWs && targetWs.readyState === 1) {
+            targetWs.send(JSON.stringify({ type: "notification", payload: { type: "chatroom_added" } }));
+          }
+        } catch {}
       }
       if (added > 0) {
         await db.update(meetupChatrooms)
@@ -25918,6 +25987,44 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error) {
       console.error("Error adding members to chatroom:", error);
       return res.status(500).json({ error: "Failed to add members" });
+    }
+  });
+
+  app.patch("/api/meetup-chatrooms/:id/name", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.id);
+      if (isNaN(chatroomId)) return res.status(400).json({ error: "Invalid chatroom ID" });
+      const { name } = req.body as { name: string };
+      if (!name || typeof name !== 'string' || name.trim().length === 0) {
+        return res.status(400).json({ error: "Name is required" });
+      }
+      const trimmed = name.trim().slice(0, 100);
+      const membership = await db.query.chatroomMembers.findFirst({
+        where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, Number(userId)), eq(chatroomMembers.isActive, true))
+      });
+      if (!membership || membership.role !== 'admin') {
+        return res.status(403).json({ error: "Only the chat creator can rename this chat" });
+      }
+      await db.update(meetupChatrooms).set({ chatroomName: trimmed }).where(eq(meetupChatrooms.id, chatroomId));
+      try {
+        const roomMembers = await db.query.chatroomMembers.findMany({
+          where: and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.isActive, true))
+        });
+        const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+        if (wsMap) {
+          const payload = JSON.stringify({ type: "chatroom_renamed", chatroomId, name: trimmed });
+          for (const m of roomMembers) {
+            const ws = wsMap.get(m.userId);
+            if (ws && ws.readyState === 1) ws.send(payload);
+          }
+        }
+      } catch {}
+      return res.json({ success: true, name: trimmed });
+    } catch (error) {
+      console.error("Error renaming chatroom:", error);
+      return res.status(500).json({ error: "Failed to rename chatroom" });
     }
   });
 

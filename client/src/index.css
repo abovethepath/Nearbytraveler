@@ -53,6 +53,18 @@ body {
   color: rgba(255, 255, 255, 0.9);
 }
 
+/* Activity feed Safari dark mode: explicit hex values so text renders correctly */
+:root {
+  --activity-title-color: #111827;
+  --activity-preview-color: #4b5563;
+  --activity-timestamp-color: #6b7280;
+}
+.dark {
+  --activity-title-color: #f3f4f6;
+  --activity-preview-color: #d1d5db;
+  --activity-timestamp-color: #9ca3af;
+}
+
 /* Home landing page: force orange travel tagline in dark mode */
 .dark .travel-tagline {
   color: #FF6B35 !important;
