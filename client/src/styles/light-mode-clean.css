@@ -539,19 +539,19 @@
    Targets bg-gradient-to-r on buttons (Tailwind gradient direction class)
    ────────────────────────────────────────────────────────────── */
 
-:root:not(.dark) button[class*="bg-gradient-to"]:not([class*="bg-clip-text"]) {
+:root:not(.dark) button[class*="bg-gradient-to"]:not([class*="bg-clip-text"]):not([data-testid*="palette-swatch"]) {
   background: #000000 !important;
   background-image: none !important;
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
 }
 
-:root:not(.dark) button[class*="bg-gradient-to"]:not([class*="bg-clip-text"]):hover {
+:root:not(.dark) button[class*="bg-gradient-to"]:not([class*="bg-clip-text"]):not([data-testid*="palette-swatch"]):hover {
   background: #1a1a1a !important;
   background-image: none !important;
 }
 
-:root:not(.dark) button[class*="bg-gradient-to"]:not([class*="bg-clip-text"]) * {
+:root:not(.dark) button[class*="bg-gradient-to"]:not([class*="bg-clip-text"]):not([data-testid*="palette-swatch"]) * {
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
 }
