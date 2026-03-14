@@ -1321,6 +1321,58 @@ p, span, div, button, input, textarea, select {
 }
 
 /* ============================================================
+   SAFARI DARK MODE: EXPLICIT HEX BACKGROUND + TEXT FALLBACKS
+   Safari cannot resolve background-color from bare HSL component
+   CSS variables (e.g. --primary: 217.2 91.2% 59.8%).
+   These rules provide explicit hex values for every Tailwind
+   utility class that relies on CSS-variable-based colors.
+   Hex values derived from the .dark {} HSL definitions above.
+   ============================================================ */
+
+/* -- backgrounds ------------------------------------------------ */
+.dark .bg-primary          { background-color: #3b82f6 !important; }
+.dark .bg-secondary        { background-color: #222f44 !important; }
+.dark .bg-accent           { background-color: #222f44 !important; }
+.dark .bg-muted            { background-color: #222f44 !important; }
+.dark .bg-destructive      { background-color: #7f1d1d !important; }
+.dark .bg-card             { background-color: #1a2333 !important; }
+.dark .bg-popover          { background-color: #1a2333 !important; }
+.dark .bg-input            { background-color: #1f2a3d !important; }
+
+/* -- foreground / text ------------------------------------------ */
+.dark .text-primary            { color: #3b82f6 !important; -webkit-text-fill-color: #3b82f6 !important; }
+.dark :is(button, [role="button"]).text-primary-foreground,
+.dark :is(button, [role="button"]) .text-primary-foreground { color: #151c29 !important; -webkit-text-fill-color: #151c29 !important; }
+.dark .text-secondary-foreground { color: #f8fafc !important; -webkit-text-fill-color: #f8fafc !important; }
+.dark .text-accent-foreground  { color: #f8fafc !important; -webkit-text-fill-color: #f8fafc !important; }
+.dark .text-destructive        { color: #ef4444 !important; -webkit-text-fill-color: #ef4444 !important; }
+.dark .text-destructive-foreground { color: #f8fafc !important; -webkit-text-fill-color: #f8fafc !important; }
+.dark .text-muted-foreground   { color: #e7eaef !important; -webkit-text-fill-color: #e7eaef !important; }
+.dark .text-card-foreground    { color: #f8fafc !important; -webkit-text-fill-color: #f8fafc !important; }
+.dark .text-popover-foreground { color: #f8fafc !important; -webkit-text-fill-color: #f8fafc !important; }
+
+/* -- border ----------------------------------------------------- */
+.dark .border-input  { border-color: #1f2a3d !important; }
+.dark .border-border { border-color: #2b3b55 !important; }
+
+/* -- hover states (escaped Tailwind hover: prefix) -------------- */
+.dark .hover\:bg-primary\/90:hover   { background-color: rgba(59,130,246,0.9) !important; }
+.dark .hover\:bg-secondary\/80:hover { background-color: rgba(34,47,68,0.8) !important; }
+.dark .hover\:bg-accent:hover        { background-color: #2a3b55 !important; }
+.dark .hover\:bg-destructive\/90:hover { background-color: rgba(127,29,29,0.9) !important; }
+
+/* -- ring-offset (used by focus ring) --------------------------- */
+.dark .ring-offset-background { --tw-ring-offset-color: #0f1117; }
+
+/* -- bg-white / bg-background on buttons and CTAs --------------- */
+.dark :is(button, [role="button"], a.inline-flex, a[class*="btn"]).bg-white,
+.dark :is(button, [role="button"], a.inline-flex, a[class*="btn"]).bg-background {
+  background-color: #1f2937 !important;
+  color: #f3f4f6 !important;
+  -webkit-text-fill-color: #f3f4f6 !important;
+}
+
+/* ============================================================
    DARK MODE READABILITY (site-wide, web + iOS WebView)
    - Brighter placeholders on iPhone
    - Brighter dropdown values + options
