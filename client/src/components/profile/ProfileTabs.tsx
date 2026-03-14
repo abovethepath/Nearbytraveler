@@ -3378,7 +3378,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                           <div
                             key={mutual.id}
                             className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 flex flex-col items-center text-center gap-2 cursor-pointer"
-                            style={{ width: '120px' }}
+                            style={{ width: '140px' }}
                             onClick={() => setLocation(`/profile/${mutual.id}`)}
                           >
                             <SimpleAvatar
