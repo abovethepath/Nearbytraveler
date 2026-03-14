@@ -91,6 +91,14 @@ export default function MeetupChatroomChat() {
     readOnlyBanner = `This meetup chat has ended. Exchange contact info before this chat is deleted on ${formatted}.`;
   }
 
+  let graceBanner: string | undefined;
+  if (lifecycleState === 'grace' && chatroomInfo?.expiresAt) {
+    const expiresAt = new Date(chatroomInfo.expiresAt);
+    const chatClosesAt = new Date(expiresAt.getTime() + 24 * 60 * 60 * 1000);
+    const hoursLeft = Math.max(0, Math.ceil((chatClosesAt.getTime() - Date.now()) / (1000 * 60 * 60)));
+    graceBanner = `Session ended · Chat closes in ${hoursLeft}h`;
+  }
+
   const isDesktop = window.innerWidth >= 768;
 
   if (isDesktop) {
@@ -108,6 +116,7 @@ export default function MeetupChatroomChat() {
           onBack={() => navigate("/messages")}
           readOnly={isReadOnly}
           readOnlyBanner={readOnlyBanner}
+          graceBanner={graceBanner}
         />
       </div>
     );
@@ -138,6 +147,7 @@ export default function MeetupChatroomChat() {
           onBack={() => navigate("/messages")}
           readOnly={isReadOnly}
           readOnlyBanner={readOnlyBanner}
+          graceBanner={graceBanner}
         />
       </div>
     </div>

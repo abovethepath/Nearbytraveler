@@ -855,7 +855,7 @@ export default function Messages() {
                   {(meetupChatrooms as any[])
                     .filter((mc: any) => {
                       if (mc.chatType === 'group_dm') return false;
-                      if (mc.expiresAt && new Date(mc.expiresAt) <= new Date()) return false;
+                      if (mc.lifecycleState !== 'grace' && mc.expiresAt && new Date(mc.expiresAt) <= new Date()) return false;
                       return !connectionSearch ||
                         (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase());
                     })
@@ -917,6 +917,17 @@ export default function Messages() {
                                 }`}>
                                   {mc.chatType === 'available_now' ? 'Available Now' : mc.chatType === 'quick_meetup' ? 'Available Now' : 'Meetup'}
                                 </span>
+                                {mc.lifecycleState === 'grace' && (() => {
+                                  const expiresAt = mc.expiresAt ? new Date(mc.expiresAt) : null;
+                                  const hoursLeft = expiresAt ? Math.max(0, Math.ceil((expiresAt.getTime() + 24 * 60 * 60 * 1000 - Date.now()) / (1000 * 60 * 60))) : 0;
+                                  return (
+                                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full shrink-0 font-medium ${
+                                      isSelected ? 'text-white/60' : 'text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800'
+                                    }`}>
+                                      Ended{hoursLeft > 0 ? ` · ${hoursLeft}h left` : ''}
+                                    </span>
+                                  );
+                                })()}
                               </div>
                               <div className="flex items-center gap-2 mt-0.5">
                                 {mc.lastMessage && (
@@ -1154,6 +1165,13 @@ export default function Messages() {
         {/* MEETUP CHATROOM VIEW */}
           {selectedMeetupChat ? (() => {
             const activeMeetup = (meetupChatrooms as any[]).find((c: any) => c.id === selectedMeetupChat);
+            let inlineGraceBanner: string | undefined;
+            if (activeMeetup?.lifecycleState === 'grace' && activeMeetup?.expiresAt) {
+              const exp = new Date(activeMeetup.expiresAt);
+              const closesAt = new Date(exp.getTime() + 24 * 60 * 60 * 1000);
+              const hLeft = Math.max(0, Math.ceil((closesAt.getTime() - Date.now()) / (1000 * 60 * 60)));
+              inlineGraceBanner = `Session ended · Chat closes in ${hLeft}h`;
+            }
             return (
               <WhatsAppChat
                 chatId={selectedMeetupChat}
@@ -1166,6 +1184,7 @@ export default function Messages() {
                   setSelectedMeetupChat(null);
                   navigate('/messages');
                 }}
+                graceBanner={inlineGraceBanner}
               />
             );
           })() :

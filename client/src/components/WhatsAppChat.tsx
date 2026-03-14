@@ -68,11 +68,12 @@ interface WhatsAppChatProps {
   otherUserProfileImage?: string | null;
   readOnly?: boolean;
   readOnlyBanner?: string;
+  graceBanner?: string;
 }
 
 
 export default function WhatsAppChat(props: WhatsAppChatProps) {
-  const { chatId, chatType, title, subtitle, currentUserId, onBack, eventId, meetupId, readOnly, readOnlyBanner } = props;
+  const { chatId, chatType, title, subtitle, currentUserId, onBack, eventId, meetupId, readOnly, readOnlyBanner, graceBanner } = props;
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const isMobileWeb =
@@ -2652,6 +2653,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             {readOnlyBanner && (
               <div className="mx-1 my-2 px-3 py-2 rounded-lg bg-amber-900/60 border border-amber-600/40 text-amber-200 text-sm text-center">
                 {readOnlyBanner}
+              </div>
+            )}
+            {graceBanner && !readOnlyBanner && (
+              <div className="mx-1 my-2 px-3 py-1.5 rounded-lg bg-gray-800/50 border border-gray-600/30 text-gray-400 text-xs text-center">
+                {graceBanner}
               </div>
             )}
             <div className="space-y-1">
