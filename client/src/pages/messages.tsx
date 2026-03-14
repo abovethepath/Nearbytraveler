@@ -332,20 +332,8 @@ export default function Messages() {
     }
   }, []);
 
-  // When the user opens the Messages page, mark ALL received messages as read on the server
-  // so badges clear to 0 across navbar/bottom-nav/notification bell.
-  useEffect(() => {
-    if (!userId) return;
-    apiRequest("POST", `/api/messages/${userId}/mark-all-read`)
-      .then(() => {
-        // Only invalidate unread-count badge — do NOT invalidate the full messages list
-        // (invalidating it triggers a refetch that shows the spinner every time Messages opens)
-        queryClient.invalidateQueries({ queryKey: ["/api/messages", userId, "unread-count"] });
-      })
-      .catch(() => {
-        // Non-fatal: badges will still clear once individual threads are marked read
-      });
-  }, [userId]);
+  // Mark messages as read only for the currently selected conversation, not all at once.
+  // This preserves unread indicators on other conversations in the list.
 
   // CRITICAL: Handle mobile app resume - reconnect WebSocket and refetch messages
   useEffect(() => {
@@ -1105,37 +1093,46 @@ export default function Messages() {
                           }`}>
                             @{conv.username}
                           </h3>
-                          {conv.unreadCount > 0 && (
+                          {conv.unreadCount > 0 && selectedConversation !== conv.userId && (
                             <span
-                              className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 shrink-0"
+                              className="w-2.5 h-2.5 rounded-full bg-orange-500 dark:bg-orange-400 shrink-0 animate-pulse"
                               aria-label="Unread messages"
                               title="Unread messages"
                             />
                           )}
-                          {conv.unreadCount > 0 && (
-                            <div className="bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                              {conv.unreadCount > 99 ? '99+' : conv.unreadCount}
-                            </div>
-                          )}
                         </div>
 
-                        <div className={`text-xs ${
-                          selectedConversation === conv.userId 
-                            ? 'text-gray-200' 
-                            : conv.unreadCount > 0
-                              ? 'text-gray-700 dark:text-gray-300 font-medium'
+                        {conv.lastMessage ? (
+                          <p className={`text-xs truncate ${
+                            selectedConversation === conv.userId
+                              ? 'text-gray-200'
+                              : conv.unreadCount > 0
+                                ? 'text-gray-800 dark:text-gray-200 font-semibold'
+                                : 'text-gray-500 dark:text-gray-400'
+                          }`}>
+                            {conv.lastMessage}
+                          </p>
+                        ) : (
+                          <div className={`text-xs ${
+                            selectedConversation === conv.userId
+                              ? 'text-gray-200'
                               : 'text-gray-600 dark:text-gray-500'
-                        }`}>
-                          {(conv as any).hometownCity
-                            ? (conv as any).travelDestination
-                              ? `${abbreviateCity((conv as any).hometownCity)} → ${abbreviateCity((conv as any).travelDestination)}`
-                              : abbreviateCity((conv as any).hometownCity)
-                            : abbreviateCity(conv.location) || ''}
-                        </div>
+                          }`}>
+                            {(conv as any).hometownCity
+                              ? (conv as any).travelDestination
+                                ? `${abbreviateCity((conv as any).hometownCity)} → ${abbreviateCity((conv as any).travelDestination)}`
+                                : abbreviateCity((conv as any).hometownCity)
+                              : abbreviateCity(conv.location) || ''}
+                          </div>
+                        )}
                       </div>
-                      {selectedConversation === conv.userId && (
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      )}
+                      {conv.unreadCount > 0 && selectedConversation !== conv.userId ? (
+                        <div className="shrink-0 bg-orange-500 text-white text-xs font-bold rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1.5">
+                          {conv.unreadCount > 99 ? '99+' : conv.unreadCount}
+                        </div>
+                      ) : selectedConversation === conv.userId ? (
+                        <div className="w-2 h-2 bg-blue-500 rounded-full shrink-0"></div>
+                      ) : null}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
