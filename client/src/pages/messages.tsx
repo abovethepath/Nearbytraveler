@@ -944,6 +944,14 @@ export default function Messages() {
                       return !connectionSearch ||
                         (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase());
                     })
+                    .sort((a: any, b: any) => {
+                      const aEnded = a.lifecycleState === 'grace' || a.lifecycleState === 'readonly' ? 1 : 0;
+                      const bEnded = b.lifecycleState === 'grace' || b.lifecycleState === 'readonly' ? 1 : 0;
+                      if (aEnded !== bEnded) return aEnded - bEnded;
+                      const aTime = a.lastMessageTime ? new Date(a.lastMessageTime).getTime() : 0;
+                      const bTime = b.lastMessageTime ? new Date(b.lastMessageTime).getTime() : 0;
+                      return bTime - aTime;
+                    })
                     .map((mc: any) => {
                       const isSelected = selectedMeetupChat === mc.id;
                       return (
