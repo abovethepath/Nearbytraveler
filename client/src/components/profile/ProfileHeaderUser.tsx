@@ -386,7 +386,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   }}
                   data-testid="button-lets-meet-now-hero"
                 >
-                  Create Quick Meetup
+                  I'm Out Now
                 </Button>
               </div>
             </div>

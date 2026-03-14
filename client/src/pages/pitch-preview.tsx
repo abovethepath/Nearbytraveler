@@ -153,7 +153,7 @@ export function PitchPreview() {
               <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto mb-2">
                 ⚡
               </div>
-              <h3 className="font-semibold text-gray-800 dark:text-white">Quick Meets</h3>
+              <h3 className="font-semibold text-gray-800 dark:text-white">Available Now</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">Instant local connections</p>
             </div>
           </div>

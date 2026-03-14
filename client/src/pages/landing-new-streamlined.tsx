@@ -462,7 +462,7 @@ export default function LandingStreamlined() {
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Discover, Message & Meet Up</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Browse AI-matched people in your city or destination. Message them directly. Create quick meetups. Join community events. RSVP to local gatherings.
+                  Browse AI-matched people in your city or destination. Message them directly. Go Available Now. Join community events. RSVP to local gatherings.
                 </p>
               </div>
 

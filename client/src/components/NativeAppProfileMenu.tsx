@@ -25,7 +25,7 @@ const MENU_ITEMS = [
   { icon: MapPin, label: "Cities", path: "/discover" },
   { icon: Calendar, label: "Events", path: "/events" },
   { icon: Compass, label: "Plan Trip", path: "/plan-trip" },
-  { icon: Zap, label: "Quick Meetups", path: "/quick-meetups" },
+  { icon: Zap, label: "Available Now", path: "/quick-meetups" },
   { icon: Users, label: "City Plans", path: "/match-in-city" },
   { icon: Calendar, label: "Create Event", path: "/create-event" },
   { icon: MessageCircle, label: "Messages", path: "/messages" },

@@ -161,7 +161,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
   ] : [
     { label: "Create Event", path: "/create-event", icon: Calendar, color: "#f97316" },
     { label: "Plan Trip", path: "/plan-trip", icon: MapPin, color: "#3b82f6" },
-    { label: "Quick Meetup", path: "/quick-meetups", icon: Users, color: "#10b981" },
+    { label: "Available Now", path: "/quick-meetups", icon: Users, color: "#10b981" },
   ];
 
   const handleCreateTap = (e: React.MouseEvent | React.TouchEvent) => {

@@ -62,7 +62,7 @@ export default function AIChatBot() {
     }
     
     if (lowerMessage.includes('event') || lowerMessage.includes('meetup')) {
-      return "For events and meetups:\n• Browse events on the home page or Events tab\n• RSVP to events you're interested in\n• Create your own events using the '+' button\n• Use Quick Meetup for spontaneous gatherings\n• Filter events by interests, date, and location";
+      return "For events and meetups:\n• Browse events on the home page or Events tab\n• RSVP to events you're interested in\n• Create your own events using the '+' button\n• Use Available Now for spontaneous gatherings\n• Filter events by interests, date, and location";
     }
     
     if (lowerMessage.includes('connect') || lowerMessage.includes('friend') || lowerMessage.includes('meet')) {

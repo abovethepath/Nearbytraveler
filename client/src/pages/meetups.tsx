@@ -113,14 +113,14 @@ export default function MeetupsPage() {
       });
       toast({
         title: "Success",
-        description: "Your quick meet has been created and is now visible to others!",
+        description: "Your post is now live for others to see!",
       });
     },
     onError: (error: any) => {
       console.error("Meetup creation error:", error);
       toast({
-        title: "Error creating quick meet",
-        description: error.message || "Failed to create quick meet. Please check required fields.",
+        title: "Error creating meetup",
+        description: error.message || "Failed to create. Please check required fields.",
         variant: "destructive",
       });
     },
@@ -135,13 +135,13 @@ export default function MeetupsPage() {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/archived-quickMeets`] });
       toast({
         title: "Joined!",
-        description: "You've successfully joined the quick meet. Click the Chat button to coordinate with other participants!",
+        description: "You've successfully joined! Click the Chat button to coordinate with other participants!",
       });
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error?.message || "Failed to join quick meet",
+        description: error?.message || "Failed to join",
         variant: "destructive",
       });
     },
@@ -157,14 +157,14 @@ export default function MeetupsPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/availability"] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/archived-quickMeets`] });
       toast({
-        title: "Left quick meet",
-        description: "You've left the quick meet successfully.",
+        title: "Left meetup",
+        description: "You've left the meetup successfully.",
       });
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error?.message || "Failed to leave quick meet",
+        description: error?.message || "Failed to leave",
         variant: "destructive",
       });
     },
@@ -311,7 +311,7 @@ export default function MeetupsPage() {
             Let's Meet Now
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Connect with people who are available right now for spontaneous quick meets
+            Connect with people who are available right now for spontaneous meetups
           </p>
         </div>
         
@@ -328,7 +328,7 @@ export default function MeetupsPage() {
           </DialogTrigger>
           <DialogContent className="max-w-2xl w-full">
             <DialogHeader>
-              <DialogTitle>Create a Quick Meet</DialogTitle>
+              <DialogTitle>I'm Out — Share What You're Doing</DialogTitle>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-6">
               {/* Left Column */}

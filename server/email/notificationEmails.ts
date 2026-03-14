@@ -83,7 +83,7 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
                 You just joined a community of travelers and locals who believe every city is better when strangers become friends.
               </p>
               <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
-                Complete your profile, find people near you, and jump into a Quick Meetup — your next adventure starts now.
+                Complete your profile, find people near you, and post what you're up to — your next adventure starts now.
               </p>
               <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 10px;">
                 Here's what to do first:
@@ -91,7 +91,7 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
               <ul style="font-size: 16px; color: #555555; line-height: 1.8; margin: 0 0 30px; padding-left: 20px;">
                 <li>Complete your profile to attract like-minded travelers</li>
                 <li>Browse locals and travelers near you</li>
-                <li>Join a Quick Meetup happening nearby</li>
+                <li>Join an Available Now meetup happening nearby</li>
                 <li>Explore city chatrooms to meet the community</li>
               </ul>
               <div style="text-align: center; margin: 30px 0;">
@@ -120,7 +120,7 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
     const result = await sendBrevoEmail({
       toEmail: user.email,
       subject: `You're in! Welcome to NearbyTraveler 🌍`,
-      textContent: `Hi ${displayName}! You just joined a community of travelers and locals who believe every city is better when strangers become friends. Complete your profile, find people near you, and jump into a Quick Meetup — your next adventure starts now. Go to your profile: ${APP_URL}/profile/${user.username}`,
+      textContent: `Hi ${displayName}! You just joined a community of travelers and locals who believe every city is better when strangers become friends. Complete your profile, find people near you, and post what you're up to — your next adventure starts now. Go to your profile: ${APP_URL}/profile/${user.username}`,
       htmlContent,
     });
 
@@ -579,7 +579,7 @@ export async function sendTripApproachingEmail(userId: number, destination: stri
               </p>
               <ul style="font-size: 16px; color: #555555; line-height: 1.8; margin: 0 0 30px; padding-left: 20px;">
                 <li>Browse locals in ${destination} who share your interests</li>
-                <li>Check out Quick Meetups happening during your visit</li>
+                <li>Check out Available Now meetups happening during your visit</li>
                 <li>Join the ${destination} city chatroom</li>
                 <li>Update your travel preferences for better matches</li>
               </ul>
@@ -605,7 +605,7 @@ export async function sendTripApproachingEmail(userId: number, destination: stri
     const result = await sendBrevoEmail({
       toEmail: user.email,
       subject: `Your trip to ${destination} is coming up! ✈️`,
-      textContent: `Hi ${displayName}! Your trip to ${destination} starts on ${startDate}. Browse locals who share your interests and check out Quick Meetups happening during your visit at ${APP_URL}/discover`,
+      textContent: `Hi ${displayName}! Your trip to ${destination} starts on ${startDate}. Browse locals who share your interests and check out Available Now meetups happening during your visit at ${APP_URL}/discover`,
       htmlContent,
     });
 
@@ -963,7 +963,7 @@ export async function sendMeetupJoinEmail(organizerId: number, joinerName: strin
             <td style="padding: 40px;">
               <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
               <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
-                <strong>${joinerName}</strong> (@${joinerUsername}) just joined your Quick Meetup:
+                <strong>${joinerName}</strong> (@${joinerUsername}) just joined your meetup:
               </p>
               <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="color: #111827; margin: 0 0 8px; font-size: 18px;">${meetupTitle}</h3>
@@ -994,7 +994,7 @@ export async function sendMeetupJoinEmail(organizerId: number, joinerName: strin
     const result = await sendBrevoEmail({
       toEmail: organizer.email,
       subject: `${joinerName} joined your meetup: ${meetupTitle}`,
-      textContent: `Hi ${displayName}! ${joinerName} (@${joinerUsername}) just joined your Quick Meetup "${meetupTitle}" at ${meetingPoint}. View the meetup at ${meetupId ? `${APP_URL}/quick-meetups/${meetupId}` : `${APP_URL}/profile/${joinerUsername}`}`,
+      textContent: `Hi ${displayName}! ${joinerName} (@${joinerUsername}) just joined your meetup "${meetupTitle}" at ${meetingPoint}. View the meetup at ${meetupId ? `${APP_URL}/quick-meetups/${meetupId}` : `${APP_URL}/profile/${joinerUsername}`}`,
       htmlContent,
     });
 

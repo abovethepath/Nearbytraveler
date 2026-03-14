@@ -173,7 +173,7 @@ export function MeetupChatroom({ meetupId, meetupTitle, isOpen, onClose, current
           )}
           
           <p className="text-sm text-gray-500">
-            {chatroom?.description || "Private chat for quick meet participants. This chat expires when the quick meet ends."}
+            {chatroom?.description || "Private chat for meetup participants. This chat expires when the meetup ends."}
           </p>
         </DialogHeader>
 

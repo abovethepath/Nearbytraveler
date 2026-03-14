@@ -72,10 +72,10 @@ export default function SupportPage() {
             
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                How do Quick Meetups work?
+                How does Available Now work?
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Quick Meetups are spontaneous hangouts you can create or join. Simply set a meeting point, time, and description. Others in your area will be notified and can join.
+                Available Now lets you share what you're doing right now so others can join, or signal that you're free to hang out. Set a meeting point, time, and description — others in your area will be notified and can join.
               </p>
             </div>
             

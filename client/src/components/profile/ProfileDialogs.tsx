@@ -2439,7 +2439,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
               { icon: Calendar, label: "Events", path: "/events" },
               { icon: Zap, label: "Event Integrations", path: "/integrations" },
               { icon: Plane, label: "Plan Trip", path: "/plan-trip" },
-              { icon: Users, label: "Quick Meetups", path: "/quick-meetups" },
+              { icon: Users, label: "Available Now", path: "/quick-meetups" },
               { icon: Users, label: "City Match", path: "/match-in-city" },
               { icon: Users, label: "Connect", path: "/connect" },
               { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },

@@ -712,7 +712,7 @@ function Navbar() {
                         }}
                       >
                         <Users className="mr-2 h-4 w-4" />
-                        <span>Quick Meetups</span>
+                        <span>Available Now</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => {
@@ -889,7 +889,7 @@ function Navbar() {
                         setLocation("/quick-meetups");
                       }}
                     >
-                      <span className="mr-3">⚡</span>Quick Meetups
+                      <span className="mr-3">⚡</span>Available Now
                     </Link>
                     <Link
                       href="/city-chatrooms"

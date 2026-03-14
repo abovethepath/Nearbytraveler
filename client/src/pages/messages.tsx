@@ -915,7 +915,7 @@ export default function Messages() {
                                         ? 'bg-gradient-to-r from-blue-500 to-indigo-600 ring-1 ring-blue-400/30'
                                         : 'bg-gradient-to-r from-purple-500 to-pink-600 ring-1 ring-purple-400/30'
                                 }`}>
-                                  {mc.chatType === 'available_now' ? 'Available Now' : mc.chatType === 'quick_meetup' ? 'Quick Meet' : 'Meetup'}
+                                  {mc.chatType === 'available_now' ? 'Available Now' : mc.chatType === 'quick_meetup' ? 'Available Now' : 'Meetup'}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2 mt-0.5">

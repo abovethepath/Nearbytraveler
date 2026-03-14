@@ -68,7 +68,7 @@ export default function QuickMeetupChat() {
       if (errorMessage.includes('404') || errorMessage.includes('not found')) {
         toast({
           title: "Meetup No Longer Available",
-          description: "This quick meet has expired or been deleted.",
+          description: "This meetup has expired or been deleted.",
           variant: "default",
         });
         setLocation('/quick-meetups');
@@ -82,7 +82,7 @@ export default function QuickMeetupChat() {
         <p className="text-lg">Invalid meetup ID</p>
         <Button onClick={() => setLocation('/quick-meetups')} variant="outline" data-testid="button-back-to-quick-meetups">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Quick Meetups
+          Back to Available Now
         </Button>
       </div>
     );
@@ -100,7 +100,7 @@ export default function QuickMeetupChat() {
         </p>
         <Button onClick={() => setLocation('/quick-meetups')} variant="outline" data-testid="button-back-to-quick-meetups-error">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Quick Meetups
+          Back to Available Now
         </Button>
       </div>
     );
@@ -112,7 +112,7 @@ export default function QuickMeetupChat() {
         <p className="text-lg">Chatroom not found</p>
         <Button onClick={() => setLocation('/quick-meetups')} variant="outline" data-testid="button-back-to-quick-meetups-no-chatroom">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Quick Meetups
+          Back to Available Now
         </Button>
       </div>
     );
@@ -125,7 +125,7 @@ export default function QuickMeetupChat() {
         <p className="text-lg">Please log in to view this chat</p>
         <Button onClick={() => setLocation('/quick-meetups')} variant="outline">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Quick Meetups
+          Back to Available Now
         </Button>
       </div>
     );

@@ -33,6 +33,7 @@ import { eventReminderService } from "./services/eventReminderService";
 import { TravelMatchingService } from "./services/matching";
 import { businessProximityEngine } from "./businessProximityNotificationEngine";
 import { smsService } from "./services/smsService";
+import { createOrJoinMeetupChatroom, addMemberToChatroom, getUserMeetupChatrooms } from "./meetupChatroomUtils";
 import QRCode from "qrcode";
 import { detectMetroArea, getMetroAreaName, getMetroCities } from '../shared/metro-areas';
 import { getMetroArea } from '../shared/constants';
@@ -16975,7 +16976,7 @@ Questions? Just reply to this message. Welcome aboard!
                 userId: cityUser.id,
                 fromUserId: parseInt(userId as string || '0'),
                 type: 'quick_meetup_nearby',
-                title: `New Quick Meetup in ${newMeetup.city}!`,
+                title: `Someone's out now in ${newMeetup.city}!`,
                 message: `${organizerName} wants to meet: "${newMeetup.title}" at ${newMeetup.meetingPoint}`,
                 data: JSON.stringify({ meetupId: newMeetup.id, city: newMeetup.city, expiresAt: newMeetup.expiresAt }),
               });
@@ -17574,24 +17575,35 @@ Questions? Just reply to this message. Welcome aboard!
       if (!meetupId) return res.status(400).json({ message: "Invalid meetup ID" });
       if (!userId) return res.status(401).json({ message: "User ID required" });
 
-      // Look up existing chatroom
       let chatroom = await storage.getMeetupChatroom(meetupId);
 
       if (!chatroom) {
-        // Auto-create the chatroom on first access
-        chatroom = await storage.createQuickMeetupChatroom(meetupId);
+        const meetup = await storage.getQuickMeetupById(meetupId);
+        if (!meetup) return res.status(404).json({ message: "Meetup not found" });
+
+        const result = await createOrJoinMeetupChatroom({
+          meetupId,
+          hostUserId: meetup.organizerId,
+          joinerUserId: parseInt(userId as string),
+          chatroomName: `${meetup.title} - Group Chat`,
+          description: `Group chat for the ${meetup.title} meetup`,
+          city: meetup.city,
+          state: meetup.state,
+          country: meetup.country,
+          activityType: meetup.category || null,
+          expiresAt: new Date(meetup.expiresAt),
+        });
+        chatroom = result.chatroom;
       }
 
       if (!chatroom) return res.status(404).json({ message: "Chatroom not found" });
 
-      // Seed chatroom_members from quick_meetup_participants (idempotent upsert)
       try {
         const participants = await storage.getQuickMeetupParticipants(meetupId);
         for (const p of participants) {
-          await storage.joinQuickMeetupChatroom(chatroom.id, p.userId);
+          await addMemberToChatroom(chatroom.id, p.userId, 'member');
         }
-        // Also ensure the requesting user is a member
-        await storage.joinQuickMeetupChatroom(chatroom.id, parseInt(userId as string));
+        await addMemberToChatroom(chatroom.id, parseInt(userId as string), 'member');
       } catch (seedErr) {
         console.error('Error seeding chatroom members:', seedErr);
       }
@@ -24544,10 +24556,6 @@ Questions? Just reply to this message. Welcome aboard!
             .from(users).where(eq(users.id, Number(userId)));
           const acceptorName = acceptor?.username || "Someone";
 
-          const [requester] = await db.select({ username: users.username })
-            .from(users).where(eq(users.id, updated.fromUserId));
-          const requesterName = requester?.username || "Someone";
-
           console.log(`[MEET ACCEPT] Looking up active session for host userId=${userId}`);
           const [activeSession] = await db.select()
             .from(availableNow)
@@ -24562,87 +24570,33 @@ Questions? Just reply to this message. Welcome aboard!
           console.log(`[MEET ACCEPT] activeSession=${activeSession?.id}, city=${activeSession?.city}, country=${activeSession?.country}`);
 
           if (activeSession) {
-            const [existingChatroom] = await db.select()
-              .from(meetupChatrooms)
-              .where(and(
-                eq(meetupChatrooms.availableNowId, activeSession.id),
-                eq(meetupChatrooms.isActive, true)
-              ))
-              .limit(1);
+            const activityLabels: Record<string, string> = {
+              coffee: "Coffee", food: "Food", drinks: "Drinks", explore: "Explore",
+              music: "Music", fitness: "Fitness", hike: "Hike", bike: "Bike",
+              beach: "Beach", sightseeing: "Sightseeing"
+            };
+            const sessionActivities = activeSession.activities || [];
+            const primaryActivity = sessionActivities.length > 0 ? sessionActivities[0] : null;
+            const activityLabel = primaryActivity ? (activityLabels[primaryActivity] || primaryActivity) : null;
+            const chatroomName = activityLabel
+              ? `${activityLabel} with @${acceptorName}`
+              : `Hangout with @${acceptorName}`;
+            const activitiesStr = sessionActivities.map((a: string) => activityLabels[a] || a).join(', ') || 'Meetup';
 
-            if (existingChatroom) {
-              console.log(`[MEET ACCEPT] Joining existing chatroom ${existingChatroom.id}`);
-              groupChatroomId = existingChatroom.id;
-              await db.update(meetupChatrooms)
-                .set({ participantCount: sql`${meetupChatrooms.participantCount} + 1` })
-                .where(eq(meetupChatrooms.id, existingChatroom.id));
-
-              await db.insert(meetupChatroomMessages).values({
-                meetupChatroomId: existingChatroom.id,
-                userId: updated.fromUserId,
-                username: requesterName,
-                message: `@${requesterName} joined the quick meet! 🎉`,
-                messageType: 'system',
-              });
-
-              await db.insert(chatroomMembers).values({
-                chatroomId: existingChatroom.id,
-                userId: updated.fromUserId,
-                role: 'member',
-                isActive: true,
-              }).onConflictDoNothing();
-
-              try {
-                const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
-                await chatWebSocketService.broadcastMemberUpdate(existingChatroom.id, 'meetup', updated.fromUserId, requesterName);
-              } catch {}
-            } else {
-              const activityLabels: Record<string, string> = {
-                coffee: "Coffee", food: "Food", drinks: "Drinks", explore: "Explore",
-                music: "Music", fitness: "Fitness", hike: "Hike", bike: "Bike",
-                beach: "Beach", sightseeing: "Sightseeing"
-              };
-              const sessionActivities = activeSession.activities || [];
-              const primaryActivity = sessionActivities.length > 0 ? sessionActivities[0] : null;
-              const activityLabel = primaryActivity ? (activityLabels[primaryActivity] || primaryActivity) : null;
-              const chatroomName = activityLabel
-                ? `${activityLabel} with @${acceptorName}`
-                : `Hangout with @${acceptorName}`;
-              const activitiesStr = sessionActivities.map((a: string) => activityLabels[a] || a).join(', ') || 'Quick Meet';
-
-              const chatroomCity = (activeSession.city || 'Unknown').trim() || 'Unknown';
-              const chatroomCountry = (activeSession.country || 'USA').trim() || 'USA';
-
-              console.log(`[MEET ACCEPT] Creating new chatroom: name="${chatroomName}", city="${chatroomCity}", country="${chatroomCountry}"`);
-              const [newChatroom] = await db.insert(meetupChatrooms).values({
-                availableNowId: activeSession.id,
-                chatroomName,
-                description: `Group chat for everyone meeting up with @${acceptorName} — ${activitiesStr}`,
-                city: chatroomCity,
-                state: activeSession.state || null,
-                country: chatroomCountry,
-                activityType: primaryActivity || null,
-                isActive: true,
-                expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
-                participantCount: 2,
-              }).returning();
-
-              groupChatroomId = newChatroom.id;
-              console.log(`[MEET ACCEPT] Created chatroom ${newChatroom.id}`);
-
-              await db.insert(meetupChatroomMessages).values({
-                meetupChatroomId: newChatroom.id,
-                userId: Number(userId),
-                username: acceptorName,
-                message: `Group chat created! @${acceptorName} and @${requesterName} are meeting up. Everyone accepted will join here automatically. 🤝`,
-                messageType: 'system',
-              });
-
-              await db.insert(chatroomMembers).values([
-                { chatroomId: newChatroom.id, userId: Number(userId), role: 'admin', isActive: true },
-                { chatroomId: newChatroom.id, userId: updated.fromUserId, role: 'member', isActive: true },
-              ]).onConflictDoNothing();
-            }
+            const result = await createOrJoinMeetupChatroom({
+              availableNowId: activeSession.id,
+              hostUserId: Number(userId),
+              joinerUserId: updated.fromUserId,
+              chatroomName,
+              description: `Group chat for everyone meeting up with @${acceptorName} — ${activitiesStr}`,
+              city: activeSession.city || 'Unknown',
+              state: activeSession.state,
+              country: activeSession.country || 'USA',
+              activityType: primaryActivity,
+              expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
+            });
+            groupChatroomId = result.chatroomId;
+            console.log(`[MEET ACCEPT] ${result.isNew ? 'Created' : 'Joined'} chatroom ${result.chatroomId}`);
           } else {
             console.log(`[MEET ACCEPT] No active session found for userId=${userId} — skipping chatroom creation`);
           }

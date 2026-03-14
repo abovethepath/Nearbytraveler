@@ -121,7 +121,7 @@ export function QuickMeetupWidget({
           ...(actualUser?.id && { 'x-user-id': actualUser.id.toString() })
         }
       });
-      if (!response.ok) throw new Error('Failed to fetch quick meetups');
+      if (!response.ok) throw new Error('Failed to fetch meetups');
       return response.json();
     },
     refetchInterval: 30000, // Refresh every 30 seconds for real-time updates
@@ -232,7 +232,7 @@ export function QuickMeetupWidget({
   // when user is not yet a member. Do NOT navigate directly to quick-meetup-chat without joining first.
   const joinMutation = useMutation({
     mutationFn: async (meetupId: number) => {
-      if (!actualUserId) throw new Error("Please log in to join quick meets");
+      if (!actualUserId) throw new Error("Please log in to join");
 
       console.log('🚀 ATTEMPTING JOIN:', { meetupId, userId: actualUserId });
       
@@ -251,7 +251,7 @@ export function QuickMeetupWidget({
       queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
       toast({
         title: "Joined!",
-        description: "You've successfully joined the quick meet.",
+        description: "You've successfully joined!",
       });
       setDetailsMeetup((prev) => {
         if (!prev || prev.id !== data.meetupId) return prev;
@@ -267,7 +267,7 @@ export function QuickMeetupWidget({
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to join quick meet",
+        description: error.message || "Failed to join",
         variant: "destructive",
       });
     },
@@ -289,7 +289,7 @@ export function QuickMeetupWidget({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
-      toast({ title: "Left meetup", description: "You've left the quick meetup." });
+      toast({ title: "Left meetup", description: "You've left the meetup." });
       setDetailsMeetup((prev) => {
         if (!prev || !actualUserId) return prev;
         const ids: number[] = Array.isArray(prev.participantIds)
@@ -310,7 +310,7 @@ export function QuickMeetupWidget({
   const createMutation = useMutation({
     mutationFn: async (meetupData: any) => {
       if (!actualUser?.id) {
-        throw new Error("Please log in to create quick meets");
+        throw new Error("Please log in to create a meetup");
       }
 
       // Calculate expiration based on response time - ALWAYS USE LOCAL TIME
@@ -384,7 +384,7 @@ export function QuickMeetupWidget({
         organizerNotes: ''
       });
       toast({
-        title: "Quick Meet Posted!",
+        title: "Posted!",
         description: "Your availability is now live for others to join.",
       });
       onCreateSuccess?.();
@@ -392,7 +392,7 @@ export function QuickMeetupWidget({
     onError: (error: any) => {
       console.error('❌ CREATE MEETUP ERROR:', error);
       toast({
-        title: "Error Creating Quick Meet",
+        title: "Error Creating Meetup",
         description: error.message || "Failed to post availability. Please try again.",
         variant: "destructive"
       });
@@ -411,13 +411,13 @@ export function QuickMeetupWidget({
       setManagingMeetupId(null);
       toast({
         title: "Updated!",
-        description: "Your quick meet has been updated.",
+        description: "Your meetup has been updated.",
       });
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to update quick meet",
+        description: error.message || "Failed to update meetup",
         variant: "destructive",
       });
     },
@@ -432,13 +432,13 @@ export function QuickMeetupWidget({
       queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
       toast({
         title: "Deleted!",
-        description: "Your quick meet has been deleted.",
+        description: "Your meetup has been deleted.",
       });
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to delete quick meet",
+        description: error.message || "Failed to delete meetup",
         variant: "destructive",
       });
     },
@@ -501,7 +501,7 @@ export function QuickMeetupWidget({
           <CardContent className="p-4 bg-transparent">
             <div className="flex items-center gap-2">
               <Zap className="h-4 w-4 text-orange-500 animate-pulse" />
-              <span className="text-sm font-medium bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Loading quick meetups...</span>
+              <span className="text-sm font-medium bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Loading meetups...</span>
             </div>
           </CardContent>
         </Card>
@@ -547,7 +547,7 @@ export function QuickMeetupWidget({
     >
       <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-900 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isManageEditing ? 'Edit Quick Meet' : 'Manage Quick Meet'}</DialogTitle>
+          <DialogTitle>{isManageEditing ? 'Edit Meetup' : 'Manage Meetup'}</DialogTitle>
         </DialogHeader>
         {managingMeetup ? (
           <div className="space-y-4">
@@ -607,7 +607,7 @@ export function QuickMeetupWidget({
                     variant="outline"
                     className="w-full border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                     onClick={() => {
-                      if (confirm('Cancel this quick meet? This action cannot be undone.')) {
+                      if (confirm('Cancel this meetup? This action cannot be undone.')) {
                         deleteMeetup(managingMeetup.id);
                         setManagingMeetupId(null);
                       }
@@ -792,7 +792,7 @@ export function QuickMeetupWidget({
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                 <h3 className="font-bold text-green-700 dark:text-green-300 text-lg">
-                  {allActiveMeetups.length} Active Quick Meetup{allActiveMeetups.length > 1 ? 's' : ''}
+                  {allActiveMeetups.length} Active Now{allActiveMeetups.length > 1 ? '' : ''}
                 </h3>
               </div>
               <div className="space-y-2 max-h-[300px] overflow-y-auto">
@@ -952,14 +952,14 @@ export function QuickMeetupWidget({
                 <div className="relative flex items-center justify-center gap-3">
                   <Coffee className="h-7 w-7 text-orange-600 dark:text-orange-400" />
                   <h3 className="font-black text-2xl bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                    Quick Meetup
+                    I'm Out Now
                   </h3>
                 </div>
               </div>
               
               <div className="space-y-2">
                 <p className="text-sm font-medium text-black dark:text-gray-300">
-                  Post a meetup idea and connect with nearby people today
+                  Share what you're doing right now and let others join you
                 </p>
               </div>
               
@@ -971,7 +971,7 @@ export function QuickMeetupWidget({
                   className="cta-gradient w-full text-lg font-bold py-5 h-14 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-600 dark:to-orange-500 dark:hover:from-blue-700 dark:hover:to-orange-600 border-0 rounded-xl shadow-lg text-gray-900"
                 >
                   <Plus className="h-5 w-5 mr-2" />
-                  Create Quick Meetup
+                  I'm Out — Join Me
                 </Button>
               </div>
             </div>
@@ -980,7 +980,7 @@ export function QuickMeetupWidget({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Zap className="h-6 w-6 text-orange-500 animate-bounce" />
-                  <h4 className="font-bold text-lg bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Create Quick Meetup</h4>
+                  <h4 className="font-bold text-lg bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">I'm Out — Share What You're Doing</h4>
                 </div>
                 <Button
                   onClick={() => {
@@ -1182,7 +1182,7 @@ export function QuickMeetupWidget({
                 className="w-full text-lg font-black py-4 h-14 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 rounded-xl shadow-2xl hover:scale-105 transition-all duration-300 relative overflow-hidden"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                  {createMutation.isPending ? 'Posting...' : 'Post Quick Meetup'}
+                  {createMutation.isPending ? 'Posting...' : 'Post — I\'m Out Now'}
                 </span>
                 {/* Animated shine effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] animate-shine"></div>
@@ -1265,7 +1265,7 @@ export function QuickMeetupWidget({
                                       setManagingMeetupId(meetup.id);
                                     }}
                                     className="p-1 rounded-full hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
-                                    title="Edit quick meet"
+                                    title="Edit meetup"
                                     data-testid={`button-edit-meetup-${meetup.id}`}
                                   >
                                     <Edit3 className="w-3 h-3 text-green-500" />
@@ -1273,12 +1273,12 @@ export function QuickMeetupWidget({
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      if (confirm('Cancel this quick meet? This action cannot be undone.')) {
+                                      if (confirm('Cancel this meetup? This action cannot be undone.')) {
                                         deleteMeetup(meetup.id);
                                       }
                                     }}
                                     className="p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                                    title="Cancel quick meet"
+                                    title="Cancel meetup"
                                     data-testid={`button-cancel-meetup-${meetup.id}`}
                                   >
                                     <Trash2 className="w-3 h-3 text-red-500" />
@@ -1395,7 +1395,7 @@ export function QuickMeetupWidget({
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (confirm('Cancel this quick meet? This action cannot be undone.')) {
+                              if (confirm('Cancel this meetup? This action cannot be undone.')) {
                                 deleteMeetup(meetup.id);
                               }
                             }}

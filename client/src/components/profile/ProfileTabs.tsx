@@ -3241,7 +3241,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Completing profile</span><span className="font-medium text-orange-600">1 pt</span></div>
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating a trip</span><span className="font-medium text-orange-600">1 pt</span></div>
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating an event</span><span className="font-medium text-orange-600">4 pts</span></div>
-                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating a quick meetup</span><span className="font-medium text-orange-600">2 pts</span></div>
+                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Posting on Available Now</span><span className="font-medium text-orange-600">2 pts</span></div>
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Uploading a photo</span><span className="font-medium text-orange-600">1 pt</span></div>
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating a chatroom</span><span className="font-medium text-orange-600">2 pts</span></div>
                           </div>
@@ -3269,7 +3269,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Completing profile</span><span className="font-medium text-orange-600">1 pt</span></div>
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating a trip</span><span className="font-medium text-orange-600">1 pt</span></div>
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating an event</span><span className="font-medium text-orange-600">4 pts</span></div>
-                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating a quick meetup</span><span className="font-medium text-orange-600">2 pts</span></div>
+                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Posting on Available Now</span><span className="font-medium text-orange-600">2 pts</span></div>
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Uploading a photo</span><span className="font-medium text-orange-600">1 pt</span></div>
                             <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating a chatroom</span><span className="font-medium text-orange-600">2 pts</span></div>
                           </div>

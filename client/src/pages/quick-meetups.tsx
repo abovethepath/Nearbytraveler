@@ -194,14 +194,14 @@ function QuickMeetupsPage() {
       
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to restart quick meet');
+        throw new Error(error.message || 'Failed to restart');
       }
       
       return response.json();
     },
     onSuccess: (data) => {
       toast({
-        title: "Quick Meet Restarted Successfully!",
+        title: "Restarted Successfully!",
         description: `"${data.meetup.title}" is now active for ${restartDuration} with a fresh participant list.`,
       });
       
@@ -210,7 +210,7 @@ function QuickMeetupsPage() {
     },
     onError: (error: Error) => {
       toast({
-        title: "Failed to Restart Quick Meet",
+        title: "Failed to Restart",
         description: error.message,
         variant: "destructive",
       });
@@ -237,7 +237,7 @@ function QuickMeetupsPage() {
       if (!response.ok) {
         const error = await response.json();
         console.error('❌ Response error:', error);
-        throw new Error(error.message || 'Failed to update quick meet');
+        throw new Error(error.message || 'Failed to update');
       }
       
       const data = await response.json();
@@ -248,7 +248,7 @@ function QuickMeetupsPage() {
       console.log('🎉 MUTATION onSuccess callback fired');
       toast({
         title: "Success!",
-        description: "Quick meet updated successfully.",
+        description: "Updated successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
       // Ensure selectedMeetupId stays set to the correct ID after update
@@ -278,7 +278,7 @@ function QuickMeetupsPage() {
       
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to delete quick meet');
+        throw new Error(error.message || 'Failed to delete');
       }
       
       return response.json();
@@ -609,7 +609,7 @@ function QuickMeetupsPage() {
       <Dialog open={!!selectedMeetupId} onOpenChange={(open) => !open && setSelectedMeetupId(null)}>
         <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-900">
           <DialogHeader>
-            <DialogTitle>Manage Quick Meet</DialogTitle>
+            <DialogTitle>Manage Meetup</DialogTitle>
           </DialogHeader>
           {selectedMeetupId && (() => {
             // Show loading while both the general list and direct lookup are in flight
@@ -664,7 +664,7 @@ function QuickMeetupsPage() {
                         id="edit-title"
                         value={editForm.title}
                         onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                        placeholder="Quick meet title"
+                        placeholder="What are you doing?"
                         data-testid="input-edit-title"
                       />
                     </div>
@@ -985,7 +985,7 @@ function QuickMeetupsPage() {
         <div className="mb-6">
           <UniversalBackButton />
           <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-red-800 bg-clip-text text-transparent mb-2">
-            All Quick Meets
+            Available Now — I'm Out
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
             Find spontaneous hangouts and activities in your area
@@ -997,7 +997,7 @@ function QuickMeetupsPage() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
-              placeholder="Search quick meets by activity, location, or username..."
+              placeholder="Search by activity, location, or username..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -1012,7 +1012,7 @@ function QuickMeetupsPage() {
             className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Create Quick Meet
+            I'm Out — Join Me
           </Button>
         </div>
 
@@ -1020,7 +1020,7 @@ function QuickMeetupsPage() {
         <Dialog open={showCreateForm} onOpenChange={(open) => { setShowCreateForm(open); if (!open) setCreateSimilarData(null); }}>
           <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-900 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{createSimilarData ? 'Create Similar Quick Meet' : 'Create Quick Meet'}</DialogTitle>
+              <DialogTitle>{createSimilarData ? 'Post Something Similar' : 'I\'m Out — Share What You\'re Doing'}</DialogTitle>
             </DialogHeader>
             <QuickMeetupWidget
               city={effectiveCity}
@@ -1076,7 +1076,7 @@ function QuickMeetupsPage() {
                   No meetups found
                 </h3>
                 <p className="text-gray-500 dark:text-gray-500 mb-4">
-                  {searchQuery ? 'Try adjusting your search terms' : 'Be the first to create a quick meetup!'}
+                  {searchQuery ? 'Try adjusting your search terms' : 'Be the first to post what you\'re up to!'}
                 </p>
                 <Button
                   onClick={() => setShowCreateForm(true)}

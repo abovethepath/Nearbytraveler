@@ -167,7 +167,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
       setShowSetup(false);
-      toast({ title: "You're Available Now!", description: "Others in your city can see you're ready to hang out." });
+      toast({ title: "You're Available Now — I'm Free!", description: "Others in your city can see you're ready to hang out." });
     },
     onError: (error: any) => {
       console.error("Go Available error:", error);
@@ -617,7 +617,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 className="available-now-secondary-cta w-full mt-3 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 font-semibold text-xs py-2 rounded-full dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white dark:border-transparent"
                 onClick={() => { refetchAvailableUsers(); onSortByAvailableNow(); }}
               >
-                🟢 See Who Else is Available Now
+                🟢 See Who's Available Now
               </Button>
             )}
           </div>
@@ -986,7 +986,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               })()}
               <div className="min-w-0 flex-1">
                 <DialogTitle className="text-base font-bold text-gray-900 dark:text-white truncate">
-                  {groupChatroom?.chatroomName || "Quick Meet Chat"}
+                  {groupChatroom?.chatroomName || "Meetup Chat"}
                 </DialogTitle>
                 <div className="flex items-center flex-wrap gap-x-1.5 gap-y-0 text-xs text-gray-500 dark:text-gray-400 leading-tight">
                   <span className="whitespace-nowrap">{groupChatroom?.participantCount || 0} people</span>
