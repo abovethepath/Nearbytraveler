@@ -468,8 +468,9 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     return map[activity.toLowerCase()] ?? "bg-gray-800 text-gray-300 border-gray-700";
   };
 
+  const now = Date.now();
   const otherAvailableUsers = (Array.isArray(availableUsers) ? availableUsers : []).filter(
-    (u: any) => u.userId !== currentUser?.id
+    (u: any) => u.userId !== currentUser?.id && (!u.expiresAt || new Date(u.expiresAt).getTime() > now)
   );
 
   const handleCardClick = (userId: number) => {
@@ -483,7 +484,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     <>
     <Card className="overflow-hidden shadow-lg rounded-2xl bg-white border border-gray-200 dark:border-0 dark:bg-gray-800 relative z-20">
       <div className="p-4">
-        {myStatus ? (
+        {myStatus && (!myStatus.expiresAt || new Date(myStatus.expiresAt).getTime() > now) ? (
           <div className="mb-4 overflow-hidden rounded-2xl p-4 bg-emerald-50 border border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-700">
             <div
               className="cursor-pointer"

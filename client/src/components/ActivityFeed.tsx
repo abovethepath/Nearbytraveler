@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { MessageSquare, Users, MapPin, X, ExternalLink, UserCheck, Loader2, Calendar, Activity as ActivityIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getApiBaseUrl } from "@/lib/queryClient";
+import { getApiBaseUrl, apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/App";
 import { useToast } from "@/hooks/use-toast";
 
@@ -458,6 +458,25 @@ export default function ActivityFeed() {
     },
   });
 
+  const respondToChatroomInvite = useMutation({
+    mutationFn: async ({ notificationId, action }: { notificationId: number; action: "accept" | "decline" }) => {
+      return await apiRequest("POST", `/api/chatroom-invites/${notificationId}/${action}`);
+    },
+    onSuccess: async (res, { action }) => {
+      qc.invalidateQueries({ queryKey: ["/api/activity-feed", currentUser?.id] });
+      qc.invalidateQueries({ queryKey: ["/api/notifications", currentUser?.id] });
+      if (action === "accept") {
+        const data = await res.json().catch(() => ({}));
+        if (data.chatroomId) {
+          setLocation(`/meetup-chatroom-chat/${data.chatroomId}?title=${encodeURIComponent(data.chatroomName || 'Chat')}&subtitle=Group+chat`);
+        }
+        toast({ title: "Invite accepted", description: "You've joined the chat!" });
+      } else {
+        toast({ title: "Invite declined" });
+      }
+    },
+  });
+
   const items = (data?.items || []) as AnyActivityItem[];
 
   const filtered = useMemo(() => {
@@ -712,6 +731,45 @@ export default function ActivityFeed() {
               );
             })();
 
+            const isChatroomInvite = item.kind === "notification" && String((item as ActivityNotificationItem).type) === "chatroom_invite";
+
+            const chatroomInviteActions = (() => {
+              if (!isChatroomInvite) return null;
+              const n = item as ActivityNotificationItem;
+              if (n.unread === false) return <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Responded</div>;
+              return (
+                <div className="flex items-center gap-2 mt-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="h-8 bg-green-600 hover:bg-green-700 text-white"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (typeof n.id === "number") respondToChatroomInvite.mutate({ notificationId: n.id, action: "accept" });
+                    }}
+                    disabled={respondToChatroomInvite.isPending}
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="destructive"
+                    className="h-8"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (typeof n.id === "number") respondToChatroomInvite.mutate({ notificationId: n.id, action: "decline" });
+                    }}
+                    disabled={respondToChatroomInvite.isPending}
+                  >
+                    Decline
+                  </Button>
+                </div>
+              );
+            })();
+
             const connectionActions = (() => {
               if (item.kind !== "notification") return null;
               const n = item as ActivityNotificationItem;
@@ -772,7 +830,7 @@ export default function ActivityFeed() {
                 className={`w-full text-left cursor-pointer ${isMeetRequest ? "group" : ""}`}
               >
                 <Card className={`p-4 bg-white dark:bg-gray-900 border transition-colors ${
-                  isMeetRequest
+                  isMeetRequest || isChatroomInvite
                     ? "border-orange-200 dark:border-orange-900/50 hover:bg-orange-50/50 dark:hover:bg-orange-950/20 hover:border-orange-300 dark:hover:border-orange-800"
                     : "border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
                 }`}>
@@ -798,6 +856,7 @@ export default function ActivityFeed() {
                         {rightSide}
                       </div>
                       {meetRequestBadge}
+                      {chatroomInviteActions}
                       {connectionActions}
                     </div>
                   </div>
