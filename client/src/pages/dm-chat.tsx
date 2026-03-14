@@ -254,7 +254,7 @@ export default function DMChat() {
           <Button
             onClick={() => setLocation(`/profile/${otherUserId}`)}
             variant="outline"
-            className="w-full gap-2 text-sm !bg-transparent border-gray-700 text-gray-300 hover:border-orange-600 hover:text-orange-400 hover:!bg-transparent transition-colors mt-1"
+            className="w-full gap-2 text-sm !bg-transparent border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 dark:border-gray-700 dark:text-gray-300 dark:hover:border-orange-600 dark:hover:text-orange-400 hover:!bg-transparent transition-colors mt-1"
           >
             <User className="w-4 h-4" />
             View Full Profile
@@ -263,7 +263,7 @@ export default function DMChat() {
           <Button
             onClick={() => setShowGroupDialog(true)}
             variant="outline"
-            className="w-full gap-2 text-sm !bg-transparent border-green-800 text-green-400 hover:border-green-500 hover:text-green-300 hover:!bg-green-900/20 transition-colors"
+            className="w-full gap-2 text-sm !bg-transparent border-green-300 text-green-700 hover:border-green-500 hover:text-green-600 dark:border-green-800 dark:text-green-400 dark:hover:border-green-500 dark:hover:text-green-300 hover:!bg-transparent dark:hover:!bg-green-900/20 transition-colors"
           >
             <UserPlus className="w-4 h-4" />
             Add People to Chat
