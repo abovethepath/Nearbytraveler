@@ -9924,9 +9924,6 @@ export class DatabaseStorage implements IStorage {
       // Use fallback values for missing fields so events without full location data still get chatrooms
       const city = event.city || event.location || 'Unknown';
       const country = event.country || 'United States';
-      const eventDate = event.date ? new Date(event.date) : new Date();
-      const expiresAt = new Date(eventDate.getTime() + 365 * 24 * 60 * 60 * 1000);
-
       const [chatroom] = await db.insert(meetupChatrooms).values({
         eventId: eventId,
         chatroomName: `${event.title} - Group Chat`,
@@ -9935,7 +9932,7 @@ export class DatabaseStorage implements IStorage {
         state: event.state || '',
         country,
         isActive: true,
-        expiresAt,
+        expiresAt: new Date('2099-12-31T23:59:59Z'),
         participantCount: 0
       }).returning();
 

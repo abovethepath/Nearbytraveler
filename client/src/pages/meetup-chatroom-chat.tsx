@@ -28,6 +28,7 @@ export default function MeetupChatroomChat() {
     isExpired: boolean;
     lifecycleState: string;
     deleteAt: string | null;
+    eventId: number | null;
   }>({
     queryKey: ['/api/meetup-chatrooms', chatroomId, 'info'],
     queryFn: async () => {
@@ -51,6 +52,7 @@ export default function MeetupChatroomChat() {
   const lifecycleState = chatroomInfo?.lifecycleState ?? "active";
   const isReadOnly = lifecycleState === "readonly";
   const deleteAt = chatroomInfo?.deleteAt ?? null;
+  const isEventChat = !!chatroomInfo?.eventId;
 
   useEffect(() => {
     if (window.innerWidth < 768) {
@@ -109,7 +111,7 @@ export default function MeetupChatroomChat() {
       >
         <WhatsAppChat
           chatId={chatroomId}
-          chatType="meetup"
+          chatType={isEventChat ? "event" : "meetup"}
           title={title}
           subtitle={subtitle}
           currentUserId={user.id}
@@ -140,7 +142,7 @@ export default function MeetupChatroomChat() {
       <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
         <WhatsAppChat
           chatId={chatroomId}
-          chatType="meetup"
+          chatType={isEventChat ? "event" : "meetup"}
           title={title}
           subtitle={subtitle}
           currentUserId={user.id}

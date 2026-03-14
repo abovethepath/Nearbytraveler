@@ -2118,7 +2118,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   </form>
                 ) : (
                   <span
-                    className={`${chatType === 'dm' ? 'text-base' : 'text-[13px]'} font-semibold text-white truncate ${isCurrentUserAdmin && chatType !== 'dm' ? 'cursor-pointer hover:underline' : ''}`}
+                    className={`${chatType === 'dm' ? 'text-base' : 'text-[13px]'} font-semibold text-white ${chatType === 'event' ? 'line-clamp-2' : 'truncate'} ${isCurrentUserAdmin && chatType !== 'dm' ? 'cursor-pointer hover:underline' : ''}`}
                     onClick={() => {
                       if (isCurrentUserAdmin && chatType !== 'dm') {
                         setEditNameValue(displayTitle);

@@ -13678,6 +13678,23 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
       
+      // AUTO-ADD to event chatroom_members when joining an event
+      try {
+        const eventChatroom = await storage.getEventChatroom(eventId);
+        if (eventChatroom?.id) {
+          await db.insert(chatroomMembers).values({
+            chatroomId: eventChatroom.id,
+            userId,
+            role: 'member',
+            isActive: true,
+          }).onConflictDoNothing();
+          await db.update(meetupChatrooms).set({ participantCount: sql`(SELECT COUNT(*) FROM chatroom_members WHERE chatroom_id = ${eventChatroom.id} AND is_active = true)` }).where(eq(meetupChatrooms.id, eventChatroom.id));
+          if (process.env.NODE_ENV === 'development') console.log(`💬 EVENT-CHAT: Added user ${userId} to chatroom_members for event chatroom ${eventChatroom.id}`);
+        }
+      } catch (chatMemberError: any) {
+        if (process.env.NODE_ENV === 'development') console.error(`⚠️ EVENT-CHAT: Failed to add user to event chatroom:`, chatMemberError.message);
+      }
+
       // AUTO-ADD EVENT TO ITINERARY when user marks as "going"
       if (status === 'going') {
         try {
@@ -14637,15 +14654,28 @@ Questions? Just reply to this message. Welcome aboard!
         console.error(`⚠️ AMBASSADOR POINTS: Failed to award create-event points for event ${newEvent.id}:`, ambassadorPointsError);
       }
       
-      // AUTO-CREATE CHATROOM for the event (like Quick Meets)
+      // AUTO-CREATE CHATROOM for the event (like Quick Meets) and add creator as first member
       try {
-        await storage.ensureEventChatroom(newEvent.id);
+        const eventChatroom = await storage.ensureEventChatroom(newEvent.id);
         if (process.env.NODE_ENV === 'development') console.log(`💬 AUTO-CHATROOM: Created chatroom for event ${newEvent.id}`);
+        
+        if (eventChatroom?.id) {
+          try {
+            await db.insert(chatroomMembers).values({
+              chatroomId: eventChatroom.id,
+              userId: newEvent.organizerId,
+              role: 'admin',
+              isActive: true,
+            }).onConflictDoNothing();
+            await db.update(meetupChatrooms).set({ participantCount: sql`${meetupChatrooms.participantCount} + 1` }).where(eq(meetupChatrooms.id, eventChatroom.id));
+            console.log(`✅ AUTO-CHATROOM: Added creator ${newEvent.organizerId} to chatroom_members for event chatroom ${eventChatroom.id}`);
+          } catch (memberError: any) {
+            console.error(`⚠️ AUTO-CHATROOM: Failed to add creator to chatroom_members:`, memberError.message);
+          }
+        }
       } catch (chatroomError: any) {
-        // CRITICAL ERROR: Log full details when chatroom creation fails
         console.error(`🚨 CRITICAL: Failed to create chatroom for event ${newEvent.id}:`, chatroomError);
         console.error(`🚨 Event details:`, { id: newEvent.id, title: newEvent.title, city: newEvent.city, organizer: newEvent.organizerId });
-        // Still allow event creation to succeed, but make the error highly visible
       }
       
       // AUTOMATICALLY ADD CREATOR AS EVENT ATTENDEE - Organizers should always attend their own events with ORGANIZER role
@@ -25069,6 +25099,7 @@ Questions? Just reply to this message. Welcome aboard!
         expiresAt: meetupChatrooms.expiresAt,
         meetupId: meetupChatrooms.meetupId,
         availableNowId: meetupChatrooms.availableNowId,
+        eventId: meetupChatrooms.eventId,
       }).from(meetupChatrooms).where(eq(meetupChatrooms.id, chatroomId)).limit(1);
       if (!chatroom) return res.status(404).json({ error: "Chatroom not found", deleted: true });
 
@@ -25212,7 +25243,7 @@ Questions? Just reply to this message. Welcome aboard!
               lifecycleState = "grace";
             }
           }
-        } else if (!c.availableNowId) {
+        } else if (!c.availableNowId && !c.eventId) {
           const isExpired = c.expiresAt && new Date(c.expiresAt) < now;
           if (isExpired) continue;
         }
@@ -25222,7 +25253,7 @@ Questions? Just reply to this message. Welcome aboard!
           isExpired: lifecycleState === "readonly",
           lifecycleState,
           deleteAt,
-          chatType: c.groupType === 'group_dm' ? "group_dm" : c.availableNowId ? "available_now" : c.meetupId ? "quick_meetup" : "meetup",
+          chatType: c.groupType === 'group_dm' ? "group_dm" : c.availableNowId ? "available_now" : c.meetupId ? "quick_meetup" : c.eventId ? "event" : "meetup",
           lastMessage: latest?.message || null,
           lastMessageUsername: latest?.username || null,
           lastMessageTime: latest?.sentAt || c.createdAt,
