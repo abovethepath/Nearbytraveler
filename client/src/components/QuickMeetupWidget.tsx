@@ -952,14 +952,14 @@ export function QuickMeetupWidget({
                 <div className="relative flex items-center justify-center gap-3">
                   <Coffee className="h-7 w-7 text-orange-600 dark:text-orange-400" />
                   <h3 className="font-black text-2xl bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                    I'm Out Now
+                    Available Now
                   </h3>
                 </div>
               </div>
               
               <div className="space-y-2">
                 <p className="text-sm font-medium text-black dark:text-gray-300">
-                  Share what you're doing right now and let others join you
+                  Share what you're doing and let others join you.
                 </p>
               </div>
               
@@ -971,7 +971,7 @@ export function QuickMeetupWidget({
                   className="cta-gradient w-full text-lg font-bold py-5 h-14 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-600 dark:to-orange-500 dark:hover:from-blue-700 dark:hover:to-orange-600 border-0 rounded-xl shadow-lg text-gray-900"
                 >
                   <Plus className="h-5 w-5 mr-2" />
-                  I'm Out — Join Me
+                  I'm Out, Come Join Me
                 </Button>
               </div>
             </div>

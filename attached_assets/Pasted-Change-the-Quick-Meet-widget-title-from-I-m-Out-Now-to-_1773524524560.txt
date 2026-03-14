@@ -1,0 +1,23 @@
+Change the Quick Meet widget title from "I'm Out Now" to "Available Now" and the subtitle to "Share what you're doing and let others join you." Change the CTA button from "I'm Out — Join Me" to "I'm Out, Come Join Me." Do not change anything else.  when a user uses this available now or the other one, there should still be a tag (as there already is) on the users card, does ths make sense or is it confusing...?
+1 availble now is (i am home but could meet for xyz... poker, coffee, drinks)
+1 availbae now is (I am already out, at the beach, come meet me, i am already out at coffee come meet me, here is the adresss.....) 
+they are different but they are both availble nows... they should also create the same chatrooms as we did already and the same expirations situation
+
+2:41 PM
+Makes total sense. Both are "Available Now" — the tag on the user card stays the same green "Available Now" badge for both. The difference is just context inside the flow, not a different brand.
+
+The user card tag doesn't need to distinguish between the two modes — both mean the same thing to someone browsing: "this person is available right now." When you click their card or accept a request, THEN you see the details (coffee at home vs already at the beach).
+
+So the system is:
+
+One "Available Now" brand — one green badge, one section title Two creation modes inside it:
+
+"I'm Free" — home/flexible, request-based (existing Available Now flow)
+"I'm Out, Come Join Me" — already out with address, direct join (existing Quick Meet flow)
+Same chatroom creation, same expiry, same everything underneath.
+
+The home page shows one unified "Available Now" section with both types of active users mixed together in one feed. User cards all show the same green "Available Now" badge.
+
+This is clean. Tell Replit:
+
+The Available Now user card badge should show for both "I'm Free" (Available Now) and "I'm Out" (Quick Meet) users — both display the same green "Available Now" badge on their user card. Do not create a separate badge for Quick Meet users. Both modes are "Available Now" to other users browsing. Do not change anything else.

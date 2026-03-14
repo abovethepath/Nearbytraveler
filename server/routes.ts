@@ -24769,7 +24769,17 @@ Questions? Just reply to this message. Welcome aboard!
           eq(availableNow.isAvailable, true),
           gte(availableNow.expiresAt, now)
         ));
-      let activeIds = results.map(r => r.userId);
+      const quickMeetResults = await db.select({ userId: quickMeetups.organizerId })
+        .from(quickMeetups)
+        .where(and(
+          eq(quickMeetups.isActive, true),
+          gte(quickMeetups.expiresAt, now)
+        ));
+      const idSet = new Set([
+        ...results.map(r => r.userId),
+        ...quickMeetResults.map(r => r.userId),
+      ]);
+      let activeIds = Array.from(idSet);
       
       // Admin (nearbytrav, user ID 2) bypasses all stealth/block filters to see every user
       if (currentUserId > 0 && currentUserId !== 2) {
