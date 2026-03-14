@@ -54,12 +54,12 @@ export function AdaptiveThemeToggle() {
           <Palette className="h-4 w-4" />
           Theme Settings
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="hidden dark:block" />
         
         <DropdownMenuItem
           onClick={() => setTheme("light")}
           className={cn(
-            "cursor-pointer text-gray-900 dark:text-gray-100",
+            "cursor-pointer text-black dark:text-gray-100",
             theme === "light" && "font-semibold dark:bg-blue-900/30"
           )}
         >
@@ -73,7 +73,7 @@ export function AdaptiveThemeToggle() {
         <DropdownMenuItem
           onClick={() => setTheme("dark")}
           className={cn(
-            "cursor-pointer text-gray-900 dark:text-gray-100",
+            "cursor-pointer text-black dark:text-gray-100",
             theme === "dark" && "font-semibold dark:bg-blue-900/30"
           )}
         >
@@ -87,7 +87,7 @@ export function AdaptiveThemeToggle() {
         <DropdownMenuItem
           onClick={() => setTheme("system")}
           className={cn(
-            "cursor-pointer text-gray-900 dark:text-gray-100",
+            "cursor-pointer text-black dark:text-gray-100",
             theme === "system" && "font-semibold dark:bg-blue-900/30"
           )}
         >
@@ -98,11 +98,11 @@ export function AdaptiveThemeToggle() {
           )}
         </DropdownMenuItem>
         
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="hidden dark:block" />
         
         <DropdownMenuItem
           onClick={toggleTheme}
-          className="cursor-pointer text-sm text-gray-600 dark:text-gray-400"
+          className="cursor-pointer text-sm text-black dark:text-gray-400"
         >
           <div className="flex items-center gap-2">
             <span>Quick Toggle</span>
