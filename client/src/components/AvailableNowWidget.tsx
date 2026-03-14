@@ -141,6 +141,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     queryKey: ["/api/available-now/accepted-requests"],
     enabled: !!currentUser?.id,
     refetchInterval: 5000,
+    retry: 3,
+    retryDelay: 500,
   });
 
   const acceptedChatroomMap: Record<number, number> = acceptedRequestsData?.acceptedChatroomMap || {};
@@ -307,6 +309,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     queryKey: ["/api/available-now/my-group-chats"],
     enabled: !!currentUser?.id,
     refetchInterval: 15000,
+    retry: 3,
+    retryDelay: 500,
   });
 
   const myAcceptedGroupChats = myGroupChatsData?.chatrooms || [];
@@ -399,11 +403,9 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       }
 
       // REQUESTER side: the host accepted or declined our request.
+      // Delay invalidation so the server has time to finish creating the chatroom
+      // before User B's queries refetch — prevents a brief error flash.
       if (notification?.action === 'meet_request_accepted') {
-        queryClient.invalidateQueries({ queryKey: ["/api/available-now/sent-requests"] });
-        queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
-        queryClient.invalidateQueries({ queryKey: ["/api/available-now/accepted-requests"] });
-        queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
         const chatroomId = notification.groupChatroomId;
         if (chatroomId) {
           toast({
@@ -418,6 +420,12 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         } else {
           toast({ title: "Meet request accepted! 🤝", description: "Check your messages." });
         }
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: ["/api/available-now/sent-requests"] });
+          queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
+          queryClient.invalidateQueries({ queryKey: ["/api/available-now/accepted-requests"] });
+          queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
+        }, 800);
       }
     };
     websocketService.on('notification', handleNotification);
