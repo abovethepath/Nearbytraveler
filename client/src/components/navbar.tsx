@@ -32,6 +32,7 @@ import {
   Moon,
   Sun,
   Heart,
+  Bell,
 } from "lucide-react";
 import Logo from "@/components/logo";
 import ConnectModal from "@/components/connect-modal";
@@ -562,6 +563,21 @@ function Navbar() {
                 </div>
 
               </div>
+              {directUser?.id && (
+                <button
+                  type="button"
+                  aria-label="Notifications"
+                  className="md:hidden relative p-2 rounded-full text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  onClick={() => setLocation("/activity")}
+                >
+                  <Bell className="w-5 h-5" />
+                  {activityUnreadCount > 0 && (
+                    <span className="absolute top-1 right-1 min-w-[16px] h-4 flex items-center justify-center bg-orange-500 text-white rounded-full px-1 text-[10px] font-bold pointer-events-none">
+                      {activityUnreadCount > 99 ? '99+' : activityUnreadCount}
+                    </span>
+                  )}
+                </button>
+              )}
               {directUser?.id && <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <button

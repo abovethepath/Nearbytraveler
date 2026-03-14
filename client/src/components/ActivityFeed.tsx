@@ -611,6 +611,10 @@ export default function ActivityFeed() {
                 return;
               }
 
+              if (type === "chatroom_invite") {
+                return;
+              }
+
               if (type === "new_message") {
                 if (n.actor?.id) setLocation(`/messages/${n.actor.id}`);
                 else setLocation("/messages");
