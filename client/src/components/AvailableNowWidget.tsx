@@ -316,13 +316,19 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const myAcceptedGroupChats = myGroupChatsData?.chatrooms || [];
   const hostGroupChat = groupChatData?.chatroom || null;
 
-  // Combine all group chats (host's own + accepted into), deduplicated
   const allGroupChats = (() => {
     const chats: any[] = [];
     const seenIds = new Set<number>();
-    if (hostGroupChat) { chats.push(hostGroupChat); seenIds.add(hostGroupChat.id); }
+    const now = new Date();
+    if (hostGroupChat && new Date(hostGroupChat.expiresAt) > now) {
+      chats.push(hostGroupChat);
+      seenIds.add(hostGroupChat.id);
+    }
     for (const c of myAcceptedGroupChats) {
-      if (!seenIds.has(c.id)) { chats.push(c); seenIds.add(c.id); }
+      if (!seenIds.has(c.id) && new Date(c.expiresAt) > now) {
+        chats.push(c);
+        seenIds.add(c.id);
+      }
     }
     return chats;
   })();
