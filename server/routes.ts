@@ -7722,6 +7722,9 @@ Questions? Just reply to this message. Welcome aboard!
         delete userWithoutPassword.contact_role;
       }
 
+      // Bust Redis profile-bundle cache so profile page reflects updates immediately
+      cache.deletePattern(`profile-bundle:${userId}:viewer:*`).catch(() => {});
+
       if (process.env.NODE_ENV === 'development') console.log(`✓ User ${userId} updated successfully`);
       return res.json(userWithoutPassword);
     } catch (error: any) {

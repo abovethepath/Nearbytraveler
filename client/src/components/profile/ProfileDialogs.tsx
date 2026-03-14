@@ -723,12 +723,8 @@ export function ProfileDialogs(props: ProfilePageProps) {
               }}
             />
             
-            {/* Save Button for Location Changes */}
+            {/* Save Button for Location Changes — always visible when pending data exists */}
             {pendingLocationData && (
-              pendingLocationData.hometownCity !== user?.hometownCity || 
-              pendingLocationData.hometownState !== user?.hometownState || 
-              pendingLocationData.hometownCountry !== user?.hometownCountry
-            ) && (
               <div className="mt-4 flex gap-3">
                 <Button
                   onClick={async () => {
