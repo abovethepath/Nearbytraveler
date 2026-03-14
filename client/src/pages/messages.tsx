@@ -1102,7 +1102,18 @@ export default function Messages() {
                           )}
                         </div>
 
-                        {conv.lastMessage ? (
+                        <div className={`text-xs ${
+                          selectedConversation === conv.userId
+                            ? 'text-gray-200'
+                            : 'text-gray-600 dark:text-gray-500'
+                        }`}>
+                          {(conv as any).hometownCity
+                            ? (conv as any).travelDestination
+                              ? `${abbreviateCity((conv as any).hometownCity)} → ${abbreviateCity((conv as any).travelDestination)}`
+                              : abbreviateCity((conv as any).hometownCity)
+                            : abbreviateCity(conv.location) || ''}
+                        </div>
+                        {conv.lastMessage && (
                           <p className={`text-xs truncate ${
                             selectedConversation === conv.userId
                               ? 'text-gray-200'
@@ -1112,18 +1123,6 @@ export default function Messages() {
                           }`}>
                             {conv.lastMessage}
                           </p>
-                        ) : (
-                          <div className={`text-xs ${
-                            selectedConversation === conv.userId
-                              ? 'text-gray-200'
-                              : 'text-gray-600 dark:text-gray-500'
-                          }`}>
-                            {(conv as any).hometownCity
-                              ? (conv as any).travelDestination
-                                ? `${abbreviateCity((conv as any).hometownCity)} → ${abbreviateCity((conv as any).travelDestination)}`
-                                : abbreviateCity((conv as any).hometownCity)
-                              : abbreviateCity(conv.location) || ''}
-                          </div>
                         )}
                       </div>
                       {conv.unreadCount > 0 && selectedConversation !== conv.userId ? (
