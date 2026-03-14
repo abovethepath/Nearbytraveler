@@ -978,22 +978,19 @@ export default function Messages() {
                             }
                           }}
                         >
-                          <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                          <div className="flex items-start gap-3">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
                               isSelected ? 'bg-white/20' : 'bg-orange-100 dark:bg-orange-900/40'
                             }`}>
                               <Users className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-orange-600 dark:text-orange-400'}`} />
                             </div>
-                            <div className="flex-1 min-w-0 overflow-hidden">
-                              <div className="flex items-center gap-2 min-w-0">
-                                <h3 className={`text-sm truncate ${
-                                  isSelected ? 'text-white font-semibold' : mc.unreadCount > 0 ? 'text-gray-900 dark:text-white font-extrabold' : 'text-gray-900 dark:text-white font-semibold'
-                                }`}>
-                                  {mc.chatroomName || 'Meetup Chat'}
-                                </h3>
-                                {mc.unreadCount > 0 && !isSelected && (
-                                  <span className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 shrink-0" />
-                                )}
+                            <div className="flex-1 min-w-0">
+                              <h3 className={`text-sm leading-snug ${
+                                isSelected ? 'text-white font-semibold' : mc.unreadCount > 0 ? 'text-gray-900 dark:text-white font-extrabold' : 'text-gray-900 dark:text-white font-semibold'
+                              }`}>
+                                {mc.chatroomName || 'Meetup Chat'}
+                              </h3>
+                              <div className="flex items-center gap-1.5 mt-1">
                                 <span className={`text-[10px] px-2 py-0.5 rounded-full shrink-0 font-bold text-white shadow-sm ${
                                   isSelected
                                     ? 'bg-white/20'
@@ -1017,16 +1014,19 @@ export default function Messages() {
                                   );
                                 })()}
                               </div>
-                              <div className="flex items-center gap-2 mt-0.5">
-                                {mc.lastMessage && (
-                                  <p className={`text-xs truncate ${
-                                    isSelected ? 'text-orange-100' : 'text-gray-500 dark:text-gray-400'
-                                  }`}>
-                                    {mc.lastMessageType === 'system' ? mc.lastMessage : `${mc.lastMessageUsername}: ${mc.lastMessage}`}
-                                  </p>
-                                )}
-                              </div>
+                              {mc.lastMessage && (
+                                <p className={`text-xs truncate mt-1 ${
+                                  isSelected ? 'text-orange-100' : mc.unreadCount > 0 ? 'text-gray-700 dark:text-gray-300 font-semibold' : 'text-gray-500 dark:text-gray-400'
+                                }`}>
+                                  {mc.lastMessageType === 'system' ? mc.lastMessage : `${mc.lastMessageUsername}: ${mc.lastMessage}`}
+                                </p>
+                              )}
                             </div>
+                            {mc.unreadCount > 0 && !isSelected && (
+                              <div className="shrink-0 bg-orange-500 text-white text-[11px] font-bold rounded-full min-w-[22px] h-[22px] flex items-center justify-center px-1.5 mt-1">
+                                {mc.unreadCount > 99 ? '99+' : mc.unreadCount}
+                              </div>
+                            )}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
