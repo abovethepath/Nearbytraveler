@@ -265,6 +265,12 @@ export default function LocalsLanding() {
                   Every week, Nearby Traveler sponsors authentic local experiences. Host sponsored events or join curated activities that bring our community together.
                 </p>
               </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
+                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white leading-tight">Always Free to Connect</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed flex-grow">
+                  Meeting travelers and building your local network costs nothing. Nearby Traveler is free to join and use.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -366,6 +372,10 @@ export default function LocalsLanding() {
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">Adventure Seekers</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">Find people to try new restaurants, events, and activities in your own city</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Digital Nomads</h4>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">Working remotely? Find your community and make any city feel like home.</p>
               </div>
             </div>
           </div>
