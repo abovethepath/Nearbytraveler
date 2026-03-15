@@ -139,6 +139,9 @@ export default function CommunityDetail({ communityId }: { communityId: number }
   const [activeSection, setActiveSection] = useState<"feed" | "members" | "chat">("feed");
   const [newPost, setNewPost] = useState("");
   const [expandedReplies, setExpandedReplies] = useState<Set<number>>(new Set());
+  const [editOpen, setEditOpen] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editDesc, setEditDesc] = useState("");
 
   const { data: community, isLoading } = useQuery<any>({
     queryKey: ["/api/community-tags", communityId],
@@ -146,6 +149,34 @@ export default function CommunityDetail({ communityId }: { communityId: number }
       const res = await fetch(`/api/community-tags?includePrivate=true`);
       const tags = await res.json();
       return tags.find((t: any) => t.id === communityId) || null;
+    },
+  });
+
+  const canEdit = !!currentUser?.id && (currentUser?.isAdmin || (community?.createdBy && community.createdBy === currentUser.id));
+
+  useEffect(() => {
+    if (!community) return;
+    setEditName(String(community.displayName || ""));
+    setEditDesc(String(community.description || ""));
+  }, [community?.id]);
+
+  const updateCommunityMutation = useMutation({
+    mutationFn: async (payload: { displayName: string; description: string }) => {
+      const res = await apiRequest("PATCH", `/api/community-tags/${communityId}`, payload);
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d?.error || "Failed to update community");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/community-tags"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/community-tags", communityId] });
+      setEditOpen(false);
+      toast({ title: "Community updated" });
+    },
+    onError: (err: any) => {
+      toast({ title: "Error", description: err?.message || "Failed to update community", variant: "destructive" });
     },
   });
 
@@ -293,12 +324,55 @@ export default function CommunityDetail({ communityId }: { communityId: number }
               </h1>
               <p className="text-white/70 text-sm">{community.memberCount || 0} members · {community.category}</p>
             </div>
+            {canEdit && (
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                className="bg-white/15 hover:bg-white/20 text-white border border-white/20"
+                onClick={() => setEditOpen(true)}
+                data-testid="button-edit-community"
+              >
+                Edit
+              </Button>
+            )}
           </div>
           {community.description && (
             <p className="text-white/80 text-sm mt-2">{community.description}</p>
           )}
         </div>
       </div>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="bg-white dark:bg-gray-900">
+          <DialogHeader>
+            <DialogTitle>Edit community</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              placeholder="Community name"
+              maxLength={60}
+            />
+            <Textarea
+              value={editDesc}
+              onChange={(e) => setEditDesc(e.target.value)}
+              placeholder="Description"
+              className="min-h-[90px]"
+              maxLength={240}
+            />
+            <Button
+              type="button"
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+              disabled={updateCommunityMutation.isPending || !editName.trim()}
+              onClick={() => updateCommunityMutation.mutate({ displayName: editName.trim(), description: editDesc.trim() })}
+            >
+              {updateCommunityMutation.isPending ? "Saving..." : "Save changes"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <div className="max-w-3xl mx-auto px-4 py-4">
         <div className="flex gap-2 mb-4">

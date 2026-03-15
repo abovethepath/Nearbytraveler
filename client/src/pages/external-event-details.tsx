@@ -94,7 +94,7 @@ export default function ExternalEventDetails() {
       case 'allevents': return 'bg-red-100 text-red-800';
       case 'eventbrite': return 'bg-purple-100 text-purple-800';
       case 'meetup': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 dark:bg-gray-800 text-gray-800';
+      default: return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100';
     }
   };
 
@@ -132,7 +132,7 @@ export default function ExternalEventDetails() {
                   {event.category}
                 </Badge>
                 {event.impact && (
-                  <Badge variant="secondary">
+                  <Badge variant="secondary" className="dark:text-gray-100">
                     {event.impact} impact
                   </Badge>
                 )}

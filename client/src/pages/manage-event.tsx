@@ -86,7 +86,14 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
     tags: [] as string[],
     isPublic: true,
     imageUrl: "",
-    isSameDay: false
+    isSameDay: false,
+    // Private event settings
+    womenOnly: false,
+    menOnly: false,
+    lgbtqiaOnly: false,
+    singlePeopleOnly: false,
+    veteransOnly: false,
+    familiesOnly: false,
   });
   
   const [newTag, setNewTag] = useState("");
@@ -177,7 +184,14 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
         tags: event.tags || [],
         isPublic: event.isPublic ?? true,
         isSameDay: false,
-        imageUrl: event.imageUrl || ""
+        imageUrl: event.imageUrl || "",
+        // Private event settings
+        womenOnly: !!(event as any).womenOnly,
+        menOnly: !!(event as any).menOnly,
+        lgbtqiaOnly: !!(event as any).lgbtqiaOnly,
+        singlePeopleOnly: !!(event as any).singlePeopleOnly,
+        veteransOnly: !!(event as any).veteransOnly,
+        familiesOnly: !!(event as any).familiesOnly,
       });
       
       // CRITICAL: Always set image preview when event has imageUrl
@@ -691,6 +705,13 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
       tags: formData.tags,
       isPublic: formData.isPublic,
       imageUrl: formData.imageUrl || null,
+      // Private event settings
+      womenOnly: !!(formData as any).womenOnly,
+      menOnly: !!(formData as any).menOnly,
+      lgbtqiaOnly: !!(formData as any).lgbtqiaOnly,
+      singlePeopleOnly: !!(formData as any).singlePeopleOnly,
+      veteransOnly: !!(formData as any).veteransOnly,
+      familiesOnly: !!(formData as any).familiesOnly,
     };
 
     console.log('Update data being sent:', updateData);
@@ -923,7 +944,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                             </div>
                           )}
                           <span>{participant.user?.username || participant.user?.name}</span>
-                          <Badge variant="outline" className="text-xs bg-transparent text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600">
+                          <Badge variant="outline" className="text-xs bg-transparent text-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600">
                             {participant.status === 'going' ? 'Going' : 'Interested'}
                           </Badge>
                         </div>
@@ -1214,6 +1235,108 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                   Make this event public
                 </button>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Private Event Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle>🔒 Private Event Settings</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Control who this event is intended for (optional).
+              </p>
+
+              {(() => {
+                const pillBase =
+                  "inline-flex items-center justify-center rounded-full border px-3 py-1 text-sm font-semibold transition-colors";
+                const pillOn = "bg-orange-500 text-white border-orange-500";
+                const pillOff =
+                  "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600 dark:hover:bg-gray-700";
+
+                const womenSelected = !!(formData as any).womenOnly;
+                const menSelected = !!(formData as any).menOnly;
+
+                const toggleWomenOnly = () => {
+                  setFormData(prev => ({
+                    ...prev,
+                    womenOnly: !(prev as any).womenOnly,
+                    menOnly: false,
+                  }));
+                };
+
+                const toggleMenOnly = () => {
+                  setFormData(prev => ({
+                    ...prev,
+                    menOnly: !(prev as any).menOnly,
+                    womenOnly: false,
+                  }));
+                };
+
+                const toggleKey = (key: "lgbtqiaOnly" | "singlePeopleOnly" | "veteransOnly" | "familiesOnly") => {
+                  setFormData(prev => ({ ...prev, [key]: !(prev as any)[key] } as any));
+                };
+
+                return (
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      aria-pressed={womenSelected}
+                      data-testid="pill-women-only"
+                      onClick={toggleWomenOnly}
+                      className={`${pillBase} ${womenSelected ? pillOn : pillOff}`}
+                    >
+                      Women only
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={menSelected}
+                      data-testid="pill-men-only"
+                      onClick={toggleMenOnly}
+                      className={`${pillBase} ${menSelected ? pillOn : pillOff}`}
+                    >
+                      Men only
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={!!(formData as any).lgbtqiaOnly}
+                      data-testid="pill-lgbtqia-only"
+                      onClick={() => toggleKey("lgbtqiaOnly")}
+                      className={`${pillBase} ${(formData as any).lgbtqiaOnly ? pillOn : pillOff}`}
+                    >
+                      🏳️‍🌈 LGBTQIA+ only
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={!!(formData as any).singlePeopleOnly}
+                      data-testid="pill-singles-only"
+                      onClick={() => toggleKey("singlePeopleOnly")}
+                      className={`${pillBase} ${(formData as any).singlePeopleOnly ? pillOn : pillOff}`}
+                    >
+                      💝 Singles only
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={!!(formData as any).veteransOnly}
+                      data-testid="pill-veterans-only"
+                      onClick={() => toggleKey("veteransOnly")}
+                      className={`${pillBase} ${(formData as any).veteransOnly ? pillOn : pillOff}`}
+                    >
+                      🪖 Veterans only
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={!!(formData as any).familiesOnly}
+                      data-testid="pill-families-only"
+                      onClick={() => toggleKey("familiesOnly")}
+                      className={`${pillBase} ${(formData as any).familiesOnly ? pillOn : pillOff}`}
+                    >
+                      👨‍👩‍👧‍👦 Families only
+                    </button>
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
 

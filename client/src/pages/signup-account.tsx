@@ -308,9 +308,9 @@ export default function SignupAccount() {
                 variant="outline"
                 size="sm"
                 onClick={() => setLocation('/join')}
-                className="bg-white dark:bg-gray-900/20 hover:bg-white dark:bg-gray-900/30 text-white border-white/50 hover:border-white font-medium backdrop-blur-sm"
+                className="bg-white hover:bg-white text-gray-900 dark:bg-gray-900/30 dark:hover:bg-gray-900/30 dark:text-white border border-gray-200 dark:border-white/50 hover:border-gray-300 dark:hover:border-white font-medium backdrop-blur-sm"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
+                <ArrowLeft className="w-4 h-4 mr-2 text-gray-900 dark:text-white" />
                 Back
               </Button>
             </div>
@@ -355,7 +355,7 @@ export default function SignupAccount() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Your business name"
-                      className="text-base py-3"
+                      className="text-base py-3 border-gray-400 dark:border-gray-600"
                       required
                     />
                   </div>
@@ -369,7 +369,7 @@ export default function SignupAccount() {
                       value={formData.contactName}
                       onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
                       placeholder="Person managing this account"
-                      className="text-base py-3"
+                      className="text-base py-3 border-gray-400 dark:border-gray-600"
                       required
                     />
                   </div>
@@ -386,7 +386,7 @@ export default function SignupAccount() {
                       value={formData.firstName}
                       onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                       placeholder="Travis"
-                      className="text-base py-3"
+                      className="text-base py-3 border-gray-400 dark:border-gray-600"
                       required
                     />
                   </div>
@@ -400,7 +400,7 @@ export default function SignupAccount() {
                       value={formData.lastName}
                       onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                       placeholder="Smith"
-                      className="text-base py-3"
+                      className="text-base py-3 border-gray-400 dark:border-gray-600"
                       required
                     />
                   </div>
@@ -417,7 +417,7 @@ export default function SignupAccount() {
                   value={formData.username}
                   onChange={(e) => handleUsernameChange(e.target.value)}
                   placeholder="Choose a unique username (6-12 chars)"
-                  className="text-base py-3"
+                  className="text-base py-3 border-gray-400 dark:border-gray-600"
                   maxLength={12}
                   required
                 />
@@ -445,7 +445,7 @@ export default function SignupAccount() {
                     if (emailError) setEmailError(null);
                   }}
                   placeholder="your@email.com"
-                  className={`text-base py-3 ${emailError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                  className={`text-base py-3 border-gray-400 dark:border-gray-600 ${emailError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                   required
                 />
                 {emailError && (
@@ -471,7 +471,7 @@ export default function SignupAccount() {
                     }
                   }}
                   placeholder="+1 (555) 123-4567"
-                  className="text-base py-3"
+                  className="text-base py-3 border-gray-400 dark:border-gray-600"
                   required
                 />
                 {phoneChecking && (
@@ -499,7 +499,7 @@ export default function SignupAccount() {
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     placeholder="Create a secure password (min 8 chars)"
                     autoComplete="new-password"
-                    className="text-base py-3 pr-10 text-gray-900 dark:text-white bg-white dark:bg-gray-800 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                    className="text-base py-3 pr-10 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-gray-400 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                     required
                   />
                   <button

@@ -298,7 +298,10 @@ export default function DMChat() {
       </aside>
 
       {/* RIGHT PANEL — chat (full width on mobile, 70% on desktop) */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden md:border-r-[3px] md:border-r-[#e0e0e0] md:dark:border-r-[#2d2d2d]">
+      <div
+        className="flex-1 flex flex-col min-w-0 overflow-hidden md:border-r-[3px] md:border-r-[#e0e0e0] md:dark:border-r-[#2d2d2d]"
+        style={{ backgroundColor: "#0f1117" }}
+      >
         {chatComponent}
       </div>
 

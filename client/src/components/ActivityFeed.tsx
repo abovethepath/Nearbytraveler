@@ -116,6 +116,45 @@ function InitialAvatar({
   );
 }
 
+function ConnectionRequestAvatar({
+  actorId,
+  currentUserId,
+  fallbackUsername,
+  fallbackProfileImage,
+}: {
+  actorId: number;
+  currentUserId: number;
+  fallbackUsername?: string | null;
+  fallbackProfileImage?: string | null;
+}) {
+  const { data: actorProfile } = useQuery<any>({
+    queryKey: ["/api/users", actorId, "activity-avatar"],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/users/${actorId}`, {
+        credentials: "include",
+        headers: { "x-user-id": String(currentUserId) },
+      });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    enabled: !!actorId && !!currentUserId,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const photo =
+    actorProfile?.profilePhoto ||
+    actorProfile?.profileImage ||
+    fallbackProfileImage ||
+    null;
+  const username =
+    actorProfile?.username ||
+    actorProfile?.name ||
+    fallbackUsername ||
+    null;
+
+  return <InitialAvatar username={username} profileImage={photo} fallbackLabel="?" />;
+}
+
 function MeetRequestModal({
   item,
   currentUserId,
@@ -133,6 +172,27 @@ function MeetRequestModal({
   const requestId = item.meetRequest?.id || item.data?.requestId;
   const hasMeetRequestData = !!item.meetRequest;
   const requestStatus = hasMeetRequestData ? (item.meetRequest!.status || "pending") : "expired";
+
+  // Bug fix: meetup chatroom can take a moment to be ready right after acceptance on mobile web / iOS.
+  // Retry 3 times with 500ms gaps before showing any error UI.
+  const waitForMeetupChatroomReady = async (chatroomId: number) => {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const res = await fetch(`${getApiBaseUrl()}/api/meetup-chatrooms/${chatroomId}/info`, {
+          credentials: "include",
+          headers: { "x-user-id": String(currentUserId) },
+        });
+        if (res.ok) {
+          const json = await res.json().catch(() => ({}));
+          if (json && (json as any).id) return true;
+        }
+      } catch {
+        // retry
+      }
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 500));
+    }
+    return false;
+  };
 
   const { data: profile, isLoading: profileLoading } = useQuery<RequesterProfile>({
     queryKey: ["/api/users", actorId, "meet-profile"],
@@ -188,7 +248,16 @@ function MeetRequestModal({
         if (_data?.groupChatroomId) {
           const title = encodeURIComponent(_data.chatroomName || 'Meetup Chat');
           const subtitle = encodeURIComponent(_data.chatroomCity || 'Group chat');
-          setLocation(`/meetup-chatroom-chat/${_data.groupChatroomId}?title=${title}&subtitle=${subtitle}`);
+          void waitForMeetupChatroomReady(Number(_data.groupChatroomId)).then((ok) => {
+            if (!ok) {
+              toast({
+                title: "Still setting up chat…",
+                description: "Please try opening the chat again in a moment.",
+              });
+              return;
+            }
+            setLocation(`/meetup-chatroom-chat/${_data.groupChatroomId}?title=${title}&subtitle=${subtitle}`);
+          });
         } else {
           toast({ title: "It's a meet!", description: "Check your messages for the meetup chat." });
         }
@@ -686,7 +755,7 @@ export default function ActivityFeed() {
                   return (
                     <InitialAvatar
                       username={logItem.actor?.username || null}
-                      profileImage={null}
+                      profileImage={logItem.actor?.profileImage || null}
                       fallbackLabel="NT"
                     />
                   );
@@ -707,6 +776,17 @@ export default function ActivityFeed() {
                   <div className="h-10 w-10 rounded-xl bg-orange-100 dark:bg-orange-950 flex items-center justify-center">
                     <Users className="h-5 w-5 text-[#E85D2F]" />
                   </div>
+                );
+              }
+
+              if (type === "connection_request" && n.actor?.id && currentUser?.id) {
+                return (
+                  <ConnectionRequestAvatar
+                    actorId={n.actor.id}
+                    currentUserId={currentUser.id}
+                    fallbackUsername={n.actor?.username || n.actor?.name || null}
+                    fallbackProfileImage={n.actor?.profileImage || null}
+                  />
                 );
               }
 

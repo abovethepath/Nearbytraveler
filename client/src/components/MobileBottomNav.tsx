@@ -61,7 +61,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
       return res.json();
     },
     enabled: !!user?.id,
-    refetchInterval: 30000,
+    refetchInterval: 5000,
   });
 
   const unreadCount = (unreadData as any)?.unreadCount || 0;

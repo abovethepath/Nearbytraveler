@@ -406,13 +406,7 @@ export default function UserCard({
                 <div className="w-full flex justify-center">
                   <span
                     data-role="user-card-things-pill"
-                    className="inline-flex items-center justify-center rounded-full px-3 py-1 text-[13px] font-bold border"
-                    style={{
-                      color: pickTextColor("#3b82f6", "#FF6B35"),
-                      backgroundColor: 'rgba(59,130,246,0.12)',
-                      borderColor: 'rgba(59,130,246,0.25)',
-                      textAlign: 'center',
-                    }}
+                    className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13.5px] font-bold border bg-orange-100 text-orange-700 border-orange-300 dark:bg-[rgba(59,130,246,0.12)] dark:text-[#FF6B35] dark:border-[rgba(59,130,246,0.25)]"
                   >
                     {thingsInCommon} things in common
                   </span>
@@ -420,13 +414,7 @@ export default function UserCard({
                 <div className="w-full flex justify-center mt-1">
                   <span
                     data-role="user-card-contacts"
-                    className="inline-flex items-center justify-center rounded-full px-3 py-1 text-[13px] font-bold border"
-                    style={{
-                      color: pickTextColor("#FF6B35", "#3b82f6"),
-                      backgroundColor: 'rgba(255,107,53,0.10)',
-                      borderColor: 'rgba(255,107,53,0.25)',
-                      textAlign: 'center',
-                    }}
+                    className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13.5px] font-bold border bg-blue-100 text-blue-700 border-blue-300 dark:bg-[rgba(255,107,53,0.10)] dark:text-[#3b82f6] dark:border-[rgba(255,107,53,0.25)]"
                   >
                     <span className="lg:hidden">{contactsInCommon} {contactsInCommon === 1 ? 'Mutual Contact' : 'Mutual Contacts'}</span>
                     <span className="hidden lg:inline">{contactsInCommon} {contactsInCommon === 1 ? 'Connection' : 'Connections'} in Common</span>
@@ -479,9 +467,7 @@ export default function UserCard({
                     className="w-full flex justify-center mt-1"
                     data-role="user-card-things"
                   >
-                    <span className="inline-flex items-center justify-center rounded-full px-3 py-1 text-[13px] font-bold border"
-                      style={{ color: pickTextColor("#3b82f6", "#FF6B35"), backgroundColor: 'rgba(59,130,246,0.12)', borderColor: 'rgba(59,130,246,0.25)' }}
-                    >
+                    <span className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13.5px] font-bold border bg-orange-100 text-orange-700 border-orange-300 dark:bg-[rgba(59,130,246,0.12)] dark:text-[#FF6B35] dark:border-[rgba(59,130,246,0.25)]">
                       {thingsInCommon} things in common
                     </span>
                   </div>
@@ -489,9 +475,7 @@ export default function UserCard({
                     className="w-full flex justify-center mt-1"
                     data-role="user-card-contacts"
                   >
-                    <span className="inline-flex items-center justify-center rounded-full px-3 py-1 text-[13px] font-bold border"
-                      style={{ color: pickTextColor("#FF6B35", "#3b82f6"), backgroundColor: 'rgba(255,107,53,0.10)', borderColor: 'rgba(255,107,53,0.25)' }}
-                    >
+                    <span className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13.5px] font-bold border bg-blue-100 text-blue-700 border-blue-300 dark:bg-[rgba(255,107,53,0.10)] dark:text-[#3b82f6] dark:border-[rgba(255,107,53,0.25)]">
                       <span className="lg:hidden">{contactsInCommon} {contactsInCommon === 1 ? 'Mutual Contact' : 'Mutual Contacts'}</span>
                       <span className="hidden lg:inline">{contactsInCommon} {contactsInCommon === 1 ? 'Connection' : 'Connections'} in Common</span>
                     </span>
@@ -570,22 +554,16 @@ export default function UserCard({
                 <div className="w-full flex justify-center">
                   <span
                     data-role="user-card-things-pill"
-                    className="inline-flex items-center justify-center text-center rounded-full px-2.5 py-0.5 text-[11.5px] font-bold border"
-                    style={{
-                      color: pickTextColor("#3b82f6", "#FF6B35"),
-                      backgroundColor: 'rgba(59,130,246,0.12)',
-                      borderColor: 'rgba(59,130,246,0.25)',
-                    }}
+                    className="inline-flex items-center justify-center text-center rounded-full px-3.5 py-1.5 text-[13px] font-bold border bg-orange-100 text-orange-700 border-orange-300 dark:bg-[rgba(59,130,246,0.12)] dark:text-[#FF6B35] dark:border-[rgba(59,130,246,0.25)]"
                   >
                     {thingsInCommon} things in common
                   </span>
                 </div>
                 <div
                   data-role="user-card-contacts"
-                  className="mt-0.5 w-full text-center block text-[11px] font-medium truncate"
-                  style={{ width: "100%", textAlign: "center" }}
+                  className="mt-1 w-full flex justify-center"
                 >
-                  <span style={{ color: pickTextColor("#FF6B35", "#3b82f6") }}>
+                  <span className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13px] font-bold border bg-blue-100 text-blue-700 border-blue-300 dark:bg-[rgba(255,107,53,0.10)] dark:text-[#3b82f6] dark:border-[rgba(255,107,53,0.25)]">
                     <span className="lg:hidden">{contactsInCommon} {contactsInCommon === 1 ? 'Mutual Contact' : 'Mutual Contacts'}</span>
                     <span className="hidden lg:inline">{contactsInCommon} {contactsInCommon === 1 ? 'Connection' : 'Connections'} in Common</span>
                   </span>

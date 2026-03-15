@@ -115,6 +115,37 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [editNameValue, setEditNameValue] = useState(title);
   const [displayTitle, setDisplayTitle] = useState(title);
   useEffect(() => { setDisplayTitle(title); }, [title]);
+
+  // Available Now / Meetup chats: show the selected activities in the header.
+  const { data: meetupChatInfo } = useQuery<{
+    id: number;
+    activityType: string | null;
+    activities: string[] | null;
+  }>({
+    queryKey: chatType === "meetup" && currentUserId ? ["/api/meetup-chatrooms", chatId, "info"] : [],
+    queryFn: async () => {
+      const headers: Record<string, string> = {};
+      if (currentUserId) headers["x-user-id"] = String(currentUserId);
+      const res = await fetch(`${getApiBaseUrl()}/api/meetup-chatrooms/${chatId}/info`, {
+        headers,
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to load meetup chat info");
+      return res.json();
+    },
+    enabled: chatType === "meetup" && !!currentUserId,
+    staleTime: 30_000,
+  });
+
+  const meetupActivityTags = useMemo(() => {
+    const fromArray = Array.isArray(meetupChatInfo?.activities) ? meetupChatInfo?.activities : [];
+    if (fromArray.length > 0) {
+      return [...new Set(fromArray.map((s) => String(s || "").trim()).filter(Boolean))].slice(0, 8);
+    }
+    const activityType = String(meetupChatInfo?.activityType || "").trim();
+    if (!activityType) return [];
+    return [...new Set(activityType.split(",").map((s) => s.trim()).filter(Boolean))].slice(0, 8);
+  }, [meetupChatInfo?.activities, meetupChatInfo?.activityType]);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -1964,6 +1995,19 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             </div>
             <h2 className="text-xl font-bold text-white leading-tight text-center">{title}</h2>
             {subtitle && <p className="text-sm text-gray-400 text-center">{subtitle}</p>}
+            {chatType === "meetup" && meetupActivityTags.length > 0 && (
+              <div className="mt-1 flex flex-wrap justify-center gap-1">
+                {meetupActivityTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-800 text-gray-100 border border-gray-700"
+                    data-testid="meetup-activity-tag"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           <hr className="border-gray-800 mx-6" />
@@ -2133,6 +2177,19 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${messagesLoaded || isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
               </div>
               {subtitle && <p className={`text-gray-400 truncate ${chatType === 'dm' ? 'text-xs' : 'text-[10px]'} leading-tight`}>{subtitle}</p>}
+              {chatType === "meetup" && meetupActivityTags.length > 0 && (
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {meetupActivityTags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-700 text-gray-100 border border-gray-600"
+                      data-testid="meetup-activity-tag"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-0 shrink-0">
@@ -2433,6 +2490,19 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               {subtitle}
             </p>
           )}
+          {chatType === "meetup" && meetupActivityTags.length > 0 && (
+            <div className="mt-1 flex flex-wrap gap-1">
+              {meetupActivityTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-700 text-gray-100 border border-gray-600"
+                  data-testid="meetup-activity-tag"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
         {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
           <Sheet open={showMembers} onOpenChange={setShowMembers}>
@@ -2642,10 +2712,27 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         )}
       </div>
 
+      {/* Native iOS uses the app's header, so render activity tags just below it */}
+      {isNativeIOSApp() && chatType === "meetup" && meetupActivityTags.length > 0 && (
+        <div className="md:hidden px-3 py-2 bg-gray-900 border-b border-gray-800">
+          <div className="flex flex-wrap gap-1">
+            {meetupActivityTags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-800 text-gray-100 border border-gray-700"
+                data-testid="meetup-activity-tag"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Messages - Flex wrapper ensures proper spacing; min-h-0 allows flex child to shrink */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0 h-0">
         {/* Scrollable messages area */}
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pt-1 pb-2 bg-[#0b141a]" style={{
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pt-1 pb-2 bg-[#0f1117]" style={{
           overscrollBehavior: 'contain', touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' as any,
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23999999' stroke-width='2' opacity='0.18'%3E%3Cpath d='M100 50 L100 150 M57 75 L143 125 M57 125 L143 75'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Cpath d='M150 270 L180 300 L150 330 L120 300 Z'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Cpath d='M100 460 L140 500 L100 540 L60 500 Z'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Cpath d='M150 665 L159 693 L188 693 L165 710 L174 738 L150 722 L126 738 L135 710 L112 693 L141 693 Z'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3Ctext x='400' y='380' text-anchor='middle' font-family='Arial, sans-serif' font-size='52' font-weight='bold' fill='%23aaaaaa' opacity='0.07' transform='rotate(-18 400 400)'%3ENearby Traveler%3C/text%3E%3Ctext x='400' y='700' text-anchor='middle' font-family='Arial, sans-serif' font-size='40' font-weight='bold' fill='%23aaaaaa' opacity='0.05' transform='rotate(-18 400 700)'%3ENearby Traveler%3C/text%3E%3C/svg%3E")`
         }}>

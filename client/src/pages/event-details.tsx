@@ -857,7 +857,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
             <CardHeader>
               <div>
                 <CardTitle className="text-2xl mb-2">{event.title}</CardTitle>
-                <Badge variant="secondary" className="mb-4">
+                <Badge variant="secondary" className="mb-4 text-gray-900 dark:text-gray-100">
                   {event.category}
                 </Badge>
               </div>
@@ -962,7 +962,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                       <Badge 
                         key={`${tag}-${index}`} 
                         variant="secondary" 
-                        className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-0 hover:bg-gray-200 dark:hover:bg-gray-600 whitespace-nowrap flex-shrink-0"
+                        className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-100 border-0 hover:bg-gray-200 dark:hover:bg-gray-600 whitespace-nowrap flex-shrink-0"
                       >
                         {tag}
                       </Badge>

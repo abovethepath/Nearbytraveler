@@ -467,7 +467,7 @@ function Navbar() {
     },
     enabled: !!directUser?.id,
     staleTime: 30 * 1000,
-    refetchInterval: 30 * 1000,
+    refetchInterval: 5 * 1000,
   });
   const unreadMessageCount = unreadMsgData?.unreadCount ?? 0;
 

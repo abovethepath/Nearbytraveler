@@ -88,13 +88,14 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
       <div className="space-y-3">
         {userTypes.map(({ type, icon: Icon, title, subtitle, gradient, bgLight, bgDark, borderColor, ringColor }) => {
           const isSelected = userType === type;
-          const selectedBg =
+          // IMPORTANT: each dark-mode class token must be prefixed with `dark:`
+          // to prevent `from-*` / `to-*` classes from leaking into light mode.
+          const darkGradientBg =
             type === "local"
-              ? "bg-gradient-to-r from-blue-500 to-orange-500"
+              ? "dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500"
               : type === "traveler"
-                ? "bg-gradient-to-r from-blue-500 to-blue-600"
-                : "bg-gradient-to-r from-orange-500 to-orange-600";
-          const unselectedBg = selectedBg;
+                ? "dark:bg-gradient-to-r dark:from-blue-500 dark:to-blue-600"
+                : "dark:bg-gradient-to-r dark:from-orange-500 dark:to-orange-600";
 
           return (
             <button
@@ -105,8 +106,8 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
                 w-full relative overflow-hidden rounded-xl p-4 text-left transition-all duration-200
                 flex items-center gap-4
                 ${isSelected 
-                  ? `${bgLight} dark:${selectedBg} dark:text-white shadow-xl scale-[1.02] ring-4 ${ringColor} dark:ring-white/20 text-gray-900`
-                  : `${bgLight} dark:${unselectedBg} dark:text-white shadow-md hover:shadow-lg hover:scale-[1.01] border border-gray-300 dark:border-white/10 dark:hover:border-white/20 text-gray-900`
+                  ? `bg-orange-50 border-2 border-orange-500 text-gray-900 shadow-xl scale-[1.02] ${darkGradientBg} dark:text-white ring-0 dark:ring-4 dark:${ringColor} dark:ring-white/20`
+                  : `bg-white border border-gray-200 text-gray-900 shadow-md hover:shadow-lg hover:scale-[1.01] ${darkGradientBg} dark:text-white dark:border-white/10 dark:hover:border-white/20`
                 }
               `}
               data-testid={`button-select-${type}`}
@@ -131,8 +132,8 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
               </div>
               
               {isSelected && (
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-300 dark:bg-white/30 flex items-center justify-center">
-                  <Check className="w-5 h-5 text-gray-700 dark:text-white" />
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-orange-500 dark:bg-white/30 flex items-center justify-center">
+                  <Check className="w-5 h-5 text-white dark:text-white" />
                 </div>
               )}
             </button>
@@ -147,7 +148,7 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
         className={`
           w-full py-6 text-lg font-semibold rounded-xl transition-all duration-200
           ${userType 
-            ? "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl hover:scale-[1.02]" 
+            ? "bg-orange-500 hover:bg-orange-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] dark:bg-gradient-to-r dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700" 
             : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
           }
         `}

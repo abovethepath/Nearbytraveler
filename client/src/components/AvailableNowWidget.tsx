@@ -147,6 +147,31 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
 
   const acceptedChatroomMap: Record<number, number> = acceptedRequestsData?.acceptedChatroomMap || {};
 
+  const normalizeDurationHours = (hours: number) => {
+    const allowed = [1, 2, 4, 6, 8, 12];
+    const h = Math.max(1, Math.min(12, Math.round(hours)));
+    // Pick the closest allowed bucket.
+    let best = allowed[0];
+    let bestDist = Math.abs(h - best);
+    for (const a of allowed) {
+      const d = Math.abs(h - a);
+      if (d < bestDist) {
+        bestDist = d;
+        best = a;
+      }
+    }
+    return best;
+  };
+
+  const getDurationFromExpiresAt = (expiresAt: string | null | undefined) => {
+    if (!expiresAt) return 4;
+    const exp = new Date(expiresAt);
+    const ms = exp.getTime() - Date.now();
+    if (!Number.isFinite(ms)) return 4;
+    const hoursLeft = Math.max(1, Math.ceil(ms / (1000 * 60 * 60)));
+    return normalizeDurationHours(hoursLeft);
+  };
+
   // Merge DB-loaded sent requests with locally tracked ones for instant UI feedback
   const pendingToUserIds: Set<number> = new Set([
     ...(sentRequestsData?.sentToUserIds ?? []),
@@ -183,7 +208,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         city: userCity,
         state: userState,
         country: userCountry,
-        durationHours: 4,
+        durationHours: getDurationFromExpiresAt(myStatus?.expiresAt),
         preserveChatrooms: true,
       });
       return res.json();
@@ -193,6 +218,14 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-status"] });
     },
   });
+
+  const openEditAvailability = () => {
+    if (!myStatus) return;
+    setSelectedActivities(Array.isArray(myStatus.activities) ? myStatus.activities : []);
+    setCustomNote(myStatus.customNote || "");
+    setDuration(String(getDurationFromExpiresAt(myStatus.expiresAt)));
+    setShowSetup(true);
+  };
 
   const clearAvailableMutation = useMutation({
     mutationFn: async () => {
@@ -259,11 +292,42 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         if (data?.groupChatroomId) {
           toast({ title: "It's a meet!", description: "Opening the group chat..." });
           queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
+          // Bug fix: chatroom creation/membership can race on mobile.
+          // Retry chatroom info up to 3 times (500ms gaps) before navigating or showing any error.
+          const waitForChatroomReady = async (chatroomId: number) => {
+            for (let attempt = 0; attempt < 3; attempt++) {
+              try {
+                const headers: Record<string, string> = {};
+                if (currentUser?.id) headers["x-user-id"] = String(currentUser.id);
+                const res = await fetch(`/api/meetup-chatrooms/${chatroomId}/info`, {
+                  credentials: "include",
+                  headers,
+                });
+                if (res.ok) {
+                  const json = await res.json().catch(() => ({}));
+                  if (json && (json as any).id) return true;
+                }
+              } catch {
+                // retry
+              }
+              if (attempt < 2) await new Promise((r) => setTimeout(r, 500));
+            }
+            return false;
+          };
           // Navigate directly to the meetup chatroom page (NOT messages) so it
           // always opens the correct group chat regardless of current page state.
           const title = encodeURIComponent(data.chatroomName || 'Meetup Chat');
           const subtitle = encodeURIComponent(data.chatroomCity || 'Group chat');
-          setLocation(`/meetup-chatroom-chat/${data.groupChatroomId}?title=${title}&subtitle=${subtitle}`);
+          void waitForChatroomReady(Number(data.groupChatroomId)).then((ok) => {
+            if (!ok) {
+              toast({
+                title: "Still setting up chat…",
+                description: "Please try opening the chat again in a moment.",
+              });
+              return;
+            }
+            setLocation(`/meetup-chatroom-chat/${data.groupChatroomId}?title=${title}&subtitle=${subtitle}`);
+          });
         } else {
           toast({ title: "It's a meet!", description: "Check your Messages for the meetup chat." });
         }
@@ -452,6 +516,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       state: userState,
       country: userCountry,
       durationHours: Number(duration),
+      // When editing an existing session, preserve the existing meetup chatrooms.
+      preserveChatrooms: !!myStatus,
     });
   };
 
@@ -527,6 +593,15 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                   );
                 })()}
                 <div className="flex items-center gap-0.5 ml-auto flex-shrink-0">
+                  <button
+                    type="button"
+                    className="h-5 px-2 flex items-center justify-center rounded-full flex-shrink-0 text-[11px] font-bold"
+                    style={{ color: '#065F46', backgroundColor: 'rgba(6,95,70,0.08)', border: '1px solid rgba(6,95,70,0.18)' }}
+                    onClick={(e) => { e.stopPropagation(); openEditAvailability(); }}
+                    data-testid="button-edit-availability"
+                  >
+                    Edit
+                  </button>
                   <button
                     type="button"
                     className="h-5 w-5 p-0 flex items-center justify-center rounded flex-shrink-0"
@@ -801,7 +876,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                           <Button
                             size="sm"
                             className="w-full text-xs bg-emerald-600 hover:bg-emerald-700 text-white border-0 font-bold"
-                            onClick={() => setLocation(`/messages?meetupChat=${existingChat.id}`)}
+                            onClick={() => setLocation(`/meetup-chatroom-chat/${existingChat.id}?title=${encodeURIComponent(existingChat.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(existingChat.city || 'Group chat')}`)}
                           >
                             <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
                             Go to Chat
@@ -813,7 +888,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                           <Button
                             size="sm"
                             className="w-full text-xs bg-emerald-600 hover:bg-emerald-700 text-white border-0 font-bold"
-                            onClick={() => setLocation(`/meetup-chatroom-chat/${acceptedChatroomId}?title=${encodeURIComponent('Meetup Chat')}`)}
+                            onClick={() => setLocation(`/meetup-chatroom-chat/${acceptedChatroomId}?title=${encodeURIComponent('Meetup Chat')}&subtitle=${encodeURIComponent(userCity || 'Group chat')}`)}
                           >
                             <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
                             Go to Chat
@@ -880,8 +955,12 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             <X className="h-4 w-4" />
           </button>
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Set Your Availability</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Let others know you're ready to hang out</p>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              {myStatus ? "Edit Your Availability" : "Set Your Availability"}
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {myStatus ? "Update your activities, note, or time window" : "Let others know you're ready to hang out"}
+            </p>
           </div>
           <div className="space-y-4">
             <div>
@@ -952,7 +1031,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               onClick={handleSetAvailable}
               disabled={setAvailableMutation.isPending}
             >
-              {setAvailableMutation.isPending ? "Setting..." : "Go Available"}
+            {setAvailableMutation.isPending ? "Saving..." : (myStatus ? "Save Changes" : "Go Available")}
             </button>
           </div>
         </div>

@@ -19,6 +19,19 @@ interface CityPulseProps {
 export function CityPulse({ city }: CityPulseProps) {
   const [, setLocation] = useLocation();
   const queryCity = city || "Los Angeles";
+  const currentUserId = (() => {
+    try {
+      const stored =
+        localStorage.getItem("user") ||
+        localStorage.getItem("travelconnect_user") ||
+        localStorage.getItem("current_user");
+      const u = stored ? JSON.parse(stored) : null;
+      const id = Number(u?.id) || 0;
+      return id || null;
+    } catch {
+      return null;
+    }
+  })();
 
   const { data } = useQuery<CityPulseData>({
     queryKey: ["/api/city-pulse", queryCity],
@@ -34,7 +47,20 @@ export function CityPulse({ city }: CityPulseProps) {
 
   if (!data) return null;
 
+  const { data: connectionRequests = [] } = useQuery<any[]>({
+    queryKey: currentUserId ? [`/api/connections/${currentUserId}/requests`] : [],
+    enabled: !!currentUserId,
+    staleTime: 30_000,
+  });
+  const pendingRequestsCount = Array.isArray(connectionRequests) ? connectionRequests.length : 0;
+
   const pills: { emoji: string; count: number; label: string; onClick: () => void }[] = [
+    {
+      emoji: "🧡",
+      count: pendingRequestsCount,
+      label: `new connection request${pendingRequestsCount === 1 ? "" : "s"} →`,
+      onClick: () => setLocation("/activity"),
+    },
     {
       emoji: "👋",
       count: data.newTravelers,
@@ -87,15 +113,15 @@ export function CityPulse({ city }: CityPulseProps) {
             <button
               key={pill.label}
               onClick={pill.onClick}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-gray-800/80 border border-orange-200 dark:border-gray-700 whitespace-nowrap shrink-0 transition-colors hover:border-orange-300 dark:hover:border-gray-500 shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-50 border border-orange-200 whitespace-nowrap shrink-0 transition-colors hover:border-orange-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:hover:border-gray-500"
             >
               <span className={pill.emoji === "🟢" ? "city-pulse-live-dot" : ""}>
                 {pill.emoji}
               </span>
-              <span className="font-bold text-[13px] text-orange-500 dark:text-[#FF6B35]">
+              <span className="font-bold text-[13px] text-orange-600 dark:text-white">
                 {pill.count}
               </span>
-              <span className="text-[12px] font-medium text-gray-700 dark:text-white/70">
+              <span className="text-[12px] font-medium text-orange-800 dark:text-white">
                 {pill.label}
               </span>
             </button>

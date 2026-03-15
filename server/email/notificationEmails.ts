@@ -50,6 +50,7 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
     const displayName = user.name?.split(" ")[0] || user.username;
     const userTypeLabel = user.userType === "traveler" ? "Nearby Traveler" : 
                           user.userType === "local" ? "Nearby Local" : "Business Partner";
+    const ctaUrl = `https://nearbytraveler.org/profile/${userId}`;
 
     console.log("📧 WELCOME EMAIL: BEFORE SEND", {
       userId,
@@ -95,7 +96,7 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
                 <li>Explore city chatrooms to meet the community</li>
               </ul>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${APP_URL}/home" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">Go to My Profile</a>
+                <a href="${ctaUrl}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">Explore Now</a>
               </div>
               <p style="font-size: 14px; color: #888888; margin: 30px 0 0; text-align: center;">
                 Have questions? Just reply to this email — we're here to help!
@@ -120,7 +121,7 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
     const result = await sendBrevoEmail({
       toEmail: user.email,
       subject: `You're in! Welcome to NearbyTraveler 🌍`,
-      textContent: `Hi ${displayName}! You just joined a community of travelers and locals who believe every city is better when strangers become friends. Complete your profile, find people near you, and post what you're up to — your next adventure starts now. Go to your home feed: ${APP_URL}/home`,
+      textContent: `Hi ${displayName}! You just joined a community of travelers and locals who believe every city is better when strangers become friends. Complete your profile, find people near you, and post what you're up to — your next adventure starts now. Explore now: ${ctaUrl}`,
       htmlContent,
     });
 
@@ -152,6 +153,7 @@ export async function sendConnectionRequestEmail(recipientId: number, senderName
     }
 
     const displayName = recipient.name?.split(" ")[0] || recipient.username;
+    const viewRequestUrl = `https://nearbytraveler.org/activity`;
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -180,7 +182,7 @@ export async function sendConnectionRequestEmail(recipientId: number, senderName
                 Check out what you have in common and send them a message — you might end up grabbing coffee or exploring the city together.
               </p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${APP_URL}/profile/${senderUsername}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">View Profile</a>
+                <a href="${viewRequestUrl}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">View Request</a>
               </div>
             </td>
           </tr>
@@ -200,8 +202,8 @@ export async function sendConnectionRequestEmail(recipientId: number, senderName
 
     const result = await sendBrevoEmail({
       toEmail: recipient.email,
-      subject: `${senderName} wants to connect with you on NearbyTraveler`,
-      textContent: `Hi ${displayName}! ${senderName} (@${senderUsername}) saw your profile and wants to connect. Check out what you have in common and send them a message — you might end up grabbing coffee or exploring the city together. View their profile at ${APP_URL}/profile/${senderUsername}`,
+      subject: `${senderUsername} wants to connect with you on Nearby Traveler.`,
+      textContent: `Hi ${displayName}! ${senderName} (@${senderUsername}) saw your profile and wants to connect. View request: ${viewRequestUrl}`,
       htmlContent,
     });
 
