@@ -9,15 +9,19 @@ neonConfig.useSecureWebSocket = true;
 neonConfig.pipelineConnect = false;
 neonConfig.fetchConnectionCache = true;
 
-if (!process.env.DATABASE_URL) {
+const dbUrl = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
+
+if (!dbUrl) {
   throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
+    "DATABASE_URL or NEON_DATABASE_URL must be set. Did you forget to provision a database?",
   );
 }
 
+console.log(`🗄️ Using database: ${dbUrl.includes('neon') ? 'NEON (Production)' : 'Local (Development)'}`);
+
 // Production-ready connection pool for high traffic events (100+ simultaneous users)
 export const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL,
+  connectionString: dbUrl,
   max: 100, // Support 100 simultaneous connections for event signups
   idleTimeoutMillis: 30000, // 30 seconds
   connectionTimeoutMillis: 15000, // 15 seconds to establish connection
