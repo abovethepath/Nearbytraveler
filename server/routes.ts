@@ -4543,7 +4543,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           lastName: users.lastName,
           userType: users.userType,
           email: users.email,
-          lastLogin: users.lastLogin,
+          lastLogin: users.last_login,
           createdAt: users.createdAt,
           ambassadorStatus: users.ambassadorStatus,
           isAdmin: users.isAdmin,
@@ -4554,7 +4554,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           hometownState: users.hometownState,
         })
         .from(users)
-        .orderBy(sqlExpr`CASE WHEN ${users.lastLogin} IS NULL THEN 1 ELSE 0 END`, desc(users.lastLogin));
+        .orderBy(sqlExpr`CASE WHEN ${users.last_login} IS NULL THEN 1 ELSE 0 END`, desc(users.last_login));
       return res.json(allUsers);
     } catch (error: any) {
       console.error("Admin users endpoint error:", error);

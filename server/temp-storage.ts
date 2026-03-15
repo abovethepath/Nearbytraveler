@@ -44,7 +44,7 @@ export class TempMemoryStorage implements IStorage {
       responseRate: 98,
       responseTime: "within 1 hour",
       joinDate: new Date("2023-01-15"),
-      lastLogin: new Date(),
+      last_login: new Date(),
       accountStatus: "active",
       privacySettings: {},
       notificationSettings: {},
