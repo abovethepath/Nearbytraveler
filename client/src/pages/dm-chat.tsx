@@ -121,7 +121,7 @@ export default function DMChat() {
   if (!user?.id) {
     if (authLoading) return <ChatPageSkeleton variant="dark" />;
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
+      <div className="flex flex-col items-center justify-center h-screen bg-[#0f1117] text-white gap-4">
         <p className="text-lg">Please log in to view this conversation</p>
         <Button onClick={() => setLocation('/messages')} variant="outline">
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -137,7 +137,7 @@ export default function DMChat() {
 
   if (isError || !otherUser) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
+      <div className="flex flex-col items-center justify-center h-screen bg-[#0f1117] text-white gap-4">
         <p className="text-lg">User not found</p>
         <Button onClick={() => setLocation('/messages')} variant="outline">
           <ArrowLeft className="w-4 h-4 mr-2" />

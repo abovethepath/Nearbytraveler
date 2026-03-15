@@ -186,28 +186,28 @@ export default function BusinessLanding() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-[#1e2139] rounded-xl p-6 text-center border border-gray-200 dark:border-white/10 shadow-sm">
+            <div className="bg-white dark:bg-[#1e2139] rounded-xl p-6 text-center border border-gray-200 dark:border-white/10 shadow-sm flex flex-col items-center">
               <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2">Direct Customer Connection</h3>
               <p className="text-sm text-gray-700 dark:text-gray-200 mb-3">Get customers other businesses can't reach</p>
-              <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1 text-left">
+              <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1 inline-block text-left">
                 <li>• Direct customer connection</li>
                 <li>• No competitor interference</li>
                 <li>• Exclusive access to travelers</li>
               </ul>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] rounded-xl p-6 text-center border border-gray-200 dark:border-white/10 shadow-sm">
+            <div className="bg-white dark:bg-[#1e2139] rounded-xl p-6 text-center border border-gray-200 dark:border-white/10 shadow-sm flex flex-col items-center">
               <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2">Quality Customers</h3>
               <p className="text-sm text-gray-700 dark:text-gray-200 mb-3">Experience seekers with spending power</p>
-              <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1 text-left">
+              <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1 inline-block text-left">
                 <li>• Higher lifetime value</li>
                 <li>• Authentic experience seekers</li>
                 <li>• Word-of-mouth promoters</li>
               </ul>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] rounded-xl p-6 text-center border border-gray-200 dark:border-white/10 shadow-sm">
+            <div className="bg-white dark:bg-[#1e2139] rounded-xl p-6 text-center border border-gray-200 dark:border-white/10 shadow-sm flex flex-col items-center">
               <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2">Smart Matching</h3>
               <p className="text-sm text-gray-700 dark:text-gray-200 mb-3">Connect with travelers who want exactly what you offer</p>
-              <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1 text-left">
+              <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1 inline-block text-left">
                 <li>• Know travel dates & duration</li>
                 <li>• See interests & preferences</li>
                 <li>• Understand group size & budget</li>

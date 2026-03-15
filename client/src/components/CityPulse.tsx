@@ -87,15 +87,15 @@ export function CityPulse({ city }: CityPulseProps) {
             <button
               key={pill.label}
               onClick={pill.onClick}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-gray-800/80 border border-orange-200 dark:border-gray-700 whitespace-nowrap shrink-0 transition-colors hover:border-orange-300 dark:hover:border-gray-500 shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-50 dark:bg-gray-700 border border-orange-300 dark:border-gray-600 whitespace-nowrap shrink-0 transition-colors hover:border-orange-400 dark:hover:border-gray-500 shadow-sm"
             >
               <span className={pill.emoji === "🟢" ? "city-pulse-live-dot" : ""}>
                 {pill.emoji}
               </span>
-              <span className="font-bold text-[13px] text-orange-500 dark:text-[#FF6B35]">
+              <span className="font-bold text-[13px] text-orange-600 dark:text-white">
                 {pill.count}
               </span>
-              <span className="text-[12px] font-medium text-gray-700 dark:text-white/70">
+              <span className="text-[12px] font-medium text-gray-800 dark:text-white">
                 {pill.label}
               </span>
             </button>

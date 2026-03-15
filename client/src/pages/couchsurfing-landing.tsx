@@ -175,8 +175,8 @@ export default function CouchsurfingLanding() {
               Imagine our couchsurfing community expanded to include everyone who shares our values — not just those who can host or surf.
             </p>
             <div className="mt-8 max-w-4xl mx-auto">
-              <p className="text-xl sm:text-2xl font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed">
-                That's millions more cultural exchanges, friendships, and adventures waiting to happen.
+              <p className="text-lg sm:text-xl md:text-2xl font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                That's millions more cultural exchanges,<br className="hidden sm:block" /> friendships, and adventures<br className="hidden sm:block" /> waiting to happen.
               </p>
             </div>
           </div>

@@ -277,6 +277,10 @@ export const welcomeEmail = (data: WelcomeEmailData): EmailTemplate => ({
         
         <p>Best regards,<br>
         Aaron- Nearby Traveler, Inc</p>
+        
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="https://nearbytraveler.org/home" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #f97316 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600;">Explore Now</a>
+        </div>
       </div>
     </body>
     </html>

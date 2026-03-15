@@ -4815,7 +4815,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
 I'm Aaron - excited to have you join our community connecting travelers and locals through shared interests.
 
-**Get Started:**
+Get Started:
 • Complete your profile to match better with others
 • Visit your city match page to connect on local activities
 • Browse people and events in ${user.hometownCity}${user.travelDestination ? ` and ${user.travelDestination}` : ''}
@@ -6050,7 +6050,7 @@ Questions? Just reply to this message!
             const welcomeMessage = user.userType === 'business'
               ? `Welcome to Nearby Traveler Business, ${firstName}! 🏢
 
-**Key Features:**
+Key Features:
 • Create deals & flash sales for immediate foot traffic
 • Get matched with travelers/locals who share your business interests
 • Appear on our interactive map for discovery
@@ -6063,7 +6063,7 @@ Aaron`
 
 I'm Aaron - excited to have you join our community connecting travelers and locals through shared interests.
 
-**Get Started:**
+Get Started:
 • Complete your profile to match better with others
 • Visit your city match page to connect on local activities
 • Browse people and events in ${user.hometownCity || 'your city'}
