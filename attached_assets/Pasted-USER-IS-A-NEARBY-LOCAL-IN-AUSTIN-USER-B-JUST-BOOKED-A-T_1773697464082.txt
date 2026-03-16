@@ -1,0 +1,26 @@
+USER IS A NEARBY LOCAL IN AUSTIN, USER B JUST BOOKED A TRIP TODAY ARRIVING TODAY IN AUSTIN FOR 3 DYAS...  THERE IS NO WHERE ON USER A PROFILE THAT SAYS USER B IS COMING TO TOWN, I THOUGHT WE CREATED THAT
+
+2:42 PM
+
+Excavated feature discussion versus actual implementation gap
+Excavated feature discussion versus actual implementation gap
+We discussed it and built parts of it, but it sounds like the profile-level notification for locals — "someone is coming to your city" — never got fully connected. The city page has the sections but the local user's own profile/home isn't alerting them. Here's the prompt:
+
+@codebase When a user books a trip to a city, locals in that city need to be notified and see it. Currently nothing happens on a local's profile or homepage when a traveler arrives or plans to visit their city.
+
+Three things need to happen when User B creates a trip to Austin:
+
+1. Homepage pill for locals Any user whose hometown is Austin should see a new headline pill in the CityPulse banner row: "✈️ 1 traveler arriving in Austin today →" Clicking it goes to the Discover People page filtered to "Here Now" in Austin.
+
+2. Notification Send a notification to all Austin locals: "@[username] is visiting Austin for 3 days — say hello!" Tapping it goes to that traveler's profile.
+
+3. Discover People feed The traveler should immediately appear in the "Here Now" section of the homepage Discover People feed for Austin locals — not just on the city page. Make sure the homepage Discover People section pulls active travel plans and surfaces travelers whose arrival date is today or within the current date range.
+
+Implementation:
+
+When a trip is created (POST /api/trips or similar), query all users whose hometown_city matches the destination city
+Create notifications for those locals
+The CityPulse query for the homepage should count active incoming travelers separately and surface the pill
+Do not change trip creation UI or profile pages. Desktop, mobile web, and iOS.
+
+This is one of the core value props of the whole app — locals knowing who's coming to town. Really important to get right. Want to keep going?

@@ -3402,9 +3402,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         db.execute(sql`
           SELECT COUNT(*)::int as count FROM travel_plans
           WHERE LOWER(destination_city) = ${cityLower}
-            AND start_date <= ${now.toISOString()}
+            AND start_date >= ${todayStart.toISOString()}
+            AND start_date < ${new Date(todayStart.getTime() + 24 * 60 * 60 * 1000).toISOString()}
             AND end_date >= ${now.toISOString()}
-            AND created_at >= ${todayStart.toISOString()}
         `),
         db.execute(sql`
           SELECT COUNT(*)::int as count FROM available_now
@@ -9901,7 +9901,55 @@ Questions? Just reply to this message. Welcome aboard!
       
       // Award 4 aura points for planning a trip
       await awardAuraPoints(travelPlanData.userId, 4, 'planning a trip');
-      
+
+      // Notify locals in destination city that a traveler is arriving
+      try {
+        const destCity = travelPlanData.destinationCity;
+        const travelerUser = await storage.getUser(travelPlanData.userId);
+        if (destCity && travelerUser) {
+          const destCityLower = destCity.toLowerCase();
+
+          // Calculate trip length
+          const tripStart = new Date(travelPlanData.startDate);
+          const tripEnd = new Date(travelPlanData.endDate);
+          const tripDays = Math.max(1, Math.round((tripEnd.getTime() - tripStart.getTime()) / (1000 * 60 * 60 * 24)));
+
+          // Find all locals whose hometown_city matches the destination (limit 100 to avoid spam)
+          const locals = await db.select({ id: users.id, username: users.username })
+            .from(users)
+            .where(and(
+              sql`LOWER(${users.hometownCity}) = ${destCityLower}`,
+              ne(users.id, travelPlanData.userId)
+            ))
+            .limit(100);
+
+          const displayName = travelerUser.firstName || travelerUser.username;
+          for (const local of locals) {
+            await storage.createNotification({
+              userId: local.id,
+              fromUserId: travelPlanData.userId,
+              type: 'traveler_arriving',
+              title: `✈️ @${displayName} is visiting ${destCity}`,
+              message: `@${travelerUser.username} is visiting ${destCity} for ${tripDays} day${tripDays === 1 ? '' : 's'} — say hello!`,
+              data: JSON.stringify({
+                travelerId: travelPlanData.userId,
+                travelerUsername: travelerUser.username,
+                city: destCity,
+                tripDays,
+                profileUrl: `/profile/${travelerUser.username}`
+              })
+            });
+          }
+
+          // Bust city-pulse cache so the arriving-today pill reflects immediately
+          await cache.delete(`city-pulse:${destCityLower}`);
+          console.log(`✈️ ARRIVALS: Notified ${locals.length} locals in ${destCity} about @${travelerUser.username}'s trip`);
+        }
+      } catch (notifyErr) {
+        console.error('⚠️ ARRIVALS: Failed to notify locals:', notifyErr);
+        // Non-fatal — don't fail the trip creation
+      }
+
       return res.status(201).json(newTravelPlan);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error creating travel plan:", error);

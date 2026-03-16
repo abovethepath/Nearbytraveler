@@ -1837,11 +1837,14 @@ export default function Home() {
       {effectiveUser && <ChatInviteAlertBar />}
 
       {effectiveUser && (
-        <CityPulse city={
-          (effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination)
-            ? effectiveUser.travelDestination.split(',')[0].trim()
-            : (effectiveUser.hometownCity || undefined)
-        } />
+        <CityPulse
+          city={
+            (effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination)
+              ? effectiveUser.travelDestination.split(',')[0].trim()
+              : (effectiveUser.hometownCity || undefined)
+          }
+          isLocal={!effectiveUser.isCurrentlyTraveling}
+        />
       )}
 
       <div className="pt-2 sm:pt-4 pb-24 md:pb-8 lg:pb-4 relative">

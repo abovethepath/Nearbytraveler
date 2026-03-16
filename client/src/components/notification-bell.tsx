@@ -607,6 +607,8 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                         markAsReadMutation.mutate(notification.id);
                         if (isTravelerArrival && notifData.savedUserId) {
                           setLocation(`/profile/${notifData.savedUserId}`);
+                        } else if (notification.type === 'traveler_arriving' && notifData.travelerUsername) {
+                          setLocation(`/profile/${notifData.travelerUsername}`);
                         }
                       }}
                     >

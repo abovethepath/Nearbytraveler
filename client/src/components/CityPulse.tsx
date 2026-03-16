@@ -14,9 +14,10 @@ interface CityPulseData {
 
 interface CityPulseProps {
   city: string | undefined;
+  isLocal?: boolean;
 }
 
-export function CityPulse({ city }: CityPulseProps) {
+export function CityPulse({ city, isLocal }: CityPulseProps) {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const queryCity = city || "Los Angeles";
@@ -100,13 +101,24 @@ export function CityPulse({ city }: CityPulseProps) {
 
   if (!data) return null;
 
+  const arrivingCount = data.newTravelers || 0;
+
   const pills: {
     emoji: string;
     count: number;
     label: string;
     notifIds?: number[];
+    highlight?: boolean;
     onClick: () => void;
   }[] = [
+    // ✈️ Arriving today — only shown to locals (not to travelers currently on a trip)
+    ...(isLocal && arrivingCount > 0 ? [{
+      emoji: "✈️",
+      count: arrivingCount,
+      label: `traveler${arrivingCount === 1 ? "" : "s"} arriving in ${data.city} today →`,
+      highlight: true,
+      onClick: () => setLocation("/discover"),
+    }] : []),
     {
       emoji: "🧡",
       count: pendingRequestsCount,
@@ -153,12 +165,6 @@ export function CityPulse({ city }: CityPulseProps) {
       count: Number(unreadMsgData?.unreadCount) || 0,
       label: `unread message${(Number(unreadMsgData?.unreadCount) || 0) === 1 ? "" : "s"} →`,
       onClick: () => setLocation("/messages"),
-    },
-    {
-      emoji: "👋",
-      count: data.newTravelers,
-      label: "new travelers today",
-      onClick: () => setLocation("/discover"),
     },
     {
       emoji: "🟢",
@@ -227,13 +233,18 @@ export function CityPulse({ city }: CityPulseProps) {
                 }
                 pill.onClick();
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-50 border border-orange-200 whitespace-nowrap shrink-0 transition-colors hover:border-orange-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:hover:border-gray-500"
+              className={
+                pill.highlight
+                  ? "flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap shrink-0 transition-colors shadow-sm text-white font-semibold"
+                  : "flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-50 border border-orange-200 whitespace-nowrap shrink-0 transition-colors hover:border-orange-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:hover:border-gray-500"
+              }
+              style={pill.highlight ? { backgroundColor: '#FF6B35' } : undefined}
             >
               <span>{pill.emoji}</span>
-              <span className="font-bold text-[13px] text-orange-600 dark:text-white">
+              <span className={`font-bold text-[13px] ${pill.highlight ? "text-white" : "text-orange-600 dark:text-white"}`}>
                 {pill.count}
               </span>
-              <span className="text-[12px] font-medium text-orange-800 dark:text-white">
+              <span className={`text-[12px] font-medium ${pill.highlight ? "text-white" : "text-orange-800 dark:text-white"}`}>
                 {pill.label}
               </span>
             </button>
