@@ -2302,16 +2302,18 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               >
                 <UserPlus className="w-4 h-4" />
               </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowShareSheet(true)}
-                className="text-white hover:bg-gray-700 h-9 w-9 touch-target shrink-0"
-                title="Share chatroom"
-                data-testid="button-share-chatroom"
-              >
-                <Share2 className="w-4 h-4" />
-              </Button>
+              {chatType !== 'dm' && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowShareSheet(true)}
+                  className="text-white hover:bg-gray-700 h-9 w-9 touch-target shrink-0"
+                  title="Share chatroom"
+                  data-testid="button-share-chatroom"
+                >
+                  <Share2 className="w-4 h-4" />
+                </Button>
+              )}
 
               <Sheet open={moreMenuOpen} onOpenChange={setMoreMenuOpen}>
                 <SheetTrigger asChild>
@@ -2357,9 +2359,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                           {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
                           <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
                         </button>
-                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); shareChatroomLink(); }}>
-                          <Share2 className="w-5 h-5" /><span className="font-semibold">Share Chatroom</span>
-                        </button>
+                        {chatType !== 'dm' && (
+                          <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); shareChatroomLink(); }}>
+                            <Share2 className="w-5 h-5" /><span className="font-semibold">Share Chatroom</span>
+                          </button>
+                        )}
                         <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); reportChatroom(); }}>
                           <ShieldAlert className="w-5 h-5" /><span className="font-semibold">Report Chatroom</span>
                         </button>
@@ -2631,16 +2635,18 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             >
               <UserPlus className="w-4 h-4" />
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowShareSheet(true)}
-              className="text-white hover:bg-gray-700 h-8 w-8"
-              title="Share chatroom"
-              data-testid="button-share-chatroom-desktop"
-            >
-              <Share2 className="w-4 h-4" />
-            </Button>
+            {chatType !== 'dm' && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowShareSheet(true)}
+                className="text-white hover:bg-gray-700 h-8 w-8"
+                title="Share chatroom"
+                data-testid="button-share-chatroom-desktop"
+              >
+                <Share2 className="w-4 h-4" />
+              </Button>
+            )}
           </>
         )}
 
