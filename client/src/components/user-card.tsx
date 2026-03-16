@@ -391,7 +391,7 @@ export default function UserCard({
                 <div className="w-full flex justify-center mt-1">
                   <span
                     data-role="user-card-contacts"
-                    className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13.5px] font-bold border bg-blue-100 text-blue-700 border-blue-300 dark:bg-[rgba(255,107,53,0.10)] dark:text-[#3b82f6] dark:border-[rgba(255,107,53,0.25)]"
+                    className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13.5px] font-semibold text-white" style={{ backgroundColor: '#FF6B35' }}
                   >
                     <span className="lg:hidden">{contactsInCommon} {contactsInCommon === 1 ? 'Mutual Contact' : 'Mutual Contacts'}</span>
                     <span className="hidden lg:inline">{contactsInCommon} {contactsInCommon === 1 ? 'Connection' : 'Connections'} in Common</span>
@@ -452,7 +452,7 @@ export default function UserCard({
                     className="w-full flex justify-center mt-1"
                     data-role="user-card-contacts"
                   >
-                    <span className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13.5px] font-bold border bg-blue-100 text-blue-700 border-blue-300 dark:bg-[rgba(255,107,53,0.10)] dark:text-[#3b82f6] dark:border-[rgba(255,107,53,0.25)]">
+                    <span className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13.5px] font-semibold text-white" style={{ backgroundColor: '#FF6B35' }}>
                       <span className="lg:hidden">{contactsInCommon} {contactsInCommon === 1 ? 'Mutual Contact' : 'Mutual Contacts'}</span>
                       <span className="hidden lg:inline">{contactsInCommon} {contactsInCommon === 1 ? 'Connection' : 'Connections'} in Common</span>
                     </span>
@@ -540,7 +540,7 @@ export default function UserCard({
                   data-role="user-card-contacts"
                   className="mt-1 w-full flex justify-center"
                 >
-                  <span className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13px] font-bold border bg-blue-100 text-blue-700 border-blue-300 dark:bg-[rgba(255,107,53,0.10)] dark:text-[#3b82f6] dark:border-[rgba(255,107,53,0.25)]">
+                  <span className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13px] font-semibold text-white" style={{ backgroundColor: '#FF6B35' }}>
                     <span className="lg:hidden">{contactsInCommon} {contactsInCommon === 1 ? 'Mutual Contact' : 'Mutual Contacts'}</span>
                     <span className="hidden lg:inline">{contactsInCommon} {contactsInCommon === 1 ? 'Connection' : 'Connections'} in Common</span>
                   </span>
@@ -597,7 +597,7 @@ export default function UserCard({
                   </div>
                   <div
                     className="w-full text-center mt-0.5"
-                    style={{ fontSize: 12, fontWeight: 500, color: pickTextColor("#9ca3af", "#3b82f6") }}
+                    style={{ fontSize: 12, fontWeight: 600, color: '#FF6B35' }}
                     data-role="user-card-contacts"
                   >
                     <span className="lg:hidden">{contactsInCommon} {contactsInCommon === 1 ? 'Mutual Contact' : 'Mutual Contacts'}</span>
