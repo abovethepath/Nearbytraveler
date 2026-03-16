@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { getApiBaseUrl } from "@/lib/queryClient";
+import { getApiBaseUrl, apiRequest } from "@/lib/queryClient";
 
 interface CityPulseData {
   city: string;
@@ -18,6 +18,7 @@ interface CityPulseProps {
 
 export function CityPulse({ city }: CityPulseProps) {
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
   const queryCity = city || "Los Angeles";
 
   const currentUserId = (() => {
@@ -71,20 +72,41 @@ export function CityPulse({ city }: CityPulseProps) {
     ? notifications.filter((n: any) => !n.isRead)
     : [];
 
-  const vouchCount = unreadNotifs.filter((n: any) => n.type === "vouch_received").length;
-  const referenceCount = unreadNotifs.filter((n: any) =>
-    typeof n.type === "string" && n.type.startsWith("reference_written:")
-  ).length;
-  const connectionAcceptedCount = unreadNotifs.filter(
-    (n: any) => n.type === "connection_accepted"
-  ).length;
-  const meetAcceptedCount = unreadNotifs.filter((n: any) => n.type === "meet_accepted").length;
-  const groupChatAddedCount = unreadNotifs.filter((n: any) => n.type === "chatroom_added").length;
-  const unreadDMs = Number(unreadMsgData?.unreadCount) || 0;
+  const vouchNotifIds = unreadNotifs
+    .filter((n: any) => n.type === "vouch_received")
+    .map((n: any) => n.id);
+  const referenceNotifIds = unreadNotifs
+    .filter((n: any) => typeof n.type === "string" && n.type.startsWith("reference_written:"))
+    .map((n: any) => n.id);
+  const connectionAcceptedNotifIds = unreadNotifs
+    .filter((n: any) => n.type === "connection_accepted")
+    .map((n: any) => n.id);
+  const meetAcceptedNotifIds = unreadNotifs
+    .filter((n: any) => n.type === "meet_accepted")
+    .map((n: any) => n.id);
+  const groupChatAddedNotifIds = unreadNotifs
+    .filter((n: any) => n.type === "chatroom_added")
+    .map((n: any) => n.id);
+
+  const markNotificationsRead = async (ids: number[]) => {
+    if (!ids.length) return;
+    await Promise.allSettled(
+      ids.map((id) => apiRequest("PUT", `/api/notifications/${id}/read`))
+    );
+    if (currentUserId) {
+      queryClient.invalidateQueries({ queryKey: [`/api/notifications/${currentUserId}`] });
+    }
+  };
 
   if (!data) return null;
 
-  const pills: { emoji: string; count: number; label: string; onClick: () => void }[] = [
+  const pills: {
+    emoji: string;
+    count: number;
+    label: string;
+    notifIds?: number[];
+    onClick: () => void;
+  }[] = [
     {
       emoji: "🧡",
       count: pendingRequestsCount,
@@ -93,38 +115,43 @@ export function CityPulse({ city }: CityPulseProps) {
     },
     {
       emoji: "🏅",
-      count: vouchCount,
-      label: `vouch${vouchCount === 1 ? "" : "es"} received →`,
+      count: vouchNotifIds.length,
+      label: `vouch${vouchNotifIds.length === 1 ? "" : "es"} received →`,
+      notifIds: vouchNotifIds,
       onClick: () => setLocation("/profile?tab=vouches"),
     },
     {
       emoji: "✍️",
-      count: referenceCount,
-      label: `reference${referenceCount === 1 ? "" : "s"} received →`,
+      count: referenceNotifIds.length,
+      label: `reference${referenceNotifIds.length === 1 ? "" : "s"} received →`,
+      notifIds: referenceNotifIds,
       onClick: () => setLocation("/profile?tab=references"),
     },
     {
       emoji: "🤝",
-      count: connectionAcceptedCount,
-      label: `connection${connectionAcceptedCount === 1 ? "" : "s"} accepted →`,
+      count: connectionAcceptedNotifIds.length,
+      label: `connection${connectionAcceptedNotifIds.length === 1 ? "" : "s"} accepted →`,
+      notifIds: connectionAcceptedNotifIds,
       onClick: () => setLocation("/activity"),
     },
     {
       emoji: "🎉",
-      count: meetAcceptedCount,
-      label: `meetup request${meetAcceptedCount === 1 ? "" : "s"} accepted →`,
+      count: meetAcceptedNotifIds.length,
+      label: `meetup request${meetAcceptedNotifIds.length === 1 ? "" : "s"} accepted →`,
+      notifIds: meetAcceptedNotifIds,
       onClick: () => setLocation("/messages"),
     },
     {
       emoji: "💬",
-      count: groupChatAddedCount,
-      label: `added to group chat${groupChatAddedCount === 1 ? "" : "s"} →`,
+      count: groupChatAddedNotifIds.length,
+      label: `added to group chat${groupChatAddedNotifIds.length === 1 ? "" : "s"} →`,
+      notifIds: groupChatAddedNotifIds,
       onClick: () => setLocation("/messages"),
     },
     {
       emoji: "💌",
-      count: unreadDMs,
-      label: `unread message${unreadDMs === 1 ? "" : "s"} →`,
+      count: Number(unreadMsgData?.unreadCount) || 0,
+      label: `unread message${(Number(unreadMsgData?.unreadCount) || 0) === 1 ? "" : "s"} →`,
       onClick: () => setLocation("/messages"),
     },
     {
@@ -146,7 +173,7 @@ export function CityPulse({ city }: CityPulseProps) {
       onClick: () => setLocation("/events"),
     },
     {
-      emoji: "🎉",
+      emoji: "✨",
       count: data.eventsCreatedToday,
       label: "events created today",
       onClick: () => setLocation("/events"),
@@ -173,17 +200,24 @@ export function CityPulse({ city }: CityPulseProps) {
       <div className="max-w-7xl mx-auto">
         <div
           className="flex gap-3 px-4 py-2.5 overflow-x-auto"
-          style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
+          style={{
+            WebkitOverflowScrolling: "touch",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
         >
           {visiblePills.map((pill, i) => (
             <button
               key={`${pill.label}-${i}`}
-              onClick={pill.onClick}
+              onClick={() => {
+                if (pill.notifIds?.length) {
+                  markNotificationsRead(pill.notifIds);
+                }
+                pill.onClick();
+              }}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-50 border border-orange-200 whitespace-nowrap shrink-0 transition-colors hover:border-orange-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:hover:border-gray-500"
             >
-              <span className={pill.emoji === "🟢" ? "city-pulse-live-dot" : ""}>
-                {pill.emoji}
-              </span>
+              <span>{pill.emoji}</span>
               <span className="font-bold text-[13px] text-orange-600 dark:text-white">
                 {pill.count}
               </span>
