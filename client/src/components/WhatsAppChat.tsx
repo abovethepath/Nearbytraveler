@@ -1585,6 +1585,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
     const content = messageText.trim();
     const replyToId = replyingTo?.id;
+    // Snapshot replyingTo before clearing it — needed for optimistic updates
+    const replyingToSnapshot = replyingTo;
     
     // Clear input immediately for responsive feel
     setMessageText("");
@@ -1605,6 +1607,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         content,
         messageType: 'text',
         replyToId,
+        replyTo: replyingToSnapshot ? {
+          id: replyingToSnapshot.id,
+          senderId: replyingToSnapshot.senderId,
+          content: replyingToSnapshot.content,
+          sender: replyingToSnapshot.sender,
+        } : undefined,
         createdAt: new Date().toISOString(),
         sender: {
           id: currentUserId,
@@ -1715,6 +1723,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               content: newMessage.content ?? content,
               messageType: newMessage.messageType || 'text',
               replyToId: newMessage.replyToId,
+              replyTo: replyingToSnapshot ? {
+                id: replyingToSnapshot.id,
+                senderId: replyingToSnapshot.senderId,
+                content: replyingToSnapshot.content,
+                sender: replyingToSnapshot.sender,
+              } : undefined,
               createdAt: newMessage.createdAt || new Date().toISOString(),
               sender: {
                 id: currentUserId,
@@ -2918,16 +2932,25 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         </div>
                       </div>
                     )}
-                    {message.replyToId && message.replyTo && (
-                      <div className={`mb-1 px-3 py-2 rounded-t-lg border-l-4 ${isOwnMessage ? 'bg-green-900/80 border-green-300' : 'bg-gray-600/80 border-green-500'}`}>
-                        <p className={`text-xs font-bold mb-0.5 ${isOwnMessage ? 'text-green-200' : 'text-green-400'}`}>
-                          ↩ Replying to {getFirstName(message.replyTo.sender?.name, message.replyTo.sender?.username)}
-                        </p>
-                        <p className={`text-xs ${isOwnMessage ? 'text-green-100/90' : 'text-gray-200'} truncate italic`}>
-                          "{message.replyTo.content}"
-                        </p>
-                      </div>
-                    )}
+                    {message.replyToId && (() => {
+                      // Fall back to looking up the replied message in the current messages array.
+                      // This covers: WS incoming messages, optimistic sends before server echo,
+                      // and any path that sets replyToId but not the full replyTo object.
+                      const resolvedReply = message.replyTo ?? messages.find(m => m.id === message.replyToId) ?? null;
+                      if (!resolvedReply) return null;
+                      const replySenderName = (resolvedReply as any).sender?.name ?? (resolvedReply as any).senderUser?.name ?? null;
+                      const replySenderUsername = (resolvedReply as any).sender?.username ?? (resolvedReply as any).senderUser?.username ?? null;
+                      return (
+                        <div className={`mb-1 px-3 py-2 rounded-t-lg border-l-4 ${isOwnMessage ? 'bg-green-900/80 border-green-300' : 'bg-gray-600/80 border-green-500'}`}>
+                          <p className={`text-xs font-bold mb-0.5 ${isOwnMessage ? 'text-green-200' : 'text-green-400'}`}>
+                            ↩ Replying to {getFirstName(replySenderName, replySenderUsername)}
+                          </p>
+                          <p className={`text-xs ${isOwnMessage ? 'text-green-100/90' : 'text-gray-200'} truncate italic`}>
+                            "{resolvedReply.content}"
+                          </p>
+                        </div>
+                      );
+                    })()}
 
                     {editingMessageId === message.id ? (
                       <div 
