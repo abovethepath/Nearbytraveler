@@ -687,6 +687,33 @@ export const getAllSubInterests = (): string[] => {
 // Events have been removed from user profiles - they now only exist as community events that users can create/attend
 
 // ========================================
+// PUBLIC LIFESTYLE INTERESTS (non-adult, safe for App Store — used as visible search filter options)
+// These are matched against BOTH interests and private_interests columns
+// ========================================
+export const PUBLIC_LIFESTYLE_INTERESTS: string[] = [
+  "Body Positivity",
+  "Free Spirit",
+  "Open Minded",
+  "Adventurous",
+  "Deep Conversations",
+  "No Judgment Zone",
+  "Playful Energy",
+  "Late Night Adventures",
+  "Night Owl",
+  "Early Riser",
+  "Solo Explorer",
+  "Social Butterfly",
+  "Minimalist",
+  "Wellness Focused",
+  "Digital Nomad",
+  "Ecstatic Dance",
+  "Breathwork",
+  "Conscious Living",
+  "Plant-Based Lifestyle",
+  "Festival Culture",
+];
+
+// ========================================
 // PRIVATE INTERESTS (lifestyle / adult — stored in private_interests column, never shown publicly)
 // ========================================
 

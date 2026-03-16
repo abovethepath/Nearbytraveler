@@ -14,7 +14,8 @@ import EventCard from "@/components/event-card";
 import { Calendar, UserPlus } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { authStorage } from "@/lib/auth";
-import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, ALL_INTERESTS, ALL_ACTIVITIES, TOP_CHOICES, PRIVATE_INTERESTS_BY_CATEGORY } from "@shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, ALL_INTERESTS, ALL_ACTIVITIES, TOP_CHOICES, PUBLIC_LIFESTYLE_INTERESTS } from "@shared/base-options";
+import { formatCityDisplay } from "@/lib/locationDisplay";
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, MILITARY_STATUS_OPTIONS } from "@/lib/formConstants";
 import { InterestPills } from "@/components/InterestPills";
 
@@ -401,48 +402,43 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
               </CollapsibleContent>
             </Collapsible>
 
-            {/* Lifestyle & Private Interests Filter */}
+            {/* Lifestyle Preferences Filter — public, App Store safe options */}
             <Collapsible open={expandedSections.privateInterests} onOpenChange={() => toggleSection('privateInterests')}>
               <CollapsibleTrigger asChild>
-                <Button variant="outline" className="w-full justify-between border-red-300 dark:border-red-700 hover:border-red-400">
+                <Button variant="outline" className="w-full justify-between">
                   <span className="flex items-center gap-1.5">
-                    <span>🔒</span>
-                    <span>Lifestyle &amp; Private Interests {advancedFilters.privateInterests.length > 0 && `(${advancedFilters.privateInterests.length})`}</span>
+                    <span>✨</span>
+                    <span>Lifestyle Preferences {advancedFilters.privateInterests.length > 0 && `(${advancedFilters.privateInterests.length})`}</span>
                   </span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-3 pt-2">
-                <p className="text-xs text-gray-500 dark:text-gray-400 italic px-1">Only matches members who have also selected these in their own private lifestyle preferences.</p>
-                {Object.entries(PRIVATE_INTERESTS_BY_CATEGORY).map(([category, options]) => (
-                  <div key={category}>
-                    <p className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide mb-1.5 px-1">{category}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {(options as string[]).map((option) => {
-                        const isSelected = advancedFilters.privateInterests.includes(option);
-                        return (
-                          <button
-                            key={option}
-                            type="button"
-                            onClick={() => setAdvancedFilters(prev => ({
-                              ...prev,
-                              privateInterests: isSelected
-                                ? prev.privateInterests.filter(p => p !== option)
-                                : [...prev.privateInterests, option]
-                            }))}
-                            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
-                              isSelected
-                                ? "bg-red-600 text-white border-red-600"
-                                : "bg-transparent border border-red-200 dark:border-red-800 text-gray-600 dark:text-white/70 hover:border-red-500"
-                            }`}
-                          >
-                            {option}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
+              <CollapsibleContent className="space-y-2 pt-2">
+                <p className="text-xs text-gray-500 dark:text-gray-400 italic px-1">Find people who share your vibe and lifestyle preferences.</p>
+                <div className="flex flex-wrap gap-2">
+                  {PUBLIC_LIFESTYLE_INTERESTS.map((option) => {
+                    const isSelected = advancedFilters.privateInterests.includes(option);
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => setAdvancedFilters(prev => ({
+                          ...prev,
+                          privateInterests: isSelected
+                            ? prev.privateInterests.filter(p => p !== option)
+                            : [...prev.privateInterests, option]
+                        }))}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                          isSelected
+                            ? "bg-orange-500 text-white border-orange-500"
+                            : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
               </CollapsibleContent>
             </Collapsible>
 
@@ -839,7 +835,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <h4 className="font-semibold text-black dark:text-white truncate">
-                              {user.username}
+                              {(user as any).firstName || user.name || user.username}
                             </h4>
                             {availableUserIds.has(user.id) && (
                               <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-blue-500 to-orange-500 text-white flex-shrink-0">
@@ -877,10 +873,14 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                       
                       {/* User details - location and interests only */}
                       <div className="space-y-2">
-                        {user.location && (
+                        {(user.hometownCity || user.location) && (
                           <p className="text-sm text-gray-500 dark:text-gray-500 flex items-center gap-1">
                             <MapPin className="w-3 h-3 flex-shrink-0" />
-                            <span className="truncate">{user.location}</span>
+                            <span className="truncate">
+                              {user.hometownCity
+                                ? formatCityDisplay(user.hometownCity, user.hometownState, user.hometownCountry)
+                                : user.location}
+                            </span>
                           </p>
                         )}
                         {/* Interests Preview */}

@@ -6574,7 +6574,7 @@ Questions? Just reply to this message. Welcome aboard!
         }
       } else {
         // If no search term provided, require at least one other filter
-        if (!location && !userType && !gender && !interests && !activities && !eventsFilter && !topChoices && !sexualPreference && !militaryStatus && !newToTown && !travelingWithChildren && !commonFriends) {
+        if (!location && !userType && !gender && !interests && !activities && !eventsFilter && !topChoices && !sexualPreference && !militaryStatus && !newToTown && !travelingWithChildren && !commonFriends && !privateInterests) {
           return res.json({
             users: [],
             total: 0,
@@ -6780,24 +6780,30 @@ Questions? Just reply to this message. Welcome aboard!
         if (interestsList.length > 0) {
           if (process.env.NODE_ENV === 'development') console.log('🎯 INTERESTS FILTER: Searching for users with interests:', interestsList);
           
-          // Search in both predefined interests array and custom interests text field
+          // Search in predefined interests array, custom interests text, AND private_interests (lifestyle cross-match)
           whereConditions.push(or(
             ...interestsList.map(interest => sql`array_to_string(${users.interests}, ',') ILIKE ${'%' + interest + '%'}`),
-            ...interestsList.map(interest => ilike(users.customInterests, `%${interest}%`))
+            ...interestsList.map(interest => ilike(users.customInterests, `%${interest}%`)),
+            ...interestsList.map(interest => sql`array_to_string(${users.privateInterests}, ',') ILIKE ${'%' + interest + '%'}`)
           ));
         }
       }
 
-      // Private Interests filter - searching in privateInterests field
+      // Lifestyle / Private Interests filter — search BOTH columns so users are found regardless
+      // of which column they stored the interest in. Private interests are never exposed in results.
       if (privateInterests && typeof privateInterests === 'string') {
         const privateInterestsList = privateInterests.split(',').map(i => i.trim()).filter(Boolean);
         if (privateInterestsList.length > 0) {
-          if (process.env.NODE_ENV === 'development') console.log('🔒 PRIVATE INTERESTS FILTER: Searching for users with private interests:', privateInterestsList);
+          if (process.env.NODE_ENV === 'development') console.log('🌿 LIFESTYLE INTERESTS FILTER: Searching for users with lifestyle interests:', privateInterestsList);
           
           whereConditions.push(or(
-            ...privateInterestsList.map(privateInterest => 
-              sql`array_to_string(${users.privateInterests}, ',') ILIKE ${'%' + privateInterest + '%'}`
-            )
+            ...privateInterestsList.map(pi =>
+              sql`array_to_string(${users.privateInterests}, ',') ILIKE ${'%' + pi + '%'}`
+            ),
+            ...privateInterestsList.map(pi =>
+              sql`array_to_string(${users.interests}, ',') ILIKE ${'%' + pi + '%'}`
+            ),
+            ...privateInterestsList.map(pi => ilike(users.customInterests, `%${pi}%`))
           ));
         }
       }
@@ -6815,6 +6821,7 @@ Questions? Just reply to this message. Welcome aboard!
           id: users.id,
           username: users.username,
           name: users.name,
+          firstName: users.firstName,
           userType: users.userType,
           bio: users.bio,
           location: users.location,
@@ -6823,6 +6830,7 @@ Questions? Just reply to this message. Welcome aboard!
           hometownCountry: users.hometownCountry,
           profileImage: users.profileImage,
           interests: users.interests,
+          customInterests: users.customInterests,
           events: users.events
         })
         .from(users)
