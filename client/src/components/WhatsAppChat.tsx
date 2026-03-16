@@ -1818,7 +1818,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const handleTyping = (text: string) => {
     setMessageText(text);
 
-    if (!wsRef.current) return;
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
 
     wsRef.current.send(JSON.stringify({
       type: 'typing:start',

@@ -21426,16 +21426,18 @@ Questions? Just reply to this message. Welcome aboard!
             break;
 
           case 'typing':
-            if (!ws.isAuthenticated) return;
-            const typingReceiverWs = connectedUsers.get(data.receiverId);
-            if (typingReceiverWs && typingReceiverWs.readyState === WebSocket.OPEN) {
-              typingReceiverWs.send(JSON.stringify({
-                type: 'user_typing',
-                senderId: ws.userId,
-                senderUsername: ws.username,
-                isTyping: data.isTyping
-              }));
-            }
+            if (!ws.isAuthenticated || !ws.userId) return;
+            // Route through chatWebSocketService so the event reaches ALL of the
+            // receiver's open WebSocket connections (app-level + any chat-specific WS).
+            // The old connectedUsers.get() only returned the latest single WS, which
+            // broke delivery when a meetup/event WhatsAppChat had overwritten the entry.
+            await chatWebSocketService.handleEvent(ws, {
+              type: data.isTyping ? 'typing:start' : 'typing:stop',
+              chatType: 'dm',
+              chatroomId: typeof data.receiverId === 'string' ? parseInt(data.receiverId, 10) : data.receiverId,
+              payload: {},
+              timestamp: Date.now(),
+            });
             break;
         }
       } catch (error: any) {

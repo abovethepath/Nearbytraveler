@@ -186,6 +186,24 @@ class WebSocketService {
         });
         break;
 
+      // chatWebSocketService delivers typing:start/stop to ALL user connections,
+      // including the app-level WS. Re-emit as user_typing so TypingIndicator works.
+      case 'typing:start':
+        this.emit('user_typing', {
+          senderId: data.payload?.userId,
+          senderUsername: data.payload?.username,
+          isTyping: true
+        });
+        break;
+
+      case 'typing:stop':
+        this.emit('user_typing', {
+          senderId: data.payload?.userId,
+          senderUsername: data.payload?.username,
+          isTyping: false
+        });
+        break;
+
       case 'message_sent':
         this.emit('message_sent', {
           messageId: data.messageId,
