@@ -600,8 +600,28 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   };
 
   const now = Date.now();
+
+  // Build the set of user IDs the current user is already in an active meetup chat with.
+  // This covers both directions:
+  //   - acceptedChatroomMap keys: users who accepted the current user's request (requester view)
+  //   - allGroupChats members: everyone in any active chatroom the current user belongs to (host + requester view)
+  const matchedUserIds = new Set<number>();
+  for (const uid of Object.keys(acceptedChatroomMap)) {
+    matchedUserIds.add(Number(uid));
+  }
+  for (const chat of allGroupChats) {
+    for (const member of (chat.members || [])) {
+      if (Number(member.userId) !== currentUser?.id) {
+        matchedUserIds.add(Number(member.userId));
+      }
+    }
+  }
+
   const otherAvailableUsers = (Array.isArray(availableUsers) ? availableUsers : []).filter(
-    (u: any) => u.userId !== currentUser?.id && (!u.expiresAt || new Date(u.expiresAt).getTime() > now)
+    (u: any) =>
+      u.userId !== currentUser?.id &&
+      (!u.expiresAt || new Date(u.expiresAt).getTime() > now) &&
+      !matchedUserIds.has(Number(u.userId))
   );
 
   const handleCardClick = (userId: number) => {
