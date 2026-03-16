@@ -23855,15 +23855,11 @@ Questions? Just reply to this message. Welcome aboard!
       // Bust the profile-bundle cache for the vouched user so the next fetch returns fresh vouch data
       cache.deletePattern(`profile-bundle:${vouchedUserId}:viewer:*`).catch(() => {/* non-fatal */});
 
-      // Fire notification + activity log for the vouched user (non-blocking)
+      // Fire notification for the vouched user (non-blocking, no duplicate activity_log)
       ;(async () => {
         try {
-          const [voucherUser, vouchedUser] = await Promise.all([
-            db.select({ username: users.username, firstName: users.firstName }).from(users).where(eq(users.id, Number(voucherUserId))).then(r => r[0]),
-            db.select({ username: users.username }).from(users).where(eq(users.id, Number(vouchedUserId))).then(r => r[0]),
-          ]);
+          const voucherUser = await db.select({ username: users.username }).from(users).where(eq(users.id, Number(voucherUserId))).then(r => r[0]);
           const voucherName = voucherUser?.username || `user_${voucherUserId}`;
-          const vouchedName = vouchedUser?.username || `user_${vouchedUserId}`;
 
           // Only insert notification if one doesn't already exist for this pair
           const existing = await db.select({ id: notifications.id }).from(notifications).where(
@@ -23874,25 +23870,14 @@ Questions? Just reply to this message. Welcome aboard!
               userId: Number(vouchedUserId),
               fromUserId: Number(voucherUserId),
               type: 'vouch_received',
-              title: `@${voucherName} vouched for you!`,
+              title: `@${voucherName} just vouched for you! Now you can vouch for others too.`,
               message: `@${voucherName} just vouched for you! Now you can vouch for others too.`,
               isRead: false,
               data: JSON.stringify({ voucherUserId: Number(voucherUserId), vouchedUserId: Number(vouchedUserId), profilePath: `/profile/${vouchedUserId}?tab=vouches` }),
             });
           }
-
-          await writeActivityLog({
-            userId: Number(vouchedUserId),
-            action: 'vouch_received',
-            category: 'connections',
-            title: `@${voucherName} vouched for you`,
-            description: `@${voucherName} vouched for @${vouchedName}`,
-            targetUserId: Number(voucherUserId),
-            targetUsername: voucherName,
-            linkUrl: `/profile/${voucherUserId}`,
-          });
         } catch (e) {
-          console.error('Failed to write vouch notification/activity log:', e);
+          console.error('Failed to write vouch notification:', e);
         }
       })();
 
