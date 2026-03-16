@@ -807,10 +807,18 @@ export default function ActivityFeed() {
                 );
               }
 
-              if (n.actor?.id && currentUser?.id) {
+              const avatarActorId =
+                n.actor?.id ||
+                (n.data?.fromUserId ? Number(n.data.fromUserId) : 0) ||
+                (n.data?.senderId ? Number(n.data.senderId) : 0) ||
+                (n.data?.requesterId ? Number(n.data.requesterId) : 0) ||
+                n.meetRequest?.fromUserId ||
+                0;
+
+              if (avatarActorId && currentUser?.id) {
                 return (
                   <ActorAvatar
-                    actorId={n.actor.id}
+                    actorId={avatarActorId}
                     currentUserId={currentUser.id}
                     fallbackUsername={n.actor?.username || n.actor?.name || null}
                     fallbackProfileImage={n.actor?.profileImage || null}
