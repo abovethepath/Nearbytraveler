@@ -115,6 +115,8 @@ export default function Messages() {
   const [newMessage, setNewMessage] = useState('');
   const prefillAppliedRef = useRef(false);
   const [connectionSearch, setConnectionSearch] = useState('');
+  const [activeTab, setActiveTab] = useState<'dms' | 'events' | 'meetups' | 'expired'>('dms');
+  const [tabInitialized, setTabInitialized] = useState(false);
   const [countdownTick, setCountdownTick] = useState(0);
   const [instantMessages, setInstantMessages] = useState<any[]>([]);
   const [replyingTo, setReplyingTo] = useState<any | null>(null);
@@ -554,6 +556,72 @@ export default function Messages() {
       );
   }, [connections, messages, allUsers, targetUserId, userId]);
 
+  const isEndedChat = (mc: any) => {
+    const ended = mc.lifecycleState === 'grace' || mc.lifecycleState === 'readonly' || (mc.expiresAt && new Date(mc.expiresAt) <= new Date());
+    return !!ended;
+  };
+
+  const activeMeetups = React.useMemo(() =>
+    (meetupChatrooms as any[]).filter((mc: any) => mc.chatType !== 'group_dm' && mc.chatType !== 'event' && !isEndedChat(mc)),
+    [meetupChatrooms]
+  );
+  const eventChats = React.useMemo(() =>
+    (meetupChatrooms as any[]).filter((mc: any) => mc.chatType === 'event'),
+    [meetupChatrooms]
+  );
+  const groupDMs = React.useMemo(() =>
+    (meetupChatrooms as any[]).filter((mc: any) => mc.chatType === 'group_dm' && !isEndedChat(mc)),
+    [meetupChatrooms]
+  );
+  const expiredChats = React.useMemo(() =>
+    (meetupChatrooms as any[]).filter((mc: any) => {
+      if (mc.chatType === 'event') return false;
+      return isEndedChat(mc);
+    }),
+    [meetupChatrooms]
+  );
+
+  const dmUnread = React.useMemo(() => {
+    const convUnread = conversations.reduce((sum: number, c: any) => sum + (c.unreadCount || 0), 0);
+    const gdmUnread = groupDMs.reduce((sum: number, mc: any) => sum + (mc.unreadCount || 0), 0);
+    return convUnread + gdmUnread;
+  }, [conversations, groupDMs]);
+  const eventUnread = React.useMemo(() =>
+    eventChats.reduce((sum: number, mc: any) => sum + (mc.unreadCount || 0), 0),
+    [eventChats]
+  );
+  const meetupUnread = React.useMemo(() =>
+    activeMeetups.reduce((sum: number, mc: any) => sum + (mc.unreadCount || 0), 0),
+    [activeMeetups]
+  );
+  const expiredUnread = React.useMemo(() =>
+    expiredChats.reduce((sum: number, mc: any) => sum + (mc.unreadCount || 0), 0),
+    [expiredChats]
+  );
+
+  React.useEffect(() => {
+    if (tabInitialized) return;
+    const initialMeetupChatId = getInitialMeetupChatId();
+    if (initialMeetupChatId) {
+      const mc = (meetupChatrooms as any[]).find((c: any) => c.id === initialMeetupChatId);
+      if (mc) {
+        if (mc.chatType === 'event') { setActiveTab('events'); setTabInitialized(true); return; }
+        if (isEndedChat(mc)) { setActiveTab('expired'); setTabInitialized(true); return; }
+        if (mc.chatType === 'group_dm') { setActiveTab('dms'); setTabInitialized(true); return; }
+        setActiveTab('meetups'); setTabInitialized(true); return;
+      }
+    }
+    if (targetUserId) { setActiveTab('dms'); setTabInitialized(true); return; }
+    if ((meetupChatrooms as any[]).length > 0 || conversations.length > 0) {
+      if (meetupUnread > 0) { setActiveTab('meetups'); }
+      else if (dmUnread > 0) { setActiveTab('dms'); }
+      else if (eventUnread > 0) { setActiveTab('events'); }
+      else if (expiredUnread > 0) { setActiveTab('expired'); }
+      else { setActiveTab('dms'); }
+      setTabInitialized(true);
+    }
+  }, [meetupChatrooms, conversations, targetUserId, tabInitialized, meetupUnread, dmUnread, eventUnread, expiredUnread]);
+
   // Auto-select target conversation from URL and scroll it into view
   // Also auto-select the first unread conversation when landing without a specific target
   useEffect(() => {
@@ -813,46 +881,57 @@ export default function Messages() {
           />
         </div>
 
-        {conversations.length > 0 && !isNativeIOSApp() && (
-          <div className="p-3 bg-gray-200/50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
-              Click on a name to open messages
-            </p>
-          </div>
-        )}
+        <div className="flex border-b border-gray-200 dark:border-gray-700 bg-[#f0f2f5] dark:bg-gray-800 shrink-0">
+          {([
+            { key: 'dms' as const, label: 'DMs', icon: MessageCircle, count: dmUnread },
+            { key: 'meetups' as const, label: 'Meetups', icon: Zap, count: meetupUnread },
+            { key: 'events' as const, label: 'Events', icon: Calendar, count: eventUnread },
+            { key: 'expired' as const, label: 'Expired', icon: Clock, count: expiredUnread },
+          ]).map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`flex-1 relative flex flex-col items-center justify-center gap-0.5 py-2.5 min-h-[44px] text-xs font-medium transition-colors ${
+                  isActive
+                    ? 'text-orange-600 dark:text-orange-400 border-b-2 border-orange-500 dark:border-orange-400'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{tab.label}</span>
+                {tab.count > 0 && (
+                  <span className="absolute top-1 right-1/4 bg-orange-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
+                    {tab.count > 99 ? '99+' : tab.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
         <div className="flex-1 min-h-0" style={{ overflowY: 'scroll', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', paddingBottom: '96px' }}>
           {(connectionsLoading || messagesLoading) && conversations.length === 0 && (meetupChatrooms as any[]).length === 0 ? (
             <div className="p-4 flex items-center justify-center">
               <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-blue-500" />
             </div>
-          ) : conversations.length === 0 && (meetupChatrooms as any[]).length === 0 ? (
-            <div className="p-4 text-center text-gray-600 dark:text-gray-500">
-              <MessageCircle className="w-10 h-10 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No conversations yet</p>
-            </div>
           ) : (
             <>
               {/* Active Meetup Chats (non-expired) */}
-              {(meetupChatrooms as any[]).filter((mc: any) => {
-                if (mc.chatType === 'group_dm' || mc.chatType === 'event') return false;
-                const ended = mc.lifecycleState === 'grace' || mc.lifecycleState === 'readonly' || (mc.expiresAt && new Date(mc.expiresAt) <= new Date());
-                return !ended;
-              }).length > 0 && (
+              {activeTab === 'meetups' && activeMeetups.length > 0 && (
                 <>
                   <div className="px-3 py-2 bg-orange-50 dark:bg-orange-900/20 border-b border-orange-200 dark:border-orange-800">
                     <p className="text-xs font-semibold text-orange-700 dark:text-orange-300 flex items-center gap-1">
                       <Zap className="w-3 h-3" /> Meetup Chats
                     </p>
                   </div>
-                  {(meetupChatrooms as any[])
-                    .filter((mc: any) => {
-                      if (mc.chatType === 'group_dm' || mc.chatType === 'event') return false;
-                      const ended = mc.lifecycleState === 'grace' || mc.lifecycleState === 'readonly' || (mc.expiresAt && new Date(mc.expiresAt) <= new Date());
-                      if (ended) return false;
-                      return !connectionSearch ||
-                        (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase());
-                    })
+                  {activeMeetups
+                    .filter((mc: any) =>
+                      !connectionSearch ||
+                      (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase())
+                    )
                     .sort((a: any, b: any) => {
                       const aTime = a.lastMessageTime ? new Date(a.lastMessageTime).getTime() : 0;
                       const bTime = b.lastMessageTime ? new Date(b.lastMessageTime).getTime() : 0;
@@ -959,19 +1038,18 @@ export default function Messages() {
               )}
 
               {/* Event Chats Section */}
-              {(meetupChatrooms as any[]).filter((mc: any) => mc.chatType === 'event').length > 0 && (
+              {activeTab === 'events' && eventChats.length > 0 && (
                 <>
                   <div className="px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
                     <p className="text-xs font-semibold text-blue-700 dark:text-blue-300 flex items-center gap-1">
                       <Calendar className="w-3 h-3" /> Event Chats
                     </p>
                   </div>
-                  {(meetupChatrooms as any[])
-                    .filter((mc: any) => {
-                      if (mc.chatType !== 'event') return false;
-                      return !connectionSearch ||
-                        (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase());
-                    })
+                  {eventChats
+                    .filter((mc: any) =>
+                      !connectionSearch ||
+                      (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase())
+                    )
                     .map((mc: any) => {
                       const isSelected = selectedMeetupChat === mc.id;
                       return (
@@ -1059,14 +1137,14 @@ export default function Messages() {
                     })}
                 </>
               )}
-              {conversations.length > 0 && (
+              {activeTab === 'dms' && conversations.length > 0 && (
                 <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
                   <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1">
                     <MessageCircle className="w-3 h-3" /> Direct Messages
                   </p>
                 </div>
               )}
-              {conversations
+              {activeTab === 'dms' && conversations
                 .filter((conv: any) => 
                   !dismissedDMs.includes(conv.userId) &&
                   (!connectionSearch || 
@@ -1183,20 +1261,18 @@ export default function Messages() {
                 ))}
 
               {/* Group Chats */}
-              {(meetupChatrooms as any[]).filter((mc: any) => mc.chatType === 'group_dm').length > 0 && (
+              {activeTab === 'dms' && groupDMs.length > 0 && (
                 <>
                   <div className="px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
                     <p className="text-xs font-semibold text-blue-700 dark:text-blue-300 flex items-center gap-1">
                       <Users className="w-3 h-3" /> Group Chats
                     </p>
                   </div>
-                  {(meetupChatrooms as any[])
-                    .filter((mc: any) => {
-                      if (mc.chatType !== 'group_dm') return false;
-                      if (mc.expiresAt && new Date(mc.expiresAt) <= new Date()) return false;
-                      return !connectionSearch ||
-                        (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase());
-                    })
+                  {groupDMs
+                    .filter((mc: any) =>
+                      !connectionSearch ||
+                      (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase())
+                    )
                     .map((mc: any) => {
                       const isSelected = selectedMeetupChat === mc.id;
                       const mobileSubtitle = mc.lastMessage
@@ -1279,25 +1355,18 @@ export default function Messages() {
               )}
 
               {/* Expired Meetup Chats (Ended) */}
-              {(meetupChatrooms as any[]).filter((mc: any) => {
-                if (mc.chatType === 'group_dm' || mc.chatType === 'event') return false;
-                const ended = mc.lifecycleState === 'grace' || mc.lifecycleState === 'readonly' || (mc.expiresAt && new Date(mc.expiresAt) <= new Date());
-                return !!ended;
-              }).length > 0 && (
+              {activeTab === 'expired' && expiredChats.length > 0 && (
                 <>
                   <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
                     <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1">
                       <Clock className="w-3 h-3" /> Ended Chats
                     </p>
                   </div>
-                  {(meetupChatrooms as any[])
-                    .filter((mc: any) => {
-                      if (mc.chatType === 'group_dm' || mc.chatType === 'event') return false;
-                      const ended = mc.lifecycleState === 'grace' || mc.lifecycleState === 'readonly' || (mc.expiresAt && new Date(mc.expiresAt) <= new Date());
-                      if (!ended) return false;
-                      return !connectionSearch ||
-                        (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase());
-                    })
+                  {expiredChats
+                    .filter((mc: any) =>
+                      !connectionSearch ||
+                      (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase())
+                    )
                     .sort((a: any, b: any) => {
                       const aExp = a.expiresAt ? new Date(a.expiresAt).getTime() : 0;
                       const bExp = b.expiresAt ? new Date(b.expiresAt).getTime() : 0;
@@ -1404,6 +1473,31 @@ export default function Messages() {
                       );
                     })}
                 </>
+              )}
+
+              {activeTab === 'dms' && conversations.length === 0 && groupDMs.length === 0 && (
+                <div className="p-6 text-center text-gray-500 dark:text-gray-400">
+                  <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                  <p className="text-sm">No direct messages yet</p>
+                </div>
+              )}
+              {activeTab === 'meetups' && activeMeetups.length === 0 && (
+                <div className="p-6 text-center text-gray-500 dark:text-gray-400">
+                  <Zap className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                  <p className="text-sm">No active meetup chats</p>
+                </div>
+              )}
+              {activeTab === 'events' && eventChats.length === 0 && (
+                <div className="p-6 text-center text-gray-500 dark:text-gray-400">
+                  <Calendar className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                  <p className="text-sm">No event chats yet</p>
+                </div>
+              )}
+              {activeTab === 'expired' && expiredChats.length === 0 && (
+                <div className="p-6 text-center text-gray-500 dark:text-gray-400">
+                  <Clock className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                  <p className="text-sm">No expired chats</p>
+                </div>
               )}
             </>
           )}
