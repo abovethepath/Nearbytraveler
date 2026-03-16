@@ -114,6 +114,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState(title);
   const [displayTitle, setDisplayTitle] = useState(title);
+  const [showHostLeaveModal, setShowHostLeaveModal] = useState(false);
+  const [hostLeaveStep, setHostLeaveStep] = useState<'choice' | 'transfer' | 'dissolve-confirm'>('choice');
+  const [transferTargetUserId, setTransferTargetUserId] = useState<number | null>(null);
   useEffect(() => { setDisplayTitle(title); }, [title]);
 
   // Available Now / Meetup chats: show the selected activities in the header.
@@ -378,36 +381,83 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
   };
 
+  const getUidAndHeaders = () => {
+    const u: any = (() => {
+      try { return JSON.parse(localStorage.getItem("user") || localStorage.getItem("travelconnect_user") || localStorage.getItem("current_user") || "{}"); } catch { return {}; }
+    })();
+    const uid = Number(currentUserId || u?.id || 0);
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      ...(uid ? { "x-user-id": String(uid) } : {}),
+      ...(u?.id ? { "x-user-data": JSON.stringify({ id: u.id, username: u.username, email: u.email, name: u.name }) } : {}),
+    };
+    return { uid, headers };
+  };
+
   const leaveChatroom = async () => {
     if (chatType === "dm") return;
+    const isMeetupOrEvent = chatType === "meetup" || chatType === "event";
+    if (isMeetupOrEvent && isCurrentUserAdmin) {
+      setHostLeaveStep('choice');
+      setTransferTargetUserId(null);
+      setShowHostLeaveModal(true);
+      return;
+    }
     const label = chatType === "meetup" ? "meetup chat" : chatType === "event" ? "event chat" : "chatroom";
     if (typeof window !== "undefined" && !window.confirm(`Leave this ${label}?`)) return;
     try {
-      const u: any = (() => {
-        try { return JSON.parse(localStorage.getItem("user") || localStorage.getItem("travelconnect_user") || localStorage.getItem("current_user") || "{}"); } catch { return {}; }
-      })();
-      const uid = Number(currentUserId || u?.id || 0);
-      const res = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/leave`, {
+      const { uid, headers } = getUidAndHeaders();
+      const endpoint = isMeetupOrEvent
+        ? `${getApiBaseUrl()}/api/meetup-chatrooms/${chatId}/leave`
+        : `${getApiBaseUrl()}/api/chatrooms/${chatId}/leave`;
+      const res = await fetch(endpoint, {
         method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user-id": uid ? String(uid) : "",
-          ...(u?.id ? { "x-user-data": JSON.stringify({ id: u.id, username: u.username, email: u.email, name: u.name }) } : {}),
-        },
+        headers,
         body: JSON.stringify({ userId: uid || undefined }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.message || data?.error || `HTTP ${res.status}`);
       toast({ title: `Left ${label}` });
-      queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatId}/members`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatId}`] });
-      if (onBack) onBack();
-      else if (chatType === "meetup") navigate("/quick-meetups");
-      else if (chatType === "event") navigate("/events");
-      else navigate("/chatrooms");
+      queryClient.invalidateQueries({ queryKey: [membersEndpoint] });
+      navigate("/messages");
     } catch (e: any) {
-      toast({ title: `Couldn't leave ${label}`, description: String(e?.message || "Please try again."), variant: "destructive" });
+      toast({ title: `Couldn't leave`, description: String(e?.message || "Please try again."), variant: "destructive" });
+    }
+  };
+
+  const confirmTransferHost = async () => {
+    if (!transferTargetUserId) return;
+    try {
+      const { headers } = getUidAndHeaders();
+      const res = await fetch(`${getApiBaseUrl()}/api/meetup-chatrooms/${chatId}/transfer-host`, {
+        method: "POST", credentials: "include", headers,
+        body: JSON.stringify({ newHostUserId: transferTargetUserId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.message || data?.error || `HTTP ${res.status}`);
+      toast({ title: "Host transferred", description: "You've left the chat." });
+      setShowHostLeaveModal(false);
+      navigate("/messages");
+    } catch (e: any) {
+      toast({ title: "Couldn't transfer host", description: String(e?.message || "Please try again."), variant: "destructive" });
+    }
+  };
+
+  const confirmDissolve = async () => {
+    try {
+      const { headers } = getUidAndHeaders();
+      const res = await fetch(`${getApiBaseUrl()}/api/meetup-chatrooms/${chatId}/dissolve`, {
+        method: "POST", credentials: "include", headers,
+        body: "{}",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.message || data?.error || `HTTP ${res.status}`);
+      toast({ title: "Meetup chat ended" });
+      setShowHostLeaveModal(false);
+      navigate("/messages");
+    } catch (e: any) {
+      toast({ title: "Couldn't dissolve chat", description: String(e?.message || "Please try again."), variant: "destructive" });
     }
   };
 
@@ -1346,6 +1396,21 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             if (data.chatroomId === chatId || data.chatroomId == chatId) {
               console.log('👤 WhatsApp Chat: New member joined, refetching member list');
               queryClient.invalidateQueries({ queryKey: [membersEndpoint] });
+            }
+            break;
+
+          case 'member:left':
+            if (data.chatroomId === chatId || data.chatroomId == chatId) {
+              console.log('👋 WhatsApp Chat: Member left, refetching member list');
+              queryClient.invalidateQueries({ queryKey: [membersEndpoint] });
+            }
+            break;
+
+          case 'chatroom:dissolved':
+            if (data.chatroomId === chatId || data.chatroomId == chatId) {
+              console.log('💥 WhatsApp Chat: Chatroom dissolved, navigating away');
+              toast({ title: "Chat ended", description: "The host ended this meetup chat." });
+              navigate("/messages");
             }
             break;
 
@@ -3145,6 +3210,120 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Host Leave Modal — shown when the chat host taps "Leave" on a meetup/event chat */}
+      {showHostLeaveModal && (
+        <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/80" onClick={() => setShowHostLeaveModal(false)}>
+          <div
+            className="w-full max-w-md bg-gray-900 rounded-t-2xl pb-8 pt-4 px-4 border-t border-gray-700 shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Handle bar */}
+            <div className="w-12 h-1 rounded-full bg-gray-600 mx-auto mb-5" />
+
+            {hostLeaveStep === 'choice' && (
+              <>
+                <h3 className="text-white font-semibold text-lg mb-1 text-center">Leave Meetup Chat</h3>
+                <p className="text-gray-400 text-sm text-center mb-6">You're the host. Choose what happens when you leave.</p>
+                <button
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 mb-3 text-white text-left"
+                  onClick={() => setHostLeaveStep('transfer')}
+                >
+                  <span className="text-2xl">👑</span>
+                  <div>
+                    <div className="font-medium">Transfer Host</div>
+                    <div className="text-xs text-gray-400">Pick a member to become the new host, then you leave</div>
+                  </div>
+                </button>
+                <button
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 mb-3 text-red-400 text-left"
+                  onClick={() => setHostLeaveStep('dissolve-confirm')}
+                >
+                  <span className="text-2xl">🔴</span>
+                  <div>
+                    <div className="font-medium">End Chat for Everyone</div>
+                    <div className="text-xs text-gray-500">Dissolves the chat — all members are removed</div>
+                  </div>
+                </button>
+                <button
+                  className="w-full py-3 rounded-xl text-gray-400 hover:text-white mt-1"
+                  onClick={() => setShowHostLeaveModal(false)}
+                >
+                  Cancel
+                </button>
+              </>
+            )}
+
+            {hostLeaveStep === 'transfer' && (
+              <>
+                <button className="text-gray-400 hover:text-white mb-3 flex items-center gap-1 text-sm" onClick={() => setHostLeaveStep('choice')}>
+                  ← Back
+                </button>
+                <h3 className="text-white font-semibold text-lg mb-4">Choose New Host</h3>
+                <div className="overflow-y-auto max-h-56 space-y-1 mb-4">
+                  {(membersRaw as any[])
+                    .filter((m: any) => {
+                      const mid = m.userId ?? m.id;
+                      const uid = Number(currentUserId);
+                      return mid && mid !== uid && (m.isActive !== false);
+                    })
+                    .map((m: any) => {
+                      const mid = m.userId ?? m.id;
+                      const name = m.firstName || m.username || m.name || `User ${mid}`;
+                      const selected = transferTargetUserId === mid;
+                      return (
+                        <button
+                          key={mid}
+                          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${selected ? 'bg-orange-500/20 border border-orange-500/50' : 'bg-gray-800 hover:bg-gray-700'}`}
+                          onClick={() => setTransferTargetUserId(mid)}
+                        >
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                            {name[0]?.toUpperCase()}
+                          </div>
+                          <span className="text-white text-sm font-medium">{name}</span>
+                          {selected && <span className="ml-auto text-orange-400 text-lg">✓</span>}
+                        </button>
+                      );
+                    })
+                  }
+                  {(membersRaw as any[]).filter((m: any) => (m.userId ?? m.id) !== Number(currentUserId)).length === 0 && (
+                    <p className="text-gray-500 text-sm text-center py-4">No other members to transfer to</p>
+                  )}
+                </div>
+                <button
+                  disabled={!transferTargetUserId}
+                  className="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium"
+                  onClick={confirmTransferHost}
+                >
+                  Transfer &amp; Leave
+                </button>
+              </>
+            )}
+
+            {hostLeaveStep === 'dissolve-confirm' && (
+              <>
+                <button className="text-gray-400 hover:text-white mb-3 flex items-center gap-1 text-sm" onClick={() => setHostLeaveStep('choice')}>
+                  ← Back
+                </button>
+                <h3 className="text-white font-semibold text-lg mb-2 text-center">End Chat for Everyone?</h3>
+                <p className="text-gray-400 text-sm text-center mb-6">This will dissolve the chat and remove all members. This can't be undone.</p>
+                <button
+                  className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium mb-3"
+                  onClick={confirmDissolve}
+                >
+                  Yes, End Chat
+                </button>
+                <button
+                  className="w-full py-3 rounded-xl text-gray-400 hover:text-white"
+                  onClick={() => setShowHostLeaveModal(false)}
+                >
+                  Cancel
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Message Action Menu - Portal rendered at body level for proper iOS fixed positioning */}
       {selectedMessage && createPortal(

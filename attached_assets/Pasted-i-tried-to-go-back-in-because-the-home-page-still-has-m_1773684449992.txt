@@ -1,0 +1,26 @@
+i tried to go back in because the home page still has me as in it. but i got a closed message.... i think everytime someone is added to the chat, that live now, might have little avatars? so people can see, wow 19 people at this live now chatroom... thoughts on that? also once you leave it, maybe the home pge removes it? thougths
+
+11:06 AM
+
+Identified bugs and synthesized feature enhancement suggestions
+Identified bugs and synthesized feature enhancement suggestions
+Great observations. Here are my thoughts:
+
+Avatars on Live Now card — yes, absolutely do this. Seeing faces creates FOMO and social proof. "3 people are hanging out right now" is way more compelling than just a name. Cap it at 4-5 avatars then "+X more" if it overflows. This is a high-value feature for engagement.
+
+Remove from homepage after leaving — yes, 100%. If you left or the chat closed, showing "Go to Chat" that leads to a closed room is a broken experience. Remove it immediately on leave/dissolve.
+
+@codebase Fix the Available Now / Live Now card on the homepage. Two issues:
+
+Bug — Card persists after leaving or chatroom closes When a user leaves a meetup chatroom, or the host dissolves it, the Live Now card on the homepage must be removed immediately for that user. Currently it stays and leads to a "room closed" error. On leave or dissolve, invalidate the Available Now session cache for that user and remove the card from their homepage feed in real time.
+
+Feature — Show member avatars on Live Now card On each Live Now card, display small stacked avatars of the current chatroom members below the activity tags and above the "Go to Chat" button:
+
+Show up to 5 avatars stacked/overlapping (like a -8px margin overlap style)
+If more than 5 members, show the remaining count as "+X" in a circle matching the avatar style
+Avatars should be the users' profile photos (fall back to initial letter avatar if no photo)
+Add a subtle member count label next to the avatars: "3 people in this chat"
+This applies to all Live Now cards — Available Now meetups, and any other active session cards on the homepage
+Do not change the card layout, colors, or "Go to Chat" button. Desktop, mobile web, and iOS.
+
+The avatar stack is one of those small touches that makes the product feel alive and busy — really good instinct on that.

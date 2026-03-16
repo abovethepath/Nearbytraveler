@@ -21,7 +21,9 @@ export type ChatEventType =
   | 'presence:leave'
   | 'sync:history'
   | 'sync:response'
-  | 'system:error';
+  | 'system:error'
+  | 'member:left'
+  | 'chatroom:dissolved';
 
 export interface ChatEvent {
   type: ChatEventType;
@@ -116,6 +118,50 @@ export class ChatWebSocketService {
       timestamp: Date.now(),
     };
     await this.broadcastToChatroom(chatroomId, event);
+  }
+
+  /**
+   * Broadcast a `member:left` event to all REMAINING active members after
+   * someone leaves a chatroom.  The leaving user is excluded so they don't
+   * receive a stale event on their now-closed chat view.
+   */
+  public async broadcastMemberLeft(
+    chatroomId: number,
+    chatType: string,
+    leavingUserId: number,
+    leavingUsername: string,
+  ): Promise<void> {
+    const event: ChatEvent = {
+      type: 'member:left',
+      chatType: chatType as any,
+      chatroomId,
+      payload: { userId: leavingUserId, username: leavingUsername },
+      timestamp: Date.now(),
+    };
+    // broadcastToChatroom reads the DB for current members — the leaving user
+    // must already be deactivated in chatroom_members before this is called
+    // so they are naturally excluded from the broadcast.
+    await this.broadcastToChatroom(chatroomId, event);
+  }
+
+  /**
+   * Broadcast a `chatroom:dissolved` event to a pre-fetched list of member IDs.
+   * Call this BEFORE deactivating the members so the list is still available.
+   */
+  public broadcastChatroomDissolved(
+    chatroomId: number,
+    chatType: string,
+    memberIds: number[],
+  ): void {
+    const event: ChatEvent = {
+      type: 'chatroom:dissolved',
+      chatType: chatType as any,
+      chatroomId,
+      payload: { chatroomId },
+      timestamp: Date.now(),
+    };
+    const eventStr = JSON.stringify(event);
+    memberIds.forEach(uid => this.sendToUser(uid, eventStr));
   }
 
   constructor() {

@@ -20728,6 +20728,34 @@ Questions? Just reply to this message. Welcome aboard!
       const roomId = parseInt(req.params.roomId || '0');
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM LEAVE: User ${userId} leaving chatroom ${roomId}`);
 
+      // Fetch user info and current membership (role) before deactivating
+      const [leavingUser] = await db.select({ username: users.username, firstName: users.firstName })
+        .from(users).where(eq(users.id, userId)).limit(1);
+      const displayName = leavingUser?.firstName || leavingUser?.username || 'Someone';
+
+      const [membership] = await db.select({ role: chatroomMembers.role })
+        .from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, roomId), eq(chatroomMembers.userId, userId)))
+        .limit(1);
+
+      // Auto-transfer admin for city/community chatrooms if the admin is leaving
+      if (membership?.role === 'admin') {
+        const [nextMember] = await db.select({ userId: chatroomMembers.userId })
+          .from(chatroomMembers)
+          .where(and(
+            eq(chatroomMembers.chatroomId, roomId),
+            eq(chatroomMembers.isActive, true),
+            sql`${chatroomMembers.userId} != ${userId}`,
+          ))
+          .orderBy(chatroomMembers.joinedAt)
+          .limit(1);
+        if (nextMember) {
+          await db.update(chatroomMembers)
+            .set({ role: 'admin' })
+            .where(and(eq(chatroomMembers.chatroomId, roomId), eq(chatroomMembers.userId, nextMember.userId)));
+        }
+      }
+
       // Deactivate membership
       await db.update(chatroomMembers)
         .set({ isActive: false })
@@ -20735,6 +20763,23 @@ Questions? Just reply to this message. Welcome aboard!
           eq(chatroomMembers.chatroomId, roomId),
           eq(chatroomMembers.userId, userId)
         ));
+
+      // Insert system departure message and broadcast real-time events to remaining members
+      try {
+        const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+        const [sysMsg] = await db.insert(chatroomMessages).values({
+          chatroomId: roomId,
+          senderId: userId,
+          content: `@${displayName} left the chat`,
+          messageType: 'system',
+        } as any).returning();
+        if (sysMsg) {
+          await chatWebSocketService.broadcastSystemMessage(
+            roomId, 'chatroom', sysMsg.id, sysMsg.content, userId, displayName,
+          );
+        }
+        await chatWebSocketService.broadcastMemberLeft(roomId, 'chatroom', userId, displayName);
+      } catch { /* non-fatal — city chatroom may not exist in citychatrooms */ }
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM LEAVE: User ${userId} successfully left chatroom ${roomId}`);
       res.json({ success: true, message: "Successfully left room" });
@@ -26362,6 +26407,191 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error) {
       console.error("Error renaming chatroom:", error);
       return res.status(500).json({ error: "Failed to rename chatroom" });
+    }
+  });
+
+  // ── Non-host leave from meetup / event chatroom ─────────────────────────────
+  app.post("/api/meetup-chatrooms/:chatroomId/leave", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string || '0');
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.chatroomId);
+      if (isNaN(chatroomId)) return res.status(400).json({ error: "Invalid chatroom ID" });
+
+      const [membership] = await db.select({ role: chatroomMembers.role })
+        .from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, userId), eq(chatroomMembers.isActive, true)))
+        .limit(1);
+      if (!membership) return res.status(403).json({ error: "Not a member of this chatroom" });
+
+      const [leavingUser] = await db.select({ username: users.username, firstName: users.firstName })
+        .from(users).where(eq(users.id, userId)).limit(1);
+      const displayName = leavingUser?.firstName || leavingUser?.username || 'Someone';
+
+      const [chatroom] = await db.select({ isActive: meetupChatrooms.isActive, eventId: meetupChatrooms.eventId })
+        .from(meetupChatrooms).where(eq(meetupChatrooms.id, chatroomId)).limit(1);
+      const chatType = chatroom?.eventId ? 'event' : 'meetup';
+
+      // Deactivate membership first so broadcastMemberLeft excludes the leaver
+      await db.update(chatroomMembers)
+        .set({ isActive: false })
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, userId)));
+
+      await db.update(meetupChatrooms)
+        .set({ participantCount: sql`GREATEST(${meetupChatrooms.participantCount} - 1, 0)` })
+        .where(eq(meetupChatrooms.id, chatroomId));
+
+      // Insert system message + real-time broadcast
+      try {
+        const [sysMsg] = await db.insert(meetupChatroomMessages).values({
+          meetupChatroomId: chatroomId,
+          userId,
+          username: displayName,
+          message: `@${displayName} left the chat`,
+          messageType: 'system',
+        }).returning();
+        const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+        if (sysMsg) {
+          await chatWebSocketService.broadcastSystemMessage(chatroomId, chatType, sysMsg.id, sysMsg.message, userId, displayName);
+        }
+        await chatWebSocketService.broadcastMemberLeft(chatroomId, chatType, userId, displayName);
+      } catch { /* non-fatal */ }
+
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error leaving meetup chatroom:", error);
+      return res.status(500).json({ error: "Failed to leave chatroom" });
+    }
+  });
+
+  // ── Transfer host and leave (host only) ─────────────────────────────────────
+  app.post("/api/meetup-chatrooms/:chatroomId/transfer-host", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string || '0');
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.chatroomId);
+      if (isNaN(chatroomId)) return res.status(400).json({ error: "Invalid chatroom ID" });
+
+      const { newHostUserId } = req.body as { newHostUserId: number };
+      if (!newHostUserId) return res.status(400).json({ error: "newHostUserId required" });
+
+      // Verify requester is the current admin
+      const [adminMembership] = await db.select({ role: chatroomMembers.role })
+        .from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, userId), eq(chatroomMembers.isActive, true)))
+        .limit(1);
+      if (adminMembership?.role !== 'admin') return res.status(403).json({ error: "Only the host can transfer host duties" });
+
+      // Verify new host is an active member
+      const [newHostMembership] = await db.select({ role: chatroomMembers.role })
+        .from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, newHostUserId), eq(chatroomMembers.isActive, true)))
+        .limit(1);
+      if (!newHostMembership) return res.status(400).json({ error: "New host must be an active member of this chatroom" });
+
+      const [[oldHostUser], [newHostUser]] = await Promise.all([
+        db.select({ username: users.username, firstName: users.firstName }).from(users).where(eq(users.id, userId)).limit(1),
+        db.select({ username: users.username, firstName: users.firstName }).from(users).where(eq(users.id, newHostUserId)).limit(1),
+      ]);
+      const oldName = oldHostUser?.firstName || oldHostUser?.username || 'Someone';
+      const newName = newHostUser?.firstName || newHostUser?.username || 'Someone';
+
+      const [chatroom] = await db.select({ eventId: meetupChatrooms.eventId })
+        .from(meetupChatrooms).where(eq(meetupChatrooms.id, chatroomId)).limit(1);
+      const chatType = chatroom?.eventId ? 'event' : 'meetup';
+
+      // Promote new host, demote old host
+      await db.update(chatroomMembers).set({ role: 'admin' })
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, newHostUserId)));
+      await db.update(chatroomMembers).set({ role: 'member' })
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, userId)));
+
+      // Insert transfer + departure system messages, then deactivate old host
+      const [transferMsg] = await db.insert(meetupChatroomMessages).values({
+        meetupChatroomId: chatroomId, userId, username: oldName,
+        message: `@${oldName} passed host duties to @${newName} 👑`, messageType: 'system',
+      }).returning();
+
+      // Deactivate old host membership BEFORE departure message so they're excluded from member:left broadcast
+      await db.update(chatroomMembers).set({ isActive: false })
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, userId)));
+      await db.update(meetupChatrooms)
+        .set({ participantCount: sql`GREATEST(${meetupChatrooms.participantCount} - 1, 0)` })
+        .where(eq(meetupChatrooms.id, chatroomId));
+
+      const [departureMsg] = await db.insert(meetupChatroomMessages).values({
+        meetupChatroomId: chatroomId, userId, username: oldName,
+        message: `@${oldName} left the chat`, messageType: 'system',
+      }).returning();
+
+      try {
+        const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+        if (transferMsg) await chatWebSocketService.broadcastSystemMessage(chatroomId, chatType, transferMsg.id, transferMsg.message, userId, oldName);
+        if (departureMsg) await chatWebSocketService.broadcastSystemMessage(chatroomId, chatType, departureMsg.id, departureMsg.message, userId, oldName);
+        await chatWebSocketService.broadcastMemberLeft(chatroomId, chatType, userId, oldName);
+      } catch { /* non-fatal */ }
+
+      return res.json({ success: true, newHostUserId });
+    } catch (error: any) {
+      console.error("Error transferring host:", error);
+      return res.status(500).json({ error: "Failed to transfer host" });
+    }
+  });
+
+  // ── Dissolve meetup chatroom (host only) ─────────────────────────────────────
+  app.post("/api/meetup-chatrooms/:chatroomId/dissolve", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string || '0');
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.chatroomId);
+      if (isNaN(chatroomId)) return res.status(400).json({ error: "Invalid chatroom ID" });
+
+      const [adminMembership] = await db.select({ role: chatroomMembers.role })
+        .from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, userId), eq(chatroomMembers.isActive, true)))
+        .limit(1);
+      if (adminMembership?.role !== 'admin') return res.status(403).json({ error: "Only the host can dissolve this chat" });
+
+      const [hostUser] = await db.select({ username: users.username, firstName: users.firstName })
+        .from(users).where(eq(users.id, userId)).limit(1);
+      const hostName = hostUser?.firstName || hostUser?.username || 'Someone';
+
+      // Collect all active member IDs BEFORE deactivating them
+      const activeMembers = await db.select({ userId: chatroomMembers.userId })
+        .from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.isActive, true)));
+      const memberIds = activeMembers.map(m => m.userId);
+
+      const [chatroom] = await db.select({ eventId: meetupChatrooms.eventId })
+        .from(meetupChatrooms).where(eq(meetupChatrooms.id, chatroomId)).limit(1);
+      const chatType = chatroom?.eventId ? 'event' : 'meetup';
+
+      // Insert farewell system message
+      const [farewell] = await db.insert(meetupChatroomMessages).values({
+        meetupChatroomId: chatroomId, userId, username: hostName,
+        message: `@${hostName} ended the meetup chat. Thanks for hanging! 👋`, messageType: 'system',
+      }).returning();
+
+      try {
+        const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+        // Broadcast farewell message first so members see it before dissolution
+        if (farewell) {
+          await chatWebSocketService.broadcastSystemMessage(chatroomId, chatType, farewell.id, farewell.message, userId, hostName);
+        }
+        // Broadcast dissolution event so all clients navigate away
+        chatWebSocketService.broadcastChatroomDissolved(chatroomId, chatType, memberIds);
+      } catch { /* non-fatal */ }
+
+      // Archive the chatroom and deactivate all members
+      await db.update(meetupChatrooms).set({ isActive: false, participantCount: 0 })
+        .where(eq(meetupChatrooms.id, chatroomId));
+      await db.update(chatroomMembers).set({ isActive: false })
+        .where(eq(chatroomMembers.chatroomId, chatroomId));
+
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error dissolving chatroom:", error);
+      return res.status(500).json({ error: "Failed to dissolve chatroom" });
     }
   });
 
