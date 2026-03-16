@@ -25613,7 +25613,7 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      // Count unread messages per chatroom (messages sent after user's lastReadAt)
+      // Count unread messages per chatroom (messages sent after user's lastReadAt, excluding own messages)
       const unreadByRoom: Record<number, number> = {};
       if (chatroomIds.length > 0) {
         await Promise.all(chatroomIds.map(async (cid) => {
@@ -25623,6 +25623,7 @@ Questions? Just reply to this message. Welcome aboard!
             .where(and(
               eq(meetupChatroomMessages.meetupChatroomId, cid),
               gt(meetupChatroomMessages.sentAt, lastRead),
+              ne(meetupChatroomMessages.userId, uid),
             ));
           unreadByRoom[cid] = Number(row?.count ?? 0);
         }));
