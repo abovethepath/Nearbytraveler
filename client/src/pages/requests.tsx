@@ -242,9 +242,9 @@ export default function Requests() {
                               <h3 className="font-semibold text-gray-900 dark:text-white">
                                 {request.requesterUser?.username || 'Unknown User'}
                               </h3>
-                              <Badge variant="outline" className="text-xs dark:text-gray-300 dark:border-gray-600">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600">
                                 {request.requesterUser?.userType || 'user'}
-                              </Badge>
+                              </span>
                             </div>
                             <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
                               {request.requesterUser?.bio || 'No bio available'}
@@ -311,9 +311,9 @@ export default function Requests() {
                                 <h3 className="font-semibold text-gray-900 dark:text-white">
                                   {request.receiverUser?.username || 'Unknown User'}
                                 </h3>
-                                <Badge variant="outline" className="text-xs dark:text-gray-300 dark:border-gray-600">
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600">
                                   {request.receiverUser?.userType || 'user'}
-                                </Badge>
+                                </span>
                                 <Badge variant="secondary" className="text-xs">
                                   Pending
                                 </Badge>

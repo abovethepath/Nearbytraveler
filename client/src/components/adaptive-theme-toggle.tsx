@@ -49,60 +49,66 @@ export function AdaptiveThemeToggle() {
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+      <DropdownMenuContent
+        align="end"
+        className="w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+      >
         <DropdownMenuLabel className="flex items-center gap-2 text-gray-900 dark:text-white">
           <Palette className="h-4 w-4" />
           Theme Settings
         </DropdownMenuLabel>
-        <DropdownMenuSeparator className="hidden dark:block" />
-        
+        <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700" />
+
         <DropdownMenuItem
           onClick={() => setTheme("light")}
           className={cn(
-            "cursor-pointer bg-white text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:text-gray-100 dark:hover:bg-accent dark:focus:bg-accent",
-            theme === "light" && "font-semibold dark:bg-blue-900/30"
+            "cursor-pointer text-gray-900 dark:text-gray-100",
+            "hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-gray-800",
+            theme === "light" && "font-semibold bg-gray-50 dark:bg-gray-800/60"
           )}
         >
           <Sun className="mr-2 h-4 w-4" />
           <span>Light</span>
           {theme === "light" && (
-            <div className="ml-auto h-2 w-2 rounded-full bg-orange-500 dark:bg-current" />
+            <div className="ml-auto h-2 w-2 rounded-full bg-orange-500" />
           )}
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem
           onClick={() => setTheme("dark")}
           className={cn(
-            "cursor-pointer bg-white text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:text-gray-100 dark:hover:bg-accent dark:focus:bg-accent",
-            theme === "dark" && "font-semibold dark:bg-blue-900/30"
+            "cursor-pointer text-gray-900 dark:text-gray-100",
+            "hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-gray-800",
+            theme === "dark" && "font-semibold bg-gray-50 dark:bg-gray-800/60"
           )}
         >
           <Moon className="mr-2 h-4 w-4" />
           <span>Dark</span>
           {theme === "dark" && (
-            <div className="ml-auto h-2 w-2 rounded-full bg-current" />
+            <div className="ml-auto h-2 w-2 rounded-full bg-blue-500" />
           )}
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem
           onClick={() => setTheme("system")}
           className={cn(
-            "cursor-pointer bg-white text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:text-gray-100 dark:hover:bg-accent dark:focus:bg-accent",
-            theme === "system" && "font-semibold dark:bg-blue-900/30"
+            "cursor-pointer text-gray-900 dark:text-gray-100",
+            "hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-gray-800",
+            theme === "system" && "font-semibold bg-gray-50 dark:bg-gray-800/60"
           )}
         >
           <Monitor className="mr-2 h-4 w-4" />
           <span>System</span>
           {theme === "system" && (
-            <div className="ml-auto h-2 w-2 rounded-full bg-current" />
+            <div className="ml-auto h-2 w-2 rounded-full bg-purple-500" />
           )}
         </DropdownMenuItem>
-        
-        <DropdownMenuSeparator className="hidden dark:block" />
-        
+
+        <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700" />
+
         <DropdownMenuItem
           onClick={toggleTheme}
-          className="cursor-pointer text-sm bg-white text-gray-900 hover:bg-gray-100 focus:bg-gray-100 dark:bg-transparent dark:text-gray-400 dark:hover:bg-accent dark:focus:bg-accent"
+          className="cursor-pointer text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-gray-800"
         >
           <div className="flex items-center gap-2">
             <span>Quick Toggle</span>
