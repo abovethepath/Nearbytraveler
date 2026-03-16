@@ -117,6 +117,7 @@ export default function Messages() {
   const [connectionSearch, setConnectionSearch] = useState('');
   const [activeTab, setActiveTab] = useState<'dms' | 'events' | 'meetups' | 'expired'>('dms');
   const [tabInitialized, setTabInitialized] = useState(false);
+  const lastMeetupChatParam = useRef<number | null>(null);
   const [countdownTick, setCountdownTick] = useState(0);
   const [instantMessages, setInstantMessages] = useState<any[]>([]);
   const [replyingTo, setReplyingTo] = useState<any | null>(null);
@@ -597,18 +598,21 @@ export default function Messages() {
   );
 
   React.useEffect(() => {
-    if (tabInitialized) return;
-    const initialMeetupChatId = getInitialMeetupChatId();
-    if (initialMeetupChatId) {
+    const currentMeetupChatId = getInitialMeetupChatId();
+    const urlParamChanged = currentMeetupChatId !== lastMeetupChatParam.current && currentMeetupChatId !== null;
+    if (tabInitialized && !urlParamChanged) return;
+    if (currentMeetupChatId) {
       if ((meetupChatrooms as any[]).length === 0) return;
-      const mc = (meetupChatrooms as any[]).find((c: any) => c.id === initialMeetupChatId);
+      const mc = (meetupChatrooms as any[]).find((c: any) => c.id === currentMeetupChatId);
       if (mc) {
+        lastMeetupChatParam.current = currentMeetupChatId;
         if (isEndedChat(mc)) { setActiveTab('expired'); setTabInitialized(true); return; }
         if (mc.chatType === 'event') { setActiveTab('events'); setTabInitialized(true); return; }
         if (mc.chatType === 'group_dm') { setActiveTab('dms'); setTabInitialized(true); return; }
         setActiveTab('meetups'); setTabInitialized(true); return;
       }
     }
+    if (tabInitialized) return;
     if (targetUserId) { setActiveTab('dms'); setTabInitialized(true); return; }
     if ((meetupChatrooms as any[]).length > 0 || conversations.length > 0) {
       if (dmUnread > 0) { setActiveTab('dms'); }
@@ -618,7 +622,7 @@ export default function Messages() {
       else { setActiveTab('dms'); }
       setTabInitialized(true);
     }
-  }, [meetupChatrooms, conversations, targetUserId, tabInitialized, meetupUnread, dmUnread, eventUnread, expiredUnread]);
+  }, [meetupChatrooms, conversations, targetUserId, tabInitialized, meetupUnread, dmUnread, eventUnread, expiredUnread, location]);
 
   // Auto-select target conversation from URL and scroll it into view
   // Also auto-select the first unread conversation when landing without a specific target
@@ -882,8 +886,8 @@ export default function Messages() {
         <div className="flex border-b border-gray-200 dark:border-gray-700 bg-[#f0f2f5] dark:bg-gray-800 shrink-0">
           {([
             { key: 'dms' as const, label: 'DMs', icon: MessageCircle, count: dmUnread },
-            { key: 'meetups' as const, label: 'Meetups', icon: Zap, count: meetupUnread },
-            { key: 'events' as const, label: 'Events', icon: Calendar, count: eventUnread },
+            { key: 'meetups' as const, label: 'Meetup Chats', icon: Zap, count: meetupUnread },
+            { key: 'events' as const, label: 'Event Chats', icon: Calendar, count: eventUnread },
             { key: 'expired' as const, label: 'Expired', icon: Clock, count: expiredUnread },
           ]).map(tab => {
             const Icon = tab.icon;
