@@ -390,10 +390,15 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
         {/* No travel plans */}
         {uniquePlans.length === 0 && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <Plane className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <p className="mb-4">
+            <Plane className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-200" />
+            <p className="mb-2 font-semibold text-gray-700 dark:text-gray-200">
               {isOwnProfile ? "No travel plans yet!" : "No travel plans shared"}
             </p>
+            {isOwnProfile && (
+              <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+                Add a trip so people can see where you’ll be traveling.
+              </p>
+            )}
             {isOwnProfile && (
               <Button 
                 size="sm" 

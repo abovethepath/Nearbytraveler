@@ -184,7 +184,12 @@ export default function CouchsurfingLanding() {
           {/* Powerful Quote */}
           <div className="max-w-4xl mx-auto bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-8 border border-blue-200 dark:border-blue-800">
             <blockquote className="text-center text-xl sm:text-2xl font-medium text-zinc-800 dark:text-zinc-200 italic leading-relaxed">
-              "The couchsurfing spirit was never really about the couch — it was about the connection. Now everyone can experience that magic."
+              <span>
+                "The couchsurfing spirit was never really about the couch — it was about the connection.{" "}
+              </span>
+              <span className="block sm:inline">
+                Now everyone can experience that magic."
+              </span>
             </blockquote>
           </div>
         </section>
@@ -384,6 +389,15 @@ export default function CouchsurfingLanding() {
                 <div className="flex items-start">
                   <Gift className="w-6 h-6 text-indigo-600 mt-1 mr-3 flex-shrink-0" />
                   <p className="text-zinc-700 dark:text-zinc-300">Traveling affordably while meeting amazing people</p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-teal-500">
+                <div className="flex items-start">
+                  <Star className="w-6 h-6 text-teal-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">
+                    You could arrive solo and still end up with plans in an hour
+                  </p>
                 </div>
               </div>
             </div>

@@ -1992,7 +1992,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                     <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">Eventbrite detected</Badge>
                   )}
                   {watch("externalRsvpProvider") === "other" && (
-                    <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300">External link</Badge>
+                    <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-100">External link</Badge>
                   )}
                   {!watch("externalRsvpProvider") && (
                     <p className="text-xs text-amber-600 dark:text-amber-400">Tip: Use a Luma or Partiful link for best experience</p>
@@ -2025,58 +2025,109 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
               </CardHeader>
               {showPrivateSettings && (
               <CardContent className="space-y-4">
-                {/* Gender Restrictions */}
+                {/* Restriction pills (toggle buttons) */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Gender Restriction</Label>
-                  <Select onValueChange={(value) => setValue("genderRestriction", value || undefined)}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select gender restriction" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="female">Women only</SelectItem>
-                      <SelectItem value="male">Men only</SelectItem>
-                      <SelectItem value="non-binary">Non-binary only</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <Label className="text-sm font-medium">Restrictions (Optional)</Label>
 
-                {/* Quick Toggle Options */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="lgbtqiaOnly" 
-                      {...register("lgbtqiaOnly")}
-                      data-testid="checkbox-lgbtqia-only"
-                    />
-                    <Label htmlFor="lgbtqiaOnly" className="text-sm">🏳️‍🌈 LGBTQIA+ only</Label>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="veteransOnly" 
-                      {...register("veteransOnly")}
-                      data-testid="checkbox-veterans-only"
-                    />
-                    <Label htmlFor="veteransOnly" className="text-sm">🪖 Veterans only</Label>
-                  </div>
+                  {/* Hidden inputs to keep RHF fields registered */}
+                  <input type="hidden" {...register("genderRestriction")} />
+                  <input type="checkbox" className="hidden" {...register("womenOnly")} />
+                  <input type="checkbox" className="hidden" {...register("menOnly")} />
+                  <input type="checkbox" className="hidden" {...register("lgbtqiaOnly")} />
+                  <input type="checkbox" className="hidden" {...register("singlePeopleOnly")} />
+                  <input type="checkbox" className="hidden" {...register("veteransOnly")} />
+                  <input type="checkbox" className="hidden" {...register("familiesOnly")} />
 
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="singlePeopleOnly" 
-                      {...register("singlePeopleOnly")}
-                      data-testid="checkbox-single-people-only"
-                    />
-                    <Label htmlFor="singlePeopleOnly" className="text-sm">💝 Singles only</Label>
-                  </div>
+                  {(() => {
+                    const pillBase =
+                      "inline-flex items-center justify-center rounded-full border px-3 py-1 text-sm font-semibold transition-colors";
+                    const pillOn = "bg-orange-500 text-white border-orange-500";
+                    const pillOff =
+                      "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600 dark:hover:bg-gray-700";
 
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="familiesOnly" 
-                      {...register("familiesOnly")}
-                      data-testid="checkbox-families-only"
-                    />
-                    <Label htmlFor="familiesOnly" className="text-sm">👨‍👩‍👧‍👦 Families only</Label>
-                  </div>
+                    const currentGender = watch("genderRestriction");
+                    const womenSelected = !!watch("womenOnly") || currentGender === "female";
+                    const menSelected = !!watch("menOnly") || currentGender === "male";
+
+                    const toggleWomenOnly = () => {
+                      const next = !womenSelected;
+                      setValue("womenOnly", next);
+                      setValue("menOnly", false);
+                      setValue("genderRestriction", next ? "female" : undefined);
+                      if (!next && currentGender === "female") setValue("genderRestriction", undefined);
+                    };
+
+                    const toggleMenOnly = () => {
+                      const next = !menSelected;
+                      setValue("menOnly", next);
+                      setValue("womenOnly", false);
+                      setValue("genderRestriction", next ? "male" : undefined);
+                      if (!next && currentGender === "male") setValue("genderRestriction", undefined);
+                    };
+
+                    const toggleBool = (key: "lgbtqiaOnly" | "singlePeopleOnly" | "veteransOnly" | "familiesOnly") => {
+                      setValue(key, !watch(key));
+                    };
+
+                    return (
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          aria-pressed={womenSelected}
+                          data-testid="pill-women-only"
+                          onClick={toggleWomenOnly}
+                          className={`${pillBase} ${womenSelected ? pillOn : pillOff}`}
+                        >
+                          Women only
+                        </button>
+                        <button
+                          type="button"
+                          aria-pressed={menSelected}
+                          data-testid="pill-men-only"
+                          onClick={toggleMenOnly}
+                          className={`${pillBase} ${menSelected ? pillOn : pillOff}`}
+                        >
+                          Men only
+                        </button>
+                        <button
+                          type="button"
+                          aria-pressed={!!watch("lgbtqiaOnly")}
+                          data-testid="pill-lgbtqia-only"
+                          onClick={() => toggleBool("lgbtqiaOnly")}
+                          className={`${pillBase} ${watch("lgbtqiaOnly") ? pillOn : pillOff}`}
+                        >
+                          🏳️‍🌈 LGBTQIA+ only
+                        </button>
+                        <button
+                          type="button"
+                          aria-pressed={!!watch("singlePeopleOnly")}
+                          data-testid="pill-singles-only"
+                          onClick={() => toggleBool("singlePeopleOnly")}
+                          className={`${pillBase} ${watch("singlePeopleOnly") ? pillOn : pillOff}`}
+                        >
+                          💝 Singles only
+                        </button>
+                        <button
+                          type="button"
+                          aria-pressed={!!watch("veteransOnly")}
+                          data-testid="pill-veterans-only"
+                          onClick={() => toggleBool("veteransOnly")}
+                          className={`${pillBase} ${watch("veteransOnly") ? pillOn : pillOff}`}
+                        >
+                          🪖 Veterans only
+                        </button>
+                        <button
+                          type="button"
+                          aria-pressed={!!watch("familiesOnly")}
+                          data-testid="pill-families-only"
+                          onClick={() => toggleBool("familiesOnly")}
+                          className={`${pillBase} ${watch("familiesOnly") ? pillOn : pillOff}`}
+                        >
+                          👨‍👩‍👧‍👦 Families only
+                        </button>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Age Restrictions */}

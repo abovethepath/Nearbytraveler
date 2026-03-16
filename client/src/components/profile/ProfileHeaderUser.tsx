@@ -62,6 +62,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
   const invalidDestinations = ['unknown', '—', '–', '-', '--', 'n/a', 'null', ''];
   const hasValidTravelDestination = currentTravelPlan && typeof currentTravelPlan === 'string' && currentTravelPlan.trim().length > 0 && !invalidDestinations.includes(currentTravelPlan.trim().toLowerCase()) && !/^[\s\-—–]+$/.test(currentTravelPlan);
+  const travelDestinationDisplay =
+    !isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan)
+      ? formatTravelDestinationShort(currentTravelPlan)
+      : currentTravelPlan;
 
   const upcomingTrip = React.useMemo(() => {
     const today = new Date();
@@ -309,15 +313,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             <Palette className="w-4 h-4" />
                             <span>Change Hero Color Palette</span>
                           </div>
-                          <div className="mt-2 grid grid-cols-4 gap-2">
+                          <div className="mt-2 flex flex-wrap gap-2">
                             {(gradientOptions || []).map((g: string, idx: number) => (
                               <button
                                 key={`palette-${idx}`}
                                 type="button"
-                                className={`h-8 w-8 rounded-md bg-gradient-to-r ${g} ring-1 ring-black/10 hover:ring-black/30 transition-all ${
-                                  idx === selectedGradient ? "ring-2 ring-orange-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900" : ""
+                                className={`h-8 w-10 rounded-full bg-gradient-to-r ${g} border-2 transition-all shrink-0 ${
+                                  idx === selectedGradient
+                                    ? "border-gray-900 dark:border-white ring-2 ring-offset-2 ring-gray-400 dark:ring-gray-500"
+                                    : "border-gray-300 dark:border-gray-600 hover:border-gray-500"
                                 }`}
-                                style={{ boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.08)" }}
                                 onClick={(e) => {
                                   // Keep menu open while selecting palettes.
                                   e.preventDefault();
@@ -368,7 +373,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <div className="text-sm sm:text-base font-semibold crisp-hero-text text-white" title={currentTravelPlan} style={{ color: '#ffffff' }}>
                     Nearby Traveler <span style={{ color: '#ffffff' }}>→</span>{" "}
                     <span style={{ color: '#ffffff' }}>
-                      {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan) ? formatTravelDestinationShort(currentTravelPlan) : currentTravelPlan}
+                      {travelDestinationDisplay}
                     </span>
                   </div>
                 )}
@@ -521,7 +526,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     <div className="text-sm sm:text-base font-semibold text-white crisp-hero-text leading-tight" title={currentTravelPlan!} style={{ color: '#ffffff' }}>
                                       <div style={{ color: '#ffffff' }}>Nearby Traveler</div>
                                       <div className="font-medium" style={{ color: '#ffffff' }}>
-                                        {formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
+                                        {travelDestinationDisplay}
                                       </div>
                                     </div>
                                   )}
@@ -542,7 +547,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                       <span style={{ color: '#ffffff' }}>Nearby Traveler</span>
                                       <span style={{ color: '#ffffff' }}> → </span>
                                       <span style={{ color: '#ffffff' }}>
-                                        {formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
+                                        {travelDestinationDisplay}
                                       </span>
                                     </div>
                                   )}
@@ -907,7 +912,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       Nearby Traveler
                     </span>
                     <span className="text-sm font-medium break-words crisp-hero-text text-white" title={currentTravelPlan!} style={{ color: "#ffffff" }}>
-                      {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
+                      {travelDestinationDisplay}
                     </span>
                   </>
                 )}
@@ -1012,7 +1017,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     Nearby Traveler
                   </span>
                   <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text text-white ${isDesktopOtherUser ? '' : !isNativeIOSApp() ? '' : ''}`} title={currentTravelPlan!} style={{ color: '#ffffff' }}>
-                    {!isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan!) ? formatTravelDestinationShort(currentTravelPlan!) : currentTravelPlan}
+                    {travelDestinationDisplay}
                   </span>
                 </>
               )}

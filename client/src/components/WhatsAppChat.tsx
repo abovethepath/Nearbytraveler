@@ -115,6 +115,37 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [editNameValue, setEditNameValue] = useState(title);
   const [displayTitle, setDisplayTitle] = useState(title);
   useEffect(() => { setDisplayTitle(title); }, [title]);
+
+  // Available Now / Meetup chats: show the selected activities in the header.
+  const { data: meetupChatInfo } = useQuery<{
+    id: number;
+    activityType: string | null;
+    activities: string[] | null;
+  }>({
+    queryKey: chatType === "meetup" && currentUserId ? ["/api/meetup-chatrooms", chatId, "info"] : [],
+    queryFn: async () => {
+      const headers: Record<string, string> = {};
+      if (currentUserId) headers["x-user-id"] = String(currentUserId);
+      const res = await fetch(`${getApiBaseUrl()}/api/meetup-chatrooms/${chatId}/info`, {
+        headers,
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to load meetup chat info");
+      return res.json();
+    },
+    enabled: chatType === "meetup" && !!currentUserId,
+    staleTime: 30_000,
+  });
+
+  const meetupActivityTags = useMemo(() => {
+    const fromArray = Array.isArray(meetupChatInfo?.activities) ? meetupChatInfo?.activities : [];
+    if (fromArray.length > 0) {
+      return [...new Set(fromArray.map((s) => String(s || "").trim()).filter(Boolean))].slice(0, 8);
+    }
+    const activityType = String(meetupChatInfo?.activityType || "").trim();
+    if (!activityType) return [];
+    return [...new Set(activityType.split(",").map((s) => s.trim()).filter(Boolean))].slice(0, 8);
+  }, [meetupChatInfo?.activities, meetupChatInfo?.activityType]);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -1964,6 +1995,19 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             </div>
             <h2 className="text-xl font-bold text-white leading-tight text-center">{title}</h2>
             {subtitle && <p className="text-sm text-gray-400 text-center">{subtitle}</p>}
+            {chatType === "meetup" && meetupActivityTags.length > 0 && (
+              <div className="mt-1 flex flex-wrap justify-center gap-1">
+                {meetupActivityTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-800 text-gray-100 border border-gray-700"
+                    data-testid="meetup-activity-tag"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           <hr className="border-gray-800 mx-6" />
@@ -2133,6 +2177,19 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${messagesLoaded || isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
               </div>
               {subtitle && <p className={`text-gray-400 truncate ${chatType === 'dm' ? 'text-xs' : 'text-[10px]'} leading-tight`}>{subtitle}</p>}
+              {chatType === "meetup" && meetupActivityTags.length > 0 && (
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {meetupActivityTags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-700 text-gray-100 border border-gray-600"
+                      data-testid="meetup-activity-tag"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-0 shrink-0">
@@ -2433,6 +2490,19 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               {subtitle}
             </p>
           )}
+          {chatType === "meetup" && meetupActivityTags.length > 0 && (
+            <div className="mt-1 flex flex-wrap gap-1">
+              {meetupActivityTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-700 text-gray-100 border border-gray-600"
+                  data-testid="meetup-activity-tag"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
         {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
           <Sheet open={showMembers} onOpenChange={setShowMembers}>
@@ -2641,6 +2711,23 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           </DropdownMenu>
         )}
       </div>
+
+      {/* Native iOS uses the app's header, so render activity tags just below it */}
+      {isNativeIOSApp() && chatType === "meetup" && meetupActivityTags.length > 0 && (
+        <div className="md:hidden px-3 py-2 bg-gray-900 border-b border-gray-800">
+          <div className="flex flex-wrap gap-1">
+            {meetupActivityTags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-800 text-gray-100 border border-gray-700"
+                data-testid="meetup-activity-tag"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Messages - Flex wrapper ensures proper spacing; min-h-0 allows flex child to shrink */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0 h-0">

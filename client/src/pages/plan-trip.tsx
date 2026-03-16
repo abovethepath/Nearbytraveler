@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { AuthContext } from "@/App";
 import { useAutoHideHero } from "@/hooks/useAutoHideHero";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -79,8 +79,10 @@ export default function PlanTrip() {
   console.log('🎯 Current URL:', window.location.href);
   console.log('🎯 Current pathname:', window.location.pathname);
   
-  const user = JSON.parse(localStorage.getItem('travelconnect_user') || 'null') || {};
-  console.log('🎯 PlanTrip - User from storage:', user?.username || 'NO USER');
+  const auth = useContext(AuthContext);
+  const storedUser = JSON.parse(localStorage.getItem('travelconnect_user') || 'null') || null;
+  const user = auth?.user || storedUser || {};
+  console.log('🎯 PlanTrip - User from storage:', storedUser?.username || 'NO USER');
   
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -88,6 +90,35 @@ export default function PlanTrip() {
 
   const { isHeroVisible, toggleHeroVisibility, autoHidden, showHeroFromAutoHide } = useAutoHideHero('planTrip', 5, false);
   const isMobile = useIsMobile();
+
+  // Prevent race condition: first submit can fire before auth/userId is hydrated.
+  const [isWaitingForAuth, setIsWaitingForAuth] = useState(false);
+  const authUserIdRef = useRef<number | null>(null);
+  useEffect(() => {
+    authUserIdRef.current = (auth?.user?.id ? Number(auth.user.id) : null) || null;
+  }, [auth?.user?.id]);
+
+  const getCurrentUserId = (): number | null => {
+    const ctxId = authUserIdRef.current;
+    if (ctxId && Number(ctxId) > 0) return Number(ctxId);
+    try {
+      const u = JSON.parse(localStorage.getItem('travelconnect_user') || 'null');
+      const id = Number(u?.id) || 0;
+      return id > 0 ? id : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const waitForUserId = async (timeoutMs = 2500): Promise<number | null> => {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      const id = getCurrentUserId();
+      if (id) return id;
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    return null;
+  };
   
   console.log('=== PLAN TRIP PAGE INITIALIZATION ===');
   console.log('Current URL location:', currentLocation);
@@ -407,6 +438,10 @@ export default function PlanTrip() {
   // Create/Update travel plan mutation
   const createTravelPlan = useMutation({
     mutationFn: async (plan: TripPlan) => {
+      const userId = getCurrentUserId();
+      if (!userId) {
+        throw new Error("User session still loading. Please try again in a moment.");
+      }
       // Build proper destination string from components
       const destinationParts = [plan.destinationCity];
       if (plan.destinationState) {
@@ -416,7 +451,7 @@ export default function PlanTrip() {
       const fullDestination = destinationParts.join(', ');
       
       const travelPlanData = {
-        userId: user?.id,
+        userId,
         destination: fullDestination,
         destinationCity: plan.destinationCity,
         destinationState: plan.destinationState,
@@ -458,15 +493,46 @@ export default function PlanTrip() {
       console.log('=== TRAVEL PLAN SUCCESS ===');
       console.log('Travel plan data:', data);
       
+      const userId = getCurrentUserId();
       // Invalidate all travel plan queries to ensure they update everywhere
       queryClient.invalidateQueries({ queryKey: ["/api/travel-plans"] });
-      queryClient.invalidateQueries({ queryKey: [`/api/travel-plans/${user?.id || 1}`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id || 1}/travel-plans`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id || 1}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/travel-plans/${userId || 1}`] });
+      // Some screens use a tuple key: ["/api/travel-plans", userId]
+      queryClient.invalidateQueries({ queryKey: ["/api/travel-plans", userId || 1] });
+      // Some widgets use /api/travel-plans/user/:id
+      queryClient.invalidateQueries({ queryKey: [`/api/travel-plans/user/${userId || 1}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId || 1}/travel-plans`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId || 1}`] });
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/search-by-location"] });
       // Invalidate profile bundle so tab counts update immediately
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id || 1}/profile-bundle`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId || 1}/profile-bundle`] });
+      // Profile bundle is often keyed with viewer ID, so invalidate all variants.
+      queryClient.invalidateQueries({
+        predicate: (q) => {
+          const k = q.queryKey;
+          const key0 = Array.isArray(k) ? k[0] : null;
+          return typeof key0 === "string" && key0.includes(`/api/users/${userId || 1}/profile-bundle`);
+        },
+      });
+      // Auth user hydration query (used by login/auth flows) — ensures hero updates immediately after trip changes.
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+
+      // Force immediate refetch for active profile + travel plan queries (prevents multi-minute stale UI).
+      queryClient.refetchQueries({
+        predicate: (q) => {
+          const k = q.queryKey;
+          const key0 = Array.isArray(k) ? k[0] : null;
+          if (typeof key0 !== "string") return false;
+          return (
+            key0 === "/api/auth/user" ||
+            key0 === "/api/travel-plans" ||
+            key0.includes(`/api/travel-plans/${userId || 1}`) ||
+            key0.includes(`/api/users/${userId || 1}`) ||
+            key0.includes(`/api/users/${userId || 1}/profile-bundle`)
+          );
+        },
+      });
       
       if (isEditMode) {
         // For edit mode, show toast and go to profile
@@ -652,12 +718,29 @@ export default function PlanTrip() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+
+    // Guard: never submit without a valid userId (race condition on first load).
+    let userId = getCurrentUserId();
+    if (!userId) {
+      setIsWaitingForAuth(true);
+      userId = await waitForUserId();
+      setIsWaitingForAuth(false);
+    }
+    if (!userId) {
+      toast({
+        title: "Loading your session…",
+        description: "Please wait a moment and try again.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     console.log('=== FORM SUBMIT DEBUG ===');
     console.log('Current tripPlan state:', tripPlan);
-    console.log('User ID:', user?.id);
+    console.log('User ID:', userId);
     console.log('Destination validation:', { city: tripPlan.destinationCity?.trim(), country: tripPlan.destinationCountry?.trim() });
     console.log('Selection counts:', { 
       interests: tripPlan.interests.length, 
@@ -1185,17 +1268,20 @@ export default function PlanTrip() {
                 <Button 
                   type="button"
                   className="w-full bg-gradient-to-b from-[#2F6BF2] to-[#2563EB] hover:from-[#2A60E6] hover:to-[#1F55D6] text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-colors text-sm sm:text-base md:text-lg h-12 sm:h-14 break-words touch-manipulation" 
-                  disabled={createTravelPlan.isPending}
+                  disabled={createTravelPlan.isPending || isWaitingForAuth}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     handleSubmit(e);
                   }}
                 >
-                  <span className="break-words">{createTravelPlan.isPending ? 
-                    (isEditMode ? "Updating Trip..." : "Creating Trip...") : 
-                    (isEditMode ? "Update My Trip Plan" : "Create Trip & Continue")
-                  }</span>
+                  <span className="break-words">
+                    {isWaitingForAuth
+                      ? "Loading session…"
+                      : createTravelPlan.isPending
+                        ? (isEditMode ? "Updating Trip..." : "Creating Trip...")
+                        : (isEditMode ? "Update My Trip Plan" : "Create Trip & Continue")}
+                  </span>
                 </Button>
                 
                 {/* Next Step Preview - only show for new trips */}

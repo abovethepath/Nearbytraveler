@@ -42,6 +42,13 @@ function MessagesWidget({ userId: propUserId }: MessagesWidgetProps) {
     refetchOnWindowFocus: true,
   });
 
+  const { data: connectionRequests = [] } = useQuery<any[]>({
+    queryKey: [`/api/connections/${userId}/requests`],
+    enabled: !!userId,
+    staleTime: 30_000,
+  });
+  const pendingRequestsCount = Array.isArray(connectionRequests) ? connectionRequests.length : 0;
+
   return (
     <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="messages-widget">
       {/* Animated Gradient Orbs Background */}
@@ -71,6 +78,11 @@ function MessagesWidget({ userId: propUserId }: MessagesWidgetProps) {
             data-testid="button-view-requests"
           >
             <span className="text-black dark:text-white">View Connection Requests</span>
+            {pendingRequestsCount > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center rounded-full bg-orange-500 text-white text-xs font-extrabold px-2 py-0.5 leading-none">
+                {pendingRequestsCount}
+              </span>
+            )}
           </Button>
         </div>
         <div className="space-y-3 max-h-64 overflow-y-auto">

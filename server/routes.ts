@@ -8352,22 +8352,71 @@ Questions? Just reply to this message. Welcome aboard!
         .orderBy(desc(notifications.createdAt))
         .limit(50);
 
+      // Parse notification data once (used for actor + connection lookups)
+      const parsedNotifData = new Map<number, any>();
+      const extraActorIds: number[] = [];
+      for (const n of notifRows) {
+        let d: any = null;
+        try {
+          d = n.data ? JSON.parse(n.data as string) : null;
+        } catch {
+          d = null;
+        }
+        parsedNotifData.set(n.id, d);
+        const derivedActorId = Number(d?.fromUserId || d?.requesterId || d?.senderId || 0) || 0;
+        if (derivedActorId) extraActorIds.push(derivedActorId);
+      }
+
       // Collect actor IDs to fetch in one query
-      const actorIds = [...new Set(notifRows.map(n => n.fromUserId).filter((id): id is number => !!id))];
+      const actorIds = [...new Set([
+        ...notifRows.map(n => n.fromUserId).filter((id): id is number => !!id),
+        ...extraActorIds,
+      ])];
       const actorMap: Record<number, { id: number; username: string | null; name: string | null; profileImage: string | null }> = {};
       if (actorIds.length > 0) {
         const actorRows = await db
           .select({ id: users.id, username: users.username, name: users.name, profileImage: users.profileImage })
           .from(users)
           .where(inArray(users.id, actorIds));
-        for (const a of actorRows) actorMap[a.id] = a;
+        // If users.profileImage is empty, fall back to user_photos.
+        // Prefer the explicit profile photo; otherwise use the most recently uploaded photo.
+        // This is critical for Activity feed avatars (connection requests) to show a real photo.
+        const profilePhotoRows = await db
+          .select({
+            userId: userPhotos.userId,
+            imageUrl: userPhotos.imageUrl,
+            isProfilePhoto: userPhotos.isProfilePhoto,
+            uploadedAt: userPhotos.uploadedAt,
+          })
+          .from(userPhotos)
+          .where(inArray(userPhotos.userId, actorIds))
+          .orderBy(desc(userPhotos.isProfilePhoto), desc(userPhotos.uploadedAt));
+
+        const profilePhotoMap: Record<number, string> = {};
+        for (const r of profilePhotoRows) {
+          const uid = Number(r?.userId || 0);
+          if (!uid || !r?.imageUrl) continue;
+          if (!profilePhotoMap[uid]) profilePhotoMap[uid] = r.imageUrl;
+        }
+
+        for (const a of actorRows) {
+          actorMap[a.id] = {
+            ...a,
+            profileImage: a.profileImage || profilePhotoMap[a.id] || null,
+          };
+        }
       }
 
       // For connection_request notifications, look up the pending connection
-      const connRequestNotifs = notifRows.filter(n => n.type === 'connection_request' && n.fromUserId);
+      const connRequestNotifs = notifRows.filter(n => n.type === 'connection_request' && (n.fromUserId || parsedNotifData.get(n.id)?.requesterId || parsedNotifData.get(n.id)?.fromUserId));
       const pendingConnMap: Record<number, any> = {};
       if (connRequestNotifs.length > 0) {
-        const requesterIds = connRequestNotifs.map(n => n.fromUserId as number);
+        const requesterIds = connRequestNotifs
+          .map((n) => {
+            const d = parsedNotifData.get(n.id);
+            return Number(n.fromUserId || d?.fromUserId || d?.requesterId || 0) || 0;
+          })
+          .filter((v) => !!v);
         const pendingConns = await db
           .select()
           .from(connections)
@@ -8409,9 +8458,10 @@ Questions? Just reply to this message. Welcome aboard!
       };
 
       const items = notifRows.map(n => {
-        const actor = n.fromUserId ? (actorMap[n.fromUserId] || null) : null;
-        const conn = n.type === 'connection_request' && n.fromUserId ? (pendingConnMap[n.fromUserId] || null) : null;
-        const parsedData = n.data ? (() => { try { return JSON.parse(n.data as string); } catch { return null; } })() : null;
+        const parsedData = parsedNotifData.get(n.id) || null;
+        const actorId = Number(n.fromUserId || parsedData?.fromUserId || parsedData?.requesterId || parsedData?.senderId || 0) || 0;
+        const actor = actorId ? (actorMap[actorId] || null) : null;
+        const conn = n.type === 'connection_request' && actorId ? (pendingConnMap[actorId] || null) : null;
         const meetRequest = n.type === 'available_now_meet_request' && parsedData?.requestId
           ? (meetRequestStatusMap[parsedData.requestId] || null)
           : null;
@@ -8438,6 +8488,35 @@ Questions? Just reply to this message. Welcome aboard!
         .orderBy(desc(activityLog.createdAt))
         .limit(50);
 
+      // Enrich activity_log "actor" avatars with a real profile photo when possible.
+      const logActorIds = [...new Set(logRows.map((l) => l.targetUserId).filter((id): id is number => !!id))];
+      const logActorProfileImageMap: Record<number, string | null> = {};
+      if (logActorIds.length > 0) {
+        const logActorRows = await db
+          .select({ id: users.id, profileImage: users.profileImage })
+          .from(users)
+          .where(inArray(users.id, logActorIds));
+
+        const logActorPhotoRows = await db
+          .select({ userId: userPhotos.userId, imageUrl: userPhotos.imageUrl })
+          .from(userPhotos)
+          .where(
+            and(
+              inArray(userPhotos.userId, logActorIds),
+              eq(userPhotos.isProfilePhoto, true)
+            )
+          );
+
+        const photoMap: Record<number, string> = {};
+        for (const r of logActorPhotoRows) {
+          if (r?.userId && r?.imageUrl) photoMap[r.userId] = r.imageUrl;
+        }
+
+        for (const r of logActorRows) {
+          logActorProfileImageMap[r.id] = r.profileImage || photoMap[r.id] || null;
+        }
+      }
+
       const logItems = logRows.map(l => ({
         id: `log_${l.id}`,
         kind: 'activity_log' as const,
@@ -8451,7 +8530,7 @@ Questions? Just reply to this message. Welcome aboard!
           id: l.targetUserId,
           username: l.targetUsername,
           name: null,
-          profileImage: l.targetProfileImage,
+          profileImage: l.targetProfileImage || logActorProfileImageMap[l.targetUserId] || null,
         } : null,
         data: null,
         connection: null,
@@ -10972,6 +11051,11 @@ Questions? Just reply to this message. Welcome aboard!
       
       if (connection) {
         if (process.env.NODE_ENV === 'development') console.log(`CONNECTION STATUS: Found connection:`, connection);
+        // Treat declined/rejected as "no connection" so the requester can re-send later.
+        // (We keep the row for history, but it should not block reconnection UX.)
+        if (connection.status === "rejected" || connection.status === "declined") {
+          return res.json({ status: "none" });
+        }
         return res.json({
           status: connection.status,
           requesterId: connection.requesterId,
@@ -11552,6 +11636,98 @@ Questions? Just reply to this message. Welcome aboard!
       const existingConnection = await storage.getConnection(parseInt(finalRequesterId || '0'), parseInt(finalTargetUserId || '0'));
       if (existingConnection) {
         if (process.env.NODE_ENV === 'development') console.log(`CONNECTION: Connection already exists:`, existingConnection);
+        // Allow re-sending if the prior request was declined/rejected.
+        // We re-open the existing row as a new pending request (do not create duplicates).
+        if (existingConnection.status === "rejected" || existingConnection.status === "declined") {
+          const reopened = await db
+            .update(connections)
+            .set({
+              requesterId: parseInt(finalRequesterId || "0"),
+              receiverId: parseInt(finalTargetUserId || "0"),
+              status: "pending",
+              createdAt: new Date(),
+            })
+            .where(eq(connections.id, existingConnection.id))
+            .returning()
+            .then((rows) => rows[0]);
+
+          // Reuse the normal notification/email flow below.
+          const newConnection = reopened;
+          if (!newConnection) {
+            return res.status(500).json({ message: "Failed to re-open connection request" });
+          }
+
+          // Everything below expects these derived values.
+          const requesterIdNum = parseInt(finalRequesterId || "0");
+          const recipientIdNum = parseInt(finalTargetUserId || "0");
+          const requester = await storage.getUser(requesterIdNum);
+          const recipient = await storage.getUser(recipientIdNum);
+          const requesterUsername = requester?.username || "unknown";
+          const requesterName = requester?.name || requesterUsername;
+
+          const payload = {
+            type: "connection_request",
+            title: "Connection request",
+            message: `@${requesterUsername} sent you a connection request`,
+          };
+
+          let newNotificationId: number | undefined;
+          try {
+            const newNotification = await storage.createNotification({
+              userId: recipientIdNum,
+              fromUserId: requesterIdNum,
+              type: "connection_request",
+              title: payload.title,
+              message: payload.message,
+              data: JSON.stringify({
+                connectionId: (newConnection as any)?.id,
+                requesterId: requesterIdNum,
+                receiverId: recipientIdNum,
+                requesterName,
+              }),
+            });
+            newNotificationId = newNotification.id;
+          } catch (e) {
+            console.error("❌ CONNECTION NOTIFICATION: Failed to create in-app notification:", e);
+          }
+
+          try {
+            const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+            const recipientWs = wsMap?.get(recipientIdNum);
+            if (recipientWs && recipientWs.readyState === 1) {
+              recipientWs.send(
+                JSON.stringify({
+                  type: "notification",
+                  payload: {
+                    id: newNotificationId,
+                    ...payload,
+                  },
+                })
+              );
+            }
+          } catch (e) {
+            if (process.env.NODE_ENV === "development") console.warn("WebSocket push failed:", e);
+          }
+
+          try {
+            const { sendConnectionRequestEmail } = await import("./email/notificationEmails");
+            await sendConnectionRequestEmail(recipientIdNum, requesterName, requesterUsername);
+          } catch (error) {
+            console.error("❌ CONNECTION EMAIL: Failed to send:", error);
+          }
+
+          setImmediate(async () => {
+            try {
+              const { sendConnectionRequestPush } = await import("./services/pushNotificationService");
+              await sendConnectionRequestPush(recipientIdNum, requesterName, requesterIdNum);
+            } catch (error) {
+              console.error("❌ CONNECTION PUSH: Failed:", error);
+            }
+          });
+
+          return res.json({ success: true, connection: newConnection });
+        }
+
         return res.status(409).json({ message: "Connection already exists", connection: existingConnection });
       }
 
@@ -11653,22 +11829,21 @@ Questions? Just reply to this message. Welcome aboard!
         if (process.env.NODE_ENV === "development") console.warn("WebSocket push failed:", e);
       }
 
-      // Send email/push notifications in the background (non-blocking)
-      setImmediate(async () => {
-        // Send email notification
-        try {
-          const { sendConnectionRequestEmail } = await import('./email/notificationEmails');
-          const result = await sendConnectionRequestEmail(recipientIdNum, requesterName, requesterUsername);
-          if (result.success && !result.skipped) {
-            console.log(`✅ CONNECTION EMAIL: Sent to user ${finalTargetUserId}`);
-          } else if (result.skipped) {
-            console.log(`ℹ️ CONNECTION EMAIL: Skipped - ${result.reason}`);
-          }
-        } catch (error) {
-          console.error('❌ CONNECTION EMAIL: Failed to send:', error);
+      // Send email notification immediately (reliable across hosting environments)
+      try {
+        const { sendConnectionRequestEmail } = await import("./email/notificationEmails");
+        const result = await sendConnectionRequestEmail(recipientIdNum, requesterName, requesterUsername);
+        if (result.success && !result.skipped) {
+          console.log(`✅ CONNECTION EMAIL: Sent to user ${finalTargetUserId}`);
+        } else if (result.skipped) {
+          console.log(`ℹ️ CONNECTION EMAIL: Skipped - ${result.reason}`);
         }
-        
-        // Send push notification
+      } catch (error) {
+        console.error("❌ CONNECTION EMAIL: Failed to send:", error);
+      }
+
+      // Send push notification in the background (non-blocking)
+      setImmediate(async () => {
         try {
           const { sendConnectionRequestPush } = await import('./services/pushNotificationService');
           const pushResult = await sendConnectionRequestPush(recipientIdNum, requesterName, requesterIdNum);
@@ -11729,11 +11904,45 @@ Questions? Just reply to this message. Welcome aboard!
         console.log(`✅ Connection ${status}: ${connection.requesterId} ↔ ${connection.receiverId}`);
       }
 
+      // When a connection request is accepted, remove the original pending "connection_request"
+      // notification from the receiver's Activity feed so only the confirmation remains.
+      if (status === "accepted") {
+        try {
+          await db
+            .delete(notifications)
+            .where(
+              and(
+                eq(notifications.userId, connection.receiverId),
+                eq(notifications.fromUserId, connection.requesterId),
+                eq(notifications.type, "connection_request")
+              )
+            );
+        } catch (e) {
+          console.error("❌ CONNECTION: Failed to clear pending request notification:", e);
+        }
+      }
+
       // If accepted, notify the requester (in-app + real-time WS) so BOTH users get feedback.
       if (status === "accepted") {
         try {
           const requesterId = connection.requesterId;
           const receiverId = connection.receiverId;
+
+          // Remove the original pending "connection_request" notification from the receiver's feed.
+          // After acceptance, only the "Connection accepted" confirmation should remain.
+          try {
+            await db
+              .delete(notifications)
+              .where(
+                and(
+                  eq(notifications.userId, receiverId),
+                  eq(notifications.fromUserId, requesterId),
+                  eq(notifications.type, "connection_request")
+                )
+              );
+          } catch (e) {
+            console.error("❌ CONNECTION ACCEPT: Failed to delete pending request notification:", e);
+          }
 
           // Load receiver identity for message text
           const receiver = await db
@@ -11757,8 +11966,8 @@ Questions? Just reply to this message. Welcome aboard!
             userId: receiverId,
             action: "connection_accepted",
             category: "connections",
-            title: "You connected",
-            description: `You connected with @${requester?.username || "someone"}`,
+            title: "Connection accepted",
+            description: `Connection accepted with @${requester?.username || "someone"}`,
             targetUserId: requesterId,
             targetUsername: requester?.username || null,
             targetProfileImage: requester?.profileImage || null,
@@ -25124,14 +25333,17 @@ Questions? Just reply to this message. Welcome aboard!
         meetupId: meetupChatrooms.meetupId,
         availableNowId: meetupChatrooms.availableNowId,
         eventId: meetupChatrooms.eventId,
+        activityType: meetupChatrooms.activityType,
       }).from(meetupChatrooms).where(eq(meetupChatrooms.id, chatroomId)).limit(1);
       if (!chatroom) return res.status(404).json({ error: "Chatroom not found", deleted: true });
 
       let sessionEndedAt: Date | null = null;
+      let sessionActivities: any[] | null = null;
       if (chatroom.availableNowId) {
-        const [session] = await db.select({ expiresAt: availableNow.expiresAt, isAvailable: availableNow.isAvailable })
+        const [session] = await db.select({ expiresAt: availableNow.expiresAt, isAvailable: availableNow.isAvailable, activities: availableNow.activities })
           .from(availableNow).where(eq(availableNow.id, chatroom.availableNowId)).limit(1);
         if (session) {
+          sessionActivities = (session as any)?.activities ?? null;
           if (!session.isAvailable || session.expiresAt < new Date()) {
             sessionEndedAt = session.expiresAt;
           }
@@ -25155,7 +25367,7 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       const isExpired = lifecycleState === "readonly";
-      res.json({ ...chatroom, isExpired, lifecycleState, deleteAt });
+      res.json({ ...chatroom, isExpired, lifecycleState, deleteAt, activities: sessionActivities });
     } catch (error: any) {
       console.error("Error fetching chatroom info:", error);
       res.status(500).json({ error: "Failed to fetch chatroom info" });
@@ -27090,6 +27302,72 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error("Create community error:", error);
       res.status(500).json({ error: "Failed to create community" });
+    }
+  });
+
+  // Update a community (creator or admin)
+  app.patch("/api/community-tags/:id", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers["x-user-id"] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const tagId = parseInt(req.params.id || "0");
+      if (!tagId) return res.status(400).json({ error: "Invalid community ID" });
+
+      const [tag] = await db
+        .select({
+          id: communityTags.id,
+          createdBy: communityTags.createdBy,
+          chatroomId: communityTags.chatroomId,
+        })
+        .from(communityTags)
+        .where(eq(communityTags.id, tagId))
+        .limit(1);
+      if (!tag) return res.status(404).json({ error: "Community not found" });
+
+      const [u] = await db.select({ isAdmin: users.isAdmin }).from(users).where(eq(users.id, userId)).limit(1);
+      const isAdmin = !!u?.isAdmin;
+      if (tag.createdBy !== userId && !isAdmin) {
+        return res.status(403).json({ error: "Only the creator or an admin can edit this community" });
+      }
+
+      const displayNameRaw = (req.body as any)?.displayName;
+      const descriptionRaw = (req.body as any)?.description;
+
+      const updateData: any = {};
+      if (displayNameRaw !== undefined) {
+        const next = String(displayNameRaw || "").trim();
+        if (!next) return res.status(400).json({ error: "Community name cannot be empty" });
+        updateData.displayName = next;
+      }
+      if (descriptionRaw !== undefined) {
+        updateData.description = String(descriptionRaw || "").trim();
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        return res.json({ ok: true });
+      }
+
+      const [updated] = await db
+        .update(communityTags)
+        .set(updateData)
+        .where(eq(communityTags.id, tagId))
+        .returning();
+
+      // Keep the linked community chatroom in sync (name/description shown in chat lists).
+      if (tag.chatroomId) {
+        const patch: any = {};
+        if (updateData.displayName !== undefined) patch.name = updateData.displayName;
+        if (updateData.description !== undefined) patch.description = updateData.description || null;
+        if (Object.keys(patch).length > 0) {
+          await db.update(citychatrooms).set(patch).where(eq(citychatrooms.id, tag.chatroomId));
+        }
+      }
+
+      res.json(updated || { ok: true });
+    } catch (error: any) {
+      console.error("Update community error:", error);
+      res.status(500).json({ error: "Failed to update community" });
     }
   });
 
