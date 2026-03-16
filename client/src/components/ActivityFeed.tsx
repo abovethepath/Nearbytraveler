@@ -116,7 +116,7 @@ function InitialAvatar({
   );
 }
 
-function ConnectionRequestAvatar({
+function ActorAvatar({
   actorId,
   currentUserId,
   fallbackUsername,
@@ -548,10 +548,40 @@ export default function ActivityFeed() {
 
   const items = (data?.items || []) as AnyActivityItem[];
 
+  const dedupedItems = useMemo(() => {
+    const kept: Array<{ typeKey: string; actorId: number; ts: number }> = [];
+    return items.filter((item) => {
+      let actorId: number | undefined;
+      let typeKey: string;
+      if (item.kind === "event_chat") {
+        typeKey = "event_chat:event_chat";
+      } else if (item.kind === "notification") {
+        const n = item as ActivityNotificationItem;
+        typeKey = `notification:${n.type || ""}`;
+        actorId = n.actor?.id ?? n.data?.fromUserId ?? n.meetRequest?.fromUserId;
+      } else {
+        const l = item as ActivityLogItem;
+        typeKey = `activity_log:${l.type || ""}`;
+        actorId = l.actor?.id;
+      }
+      if (actorId === undefined) return true;
+      const ts = safeDate(item.timestamp)?.getTime() ?? 0;
+      const isDuplicate = kept.some(
+        (s) =>
+          s.typeKey === typeKey &&
+          s.actorId === actorId &&
+          Math.abs(s.ts - ts) <= 60000
+      );
+      if (isDuplicate) return false;
+      kept.push({ typeKey, actorId, ts });
+      return true;
+    });
+  }, [items]);
+
   const filtered = useMemo(() => {
-    if (filter === "all") return items;
-    return items.filter((i) => i.category === filter);
-  }, [items, filter]);
+    if (filter === "all") return dedupedItems;
+    return dedupedItems.filter((i) => i.category === filter);
+  }, [dedupedItems, filter]);
 
   const emptyLabel =
     filter === "messages"
@@ -733,8 +763,15 @@ export default function ActivityFeed() {
 
               if (item.kind === "activity_log") {
                 const logItem = item as ActivityLogItem;
-                if (logItem.actor?.profileImage) {
-                  return <img src={logItem.actor.profileImage} alt="" className="h-10 w-10 rounded-full object-cover" />;
+                if (logItem.actor?.id && currentUser?.id) {
+                  return (
+                    <ActorAvatar
+                      actorId={logItem.actor.id}
+                      currentUserId={currentUser.id}
+                      fallbackUsername={logItem.actor?.username || logItem.actor?.name || null}
+                      fallbackProfileImage={logItem.actor?.profileImage || null}
+                    />
+                  );
                 }
                 const action = logItem.type;
                 if (action.includes("event") || action.includes("rsvp")) {
@@ -749,15 +786,6 @@ export default function ActivityFeed() {
                     <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center">
                       <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
                     </div>
-                  );
-                }
-                if (action.includes("connection") || action.includes("meet")) {
-                  return (
-                    <InitialAvatar
-                      username={logItem.actor?.username || null}
-                      profileImage={logItem.actor?.profileImage || null}
-                      fallbackLabel="NT"
-                    />
                   );
                 }
                 return (
@@ -779,9 +807,9 @@ export default function ActivityFeed() {
                 );
               }
 
-              if (type === "connection_request" && n.actor?.id && currentUser?.id) {
+              if (n.actor?.id && currentUser?.id) {
                 return (
-                  <ConnectionRequestAvatar
+                  <ActorAvatar
                     actorId={n.actor.id}
                     currentUserId={currentUser.id}
                     fallbackUsername={n.actor?.username || n.actor?.name || null}
