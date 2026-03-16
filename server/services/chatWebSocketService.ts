@@ -84,6 +84,40 @@ export class ChatWebSocketService {
     });
   }
 
+  /**
+   * Broadcast a system message (e.g. "@user joined the meetup! 🎉") to all active
+   * chatroom members as a real-time `message:new` event.  This ensures ALL members
+   * — including the host and any member who didn't trigger the join — see the
+   * announcement appear instantly in their feed without needing a page reload.
+   */
+  public async broadcastSystemMessage(
+    chatroomId: number,
+    chatType: string,
+    messageId: number,
+    messageContent: string,
+    senderUserId: number,
+    senderUsername: string,
+  ): Promise<void> {
+    const payload = {
+      id: messageId,
+      content: messageContent,
+      createdAt: new Date().toISOString(),
+      senderId: senderUserId,
+      messageType: 'system',
+      sender: { id: senderUserId, username: senderUsername, profileImage: null },
+      replyTo: null,
+    };
+    const event: ChatEvent = {
+      type: 'message:new',
+      chatType,
+      chatroomId,
+      payload,
+      senderId: senderUserId,
+      timestamp: Date.now(),
+    };
+    await this.broadcastToChatroom(chatroomId, event);
+  }
+
   constructor() {
     // Clean up expired typing indicators every 2 seconds
     setInterval(() => this.cleanupExpiredTyping(), 2000);

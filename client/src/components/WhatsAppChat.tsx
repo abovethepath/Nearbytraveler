@@ -2785,6 +2785,16 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                     ? { id: chatId, username: props.otherUserUsername, name: null, profileImage: props.otherUserProfileImage ?? null }
                     : null;
               
+              if (message.messageType === 'system') {
+                return (
+                  <div key={message.id} className="flex justify-center my-1.5">
+                    <span className="px-3 py-1 rounded-full text-[12px] text-gray-300 bg-gray-800/70 border border-gray-700/50 select-none text-center max-w-[80%]">
+                      {message.content}
+                    </span>
+                  </div>
+                );
+              }
+
               return (
                 <div key={message.id} className={`flex gap-1.5 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
                   {!isOwnMessage && (

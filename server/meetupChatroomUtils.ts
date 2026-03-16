@@ -51,17 +51,30 @@ export async function createOrJoinMeetupChatroom(params: CreateOrJoinChatroomPar
         .set({ participantCount: sql`${meetupChatrooms.participantCount} + 1` })
         .where(eq(meetupChatrooms.id, existingChatroom.id));
 
-      await db.insert(meetupChatroomMessages).values({
+      const [sysMsg] = await db.insert(meetupChatroomMessages).values({
         meetupChatroomId: existingChatroom.id,
         userId: joinerUserId,
         username: joinerName,
         message: `@${joinerName} joined the meetup! 🎉`,
         messageType: 'system',
-      });
+      }).returning();
 
       try {
         const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+        // Broadcast the member-joined event so all members refresh their sidebar
         await chatWebSocketService.broadcastMemberUpdate(existingChatroom.id, 'meetup', joinerUserId, joinerName);
+        // Also push the system message as a real-time message:new event so it appears
+        // instantly in every member's chat feed (fixes silent join for existing members)
+        if (sysMsg) {
+          await chatWebSocketService.broadcastSystemMessage(
+            existingChatroom.id,
+            'meetup',
+            sysMsg.id,
+            sysMsg.message,
+            joinerUserId,
+            joinerName,
+          );
+        }
       } catch {}
     }
 
