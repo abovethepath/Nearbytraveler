@@ -290,12 +290,12 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       }
       if (variables.status === "accepted") {
         if (data?.groupChatroomId) {
-          toast({ title: "It's a meet!", description: "Opening the group chat..." });
           queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
-          // Bug fix: chatroom creation/membership can race on mobile.
-          // Retry chatroom info up to 3 times (500ms gaps) before navigating or showing any error.
+          // Race-condition fix: poll the chatroom info endpoint up to 5 times at
+          // 600ms intervals before navigating. The chatroom page itself also has
+          // retry logic, but this prevents any visible flash on the acceptor side.
           const waitForChatroomReady = async (chatroomId: number) => {
-            for (let attempt = 0; attempt < 3; attempt++) {
+            for (let attempt = 0; attempt < 5; attempt++) {
               try {
                 const headers: Record<string, string> = {};
                 if (currentUser?.id) headers["x-user-id"] = String(currentUser.id);
@@ -310,20 +310,21 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               } catch {
                 // retry
               }
-              if (attempt < 2) await new Promise((r) => setTimeout(r, 500));
+              await new Promise((r) => setTimeout(r, 600));
             }
             return false;
           };
           // Navigate directly to the meetup chatroom page (NOT messages) so it
           // always opens the correct group chat regardless of current page state.
+          // The meetup-chatroom-chat page has its own retry mechanism for any
+          // remaining transient errors, so no error flash will be visible.
           const title = encodeURIComponent(data.chatroomName || 'Meetup Chat');
           const subtitle = encodeURIComponent(data.chatroomCity || 'Group chat');
+          toast({ title: "It's a meet!", description: "Setting up your chat…" });
           void waitForChatroomReady(Number(data.groupChatroomId)).then((ok) => {
             if (!ok) {
-              toast({
-                title: "Still setting up chat…",
-                description: "Please try opening the chat again in a moment.",
-              });
+              // Navigate anyway — the chat page's own retry logic will handle it
+              setLocation(`/meetup-chatroom-chat/${data.groupChatroomId}?title=${title}&subtitle=${subtitle}`);
               return;
             }
             setLocation(`/meetup-chatroom-chat/${data.groupChatroomId}?title=${title}&subtitle=${subtitle}`);

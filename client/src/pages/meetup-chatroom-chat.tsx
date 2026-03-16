@@ -20,7 +20,7 @@ export default function MeetupChatroomChat() {
   const titleFromUrl = searchParams.get("title") || "Meetup Chat";
   const subtitle = searchParams.get("subtitle") || "Group chat";
 
-  const { data: chatroomInfo, error: chatroomError } = useQuery<{
+  const { data: chatroomInfo, error: chatroomError, isLoading: chatroomLoading, fetchStatus } = useQuery<{
     id: number;
     chatroomName: string;
     isActive: boolean;
@@ -44,7 +44,14 @@ export default function MeetupChatroomChat() {
       return res.json();
     },
     enabled: !!chatroomId && !!user?.id,
-    retry: false,
+    // Retry up to 5 times at 600ms intervals — this closes the race condition where
+    // the frontend navigates to the chat page before the chatroom_members rows are
+    // fully committed to the DB after an Available Now or Quick Meetup acceptance.
+    retry: (failureCount, error) => {
+      if ((error as Error)?.message === "DELETED") return false;
+      return failureCount < 5;
+    },
+    retryDelay: 600,
   });
 
   const { toast } = useToast();
@@ -83,6 +90,14 @@ export default function MeetupChatroomChat() {
   }
 
   if (authLoading || !user?.id) {
+    return <ChatPageSkeleton variant="dark" />;
+  }
+
+  // While retrying after a transient 404 (race condition), show skeleton instead
+  // of an error so there's no visible flash. fetchStatus === 'fetching' means a
+  // retry attempt is in-flight.
+  const isRetrying = chatroomLoading || (!!chatroomError && fetchStatus === 'fetching');
+  if (isRetrying) {
     return <ChatPageSkeleton variant="dark" />;
   }
 
