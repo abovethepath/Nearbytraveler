@@ -3457,6 +3457,90 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // City-pulse user list endpoint — returns users for a given pill type
+  app.get("/api/city-pulse/users", async (req: any, res) => {
+    try {
+      const city = ((req.query.city as string) || '').trim();
+      const type = (req.query.type as string) || '';
+      if (!city || !type) return res.status(400).json({ message: "city and type required" });
+
+      const cityLower = city.toLowerCase();
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      if (type === 'travelers') {
+        const rows = await db.execute(sql`
+          SELECT u.id, u.username, u.first_name, u.full_name, u.profile_image,
+                 tp.destination_city, tp.start_date, tp.end_date, u.hometown_city
+          FROM travel_plans tp
+          JOIN users u ON tp.user_id = u.id
+          WHERE LOWER(tp.destination_city) = ${cityLower}
+            AND tp.start_date >= ${todayStart.toISOString()}
+            AND tp.start_date < ${new Date(todayStart.getTime() + 86400000).toISOString()}
+            AND tp.end_date >= ${now.toISOString()}
+          ORDER BY tp.start_date ASC
+          LIMIT 50
+        `);
+        return res.json((rows as any).rows || []);
+      }
+
+      if (type === 'new-members') {
+        const rows = await db.execute(sql`
+          SELECT u.id, u.username, u.first_name, u.full_name, u.profile_image,
+                 u.hometown_city, u.created_at, u.user_type
+          FROM users u
+          WHERE LOWER(u.hometown_city) = ${cityLower}
+            AND u.created_at >= ${todayStart.toISOString()}
+          ORDER BY u.created_at DESC
+          LIMIT 50
+        `);
+        return res.json((rows as any).rows || []);
+      }
+
+      if (type === 'connections-today') {
+        const rows = await db.execute(sql`
+          SELECT DISTINCT u.id, u.username, u.first_name, u.full_name, u.profile_image,
+                 u.hometown_city, u.user_type
+          FROM connections c
+          JOIN users u ON (u.id = c.requester_id OR u.id = c.receiver_id)
+          WHERE c.status = 'accepted'
+            AND c.created_at >= ${todayStart.toISOString()}
+            AND (
+              c.requester_id IN (SELECT id FROM users WHERE LOWER(hometown_city) = ${cityLower})
+              OR c.receiver_id IN (SELECT id FROM users WHERE LOWER(hometown_city) = ${cityLower})
+            )
+          ORDER BY u.username
+          LIMIT 50
+        `);
+        return res.json((rows as any).rows || []);
+      }
+
+      return res.status(400).json({ message: "Unknown type" });
+    } catch (error: any) {
+      console.error("Error fetching city-pulse users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  // Batch user lookup by IDs — used by PillPopover for notification pills
+  app.get("/api/users/by-ids", async (req: any, res) => {
+    try {
+      const idsParam = (req.query.ids as string) || '';
+      const ids = idsParam.split(',').map(Number).filter(n => n > 0).slice(0, 50);
+      if (!ids.length) return res.json([]);
+      const rows = await db.execute(sql`
+        SELECT id, username, first_name, full_name, profile_image, hometown_city, user_type
+        FROM users
+        WHERE id = ANY(${sql.raw(`ARRAY[${ids.join(',')}]::int[]`)})
+        LIMIT 50
+      `);
+      return res.json((rows as any).rows || []);
+    } catch (error: any) {
+      console.error("Error fetching users by ids:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
   // Tonight in [City] endpoint
   app.get("/api/tonight/:city", async (req, res) => {
     try {
