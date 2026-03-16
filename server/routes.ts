@@ -20790,6 +20790,25 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Report a chatroom/group
+  app.post("/api/chatrooms/:roomId/mark-read", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const roomId = parseInt(req.params.roomId || '0');
+      if (!roomId) return res.status(400).json({ error: "Invalid chatroom ID" });
+      await db.update(chatroomMembers)
+        .set({ lastReadAt: new Date() })
+        .where(and(
+          eq(chatroomMembers.chatroomId, roomId),
+          eq(chatroomMembers.userId, Number(userId))
+        ));
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error marking chatroom as read:", error);
+      return res.status(500).json({ error: "Failed to mark as read" });
+    }
+  });
+
   app.post("/api/chatrooms/:roomId/report", async (req: any, res) => {
     try {
       const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || (req.body && req.body.userId);

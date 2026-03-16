@@ -461,6 +461,13 @@ export class ChatWebSocketService {
         }).returning();
         
         console.log('✅ City chatroom message inserted successfully:', newMessage.id);
+        // Sending a message = user has read everything up to now → reset their unread count
+        await db.update(chatroomMembers)
+          .set({ lastReadAt: new Date() })
+          .where(and(
+            eq(chatroomMembers.chatroomId, chatroomId),
+            eq(chatroomMembers.userId, ws.userId!)
+          ));
       }
       
       console.log('✅ Message inserted successfully:', newMessage.id);

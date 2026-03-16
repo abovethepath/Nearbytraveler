@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import WhatsAppChat from "@/components/WhatsAppChat";
 import { useAuth } from "@/App";
 import { ChatPageSkeleton } from "@/components/ui/chat-page-skeleton";
-import { getApiBaseUrl } from "@/lib/queryClient";
+import { getApiBaseUrl, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 export default function MeetupChatroomChat() {
@@ -60,6 +60,12 @@ export default function MeetupChatroomChat() {
     }
     return () => document.body.classList.remove("is-chat-page");
   }, []);
+
+  // Mark chatroom as read when opened directly via URL
+  useEffect(() => {
+    if (!chatroomId || !user?.id) return;
+    apiRequest('POST', `/api/meetup-chatrooms/${chatroomId}/mark-read`).catch(() => {});
+  }, [chatroomId, user?.id]);
 
   useEffect(() => {
     if (chatroomError && chatroomError.message === "DELETED") {

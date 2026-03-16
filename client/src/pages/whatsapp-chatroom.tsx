@@ -59,6 +59,12 @@ export default function WhatsAppChatroom() {
     retry: 2,
   });
 
+  // Mark chatroom as read when opened
+  useEffect(() => {
+    if (!chatroomId || !currentUserId) return;
+    apiRequest('POST', `/api/chatrooms/${chatroomId}/mark-read`).catch(() => {});
+  }, [chatroomId, currentUserId]);
+
   const joinMutation = useMutation({
     mutationFn: async () => {
       const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatroomId}/join`, {
