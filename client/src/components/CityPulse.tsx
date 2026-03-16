@@ -164,7 +164,19 @@ export function CityPulse({ city }: CityPulseProps) {
       emoji: "🟢",
       count: data.openToMeet,
       label: "open to meet now",
-      onClick: () => setLocation("/quick-meetups"),
+      onClick: () => {
+        const desktopSection = document.getElementById("available-now-section-desktop");
+        const mobileSection = document.getElementById("available-now-section");
+        const target =
+          desktopSection && getComputedStyle(desktopSection).display !== "none"
+            ? desktopSection
+            : mobileSection;
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+          setLocation("/quick-meetups");
+        }
+      },
     },
     {
       emoji: "📅",
