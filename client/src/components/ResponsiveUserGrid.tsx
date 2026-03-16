@@ -140,7 +140,7 @@ export default function ResponsiveUserGrid({
     if (!user.interests || user.interests.length === 0) return null;
     const count = user.interests.length;
     return (
-      <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-bold leading-none whitespace-nowrap bg-gradient-to-r from-blue-500 to-purple-500 border-0 appearance-none select-none gap-1.5 shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 text-white">
+      <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-bold leading-none whitespace-nowrap bg-gradient-to-r from-blue-500 to-purple-500 border-0 appearance-none select-none gap-1.5 shadow-md transition-shadow duration-200 text-white" style={{ WebkitFontSmoothing: 'antialiased', textRendering: 'optimizeLegibility' } as React.CSSProperties}>
         {count} interest{count !== 1 ? 's' : ''}
       </div>
     );
@@ -153,7 +153,7 @@ export default function ResponsiveUserGrid({
     const travelDest = getTravelDestination(user);
     return (
     <Card 
-      className={`group cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden h-full min-h-[320px] flex flex-col ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
+      className={`group cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-[box-shadow,border-color] duration-200 overflow-hidden h-full min-h-[320px] flex flex-col ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={() => setLocation(`/profile/${user.id}`)}
     >
       {/* Cover Background */}
@@ -255,7 +255,7 @@ export default function ResponsiveUserGrid({
     const travelDest = getTravelDestination(user);
     return (
     <Card 
-      className={`cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden h-full min-h-[280px] flex flex-col ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
+      className={`cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-[box-shadow,border-color] duration-200 overflow-hidden h-full min-h-[280px] flex flex-col ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={() => setLocation(`/profile/${user.id}`)}
     >
       {/* Gradient Cover - smaller for mobile */}

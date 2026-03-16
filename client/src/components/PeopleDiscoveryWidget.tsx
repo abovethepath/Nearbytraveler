@@ -347,7 +347,7 @@ export function PeopleDiscoveryWidget({
 
     return (
       <div
-        className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-lg transition-all duration-200 cursor-pointer text-gray-900 dark:text-white relative h-auto"
+        className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-lg transition-[box-shadow] duration-200 cursor-pointer text-gray-900 dark:text-white relative h-auto"
         onClick={handleCardClick}
       >
         {/* Available Now Badge - Top Right */}

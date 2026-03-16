@@ -2669,3 +2669,26 @@ html.dark .landing-quote {
   display: inline-flex;
   animation: cityPulseLiveDot 2s ease-in-out infinite;
 }
+
+/* ── Pill / badge text sharpness ──────────────────────────────────────────
+   Prevents GPU compositing blur on pill labels caused by parent card
+   transitions. Applied to all user-card pill elements site-wide.          */
+.status-badge,
+.common-shared-interest-pill,
+.user-card-pill {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transform: translateZ(0);
+  will-change: auto;
+}
+
+/* Catch-all: any rounded-full span/div that is a direct descendant of a
+   card element (covers "X things in common", "Available Now", badge pills) */
+[class*="rounded-full"][class*="font-bold"],
+[class*="rounded-full"][class*="font-semibold"],
+[class*="rounded-full"][class*="font-medium"] {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
