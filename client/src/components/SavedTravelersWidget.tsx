@@ -109,7 +109,7 @@ export function SavedTravelersWidget() {
       <div className="bg-white dark:bg-gray-900 p-3 space-y-2">
         {saved.map((traveler) => {
           const cfg = getStatusConfig(traveler.tripStatus, traveler.destinationCity);
-          const displayName = traveler.firstName || `@${traveler.username}`;
+          const displayName = (traveler.firstName || '').split(' ')[0] || `@${traveler.username}`;
           let from = traveler.hometownCity || traveler.hometownCountry || null;
           // Extract only city name if hometownCity contains full location (e.g., "Lisbon, Portugal")
           if (from && from.includes(",")) {

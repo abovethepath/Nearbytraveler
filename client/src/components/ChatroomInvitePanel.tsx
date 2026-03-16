@@ -59,7 +59,7 @@ export default function ChatroomInvitePanel({
   const [selectedUsers, setSelectedUsers] = useState<UserResult[]>([]);
 
   const displayName = (u: UserResult) =>
-    u.firstName || u.name?.split(" ")[0] || u.username;
+    (u.firstName || "").split(" ")[0] || u.name?.split(" ")[0] || u.username;
 
   // Load user's connections (primary source)
   const { data: connectionsRaw = [], isLoading: connectionsLoading } = useQuery<Connection[]>({

@@ -43,7 +43,7 @@ export default function GroupDMDialog({
   );
 
   const displayName = (u: UserResult) =>
-    u.firstName || u.name?.split(" ")[0] || u.username;
+    (u.firstName || "").split(" ")[0] || u.name?.split(" ")[0] || u.username;
 
   const { data: searchResults = [], isFetching } = useQuery<UserResult[]>({
     queryKey: ["/api/users/search", searchQuery],

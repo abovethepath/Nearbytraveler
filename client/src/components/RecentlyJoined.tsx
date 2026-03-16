@@ -23,7 +23,8 @@ function cityLabel(user: any): string {
 }
 
 function displayName(user: any): string {
-  return user.firstName || user.name || user.username || "New member";
+  const full = user.firstName || user.name || user.username || "New member";
+  return full.split(" ")[0];
 }
 
 interface RecentlyJoinedProps {

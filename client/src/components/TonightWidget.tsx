@@ -178,7 +178,7 @@ export function TonightWidget({ city }: Props) {
                 <button
                   key={t.userId}
                   onClick={() => setLocation(`/profile/${t.userId}`)}
-                  title={t.firstName || `@${t.username}`}
+                  title={(t.firstName || '').split(' ')[0] || `@${t.username}`}
                   className="flex-shrink-0 ring-2 ring-white dark:ring-gray-900 rounded-full hover:ring-orange-300 dark:hover:ring-orange-600 transition-all"
                 >
                   <SimpleAvatar

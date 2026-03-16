@@ -844,7 +844,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                             
                             {/* User details - centered on mobile, left-aligned on desktop */}
                             <div className="flex-1 text-center sm:text-left">
-                              <h4 className="text-lg sm:text-xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-gray-900 dark:text-white mb-2">{user.firstName || user.name || user.username}</h4>
+                              <h4 className="text-lg sm:text-xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-gray-900 dark:text-white mb-2">{(user.firstName || user.name || user.username || '').split(' ')[0] || user.username}</h4>
                               <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-3 leading-relaxed line-clamp-3">{user.bio}</p>
                               <div className="flex items-center justify-center sm:justify-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                                 {user.currentTravelDestination ? (
@@ -878,7 +878,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                               currentUserId={currentUser?.id || authStorage.getUser()?.id || 0}
                               targetUserId={user.id}
                               targetUsername={user.username}
-                              targetName={(user as any).firstName || user.name || user.username}
+                              targetName={((user as any).firstName || user.name || user.username || '').split(' ')[0] || user.username}
                               size="lg"
                               className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 hover:from-orange-600 hover:to-orange-700 font-semibold px-4 sm:px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
                             />

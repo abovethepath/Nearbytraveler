@@ -36,7 +36,7 @@ function AlmostMetCard({ person }: { person: AlmostMetUser }) {
     },
   });
 
-  const displayName = person.firstName || `@${person.username}`;
+  const displayName = (person.firstName || '').split(' ')[0] || `@${person.username}`;
   const from = person.hometownCity || person.hometownCountry;
 
   const overlapDetail = person.daysOverlap != null && person.daysOverlap > 1

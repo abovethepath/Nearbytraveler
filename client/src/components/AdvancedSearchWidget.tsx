@@ -835,7 +835,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <h4 className="font-semibold text-black dark:text-white truncate">
-                              {(user as any).firstName || user.name || user.username}
+                              {((user as any).firstName || user.name || user.username || '').split(' ')[0] || user.username}
                             </h4>
                             {availableUserIds.has(user.id) && (
                               <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-blue-500 to-orange-500 text-white flex-shrink-0">

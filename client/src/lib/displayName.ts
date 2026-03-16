@@ -43,7 +43,8 @@ type MinimalUser = {
 export function getDisplayName(user: MinimalUser | null | undefined): string {
   if (!user) return '';
   if (user.userType === 'business' && user.businessName) return user.businessName;
-  return user.firstName || user.username || '';
+  const raw = user.firstName || user.username || '';
+  return raw.split(' ')[0];
 }
 
 export function getUserInitial(user: MinimalUser | null | undefined): string {

@@ -174,7 +174,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     const { viralText, redditText } = buildShareModal();
     return (
       <ShareModal
-        title={`Share ${(user as any)?.firstName || user?.username || "this profile"}`}
+        title={`Share ${((user as any)?.firstName || "").split(" ")[0] || user?.username || "this profile"}`}
         url={profileUrl}
         shareText={viralText}
         redditText={redditText}
@@ -267,7 +267,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               <div className="flex items-center gap-2.5 shrink-0 w-full max-w-full">
                 <div className="flex flex-col leading-tight">
                   <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold break-all crisp-hero-text text-white" style={{ color: '#ffffff' }}>
-                    {(user as any)?.firstName || user?.username}
+                    {((user as any)?.firstName || "").split(" ")[0] || user?.username}
                   </h1>
                   {(user as any)?.firstName && (
                     <span className="text-sm sm:text-base font-medium text-white/80 break-all">@{user?.username}</span>
@@ -501,7 +501,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <h1 className="text-xl sm:text-3xl font-extrabold text-white break-all leading-tight crisp-hero-text" style={{ color: '#ffffff' }}>
-                                {(user as any)?.firstName || user?.username}
+                                {((user as any)?.firstName || "").split(" ")[0] || user?.username}
                                 {!isOwnProfile && (() => {
                                   const deg = connectionStatus?.status === 'accepted' ? 1 : (connectionDegreeData as any)?.degree;
                                   const label = deg === 1 ? '1st' : deg === 2 ? '2nd' : deg === 3 ? '3rd' : null;
@@ -1088,7 +1088,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         <div className="lg:inline-flex lg:items-center lg:bg-black/35 lg:backdrop-blur-none lg:rounded-full lg:px-3 lg:py-1.5 lg:shadow-sm">
                           <div className="flex flex-col">
                           <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold break-all !text-white crisp-hero-text" style={{ color: "#ffffff" }}>
-                            {(user as any)?.firstName || user?.username}
+                            {((user as any)?.firstName || "").split(" ")[0] || user?.username}
                             {!isOwnProfile && (() => {
                               const deg = connectionStatus?.status === 'accepted' ? 1 : (connectionDegreeData as any)?.degree;
                               const label = deg === 1 ? '1st' : deg === 2 ? '2nd' : deg === 3 ? '3rd' : null;

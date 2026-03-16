@@ -72,7 +72,7 @@ function PersonCard({
     saveMutation.mutate(next);
   };
 
-  const displayName = user.firstName || `@${user.username}`;
+  const displayName = (user.firstName || '').split(' ')[0] || `@${user.username}`;
   let from = user.hometownCity || user.hometownCountry || null;
   if (from && from.includes(",")) from = from.split(",")[0].trim();
   if (from) from = abbreviateCity(from);
