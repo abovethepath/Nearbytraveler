@@ -993,7 +993,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
   });
   
-  // Unmute user mutation
+  // Unmute user mutation — with optimistic update so the UI clears immediately
   const unmuteMutation = useMutation({
     mutationFn: async (targetUserId: number) => {
       const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/unmute`, {
@@ -1001,15 +1001,43 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         body: JSON.stringify({ targetUserId }),
         headers: { 'Content-Type': 'application/json', 'x-user-id': currentUserId?.toString() || '' }
       });
-      if (!response.ok) throw new Error('Failed to unmute user');
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({}));
+        throw new Error(errBody?.message || 'Failed to unmute user');
+      }
       return response.json();
     },
-    onSuccess: () => {
-      toast({ title: "User unmuted successfully" });
-      queryClient.invalidateQueries({ queryKey: [membersEndpoint] });
+    onMutate: async (targetUserId: number) => {
+      // Cancel any in-flight members refetch so it doesn't overwrite our optimistic update
+      if (membersEndpoint) {
+        await queryClient.cancelQueries({ queryKey: [membersEndpoint] });
+      }
+      // Snapshot previous data for rollback
+      const previousMembers = membersEndpoint ? queryClient.getQueryData<any[]>([membersEndpoint]) : undefined;
+      // Optimistically remove mute flag from the target member
+      if (membersEndpoint) {
+        queryClient.setQueryData<any[]>([membersEndpoint], (old) =>
+          (old ?? []).map((m: any) =>
+            m.id === targetUserId ? { ...m, isMuted: false, muteReason: null } : m
+          )
+        );
+      }
+      return { previousMembers };
     },
-    onError: () => {
-      toast({ title: "Failed to unmute user", variant: "destructive" });
+    onSuccess: (_data, _targetUserId, _ctx) => {
+      toast({ title: "User unmuted successfully" });
+      // Force a fresh server fetch to confirm
+      if (membersEndpoint) {
+        queryClient.invalidateQueries({ queryKey: [membersEndpoint] });
+        queryClient.refetchQueries({ queryKey: [membersEndpoint] });
+      }
+    },
+    onError: (error: any, _targetUserId, context: any) => {
+      // Roll back optimistic update
+      if (membersEndpoint && context?.previousMembers !== undefined) {
+        queryClient.setQueryData([membersEndpoint], context.previousMembers);
+      }
+      toast({ title: error?.message || "Failed to unmute user", variant: "destructive" });
     }
   });
 
