@@ -25,11 +25,13 @@ import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, USER_TYPE_OPTIONS, TRAVELER_
 import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
 import ConnectButton from "@/components/ConnectButton";
 import { isLAMetroCity } from "../../../shared/constants";
+import { formatCityDisplay } from "@/lib/locationDisplay";
 
 interface User {
   id: number;
   username: string;
   name: string;
+  firstName?: string | null;
   userType: 'local' | 'current_traveler' | 'business';
   bio: string;
   location: string;
@@ -842,7 +844,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                             
                             {/* User details - centered on mobile, left-aligned on desktop */}
                             <div className="flex-1 text-center sm:text-left">
-                              <h4 className="text-lg sm:text-xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-gray-900 dark:text-white mb-2">{user.username}</h4>
+                              <h4 className="text-lg sm:text-xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-gray-900 dark:text-white mb-2">{user.firstName || user.name || user.username}</h4>
                               <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-3 leading-relaxed line-clamp-3">{user.bio}</p>
                               <div className="flex items-center justify-center sm:justify-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                                 {user.currentTravelDestination ? (
@@ -850,7 +852,11 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                                 ) : (
                                   <MapPin className="w-4 h-4" />
                                 )}
-                                <span className="font-medium">{user.location}</span>
+                                <span className="font-medium">
+                                  {user.hometownCity
+                                    ? formatCityDisplay(user.hometownCity, user.hometownState, user.hometownCountry)
+                                    : user.location}
+                                </span>
                               </div>
                             </div>
                           </div>

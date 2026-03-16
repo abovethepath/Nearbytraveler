@@ -3089,12 +3089,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     try {
       const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
-      const { cityName } = req.query;
       await db.delete(savedTravelers)
         .where(and(
           eq(savedTravelers.userId, Number(userId)),
-          eq(savedTravelers.savedUserId, Number(req.params.savedUserId)),
-          cityName ? sql`LOWER(${savedTravelers.cityName}) = LOWER(${cityName as string})` : isNull(savedTravelers.cityName)
+          eq(savedTravelers.savedUserId, Number(req.params.savedUserId))
         ));
       res.json({ ok: true });
     } catch (error: any) {

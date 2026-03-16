@@ -1,0 +1,47 @@
+Here's a breakdown of all the issues and how to fix them:
+
+**1. Activity Feed Delay (4 min on Chrome Desktop)**
+The feed likely relies on a polling interval or WebSocket that isn't firing on initial page load. Check if your real-time listener (WebSocket/SSE/polling) is being initialized correctly on the home page — it may only be registering after a user action triggers it. The Activity tab probably has its own dedicated listener that initializes immediately. Make sure the home feed subscribes to the same event stream on mount, not lazily.
+
+**2. Plural grammar — "1 new travelers today"**
+Simple fix: `${count} new traveler${count !== 1 ? 's' : ''} today`
+
+**3. Click goes to Cities page instead of opening a widget**
+Sounds like the route handler is catching the click and sending it to `/cities` — possibly a misconfigured `<Link>` or `href`. Replace the navigation with a click handler that opens a modal/popover widget instead. No routing at all — just `onClick={() => setShowTravelersWidget(true)}`.
+
+**4. New connection only showing on one user's feed**
+This is a backend issue — when a connection is made, you need to push the notification event to *both* users' feeds, not just the initiator. Check your connection event handler and make sure it broadcasts to both user IDs (e.g., `notifyUser(userA)` AND `notifyUser(userB)`).
+
+**5. Widget behavior (don't navigate away)**
+Both the "new travelers" and "new connections" pills should open a small popover/bottom-sheet widget on the home page showing avatars + names. No page transitions. This keeps users in context. Something like:
+
+```
+[ 👋 3 new travelers today ]  →  opens overlay:
+  ┌─────────────────────┐
+  │  New Travelers       │
+  │  • Ryan Reynolds     │
+  │  • Jon Bart          │
+  │  • Aaron Marc        │
+  └─────────────────────┘
+```
+
+**6. Icons**
+The yellow heart is wrong for connections. Better options:
+
+| Use case | Better icon |
+|---|---|
+| New traveler joined | 🧳 or 👤+ (`UserPlus` from Lucide/HeroIcons) |
+| New connection/contact | 🤝 actual handshake — use `lucide-react`'s `Handshake` or FontAwesome's `fa-handshake` |
+| Available to hang out | ⚡ (you already have this, looks good) |
+
+The yellow heart reads as "favorite/like" to users — swap it for `HandshakeIcon` or a `UserCheck` icon in a neutral or green color to signal a confirmed connection.
+
+---
+
+**Priority order to fix:**
+1. Feed delay (most impactful UX bug)
+2. Widget-on-click instead of navigation (prevents wrong-page confusion)
+3. Dual-user notification on connection
+4. Grammar + icon polish
+
+Want help writing the widget component or the dual-notification backend logic?

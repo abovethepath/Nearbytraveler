@@ -32,7 +32,7 @@ import BusinessEventsWidget from "@/components/business-events-widget";
 import SubInterestSelector from "@/components/SubInterestSelector";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
-import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS, PRIVATE_INTERESTS_BY_CATEGORY } from "@shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS } from "@shared/base-options";
 import { ReportUserButton } from "@/components/report-user-button";
 import type { ProfilePageProps } from "./profile-complete-types";
 import { profileEditButtonClass } from "@/components/profile/editButtonClass";
@@ -262,8 +262,6 @@ export function ProfileTabs(props: ProfilePageProps) {
 
   const outgoingConnectionRequests = (props as any)?.outgoingConnectionRequests || [];
 
-  const [showLifestyleWelcome, setShowLifestyleWelcome] = useState(false);
-  const [privateInterestsExpanded, setPrivateInterestsExpanded] = useState(false);
 
   /* Desktop user profiles: tabs are integrated into hero (ProfileTabBar); hide duplicate card. iOS + business: show tabs card. */
   const showTabsCard = isNativeIOSApp() || user?.userType === 'business';
@@ -1597,96 +1595,6 @@ export function ProfileTabs(props: ProfilePageProps) {
                         showOptionalLabel={true}
                       />
                     </div>
-
-                    {/* LIFESTYLE & PRIVATE INTERESTS SECTION */}
-                    {user?.userType !== 'business' && (
-                      <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
-                        <div className="border border-red-200 dark:border-red-800 rounded-xl overflow-hidden">
-                          <button
-                            type="button"
-                            onClick={() => setPrivateInterestsExpanded(prev => !prev)}
-                            className="w-full bg-red-50 dark:bg-red-950/40 px-4 py-3 flex items-center gap-2 border-b border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-950/60 transition-colors"
-                          >
-                            <Eye className="w-4 h-4 text-red-500 flex-shrink-0" />
-                            <h4 className="text-sm font-semibold text-red-800 dark:text-red-300 flex-1 text-left">Lifestyle &amp; Private Interests</h4>
-                            {(editFormData.privateInterests || []).length > 0 && (
-                              <span className="text-xs bg-red-600 text-white rounded-full px-2 py-0.5 font-medium">
-                                {(editFormData.privateInterests || []).length}
-                              </span>
-                            )}
-                            <svg className={`w-4 h-4 text-red-500 transition-transform ${privateInterestsExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                          </button>
-                          <div className="px-4 py-3 bg-white dark:bg-gray-800">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                              These are completely private. Only visible to and searchable by members who have also selected lifestyle interests. Never shown publicly.
-                            </p>
-                            {!privateInterestsExpanded && (editFormData.privateInterests || []).length > 0 && (
-                              <div className="flex flex-wrap gap-1.5 mt-3">
-                                {(editFormData.privateInterests || []).map((interest: string) => (
-                                  <span key={interest} className="inline-flex items-center h-6 rounded-full px-3 text-xs font-medium bg-red-600 text-white">
-                                    {interest}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                            {privateInterestsExpanded && (
-                              <div className="mt-4 space-y-4">
-                                {Object.entries(PRIVATE_INTERESTS_BY_CATEGORY).map(([category, options]) => (
-                                  <div key={category}>
-                                    <p className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide mb-2">{category}</p>
-                                    <div className="flex flex-wrap gap-1.5">
-                                      {(options as string[]).map((interest: string) => {
-                                        const isSelected = (editFormData.privateInterests || []).includes(interest);
-                                        return (
-                                          <button
-                                            key={interest}
-                                            type="button"
-                                            onClick={() => {
-                                              const current: string[] = editFormData.privateInterests || [];
-                                              const alreadySelected = current.includes(interest);
-                                              if (!alreadySelected && current.length === 0 && !localStorage.getItem('lifestyle_welcome_shown')) {
-                                                localStorage.setItem('lifestyle_welcome_shown', 'true');
-                                                setShowLifestyleWelcome(true);
-                                              }
-                                              const updated = alreadySelected ? current.filter((i: string) => i !== interest) : [...current, interest];
-                                              setEditFormData((prev: any) => ({ ...prev, privateInterests: updated }));
-                                            }}
-                                            className={`inline-flex items-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap border transition-all ${
-                                              isSelected
-                                                ? 'bg-red-600 text-white border-red-600'
-                                                : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-red-300 dark:border-red-700 hover:border-red-500'
-                                            }`}
-                                          >
-                                            {interest}
-                                          </button>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Lifestyle Welcome — compact inline notice */}
-                    {showLifestyleWelcome && (
-                      <div className="rounded-lg border border-red-200 dark:border-red-800/60 bg-red-50 dark:bg-red-950/40 p-3 flex flex-col sm:flex-row sm:items-start gap-2 text-sm">
-                        <Eye className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-red-800 dark:text-red-300 text-xs mb-0.5">Lifestyle interests are private</p>
-                          <p className="text-red-700 dark:text-red-400 text-xs leading-snug">Never shown publicly — only shared with mutually matched members who select the same interests.</p>
-                        </div>
-                        <button
-                          onClick={() => setShowLifestyleWelcome(false)}
-                          className="shrink-0 self-start sm:self-center px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-medium"
-                        >
-                          Got it
-                        </button>
-                      </div>
-                    )}
 
                     {/* SAVE/CANCEL BUTTONS */}
                     <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-600">

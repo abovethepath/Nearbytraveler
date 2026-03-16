@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Heart, Plane, MapPin, Bookmark, Bell } from "lucide-react";
@@ -49,7 +48,6 @@ function getStatusConfig(status: SavedTraveler["tripStatus"], city: string | nul
 export function SavedTravelersWidget() {
   const [, setLocation] = useLocation();
   const qc = useQueryClient();
-  const [removingIds, setRemovingIds] = useState<Set<number>>(new Set());
 
   const { data: saved = [], isLoading } = useQuery<SavedTraveler[]>({
     queryKey: ["/api/saved-travelers"],
@@ -60,7 +58,18 @@ export function SavedTravelersWidget() {
     mutationFn: async (savedUserId: number) => {
       await apiRequest("DELETE", `/api/saved-travelers/${savedUserId}`);
     },
-    onSuccess: () => {
+    onMutate: async (savedUserId: number) => {
+      await qc.cancelQueries({ queryKey: ["/api/saved-travelers"] });
+      const prev = qc.getQueryData<SavedTraveler[]>(["/api/saved-travelers"]);
+      qc.setQueryData<SavedTraveler[]>(["/api/saved-travelers"], (old = []) =>
+        old.filter((t) => t.savedUserId !== savedUserId)
+      );
+      return { prev };
+    },
+    onError: (_err, _savedUserId, ctx: any) => {
+      if (ctx?.prev) qc.setQueryData(["/api/saved-travelers"], ctx.prev);
+    },
+    onSettled: () => {
       qc.invalidateQueries({ queryKey: ["/api/saved-travelers"] });
       qc.invalidateQueries({ queryKey: ["/api/saved-travelers/check"] });
     },
@@ -68,15 +77,7 @@ export function SavedTravelersWidget() {
 
   const handleUnsave = (e: React.MouseEvent, savedUserId: number) => {
     e.stopPropagation();
-    setRemovingIds((s) => new Set(s).add(savedUserId));
-    unsaveMutation.mutate(savedUserId, {
-      onSettled: () =>
-        setRemovingIds((s) => {
-          const n = new Set(s);
-          n.delete(savedUserId);
-          return n;
-        }),
-    });
+    unsaveMutation.mutate(savedUserId);
   };
 
   if (isLoading || saved.length === 0) return null;
@@ -114,14 +115,10 @@ export function SavedTravelersWidget() {
           if (from && from.includes(",")) {
             from = from.split(",")[0].trim();
           }
-          const isRemoving = removingIds.has(traveler.savedUserId);
-
           return (
             <div
               key={traveler.id}
-              className={`flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all cursor-pointer ${
-                isRemoving ? "opacity-40 pointer-events-none" : ""
-              }`}
+              className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all cursor-pointer"
               onClick={() => setLocation(`/profile/${traveler.savedUserId}`)}
             >
               {/* Avatar with status dot */}
