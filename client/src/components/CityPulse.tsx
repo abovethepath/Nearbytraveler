@@ -45,14 +45,14 @@ export function CityPulse({ city }: CityPulseProps) {
     staleTime: 5 * 60 * 1000,
   });
 
-  if (!data) return null;
-
   const { data: connectionRequests = [] } = useQuery<any[]>({
     queryKey: currentUserId ? [`/api/connections/${currentUserId}/requests`] : [],
     enabled: !!currentUserId,
     staleTime: 30_000,
   });
   const pendingRequestsCount = Array.isArray(connectionRequests) ? connectionRequests.length : 0;
+
+  if (!data) return null;
 
   const pills: { emoji: string; count: number; label: string; onClick: () => void }[] = [
     {
