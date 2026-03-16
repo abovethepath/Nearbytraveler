@@ -8976,6 +8976,48 @@ Questions? Just reply to this message. Welcome aboard!
       };
       
       const newReference = await storage.createUserReference(referenceData);
+
+      // Fire notification + activity log for the reviewee (non-blocking)
+      ;(async () => {
+        try {
+          const [reviewerUser, revieweeUser] = await Promise.all([
+            db.select({ username: users.username }).from(users).where(eq(users.id, Number(reviewerId))).then(r => r[0]),
+            db.select({ username: users.username }).from(users).where(eq(users.id, Number(revieweeId))).then(r => r[0]),
+          ]);
+          const reviewerName = reviewerUser?.username || `user_${reviewerId}`;
+          const revieweeName = revieweeUser?.username || `user_${revieweeId}`;
+
+          // Only insert notification if one doesn't already exist for this pair
+          const existingNotif = await db.select({ id: notifications.id }).from(notifications).where(
+            and(eq(notifications.userId, Number(revieweeId)), eq(notifications.fromUserId, Number(reviewerId)), eq(notifications.type, `reference_written:${revieweeId}`))
+          );
+          if (existingNotif.length === 0) {
+            await db.insert(notifications).values({
+              userId: Number(revieweeId),
+              fromUserId: Number(reviewerId),
+              type: `reference_written:${revieweeId}`,
+              title: `@${reviewerName} wrote you a reference!`,
+              message: `@${reviewerName} just wrote you a reference!`,
+              isRead: false,
+              data: JSON.stringify({ reviewerId: Number(reviewerId), revieweeId: Number(revieweeId), profilePath: `/profile/${revieweeId}?tab=references` }),
+            });
+          }
+
+          await writeActivityLog({
+            userId: Number(revieweeId),
+            action: 'reference_written',
+            category: 'connections',
+            title: `@${reviewerName} wrote you a reference`,
+            description: `@${reviewerName} wrote a reference for @${revieweeName}`,
+            targetUserId: Number(reviewerId),
+            targetUsername: reviewerName,
+            linkUrl: `/profile/${revieweeId}?tab=references`,
+          });
+        } catch (e) {
+          console.error('Failed to write reference notification/activity log:', e);
+        }
+      })();
+
       return res.json(newReference);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error creating user reference:", error);
@@ -23812,6 +23854,47 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Bust the profile-bundle cache for the vouched user so the next fetch returns fresh vouch data
       cache.deletePattern(`profile-bundle:${vouchedUserId}:viewer:*`).catch(() => {/* non-fatal */});
+
+      // Fire notification + activity log for the vouched user (non-blocking)
+      ;(async () => {
+        try {
+          const [voucherUser, vouchedUser] = await Promise.all([
+            db.select({ username: users.username, firstName: users.firstName }).from(users).where(eq(users.id, Number(voucherUserId))).then(r => r[0]),
+            db.select({ username: users.username }).from(users).where(eq(users.id, Number(vouchedUserId))).then(r => r[0]),
+          ]);
+          const voucherName = voucherUser?.username || `user_${voucherUserId}`;
+          const vouchedName = vouchedUser?.username || `user_${vouchedUserId}`;
+
+          // Only insert notification if one doesn't already exist for this pair
+          const existing = await db.select({ id: notifications.id }).from(notifications).where(
+            and(eq(notifications.userId, Number(vouchedUserId)), eq(notifications.fromUserId, Number(voucherUserId)), eq(notifications.type, 'vouch_received'))
+          );
+          if (existing.length === 0) {
+            await db.insert(notifications).values({
+              userId: Number(vouchedUserId),
+              fromUserId: Number(voucherUserId),
+              type: 'vouch_received',
+              title: `@${voucherName} vouched for you!`,
+              message: `@${voucherName} just vouched for you! Now you can vouch for others too.`,
+              isRead: false,
+              data: JSON.stringify({ voucherUserId: Number(voucherUserId), vouchedUserId: Number(vouchedUserId), profilePath: `/profile/${vouchedUserId}?tab=vouches` }),
+            });
+          }
+
+          await writeActivityLog({
+            userId: Number(vouchedUserId),
+            action: 'vouch_received',
+            category: 'connections',
+            title: `@${voucherName} vouched for you`,
+            description: `@${voucherName} vouched for @${vouchedName}`,
+            targetUserId: Number(voucherUserId),
+            targetUsername: voucherName,
+            linkUrl: `/profile/${voucherUserId}`,
+          });
+        } catch (e) {
+          console.error('Failed to write vouch notification/activity log:', e);
+        }
+      })();
 
       res.status(201).json(newVouch);
     } catch (error: any) {

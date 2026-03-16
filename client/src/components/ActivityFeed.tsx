@@ -795,6 +795,11 @@ export default function ActivityFeed() {
                 setLocation(`${profilePath}?tab=references`);
                 return;
               }
+              if (type === "vouch_received") {
+                const profilePath = currentUser?.id ? `/profile/${currentUser.id}` : "/profile";
+                setLocation(`${profilePath}?tab=vouches`);
+                return;
+              }
               if (type.startsWith("suggested_connections:")) {
                 setLocation("/connect");
                 return;
