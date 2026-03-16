@@ -1192,7 +1192,7 @@ export default function Messages() {
                         </Avatar>
                       </div>
                       <div className="flex-1 min-w-0 overflow-hidden">
-                        <div className="flex items-center gap-2 min-w-0">
+                        <div className="flex items-center gap-2 min-w-0 flex-wrap">
                           <h3 className={`text-sm truncate ${
                             selectedConversation === conv.userId 
                               ? 'text-white font-semibold' 
@@ -1200,8 +1200,17 @@ export default function Messages() {
                                 ? 'text-gray-900 dark:text-white font-extrabold'
                                 : 'text-gray-900 dark:text-white font-semibold'
                           }`}>
-                            @{conv.username}
+                            {(conv as any).firstName || `@${conv.username}`}
                           </h3>
+                          {(conv as any).firstName && conv.username && (
+                            <span className={`text-xs truncate ${
+                              selectedConversation === conv.userId
+                                ? 'text-gray-300'
+                                : 'text-gray-500 dark:text-gray-400'
+                            }`}>
+                              @{conv.username}
+                            </span>
+                          )}
                         </div>
 
                         <div className={`text-xs ${
