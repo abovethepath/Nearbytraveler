@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp, Camera, User as UserIcon, ShieldAlert, Share2, LogOut, Lock, UserPlus } from "lucide-react";
+import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp, Camera, User as UserIcon, ShieldAlert, Share2, LogOut, Lock, UserPlus, Pin, PinOff } from "lucide-react";
 import ChatroomInvitePanel from "@/components/ChatroomInvitePanel";
 import ShareChatroomSheet from "@/components/ShareChatroomSheet";
 import { useToast } from "@/hooks/use-toast";
@@ -113,6 +113,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [viewportHeight, setViewportHeight] = useState<number | null>(null);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState(title);
+  const [pinnedMessage, setPinnedMessage] = useState<{ id: number; content: string; senderName: string } | null>(null);
   const [displayTitle, setDisplayTitle] = useState(title);
   const [showHostLeaveModal, setShowHostLeaveModal] = useState(false);
   const [hostLeaveStep, setHostLeaveStep] = useState<'choice' | 'transfer' | 'dissolve-confirm'>('choice');
@@ -139,6 +140,27 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     enabled: chatType === "meetup" && !!currentUserId,
     staleTime: 30_000,
   });
+
+  // Pinned message query — for all non-DM chatrooms
+  const pinnedMsgEndpoint = (chatType === 'meetup' || chatType === 'event')
+    ? `/api/meetup-chatrooms/${chatId}/pinned-message`
+    : `/api/chatrooms/${chatId}/pinned-message`;
+  const { data: pinnedMsgData, refetch: refetchPinnedMsg } = useQuery<{ pinnedMessage: { id: number; content: string; senderName: string } | null }>({
+    queryKey: [pinnedMsgEndpoint],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}${pinnedMsgEndpoint}`, { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch pinned message');
+      return res.json();
+    },
+    enabled: chatType !== 'dm' && !!currentUserId,
+    staleTime: 30_000,
+  });
+  // Sync pinnedMsgData into local state whenever the query result changes
+  useEffect(() => {
+    if (pinnedMsgData !== undefined) {
+      setPinnedMessage(pinnedMsgData?.pinnedMessage ?? null);
+    }
+  }, [pinnedMsgData]);
 
   const meetupActivityTags = useMemo(() => {
     const fromArray = Array.isArray(meetupChatInfo?.activities) ? meetupChatInfo?.activities : [];
@@ -1999,6 +2021,42 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
   };
 
+  const handlePinMessage = async (messageId: number | null) => {
+    setSelectedMessage(null);
+    const endpoint = (chatType === 'meetup' || chatType === 'event')
+      ? `/api/meetup-chatrooms/${chatId}/pin-message`
+      : `/api/chatrooms/${chatId}/pin-message`;
+    try {
+      const res = await fetch(`${getApiBaseUrl()}${endpoint}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ messageId }),
+      });
+      if (res.ok) {
+        refetchPinnedMsg();
+        toast({ title: messageId ? '📌 Message pinned' : 'Message unpinned' });
+      } else {
+        const err = await res.json().catch(() => ({}));
+        toast({ title: err.error || 'Failed to pin message', variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Failed to pin message', variant: 'destructive' });
+    }
+  };
+
+  const scrollToPinnedMessage = () => {
+    if (!pinnedMessage) return;
+    const el = document.querySelector(`[data-testid="message-${pinnedMessage.id}"]`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Brief highlight flash
+      (el as HTMLElement).style.transition = 'background 0.3s';
+      (el as HTMLElement).style.background = 'rgba(255,107,53,0.25)';
+      setTimeout(() => { (el as HTMLElement).style.background = ''; }, 1500);
+    }
+  };
+
   const handleDeleteMessage = async (messageId: number) => {
     // Close the menu first
     setSelectedMessage(null);
@@ -2838,12 +2896,70 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         </div>
       )}
 
+      {/* ── PINNED MESSAGE BANNER ─────────────────────────────────────────── */}
+      {/* Desktop: sits naturally in the flex column between header and messages */}
+      {pinnedMessage && chatType !== 'dm' && !isMobileWeb && (
+        <div className="flex-shrink-0 bg-gray-800 border-b border-orange-500/30 px-3 py-1.5 flex items-center gap-2 min-w-0">
+          <Pin className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+          <button
+            onClick={scrollToPinnedMessage}
+            className="flex-1 min-w-0 text-left"
+          >
+            <span className="text-xs text-orange-300 font-medium">{pinnedMessage.senderName}: </span>
+            <span className="text-xs text-gray-300 truncate">
+              {pinnedMessage.content.slice(0, 60)}{pinnedMessage.content.length > 60 ? '…' : ''}
+            </span>
+          </button>
+          {isCurrentUserAdmin && (
+            <button
+              onClick={() => handlePinMessage(null)}
+              className="shrink-0 text-gray-500 hover:text-gray-300 p-0.5"
+              title="Unpin message"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      )}
+      {/* Mobile: fixed below the fixed header — rendered via portal-like direct positioning */}
+      {pinnedMessage && chatType !== 'dm' && isMobileWeb && (
+        <div
+          style={{
+            position: 'fixed',
+            top: `calc(env(safe-area-inset-top, 0px) + 52px)`,
+            left: 0, right: 0,
+            zIndex: 999,
+          }}
+          className="bg-gray-800 border-b border-orange-500/30 px-3 py-1.5 flex items-center gap-2"
+        >
+          <Pin className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+          <button
+            onClick={scrollToPinnedMessage}
+            className="flex-1 min-w-0 text-left"
+          >
+            <span className="text-xs text-orange-300 font-medium">{pinnedMessage.senderName}: </span>
+            <span className="text-xs text-gray-300 truncate inline-block max-w-[60vw] align-bottom">
+              {pinnedMessage.content.slice(0, 60)}{pinnedMessage.content.length > 60 ? '…' : ''}
+            </span>
+          </button>
+          {isCurrentUserAdmin && (
+            <button
+              onClick={() => handlePinMessage(null)}
+              className="shrink-0 text-gray-500 hover:text-gray-300 p-0.5"
+              title="Unpin message"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Messages - Flex wrapper ensures proper spacing; min-h-0 allows flex child to shrink */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0 h-0">
         {/* Scrollable messages area */}
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pt-1 pb-2 bg-[#0f1117]" style={{
           overscrollBehavior: 'contain', touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' as any,
-          paddingTop: isMobileWeb ? `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'} + 4px)` : undefined,
+          paddingTop: isMobileWeb ? `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'} + ${pinnedMessage && chatType !== 'dm' ? '40px' : '4px'})` : undefined,
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23999999' stroke-width='2' opacity='0.18'%3E%3Cpath d='M100 50 L100 150 M57 75 L143 125 M57 125 L143 75'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Cpath d='M150 270 L180 300 L150 330 L120 300 Z'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Cpath d='M100 460 L140 500 L100 540 L60 500 Z'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Cpath d='M150 665 L159 693 L188 693 L165 710 L174 738 L150 722 L126 738 L135 710 L112 693 L141 693 Z'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3Ctext x='400' y='380' text-anchor='middle' font-family='Arial, sans-serif' font-size='52' font-weight='bold' fill='%23aaaaaa' opacity='0.07' transform='rotate(-18 400 400)'%3ENearby Traveler%3C/text%3E%3Ctext x='400' y='700' text-anchor='middle' font-family='Arial, sans-serif' font-size='40' font-weight='bold' fill='%23aaaaaa' opacity='0.05' transform='rotate(-18 400 700)'%3ENearby Traveler%3C/text%3E%3C/svg%3E")`
         }}>
           <div className="flex flex-col min-h-full justify-end w-full">
@@ -3476,6 +3592,38 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   <Reply className="w-5 h-5 text-green-400 pointer-events-none" />
                   <span className="text-sm pointer-events-none">Reply</span>
                 </button>
+              )}
+
+              {/* Pin / Unpin — host/admin only, non-DM chatrooms */}
+              {isCurrentUserAdmin && chatType !== 'dm' && (
+                <>
+                  <div className="mx-1 border-t border-gray-700 my-1" />
+                  <button
+                    type="button"
+                    onTouchEnd={(e) => {
+                      e.preventDefault(); e.stopPropagation();
+                      handlePinMessage(pinnedMessage?.id === selectedMessage.id ? null : selectedMessage.id);
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault(); e.stopPropagation();
+                      handlePinMessage(pinnedMessage?.id === selectedMessage.id ? null : selectedMessage.id);
+                    }}
+                    className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                    style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+                  >
+                    {pinnedMessage?.id === selectedMessage.id ? (
+                      <>
+                        <PinOff className="w-5 h-5 text-orange-400 pointer-events-none" />
+                        <span className="text-sm pointer-events-none">Unpin Message</span>
+                      </>
+                    ) : (
+                      <>
+                        <Pin className="w-5 h-5 text-orange-400 pointer-events-none" />
+                        <span className="text-sm pointer-events-none">Pin Message</span>
+                      </>
+                    )}
+                  </button>
+                </>
               )}
             </div>
           </div>

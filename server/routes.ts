@@ -26693,6 +26693,135 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // ---------- PIN MESSAGE — MEETUP/EVENT CHATROOMS ----------
+
+  app.get("/api/meetup-chatrooms/:id/pinned-message", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.id);
+      if (isNaN(chatroomId)) return res.status(400).json({ error: "Invalid ID" });
+
+      const [chatroom] = await db.select({ pinnedMessageId: meetupChatrooms.pinnedMessageId })
+        .from(meetupChatrooms).where(eq(meetupChatrooms.id, chatroomId)).limit(1);
+      if (!chatroom || !chatroom.pinnedMessageId) return res.json({ pinnedMessage: null });
+
+      const [msg] = await db.select({
+        id: meetupChatroomMessages.id,
+        content: meetupChatroomMessages.message,
+        userId: meetupChatroomMessages.userId,
+        username: meetupChatroomMessages.username,
+        createdAt: meetupChatroomMessages.createdAt,
+      }).from(meetupChatroomMessages)
+        .where(eq(meetupChatroomMessages.id, chatroom.pinnedMessageId)).limit(1);
+      if (!msg) return res.json({ pinnedMessage: null });
+
+      const [sender] = await db.select({ firstName: users.firstName, username: users.username })
+        .from(users).where(eq(users.id, msg.userId)).limit(1);
+
+      return res.json({
+        pinnedMessage: {
+          id: msg.id,
+          content: msg.content,
+          senderName: sender?.firstName || sender?.username || msg.username,
+        }
+      });
+    } catch (error: any) {
+      console.error("Error fetching pinned message:", error);
+      return res.status(500).json({ error: "Failed to fetch pinned message" });
+    }
+  });
+
+  app.put("/api/meetup-chatrooms/:id/pin-message", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string || '0');
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.id);
+      if (isNaN(chatroomId)) return res.status(400).json({ error: "Invalid ID" });
+
+      const [membership] = await db.select({ role: chatroomMembers.role })
+        .from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, userId), eq(chatroomMembers.isActive, true)))
+        .limit(1);
+      if (membership?.role !== 'admin') return res.status(403).json({ error: "Only the host can pin messages" });
+
+      const { messageId } = req.body as { messageId: number | null };
+      await db.update(meetupChatrooms).set({ pinnedMessageId: messageId ?? null })
+        .where(eq(meetupChatrooms.id, chatroomId));
+
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error pinning message:", error);
+      return res.status(500).json({ error: "Failed to pin message" });
+    }
+  });
+
+  // ---------- PIN MESSAGE — CITY/COMMUNITY CHATROOMS ----------
+
+  app.get("/api/chatrooms/:id/pinned-message", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.id);
+      if (isNaN(chatroomId)) return res.status(400).json({ error: "Invalid ID" });
+
+      const [chatroom] = await db.select({ pinnedMessageId: citychatrooms.pinnedMessageId })
+        .from(citychatrooms).where(eq(citychatrooms.id, chatroomId)).limit(1);
+      if (!chatroom || !chatroom.pinnedMessageId) return res.json({ pinnedMessage: null });
+
+      const [msg] = await db.select({
+        id: chatroomMessages.id,
+        content: chatroomMessages.content,
+        senderId: chatroomMessages.senderId,
+        createdAt: chatroomMessages.createdAt,
+      }).from(chatroomMessages)
+        .where(eq(chatroomMessages.id, chatroom.pinnedMessageId)).limit(1);
+      if (!msg) return res.json({ pinnedMessage: null });
+
+      const [sender] = await db.select({ firstName: users.firstName, username: users.username })
+        .from(users).where(eq(users.id, msg.senderId)).limit(1);
+
+      return res.json({
+        pinnedMessage: {
+          id: msg.id,
+          content: msg.content,
+          senderName: sender?.firstName || sender?.username || 'Unknown',
+        }
+      });
+    } catch (error: any) {
+      console.error("Error fetching pinned message:", error);
+      return res.status(500).json({ error: "Failed to fetch pinned message" });
+    }
+  });
+
+  app.put("/api/chatrooms/:id/pin-message", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string || '0');
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.id);
+      if (isNaN(chatroomId)) return res.status(400).json({ error: "Invalid ID" });
+
+      // Admin = room creator OR member with admin role
+      const [chatroom] = await db.select({ createdById: citychatrooms.createdById })
+        .from(citychatrooms).where(eq(citychatrooms.id, chatroomId)).limit(1);
+      const [membership] = await db.select({ role: chatroomMembers.role })
+        .from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, userId), eq(chatroomMembers.isActive, true)))
+        .limit(1);
+      const isAdmin = chatroom?.createdById === userId || membership?.role === 'admin';
+      if (!isAdmin) return res.status(403).json({ error: "Only admins can pin messages" });
+
+      const { messageId } = req.body as { messageId: number | null };
+      await db.update(citychatrooms).set({ pinnedMessageId: messageId ?? null })
+        .where(eq(citychatrooms.id, chatroomId));
+
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error pinning message:", error);
+      return res.status(500).json({ error: "Failed to pin message" });
+    }
+  });
+
   // Create a group DM chatroom (converts DM thread into a multi-person group chat)
   app.post("/api/meetup-chatrooms/group-dm", async (req: any, res) => {
     try {

@@ -301,6 +301,7 @@ export const citychatrooms = pgTable("city_chatrooms", {
   maxMembers: integer("max_members").default(500),
   tags: text("tags").array(),
   rules: text("rules"),
+  pinnedMessageId: integer("pinned_message_id"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -1203,9 +1204,10 @@ export const meetupChatrooms = pgTable("meetup_chatrooms", {
   expiresAt: timestamp("expires_at").notNull(),
   participantCount: integer("participant_count").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow(),
-  inviteToken: text("invite_token").unique(), // shareable invite token, generated on demand
+  inviteToken: text("invite_token").unique(), // shareable invoke token, generated on demand
   groupType: text("group_type"), // null = meetup/event/available_now, 'group_dm' = group chat created from a DM
   createdByUserId: integer("created_by_user_id"), // for group_dm chatrooms
+  pinnedMessageId: integer("pinned_message_id"),
 });
 
 // Universal invite tokens for any chatroom type (meetup | event | chatroom | dm)
