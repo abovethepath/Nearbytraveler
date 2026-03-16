@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,7 @@ import { getAllInterests, getAllActivities, getAllLanguages } from "../../../sha
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, USER_TYPE_OPTIONS, TRAVELER_TYPE_OPTIONS, MILITARY_STATUS_OPTIONS } from "@/lib/formConstants";
 import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
 import ConnectButton from "@/components/ConnectButton";
+import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { isLAMetroCity } from "../../../shared/constants";
 import { formatCityDisplay } from "@/lib/locationDisplay";
 
@@ -83,6 +84,9 @@ interface SearchFilters {
 
 export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTravelPlans = [], defaultLocationMode = 'current', currentUser }: ConnectModalProps) {
   const [searchLocation, setSearchLocation] = useState('');
+  const [locCity, setLocCity] = useState('');
+  const [locState, setLocState] = useState('');
+  const [locCountry, setLocCountry] = useState('');
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [searchResults, setSearchResults] = useState<User[]>([]);
@@ -237,6 +241,8 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
       console.log('ConnectModal useEffect - WHO IS HERE NOW bucket:', expectedLocation);
       if (expectedLocation && expectedLocation.trim() !== '') {
         setSearchLocation(expectedLocation);
+        const au = currentUser || authStorage.getUser();
+        setLocFromStr(expectedLocation, au?.hometownCity || '', au?.hometownState || '', au?.hometownCountry || '');
         setSearchResults([]);
         setIsSearching(false);
         setHasSearched(false);
@@ -330,8 +336,26 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
     }, 100);
   };
 
+  // Parse a location string like "Cincinnati, Ohio, United States" into fields for SmartLocationInput
+  const setLocFromStr = useCallback((locStr: string, city?: string, state?: string, country?: string) => {
+    if (city !== undefined) {
+      setLocCity(city);
+      setLocState(state || '');
+      setLocCountry(country || '');
+      return;
+    }
+    // Best-effort parse of "City, State, Country" or "City, Country" or "City"
+    const parts = locStr.split(', ');
+    if (parts.length === 1) { setLocCity(parts[0]); setLocState(''); setLocCountry(''); }
+    else if (parts.length === 2) { setLocCity(parts[0]); setLocState(''); setLocCountry(parts[1]); }
+    else { setLocCity(parts[0]); setLocCountry(parts[parts.length - 1]); setLocState(parts.slice(1, -1).join(', ')); }
+  }, []);
+
   const handleReset = () => {
-    setSearchLocation(getUserBucketLocation('who_is_here_now'));
+    const loc = getUserBucketLocation('who_is_here_now');
+    setSearchLocation(loc);
+    const au = currentUser || authStorage.getUser();
+    setLocFromStr(loc, au?.hometownCity || '', au?.hometownState || '', au?.hometownCountry || '');
     setStartDate(undefined);
     setEndDate(undefined);
     setSearchResults([]);
@@ -401,6 +425,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
 
   const handleTravelPlanSelect = (plan: TravelPlan) => {
     setSearchLocation(plan.destination);
+    setLocFromStr(plan.destination);
     // Timezone-safe date parsing helper
     const parseDate = (dateInput: any) => {
       if (!dateInput) return new Date();
@@ -488,6 +513,8 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                     console.log('WHO IS HERE NOW bucket clicked, location:', location);
                     if (location) {
                       setSearchLocation(location);
+                      const au = currentUser || authStorage.getUser();
+                      setLocFromStr(location, au?.hometownCity || '', au?.hometownState || '', au?.hometownCountry || '');
                       setTimeout(() => {
                         setIsSearching(true);
                         searchMutation.mutate();
@@ -509,6 +536,8 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                     const location = getUserBucketLocation('permanent_locals_from_my_area');
                     if (location) {
                       setSearchLocation(location);
+                      const au = currentUser || authStorage.getUser();
+                      setLocFromStr(location, au?.hometownCity || '', au?.hometownState || '', au?.hometownCountry || '');
                       setTimeout(() => {
                         setIsSearching(true);
                         searchMutation.mutate();
@@ -536,6 +565,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                       size="sm"
                       onClick={() => {
                         setSearchLocation('Los Angeles');
+                        setLocFromStr('Los Angeles', 'Los Angeles', 'California', 'United States');
                         setTimeout(() => {
                           setIsSearching(true);
                           searchMutation.mutate();
@@ -610,17 +640,25 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
             {/* Search Form */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 min-w-0 overflow-hidden">
               <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
-                <div className="relative">
-                  <Input
-                    id="location"
-                    placeholder="Enter city or destination..."
-                    value={searchLocation}
-                    onChange={(e) => setSearchLocation(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  />
-                  <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                </div>
+                <Label>Location</Label>
+                <SmartLocationInput
+                  country={locCountry}
+                  city={locCity}
+                  state={locState}
+                  onLocationChange={({ city, state, country }) => {
+                    setLocCity(city);
+                    setLocState(state);
+                    setLocCountry(country);
+                    if (city) {
+                      const isUSCA = country === 'United States' || country === 'Canada';
+                      const loc = isUSCA
+                        ? `${city}${state ? ', ' + state : ''}`
+                        : `${city}${country ? ', ' + country : ''}`;
+                      setSearchLocation(loc);
+                    }
+                  }}
+                  placeholder={{ country: "Select country", city: "Select city", state: "Select state/region" }}
+                />
               </div>
 
               <div className="space-y-2">
