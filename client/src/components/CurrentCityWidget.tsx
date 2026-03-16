@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
+import { formatCityDisplay } from "@/lib/locationDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface CurrentCityWidgetProps {
@@ -63,16 +64,7 @@ export default function CurrentCityWidget({
     const hometownCountry = currentUser.hometownCountry;
     
     if (hometownCity) {
-      // For international locations (non-US), show City, Country
-      if (hometownCountry && hometownCountry !== 'United States' && hometownCountry !== 'USA') {
-        return `${hometownCity}, ${hometownCountry}`;
-      }
-      // For US locations, show City, State
-      else if (hometownState && (hometownCountry === 'United States' || hometownCountry === 'USA')) {
-        return `${hometownCity}, ${hometownState}`;
-      } else {
-        return hometownCity;
-      }
+      return formatCityDisplay(hometownCity, hometownState, hometownCountry);
     }
     
     return currentUser.location || currentUser.hometown;

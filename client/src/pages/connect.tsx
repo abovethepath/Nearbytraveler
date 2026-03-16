@@ -28,6 +28,7 @@ import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoi
 import { SEXUAL_PREFERENCE_OPTIONS } from "@/lib/formConstants";
 
 import { formatDateForDisplay } from "@/lib/dateUtils";
+import { formatCityDisplay } from "@/lib/locationDisplay";
 import BackButton from "@/components/back-button";
 import ConnectModal from "@/components/connect-modal";
 import type { User, TravelPlan } from "@shared/schema";
@@ -92,12 +93,7 @@ export default function ConnectPage() {
     if (!user) return "";
     
     if (mode === 'hometown') {
-      // Build hometown from city, state, country
-      const parts = [];
-      if (user.hometownCity) parts.push(user.hometownCity);
-      if (user.hometownState) parts.push(user.hometownState);
-      if (user.hometownCountry && user.hometownCountry !== 'United States') parts.push(user.hometownCountry);
-      return parts.join(', ') || "";
+      return formatCityDisplay(user.hometownCity, user.hometownState, user.hometownCountry) || "";
     } else {
       // Check if user is currently traveling based on any active travel plan
       const now = new Date();

@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { User, MapPin, MessageSquare, UserPlus } from "lucide-react";
 import { useLocation } from "wouter";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
+import { formatCityDisplay } from "@/lib/locationDisplay";
 
 interface UserListModalProps {
   isOpen: boolean;
@@ -119,10 +120,7 @@ export function UserListModal({ isOpen, onClose, city, state, country, userType,
   });
 
   const getDisplayLocation = (user: UserData) => {
-    if (user.hometownState) {
-      return `${user.hometownCity}, ${user.hometownState}`;
-    }
-    return `${user.hometownCity}, ${user.hometownCountry}`;
+    return formatCityDisplay(user.hometownCity, user.hometownState, user.hometownCountry);
   };
 
   const getUserTypeDisplay = (userType: string) => {

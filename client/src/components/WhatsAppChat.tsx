@@ -810,9 +810,18 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       const hometownStateFinal = hometownState || profileHometownState;
       const hometownCountryFinal = hometownCountry || profileHometownCountry;
       const locationFinal = location || profileLocation;
+      const isUsOrCa = (() => {
+        const c = (hometownCountryFinal || '').toLowerCase();
+        return c === 'united states' || c === 'usa' || c === 'us' || c === 'canada' ||
+          c === 'united states of america';
+      })();
       const locationLabel =
         (hometownCityFinal
-          ? `${hometownCityFinal}${hometownStateFinal ? `, ${hometownStateFinal}` : ""}`
+          ? isUsOrCa && hometownStateFinal
+            ? `${hometownCityFinal}, ${hometownStateFinal}`
+            : hometownCountryFinal
+              ? `${hometownCityFinal}, ${hometownCountryFinal}`
+              : hometownCityFinal
           : (locationFinal ? locationFinal : "")) || "";
 
       out.push({

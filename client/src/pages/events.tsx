@@ -774,9 +774,14 @@ export default function Events() {
               <SelectContent>
                 {(user?.hometownCity || hometownFallback) && (
                   <SelectItem value="hometown">
-                    {getMetroContext(user?.hometownCity || hometownFallback).displayName || (user?.hometownCity || hometownFallback)}
-                    {user?.hometownState ? `, ${user.hometownState}` : ''}
-                    {user?.hometownCountry ? `, ${user.hometownCountry}` : ''}
+                    {(() => {
+                      const displayCity = getMetroContext(user?.hometownCity || hometownFallback).displayName || (user?.hometownCity || hometownFallback);
+                      const c = (user?.hometownCountry || '').toLowerCase();
+                      const isUsOrCa = c === 'united states' || c === 'usa' || c === 'us' || c === 'canada' || c === 'united states of america';
+                      if (isUsOrCa && user?.hometownState) return `${displayCity}, ${user.hometownState}`;
+                      if (user?.hometownCountry) return `${displayCity}, ${user.hometownCountry}`;
+                      return displayCity;
+                    })()}
                   </SelectItem>
                 )}
                 {userTravelPlans.length > 0 && (

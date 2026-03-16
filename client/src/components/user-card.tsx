@@ -2,12 +2,12 @@ import React from "react";
 import { useLocation } from "wouter";
 import { Plane } from "lucide-react";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
+import { formatCityDisplay } from "@/lib/locationDisplay";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { abbreviateCity } from "@/lib/displayName";
 import { truncateBioToSentences } from "@/lib/bioPreview";
 import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
 import { prefetchedNav } from "@/lib/navigation";
-import { US_STATES } from "@shared/locationData";
 import { useQuery } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/queryClient";
 
@@ -173,33 +173,10 @@ export default function UserCard({
   const travelCityFinal = getTravelCity();
   const hometownLine = (() => {
     const city = (user.hometownCity || "").trim();
-    const state = (user.hometownState || "").trim();
-    const country = (user.hometownCountry || "").trim();
     if (!city) return "Unknown";
-
-    const normalizeCountry = (value: string) => value.trim().toLowerCase();
-    const isUsaCountry = (value: string) => {
-      const v = normalizeCountry(value);
-      return v === "united states" || v === "united states of america" || v === "usa" || v === "us" || v === "u.s." || v === "u.s.a.";
-    };
-
-    const toStateAbbrev = (value: string): string => {
-      const v = value.trim();
-      if (!v) return "";
-      if (/^[A-Za-z]{2}$/.test(v)) return v.toUpperCase();
-      const match = US_STATES.find((s) => s.value.toLowerCase() === v.toLowerCase());
-      return match?.abbreviation || v;
-    };
-
     const abbrevCity = abbreviateCity(city);
-
-    // If country is provided and is not USA, show "City, Country" (max 2 parts)
-    if (country && !isUsaCountry(country)) return `${abbrevCity}, ${country}`;
-
-    // Otherwise, treat as USA-style formatting: "City, ST" (abbreviated state) or just "City"
-    const st = toStateAbbrev(state);
-    if (st) return `${abbrevCity}, ${st}`;
-    return abbrevCity;
+    const formatted = formatCityDisplay(abbrevCity, user.hometownState, user.hometownCountry);
+    return formatted === "Unknown" ? abbrevCity : formatted;
   })();
 
   const handle = `@${user.username}`;

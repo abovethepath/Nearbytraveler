@@ -344,7 +344,11 @@ const US_STATE_ABBREVIATIONS: Record<string, string> = {
   'Oklahoma': 'OK', 'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
   'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
   'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY',
-  'District of Columbia': 'DC'
+  'District of Columbia': 'DC',
+  'Alberta': 'AB', 'British Columbia': 'BC', 'Manitoba': 'MB', 'New Brunswick': 'NB',
+  'Newfoundland and Labrador': 'NL', 'Northwest Territories': 'NT', 'Nova Scotia': 'NS',
+  'Nunavut': 'NU', 'Ontario': 'ON', 'Prince Edward Island': 'PE', 'Quebec': 'QC',
+  'Saskatchewan': 'SK', 'Yukon': 'YT'
 };
 
 /**
@@ -382,27 +386,27 @@ export function formatLocationCompact(
 ): string {
   if (!city && !country) return 'Unknown';
   
-  const parts: string[] = [];
-  
-  if (city) parts.push(city);
-  
-  if (state && state.toLowerCase() !== (city || '').toLowerCase()) {
-    const abbrevState = abbreviateState(state);
-    // Also skip if the abbreviated state equals the city (e.g. "Berlin" → "Berlin")
-    if (abbrevState.toLowerCase() !== (city || '').toLowerCase()) {
-      parts.push(abbrevState);
+  const c = (country || '').trim().toLowerCase();
+  const isUsOrCanada =
+    c === 'united states' || c === 'usa' || c === 'us' ||
+    c === 'u.s.' || c === 'u.s.a.' || c === 'united states of america' ||
+    c === 'canada';
+
+  if (city && isUsOrCanada) {
+    if (state && state.toLowerCase() !== city.toLowerCase()) {
+      const abbrev = abbreviateState(state);
+      if (abbrev.toLowerCase() !== city.toLowerCase()) {
+        return `${city}, ${abbrev}`;
+      }
     }
+    return city;
   }
-  
-  if (country) {
-    const abbrevCountry = abbreviateCountry(country);
-    // Only add country if it's different from state context (avoid "LA, CA, USA" redundancy for US)
-    if (abbrevCountry !== 'USA' || !state) {
-      parts.push(abbrevCountry);
-    }
+
+  if (city && country) {
+    return `${city}, ${abbreviateCountry(country)}`;
   }
-  
-  return parts.join(', ') || 'Unknown';
+
+  return city || abbreviateCountry(country) || 'Unknown';
 }
 
 /**

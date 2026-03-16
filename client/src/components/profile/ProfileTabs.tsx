@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
+import { formatCityDisplay } from "@/lib/locationDisplay";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -978,10 +979,9 @@ export function ProfileTabs(props: ProfilePageProps) {
                     <span className="text-gray-900 dark:text-gray-100 break-words min-w-0">
                       {user?.userType === 'business'
                         ? (user?.location || user?.hometownCity || "Los Angeles, CA")
-                        : (() => {
-                            const parts = [user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean);
-                            return parts.length > 0 ? parts.join(', ') : "Not specified";
-                          })()
+                        : (user?.hometownCity
+                            ? formatCityDisplay(user.hometownCity, user.hometownState, user.hometownCountry)
+                            : "Not specified")
                       }
                     </span>
                   </div>

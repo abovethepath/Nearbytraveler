@@ -3,6 +3,7 @@ import { useAuth } from "@/App";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/queryClient";
+import { formatCityDisplay } from "@/lib/locationDisplay";
 import { Zap } from "lucide-react";
 
 export default function ProfilePageResponsive() {
@@ -101,9 +102,9 @@ export default function ProfilePageResponsive() {
   
   // CRITICAL: Build hometown location (ALWAYS shown) - NEVER use location field (contains metro area)
   const hometownLocation = user.hometown || 
-    (user.hometownCity && user.hometownState && user.hometownCountry 
-      ? `${user.hometownCity}, ${user.hometownState}, ${user.hometownCountry}` 
-      : user.hometownCity || "Location not set");
+    (user.hometownCity
+      ? formatCityDisplay(user.hometownCity, user.hometownState, user.hometownCountry)
+      : "Location not set");
   
   // Build destination location (shown only when actively traveling)
   const destinationLocation = user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry
