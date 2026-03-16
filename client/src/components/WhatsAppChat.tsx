@@ -53,6 +53,7 @@ interface ChatMember {
   isAdmin: boolean;
   joinedAt: string;
   isMuted?: boolean;
+  muteReason?: string | null;
 }
 
 interface WhatsAppChatProps {
@@ -920,6 +921,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         isAdmin: Boolean((item as any)?.isAdmin) || false,
         joinedAt: String((item as any)?.joinedAt ?? (item as any)?.createdAt ?? new Date().toISOString()),
         isMuted: Boolean((item as any)?.isMuted) || undefined,
+        muteReason: (item as any)?.muteReason ?? null,
       });
     }
 
@@ -2213,16 +2215,20 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                             {chatType === 'event' || chatType === 'meetup' ? '👑 Host' : 'Admin'}
                           </span>
                         )}
-                        {member.isMuted && <span className="ml-1.5 text-xs text-red-400">Muted</span>}
+                        {member.isMuted && <span className="ml-1.5 text-xs text-red-400">🔇 Muted</span>}
                       </p>
-                      <p className="text-xs text-gray-500 truncate">{member.locationLabel || member.location || member.hometownCity || ''}</p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {member.isMuted && member.muteReason
+                          ? <span className="text-red-400/70 italic">"{member.muteReason}"</span>
+                          : (member.locationLabel || member.location || member.hometownCity || '')}
+                      </p>
                     </div>
                   </div>
                   {isCurrentUserAdmin && member.id !== currentUserId && (
                     <div onClick={(e) => e.stopPropagation()}>
                       {member.isMuted ? (
-                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-green-400 hover:text-green-300 hover:bg-gray-700" onClick={() => unmuteMutation.mutate(member.id)} disabled={unmuteMutation.isPending}>
-                          <Volume2 className="w-3.5 h-3.5" />
+                        <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-green-400 hover:text-green-300 hover:bg-gray-700 flex items-center gap-1" onClick={() => unmuteMutation.mutate(member.id)} disabled={unmuteMutation.isPending}>
+                          <Volume2 className="w-3.5 h-3.5" /><span>Unmute</span>
                         </Button>
                       ) : (
                         <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-gray-700" onClick={() => { setSelectedMember(member); setMuteDialogOpen(true); }}>
@@ -2412,16 +2418,20 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                                 <p className="font-semibold text-sm truncate">
                                   {getFirstName(member.name, member.username)}
                                   {member.isAdmin && <span className={`ml-2 text-xs font-semibold ${chatType === 'event' || chatType === 'meetup' ? 'text-orange-400' : 'text-green-400'}`}>{chatType === 'event' || chatType === 'meetup' ? '👑 Host' : 'Admin'}</span>}
-                                  {member.isMuted && <span className="ml-2 text-xs text-red-400">Muted</span>}
+                                  {member.isMuted && <span className="ml-2 text-xs text-red-400">🔇 Muted</span>}
                                 </p>
-                                <p className="text-xs text-gray-400 truncate">{member.locationLabel || member.location || member.hometownCity || 'Unknown'}</p>
+                                <p className="text-xs text-gray-400 truncate">
+                                  {member.isMuted && member.muteReason
+                                    ? <span className="text-red-400/70 italic">"{member.muteReason}"</span>
+                                    : (member.locationLabel || member.location || member.hometownCity || 'Unknown')}
+                                </p>
                               </div>
                             </div>
                             {isCurrentUserAdmin && member.id !== currentUserId && (
                               <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                                 {member.isMuted ? (
-                                  <Button size="sm" variant="ghost" className="h-8 text-green-400 hover:text-green-300 hover:bg-gray-700" onClick={() => unmuteMutation.mutate(member.id)} disabled={unmuteMutation.isPending} data-testid={`button-unmute-${member.id}`}>
-                                    <Volume2 className="w-4 h-4" />
+                                  <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-green-400 hover:text-green-300 hover:bg-gray-700 flex items-center gap-1" onClick={() => unmuteMutation.mutate(member.id)} disabled={unmuteMutation.isPending} data-testid={`button-unmute-${member.id}`}>
+                                    <Volume2 className="w-4 h-4" /><span>Unmute</span>
                                   </Button>
                                 ) : (
                                   <Button size="sm" variant="ghost" className="h-8 text-red-400 hover:text-red-300 hover:bg-gray-700" onClick={() => { setSelectedMember(member); setMuteDialogOpen(true); }} data-testid={`button-mute-${member.id}`}>
@@ -2727,9 +2737,13 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                           <p className="font-semibold text-sm truncate">
                             {getFirstName(member.name, member.username)}
                             {member.isAdmin && <span className={`ml-2 text-xs font-semibold ${chatType === 'event' || chatType === 'meetup' ? 'text-orange-400' : 'text-green-400'}`}>{chatType === 'event' || chatType === 'meetup' ? '👑 Host' : 'Admin'}</span>}
-                            {member.isMuted && <span className="ml-2 text-xs text-red-400">Muted</span>}
+                            {member.isMuted && <span className="ml-2 text-xs text-red-400">🔇 Muted</span>}
                           </p>
-                          <p className="text-xs text-gray-400 truncate">{member.locationLabel || member.location || member.hometownCity || 'Unknown'}</p>
+                          <p className="text-xs text-gray-400 truncate">
+                            {member.isMuted && member.muteReason
+                              ? <span className="text-red-400/70 italic">"{member.muteReason}"</span>
+                              : (member.locationLabel || member.location || member.hometownCity || 'Unknown')}
+                          </p>
                         </div>
                       </div>
                       {isCurrentUserAdmin && member.id !== currentUserId && (
@@ -2738,12 +2752,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-8 text-green-400 hover:text-green-300 hover:bg-gray-700"
+                              className="h-8 px-2 text-xs text-green-400 hover:text-green-300 hover:bg-gray-700 flex items-center gap-1"
                               onClick={() => unmuteMutation.mutate(member.id)}
                               disabled={unmuteMutation.isPending}
                               data-testid={`button-unmute-${member.id}`}
                             >
-                              <Volume2 className="w-4 h-4" />
+                              <Volume2 className="w-4 h-4" /><span>Unmute</span>
                             </Button>
                           ) : (
                             <Button

@@ -93,7 +93,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords } from "../shared/schema";
 import { writeActivityLog } from "./services/activityLogService";
 import { alias } from "drizzle-orm/pg-core";
 
@@ -13087,10 +13087,28 @@ Questions? Just reply to this message. Welcome aboard!
         .orderBy(desc(chatroomMembers.role), users.username);
 
       // Filter out explicitly deactivated members (false, not null)
-      // Convert role to isAdmin for frontend compatibility
-      const members = allMembers.filter(m => m.isActive !== false).map(({ isActive, role, ...member }) => ({
+      const activeMembers = allMembers.filter(m => m.isActive !== false);
+
+      // Fetch active mute records for all members in this chatroom in one query
+      const muteRecords = await db
+        .select({
+          targetUserId: chatroomModerationRecords.targetUserId,
+          reason: chatroomModerationRecords.reason,
+        })
+        .from(chatroomModerationRecords)
+        .where(and(
+          eq(chatroomModerationRecords.chatroomId, chatroomId),
+          eq(chatroomModerationRecords.actionType, 'mute'),
+          isNull(chatroomModerationRecords.revokedAt)
+        ));
+      const muteByUserId = new Map(muteRecords.map(r => [r.targetUserId, r.reason]));
+
+      // Convert role to isAdmin + attach isMuted / muteReason for frontend
+      const members = activeMembers.map(({ isActive, role, ...member }) => ({
         ...member,
-        isAdmin: role === 'admin'
+        isAdmin: role === 'admin',
+        isMuted: muteByUserId.has(member.id),
+        muteReason: muteByUserId.get(member.id) ?? null,
       }));
 
       if (process.env.NODE_ENV === 'development') console.log(`👥 Found ${members.length} members in chatroom ${chatroomId}`);
