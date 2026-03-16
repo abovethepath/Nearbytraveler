@@ -6452,6 +6452,8 @@ Questions? Just reply to this message. Welcome aboard!
               // Text fields using ilike - ALL profile text fields
               ilike(users.name, pattern),
               ilike(users.username, pattern),
+              ilike(users.firstName, pattern),
+              ilike(users.userType, pattern),
               ilike(users.bio, pattern),
               ilike(users.location, pattern),
               ilike(users.hometownCity, pattern),
@@ -6778,11 +6780,17 @@ Questions? Just reply to this message. Welcome aboard!
         if (interestsList.length > 0) {
           if (process.env.NODE_ENV === 'development') console.log('🎯 INTERESTS FILTER: Searching for users with interests:', interestsList);
           
-          // Search in predefined interests array, custom interests text, AND private_interests (lifestyle cross-match)
+          // Search across all interest/activity/lifestyle columns
           whereConditions.push(or(
             ...interestsList.map(interest => sql`array_to_string(${users.interests}, ',') ILIKE ${'%' + interest + '%'}`),
             ...interestsList.map(interest => ilike(users.customInterests, `%${interest}%`)),
-            ...interestsList.map(interest => sql`array_to_string(${users.privateInterests}, ',') ILIKE ${'%' + interest + '%'}`)
+            ...interestsList.map(interest => sql`array_to_string(${users.privateInterests}, ',') ILIKE ${'%' + interest + '%'}`),
+            ...interestsList.map(interest => sql`array_to_string(${users.activities}, ',') ILIKE ${'%' + interest + '%'}`),
+            ...interestsList.map(interest => ilike(users.customActivities, `%${interest}%`)),
+            ...interestsList.map(interest => sql`array_to_string(${users.subInterests}, ',') ILIKE ${'%' + interest + '%'}`),
+            ...interestsList.map(interest => sql`array_to_string(${users.travelStyle}, ',') ILIKE ${'%' + interest + '%'}`),
+            ...interestsList.map(interest => sql`array_to_string(${users.languagesSpoken}, ',') ILIKE ${'%' + interest + '%'}`),
+            ...interestsList.map(interest => sql`array_to_string(${users.localExpertise}, ',') ILIKE ${'%' + interest + '%'}`)
           ));
         }
       }
