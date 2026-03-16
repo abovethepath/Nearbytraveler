@@ -1962,8 +1962,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       className={`flex bg-gray-900 text-white overflow-hidden w-full h-full min-h-0 ${isMobileWeb ? 'fixed left-0 right-0 z-50' : ''}`} 
       style={isMobileWeb ? { 
         top: 0, 
-        height: viewportHeight ? `${viewportHeight}px` : '100dvh', 
-        maxHeight: viewportHeight ? `${viewportHeight}px` : '100dvh',
+        height: viewportHeight ? `${viewportHeight}px` : '100svh', 
+        maxHeight: viewportHeight ? `${viewportHeight}px` : '100svh',
         position: 'fixed',
         left: 0,
         right: 0,
@@ -2088,7 +2088,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       <div className="flex flex-col h-full">
       {/* ═══ MOBILE HEADER: Single-row layout (back | avatar+name+status | logo-menu) — DMs get taller header for bigger logo ═══ */}
       {isMobileWeb && (
-        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden" style={{ position: 'sticky', top: 0, zIndex: 1000, paddingTop: 'env(safe-area-inset-top, 0px)', height: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, minHeight: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, maxHeight: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, transform: 'translateZ(0)', willChange: 'transform' }}>
+        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, paddingTop: 'env(safe-area-inset-top, 0px)', height: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, minHeight: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, maxHeight: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, transform: 'translateZ(0)', willChange: 'transform' }}>
           <div className={`flex items-center ${chatType === 'dm' ? 'h-[62px]' : 'h-[52px]'} px-2 gap-2`}>
             <Button
               variant="ghost"
@@ -2100,9 +2100,15 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               <ArrowLeft className="w-5 h-5" />
             </Button>
 
-            {chatType === 'dm' && props.otherUserProfileImage ? (
-              <Avatar className="w-10 h-10 shrink-0">
-                <AvatarImage src={props.otherUserProfileImage} />
+            {/* Small logo — branding, visible on all mobile chat types */}
+            <img src="/new-logo.png" alt="Nearby Traveler" className="h-6 w-6 object-contain shrink-0" />
+
+            {chatType === 'dm' ? (
+              <Avatar
+                className="w-8 h-8 shrink-0 cursor-pointer"
+                onClick={() => navigate(`/profile/${chatId}`)}
+              >
+                <AvatarImage src={props.otherUserProfileImage || undefined} />
                 <AvatarFallback className="bg-green-600 text-white text-sm">{(title || '?')[0]}</AvatarFallback>
               </Avatar>
             ) : (chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 ? (
@@ -2302,11 +2308,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 <SheetTrigger asChild>
                   <button
                     type="button"
-                    className={`${chatType === 'dm' ? 'h-[52px] w-[52px]' : 'h-9 w-9'} flex items-center justify-center shrink-0 touch-target`}
+                    className="h-9 w-9 flex items-center justify-center shrink-0 touch-target text-white hover:bg-gray-700 rounded-full"
                     onClick={() => setMoreMenuOpen(true)}
                     data-testid="button-chat-more-mobile"
                   >
-                    <img src="/new-logo.png" alt="Menu" className={`${chatType === 'dm' ? 'h-[52px] w-[52px]' : 'h-10 w-10'} object-contain`} />
+                    <MoreVertical className="w-5 h-5" />
                   </button>
                 </SheetTrigger>
                 <SheetContent side="bottom" className="bg-gray-900 border-t border-gray-700 text-white">
@@ -2734,6 +2740,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         {/* Scrollable messages area */}
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pt-1 pb-2 bg-[#0f1117]" style={{
           overscrollBehavior: 'contain', touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' as any,
+          paddingTop: isMobileWeb ? `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'} + 4px)` : undefined,
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23999999' stroke-width='2' opacity='0.18'%3E%3Cpath d='M100 50 L100 150 M57 75 L143 125 M57 125 L143 75'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Cpath d='M150 270 L180 300 L150 330 L120 300 Z'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Cpath d='M100 460 L140 500 L100 540 L60 500 Z'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Cpath d='M150 665 L159 693 L188 693 L165 710 L174 738 L150 722 L126 738 L135 710 L112 693 L141 693 Z'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3Ctext x='400' y='380' text-anchor='middle' font-family='Arial, sans-serif' font-size='52' font-weight='bold' fill='%23aaaaaa' opacity='0.07' transform='rotate(-18 400 400)'%3ENearby Traveler%3C/text%3E%3Ctext x='400' y='700' text-anchor='middle' font-family='Arial, sans-serif' font-size='40' font-weight='bold' fill='%23aaaaaa' opacity='0.05' transform='rotate(-18 400 700)'%3ENearby Traveler%3C/text%3E%3C/svg%3E")`
         }}>
           <div className="flex flex-col min-h-full justify-end w-full">
