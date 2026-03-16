@@ -1085,8 +1085,8 @@ export default function Messages() {
                               <Calendar className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-blue-600 dark:text-blue-400'}`} />
                             </div>
                             <div className="flex-1 min-w-0 overflow-hidden">
-                              <div className="flex items-center gap-2 min-w-0">
-                                <h3 className={`text-sm truncate ${
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <h3 className={`text-sm flex-1 min-w-0 truncate ${
                                   isSelected ? 'text-white font-semibold' : mc.unreadCount > 0 ? 'text-gray-900 dark:text-white font-extrabold' : 'text-gray-900 dark:text-white font-semibold'
                                 }`}>
                                   {mc.chatroomName || 'Event Chat'}
@@ -1094,15 +1094,15 @@ export default function Messages() {
                                 {mc.unreadCount > 0 && !isSelected && (
                                   <span className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 shrink-0" />
                                 )}
+                              </div>
+                              <div className="flex items-center gap-2 mt-0.5 min-w-0">
                                 <span className={`text-[10px] px-2 py-0.5 rounded-full shrink-0 font-bold text-white shadow-sm ${
                                   isSelected ? 'bg-white/20' : 'bg-gradient-to-r from-blue-500 to-indigo-600 ring-1 ring-blue-400/30'
                                 }`}>
                                   Event
                                 </span>
-                              </div>
-                              <div className="flex items-center gap-2 mt-0.5">
                                 {mc.lastMessage && (
-                                  <p className={`text-xs truncate ${
+                                  <p className={`text-xs truncate min-w-0 flex-1 ${
                                     isSelected ? 'text-blue-100' : mc.unreadCount > 0 ? 'text-gray-700 dark:text-gray-200 font-bold' : 'text-gray-500 dark:text-gray-400'
                                   }`}>
                                     {mc.lastMessageType === 'system' ? mc.lastMessage : `${mc.lastMessageUsername}: ${mc.lastMessage}`}
