@@ -437,6 +437,13 @@ export class ChatWebSocketService {
         }).returning();
         
         console.log('✅ Meetup/Event message inserted successfully:', newMessage.id);
+        // Sending a message = user has read everything up to now → reset their unread count
+        await db.update(chatroomMembers)
+          .set({ lastReadAt: new Date() })
+          .where(and(
+            eq(chatroomMembers.chatroomId, chatroomId),
+            eq(chatroomMembers.userId, ws.userId!)
+          ));
       } else {
         // For city chatrooms, use standard chatroom_messages table
         console.log('📝 Inserting into chatroom_messages table');
