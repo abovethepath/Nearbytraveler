@@ -2207,6 +2207,12 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       }
 
+      // Hide "Los Angeles" when "Los Angeles Metro" is also present
+      if (seenCities.has('Los Angeles Metro') && seenCities.has('Los Angeles')) {
+        consolidatedCityMap.delete('Los Angeles');
+        seenCities.delete('Los Angeles');
+      }
+
       // PERFORMANCE FIX: Get ALL stats in ONE batch query using CASE expressions
       const citiesWithStats = await Promise.all(
         Array.from(consolidatedCityMap.entries()).map(async ([metroCity, originalCities]) => {

@@ -376,15 +376,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         const existingCity = allCities.find(c => c.city.toLowerCase() === cityLower);
         if (existingCity) {
           cities.push({ ...existingCity, isHometown: true });
-        } else {
-          cities.push({
-            city: displayCity,
-            country: profile.hometownCountry || '',
-            state: profile.hometownState || '',
-            gradient: gradientOptions[0],
-            isHometown: true,
-            isPlaceholder: true
-          });
         }
       }
     }
@@ -414,15 +405,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             const existingCity = allCities.find(c => c.city.toLowerCase() === cityLower);
             if (existingCity) {
               cities.push({ ...existingCity, isTravelDestination: true });
-            } else {
-              cities.push({
-                city: displayCity,
-                country: plan.destinationCountry || '',
-                state: plan.destinationState || '',
-                gradient: gradientOptions[(index + 1) % gradientOptions.length],
-                isTravelDestination: true,
-                isPlaceholder: true
-              });
             }
           }
         }
