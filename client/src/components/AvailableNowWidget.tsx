@@ -808,7 +808,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                       size="sm"
                       className="h-7 bg-orange-500 hover:bg-orange-600 text-white text-xs"
                       onClick={() => respondRequestMutation.mutate({ requestId: req.id, status: "accepted", fromUserId: req.fromUser?.id })}
-                      disabled={pendingRequestId === req.id}
+                      disabled={pendingRequestId === req.id || respondRequestMutation.isPending}
                     >
                       {pendingRequestId === req.id ? "..." : "Accept"}
                     </Button>

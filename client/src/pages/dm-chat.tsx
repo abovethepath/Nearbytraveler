@@ -228,7 +228,7 @@ export default function DMChat() {
           </button>
         </div>
 
-        <div className="flex flex-col items-center gap-4 px-6 pt-16 pb-8 flex-1">
+        <div className="flex flex-col items-center gap-4 px-6 pt-16 pb-8 flex-1 overflow-y-auto">
 
           {avatarUrl ? (
             <img

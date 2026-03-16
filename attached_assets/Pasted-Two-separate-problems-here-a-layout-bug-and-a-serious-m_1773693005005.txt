@@ -1,0 +1,27 @@
+Two separate problems here — a layout bug and a serious message duplication bug:
+1. The "Hey! I accepted your meet request" message fired 5 times — that's a critical bug. The auto-message on acceptance is triggering multiple times, probably from re-renders or multiple socket events firing.
+2. The DM sidebar looks broken — giant white empty space below the profile card on the left.
+
+Prompt 1 — Duplicate auto-message bug (critical):
+
+@codebase The automatic message sent when a meet request is accepted ("Hey! I accepted your meet request — let's figure out where to meet up! 🧡") is being sent multiple times (5+ times) in the same DM conversation.
+Fix: Add a deduplication guard on the meet acceptance auto-message:
+
+Before sending the auto-message, check if a message with that exact text already exists in the conversation from the same sender within the last 60 seconds — if so, do not send again
+On the frontend, make sure the acceptance handler only fires once — wrap it in a ref guard or disable the button immediately on first click to prevent double-firing
+On the backend acceptance endpoint, add an idempotency check so the same acceptance event cannot trigger multiple messages
+
+Do not change the message text or any other DM functionality. Desktop, mobile web, and iOS.
+
+Prompt 2 — DM sidebar white space:
+
+@codebase In the DM chat page on desktop, the left sidebar panel has a large white/empty area below the profile card (avatar, name, username, location, View Full Profile button, Add People to Chat button, Things in Common, Connections in Common). The sidebar should be dark background matching the rest of the app — no white space anywhere.
+Fix:
+
+Make sure the sidebar container has background-color set to the app's dark background, not white or transparent
+The sidebar should fill the full height of the viewport with the dark background
+Remove any background: white or missing background declarations on the sidebar or its parent containers
+
+Do not change the profile card layout or any other styling. Desktop only.
+
+Send both — the duplicate message one is urgent. Want to keep going?

@@ -24903,7 +24903,8 @@ Questions? Just reply to this message. Welcome aboard!
         .set({ status })
         .where(and(
           eq(availableNowRequests.id, Number(requestId)),
-          eq(availableNowRequests.toUserId, Number(userId))
+          eq(availableNowRequests.toUserId, Number(userId)),
+          eq(availableNowRequests.status, "pending")
         ))
         .returning();
 
@@ -25044,7 +25045,7 @@ Questions? Just reply to this message. Welcome aboard!
         const acceptanceContent = groupChatroomId
           ? `Hey! I accepted your meet request — check the group chat to coordinate! 🤝`
           : `Hey! I accepted your meet request — let's figure out where to meet up! 🤝`;
-        const recentCutoff = new Date(Date.now() - 5 * 60 * 1000);
+        const recentCutoff = new Date(Date.now() - 60 * 1000);
         const existingAcceptance = await db.select({ id: messages.id })
           .from(messages)
           .where(and(
