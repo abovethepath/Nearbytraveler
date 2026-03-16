@@ -28,9 +28,10 @@ function displayName(user: any): string {
 
 interface RecentlyJoinedProps {
   currentUserId?: number;
+  messagedUserIds?: Set<number>;
 }
 
-export default function RecentlyJoined({ currentUserId }: RecentlyJoinedProps) {
+export default function RecentlyJoined({ currentUserId, messagedUserIds }: RecentlyJoinedProps) {
   const [, setLocation] = useLocation();
 
   const { data: newUsers = [] } = useQuery<any[]>({
@@ -109,17 +110,18 @@ export default function RecentlyJoined({ currentUserId }: RecentlyJoinedProps) {
                 {timeAgo(user.createdAt)}
               </p>
 
-              {/* Say Hello button */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLocation(`/messages/${user.id}`);
-                }}
-                className="flex items-center gap-1 px-3 py-1 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-[11px] font-semibold transition-colors w-full justify-center"
-              >
-                <MessageCircle className="w-3 h-3" />
-                Say hi
-              </button>
+              {!messagedUserIds?.has(user.id) && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLocation(`/messages/${user.id}`);
+                  }}
+                  className="flex items-center gap-1 px-3 py-1 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-[11px] font-semibold transition-colors w-full justify-center"
+                >
+                  <MessageCircle className="w-3 h-3" />
+                  Say hi
+                </button>
+              )}
             </div>
           );
         })}

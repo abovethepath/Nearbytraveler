@@ -986,8 +986,18 @@ export default function Home() {
 
   const { data: messages = [], isLoading: messagesLoading } = useQuery<Message[]>({
     queryKey: [`/api/messages/${currentUserId}`],
-    enabled: !!currentUserId && loadedSections.has('messages'), // Only load when messages section is viewed
+    enabled: !!currentUserId && loadedSections.has('messages'),
   });
+
+  const messagedUserIds = React.useMemo(() => {
+    if (!currentUserId || messages.length === 0) return new Set<number>();
+    return new Set(
+      messages
+        .filter((m: any) => m.senderId === currentUserId)
+        .map((m: any) => m.receiverId)
+        .filter((id: any): id is number => typeof id === 'number')
+    );
+  }, [messages, currentUserId]);
 
   // Business deals functionality removed - focusing on travelers and locals
 
@@ -1847,7 +1857,7 @@ export default function Home() {
 
             {/* Recently Joined — global new members strip */}
             {effectiveUser?.userType !== 'business' && (
-              <RecentlyJoined currentUserId={effectiveUser?.id} />
+              <RecentlyJoined currentUserId={effectiveUser?.id} messagedUserIds={messagedUserIds} />
             )}
 
             <div className="home-discover-people relative z-10 bg-white dark:bg-gray-900 rounded-3xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
