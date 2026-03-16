@@ -292,9 +292,9 @@ export default function ConnectPage() {
                         setHasSearched(false);
                         setTimeout(() => handleSearch(), 100);
                       }}
-                      className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 bg-blue-50 border-blue-200"
+                      className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300"
                     >
-                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400" />
                       <span className="truncate max-w-[100px] sm:max-w-none">
                         {currentLocation.split(',')[0]}
                       </span>
@@ -326,9 +326,9 @@ export default function ConnectPage() {
               {/* Travel Plans */}
               {isLoadingTravelPlans ? (
                 <div className="space-y-2">
-                  <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-                  <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-                  <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
                 </div>
               ) : userTravelPlans && userTravelPlans.length > 0 ? (
                 userTravelPlans.map((plan: TravelPlan) => (
