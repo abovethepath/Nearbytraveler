@@ -25209,7 +25209,20 @@ Questions? Just reply to this message. Welcome aboard!
           ))
           .orderBy(desc(meetupChatrooms.createdAt))
           .limit(1);
-        return res.json({ chatroom: chatroom || null });
+        // Check user is still an active member before returning
+        if (chatroom) {
+          const [membership] = await db.select({ role: chatroomMembers.role })
+            .from(chatroomMembers)
+            .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.userId, Number(userId)), eq(chatroomMembers.isActive, true)))
+            .limit(1);
+          if (!membership) return res.json({ chatroom: null });
+          const members = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage })
+            .from(chatroomMembers)
+            .innerJoin(users, eq(users.id, chatroomMembers.userId))
+            .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.isActive, true)));
+          return res.json({ chatroom: { ...chatroom, members } });
+        }
+        return res.json({ chatroom: null });
       }
 
       // User is NOT currently live — allow them to still see the chatroom from
@@ -25231,8 +25244,10 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       const sessionIds = recentSessions.map(s => s.id);
-      const [chatroom] = await db.select()
+      // Also verify user still has active membership in the chatroom
+      const [chatroom] = await db.select({ id: meetupChatrooms.id, availableNowId: meetupChatrooms.availableNowId, chatroomName: meetupChatrooms.chatroomName, description: meetupChatrooms.description, city: meetupChatrooms.city, state: meetupChatrooms.state, country: meetupChatrooms.country, activityType: meetupChatrooms.activityType, isActive: meetupChatrooms.isActive, expiresAt: meetupChatrooms.expiresAt, participantCount: meetupChatrooms.participantCount, createdAt: meetupChatrooms.createdAt })
         .from(meetupChatrooms)
+        .innerJoin(chatroomMembers, and(eq(chatroomMembers.chatroomId, meetupChatrooms.id), eq(chatroomMembers.userId, Number(userId)), eq(chatroomMembers.isActive, true)))
         .where(and(
           inArray(meetupChatrooms.availableNowId, sessionIds),
           eq(meetupChatrooms.isActive, true)
@@ -25240,7 +25255,12 @@ Questions? Just reply to this message. Welcome aboard!
         .orderBy(desc(meetupChatrooms.createdAt))
         .limit(1);
 
-      res.json({ chatroom: chatroom || null });
+      if (!chatroom) return res.json({ chatroom: null });
+      const members = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage })
+        .from(chatroomMembers)
+        .innerJoin(users, eq(users.id, chatroomMembers.userId))
+        .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.isActive, true)));
+      res.json({ chatroom: { ...chatroom, members } });
     } catch (error: any) {
       console.error("Error fetching group chat:", error);
       res.status(500).json({ error: "Failed to fetch group chat" });
@@ -25289,7 +25309,16 @@ Questions? Just reply to this message. Welcome aboard!
           isNotNull(meetupChatrooms.availableNowId),
         ));
 
-      res.json({ chatrooms });
+      // Attach members to each chatroom
+      const chatroomsWithMembers = await Promise.all(chatrooms.map(async (chat) => {
+        const memberRows = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage })
+          .from(chatroomMembers)
+          .innerJoin(users, eq(users.id, chatroomMembers.userId))
+          .where(and(eq(chatroomMembers.chatroomId, chat.id), eq(chatroomMembers.isActive, true)));
+        return { ...chat, members: memberRows };
+      }));
+
+      res.json({ chatrooms: chatroomsWithMembers });
     } catch (error: any) {
       console.error("Error fetching my group chats:", error);
       res.status(500).json({ error: "Failed to fetch group chats" });

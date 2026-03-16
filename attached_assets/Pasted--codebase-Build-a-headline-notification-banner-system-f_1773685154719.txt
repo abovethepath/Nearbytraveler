@@ -1,0 +1,33 @@
+@codebase Build a headline notification banner system for high-priority user events. These are distinct from the regular notification bell — they appear as a prominent animated banner/toast at the top of the screen for moments that matter.
+Design:
+
+Appears at the top of the screen, full width or centered card style, slides down from the top
+Shows for 5-6 seconds then slides back up (or user can dismiss with X)
+Has an icon, bold headline text, and a subtle subtext
+Tapping/clicking navigates to the relevant page
+If multiple stack, show them one at a time in a queue
+Use brand colors — gradient or dark card with colored left border per type
+
+Trigger these headline banners for:
+
+Vouched — "You've been vouched! 🏅" → subtext: "@[username] just vouched for you" → links to profile vouches
+New reference — "New reference written for you ✍️" → subtext: "@[username] wrote you a reference" → links to profile references
+Accepted to meetup — "You're in! 🎉" → subtext: "@[host] accepted your Available Now request" → links to meetup chatroom
+Added to group chat — "You've been added to a group chat 💬" → subtext: "@[host] added you to '[chatroom name]'" → links to chatroom
+New connection — "New connection made 🤝" → subtext: "You and @[username] are now connected" → links to their profile
+Join request received (host only) — "Someone wants to join your meetup 👋" → subtext: "@[username] requested to join" → links to Available Now requests
+Event starting soon — "Your event starts in 1 hour ⏰" → subtext: "[Event name] is coming up" → links to event
+New message in chatroom (when not in that chat) — "New message in [chatroom name] 💬" → subtext: "@[username]: [first few words...]" → links to chatroom
+
+Implementation:
+
+Create a HeadlineBanner component and a context/hook useHeadlineBanner that any part of the app can call to trigger a banner
+Connect it to the existing WebSocket/notification system — when a notification is created server-side for these event types, push it through the socket to trigger the banner client-side in real time
+Also show the banner on app load if there are unread notifications of these types from the last 24 hours that haven't been seen yet
+Store a headline_shown flag per notification so it only shows once
+
+Do not remove or change the existing notification bell — this is additive. Desktop, mobile web, and iOS.
+
+This turns passive notifications into active moments — every high-signal event gets its spotlight. Ready to keep going through the audit?there already is a headline banner, though i dont see it on everyones profile.. 1 new connection today, 1 open to meet now, is aleady on a headline banner those above should go on that banner11:18 AMRecognized existing banner system should consolidate notificationsRecognized existing banner system should consolidate notificationsGood catch — don't build a new system, plug into the existing one. Here's the updated prompt:
+
+@codebase The homepage already has a headline banner row showing pills like "1 open to meet now" and "1 new connections today." Do NOT build a new banner system. Instead, add the following new pill types to that same existing banner row:

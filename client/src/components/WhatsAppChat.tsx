@@ -420,6 +420,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       if (!res.ok) throw new Error(data?.message || data?.error || `HTTP ${res.status}`);
       toast({ title: `Left ${label}` });
       queryClient.invalidateQueries({ queryKey: [membersEndpoint] });
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
       navigate("/messages");
     } catch (e: any) {
       toast({ title: `Couldn't leave`, description: String(e?.message || "Please try again."), variant: "destructive" });
@@ -438,6 +441,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       if (!res.ok) throw new Error(data?.message || data?.error || `HTTP ${res.status}`);
       toast({ title: "Host transferred", description: "You've left the chat." });
       setShowHostLeaveModal(false);
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
       navigate("/messages");
     } catch (e: any) {
       toast({ title: "Couldn't transfer host", description: String(e?.message || "Please try again."), variant: "destructive" });
@@ -455,6 +461,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       if (!res.ok) throw new Error(data?.message || data?.error || `HTTP ${res.status}`);
       toast({ title: "Meetup chat ended" });
       setShowHostLeaveModal(false);
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
       navigate("/messages");
     } catch (e: any) {
       toast({ title: "Couldn't dissolve chat", description: String(e?.message || "Please try again."), variant: "destructive" });

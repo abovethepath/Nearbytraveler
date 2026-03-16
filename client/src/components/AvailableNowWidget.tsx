@@ -502,6 +502,20 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     return () => { websocketService.off('notification', handleNotification); };
   }, [toast, setLocation, userCity]);
 
+  // Invalidate group-chat queries when the current user is removed from a meetup chatroom
+  useEffect(() => {
+    const handleChatEvent = (event: any) => {
+      const type = event?.type;
+      if (type === 'chatroom:dissolved' || type === 'member:left') {
+        queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
+      }
+    };
+    websocketService.on('chat_event', handleChatEvent);
+    return () => { websocketService.off('chat_event', handleChatEvent); };
+  }, []);
+
   const toggleActivity = (value: string) => {
     setSelectedActivities(prev =>
       prev.includes(value) ? prev.filter(a => a !== value) : [...prev, value]
@@ -546,6 +560,42 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       cultural:   "bg-indigo-900/60 text-indigo-300 border-indigo-700/50",
     };
     return map[activity.toLowerCase()] ?? "bg-gray-800 text-gray-300 border-gray-700";
+  };
+
+  const MemberAvatarStack = ({ members, max = 5 }: { members: any[]; max?: number }) => {
+    if (!members || members.length === 0) return null;
+    const visible = members.slice(0, max);
+    const extra = members.length - max;
+    return (
+      <div className="flex items-center gap-2 mt-2">
+        <div className="flex">
+          {visible.map((m: any, i: number) => (
+            <div
+              key={m.userId || i}
+              title={m.firstName || m.username}
+              className="w-6 h-6 rounded-full border-2 border-gray-900 overflow-hidden flex-shrink-0 bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center"
+              style={{ marginLeft: i === 0 ? 0 : -8, zIndex: max - i }}
+            >
+              {m.profilePhoto
+                ? <img src={m.profilePhoto} alt={m.firstName || m.username || ''} className="w-full h-full object-cover" />
+                : <span className="text-[9px] font-bold text-white">{(m.firstName || m.username || '?')[0].toUpperCase()}</span>
+              }
+            </div>
+          ))}
+          {extra > 0 && (
+            <div
+              className="w-6 h-6 rounded-full border-2 border-gray-900 bg-gray-700 flex items-center justify-center flex-shrink-0"
+              style={{ marginLeft: -8, zIndex: 0 }}
+            >
+              <span className="text-[9px] font-bold text-gray-300">+{extra}</span>
+            </div>
+          )}
+        </div>
+        <span className="text-xs text-gray-500 dark:text-gray-400">
+          {members.length === 1 ? '1 person in this chat' : `${members.length} people in this chat`}
+        </span>
+      </div>
+    );
   };
 
   const now = Date.now();
@@ -664,18 +714,21 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             {allGroupChats.length > 0 && allGroupChats.map((chat: any) => (
               <div
                 key={chat.id}
-                className="flex items-center gap-2 pt-3 mt-3 border-t border-gray-200 dark:border-white/[0.08]"
+                className="pt-3 mt-3 border-t border-gray-200 dark:border-white/[0.08]"
               >
-                <MessageCircle className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                <span className="text-xs text-gray-600 dark:text-gray-300 flex-1 min-w-0 truncate">{chat.chatroomName} ({chat.participantCount} people)</span>
-                <button
-                  type="button"
-                  onClick={() => setLocation(`/meetup-chatroom-chat/${chat.id}?title=${encodeURIComponent(chat.chatroomName || 'Meetup Chat')}`)}
-                  className="text-white text-xs font-bold px-3 py-1 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: '#FF6B35' }}
-                >
-                  Open
-                </button>
+                <div className="flex items-center gap-2">
+                  <MessageCircle className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                  <span className="text-xs text-gray-600 dark:text-gray-300 flex-1 min-w-0 truncate">{chat.chatroomName}</span>
+                  <button
+                    type="button"
+                    onClick={() => setLocation(`/meetup-chatroom-chat/${chat.id}?title=${encodeURIComponent(chat.chatroomName || 'Meetup Chat')}`)}
+                    className="text-white text-xs font-bold px-3 py-1 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: '#FF6B35' }}
+                  >
+                    Open
+                  </button>
+                </div>
+                <MemberAvatarStack members={chat.members || []} />
               </div>
             ))}
           </div>
@@ -708,20 +761,27 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         {!myStatus && allGroupChats.length > 0 && (
           <div className="mb-4 space-y-2">
             {allGroupChats.map((chat: any) => (
-              <button
+              <div
                 key={chat.id}
-                type="button"
-                onClick={() => setLocation(`/meetup-chatroom-chat/${chat.id}?title=${encodeURIComponent(chat.chatroomName || 'Meetup Chat')}`)}
-                className="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl text-sm font-semibold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all"
+                className="px-3 py-2.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl transition-all"
               >
-                <div className="flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4" />
-                  <span>{chat.chatroomName}</span>
-                </div>
-                <Badge className="bg-blue-500 text-white text-[10px]">
-                  {chat.participantCount} people
-                </Badge>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setLocation(`/meetup-chatroom-chat/${chat.id}?title=${encodeURIComponent(chat.chatroomName || 'Meetup Chat')}`)}
+                  className="w-full flex items-center justify-between gap-2 text-sm font-semibold text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-100 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>{chat.chatroomName}</span>
+                  </div>
+                  <Badge className="bg-blue-500 text-white text-[10px] flex-shrink-0">
+                    Go to Chat
+                  </Badge>
+                </button>
+                {chat.members?.length > 0 && (
+                  <MemberAvatarStack members={chat.members} />
+                )}
+              </div>
             ))}
           </div>
         )}
@@ -873,14 +933,19 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                       const acceptedChatroomId = acceptedChatroomMap[entry.userId];
                       if (existingChat) {
                         return (
-                          <Button
-                            size="sm"
-                            className="w-full text-xs bg-emerald-600 hover:bg-emerald-700 text-white border-0 font-bold"
-                            onClick={() => setLocation(`/meetup-chatroom-chat/${existingChat.id}?title=${encodeURIComponent(existingChat.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(existingChat.city || 'Group chat')}`)}
-                          >
-                            <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
-                            Go to Chat
-                          </Button>
+                          <div>
+                            {existingChat.members?.length > 0 && (
+                              <MemberAvatarStack members={existingChat.members} />
+                            )}
+                            <Button
+                              size="sm"
+                              className="w-full text-xs bg-emerald-600 hover:bg-emerald-700 text-white border-0 font-bold mt-2"
+                              onClick={() => setLocation(`/meetup-chatroom-chat/${existingChat.id}?title=${encodeURIComponent(existingChat.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(existingChat.city || 'Group chat')}`)}
+                            >
+                              <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
+                              Go to Chat
+                            </Button>
+                          </div>
                         );
                       }
                       if (acceptedChatroomId) {
