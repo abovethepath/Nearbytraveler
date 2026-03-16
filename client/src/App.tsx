@@ -971,7 +971,19 @@ function Router() {
       setUser: (newUser: User | null) => {
         console.log('AuthContext setUser called with:', newUser?.username || 'null');
         setUser(newUser);
-        if (!newUser?.id) clearSessionVerified();
+        if (newUser?.id) {
+          // Signup/login just succeeded — immediately clear the "invalid" flag that
+          // the pre-login 401 check set, mark the session verified, and write the
+          // cache. This prevents the landing-page flash when navigating to /home or
+          // /profile right after signup: without this, isSessionMarkedInvalid() is
+          // still true from the unauthenticated 401, so isActuallyAuthenticated stays
+          // false for one render cycle.
+          clearSessionInvalid();
+          markSessionVerified();
+          writeSessionCache(newUser);
+        } else {
+          clearSessionVerified();
+        }
       },
       isAuthenticating,
       setIsAuthenticating,
@@ -1230,6 +1242,11 @@ function Router() {
     const isActuallyAuthenticated = authValue.isAuthenticated || (!!effectiveUser && isSessionVerified()) || (Date.now() - loginSucceededAtRef.current < 10_000 && !!effectiveUser);
 
     if (!isActuallyAuthenticated && !isPublicRoute) {
+      // Safety net: if a login/signup transition is in flight, show the
+      // loading spinner instead of briefly flashing the landing page.
+      if (loginPending || isAuthenticating || authLoading || !authInitialized) {
+        return <FullPageSkeleton />;
+      }
       return <LandingStreamlined />;
     }
 
