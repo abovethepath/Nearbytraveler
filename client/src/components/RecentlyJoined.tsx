@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+import { useRef } from "react";
 import { useLocation } from "wouter";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { getProfileImageUrl } from "@/components/simple-avatar";
-import { UserPlus, MessageCircle } from "lucide-react";
+import { UserPlus, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { abbreviateCity } from "@/lib/displayName";
 
 function timeAgo(dateStr: string): string {
@@ -17,7 +18,6 @@ function timeAgo(dateStr: string): string {
 
 function cityLabel(user: any): string {
   const city = user.hometownCity || "";
-  // Extract only the city name if the field contains a full location string (e.g., "Lisbon, Portugal")
   const cityOnly = city.includes(",") ? city.split(",")[0].trim() : city;
   return abbreviateCity(cityOnly);
 }
@@ -32,8 +32,11 @@ interface RecentlyJoinedProps {
   messagedUserIds?: Set<number>;
 }
 
+const SCROLL_AMOUNT = 150;
+
 export default function RecentlyJoined({ currentUserId, messagedUserIds }: RecentlyJoinedProps) {
   const [, setLocation] = useLocation();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const { data: newUsers = [] } = useQuery<any[]>({
     queryKey: ["/api/users/recently-joined"],
@@ -51,6 +54,11 @@ export default function RecentlyJoined({ currentUserId, messagedUserIds }: Recen
   const filtered = newUsers.filter((u) => u.id !== currentUserId);
   if (filtered.length === 0) return null;
 
+  const scroll = (dir: "left" | "right") => {
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollBy({ left: dir === "left" ? -SCROLL_AMOUNT : SCROLL_AMOUNT, behavior: "smooth" });
+  };
+
   return (
     <div className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
       <div className="px-4 pt-4 pb-2 flex items-center gap-2">
@@ -63,69 +71,92 @@ export default function RecentlyJoined({ currentUserId, messagedUserIds }: Recen
         </span>
       </div>
 
-      <div
-        className="flex flex-nowrap gap-3 px-4 pb-4 overflow-x-auto lg:flex-wrap lg:overflow-x-visible"
-        style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
-      >
-        {filtered.map((user) => {
-          const city = cityLabel(user);
-          const img = getProfileImageUrl(user);
-          const initial = (user.username || user.name || "?")[0].toUpperCase();
+      {/* Wrapper: relative so arrow buttons can be positioned absolutely on desktop */}
+      <div className="relative">
+        {/* Left arrow — desktop only */}
+        <button
+          onClick={() => scroll("left")}
+          className="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 items-center justify-center rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Scroll left"
+        >
+          <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+        </button>
 
-          return (
-            <div
-              key={user.id}
-              className="flex-shrink-0 lg:flex-shrink flex flex-col items-center gap-2 w-[120px] lg:w-[108px] bg-gray-50 dark:bg-gray-800 rounded-xl p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors"
-              onClick={() => setLocation(`/profile/${user.id}`)}
-            >
-              {/* Avatar */}
-              <div className="relative">
-                {img ? (
-                  <img
-                    src={img}
-                    alt={user.username}
-                    className="w-14 h-14 rounded-full object-cover border-2 border-orange-400/60"
-                  />
-                ) : (
-                  <div className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold text-white bg-gradient-to-br from-orange-400 to-pink-500 border-2 border-orange-400/60">
-                    {initial}
-                  </div>
-                )}
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white dark:border-gray-800" />
-              </div>
+        {/* Card row */}
+        <div
+          ref={scrollRef}
+          className="flex flex-nowrap gap-3 px-4 pb-4 overflow-x-auto lg:overflow-x-hidden lg:px-8"
+          style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {filtered.map((user) => {
+            const city = cityLabel(user);
+            const img = getProfileImageUrl(user);
+            const initial = (user.username || user.name || "?")[0].toUpperCase();
 
-              {/* Name */}
-              <p className="text-xs font-semibold text-gray-900 dark:text-white text-center leading-tight truncate w-full">
-                {displayName(user)}
-              </p>
+            return (
+              <div
+                key={user.id}
+                className="flex-shrink-0 flex flex-col items-center gap-2 w-[120px] bg-gray-50 dark:bg-gray-800 rounded-xl p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors"
+                onClick={() => setLocation(`/profile/${user.id}`)}
+              >
+                {/* Avatar */}
+                <div className="relative">
+                  {img ? (
+                    <img
+                      src={img}
+                      alt={user.username}
+                      className="w-14 h-14 rounded-full object-cover border-2 border-orange-400/60"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold text-white bg-gradient-to-br from-orange-400 to-pink-500 border-2 border-orange-400/60">
+                      {initial}
+                    </div>
+                  )}
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white dark:border-gray-800" />
+                </div>
 
-              {/* City */}
-              {city && (
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 text-center leading-tight truncate w-full">
-                  {city}
+                {/* Name */}
+                <p className="text-xs font-semibold text-gray-900 dark:text-white text-center leading-tight truncate w-full">
+                  {displayName(user)}
                 </p>
-              )}
 
-              {/* Time */}
-              <p className="text-[10px] text-orange-400 font-medium">
-                {timeAgo(user.createdAt)}
-              </p>
+                {/* City */}
+                {city && (
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 text-center leading-tight truncate w-full">
+                    {city}
+                  </p>
+                )}
 
-              {!messagedUserIds?.has(user.id) && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setLocation(`/messages/${user.id}`);
-                  }}
-                  className="flex items-center gap-1 px-3 py-1 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-[11px] font-semibold transition-colors w-full justify-center"
-                >
-                  <MessageCircle className="w-3 h-3" />
-                  Say hi
-                </button>
-              )}
-            </div>
-          );
-        })}
+                {/* Time */}
+                <p className="text-[10px] text-orange-400 font-medium">
+                  {timeAgo(user.createdAt)}
+                </p>
+
+                {!messagedUserIds?.has(user.id) && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setLocation(`/messages/${user.id}`);
+                    }}
+                    className="flex items-center gap-1 px-3 py-1 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-[11px] font-semibold transition-colors w-full justify-center"
+                  >
+                    <MessageCircle className="w-3 h-3" />
+                    Say hi
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Right arrow — desktop only */}
+        <button
+          onClick={() => scroll("right")}
+          className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 items-center justify-center rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Scroll right"
+        >
+          <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+        </button>
       </div>
     </div>
   );
