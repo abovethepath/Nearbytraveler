@@ -5,6 +5,7 @@ import {
   getAllActivities,
   getAllInterests,
   getAllLanguages,
+  PRIVATE_INTERESTS_BY_CATEGORY,
 } from "@shared/base-options";
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS } from "@/lib/formConstants";
 import { COUNTRIES } from "@/lib/locationData";
@@ -95,6 +96,12 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
   const [hostelQuery, setHostelQuery] = useState(filters.hostelName || "");
   const [languageQuery, setLanguageQuery] = useState("");
   const [countryQuery, setCountryQuery] = useState("");
+  const [privateInterestQuery, setPrivateInterestQuery] = useState("");
+
+  const allPrivateInterests = useMemo(
+    () => Object.values(PRIVATE_INTERESTS_BY_CATEGORY).flat(),
+    []
+  );
 
   const allInterests = useMemo(() => getAllInterests(), []);
   const allActivities = useMemo(() => getAllActivities(), []);
@@ -148,6 +155,7 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
       "militaryStatus",
       "languages",
       "countriesVisited",
+      "privateInterests",
     ].forEach(
       (k) => {
         n += (filters[k] || []).length;
@@ -175,6 +183,7 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
       "militaryStatus",
       "languages",
       "countriesVisited",
+      "privateInterests",
     ].forEach(
       (key) => {
         (filters[key] || []).forEach((val) => chips.push({ key, val }));
@@ -208,6 +217,7 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
   const clearAll = () => {
     setSearchQuery("");
     setHostelQuery("");
+    setPrivateInterestQuery("");
     setFilters({
       topChoices: [],
       gender: [],
@@ -224,6 +234,7 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
       militaryStatus: [],
       languages: [],
       countriesVisited: [],
+      privateInterests: [],
       newToTown: false,
       travelingWithChildren: false,
       hostelName: "",
@@ -545,6 +556,42 @@ export default function NearbyTravelerSearchWidget({ filters, setFilters, onClos
                 key={opt}
                 style={pillStyle((filters.countriesVisited || []).includes(opt))}
                 onClick={() => toggleArray("countriesVisited", opt)}
+              >
+                {opt}
+              </button>
+            ))}
+        </Section>
+
+        <Section title="Lifestyle & Private Interests" icon="🔮" count={(filters.privateInterests || []).length}>
+          <div style={{ width: "100%" }}>
+            <input
+              value={privateInterestQuery}
+              onChange={(e) => setPrivateInterestQuery(e.target.value)}
+              placeholder="Type to filter lifestyle interests…"
+              style={{
+                width: "100%",
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 12,
+                padding: "10px 12px",
+                color: "#fff",
+                fontSize: 13,
+                outline: "none",
+                boxSizing: "border-box",
+                marginBottom: 10,
+              }}
+            />
+          </div>
+          {allPrivateInterests
+            .filter((opt) =>
+              !privateInterestQuery.trim() ||
+              opt.toLowerCase().includes(privateInterestQuery.trim().toLowerCase())
+            )
+            .map((opt) => (
+              <button
+                key={opt}
+                style={pillStyle((filters.privateInterests || []).includes(opt))}
+                onClick={() => toggleArray("privateInterests", opt)}
               >
                 {opt}
               </button>

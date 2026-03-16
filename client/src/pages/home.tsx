@@ -671,6 +671,7 @@ export default function Home() {
     militaryStatus: [] as string[],
     languages: [] as string[],
     countriesVisited: [] as string[],
+    privateInterests: [] as string[],
     newToTown: false,
     travelingWithChildren: false,
     hostelName: "",
@@ -1103,6 +1104,7 @@ export default function Home() {
     filters.militaryStatus.length > 0 ||
     filters.languages.length > 0 ||
     filters.countriesVisited.length > 0 ||
+    filters.privateInterests.length > 0 ||
     filters.newToTown ||
     filters.travelingWithChildren ||
     !!filters.hostelName ||
@@ -1415,6 +1417,21 @@ export default function Home() {
         )
       );
       if (!hasMatchingEventInterest) return false;
+    }
+
+    if (filters.privateInterests.length > 0) {
+      const userPrivate = (otherUser as any).privateInterests || [];
+      const userInterests = otherUser.interests || [];
+      const userCustom = (otherUser as any).customInterests || "";
+      const haystack = [
+        ...userPrivate.map((s: string) => String(s).toLowerCase()),
+        ...userInterests.map((s: string) => String(s).toLowerCase()),
+        userCustom.toLowerCase(),
+      ].join(" ");
+      const hasMatch = filters.privateInterests.some((pi: string) =>
+        haystack.includes(pi.toLowerCase())
+      );
+      if (!hasMatch) return false;
     }
 
     // Military status (schema has booleans: isVeteran / isActiveDuty)
