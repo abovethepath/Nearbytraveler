@@ -8350,6 +8350,22 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  app.delete("/api/notifications/:id", async (req: any, res) => {
+    try {
+      const notifId = parseInt(req.params.id || '0');
+      if (isNaN(notifId) || notifId <= 0) return res.status(400).json({ message: "Invalid notification ID" });
+      const userId = req.session?.userId || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      await db.delete(notifications).where(
+        and(eq(notifications.id, notifId), eq(notifications.userId, Number(userId)))
+      );
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error deleting notification:", error);
+      return res.status(500).json({ message: "Failed to delete notification" });
+    }
+  });
+
   // Activity feed — combines notifications into a unified feed for the Explore > Activity tab
   app.get("/api/activity-feed/:userId", async (req, res) => {
     try {

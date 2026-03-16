@@ -460,6 +460,7 @@ export default function ActivityFeed() {
 
   const [filter, setFilter] = useState<ActivityFilter>("all");
   const [meetModalItem, setMeetModalItem] = useState<ActivityNotificationItem | null>(null);
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery<ActivityFeedResponse>({
     queryKey: ["/api/activity-feed", currentUser?.id],
@@ -546,6 +547,48 @@ export default function ActivityFeed() {
     },
   });
 
+  const markAllRead = useMutation({
+    mutationFn: async () => {
+      if (!currentUser?.id) return;
+      const res = await fetch(`${getApiBaseUrl()}/api/notifications/${currentUser.id}/read-all`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!res.ok) throw new Error("Failed to mark all read");
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["/api/activity-feed", currentUser?.id] });
+      qc.invalidateQueries({ queryKey: ["/api/activity-feed", currentUser?.id, "unread-count"] });
+      qc.invalidateQueries({ queryKey: ["/api/notifications", currentUser?.id] });
+    },
+  });
+
+  const deleteNotification = useMutation({
+    mutationFn: async (notifId: number) => {
+      const res = await fetch(`${getApiBaseUrl()}/api/notifications/${notifId}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: currentUser?.id ? { "x-user-id": String(currentUser.id) } : {},
+      });
+      if (!res.ok) throw new Error("Failed to delete notification");
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["/api/activity-feed", currentUser?.id] });
+      qc.invalidateQueries({ queryKey: ["/api/activity-feed", currentUser?.id, "unread-count"] });
+    },
+  });
+
+  const handleDeleteItem = (item: AnyActivityItem) => {
+    const key = `${item.kind}_${String(item.id)}`;
+    if (item.kind === "notification" && typeof item.id === "number") {
+      setDismissedIds((prev) => new Set([...prev, key]));
+      deleteNotification.mutate(item.id);
+    } else {
+      setDismissedIds((prev) => new Set([...prev, key]));
+    }
+  };
+
   const items = (data?.items || []) as AnyActivityItem[];
 
   const dedupedItems = useMemo(() => {
@@ -579,9 +622,10 @@ export default function ActivityFeed() {
   }, [items]);
 
   const filtered = useMemo(() => {
-    if (filter === "all") return dedupedItems;
-    return dedupedItems.filter((i) => i.category === filter);
-  }, [dedupedItems, filter]);
+    const base = dedupedItems.filter((i) => !dismissedIds.has(`${i.kind}_${String(i.id)}`));
+    if (filter === "all") return base;
+    return base.filter((i) => i.category === filter);
+  }, [dedupedItems, filter, dismissedIds]);
 
   const emptyLabel =
     filter === "messages"
@@ -624,6 +668,18 @@ export default function ActivityFeed() {
           </button>
         ))}
         <div className="ml-auto flex items-center gap-2">
+          {(data?.unreadCount ?? 0) > 0 && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => markAllRead.mutate()}
+              disabled={markAllRead.isPending}
+              className="h-8 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+            >
+              {markAllRead.isPending ? "Clearing..." : "Clear all"}
+            </Button>
+          )}
           <Button
             type="button"
             variant="outline"
@@ -836,9 +892,17 @@ export default function ActivityFeed() {
             })();
 
             const rightSide = (
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0">
                 {unread && <span className="h-2 w-2 rounded-full bg-[#2563EB]" aria-label="Unread" />}
                 <span className="text-xs tabular-nums" style={{ color: 'var(--activity-timestamp-color, #6b7280)' }}>{timestamp}</span>
+                <button
+                  type="button"
+                  aria-label="Dismiss"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteItem(item); }}
+                  className="ml-0.5 p-1 rounded-full text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
               </div>
             );
 

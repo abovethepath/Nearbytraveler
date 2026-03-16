@@ -1,0 +1,52 @@
+@codebase When a user receives a vouch, trigger two things:
+1. Notification
+Create a notification for the recipient that says:
+"@[voucher_username] just vouched for you! Now you can vouch for others too."
+
+Show it in their notifications bell/dropdown
+Mark it unread so they see it immediately
+Tapping/clicking it should go to their profile vouches section
+
+2. Activity Feed
+Post an activity feed entry visible to the recipient's connections that says:
+"@[voucher_username] vouched for @[recipient_username]"
+
+Show it at the top of the activity feed like other social actions (connections made, trips posted, etc.)
+Include both users' avatars/names as clickable links to their profiles
+Use the same card style as other activity feed items
+
+Implementation:
+
+Find the vouch creation endpoint (likely POST /api/vouches or similar in server/routes.ts)
+In the success handler, after saving the vouch: (1) insert a notification row for the recipient, (2) insert an activity feed row
+The notification and feed post should only fire once per unique voucher→recipient pair — no duplicate notifications if somehow called twice
+
+Do not change the vouch UI, vouch logic, or any other notification types. Desktop, mobile web, and iOS.
+
+Also worth noting — the message "now you can vouch for others" implies there's a threshold (receiving 1 vouch = unlocks vouching). Make sure that logic is already in place, or flag it if it's not. Want to keep going?you forgot references too if we get a new references it needs to shwo10:12 AMIdentified missing references feature for notificationsIdentified missing references feature for notificationsGood catch — same treatment for references. Add this to the prompt:
+
+@codebase When a user receives a reference (written recommendation from another user), trigger two things:
+1. Notification
+Create a notification for the recipient that says:
+"@[author_username] just wrote you a reference!"
+
+Show it in their notifications bell/dropdown
+Mark it unread
+Tapping/clicking it should go to their profile references section
+
+2. Activity Feed
+Post an activity feed entry visible to the recipient's connections that says:
+"@[author_username] wrote a reference for @[recipient_username]"
+
+Same card style as other activity feed items
+Both usernames clickable to their profiles
+
+Implementation:
+
+Find the reference creation endpoint in server/routes.ts
+In the success handler, after saving the reference: (1) insert a notification row for the recipient, (2) insert an activity feed row
+Only fire once per unique author→recipient reference — no duplicates
+
+Do not change the reference UI, reference logic, or any other notification types. Desktop, mobile web, and iOS.
+
+So to recap both together — vouches AND references now both trigger a notification to the recipient AND an activity feed post. Send both prompts together or combined as one. Want me to merge them into a single prompt so Replit handles both in one pass?
