@@ -302,6 +302,7 @@ export const citychatrooms = pgTable("city_chatrooms", {
   tags: text("tags").array(),
   rules: text("rules"),
   pinnedMessageId: integer("pinned_message_id"),
+  adminsOnly: boolean("admins_only").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

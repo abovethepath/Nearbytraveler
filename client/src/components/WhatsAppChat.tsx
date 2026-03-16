@@ -172,6 +172,19 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     if (!activityType) return [];
     return [...new Set(activityType.split(",").map((s) => s.trim()).filter(Boolean))].slice(0, 8);
   }, [meetupChatInfo?.activities, meetupChatInfo?.activityType]);
+
+  // Chatroom settings query — city chatrooms only, gives us adminsOnly flag
+  const { data: chatroomSettings, refetch: refetchChatroomSettings } = useQuery<{ adminsOnly: boolean }>({
+    queryKey: [`/api/chatrooms/${chatId}/settings`],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}`, { credentials: 'include', headers: currentUserId ? { 'x-user-id': String(currentUserId) } : {} });
+      if (!res.ok) throw new Error('Failed to load chatroom settings');
+      const data = await res.json();
+      return { adminsOnly: Boolean(data.adminsOnly) };
+    },
+    enabled: chatType === 'chatroom' && !!currentUserId,
+    staleTime: 30_000,
+  });
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -931,6 +944,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   // Check if current user is admin (use == for type coercion since currentUserId may be string)
   const currentMember = members.find(m => m.id == currentUserId);
   const isCurrentUserAdmin = currentMember?.isAdmin || false;
+  const currentUserIsMuted = Boolean(currentMember?.isMuted);
+  const isAdminsOnly = chatType === 'chatroom' && Boolean(chatroomSettings?.adminsOnly);
   const editNameInputRef = useRef<HTMLInputElement>(null);
 
   const renameChatroomMutation = useMutation({
@@ -996,6 +1011,42 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     onError: () => {
       toast({ title: "Failed to unmute user", variant: "destructive" });
     }
+  });
+
+  // Toggle admins-only (announcement) mode for city chatrooms
+  const adminsOnlyMutation = useMutation({
+    mutationFn: async (adminsOnly: boolean) => {
+      const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/admins-only`, {
+        method: 'PUT',
+        body: JSON.stringify({ adminsOnly }),
+        headers: { 'Content-Type': 'application/json', 'x-user-id': currentUserId?.toString() || '' }
+      });
+      if (!response.ok) throw new Error('Failed to update setting');
+      return response.json();
+    },
+    onSuccess: (_data, adminsOnly) => {
+      toast({ title: adminsOnly ? "📢 Announcement mode on" : "💬 Announcement mode off" });
+      refetchChatroomSettings();
+    },
+    onError: () => toast({ title: "Failed to update setting", variant: "destructive" })
+  });
+
+  // Promote or demote a chatroom member
+  const roleMutation = useMutation({
+    mutationFn: async ({ targetUserId, role }: { targetUserId: number; role: 'admin' | 'member' }) => {
+      const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/members/${targetUserId}/role`, {
+        method: 'POST',
+        body: JSON.stringify({ role }),
+        headers: { 'Content-Type': 'application/json', 'x-user-id': currentUserId?.toString() || '' }
+      });
+      if (!response.ok) throw new Error('Failed to change role');
+      return response.json();
+    },
+    onSuccess: (_data, { role }) => {
+      toast({ title: role === 'admin' ? "👑 Made admin" : "Admin removed" });
+      queryClient.invalidateQueries({ queryKey: [membersEndpoint] });
+    },
+    onError: () => toast({ title: "Failed to change role", variant: "destructive" })
   });
 
   // If members fetch fails for a meetup/chatroom, treat the room as expired (closed).
@@ -1768,18 +1819,21 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             scrollToBottom();
           }
         } else {
-          let errText = '';
-          try { errText = JSON.stringify(await response.json()); } catch { try { errText = await response.text(); } catch {} }
-          console.error('❌ HTTP message send failed:', {
-            status: response.status,
-            chatType,
-            chatId,
-            endpoint,
-            body,
-            currentUserId,
-            errText
-          });
-          toast({ title: "Failed to send message", variant: "destructive" });
+          let errBody: any = {};
+          try { errBody = await response.json(); } catch { try { errBody = { message: await response.text() }; } catch {} }
+          console.error('❌ HTTP message send failed:', { status: response.status, chatType, chatId, endpoint, currentUserId, errBody });
+          if (response.status === 403) {
+            const msg = errBody?.message || '';
+            if (msg.toLowerCase().includes('muted')) {
+              toast({ title: "🔇 You are muted", description: "You can't send messages in this group right now.", variant: "destructive" });
+            } else if (msg.toLowerCase().includes('admins only') || msg.toLowerCase().includes('only admins')) {
+              toast({ title: "📢 Announcement mode", description: "Only admins can send messages right now." });
+            } else {
+              toast({ title: "Not allowed", description: msg || "You don't have permission to send messages.", variant: "destructive" });
+            }
+          } else {
+            toast({ title: "Failed to send message", variant: "destructive" });
+          }
           // Restore the message text so user can try again
           setMessageText(content);
         }
@@ -2171,7 +2225,20 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
           {/* Member list */}
           <div className="px-4 pt-4 pb-2">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Members ({members.length})</p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Members ({members.length})</p>
+              {isCurrentUserAdmin && chatType === 'chatroom' && (
+                <button
+                  onClick={() => adminsOnlyMutation.mutate(!isAdminsOnly)}
+                  disabled={adminsOnlyMutation.isPending}
+                  className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full border transition-colors ${isAdminsOnly ? 'bg-orange-500/20 border-orange-500/50 text-orange-300' : 'border-gray-600 text-gray-500 hover:border-gray-400 hover:text-gray-300'}`}
+                  title={isAdminsOnly ? 'Turn off announcement mode' : 'Turn on announcement mode (only admins can chat)'}
+                >
+                  <span>📢</span>
+                  <span>{isAdminsOnly ? 'Announcement On' : 'Announcement Off'}</span>
+                </button>
+              )}
+            </div>
             <input
               type="text"
               placeholder="Search members..."
@@ -2225,7 +2292,18 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                     </div>
                   </div>
                   {isCurrentUserAdmin && member.id !== currentUserId && (
-                    <div onClick={(e) => e.stopPropagation()}>
+                    <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                      {chatType === 'chatroom' && (
+                        member.isAdmin ? (
+                          <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-orange-400 hover:text-orange-300 hover:bg-gray-700" onClick={() => roleMutation.mutate({ targetUserId: member.id, role: 'member' })} disabled={roleMutation.isPending} title="Remove admin">
+                            👑
+                          </Button>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-gray-500 hover:text-orange-300 hover:bg-gray-700" onClick={() => roleMutation.mutate({ targetUserId: member.id, role: 'admin' })} disabled={roleMutation.isPending} title="Make admin">
+                            👑
+                          </Button>
+                        )
+                      )}
                       {member.isMuted ? (
                         <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-green-400 hover:text-green-300 hover:bg-gray-700 flex items-center gap-1" onClick={() => unmuteMutation.mutate(member.id)} disabled={unmuteMutation.isPending}>
                           <Volume2 className="w-3.5 h-3.5" /><span>Unmute</span>
@@ -2369,7 +2447,18 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   </SheetTrigger>
                   <SheetContent side="right" className="members-sheet-mobile bg-gray-900 border-l border-gray-700 text-white w-80">
                     <SheetHeader>
-                      <SheetTitle className="!text-lg font-semibold text-white">Members ({members.length})</SheetTitle>
+                      <div className="flex items-center justify-between">
+                        <SheetTitle className="!text-lg font-semibold text-white">Members ({members.length})</SheetTitle>
+                        {isCurrentUserAdmin && chatType === 'chatroom' && (
+                          <button
+                            onClick={() => adminsOnlyMutation.mutate(!isAdminsOnly)}
+                            disabled={adminsOnlyMutation.isPending}
+                            className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full border ${isAdminsOnly ? 'bg-orange-500/20 border-orange-500/50 text-orange-300' : 'border-gray-600 text-gray-500'}`}
+                          >
+                            📢 {isAdminsOnly ? 'On' : 'Off'}
+                          </button>
+                        )}
+                      </div>
                     </SheetHeader>
                     <div className="mt-4">
                       <input
@@ -2429,6 +2518,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                             </div>
                             {isCurrentUserAdmin && member.id !== currentUserId && (
                               <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                                {chatType === 'chatroom' && (
+                                  member.isAdmin ? (
+                                    <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-orange-400 hover:text-orange-300 hover:bg-gray-700" onClick={() => roleMutation.mutate({ targetUserId: member.id, role: 'member' })} disabled={roleMutation.isPending} title="Remove admin">
+                                      👑
+                                    </Button>
+                                  ) : (
+                                    <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-gray-500 hover:text-orange-300 hover:bg-gray-700" onClick={() => roleMutation.mutate({ targetUserId: member.id, role: 'admin' })} disabled={roleMutation.isPending} title="Make admin">
+                                      👑
+                                    </Button>
+                                  )
+                                )}
                                 {member.isMuted ? (
                                   <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-green-400 hover:text-green-300 hover:bg-gray-700 flex items-center gap-1" onClick={() => unmuteMutation.mutate(member.id)} disabled={unmuteMutation.isPending} data-testid={`button-unmute-${member.id}`}>
                                     <Volume2 className="w-4 h-4" /><span>Unmute</span>
@@ -2688,7 +2788,18 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             </SheetTrigger>
             <SheetContent side="right" className="members-sheet-mobile bg-gray-900 border-l border-gray-700 text-white w-80">
               <SheetHeader>
-                <SheetTitle className="!text-lg font-semibold text-white">Members ({members.length})</SheetTitle>
+                <div className="flex items-center justify-between">
+                  <SheetTitle className="!text-lg font-semibold text-white">Members ({members.length})</SheetTitle>
+                  {isCurrentUserAdmin && chatType === 'chatroom' && (
+                    <button
+                      onClick={() => adminsOnlyMutation.mutate(!isAdminsOnly)}
+                      disabled={adminsOnlyMutation.isPending}
+                      className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full border ${isAdminsOnly ? 'bg-orange-500/20 border-orange-500/50 text-orange-300' : 'border-gray-600 text-gray-500'}`}
+                    >
+                      📢 {isAdminsOnly ? 'On' : 'Off'}
+                    </button>
+                  )}
+                </div>
               </SheetHeader>
               <div className="mt-4">
                 <input
@@ -2748,6 +2859,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                       </div>
                       {isCurrentUserAdmin && member.id !== currentUserId && (
                         <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                          {chatType === 'chatroom' && (
+                            member.isAdmin ? (
+                              <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-orange-400 hover:text-orange-300 hover:bg-gray-700" onClick={() => roleMutation.mutate({ targetUserId: member.id, role: 'member' })} disabled={roleMutation.isPending} title="Remove admin">
+                                👑
+                              </Button>
+                            ) : (
+                              <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-gray-500 hover:text-orange-300 hover:bg-gray-700" onClick={() => roleMutation.mutate({ targetUserId: member.id, role: 'admin' })} disabled={roleMutation.isPending} title="Make admin">
+                                👑
+                              </Button>
+                            )
+                          )}
                           {member.isMuted ? (
                             <Button
                               size="sm"
@@ -3240,6 +3362,27 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             {isMembersAccessDenied && (
               <span className="text-gray-500 text-xs">Chat history is preserved. The room will be removed shortly.</span>
             )}
+          </div>
+        ) : currentUserIsMuted ? (
+          <div
+            className={`chat-input-area flex flex-col items-center justify-center gap-1 px-4 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : isMobileWeb ? 'pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]' : 'pb-3'}`}
+            style={{ minHeight: 56 }}
+          >
+            <div className="flex items-center gap-2">
+              <VolumeX className="w-4 h-4 text-red-400 flex-shrink-0" />
+              <span className="text-red-300 text-sm font-medium">You have been muted in this group</span>
+            </div>
+            <span className="text-gray-500 text-xs">You can read messages but cannot send any.</span>
+          </div>
+        ) : (isAdminsOnly && !isCurrentUserAdmin) ? (
+          <div
+            className={`chat-input-area flex flex-col items-center justify-center gap-1 px-4 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : isMobileWeb ? 'pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]' : 'pb-3'}`}
+            style={{ minHeight: 56 }}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-lg">📢</span>
+              <span className="text-gray-300 text-sm font-medium">Announcement mode — only admins can send messages</span>
+            </div>
           </div>
         ) : (
         <div className={`chat-input-area px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : isMobileWeb ? 'pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]' : 'pb-3'}`}>

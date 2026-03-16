@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
 import { db } from '../db';
-import { chatroomMessages, chatroomMembers, users, messages, meetupChatroomMessages, meetupChatrooms, eventParticipants, availableNow, availableNowRequests } from '../../shared/schema';
-import { eq, and, desc, gt, or, gte } from 'drizzle-orm';
+import { chatroomMessages, chatroomMembers, users, messages, meetupChatroomMessages, meetupChatrooms, eventParticipants, availableNow, availableNowRequests, citychatrooms, chatroomModerationRecords } from '../../shared/schema';
+import { eq, and, desc, gt, or, gte, isNull } from 'drizzle-orm';
 import { redisPubSub } from './redisPubSub';
 
 // WebSocket event types for WhatsApp-style chat
@@ -408,7 +408,43 @@ export class ChatWebSocketService {
       this.sendError(ws, 'You are not a member of this chatroom');
       return;
     }
-    
+
+    // 🔇 MUTE CHECK (city chatrooms only)
+    if (chatType === 'chatroom') {
+      const [muteRecord] = await db
+        .select({ id: chatroomModerationRecords.id })
+        .from(chatroomModerationRecords)
+        .where(and(
+          eq(chatroomModerationRecords.chatroomId, chatroomId),
+          eq(chatroomModerationRecords.targetUserId, ws.userId!),
+          eq(chatroomModerationRecords.actionType, 'mute'),
+          isNull(chatroomModerationRecords.revokedAt)
+        ))
+        .limit(1);
+      if (muteRecord) {
+        this.sendError(ws, 'You have been muted in this chatroom');
+        return;
+      }
+
+      // 📢 ADMINS-ONLY CHECK
+      const [roomData] = await db
+        .select({ adminsOnly: citychatrooms.adminsOnly })
+        .from(citychatrooms)
+        .where(eq(citychatrooms.id, chatroomId))
+        .limit(1);
+      if (roomData?.adminsOnly) {
+        const [membership] = await db
+          .select({ role: chatroomMembers.role })
+          .from(chatroomMembers)
+          .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, ws.userId!), eq(chatroomMembers.isActive, true)))
+          .limit(1);
+        if (membership?.role !== 'admin') {
+          this.sendError(ws, 'Only admins can send messages in this chatroom');
+          return;
+        }
+      }
+    }
+
     console.log('✅ User IS a member - inserting message');
 
     try {

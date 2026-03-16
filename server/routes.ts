@@ -19011,6 +19011,78 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Toggle admins-only (announcement) mode for a chatroom
+  app.put("/api/chatrooms/:chatroomId/admins-only", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const { adminsOnly } = req.body;
+      const userId = req.headers['x-user-id'];
+
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+      if (typeof adminsOnly !== 'boolean') return res.status(400).json({ message: "adminsOnly (boolean) is required" });
+
+      const isAdmin = await storage.isUserChatroomAdmin(chatroomId, parseInt(userId as string));
+      if (!isAdmin) return res.status(403).json({ message: "Only admins can change this setting" });
+
+      await db.update(citychatrooms).set({ adminsOnly }).where(eq(citychatrooms.id, chatroomId));
+
+      // Broadcast a system message so members see the change
+      const adminUser = await db.select({ username: users.username, name: users.name, firstName: users.firstName }).from(users).where(eq(users.id, parseInt(userId as string))).limit(1);
+      const adminName = adminUser[0]?.firstName || adminUser[0]?.name || adminUser[0]?.username || 'Admin';
+      const sysMsg = await storage.createChatroomMessage(chatroomId, parseInt(userId as string),
+        adminsOnly ? `📢 ${adminName} turned on Announcement mode. Only admins can send messages.` : `💬 ${adminName} turned off Announcement mode. Everyone can send messages.`,
+        'system', null);
+      if (sysMsg) await chatWebSocketService.broadcastSystemMessage(chatroomId, 'chatroom', sysMsg.id, sysMsg.message, parseInt(userId as string), adminName);
+
+      res.json({ success: true, adminsOnly });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error toggling admins-only:", error);
+      res.status(500).json({ message: "Failed to update setting" });
+    }
+  });
+
+  // Promote or demote a chatroom member (admin only)
+  app.post("/api/chatrooms/:chatroomId/members/:targetUserId/role", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const targetUserId = parseInt(req.params.targetUserId || '0');
+      const { role } = req.body; // 'admin' | 'member'
+      const userId = req.headers['x-user-id'];
+
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+      if (role !== 'admin' && role !== 'member') return res.status(400).json({ message: "role must be 'admin' or 'member'" });
+
+      const isAdmin = await storage.isUserChatroomAdmin(chatroomId, parseInt(userId as string));
+      if (!isAdmin) return res.status(403).json({ message: "Only admins can change member roles" });
+
+      // Update the role in chatroom_members
+      const updated = await db
+        .update(chatroomMembers)
+        .set({ role })
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId), eq(chatroomMembers.isActive, true)));
+
+      // Fetch target user display name for system message
+      const targetUser = await db.select({ username: users.username, name: users.name, firstName: users.firstName }).from(users).where(eq(users.id, targetUserId)).limit(1);
+      const targetName = targetUser[0]?.firstName || targetUser[0]?.name || targetUser[0]?.username || 'User';
+      const actorUser = await db.select({ username: users.username, name: users.name, firstName: users.firstName }).from(users).where(eq(users.id, parseInt(userId as string))).limit(1);
+      const actorName = actorUser[0]?.firstName || actorUser[0]?.name || actorUser[0]?.username || 'Admin';
+
+      const sysMsgText = role === 'admin'
+        ? `👑 ${actorName} made ${targetName} an admin.`
+        : `${actorName} removed admin from ${targetName}.`;
+      const sysMsg = await storage.createChatroomMessage(chatroomId, parseInt(userId as string), sysMsgText, 'system', null);
+      if (sysMsg) await chatWebSocketService.broadcastSystemMessage(chatroomId, 'chatroom', sysMsg.id, sysMsg.message, parseInt(userId as string), actorName);
+
+      // Broadcast member list refresh
+      await chatWebSocketService.broadcastMemberUpdate(chatroomId, 'chatroom', targetUserId, targetName);
+
+      res.json({ success: true, role });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error changing member role:", error);
+      res.status(500).json({ message: "Failed to change role" });
+    }
+  });
+
   // Get moderation records for chatroom
   app.get("/api/chatrooms/:chatroomId/moderation", async (req, res) => {
     try {
@@ -20528,6 +20600,20 @@ Questions? Just reply to this message. Welcome aboard!
       if (memberCheck.length === 0) {
         if (process.env.NODE_ENV === 'development') console.log(`🚫 SECURITY: User ${userId} attempted to post to chatroom ${roomId} without membership`);
         return res.status(403).json({ message: "You must join the chatroom before sending messages" });
+      }
+
+      // 🔇 MUTE CHECK: Block muted users from sending messages
+      const isMuted = await storage.isUserMutedInChatroom(roomId, parseInt(userId as string));
+      if (isMuted) {
+        return res.status(403).json({ message: "You have been muted in this chatroom" });
+      }
+
+      // 📢 ADMINS-ONLY CHECK: Block non-admins when chatroom is in announcement mode
+      if (memberCheck[0].role !== 'admin') {
+        const [roomData] = await db.select({ adminsOnly: citychatrooms.adminsOnly }).from(citychatrooms).where(eq(citychatrooms.id, roomId)).limit(1);
+        if (roomData?.adminsOnly) {
+          return res.status(403).json({ message: "Only admins can send messages in this chatroom" });
+        }
       }
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM MESSAGE: User ${userId} sending message to chatroom ${roomId}`);
