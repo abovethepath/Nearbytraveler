@@ -8977,15 +8977,11 @@ Questions? Just reply to this message. Welcome aboard!
       
       const newReference = await storage.createUserReference(referenceData);
 
-      // Fire notification + activity log for the reviewee (non-blocking)
+      // Fire notification for the reviewee (non-blocking, no duplicate activity_log)
       ;(async () => {
         try {
-          const [reviewerUser, revieweeUser] = await Promise.all([
-            db.select({ username: users.username }).from(users).where(eq(users.id, Number(reviewerId))).then(r => r[0]),
-            db.select({ username: users.username }).from(users).where(eq(users.id, Number(revieweeId))).then(r => r[0]),
-          ]);
+          const reviewerUser = await db.select({ username: users.username }).from(users).where(eq(users.id, Number(reviewerId))).then(r => r[0]);
           const reviewerName = reviewerUser?.username || `user_${reviewerId}`;
-          const revieweeName = revieweeUser?.username || `user_${revieweeId}`;
 
           // Only insert notification if one doesn't already exist for this pair
           const existingNotif = await db.select({ id: notifications.id }).from(notifications).where(
@@ -8996,25 +8992,14 @@ Questions? Just reply to this message. Welcome aboard!
               userId: Number(revieweeId),
               fromUserId: Number(reviewerId),
               type: `reference_written:${revieweeId}`,
-              title: `@${reviewerName} wrote you a reference!`,
+              title: `@${reviewerName} just wrote you a reference!`,
               message: `@${reviewerName} just wrote you a reference!`,
               isRead: false,
               data: JSON.stringify({ reviewerId: Number(reviewerId), revieweeId: Number(revieweeId), profilePath: `/profile/${revieweeId}?tab=references` }),
             });
           }
-
-          await writeActivityLog({
-            userId: Number(revieweeId),
-            action: 'reference_written',
-            category: 'connections',
-            title: `@${reviewerName} wrote you a reference`,
-            description: `@${reviewerName} wrote a reference for @${revieweeName}`,
-            targetUserId: Number(reviewerId),
-            targetUsername: reviewerName,
-            linkUrl: `/profile/${revieweeId}?tab=references`,
-          });
         } catch (e) {
-          console.error('Failed to write reference notification/activity log:', e);
+          console.error('Failed to write reference notification:', e);
         }
       })();
 

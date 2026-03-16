@@ -140,7 +140,7 @@ export default function ResponsiveUserGrid({
     if (!user.interests || user.interests.length === 0) return null;
     const count = user.interests.length;
     return (
-      <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-bold leading-none whitespace-nowrap bg-gradient-to-r from-blue-500 to-purple-500 border-0 appearance-none select-none gap-1.5 shadow-md transition-shadow duration-200 text-white" style={{ WebkitFontSmoothing: 'antialiased', textRendering: 'optimizeLegibility' } as React.CSSProperties}>
+      <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-bold leading-none whitespace-nowrap bg-gradient-to-r from-blue-500 to-purple-500 border-0 appearance-none select-none gap-1.5 shadow-md transition-shadow duration-200 text-white" >
         {count} interest{count !== 1 ? 's' : ''}
       </div>
     );

@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export function ModernCardSkeleton() {
   return (
-    <Card className="relative overflow-hidden bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50">
+    <Card className="relative overflow-hidden bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50">
       <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/60 dark:via-gray-700/60 to-transparent"></div>
       
       <CardHeader className="space-y-4">
@@ -38,7 +38,7 @@ export function ModernCardSkeleton() {
 
 export function ModernEventSkeleton() {
   return (
-    <Card className="relative overflow-hidden bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50">
+    <Card className="relative overflow-hidden bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50">
       <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/60 dark:via-gray-700/60 to-transparent"></div>
       
       <CardHeader className="space-y-3">
@@ -72,7 +72,7 @@ export function ModernEventSkeleton() {
 
 export function ModernListSkeleton() {
   return (
-    <div className="relative overflow-hidden rounded-lg bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 p-4">
+    <div className="relative overflow-hidden rounded-lg bg-white/50 dark:bg-gray-800/50 border border-gray-200/50 dark:border-gray-700/50 p-4">
       <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/60 dark:via-gray-700/60 to-transparent"></div>
       
       <div className="flex items-center gap-4">
