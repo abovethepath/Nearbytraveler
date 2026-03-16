@@ -566,7 +566,7 @@ export default function Messages() {
     [meetupChatrooms]
   );
   const eventChats = React.useMemo(() =>
-    (meetupChatrooms as any[]).filter((mc: any) => mc.chatType === 'event'),
+    (meetupChatrooms as any[]).filter((mc: any) => mc.chatType === 'event' && !isEndedChat(mc)),
     [meetupChatrooms]
   );
   const groupDMs = React.useMemo(() =>
@@ -574,10 +574,7 @@ export default function Messages() {
     [meetupChatrooms]
   );
   const expiredChats = React.useMemo(() =>
-    (meetupChatrooms as any[]).filter((mc: any) => {
-      if (mc.chatType === 'event') return false;
-      return isEndedChat(mc);
-    }),
+    (meetupChatrooms as any[]).filter((mc: any) => isEndedChat(mc)),
     [meetupChatrooms]
   );
 
@@ -603,18 +600,19 @@ export default function Messages() {
     if (tabInitialized) return;
     const initialMeetupChatId = getInitialMeetupChatId();
     if (initialMeetupChatId) {
+      if ((meetupChatrooms as any[]).length === 0) return;
       const mc = (meetupChatrooms as any[]).find((c: any) => c.id === initialMeetupChatId);
       if (mc) {
-        if (mc.chatType === 'event') { setActiveTab('events'); setTabInitialized(true); return; }
         if (isEndedChat(mc)) { setActiveTab('expired'); setTabInitialized(true); return; }
+        if (mc.chatType === 'event') { setActiveTab('events'); setTabInitialized(true); return; }
         if (mc.chatType === 'group_dm') { setActiveTab('dms'); setTabInitialized(true); return; }
         setActiveTab('meetups'); setTabInitialized(true); return;
       }
     }
     if (targetUserId) { setActiveTab('dms'); setTabInitialized(true); return; }
     if ((meetupChatrooms as any[]).length > 0 || conversations.length > 0) {
-      if (meetupUnread > 0) { setActiveTab('meetups'); }
-      else if (dmUnread > 0) { setActiveTab('dms'); }
+      if (dmUnread > 0) { setActiveTab('dms'); }
+      else if (meetupUnread > 0) { setActiveTab('meetups'); }
       else if (eventUnread > 0) { setActiveTab('events'); }
       else if (expiredUnread > 0) { setActiveTab('expired'); }
       else { setActiveTab('dms'); }
