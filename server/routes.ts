@@ -4547,6 +4547,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           lastName: users.lastName,
           userType: users.userType,
           email: users.email,
+          phoneNumber: users.phoneNumber,
+          location: users.location,
+          hometownCity: users.hometownCity,
+          hometownState: users.hometownState,
+          hometownCountry: users.hometownCountry,
+          isCurrentlyTraveling: users.isCurrentlyTraveling,
+          travelDestination: users.travelDestination,
+          subscriptionStatus: users.subscriptionStatus,
           lastLogin: users.last_login,
           createdAt: users.createdAt,
           ambassadorStatus: users.ambassadorStatus,
@@ -4554,8 +4562,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           profileImage: users.profileImage,
           adminNotes: users.adminNotes,
           referralCount: users.referralCount,
-          hometownCity: users.hometownCity,
-          hometownState: users.hometownState,
         })
         .from(users)
         .orderBy(sqlExpr`CASE WHEN ${users.last_login} IS NULL THEN 1 ELSE 0 END`, desc(users.last_login));
@@ -23964,22 +23970,27 @@ Questions? Just reply to this message. Welcome aboard!
   // GET /api/admin/stats - Admin dashboard statistics
   app.get("/api/admin/stats", async (req: any, res) => {
     try {
-      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
-      if (userId !== 2) return res.status(403).json({ error: "Admin access required" });
-      const allUsers = await db.select().from(users);
-      const totalUsers = allUsers.length;
-      const totalBusinesses = allUsers.filter(u => u.userType === 'business').length;
+      const sessionUser = (req as any).session?.user;
+      if (!sessionUser || sessionUser.id !== 2) {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const newUsersThisMonth = allUsers.filter(u => u.createdAt && new Date(u.createdAt) >= startOfMonth).length;
+
+      const [totalRow, bizRow, newThisMonthRow] = await Promise.all([
+        db.select({ count: sql<number>`count(*)::int` }).from(users),
+        db.select({ count: sql<number>`count(*)::int` }).from(users).where(eq(users.userType, 'business')),
+        db.select({ count: sql<number>`count(*)::int` }).from(users).where(sql`created_at >= ${startOfMonth.toISOString()}`),
+      ]);
 
       res.json({
-        totalUsers,
-        totalBusinesses,
+        totalUsers: totalRow[0]?.count ?? 0,
+        totalBusinesses: bizRow[0]?.count ?? 0,
         activeSubscriptions: 0,
         monthlyRevenue: 0,
-        newUsersThisMonth,
-        subscriptionRevenue: 0
+        newUsersThisMonth: newThisMonthRow[0]?.count ?? 0,
+        subscriptionRevenue: 0,
       });
     } catch (error: any) {
       console.error('Error fetching admin stats:', error);

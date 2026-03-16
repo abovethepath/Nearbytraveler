@@ -10,7 +10,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Users, Building2, DollarSign, Settings, TrendingUp, AlertTriangle } from "lucide-react";
+import { Users, Building2, DollarSign, Settings, TrendingUp, AlertTriangle, Lock } from "lucide-react";
+import { useAuth } from "@/App";
 
 interface AdminStats {
   totalUsers: number;
@@ -61,33 +62,38 @@ interface PricingConfig {
 
 export default function AdminDashboard() {
   const { toast } = useToast();
+  const { user, isLoading: authLoading } = useAuth();
   const [pricingForm, setPricingForm] = useState({
     monthlyPrice: "50.00",
     trialDays: "7"
   });
 
-  // Fetch admin stats
+  // Fetch admin stats — only after confirmed admin session
   const { data: stats, isLoading: statsLoading } = useQuery<AdminStats>({
     queryKey: ["/api/admin/stats"],
-    retry: 1
+    retry: 2,
+    enabled: !!user && user.id === 2,
   });
 
   // Fetch all users
   const { data: users, isLoading: usersLoading } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
-    retry: 1
+    retry: 2,
+    enabled: !!user && user.id === 2,
   });
 
   // Fetch business subscriptions
   const { data: businesses, isLoading: businessesLoading } = useQuery<BusinessSubscription[]>({
     queryKey: ["/api/admin/businesses"],
-    retry: 1
+    retry: 2,
+    enabled: !!user && user.id === 2,
   });
 
   // Fetch current pricing config
   const { data: pricingConfig } = useQuery<PricingConfig>({
     queryKey: ["/api/admin/pricing-config"],
-    retry: 1
+    retry: 2,
+    enabled: !!user && user.id === 2,
   });
 
   // Update pricing mutation
@@ -147,6 +153,32 @@ export default function AdminDashboard() {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
   };
+
+  if (authLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  if (!user || user.id !== 2) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <Card className="w-full max-w-md mx-4">
+          <CardHeader className="text-center">
+            <Lock className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
+            <CardTitle>Admin Access Required</CardTitle>
+            <CardDescription>
+              {!user
+                ? "You must be logged in as @nearbytrav to view this page."
+                : `You're logged in as @${(user as any).username} — admin access is restricted to @nearbytrav.`}
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
 
   if (statsLoading) {
     return (
