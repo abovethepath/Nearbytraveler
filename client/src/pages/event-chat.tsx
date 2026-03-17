@@ -138,7 +138,7 @@ export default function EventChat() {
   }
 
   return (
-    <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
+    <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full md:border-r-[3px] md:border-r-[#e0e0e0] md:dark:border-r-[#2d2d2d]">
       <WhatsAppChat
         chatId={chatroom.id}
         chatType="event"
