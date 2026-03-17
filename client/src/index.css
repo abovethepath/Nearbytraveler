@@ -2686,3 +2686,25 @@ html.dark .landing-quote {
   animation: cityPulseLiveDot 2s ease-in-out infinite;
 }
 
+/* ── DARK MODE INPUT / TEXTAREA VISIBILITY ──────────────────────────────────
+   Tailwind dark: variants can lose to other specificity chains.
+   These explicit rules guarantee every text input and textarea shows a
+   clearly visible border and a slightly lighter background than the page.
+   Excludes checkboxes, radio buttons, and range sliders.
+   ───────────────────────────────────────────────────────────────────────── */
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]) {
+  border: 1px solid #4b5563 !important; /* gray-600 — visible on any dark bg */
+  background-color: #1f2937 !important; /* gray-800 */
+}
+
+.dark textarea {
+  border: 1px solid #4b5563 !important;
+  background-color: #1f2937 !important;
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):focus,
+.dark textarea:focus {
+  border-color: #6b7280 !important; /* gray-500 — slightly brighter on focus */
+  outline: none !important;
+}
+
