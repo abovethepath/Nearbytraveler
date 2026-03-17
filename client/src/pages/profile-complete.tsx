@@ -23,7 +23,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon, Mail, ThumbsUp, Building2, Award } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon, Mail, ThumbsUp, Building2, Award, Bell } from "lucide-react";
 import { SkeletonProfile } from "@/components/ui/skeleton-loaders";
 
 type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries' | 'vouches' | 'chatrooms' | 'menu' | 'about';
@@ -658,6 +658,82 @@ function nudgeIncrementLogin(userId: number) {
     s.logins = (s.logins || 0) + 1;
     localStorage.setItem(key, JSON.stringify(s));
   } catch {}
+}
+
+function NotificationPreferencesSection({ currentUserId }: { currentUserId?: number }) {
+  const { toast } = useToast();
+  const { data: prefs, isLoading } = useQuery<Record<string, boolean>>({
+    queryKey: ['/api/users/notification-preferences'],
+    enabled: !!currentUserId,
+  });
+  const [saving, setSaving] = useState(false);
+  const [local, setLocal] = useState<Record<string, boolean> | null>(null);
+
+  const effective = local ?? prefs ?? { messages: true, meet_requests: true, connections: true, events: true, vouches: true };
+
+  const toggle = async (key: string) => {
+    if (!currentUserId) return;
+    const next = { ...effective, [key]: !effective[key] };
+    setLocal(next);
+    setSaving(true);
+    try {
+      await apiRequest('PUT', '/api/users/notification-preferences', next);
+    } catch {
+      toast({ description: 'Failed to save notification preference.', variant: 'destructive' });
+      setLocal(effective);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const categories = [
+    { key: 'messages', label: 'Messages', desc: 'DMs and chatroom messages' },
+    { key: 'meet_requests', label: 'Meet Requests', desc: 'Available Now and Quick Meet requests' },
+    { key: 'connections', label: 'Connections', desc: 'Connection requests and acceptances' },
+    { key: 'events', label: 'Events', desc: 'RSVPs, invites, and traveler arrivals' },
+    { key: 'vouches', label: 'Vouches & References', desc: 'Vouches and written references' },
+  ];
+
+  if (isLoading || !currentUserId) return null;
+
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-2">
+      <Card className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+        <CardHeader className="pb-2 border-b border-gray-100 dark:border-gray-800">
+          <CardTitle className="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
+            <Bell className="w-4 h-4 text-orange-500" />
+            Push Notifications
+          </CardTitle>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Choose what you want to be notified about</p>
+        </CardHeader>
+        <CardContent className="pt-3 space-y-3">
+          {categories.map(({ key, label, desc }) => (
+            <div key={key} className="flex items-center justify-between py-1">
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{label}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{desc}</p>
+              </div>
+              <button
+                onClick={() => toggle(key)}
+                disabled={saving}
+                className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  effective[key] ? 'bg-orange-500' : 'bg-gray-300 dark:bg-gray-600'
+                }`}
+                role="switch"
+                aria-checked={effective[key]}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                    effective[key] ? 'translate-x-4' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
@@ -4246,6 +4322,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     <div className="flex flex-col gap-4 md:gap-0">
       <ProfileHeader {...profileProps} />
       <ProfileTabs {...profileProps} />
+      {isOwnProfile && <NotificationPreferencesSection currentUserId={currentUser?.id} />}
       {isNearbytrav && <AdminDashboard />}
       <ProfileDialogs {...profileProps} />
     </div>

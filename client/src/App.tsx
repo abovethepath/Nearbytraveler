@@ -12,6 +12,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import GlobalHotfixes from "@/GlobalHotfixes";
 import { DarkModeSuggestionBanner } from "@/components/DarkModeSuggestionBanner";
 import { FullPageSkeleton } from "@/components/FullPageSkeleton";
+import { OneSignalInit } from "@/components/OneSignalInit";
+import { NotificationPermissionModal } from "@/components/NotificationPermissionModal";
 import { METRO_AREAS } from "@shared/constants";
 import Home from "@/pages/home";
 import Welcome from "@/pages/welcome";
@@ -2013,6 +2015,14 @@ function Router() {
       {/* Advanced Search for native iOS - web nav is hidden, so we render the widget here and open it via postMessage from native header */}
       {isNativeIOSApp() && !isSignupRoute && authValue.isAuthenticated && (
         <NativeIOSSearchWidget />
+      )}
+
+      {/* OneSignal push notifications — init + permission prompt */}
+      {authValue.isAuthenticated && user?.id && (
+        <>
+          <OneSignalInit userId={user.id} />
+          <NotificationPermissionModal userId={user.id} />
+        </>
       )}
     </AuthContext.Provider>
   );

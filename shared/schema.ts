@@ -230,6 +230,8 @@ export const users = pgTable("users", {
 
   lastLogin: timestamp("last_login"),
   adminNotes: text("admin_notes"),
+  onesignalPlayerId: text("onesignal_player_id"), // OneSignal push subscription ID
+  notificationPreferences: text("notification_preferences"), // JSON: { messages, meet_requests, connections, events, vouches }
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
   index("idx_users_hometown").on(table.hometownCity, table.hometownCountry),

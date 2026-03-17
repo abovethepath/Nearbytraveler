@@ -1,0 +1,51 @@
+OneSignal is the right choice — free tier handles up to 10,000 subscribers, has a great dashboard, works on web push + iOS + Android, and is the fastest to integrate. Here's the full prompt:
+
+@codebase Integrate OneSignal push notifications across the entire Nearby Traveler platform. This should work on web (Chrome, Safari, Firefox), iOS, and Android.
+Setup:
+
+Install the OneSignal SDK: npm install @onesignal/node-onesignal for the backend and load the OneSignal web SDK via script tag in index.html
+Add these to environment variables:
+
+ONESIGNAL_APP_ID
+ONESIGNAL_API_KEY
+
+
+Initialize OneSignal in the frontend on app load — prompt the user for notification permission after they complete onboarding/first login, NOT on first visit. Store their OneSignal player_id / subscription_id against their user record in the database — add a onesignal_player_id column to the users table
+On the backend, create a helper function sendPushNotification(userId, title, message, url) that looks up the user's onesignal_player_id and sends via OneSignal's REST API
+
+Trigger push notifications for these events (hook into the existing notification creation points):
+🔴 Immediate / high priority:
+
+"@[username] wants to meet up! 👋" → when Available Now request received → opens Available Now page
+"You're in! @[host] accepted your meet request 🎉" → when accepted → opens meetup chatroom
+"New message from @[username] 💬" → when DM received and user is not currently in that chat → opens DM
+"@[username] sent a message in [chatroom name] 💬" → when group/event/city chatroom message received and user is not in that chat → opens chatroom
+"@[username] wants to connect! 🤝" → connection request received → opens their profile
+"@[username] accepted your connection 🧡" → connection accepted → opens their profile
+"@[username] vouched for you 🏅" → vouch received → opens profile vouches tab
+"@[username] wrote you a reference ✍️" → reference received → opens profile references tab
+"@[username] RSVPd to your event 📅" → event RSVP received → opens event page
+"@[username] added you to a group chat 💬" → added to chatroom → opens chatroom
+"✈️ [username] is visiting [city] for [X] days — say hello!" → traveler arrives in local's city → opens traveler's profile
+
+🟡 Reminder / time-based:
+
+"Your Available Now session expires in 30 minutes ⏰" → 30 min before expiry → opens Available Now
+"[Event name] starts in 1 hour 📅" → 1 hour before event → opens event page
+
+Smart rules — do NOT send push if:
+
+The user is currently active in that exact chat (check last activity timestamp)
+The user has already seen the notification in-app within the last 5 minutes
+It's a message from the user themselves
+The user has disabled that notification type (add a basic notification preferences section to profile settings: toggles for Messages, Meet Requests, Connections, Events, Vouches)
+
+Notification preferences UI:
+Add a "Notifications" section to the profile settings page with toggles for each category above. Store preferences in a notification_preferences JSON column on the users table. Respect these preferences before sending any push.
+Web push permission prompt:
+
+Show the OneSignal permission prompt as a custom in-app modal (not the raw browser prompt) after the user's 3rd login or after they complete their first connection — not on first visit
+The modal should say: "Stay in the loop — enable notifications to know when someone wants to meet up, messages you, or arrives in your city."
+Two buttons: "Turn On Notifications" (triggers browser permission) and "Maybe Later" (dismisses, asks again after 7 days)
+
+Do not change any existing notification bell or in-app notification logic — push notifications are additive on top of what already exists. Desktop web, mobile web, iOS, and Android.

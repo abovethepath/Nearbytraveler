@@ -858,6 +858,58 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   await setupAuth(app);
   console.log("✅ Replit Auth setup complete");
 
+  // ─── OneSignal: wrap createNotification to fire push notifications ────────
+  // This single hook covers ALL notification creation points automatically.
+  {
+    const origCreate = storage.createNotification.bind(storage);
+    (storage as any).createNotification = async function(notif: any) {
+      const created = await origCreate(notif);
+      // Fire push asynchronously — never block the main request
+      setImmediate(async () => {
+        try {
+          if (!process.env.ONESIGNAL_APP_ID || !process.env.ONESIGNAL_API_KEY) return;
+          if (!created?.userId) return;
+          // Map notification type to a human-readable push message
+          const TYPE_PUSH: Record<string, { title: string; msg: string; url: string; cat: string } | null> = {
+            connection_request: { title: '🤝 New connection request', msg: notif.message || 'Someone wants to connect!', url: notif.data ? (tryParseJson(notif.data)?.profileUrl || '/connections') : '/connections', cat: 'connections' },
+            connection_accepted: { title: '🧡 Connection accepted!', msg: notif.message || 'Your connection was accepted.', url: notif.data ? (tryParseJson(notif.data)?.profileUrl || '/connections') : '/connections', cat: 'connections' },
+            vouch: { title: '🏅 New vouch received', msg: notif.message || 'Someone vouched for you!', url: '/profile#vouches', cat: 'vouches' },
+            vouch_received: { title: '🏅 New vouch received', msg: notif.message || 'Someone vouched for you!', url: '/profile#vouches', cat: 'vouches' },
+            reference_received: { title: '✍️ New reference written', msg: notif.message || 'Someone wrote you a reference!', url: '/profile#references', cat: 'vouches' },
+            event_rsvp: { title: '📅 New RSVP', msg: notif.message || 'Someone RSVP\'d to your event!', url: notif.data ? (tryParseJson(notif.data)?.eventUrl || '/events') : '/events', cat: 'events' },
+            event_invite: { title: '📅 Event invitation', msg: notif.message || 'You\'ve been invited to an event!', url: notif.data ? (tryParseJson(notif.data)?.eventUrl || '/events') : '/events', cat: 'events' },
+            available_now_request: { title: '👋 Meetup request!', msg: notif.message || 'Someone wants to meet up!', url: '/available-now', cat: 'meet_requests' },
+            available_now_accepted: { title: '🎉 Meetup accepted!', msg: notif.message || 'Your meet request was accepted!', url: notif.data ? (tryParseJson(notif.data)?.chatroomUrl || '/messages') : '/messages', cat: 'meet_requests' },
+            quick_meetup_request: { title: '⚡ Quick meetup request', msg: notif.message || 'Someone wants a quick meetup!', url: '/quick-meetups', cat: 'meet_requests' },
+            quick_meetup_accepted: { title: '🎉 Quick meetup accepted!', msg: notif.message || 'Your quick meetup was accepted!', url: '/messages', cat: 'meet_requests' },
+            message: { title: '💬 New message', msg: notif.message || 'You have a new message!', url: notif.data ? (tryParseJson(notif.data)?.chatUrl || '/messages') : '/messages', cat: 'messages' },
+            chatroom_message: { title: '💬 New message', msg: notif.message || 'New message in a chat!', url: notif.data ? (tryParseJson(notif.data)?.chatUrl || '/messages') : '/messages', cat: 'messages' },
+            traveler_arriving: { title: '✈️ Traveler arriving', msg: notif.message || 'A traveler is visiting your city!', url: notif.data ? (tryParseJson(notif.data)?.profileUrl || '/discover') : '/discover', cat: 'events' },
+            chatroom_added: { title: '💬 Added to a group chat', msg: notif.message || 'You were added to a chat!', url: notif.data ? (tryParseJson(notif.data)?.chatUrl || '/messages') : '/messages', cat: 'messages' },
+          };
+          const pushDef = TYPE_PUSH[notif.type];
+          if (!pushDef) return; // Don't push for all types
+          const { pushToUser: doPush } = await import('./pushNotifications');
+          await doPush({
+            db,
+            users,
+            eq,
+            toUserId: created.userId,
+            title: created.title || pushDef.title,
+            message: created.message || pushDef.msg,
+            url: pushDef.url,
+            notifType: notif.type,
+            fromUserId: notif.fromUserId ?? null,
+          });
+        } catch (_e) { /* push failures are non-fatal */ }
+      });
+      return created;
+    };
+  }
+  function tryParseJson(s: string | null | undefined): any {
+    try { return s ? JSON.parse(s) : null; } catch { return null; }
+  }
+
   // Lightweight activity tracking (for DM email rules):
   // update users.lastSeenAt for authenticated API requests, throttled to avoid excessive writes.
   const lastSeenWriteMsByUser = new Map<number, number>();
@@ -29216,6 +29268,59 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error("Error fetching event chatroom:", error);
       res.status(500).json({ error: "Failed to fetch event chatroom" });
+    }
+  });
+
+  // ─── OneSignal push notification endpoints ───────────────────────────────
+
+  // Register or update OneSignal player/subscription ID for the current user
+  app.put("/api/users/onesignal-player", async (req: any, res) => {
+    try {
+      const sessionUser = req.session?.user;
+      if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
+      const { playerId } = req.body;
+      if (!playerId || typeof playerId !== 'string') {
+        return res.status(400).json({ error: "playerId required" });
+      }
+      await db.update(users).set({ onesignalPlayerId: playerId }).where(eq(users.id, sessionUser.id));
+      return res.json({ ok: true });
+    } catch (e: any) {
+      console.error("[onesignal] register player error:", e);
+      return res.status(500).json({ error: "Server error" });
+    }
+  });
+
+  // Get notification preferences for the current user
+  app.get("/api/users/notification-preferences", async (req: any, res) => {
+    try {
+      const sessionUser = req.session?.user;
+      if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
+      const [user] = await db.select({ prefs: users.notificationPreferences }).from(users).where(eq(users.id, sessionUser.id)).limit(1);
+      const defaults = { messages: true, meet_requests: true, connections: true, events: true, vouches: true };
+      try {
+        const parsed = user?.prefs ? JSON.parse(user.prefs) : {};
+        return res.json({ ...defaults, ...parsed });
+      } catch {
+        return res.json(defaults);
+      }
+    } catch (e: any) {
+      console.error("[onesignal] get prefs error:", e);
+      return res.status(500).json({ error: "Server error" });
+    }
+  });
+
+  // Update notification preferences for the current user
+  app.put("/api/users/notification-preferences", async (req: any, res) => {
+    try {
+      const sessionUser = req.session?.user;
+      if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
+      const { messages, meet_requests, connections, events, vouches } = req.body;
+      const prefs = { messages: !!messages, meet_requests: !!meet_requests, connections: !!connections, events: !!events, vouches: !!vouches };
+      await db.update(users).set({ notificationPreferences: JSON.stringify(prefs) }).where(eq(users.id, sessionUser.id));
+      return res.json({ ok: true, prefs });
+    } catch (e: any) {
+      console.error("[onesignal] update prefs error:", e);
+      return res.status(500).json({ error: "Server error" });
     }
   });
 
