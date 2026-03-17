@@ -443,7 +443,7 @@ function Router() {
   // --- Auth limbo hardening (web only) ---
   const authSyncInFlightRef = React.useRef(false);
   const authSyncSeqRef = React.useRef(0);
-  const lastAuthSyncAtRef = React.useRef(0);
+  const lastAuthSyncAtRef = React.useRef(Date.now());
   const navSyncTimerRef = React.useRef<number | undefined>(undefined);
 
   // If we determine the server session is invalid, mark it for this tab so we:
@@ -697,35 +697,8 @@ function Router() {
         }
 
         if (res.status === 401) {
-          const msSinceLogin = Date.now() - loginSucceededAtRef.current;
-          if (msSinceLogin < 30_000) {
-            console.log("Auth sync: 401 within login grace period, keeping user state");
-            return;
-          }
-
-          // Background navigation syncs (force=false) must NOT kick the user out on a
-          // single 401 — the server may be momentarily unavailable (cold start, Redis
-          // blip, Render instance restart). Leave auth state intact so the user can
-          // keep using the app. Only forced syncs (login/signup transitions) perform
-          // the full clear-and-redirect because those indicate a definitive state change.
-          if (!force) {
-            console.warn("Auth sync: background 401 — session may have lapsed, keeping user on page");
-            return;
-          }
-
-          clearLocalAuthState("syncAuthFromServer:401");
-          setUser(null);
-          setLoginPendingFlag(false);
-          setIsAuthenticating(false);
-
-          if (!isPublicRoute && !(authLoading || !authInitialized || isLoading)) {
-            try {
-              if (!isLandingPage) localStorage.setItem("postAuthRedirect", location);
-            } catch {
-              // ignore
-            }
-            setLocation("/");
-          }
+          // Silent fail — a background sync getting a 401 never redirects.
+          // The only thing that should ever redirect to landing is an explicit logout.
           return;
         }
       } catch (e) {
