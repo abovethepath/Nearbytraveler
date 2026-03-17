@@ -267,12 +267,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </label>
 
               </div>
-              {/* Mobile web: place badge under avatar (avoid camera icon overlap) */}
-              {isMobileWeb && isNewToTown && (
-                <span className="mt-2 inline-flex items-center self-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm text-green-800">
-                  New to Town
-                </span>
-              )}
             </div>
             {/* RIGHT: @username + Share Profile, buttons - bio has its own dedicated section below hero */}
             <div className="flex-1 min-w-0 flex flex-col gap-1.5 pt-0 lg:pl-[23rem]">
@@ -372,11 +366,11 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 )}
               </div>
 
-              {/* Nearby Local/Traveler moved under username (inside hero content area) */}
-              <div className="mt-1 space-y-0.5">
+              {/* Nearby Local/Traveler + badge: desktop only — mobile shows full-width below */}
+              <div className="hidden lg:block mt-1 space-y-0.5">
                 <div className="text-sm sm:text-base font-semibold crisp-hero-text flex items-center gap-2 flex-wrap text-white" style={{ color: '#ffffff' }}>
                   Nearby Local · <span style={{ color: '#ffffff' }}>{hometown}</span>
-                  {!isMobileWeb && isNewToTown && (
+                  {isNewToTown && (
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
                       New to Town
                     </span>
@@ -392,7 +386,26 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 mt-3 md:hidden">
+            </div>
+            </div>
+
+            {/* MOBILE ONLY: full-width badge + city lines + CTA below avatar/name row */}
+            <div className="lg:hidden mt-2 space-y-1">
+              {isNewToTown && (
+                <span className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm text-green-800">
+                  New to Town
+                </span>
+              )}
+              <div className="text-sm sm:text-base font-semibold crisp-hero-text text-white" style={{ color: '#ffffff' }}>
+                Nearby Local · <span style={{ color: '#ffffff' }}>{hometown}</span>
+              </div>
+              {hasValidTravelDestination && (
+                <div className="text-sm sm:text-base font-semibold crisp-hero-text text-white" title={currentTravelPlan} style={{ color: '#ffffff' }}>
+                  Nearby Traveler <span style={{ color: '#ffffff' }}>→</span>{" "}
+                  <span style={{ color: '#ffffff' }}>{travelDestinationDisplay}</span>
+                </div>
+              )}
+              <div className="flex flex-wrap items-center gap-2 mt-2">
                 <Button
                   type="button"
                   size="sm"
@@ -403,13 +416,13 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     setTriggerQuickMeetup?.(true);
                     setTimeout(() => setTriggerQuickMeetup?.(false), 500);
                   }}
-                  data-testid="button-lets-meet-now-hero"
+                  data-testid="button-lets-meet-now-hero-mobile"
                 >
                   I'm Out Now
                 </Button>
               </div>
             </div>
-            </div>
+
             {/* Desktop: tab bar integrated at bottom of hero */}
             {!isNativeIOSApp() && (
               <div className="w-full mt-4 lg:pl-[23rem]">

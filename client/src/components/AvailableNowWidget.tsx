@@ -192,7 +192,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
       setShowSetup(false);
-      toast({ title: "You're Available Now — I'm Free!", description: "Others in your city can see you're ready to hang out." });
+      toast({ title: "You're Out Now!", description: "Others in your city can see you're out and ready to hang out." });
     },
     onError: (error: any) => {
       console.error("Go Available error:", error);
@@ -762,7 +762,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             >
               <span className="flex items-center justify-center gap-2 pointer-events-none">
                 <Zap className="w-5 h-5 text-yellow-300" />
-                I'm Available to Hang Out
+                I'm Out Now
               </span>
             </button>
 
