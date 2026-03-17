@@ -128,6 +128,7 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
     popoverUserIds?: number[];
     popoverRequestData?: any[];
     onClick?: () => void;
+    onPopoverClose?: () => void;
   };
 
   const pills: PillDef[] = [
@@ -159,6 +160,7 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
       notifIds: vouchNotifIds,
       popoverType: "notification-users" as PillPopoverType,
       popoverUserIds: vouchFromUserIds,
+      onPopoverClose: () => markNotificationsRead(vouchNotifIds),
     },
     // ✍️ References → popover showing who wrote the reference
     {
@@ -168,6 +170,7 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
       notifIds: referenceNotifIds,
       popoverType: "notification-users" as PillPopoverType,
       popoverUserIds: referenceFromUserIds,
+      onPopoverClose: () => markNotificationsRead(referenceNotifIds),
     },
     // 🤝 Connections accepted → popover showing who accepted
     {
@@ -177,6 +180,7 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
       notifIds: connectionAcceptedNotifIds,
       popoverType: "notification-users" as PillPopoverType,
       popoverUserIds: connectionAcceptedFromUserIds,
+      onPopoverClose: () => markNotificationsRead(connectionAcceptedNotifIds),
     },
     // 🎉 Meetup accepted → popover showing who accepted
     {
@@ -186,6 +190,7 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
       notifIds: meetAcceptedNotifIds,
       popoverType: "notification-users" as PillPopoverType,
       popoverUserIds: meetAcceptedFromUserIds,
+      onPopoverClose: () => markNotificationsRead(meetAcceptedNotifIds),
     },
     // 💬 Added to group chat → navigate (no specific user list to show)
     {
@@ -193,7 +198,10 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
       count: groupChatAddedNotifIds.length,
       label: `added to group chat${groupChatAddedNotifIds.length === 1 ? "" : "s"} →`,
       notifIds: groupChatAddedNotifIds,
-      onClick: () => setLocation("/messages"),
+      onClick: () => {
+        markNotificationsRead(groupChatAddedNotifIds);
+        setLocation("/messages");
+      },
     },
     // 💬 Unread messages → navigate and immediately clear count
     {
@@ -294,9 +302,7 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
                   userIds={pill.popoverUserIds}
                   requestData={pill.popoverRequestData}
                   currentUserId={currentUserId}
-                  onOpen={() => {
-                    if (pill.notifIds?.length) markNotificationsRead(pill.notifIds);
-                  }}
+                  onClose={pill.onPopoverClose}
                 >
                   {pillEl}
                 </PillPopover>

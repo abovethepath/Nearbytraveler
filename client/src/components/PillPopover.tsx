@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/queryClient";
@@ -59,6 +59,7 @@ interface PillPopoverProps {
   currentUserId?: number | null;
   onNavigateFallback?: () => void;
   onOpen?: () => void;
+  onClose?: () => void;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -235,8 +236,10 @@ function PopoverInner({
     staleTime: 30_000,
   });
 
+  // Use the snapshotted userIds (frozen at open time) so the list never empties while open
+  const frozenIdsKey = userIds?.join(",") ?? "";
   const { data: notifUsers = [], isLoading: notifLoading } = useQuery<PillUser[]>({
-    queryKey: ["/api/users/by-ids", userIds?.join(",")],
+    queryKey: ["/api/users/by-ids", frozenIdsKey],
     queryFn: async () => {
       if (!userIds?.length) return [];
       const res = await fetch(`${base}/api/users/by-ids?ids=${userIds.join(",")}`);
@@ -244,7 +247,7 @@ function PopoverInner({
       return res.json();
     },
     enabled: type === "notification-users" && !!userIds?.length,
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
   });
 
   const isLoading = cityLoading || availableLoading || notifLoading;
@@ -307,9 +310,15 @@ export function PillPopover({
   currentUserId,
   onNavigateFallback,
   onOpen,
+  onClose,
 }: PillPopoverProps) {
   const [open, setOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Snapshot userIds and requestData at open time so the list stays stable
+  // while the popover is visible (even if parent state changes underneath it).
+  const [frozenUserIds, setFrozenUserIds] = useState<number[] | undefined>(undefined);
+  const [frozenRequestData, setFrozenRequestData] = useState<any[] | undefined>(undefined);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -318,20 +327,29 @@ export function PillPopover({
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const handleOpen = () => {
-    onOpen?.();
-    setOpen(true);
+  // Single handler for all open/close transitions — avoids dual-trigger conflicts
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen && !open) {
+      // Opening: snapshot user data so the list stays stable while visible
+      setFrozenUserIds(userIds && userIds.length > 0 ? [...userIds] : undefined);
+      setFrozenRequestData(requestData ? [...requestData] : undefined);
+      onOpen?.();
+    } else if (!newOpen && open) {
+      // Closing: mark notifications read AFTER user has seen the popover
+      onClose?.();
+    }
+    setOpen(newOpen);
   };
 
-  const handleClose = () => setOpen(false);
+  const handleClose = () => handleOpenChange(false);
 
   if (isMobile) {
     return (
       <>
-        <button onClick={handleOpen} className="contents">
+        <button onClick={() => handleOpenChange(true)} className="contents">
           {children}
         </button>
-        <Sheet open={open} onOpenChange={setOpen}>
+        <Sheet open={open} onOpenChange={handleOpenChange}>
           <SheetContent
             side="bottom"
             className="rounded-t-2xl bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-5 pt-4 pb-8 max-h-[80vh]"
@@ -344,8 +362,8 @@ export function PillPopover({
             <PopoverInner
               type={type}
               city={city}
-              userIds={userIds}
-              requestData={requestData}
+              userIds={frozenUserIds}
+              requestData={frozenRequestData}
               label=""
               onClose={handleClose}
               currentUserId={currentUserId}
@@ -357,8 +375,8 @@ export function PillPopover({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild onClick={handleOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
+      <PopoverTrigger asChild>
         <button className="contents">{children}</button>
       </PopoverTrigger>
       <PopoverContent
@@ -369,8 +387,8 @@ export function PillPopover({
         <PopoverInner
           type={type}
           city={city}
-          userIds={userIds}
-          requestData={requestData}
+          userIds={frozenUserIds}
+          requestData={frozenRequestData}
           label={label}
           onClose={handleClose}
           currentUserId={currentUserId}
