@@ -329,7 +329,7 @@ export default function SignupLocal() {
   const { min: minDate, max: maxDate } = getDateInputConstraints();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 pt-4 pb-12">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 pt-4 pb-12 overflow-x-hidden">
       {/* Vibrant header banner */}
       <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-orange-500 py-3 px-4 text-center z-40 shadow-lg">
         <p className="text-white font-bold text-sm sm:text-base">
@@ -396,7 +396,7 @@ export default function SignupLocal() {
                   Where Do You Live?
                 </h3>
 
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600 overflow-hidden">
                   <Label className="text-gray-700 dark:text-gray-200 font-semibold mb-2 block">Your Hometown *</Label>
                   <SmartLocationInput
                     country={formData.hometownCountry}

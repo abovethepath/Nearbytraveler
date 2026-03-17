@@ -414,7 +414,7 @@ export default function SignupTraveling() {
   // No default date - user must pick their trip end date
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 pt-4 pb-12">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 pt-4 pb-12 overflow-x-hidden">
       {/* Vibrant header banner */}
       <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-orange-500 to-blue-600 py-3 px-4 text-center z-40 shadow-lg">
         <p className="text-white font-bold text-sm sm:text-base">
@@ -546,7 +546,7 @@ export default function SignupTraveling() {
                   Where Are You Traveling?
                 </h3>
 
-                <div className="bg-orange-50 dark:bg-orange-900/30 rounded-xl p-4 border-2 border-orange-200 dark:border-orange-700">
+                <div className="bg-orange-50 dark:bg-orange-900/30 rounded-xl p-4 border-2 border-orange-200 dark:border-orange-700 overflow-hidden">
                   <Label className="text-gray-700 dark:text-gray-200 font-semibold mb-2 block">Current Destination *</Label>
                   <SmartLocationInput
                     country={formData.destinationCountry}
