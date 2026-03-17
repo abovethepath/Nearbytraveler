@@ -805,7 +805,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
             <div className="bg-gradient-to-br from-orange-500 via-pink-500 to-blue-600 rounded-t-xl px-6 py-8 text-white">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2.5 bg-white dark:bg-gray-900/20 rounded-xl backdrop-blur-sm">
-                  <CalendarIcon className="w-6 h-6 text-white" />
+                  <CalendarIcon className="w-6 h-6 text-orange-500 dark:text-white" />
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Create New Event</h1>
               </div>
