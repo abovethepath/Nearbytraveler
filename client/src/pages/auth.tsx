@@ -100,9 +100,6 @@ export default function Auth() {
             login(fullUser);
           }
           
-          // Invalidate auth queries to refresh user state
-          queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-          
           toast({
             title: "Welcome back!",
             description: "Successfully logged in.",

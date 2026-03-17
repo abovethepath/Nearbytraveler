@@ -168,26 +168,7 @@ export async function apiRequest(
     }
     
     if (res.status === 401) {
-      const refreshed = await tryRefreshSession();
-      if (refreshed) {
-        const retryController = new AbortController();
-        const retryTimeout = setTimeout(() => retryController.abort(), 30000);
-        res = await fetch(fullUrl, {
-          method,
-          headers,
-          body: data ? JSON.stringify(data) : null,
-          credentials: 'include',
-          signal: retryController.signal,
-        });
-        clearTimeout(retryTimeout);
-        if (res.status === 401) {
-          window.location.href = '/?session_expired=1';
-          throw new Error('Session expired. Please log in again.');
-        }
-      } else {
-        window.location.href = '/?session_expired=1';
-        throw new Error('Session expired. Please log in again.');
-      }
+      throw new Error('401: Unauthorized');
     }
     
     await throwIfResNotOk(res);
@@ -253,20 +234,7 @@ export const getQueryFn: <T>(options: {
       if (unauthorizedBehavior === "returnNull") {
         return null;
       }
-      const refreshed = await tryRefreshSession();
-      if (refreshed) {
-        res = await fetch(fullUrl, {
-          credentials: "include",
-          headers,
-        });
-        if (res.status === 401) {
-          window.location.href = '/?session_expired=1';
-          throw new Error('Session expired. Please log in again.');
-        }
-      } else {
-        window.location.href = '/?session_expired=1';
-        throw new Error('Session expired. Please log in again.');
-      }
+      throw new Error('401: Unauthorized');
     }
 
     await throwIfResNotOk(res);
