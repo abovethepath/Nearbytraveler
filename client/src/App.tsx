@@ -702,6 +702,17 @@ function Router() {
             console.log("Auth sync: 401 within login grace period, keeping user state");
             return;
           }
+
+          // Background navigation syncs (force=false) must NOT kick the user out on a
+          // single 401 — the server may be momentarily unavailable (cold start, Redis
+          // blip, Render instance restart). Leave auth state intact so the user can
+          // keep using the app. Only forced syncs (login/signup transitions) perform
+          // the full clear-and-redirect because those indicate a definitive state change.
+          if (!force) {
+            console.warn("Auth sync: background 401 — session may have lapsed, keeping user on page");
+            return;
+          }
+
           clearLocalAuthState("syncAuthFromServer:401");
           setUser(null);
           setLoginPendingFlag(false);
@@ -850,6 +861,8 @@ function Router() {
           setUser(serverUser);
           stopAuthenticating();
           setLoginPendingFlag(false);
+          // Stamp the throttle so the first tab-click doesn't immediately re-fire syncAuthFromServer.
+          lastAuthSyncAtRef.current = Date.now();
           
           if (serverUser && !localStorage.getItem('welcomed_' + serverUser.id)) {
             console.log('🎉 New user detected - showing welcome');
