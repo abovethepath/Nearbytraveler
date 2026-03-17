@@ -2348,7 +2348,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   </div>
                   {isCurrentUserAdmin && member.id !== currentUserId && (
                     <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                      {chatType === 'chatroom' && (
+                      {(chatType === 'chatroom' || chatType === 'event') && (
                         member.isAdmin ? (
                           <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-orange-400 hover:text-orange-300 hover:bg-gray-700" onClick={() => roleMutation.mutate({ targetUserId: member.id, role: 'member' })} disabled={roleMutation.isPending} title="Remove admin">
                             👑
@@ -2584,7 +2584,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                             </div>
                             {isCurrentUserAdmin && member.id !== currentUserId && (
                               <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                                {chatType === 'chatroom' && (
+                                {(chatType === 'chatroom' || chatType === 'event') && (
                                   member.isAdmin ? (
                                     <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-orange-400 hover:text-orange-300 hover:bg-gray-700" onClick={() => roleMutation.mutate({ targetUserId: member.id, role: 'member' })} disabled={roleMutation.isPending} title="Remove admin">
                                       👑
@@ -2925,7 +2925,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                       </div>
                       {isCurrentUserAdmin && member.id !== currentUserId && (
                         <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                          {chatType === 'chatroom' && (
+                          {(chatType === 'chatroom' || chatType === 'event') && (
                             member.isAdmin ? (
                               <Button size="sm" variant="ghost" className="h-8 px-2 text-xs text-orange-400 hover:text-orange-300 hover:bg-gray-700" onClick={() => roleMutation.mutate({ targetUserId: member.id, role: 'member' })} disabled={roleMutation.isPending} title="Remove admin">
                                 👑

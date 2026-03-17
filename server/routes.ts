@@ -14153,6 +14153,23 @@ Questions? Just reply to this message. Welcome aboard!
       const participants = await storage.getEventParticipants(eventId);
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT PARTICIPANTS: Found ${participants.length} participants for event ${eventId}`);
       
+      // Enrich with isAdmin from chatroom_members so host promotions are reflected in the sidebar
+      try {
+        const [eventChatroom] = await db.select({ id: meetupChatrooms.id })
+          .from(meetupChatrooms).where(eq(meetupChatrooms.eventId, eventId)).limit(1);
+        if (eventChatroom?.id) {
+          const adminRows = await db.select({ userId: chatroomMembers.userId })
+            .from(chatroomMembers)
+            .where(and(
+              eq(chatroomMembers.chatroomId, eventChatroom.id),
+              eq(chatroomMembers.role, 'admin'),
+              eq(chatroomMembers.isActive, true)
+            ));
+          const adminSet = new Set(adminRows.map(r => r.userId));
+          return res.json(participants.map(p => ({ ...p, isAdmin: adminSet.has(p.userId) })));
+        }
+      } catch { /* non-critical, fall through */ }
+
       return res.json(participants);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching event participants:", error);
