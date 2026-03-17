@@ -86,7 +86,7 @@ router.post("/forgot-password", async (req, res) => {
       [user.id, tokenHash, expiresAt]
     );
 
-    const resetUrl = `${process.env.APP_URL}/reset-password?token=${rawToken}`;
+    const resetUrl = `https://nearbytraveler.org/reset-password?token=${rawToken}`;
 
     await sendBrevoEmail({
       toEmail: user.email,
@@ -94,6 +94,25 @@ router.post("/forgot-password", async (req, res) => {
       textContent:
         `Reset your password:\n\n${resetUrl}\n\n` +
         `This link expires in 1 hour. If you didn't request this, ignore this email.`,
+      htmlContent: `
+        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
+          <h2 style="color: #f97316; margin-bottom: 8px;">Nearby Traveler</h2>
+          <p style="color: #374151;">Hi there,</p>
+          <p style="color: #374151;">Click the button below to reset your password. This link expires in 1 hour.</p>
+          <div style="text-align: center; margin: 28px 0;">
+            <a href="${resetUrl}"
+               style="display: inline-block; background: #f97316; color: #ffffff; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px;">
+              Reset My Password
+            </a>
+          </div>
+          <p style="color: #6b7280; font-size: 13px;">If you didn't request this, you can safely ignore this email.</p>
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
+          <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+            © Nearby Traveler &nbsp;·&nbsp;
+            <a href="https://nearbytraveler.org" style="color: #9ca3af;">nearbytraveler.org</a>
+          </p>
+        </div>
+      `,
     });
 
     return res.json(generic);
