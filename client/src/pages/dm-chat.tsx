@@ -170,6 +170,14 @@ export default function DMChat() {
     const dest = (activePlan.destination || activePlan.destinationCity || "").trim();
     const home = hometownDisplay?.trim() || "";
     if (!dest || dest.toLowerCase() === home.toLowerCase()) return null;
+    // Shorten: "Austin, Texas, United States" → "Austin, Texas"
+    //          "Paris, Île-de-France, France" → "Paris, France"
+    const parts = dest.split(",").map((s: string) => s.trim()).filter(Boolean);
+    if (parts.length >= 3) {
+      const country = parts[parts.length - 1];
+      const isUS = /united states|usa/i.test(country);
+      return isUS ? `${parts[0]}, ${parts[1]}` : `${parts[0]}, ${country}`;
+    }
     return dest;
   })();
 
@@ -255,10 +263,13 @@ export default function DMChat() {
           )}
 
           {travelDestination && (
-            <p className="flex items-center justify-center gap-1.5 text-sm text-blue-400 font-medium">
+            <div
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white text-xs font-semibold"
+              style={{ background: 'linear-gradient(135deg, #f97316 0%, #fb923c 100%)' }}
+            >
               <Plane className="w-3.5 h-3.5 shrink-0" />
               Traveling to {travelDestination}
-            </p>
+            </div>
           )}
 
           <Button
