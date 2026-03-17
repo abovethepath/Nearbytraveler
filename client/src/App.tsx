@@ -2011,11 +2011,14 @@ function Router() {
         <NativeIOSSearchWidget />
       )}
 
-      {/* OneSignal push notifications — init + permission prompt */}
+      {/* OneSignal push notifications — init runs globally for authenticated users;
+          permission prompt modal only fires on the homepage (/) */}
       {authValue.isAuthenticated && user?.id && (
         <>
           <OneSignalInit userId={user.id} />
-          <NotificationPermissionModal userId={user.id} />
+          {normalizedPath === "/" && (
+            <NotificationPermissionModal userId={user.id} />
+          )}
         </>
       )}
     </AuthContext.Provider>

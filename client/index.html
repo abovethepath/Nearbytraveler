@@ -84,16 +84,10 @@
     <meta name="twitter:description" content="Connect with travelers and locals worldwide. Find travel companions and authentic experiences." />
     <meta name="twitter:image" content="https://nearbytraveler.org/og-image.png" />
     
-    <!-- OneSignal Web Push SDK -->
+    <!-- OneSignal Web Push SDK — SDK loaded here, init is deferred to the React
+         component (OneSignalInit.tsx) which only runs after authentication so
+         the permission prompt never appears for logged-out visitors. -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "719a4b94-fd86-48f2-bf31-9fc8b1a7b86e",
-        });
-      });
-    </script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
