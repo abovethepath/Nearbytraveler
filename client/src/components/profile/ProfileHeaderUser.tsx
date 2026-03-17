@@ -22,6 +22,18 @@ import { resolveAndJoinHostelChatroom } from "@/lib/hostelChatrooms";
 import { ShareModal } from "@/components/ShareModal";
 import { getProfileShareText, getProfileRedditText } from "@/lib/shareUtils";
 import { SITE_URL } from "@/lib/constants";
+import { SUPPORT_TIER_DISPLAY } from "@/pages/donate";
+
+function SupportBadge({ tier }: { tier?: string | null }) {
+  if (!tier) return null;
+  const info = SUPPORT_TIER_DISPLAY[tier];
+  if (!info) return null;
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-black/30 text-white backdrop-blur-sm border border-white/20 shrink-0">
+      {info.emoji} {info.label}
+    </span>
+  );
+}
 
 export function ProfileHeaderUser(props: ProfilePageProps) {
   const {
@@ -272,6 +284,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   {(user as any)?.firstName && (
                     <span className="text-sm sm:text-base font-medium text-white/80 break-all">@{user?.username}</span>
                   )}
+                  <SupportBadge tier={(user as any)?.supportTier} />
                 </div>
                 {/* Own profile: ⋮ menu lives on username row (top-right) */}
                 {isOwnProfile && (
@@ -512,6 +525,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               {(user as any)?.firstName && (
                                 <div className="text-sm font-medium text-white/75 break-all mt-0.5">@{user?.username}</div>
                               )}
+                              <SupportBadge tier={(user as any)?.supportTier} />
                             </div>
 
                             <div className="mt-2 space-y-1">
@@ -1099,6 +1113,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           {(user as any)?.firstName && (
                             <span className="text-sm font-medium text-white/75 break-all">@{user?.username}</span>
                           )}
+                          <SupportBadge tier={(user as any)?.supportTier} />
                           </div>
                           {!isOwnProfile && connectionStatus?.status === 'accepted' && (
                             <span className="ml-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 shrink-0" title="Connected">

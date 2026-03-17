@@ -179,6 +179,7 @@ import ReferralsPage from "@/pages/referrals";
 import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
 import Donate from "@/pages/donate";
+import SupportSuccess from "@/pages/support-success";
 import NotFound from "@/pages/not-found";
 import Itinerary from "@/pages/itinerary";
 import SharedTrip from "@/pages/shared-trip";
@@ -1853,6 +1854,8 @@ function Router() {
 
       case '/donate':
         return <Donate />;
+      case '/support-success':
+        return <SupportSuccess />;
       case '/dashboard/ambassador':
         return <AmbassadorDashboard />;
       case '/ambassador-info':

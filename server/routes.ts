@@ -29324,6 +29324,222 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // ─── STRIPE SUPPORT / DONATION ENDPOINTS ────────────────────────────────────
+
+  const SUPPORT_PRODUCTS: Record<string, { label: string; tier: string; mode: "subscription" | "payment" }> = {
+    "prod_UA7HkaOOltz9uv": { label: "Community Supporter – $5/month", tier: "community_supporter", mode: "subscription" },
+    "prod_UA7Iao2qt6pY8b": { label: "Travel Explorer – $10/month",    tier: "travel_explorer",      mode: "subscription" },
+    "prod_UA7I707QDAEu0j": { label: "Travel Champion – $15/month",     tier: "travel_champion",      mode: "subscription" },
+    "prod_UA7HPF0d3egAlt": { label: "One-Time Supporter",              tier: "donor",                mode: "payment" },
+  };
+
+  // POST /api/stripe/support/checkout
+  app.post("/api/stripe/support/checkout", async (req: any, res) => {
+    try {
+      const sessionUser = req.session?.user;
+      if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
+
+      const stripeKey = process.env.STRIPE_SECRET_KEY;
+      if (!stripeKey) return res.status(503).json({ error: "Stripe not configured" });
+
+      const Stripe = (await import("stripe")).default;
+      const stripe = new Stripe(stripeKey, { apiVersion: "2025-02-24.acacia" });
+
+      const { productId, amountCents } = req.body as { productId: string; amountCents?: number };
+      const product = SUPPORT_PRODUCTS[productId];
+      if (!product) return res.status(400).json({ error: "Unknown product" });
+
+      const [userRow] = await db.select().from(users).where(eq(users.id, sessionUser.id));
+      if (!userRow) return res.status(404).json({ error: "User not found" });
+
+      let customerId = userRow.supportStripeCustomerId ?? undefined;
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          email: userRow.email,
+          name: userRow.firstName || userRow.username,
+          metadata: { userId: String(userRow.id) },
+        });
+        customerId = customer.id;
+        await db.update(users).set({ supportStripeCustomerId: customerId }).where(eq(users.id, userRow.id));
+      }
+
+      const origin = req.headers.origin || "https://nearbytraveler.org";
+      const successUrl = `${origin}/support-success?session_id={CHECKOUT_SESSION_ID}`;
+      const cancelUrl  = `${origin}/donate`;
+
+      let session: any;
+
+      if (product.mode === "subscription") {
+        const prices = await stripe.prices.list({ product: productId, active: true, limit: 5 });
+        const recurringPrice = prices.data.find(p => p.recurring);
+        if (!recurringPrice) return res.status(500).json({ error: "No recurring price found for product" });
+
+        session = await stripe.checkout.sessions.create({
+          customer: customerId,
+          mode: "subscription",
+          line_items: [{ price: recurringPrice.id, quantity: 1 }],
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+          metadata: { userId: String(userRow.id), tier: product.tier },
+          subscription_data: { metadata: { userId: String(userRow.id), tier: product.tier } },
+        });
+      } else {
+        const cents = amountCents && amountCents >= 100 ? amountCents : 500;
+        session = await stripe.checkout.sessions.create({
+          customer: customerId,
+          mode: "payment",
+          line_items: [{
+            price_data: {
+              currency: "usd",
+              product: productId,
+              unit_amount: cents,
+            },
+            quantity: 1,
+          }],
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+          metadata: { userId: String(userRow.id), tier: "donor" },
+        });
+      }
+
+      return res.json({ url: session.url });
+    } catch (e: any) {
+      console.error("[stripe-support] checkout error:", e);
+      return res.status(500).json({ error: e.message || "Checkout failed" });
+    }
+  });
+
+  // POST /api/stripe/support/webhook
+  app.post("/api/stripe/support/webhook", async (req: any, res) => {
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!stripeKey) return res.status(503).send("Stripe not configured");
+
+    const Stripe = (await import("stripe")).default;
+    const stripe = new Stripe(stripeKey, { apiVersion: "2025-02-24.acacia" });
+
+    let event: any;
+    try {
+      if (webhookSecret && req.rawBody) {
+        const sig = req.headers["stripe-signature"] as string;
+        event = stripe.webhooks.constructEvent(req.rawBody, sig, webhookSecret);
+      } else if (req.rawBody) {
+        event = JSON.parse(req.rawBody);
+      } else {
+        event = req.body;
+      }
+    } catch (e: any) {
+      console.error("[stripe-webhook] signature error:", e.message);
+      return res.status(400).send(`Webhook Error: ${e.message}`);
+    }
+
+    const setTier = async (userId: number, tier: string | null, subId?: string | null, status?: string | null) => {
+      await db.update(users).set({
+        supportTier: tier,
+        supportSubscriptionId: subId ?? undefined,
+        supportSubscriptionStatus: status ?? undefined,
+      }).where(eq(users.id, userId));
+    };
+
+    const userIdFromMeta = (meta: any): number | null => {
+      const id = parseInt(meta?.userId, 10);
+      return isNaN(id) ? null : id;
+    };
+
+    try {
+      switch (event.type) {
+        case "checkout.session.completed": {
+          const session = event.data.object;
+          const userId = userIdFromMeta(session.metadata);
+          const tier   = session.metadata?.tier || "donor";
+          if (!userId) break;
+          if (session.mode === "subscription") {
+            await setTier(userId, tier, session.subscription, "active");
+          } else {
+            await setTier(userId, "donor", null, "active");
+          }
+          break;
+        }
+        case "customer.subscription.updated": {
+          const sub = event.data.object;
+          const userId = userIdFromMeta(sub.metadata);
+          const tier   = sub.metadata?.tier;
+          if (!userId || !tier) break;
+          const status = sub.status === "active" || sub.status === "trialing" ? "active"
+            : sub.status === "past_due" ? "past_due" : "canceled";
+          await setTier(userId, status === "canceled" ? null : tier, sub.id, status);
+          break;
+        }
+        case "customer.subscription.deleted": {
+          const sub = event.data.object;
+          const userId = userIdFromMeta(sub.metadata);
+          if (!userId) break;
+          await setTier(userId, null, null, "canceled");
+          break;
+        }
+        case "invoice.payment_failed": {
+          const inv = event.data.object as any;
+          const custId = inv.customer as string;
+          if (custId) {
+            await db.update(users)
+              .set({ supportSubscriptionStatus: "past_due" })
+              .where(eq(users.supportStripeCustomerId, custId));
+          }
+          break;
+        }
+      }
+    } catch (e: any) {
+      console.error("[stripe-webhook] handler error:", e);
+    }
+
+    return res.json({ received: true });
+  });
+
+  // GET /api/stripe/support/portal
+  app.get("/api/stripe/support/portal", async (req: any, res) => {
+    try {
+      const sessionUser = req.session?.user;
+      if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
+
+      const stripeKey = process.env.STRIPE_SECRET_KEY;
+      if (!stripeKey) return res.status(503).json({ error: "Stripe not configured" });
+
+      const [userRow] = await db.select().from(users).where(eq(users.id, sessionUser.id));
+      if (!userRow?.supportStripeCustomerId) return res.status(404).json({ error: "No subscription found" });
+
+      const Stripe = (await import("stripe")).default;
+      const stripe = new Stripe(stripeKey, { apiVersion: "2025-02-24.acacia" });
+
+      const origin = req.headers.origin || "https://nearbytraveler.org";
+      const portal = await stripe.billingPortal.sessions.create({
+        customer: userRow.supportStripeCustomerId,
+        return_url: `${origin}/donate`,
+      });
+      return res.json({ url: portal.url });
+    } catch (e: any) {
+      console.error("[stripe-portal] error:", e);
+      return res.status(500).json({ error: e.message });
+    }
+  });
+
+  // GET /api/stripe/support/status  — current user's support tier
+  app.get("/api/stripe/support/status", async (req: any, res) => {
+    try {
+      const sessionUser = req.session?.user;
+      if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
+      const [userRow] = await db.select({
+        supportTier: users.supportTier,
+        supportSubscriptionStatus: users.supportSubscriptionStatus,
+        supportSubscriptionId: users.supportSubscriptionId,
+      }).from(users).where(eq(users.id, sessionUser.id));
+      return res.json(userRow || {});
+    } catch (e: any) {
+      return res.status(500).json({ error: e.message });
+    }
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────────
+
   // Return the configured HTTP server with WebSocket support  
   return httpServer;
 }

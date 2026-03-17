@@ -622,6 +622,18 @@ app.use((req, _res, next) => {
   next();
 });
 
+// Stripe webhook needs raw body for signature verification — capture BEFORE json parser
+app.use((req: any, res: any, next: any) => {
+  if (req.path === '/api/stripe/support/webhook') {
+    let data = '';
+    req.setEncoding('utf8');
+    req.on('data', (chunk: string) => { data += chunk; });
+    req.on('end', () => { req.rawBody = data; next(); });
+  } else {
+    next();
+  }
+});
+
 // CRITICAL FIX: Increase payload limits to prevent 431 "Request Header Fields Too Large" errors
 app.use(express.json({ limit: "50mb" }));
 app.use(

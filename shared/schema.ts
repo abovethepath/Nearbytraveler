@@ -232,6 +232,11 @@ export const users = pgTable("users", {
   adminNotes: text("admin_notes"),
   onesignalPlayerId: text("onesignal_player_id"), // OneSignal push subscription ID
   notificationPreferences: text("notification_preferences"), // JSON: { messages, meet_requests, connections, events, vouches }
+  // Support / donation tier (Stripe)
+  supportTier: text("support_tier"), // 'community_supporter' | 'travel_explorer' | 'travel_champion' | 'donor' | null
+  supportStripeCustomerId: text("support_stripe_customer_id"),
+  supportSubscriptionId: text("support_subscription_id"),
+  supportSubscriptionStatus: text("support_subscription_status"), // 'active' | 'canceled' | 'past_due'
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
   index("idx_users_hometown").on(table.hometownCity, table.hometownCountry),

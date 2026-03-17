@@ -38,6 +38,7 @@ export default function Footer() {
               <ul className="space-y-2">
                 <li><Link href="/about" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors text-sm">About Us</Link></li>
                 <li><Link href="/ambassador-program" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors text-sm">Ambassador Program</Link></li>
+                <li><Link href="/donate" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors text-sm">Support Us 💛</Link></li>
                 <li><Link href="/community-guidelines" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors text-sm">Community Guidelines</Link></li>
                 <li><Link href="/privacy" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors text-sm">Privacy Policy</Link></li>
                 <li><Link href="/terms" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors text-sm">Terms of Service</Link></li>

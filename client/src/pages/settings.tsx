@@ -355,6 +355,21 @@ export default function SettingsPage() {
                     </p>
                   </div>
 
+                  {/* Support Us */}
+                  <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-base font-medium text-black dark:text-white">Support Us 💛</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Subscribe or donate to earn a profile badge</p>
+                      </div>
+                      <Link href="/donate">
+                        <Button size="sm" className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold" style={{ transition: "none" }}>
+                          Support
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+
                   {/* Legal - Privacy Policy & Terms (for App Store / in-app access) */}
                   <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                     <Label className="text-base font-medium flex items-center gap-2">
