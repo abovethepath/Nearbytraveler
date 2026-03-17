@@ -12,7 +12,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
           // Colors: explicit readable text so password/inputs are never same as background (e.g. yellow on yellow)
           "bg-background border-input",
           "text-gray-900 dark:text-gray-100",
-          "dark:bg-gray-800 dark:border-border",
+          "dark:bg-gray-800 dark:border-gray-600",
           // Placeholder: visible on both light and dark
           "placeholder:text-gray-500 dark:placeholder:text-gray-400",
           // Focus states
