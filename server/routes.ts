@@ -2987,6 +2987,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const rawRows: any[] = (rows as any).rows || [];
       const rawLocalRows: any[] = (localRows as any).rows || [];
 
+      console.log(`🏙️ ARRIVALS [${city}]: ARM1+ARM2 found ${rawRows.length} traveler row(s), ${rawLocalRows.length} local row(s) for uid=${uid ?? 'anon'}`);
+      if (rawRows.length > 0) {
+        console.log(`  travelers:`, rawRows.map(r => `${r.username}(start=${r.startDate},end=${r.endDate},dest=${r.destination})`));
+      }
+
       // Fetch which users the current user has hearted for this city
       let savedSet = new Set<number>();
       if (uid) {
@@ -6083,39 +6088,62 @@ Questions? Just reply to this message!
           // Check if user is traveling - use either destinationCity/Country OR travelDestination
           const hasDestinationFields = user.destinationCity && user.destinationCountry;
           const hasTravelDestination = user.travelDestination && user.travelDestination.trim().length > 0;
-          
+
+          // Extract destination city with fallback: prefer destinationCity, then parse travelDestination
+          const effectiveDestCity = user.destinationCity ||
+            (user.travelDestination ? user.travelDestination.split(',')[0]?.trim() || null : null);
+          const effectiveDestState = user.destinationState ||
+            (user.travelDestination ? user.travelDestination.split(',')[1]?.trim() || null : null);
+          const effectiveDestCountry = user.destinationCountry ||
+            (user.travelDestination ? user.travelDestination.split(',').slice(-1)[0]?.trim() || null : null);
+
+          console.log(`ℹ️ BACKGROUND: Travel check for ${user.username}:`, {
+            isCurrentlyTraveling: user.isCurrentlyTraveling,
+            destinationCity: user.destinationCity,
+            destinationCountry: user.destinationCountry,
+            travelDestination: user.travelDestination,
+            effectiveDestCity,
+            travelStartDate: user.travelStartDate,
+            travelEndDate: user.travelEndDate,
+          });
+
           if (user.isCurrentlyTraveling && (hasDestinationFields || hasTravelDestination)) {
             // Build destination string - prefer separate fields, fallback to travelDestination
             let destination: string;
             if (hasDestinationFields) {
-              destination = `${user.destinationCity}, ${user.destinationState || ''}, ${user.destinationCountry}`.replace(', ,', ',');
+              destination = [user.destinationCity, user.destinationState, user.destinationCountry]
+                .filter(p => p && p.trim()).join(', ');
             } else {
               destination = user.travelDestination!;
             }
-            
+
+            const now = new Date();
             const travelPlanData = {
               userId: user.id,
               destination: destination,
-              destinationCity: user.destinationCity || null,
-              destinationState: user.destinationState || null,
-              destinationCountry: user.destinationCountry || null,
-              startDate: user.travelStartDate || new Date().toISOString().split('T')[0],
-              endDate: user.travelEndDate || new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
+              destinationCity: effectiveDestCity,
+              destinationState: effectiveDestState,
+              destinationCountry: effectiveDestCountry,
+              startDate: user.travelStartDate instanceof Date ? user.travelStartDate : (user.travelStartDate ? new Date(user.travelStartDate as any) : now),
+              endDate: user.travelEndDate instanceof Date ? user.travelEndDate : (user.travelEndDate ? new Date(user.travelEndDate as any) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
               status: 'active' as const,
               notes: 'Currently traveling',
               interests: user.interests || [],
               activities: user.activities || [],
               events: user.events || []
             };
-            
-            await storage.createTravelPlan(travelPlanData);
-            console.log(`✅ BACKGROUND: Created travel plan for ${user.username} to ${destination}`);
-          } else if (user.isCurrentlyTraveling) {
-            console.log(`⚠️ BACKGROUND: User ${user.username} marked as traveling but missing destination fields:`, {
-              destinationCity: user.destinationCity,
-              destinationCountry: user.destinationCountry,
-              travelDestination: user.travelDestination
+
+            console.log(`✈️ BACKGROUND: Creating travel plan for ${user.username}:`, {
+              destination: travelPlanData.destination,
+              destinationCity: travelPlanData.destinationCity,
+              startDate: travelPlanData.startDate,
+              endDate: travelPlanData.endDate,
             });
+
+            await storage.createTravelPlan(travelPlanData);
+            console.log(`✅ BACKGROUND: Travel plan created — ${user.username} will appear in arrivals for "${effectiveDestCity}"`);
+          } else if (user.isCurrentlyTraveling) {
+            console.log(`⚠️ BACKGROUND: User ${user.username} marked as traveling but missing destination fields — NOT creating travel plan`);
           }
         } catch (error) {
           console.error('❌ BACKGROUND: Failed to create travel plan:', error);

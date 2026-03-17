@@ -212,7 +212,8 @@ export function CityArrivalsWidget({ cityName }: Props) {
       if (!res.ok) return { locals: [], hereNow: [], comingSoon: [] };
       return res.json();
     },
-    staleTime: 3 * 60 * 1000,
+    staleTime: 30 * 1000,
+    refetchOnWindowFocus: true,
     enabled: !!cityName,
   });
 
