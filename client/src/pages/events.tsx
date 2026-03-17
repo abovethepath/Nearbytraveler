@@ -1000,7 +1000,7 @@ export default function Events() {
                             <div className="space-y-3">
                               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white">
                                 <Calendar className="w-4 h-4 text-gray-600 dark:text-white" />
-                                {formatDateForDisplay(event.date)} at{" "}
+                                {new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} at{" "}
                                 {new Date(event.date).toLocaleTimeString([], { 
                                   hour: '2-digit', 
                                   minute: '2-digit' 
@@ -1375,7 +1375,7 @@ export default function Events() {
                         <div className="space-y-3">
                           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                             <Calendar className="w-4 h-4" />
-                            {formatDateForDisplay(event.date)} at{" "}
+                            {new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} at{" "}
                             {new Date(event.date).toLocaleTimeString([], { 
                               hour: '2-digit', 
                               minute: '2-digit' 
