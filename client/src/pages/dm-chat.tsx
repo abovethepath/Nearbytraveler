@@ -264,7 +264,7 @@ export default function DMChat() {
           <Button
             onClick={() => setLocation(`/profile/${otherUserId}`)}
             variant="outline"
-            className="w-full gap-2 text-sm !bg-transparent border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500 dark:border-gray-700 dark:text-gray-300 dark:hover:border-orange-600 dark:hover:text-orange-400 hover:!bg-transparent transition-colors mt-1"
+            className="w-full gap-2 text-sm !bg-transparent border-gray-600 text-gray-200 hover:border-orange-500 hover:text-orange-500 dark:border-gray-700 dark:text-gray-300 dark:hover:border-orange-600 dark:hover:text-orange-400 hover:!bg-transparent transition-colors mt-1"
           >
             <User className="w-4 h-4" />
             View Full Profile
