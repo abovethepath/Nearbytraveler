@@ -4450,7 +4450,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       console.log(`🔍 Attempting to send forgot password email to: ${user.email}`);
       const emailResult = await emailService.sendForgotPasswordEmail(user.email!, {
         name: user.displayName || user.username || 'User',
-        resetUrl: `${req.protocol}://${req.get('host')}/reset-password?token=${resetToken}`,
+        resetUrl: `https://nearbytraveler.org/reset-password?token=${resetToken}`,
         expiryHours: 1
       });
 
@@ -4461,7 +4461,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
         return res.json({ 
           message: "If an account with this email or username exists, a password reset link has been sent.",
-          resetLink: `${req.protocol}://${req.get('host')}/reset-password?token=${resetToken}`,
+          resetLink: `https://nearbytraveler.org/reset-password?token=${resetToken}`,
           devNote: "Reset link provided for development testing"
         });
       }
@@ -4470,6 +4470,31 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     } catch (error: any) {
       console.error("Forgot password error:", error);
       res.status(500).json({ message: "Failed to process password reset request" });
+    }
+  });
+
+  // Forgot Username endpoint
+  app.post("/api/auth/forgot-username", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const user = await storage.getUserByEmail(email.toLowerCase().trim());
+      if (!user || !user.email) {
+        // Don't reveal whether email exists
+        return res.json({ message: "If an account with that email exists, we sent your username to it." });
+      }
+
+      const username = user.username || user.displayName || 'your username';
+      const { emailService } = await import('./services/emailService');
+      await emailService.sendUsernameReminderEmail(user.email, username);
+
+      return res.json({ message: "If an account with that email exists, we sent your username to it." });
+    } catch (error: any) {
+      console.error("Forgot username error:", error);
+      res.status(500).json({ message: "Failed to process request" });
     }
   });
 
@@ -4552,7 +4577,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         const resetToken = "test_token_123";
         const testSuccess = await emailService.sendForgotPasswordEmail(email, {
           name: username || "Test User",
-          resetUrl: `${req.protocol}://${req.get('host')}/reset-password?token=${resetToken}`,
+          resetUrl: `https://nearbytraveler.org/reset-password?token=${resetToken}`,
           expiryHours: 1
         });
 

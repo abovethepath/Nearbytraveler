@@ -184,6 +184,37 @@ export class EmailService {
     return this.sendEmail(to, template.subject, template.html, template.text);
   }
 
+  async sendUsernameReminderEmail(to: string, username: string) {
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <span style="font-size: 28px; font-weight: 800; color: #FF6B35;">Nearby</span>
+          <span style="font-size: 28px; font-weight: 800; color: #2563EB;">Traveler</span>
+        </div>
+        <h2 style="color: #111827; font-size: 22px; margin-bottom: 16px;">Your Username</h2>
+        <p style="color: #374151; font-size: 16px; line-height: 1.6;">
+          Here is your Nearby Traveler username:
+        </p>
+        <div style="background: #F3F4F6; border-radius: 8px; padding: 20px; text-align: center; margin: 24px 0;">
+          <span style="font-size: 24px; font-weight: 700; color: #111827;">@${username}</span>
+        </div>
+        <p style="color: #374151; font-size: 14px; line-height: 1.6;">
+          Use this username along with your password to sign in at
+          <a href="https://nearbytraveler.org" style="color: #2563EB;">nearbytraveler.org</a>.
+        </p>
+        <p style="color: #374151; font-size: 14px; line-height: 1.6;">
+          If you didn't request this, you can safely ignore this email.
+        </p>
+        <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;" />
+        <p style="color: #9CA3AF; font-size: 12px; text-align: center;">
+          © Nearby Traveler · <a href="https://nearbytraveler.org" style="color: #9CA3AF;">nearbytraveler.org</a>
+        </p>
+      </div>
+    `;
+    const text = `Your Nearby Traveler username is: @${username}\n\nSign in at https://nearbytraveler.org`;
+    return this.sendEmail(to, 'Your Nearby Traveler username', html, text);
+  }
+
   async sendReferralEmail(to: string, data: ReferralEmailData) {
     const template = referralEmail(data);
     return this.sendEmail(to, template.subject, template.html, template.text);

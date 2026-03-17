@@ -39,6 +39,12 @@ export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Forgot username state
+  const [showForgotUsername, setShowForgotUsername] = useState(false);
+  const [forgotUsernameEmail, setForgotUsernameEmail] = useState("");
+  const [forgotUsernameSent, setForgotUsernameSent] = useState(false);
+  const [forgotUsernameLoading, setForgotUsernameLoading] = useState(false);
+
   const handleLogin = async () => {
     console.log('handleLogin called with email:', formData.email, 'password length:', formData.password?.length);
     if (!formData.email || !formData.password) {
@@ -151,6 +157,20 @@ export default function Auth() {
     void handleLogin();
   };
 
+  const handleForgotUsername = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!forgotUsernameEmail.trim() || forgotUsernameLoading) return;
+    setForgotUsernameLoading(true);
+    try {
+      await apiRequest("POST", "/api/auth/forgot-username", { email: forgotUsernameEmail.trim().toLowerCase() });
+      setForgotUsernameSent(true);
+    } catch {
+      setForgotUsernameSent(true); // Always show success to avoid email enumeration
+    } finally {
+      setForgotUsernameLoading(false);
+    }
+  };
+
 
   return (
     <div 
@@ -233,14 +253,53 @@ export default function Auth() {
             ) : null}
 
             {isLogin && (
-              <div className="text-center mt-4">
-                <button
-                  onClick={() => window.location.href = '/forgot-password'}
-                  className="text-sm font-medium underline"
-                  data-testid="link-forgot-password"
-                >
-                  <span className="text-blue-600 dark:text-blue-400">Forgot your password?</span>
-                </button>
+              <div className="mt-4 space-y-3">
+                <div className="flex items-center justify-center gap-4">
+                  <button
+                    onClick={() => window.location.href = '/forgot-password'}
+                    className="text-sm font-medium underline text-blue-600 dark:text-blue-400"
+                    data-testid="link-forgot-password"
+                  >
+                    Forgot password?
+                  </button>
+                  <span className="text-gray-300 dark:text-gray-600">·</span>
+                  <button
+                    onClick={() => { setShowForgotUsername(!showForgotUsername); setForgotUsernameSent(false); setForgotUsernameEmail(""); }}
+                    className="text-sm font-medium underline text-blue-600 dark:text-blue-400"
+                    data-testid="link-forgot-username"
+                  >
+                    Forgot username?
+                  </button>
+                </div>
+
+                {showForgotUsername && (
+                  <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                    {forgotUsernameSent ? (
+                      <p className="text-sm text-center text-green-600 dark:text-green-400 font-medium">
+                        We sent your username to that email address.
+                      </p>
+                    ) : (
+                      <form onSubmit={handleForgotUsername} className="space-y-3">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Enter your email and we'll remind you of your username.</p>
+                        <Input
+                          type="email"
+                          placeholder="Your email address"
+                          value={forgotUsernameEmail}
+                          onChange={(e) => setForgotUsernameEmail(e.target.value)}
+                          className="text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                          required
+                        />
+                        <Button
+                          type="submit"
+                          disabled={forgotUsernameLoading || !forgotUsernameEmail.trim()}
+                          className="w-full text-sm py-2 bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          {forgotUsernameLoading ? "Sending..." : "Send my username"}
+                        </Button>
+                      </form>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
