@@ -28,6 +28,7 @@ function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 import path from "path";
+import fs from "fs";
 import { db, checkDatabaseHealth, getDatabaseStatus } from "./db";
 import {
   users,
@@ -873,6 +874,81 @@ app.use((req, res, next) => {
     console.log("The server will continue with basic functionality only");
     // Don't exit to keep basic server running
   }
+
+  // ─── Server-side OG meta injection for event pages ───────────────────────
+  // WhatsApp / iMessage / Twitter crawlers don't execute JS, so meta tags must
+  // be rendered server-side. We intercept /events/:id before any wildcard
+  // handler and serve index.html with event-specific OG tags injected.
+  function escapeHtml(str: string): string {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  app.get("/events/:id", async (req: Request, res: Response, next: NextFunction) => {
+    // Only intercept HTML navigation requests (browsers & crawlers)
+    const accept = String(req.headers.accept || "");
+    if (!accept.includes("text/html")) return next();
+
+    const eventId = parseInt(req.params.id || "0", 10);
+    if (!eventId || isNaN(eventId)) return next();
+
+    try {
+      // Fetch event and organizer from DB
+      const [event] = await db.select().from(events).where(eq(events.id, eventId)).limit(1);
+      if (!event) return next();
+
+      const [organizer] = await db.select().from(users).where(eq(users.id, event.organizerId)).limit(1);
+      const hostName = (organizer as any)?.firstName || (organizer as any)?.username || "The host";
+
+      // Format date/time
+      const eventDateObj = new Date(event.date);
+      const dateStr = eventDateObj.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+      const timeStr = eventDateObj.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+
+      const ogTitle = `${event.title} | Nearby Traveler`;
+      const ogDesc = `Join ${hostName} for ${event.title} in ${event.city} on ${dateStr} at ${timeStr}`;
+      const ogImage = (event.imageUrl && event.imageUrl.trim())
+        ? event.imageUrl
+        : "https://nearbytraveler.org/og-image.png";
+      const ogUrl = `https://nearbytraveler.org/events/${eventId}`;
+
+      // Determine index.html path (prod vs dev)
+      const isReplitDep = process.env.REPL_ID && process.env.REPLIT_DEPLOYMENT;
+      const isProd = process.env.NODE_ENV === "production";
+      const htmlPath = (isReplitDep || isProd)
+        ? path.resolve(process.cwd(), "dist", "public", "index.html")
+        : path.resolve(process.cwd(), "client", "index.html");
+
+      let template = await fs.promises.readFile(htmlPath, "utf-8");
+
+      // Replace static OG/Twitter meta tags with event-specific values
+      template = template
+        .replace(/<title>[^<]*<\/title>/, `<title>${escapeHtml(ogTitle)}</title>`)
+        .replace(/<meta property="og:title"[^>]*\/?>/, `<meta property="og:title" content="${escapeHtml(ogTitle)}" />`)
+        .replace(/<meta property="og:description"[^>]*\/?>/, `<meta property="og:description" content="${escapeHtml(ogDesc)}" />`)
+        .replace(/<meta property="og:image"[^>]*\/?>/, `<meta property="og:image" content="${escapeHtml(ogImage)}" />`)
+        .replace(/<meta name="twitter:title"[^>]*\/?>/, `<meta name="twitter:title" content="${escapeHtml(ogTitle)}" />`)
+        .replace(/<meta name="twitter:description"[^>]*\/?>/, `<meta name="twitter:description" content="${escapeHtml(ogDesc)}" />`)
+        .replace(/<meta name="twitter:image"[^>]*\/?>/, `<meta name="twitter:image" content="${escapeHtml(ogImage)}" />`);
+
+      // Inject og:url + og:type + twitter:card (summary_large_image) before </head>
+      const extraMeta = [
+        `  <meta property="og:url" content="${escapeHtml(ogUrl)}" />`,
+        `  <meta property="og:type" content="website" />`,
+        `  <meta name="twitter:card" content="summary_large_image" />`,
+      ].join("\n");
+      template = template.replace("</head>", `${extraMeta}\n  </head>`);
+
+      res.status(200).set("Content-Type", "text/html").end(template);
+    } catch (e) {
+      console.error("OG meta injection error for event", eventId, e);
+      return next();
+    }
+  });
+  // ─────────────────────────────────────────────────────────────────────────
 
   // Setup vite after ALL routes are registered
   // CRITICAL FIX v3: Custom deployment setup that preserves API routes

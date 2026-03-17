@@ -1,0 +1,38 @@
+a post in the event, didnt alert the user on the message notification nor on the actiivty, when people post in chat there should also be notifications to others. i tink, thoughts? maybe not everyone one but certainly something
+
+7:40 AM
+Good question — here's the right approach:
+
+Yes, notify — but smartly. Don't notify every single message or it becomes spam.
+
+Rules:
+
+First message after you've been away — notify once, then batch the rest. "3 new messages in Sing Along"
+If you're actively in the chat — no notification
+@mention — always notify immediately
+New person joins the chat — notify existing members once
+Don't notify your own messages — obviously
+For activity feed:
+
+Event chat messages should NOT spam the activity feed — that's for social actions (connections, vouches, RSVPs). Keep messages in the notification bell only, not activity feed.
+@codebase Event chatroom messages are not triggering notifications for other members. Fix:
+
+1. Push notification + bell notification when a new message is posted in an event chatroom:
+
+Notify all members who are NOT currently active in that chat
+Message: "@[sender] posted in [Event Name]: '[first 40 chars of message]...'"
+Links to the event chatroom
+Batch notifications — if 5 messages come in while user is away, send ONE notification not 5: "5 new messages in [Event Name]"
+Use a 2 minute batching window — collect messages for 2 mins then send one notification
+2. @mention always notifies immediately If a message contains @[username], notify that user immediately regardless of batching
+
+3. Don't notify:
+
+The sender themselves
+Users currently active in the chatroom (last activity within 2 minutes)
+Apply same rules to ALL chatroom types — meetup chats, city chats, community chats, event chats
+4. Activity feed — do NOT add chat messages Keep the activity feed clean — only social actions (connections, RSVPs, vouches). Chat message notifications go to the bell only, not the activity feed.
+
+Do not change the chatroom UI. Desktop, mobile web, and iOS.
+
+Smart batched notifications = users stay informed without feeling spammed. Send it!
