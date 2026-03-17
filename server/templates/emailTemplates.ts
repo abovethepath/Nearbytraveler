@@ -332,7 +332,7 @@ export const passwordResetEmail = (data: PasswordResetData): EmailTemplate => ({
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${data.resetUrl}" class="button">Reset My Password</a>
+            <a href="${data.resetUrl}" style="display: inline-block; background: #f97316; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; margin: 16px 0; font-size: 16px;">Reset My Password</a>
           </div>
           
           <p><strong>If you didn't request this:</strong></p>
@@ -845,7 +845,7 @@ export const forgotPasswordEmail = (data: PasswordResetData): EmailTemplate => (
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${data.resetUrl}" class="button">Reset My Password</a>
+            <a href="${data.resetUrl}" style="display: inline-block; background: #f97316; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; margin: 16px 0; font-size: 16px;">Reset My Password</a>
           </div>
           
           <p><strong>Can't click the button?</strong> Copy and paste this link into your browser:</p>
