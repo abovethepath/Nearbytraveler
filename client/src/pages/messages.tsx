@@ -1054,6 +1054,7 @@ export default function Messages() {
                     )
                     .map((mc: any) => {
                       const isSelected = selectedMeetupChat === mc.id;
+                      const eventDisplayName = (mc.chatroomName || 'Event Chat').replace(/ - Group Chat$/i, '');
                       return (
                         <div
                           key={`mc-${mc.id}`}
@@ -1070,7 +1071,7 @@ export default function Messages() {
                             );
                             apiRequest('POST', `/api/meetup-chatrooms/${mc.id}/mark-read`).catch(() => {});
                             if (window.innerWidth < 1024) {
-                              navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Event Chat')}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`);
+                              navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(eventDisplayName)}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`);
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
@@ -1089,7 +1090,7 @@ export default function Messages() {
                                 <h3 className={`text-sm flex-1 min-w-0 truncate ${
                                   isSelected ? 'text-white font-semibold' : mc.unreadCount > 0 ? 'text-gray-900 dark:text-white font-extrabold' : 'text-gray-900 dark:text-white font-semibold'
                                 }`}>
-                                  {mc.chatroomName || 'Event Chat'}
+                                  {eventDisplayName}
                                 </h3>
                                 {mc.unreadCount > 0 && !isSelected && (
                                   <span className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 shrink-0" />
@@ -1123,7 +1124,7 @@ export default function Messages() {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setDismissTarget({ type: 'meetup', id: mc.id, name: mc.chatroomName || 'Event Chat' });
+                                setDismissTarget({ type: 'meetup', id: mc.id, name: eventDisplayName });
                               }}
                               className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
                                 isSelected ? 'text-white/70 hover:text-white hover:bg-white/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'

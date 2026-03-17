@@ -62,6 +62,7 @@ interface WhatsAppChatProps {
   chatType: 'chatroom' | 'event' | 'meetup' | 'dm';
   title: string;
   subtitle?: string;
+  chatLocation?: string;
   currentUserId?: number;
   onBack?: () => void;
   eventId?: number;
@@ -76,7 +77,7 @@ interface WhatsAppChatProps {
 
 
 export default function WhatsAppChat(props: WhatsAppChatProps) {
-  const { chatId, chatType, title, subtitle, currentUserId, onBack, eventId, eventImageUrl, meetupId, readOnly, readOnlyBanner, graceBanner } = props;
+  const { chatId, chatType, title, subtitle, chatLocation, currentUserId, onBack, eventId, eventImageUrl, meetupId, readOnly, readOnlyBanner, graceBanner } = props;
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const isMobileWeb =
@@ -117,11 +118,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState(title);
   const [pinnedMessage, setPinnedMessage] = useState<{ id: number; content: string; senderName: string } | null>(null);
-  const [displayTitle, setDisplayTitle] = useState(title);
+  const [displayTitle, setDisplayTitle] = useState(title?.replace(/ - Group Chat$/i, '') ?? title);
   const [showHostLeaveModal, setShowHostLeaveModal] = useState(false);
   const [hostLeaveStep, setHostLeaveStep] = useState<'choice' | 'transfer' | 'dissolve-confirm'>('choice');
   const [transferTargetUserId, setTransferTargetUserId] = useState<number | null>(null);
-  useEffect(() => { setDisplayTitle(title); }, [title]);
+  useEffect(() => { setDisplayTitle(title?.replace(/ - Group Chat$/i, '') ?? title); }, [title]);
 
   // Available Now / Meetup chats: show the selected activities in the header.
   const { data: meetupChatInfo } = useQuery<{
@@ -2250,6 +2251,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             )}
             <h2 className="text-xl font-bold text-white leading-tight text-center">{title}</h2>
             {subtitle && <p className="text-sm text-gray-400 text-center">{subtitle}</p>}
+            {chatLocation && <p className="text-xs text-gray-500 text-center mt-0.5">📍 {chatLocation}</p>}
             {chatType === "meetup" && meetupActivityTags.length > 0 && (
               <div className="mt-1 flex flex-wrap justify-center gap-1">
                 {meetupActivityTags.map((tag) => (
@@ -2329,7 +2331,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         {member.isMuted && <span className="ml-1.5 text-xs text-red-400">🔇 Muted</span>}
                       </p>
                       <p className="text-xs text-gray-500 truncate">
-                        {member.isMuted && member.muteReason
+                        {isCurrentUserAdmin && member.isMuted && member.muteReason
                           ? <span className="text-red-400/70 italic">"{member.muteReason}"</span>
                           : (member.locationLabel || member.location || member.hometownCity || '')}
                       </p>
@@ -2565,7 +2567,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                                   {member.isMuted && <span className="ml-2 text-xs text-red-400">🔇 Muted</span>}
                                 </p>
                                 <p className="text-xs text-gray-400 truncate">
-                                  {member.isMuted && member.muteReason
+                                  {isCurrentUserAdmin && member.isMuted && member.muteReason
                                     ? <span className="text-red-400/70 italic">"{member.muteReason}"</span>
                                     : (member.locationLabel || member.location || member.hometownCity || 'Unknown')}
                                 </p>
@@ -2917,7 +2919,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                             {member.isMuted && <span className="ml-2 text-xs text-red-400">🔇 Muted</span>}
                           </p>
                           <p className="text-xs text-gray-400 truncate">
-                            {member.isMuted && member.muteReason
+                            {isCurrentUserAdmin && member.isMuted && member.muteReason
                               ? <span className="text-red-400/70 italic">"{member.muteReason}"</span>
                               : (member.locationLabel || member.location || member.hometownCity || 'Unknown')}
                           </p>
@@ -3334,7 +3336,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                               if (profileId) navigate(`/profile/${profileId}`);
                             }}
                           >
-                            {getFirstName(resolvedSender?.name, resolvedSender?.username)}
+                            {resolvedSender ? getFirstName(resolvedSender.name, resolvedSender.username) : null}
                           </p>
                         )}
                         {(() => {

@@ -144,6 +144,7 @@ export default function EventChat() {
         chatType="event"
         title={event.title}
         subtitle={event.date ? formatEventDate(event.date) : 'Event Chat'}
+        chatLocation={event.location || undefined}
         currentUserId={userId}
         eventId={eventId}
         eventImageUrl={event.imageUrl || undefined}

@@ -14154,20 +14154,34 @@ Questions? Just reply to this message. Welcome aboard!
       const participants = await storage.getEventParticipants(eventId);
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT PARTICIPANTS: Found ${participants.length} participants for event ${eventId}`);
       
-      // Enrich with isAdmin from chatroom_members so host promotions are reflected in the sidebar
+      // Enrich with isAdmin + isMuted from chatroom_members and moderation records
       try {
         const [eventChatroom] = await db.select({ id: meetupChatrooms.id })
           .from(meetupChatrooms).where(eq(meetupChatrooms.eventId, eventId)).limit(1);
         if (eventChatroom?.id) {
-          const adminRows = await db.select({ userId: chatroomMembers.userId })
-            .from(chatroomMembers)
-            .where(and(
-              eq(chatroomMembers.chatroomId, eventChatroom.id),
-              eq(chatroomMembers.role, 'admin'),
-              eq(chatroomMembers.isActive, true)
-            ));
+          const [adminRows, muteRecords] = await Promise.all([
+            db.select({ userId: chatroomMembers.userId })
+              .from(chatroomMembers)
+              .where(and(
+                eq(chatroomMembers.chatroomId, eventChatroom.id),
+                eq(chatroomMembers.role, 'admin')
+              )),
+            db.select({ targetUserId: chatroomModerationRecords.targetUserId, reason: chatroomModerationRecords.reason })
+              .from(chatroomModerationRecords)
+              .where(and(
+                eq(chatroomModerationRecords.chatroomId, eventChatroom.id),
+                eq(chatroomModerationRecords.actionType, 'mute'),
+                isNull(chatroomModerationRecords.revokedAt)
+              )),
+          ]);
           const adminSet = new Set(adminRows.map(r => r.userId));
-          return res.json(participants.map(p => ({ ...p, isAdmin: adminSet.has(p.userId) })));
+          const muteByUserId = new Map(muteRecords.map(r => [r.targetUserId, r.reason]));
+          return res.json(participants.map(p => ({
+            ...p,
+            isAdmin: adminSet.has(p.userId),
+            isMuted: muteByUserId.has(p.userId),
+            muteReason: muteByUserId.get(p.userId) ?? null,
+          })));
         }
       } catch { /* non-critical, fall through */ }
 
@@ -29274,6 +29288,18 @@ Questions? Just reply to this message. Welcome aboard!
         .where(eq(meetupChatrooms.id, chatroomId))
         .limit(1);
       if (!chatroom) return res.status(404).json({ error: "Chatroom not found" });
+
+      // Check if user is muted in this chatroom
+      const [muteRecord] = await db.select({ id: chatroomModerationRecords.id })
+        .from(chatroomModerationRecords)
+        .where(and(
+          eq(chatroomModerationRecords.chatroomId, chatroomId),
+          eq(chatroomModerationRecords.targetUserId, Number(userId)),
+          eq(chatroomModerationRecords.actionType, 'mute'),
+          isNull(chatroomModerationRecords.revokedAt)
+        ))
+        .limit(1);
+      if (muteRecord) return res.status(403).json({ error: "You have been muted in this chatroom" });
 
       const [user] = await db.select({ username: users.username })
         .from(users).where(eq(users.id, Number(userId)));

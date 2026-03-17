@@ -4955,7 +4955,7 @@ export class DatabaseStorage implements IStorage {
 
   async isUserChatroomAdmin(chatroomId: number, userId: number): Promise<boolean> {
     try {
-      // First check if user is the chatroom creator
+      // First check if user is the city chatroom creator
       const [chatroom] = await db
         .select({ createdById: citychatrooms.createdById })
         .from(citychatrooms)
@@ -4966,18 +4966,35 @@ export class DatabaseStorage implements IStorage {
         return true;
       }
 
-      // Check if user has admin role in chatroom members
+      // Check if user has admin role in chatroom members (works for both city and event chatrooms)
       const [member] = await db
         .select({ role: chatroomMembers.role })
         .from(chatroomMembers)
         .where(and(
           eq(chatroomMembers.chatroomId, chatroomId),
-          eq(chatroomMembers.userId, userId),
-          eq(chatroomMembers.isActive, true)
+          eq(chatroomMembers.userId, userId)
         ))
         .limit(1);
 
-      return member?.role === 'admin';
+      if (member?.role === 'admin') return true;
+
+      // For event chatrooms (stored in meetupChatrooms), also check if user is the event organizer
+      const [meetupRoom] = await db
+        .select({ eventId: meetupChatrooms.eventId })
+        .from(meetupChatrooms)
+        .where(eq(meetupChatrooms.id, chatroomId))
+        .limit(1);
+
+      if (meetupRoom?.eventId) {
+        const [evt] = await db
+          .select({ organizerId: events.organizerId })
+          .from(events)
+          .where(eq(events.id, meetupRoom.eventId))
+          .limit(1);
+        if (evt?.organizerId === userId) return true;
+      }
+
+      return false;
     } catch (error) {
       console.error('Error checking chatroom admin status:', error);
       return false;
@@ -9926,7 +9943,7 @@ export class DatabaseStorage implements IStorage {
       const country = event.country || 'United States';
       const [chatroom] = await db.insert(meetupChatrooms).values({
         eventId: eventId,
-        chatroomName: `${event.title} - Group Chat`,
+        chatroomName: event.title,
         description: `Group chat for ${event.title}`,
         city,
         state: event.state || '',
