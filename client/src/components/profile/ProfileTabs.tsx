@@ -743,7 +743,7 @@ export function ProfileTabs(props: ProfilePageProps) {
               className="space-y-4"
               data-testid="about-content"
             >
-            <Card className="mt-2 relative overflow-visible bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+            <Card className="mt-2 relative overflow-visible bg-white dark:bg-gray-800 shadow-sm">
               <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-4 lg:px-6 pt-3 sm:pt-4 lg:pt-6">
                 <div className="flex items-center justify-between w-full">
                   <CardTitle className="text-base sm:text-lg lg:text-xl font-bold break-words text-left leading-tight flex-1 pr-2 text-gray-900 dark:text-white">
