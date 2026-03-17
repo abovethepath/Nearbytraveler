@@ -54,6 +54,7 @@ interface ChatMember {
   joinedAt: string;
   isMuted?: boolean;
   muteReason?: string | null;
+  rsvpStatus?: string;
 }
 
 interface WhatsAppChatProps {
@@ -64,6 +65,7 @@ interface WhatsAppChatProps {
   currentUserId?: number;
   onBack?: () => void;
   eventId?: number;
+  eventImageUrl?: string;
   meetupId?: number;
   otherUserUsername?: string;
   otherUserProfileImage?: string | null;
@@ -74,7 +76,7 @@ interface WhatsAppChatProps {
 
 
 export default function WhatsAppChat(props: WhatsAppChatProps) {
-  const { chatId, chatType, title, subtitle, currentUserId, onBack, eventId, meetupId, readOnly, readOnlyBanner, graceBanner } = props;
+  const { chatId, chatType, title, subtitle, currentUserId, onBack, eventId, eventImageUrl, meetupId, readOnly, readOnlyBanner, graceBanner } = props;
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const isMobileWeb =
@@ -919,6 +921,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               : hometownCityFinal
           : (locationFinal ? locationFinal : "")) || "";
 
+      // For event participant lists, the organizer is flagged via isEventCreator rather than isAdmin
+      const isAdminResolved =
+        Boolean((item as any)?.isAdmin) ||
+        Boolean((item as any)?.isEventCreator) ||
+        false;
+
       out.push({
         id,
         username,
@@ -930,11 +938,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         hometownCountry: hometownCountryFinal || undefined,
         location: locationFinal || undefined,
         locationLabel: locationLabel || undefined,
-        // Do not assume admin/moderator privileges from participant lists
-        isAdmin: Boolean((item as any)?.isAdmin) || false,
+        isAdmin: isAdminResolved,
         joinedAt: String((item as any)?.joinedAt ?? (item as any)?.createdAt ?? new Date().toISOString()),
         isMuted: Boolean((item as any)?.isMuted) || undefined,
         muteReason: (item as any)?.muteReason ?? null,
+        rsvpStatus: toText((item as any)?.status) || undefined,
       });
     }
 
@@ -2229,9 +2237,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
           {/* Chatroom icon + title */}
           <div className="flex flex-col items-center gap-3 px-6 pt-6 pb-5">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-600 to-orange-500 flex items-center justify-center shrink-0">
-              <Users className="w-9 h-9 text-white" />
-            </div>
+            {chatType === 'event' && eventImageUrl ? (
+              <img
+                src={eventImageUrl}
+                alt={title}
+                className="w-20 h-20 rounded-full object-cover shrink-0 border-2 border-gray-700"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-600 to-orange-500 flex items-center justify-center shrink-0">
+                <Users className="w-9 h-9 text-white" />
+              </div>
+            )}
             <h2 className="text-xl font-bold text-white leading-tight text-center">{title}</h2>
             {subtitle && <p className="text-sm text-gray-400 text-center">{subtitle}</p>}
             {chatType === "meetup" && meetupActivityTags.length > 0 && (
@@ -2317,6 +2333,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                           ? <span className="text-red-400/70 italic">"{member.muteReason}"</span>
                           : (member.locationLabel || member.location || member.hometownCity || '')}
                       </p>
+                      {chatType === 'event' && !member.isAdmin && member.rsvpStatus && (
+                        <span className={`inline-flex items-center mt-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                          member.rsvpStatus === 'going'
+                            ? 'bg-green-900/50 text-green-400 border border-green-700/50'
+                            : member.rsvpStatus === 'interested'
+                              ? 'bg-amber-900/50 text-amber-400 border border-amber-700/50'
+                              : 'bg-gray-800 text-gray-400 border border-gray-600'
+                        }`}>
+                          {member.rsvpStatus === 'going' ? '✅ Going' : member.rsvpStatus === 'interested' ? '👀 Interested' : 'Invited'}
+                        </span>
+                      )}
                     </div>
                   </div>
                   {isCurrentUserAdmin && member.id !== currentUserId && (
@@ -2542,6 +2569,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                                     ? <span className="text-red-400/70 italic">"{member.muteReason}"</span>
                                     : (member.locationLabel || member.location || member.hometownCity || 'Unknown')}
                                 </p>
+                                {chatType === 'event' && !member.isAdmin && member.rsvpStatus && (
+                                  <span className={`inline-flex items-center mt-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                                    member.rsvpStatus === 'going'
+                                      ? 'bg-green-900/50 text-green-400 border border-green-700/50'
+                                      : member.rsvpStatus === 'interested'
+                                        ? 'bg-amber-900/50 text-amber-400 border border-amber-700/50'
+                                        : 'bg-gray-800 text-gray-400 border border-gray-600'
+                                  }`}>
+                                    {member.rsvpStatus === 'going' ? '✅ Going' : member.rsvpStatus === 'interested' ? '👀 Interested' : 'Invited'}
+                                  </span>
+                                )}
                               </div>
                             </div>
                             {isCurrentUserAdmin && member.id !== currentUserId && (

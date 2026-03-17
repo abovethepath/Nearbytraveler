@@ -13,6 +13,19 @@ interface Event {
   title: string;
   location: string;
   date: string;
+  imageUrl?: string | null;
+}
+
+function formatEventDate(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const datePart = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const timePart = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    return `${datePart} at ${timePart}`;
+  } catch {
+    return dateStr;
+  }
 }
 
 interface EventChatroom {
@@ -130,9 +143,10 @@ export default function EventChat() {
         chatId={chatroom.id}
         chatType="event"
         title={event.title}
-        subtitle={event.date ? new Date(event.date).toLocaleDateString() : 'Event Chat'}
+        subtitle={event.date ? formatEventDate(event.date) : 'Event Chat'}
         currentUserId={userId}
         eventId={eventId}
+        eventImageUrl={event.imageUrl || undefined}
       />
     </div>
   );
