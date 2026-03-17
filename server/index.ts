@@ -222,6 +222,39 @@ console.log(
 
 // Password reset token verification now handled by server/routes/passwordReset.ts
 
+// Notification preferences — registered EARLY so PUT /api/users/:id doesn't swallow the route
+app.get("/api/users/notification-preferences", async (req: any, res: any) => {
+  try {
+    const sessionUser = req.session?.user;
+    if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
+    const [row] = await db.select({ prefs: users.notificationPreferences }).from(users).where(eq(users.id, sessionUser.id)).limit(1);
+    const defaults = { messages: true, meet_requests: true, connections: true, events: true, vouches: true };
+    try {
+      const parsed = row?.prefs ? JSON.parse(row.prefs) : {};
+      return res.json({ ...defaults, ...parsed });
+    } catch {
+      return res.json(defaults);
+    }
+  } catch (e: any) {
+    console.error("[notification-prefs] get error:", e);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.put("/api/users/notification-preferences", async (req: any, res: any) => {
+  try {
+    const sessionUser = req.session?.user;
+    if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
+    const { messages, meet_requests, connections, events, vouches } = req.body;
+    const prefs = { messages: !!messages, meet_requests: !!meet_requests, connections: !!connections, events: !!events, vouches: !!vouches };
+    await db.update(users).set({ notificationPreferences: JSON.stringify(prefs) }).where(eq(users.id, sessionUser.id));
+    return res.json({ ok: true, prefs });
+  } catch (e: any) {
+    console.error("[notification-prefs] put error:", e);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
 app.get("/api/quick-meetups", async (req, res) => {
   try {
     const now = new Date();
@@ -826,6 +859,8 @@ app.use((req, res, next) => {
     await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_period_start_at TIMESTAMP`);
     await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_points_in_period INTEGER DEFAULT 0`);
     await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_status_set_by_admin BOOLEAN DEFAULT false`);
+    // Notification preferences column
+    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS notification_preferences TEXT DEFAULT '{"messages":true,"meet_requests":true,"connections":true,"events":true,"vouches":true}'`);
     // Stealth mode: hidden_from_users table for "hide from this person" feature
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS hidden_from_users (
