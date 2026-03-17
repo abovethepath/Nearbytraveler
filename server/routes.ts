@@ -7415,6 +7415,7 @@ Questions? Just reply to this message. Welcome aboard!
                   id: users.id,
                   username: users.username,
                   name: users.name,
+                  firstName: users.firstName,
                   profileImage: users.profileImage,
                 }).from(users).where(inArray(users.id, mutualIds.slice(0, 5)))
               : [];

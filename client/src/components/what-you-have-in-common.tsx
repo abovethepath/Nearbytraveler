@@ -937,16 +937,16 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                   {connection.profileImage ? (
                     <img
                       src={connection.profileImage}
-                      alt={connection.name || connection.username}
+                      alt={connection.firstName || connection.name || connection.username}
                       className="w-10 h-10 rounded-full object-cover mb-2"
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-400 to-rose-400 flex items-center justify-center text-white text-xs font-bold mb-2">
-                      {(connection.name || connection.username).charAt(0).toUpperCase()}
+                      {(connection.firstName || connection.name || connection.username).charAt(0).toUpperCase()}
                     </div>
                   )}
                   <div className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate max-w-full">
-                    {connection.username}
+                    {connection.firstName || connection.name || connection.username}
                   </div>
                   {connection.hometownCity && connection.hometownCountry && (
                     <div className="text-xs text-gray-900 dark:text-gray-100 truncate max-w-full">
