@@ -1431,9 +1431,9 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                 Event Schedule
               </Label>
               
-              {/* Start + End on one row */}
+              {/* Start + End — start on row 1, end time wraps to row 2 */}
               <div className="border rounded-lg p-4 space-y-3 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-                <div className="flex items-end gap-3 overflow-x-auto pb-1">
+                <div className="flex flex-wrap items-end gap-3">
                   <div className="space-y-2 shrink-0 min-w-[170px]">
                     <Label htmlFor="startDate" className="text-sm font-medium dark:text-white">
                       Start date *
@@ -1541,30 +1541,27 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                     </div>
                     <input type="hidden" {...register("startTime", { required: "Start time is required" })} />
                   </div>
+                </div>
 
-                  {addEndTime && (
-                    <>
-                      <div className="shrink-0 pb-3 text-gray-500 dark:text-gray-200 font-semibold select-none">
-                        →
+                {addEndTime && (
+                  <div className="flex flex-wrap items-end gap-3 pt-2 border-t border-gray-200 dark:border-gray-600">
+                    {!watch("isSameDay") && (
+                      <div className="space-y-2 shrink-0 min-w-[170px]">
+                        <Label htmlFor="endDate" className="text-sm font-medium dark:text-white">
+                          End date
+                        </Label>
+                        <Input
+                          id="endDate"
+                          type="date"
+                          {...register("endDate", { required: addEndTime && !watch("isSameDay") ? "End date is required" : false })}
+                          min={new Date().toISOString().split('T')[0]}
+                          max="9999-12-31"
+                          placeholder="20__-__-__"
+                          className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
+                          style={{ colorScheme: 'light dark' }}
+                        />
                       </div>
-
-                      {!watch("isSameDay") && (
-                        <div className="space-y-2 shrink-0 min-w-[170px]">
-                          <Label htmlFor="endDate" className="text-sm font-medium dark:text-white">
-                            End date
-                          </Label>
-                          <Input
-                            id="endDate"
-                            type="date"
-                            {...register("endDate", { required: addEndTime && !watch("isSameDay") ? "End date is required" : false })}
-                            min={new Date().toISOString().split('T')[0]}
-                            max="9999-12-31"
-                            placeholder="20__-__-__"
-                            className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
-                            style={{ colorScheme: 'light dark' }}
-                          />
-                        </div>
-                      )}
+                    )}
 
                       <div className="space-y-2 shrink-0 min-w-[270px]">
                         <Label htmlFor="endTime" className="text-sm font-medium dark:text-white">
@@ -1662,9 +1659,8 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                         </div>
                         <input type="hidden" {...register("endTime", { required: addEndTime ? "End time is required" : false })} />
                       </div>
-                    </>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {(errors.date || errors.startTime || errors.endDate || errors.endTime) && (
                   <div className="space-y-1">
