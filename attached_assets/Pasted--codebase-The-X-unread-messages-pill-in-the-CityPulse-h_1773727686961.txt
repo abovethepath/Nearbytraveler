@@ -1,0 +1,46 @@
+@codebase The "X unread messages" pill in the CityPulse homepage banner row is not clearing after the user reads the message. It still shows "1 unread message" even after the conversation has been opened and read.
+Fix:
+
+When a user opens a DM or chatroom, mark all messages in that conversation as read immediately — update the read status in the database
+The unread message count used by the CityPulse pill must re-fetch or update in real time after a conversation is opened — use React Query cache invalidation or a WebSocket event to decrement the count
+The pill should disappear completely when unread count hits 0 — not show "0 unread messages"
+
+Also check — the pill is showing a ❤️ heart emoji for unread messages. It should be 💬 chat bubble. Fix the emoji to match the message type.
+Do not change the pill layout or any other CityPulse pills. Desktop, mobile web, and iOS.
+
+Also — is the bounce fixed after Replit's last deploy? That's the most important thing to confirm right now.actually it went away after 30 seconds11:06 PMThat's the 30-second grace period kicking in — it's masking the problem, not fixing it. The bounce is still happening, it's just waiting 30 seconds before settling.
+The real fix Replit just did (removing the hard redirect on 401) should eliminate the bounce entirely — not just delay it. It shouldn't take 30 seconds to stabilize.
+Tell Replit:
+
+@codebase The auth bounce is still happening — it settles after 30 seconds which means the grace period is masking it, not fixing it. The window.location.href hard redirect removal didn't fully take effect or there is another redirect still firing.
+Do this:
+
+Search the ENTIRE codebase for every instance of window.location.href and window.location.replace and list them all — we need to find any remaining hard redirects
+Search for session_expired — any code that references this should be removed entirely
+Search for /?session_expired and remove every redirect to that URL
+Make sure the 401 handler in queryClient.ts is confirmed clean — no redirects, just throws an error
+Reduce the grace period back from 30s to 5s — if the fix is real we don't need 30 seconds
+
+The app should settle in under 2 seconds on login, not 30. Find and remove every remaining hard redirect.
+
+30 seconds is way too long for users — they'll think the app is broken and leave. This needs to be instant. Send this now.i was signed in, i was in the home page, and i clied the sunshine to chante to dark mode, and i got kicked off the site to kanding page11:07 PMThat's the same bug — the dark mode toggle is causing a re-render that briefly clears auth state, which triggers the redirect. The theme toggle should never touch auth. Tell Replit:
+
+@codebase Clicking the dark mode/light mode toggle (sunshine icon) is kicking users back to the landing page. This means the theme toggle is causing an auth state disruption.
+Find the theme toggle component and fix:
+
+The theme toggle must NEVER cause any auth state change, session check, or component remount that could trigger the redirect logic
+Check if the toggle is causing a full page re-render or remounting the App component — it should only update a CSS class on <html> or <body>, nothing else
+Make sure the theme state is stored in localStorage only — not in React state at the app root level where a state change would remount auth-dependent components
+The toggle click handler should be:
+
+javascriptconst toggleTheme = () => {
+  const isDark = document.documentElement.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+}
+That's it — no state updates, no re-renders, no auth touching
+
+Also search for any useEffect that watches theme state and triggers auth checks or redirects — remove that dependency entirely
+
+The theme toggle and auth are completely separate systems and must never interact. Do not change any auth logic. Desktop, mobile web, and iOS.
+
+This confirms the redirect is still firing from re-renders, not just on login. The window.location.href nuclear redirect is still somewhere in the code. Send both prompts.

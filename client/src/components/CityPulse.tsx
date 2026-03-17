@@ -64,7 +64,13 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
   });
 
   const { data: unreadMsgData } = useQuery<{ unreadCount: number }>({
-    queryKey: currentUserId ? [`/api/messages/${currentUserId}/unread-count`] : [],
+    queryKey: currentUserId ? ['/api/messages', currentUserId, 'unread-count'] : [],
+    queryFn: async () => {
+      const base = getApiBaseUrl();
+      const res = await fetch(`${base}/api/messages/${currentUserId}/unread-count`, { credentials: 'include' });
+      if (!res.ok) return { unreadCount: 0 };
+      return res.json();
+    },
     enabled: !!currentUserId,
     refetchInterval: 30_000,
     staleTime: 20_000,
@@ -189,12 +195,18 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
       notifIds: groupChatAddedNotifIds,
       onClick: () => setLocation("/messages"),
     },
-    // 💌 Unread messages → navigate
+    // 💬 Unread messages → navigate and immediately clear count
     {
-      emoji: "💌",
+      emoji: "💬",
       count: Number(unreadMsgData?.unreadCount) || 0,
       label: `unread message${(Number(unreadMsgData?.unreadCount) || 0) === 1 ? "" : "s"} →`,
-      onClick: () => setLocation("/messages"),
+      onClick: () => {
+        setLocation("/messages");
+        // Invalidate so the count re-fetches (and clears) once messages page marks them read
+        if (currentUserId) {
+          queryClient.invalidateQueries({ queryKey: ['/api/messages', currentUserId, 'unread-count'] });
+        }
+      },
     },
     // 🟢 Open to meet now → popover
     {
