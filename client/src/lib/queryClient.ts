@@ -168,6 +168,35 @@ export async function apiRequest(
     }
     
     if (res.status === 401) {
+      // Try to silently refresh the session and retry the original request.
+      // This restores the seamless behavior for mutations (Available Now, etc.)
+      // without hard-redirecting the user on failure.
+      const refreshed = await tryRefreshSession();
+      if (refreshed) {
+        const retryController = new AbortController();
+        const retryTimeout = setTimeout(() => retryController.abort(), 30000);
+        try {
+          const retryRes = await fetch(fullUrl, {
+            method,
+            headers,
+            body: data ? JSON.stringify(data) : null,
+            credentials: 'include',
+            signal: retryController.signal,
+          });
+          clearTimeout(retryTimeout);
+          if (retryRes.status === 401) {
+            throw new Error('401: Unauthorized');
+          }
+          await throwIfResNotOk(retryRes);
+          return retryRes;
+        } catch (retryErr) {
+          clearTimeout(retryTimeout);
+          if ((retryErr as Error).name === 'AbortError') {
+            throw new Error('Request timed out after 30 seconds');
+          }
+          throw retryErr;
+        }
+      }
       throw new Error('401: Unauthorized');
     }
     
