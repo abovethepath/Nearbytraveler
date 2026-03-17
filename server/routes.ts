@@ -878,6 +878,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             reference_received: { title: '✍️ New reference written', msg: notif.message || 'Someone wrote you a reference!', url: '/profile#references', cat: 'vouches' },
             event_rsvp: { title: '📅 New RSVP', msg: notif.message || 'Someone RSVP\'d to your event!', url: notif.data ? (tryParseJson(notif.data)?.eventUrl || '/events') : '/events', cat: 'events' },
             event_invite: { title: '📅 Event invitation', msg: notif.message || 'You\'ve been invited to an event!', url: notif.data ? (tryParseJson(notif.data)?.eventUrl || '/events') : '/events', cat: 'events' },
+            event_invite_to_go: { title: '📅 Event invite', msg: notif.message || 'Your host thinks you\'d love this event!', url: notif.data ? (tryParseJson(notif.data)?.eventUrl || '/events') : '/events', cat: 'events' },
             available_now_request: { title: '👋 Meetup request!', msg: notif.message || 'Someone wants to meet up!', url: '/available-now', cat: 'meet_requests' },
             available_now_accepted: { title: '🎉 Meetup accepted!', msg: notif.message || 'Your meet request was accepted!', url: notif.data ? (tryParseJson(notif.data)?.chatroomUrl || '/messages') : '/messages', cat: 'meet_requests' },
             quick_meetup_request: { title: '⚡ Quick meetup request', msg: notif.message || 'Someone wants a quick meetup!', url: '/quick-meetups', cat: 'meet_requests' },
@@ -15107,6 +15108,7 @@ Questions? Just reply to this message. Welcome aboard!
       // Boolean fields with defaults
       cleanEventData.isPublic = eventData.isPublic !== false;
       cleanEventData.isRecurring = eventData.isRecurring || false;
+      cleanEventData.showInterestedPublicly = eventData.showInterestedPublicly === true;
       
       // Import attribution fields
       if (body.isOriginalOrganizer !== undefined) cleanEventData.isOriginalOrganizer = body.isOriginalOrganizer;
@@ -15343,6 +15345,7 @@ Questions? Just reply to this message. Welcome aboard!
       if ((req.body as any).requirements !== undefined && (req.body as any).requirements !== null) updateData.requirements = (req.body as any).requirements?.trim();
       if ((req.body as any).tags !== undefined && (req.body as any).tags !== null) updateData.tags = (req.body as any).tags || [];
       if ((req.body as any).isPublic !== undefined) updateData.isPublic = (req.body as any).isPublic;
+      if ((req.body as any).showInterestedPublicly !== undefined) updateData.showInterestedPublicly = (req.body as any).showInterestedPublicly;
       if ((req.body as any).imageUrl !== undefined && (req.body as any).imageUrl !== null) updateData.imageUrl = (req.body as any).imageUrl;
 
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT UPDATE: Cleaned update data:`, updateData);
@@ -15612,6 +15615,44 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error getting interested users:", error);
       return res.status(500).json({ error: "Failed to get interested users" });
+    }
+  });
+
+  // Invite an "Interested" user to Go — host-only action
+  app.post("/api/events/:eventId/invite-to-go", async (req, res) => {
+    try {
+      const hostId = parseInt(req.headers['x-user-id'] as string || '0');
+      if (!hostId) return res.status(401).json({ error: "Not authenticated" });
+
+      const eventId = parseInt(req.params.eventId || '0');
+      const { interestedUserId } = req.body;
+      if (!eventId || !interestedUserId) return res.status(400).json({ error: "Missing eventId or interestedUserId" });
+
+      // Verify requester is the event organizer
+      const event = await storage.getEvent(eventId);
+      if (!event) return res.status(404).json({ error: "Event not found" });
+      if (event.organizerId !== hostId) return res.status(403).json({ error: "Only the event host can send invites" });
+
+      // Fetch host user for display name
+      const hostUser = await storage.getUserById(hostId);
+      const hostDisplay = (hostUser as any)?.firstName || hostUser?.username || 'Your host';
+      const eventUrl = `/events/${eventId}`;
+
+      await storage.createNotification({
+        userId: interestedUserId,
+        fromUserId: hostId,
+        type: "event_invite_to_go",
+        title: "You're invited to join!",
+        message: `@${hostUser?.username || hostDisplay} thinks you'd love this event — want to join?`,
+        data: JSON.stringify({ eventId, eventUrl, eventTitle: event.title, hostId }),
+        isRead: false,
+        createdAt: new Date(),
+      } as any);
+
+      return res.json({ success: true });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error sending invite-to-go:", error);
+      return res.status(500).json({ error: "Failed to send invite" });
     }
   });
 

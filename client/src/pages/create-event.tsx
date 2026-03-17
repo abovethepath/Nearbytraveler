@@ -50,6 +50,7 @@ interface EventFormData {
   timeZone?: string; // IANA timezone (e.g. "America/Los_Angeles")
   maxParticipants?: number;
   isPublic?: boolean;
+  showInterestedPublicly?: boolean;
   tags?: string[];
   requirements?: string;
   imageUrl?: string;
@@ -277,6 +278,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   } = useForm<EventFormData>({
     defaultValues: {
       isPublic: true,
+      showInterestedPublicly: false,
       isRecurring: false,
       date: getDefaultDate(), // Default to 2026 for easier event creation
       timeZone: localTimeZone,
@@ -714,6 +716,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
         organizerId: user.id,
         maxParticipants: data.maxParticipants ? parseInt(data.maxParticipants.toString()) : null,
         isPublic: data.isPublic !== false,
+        showInterestedPublicly: data.showInterestedPublicly === true,
         tags: [],
         requirements: data.requirements || '',
         imageUrl: data.imageUrl || null,
@@ -2199,6 +2202,27 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                 </div>
               </div>
             )}
+
+            {/* Interested list visibility */}
+            <div className="border rounded-lg p-4 bg-yellow-50/60 dark:bg-yellow-950/20 dark:border-yellow-800/40 border-yellow-200">
+              <div className="flex items-start gap-3">
+                <Checkbox
+                  id="showInterestedPublicly"
+                  checked={!!watch("showInterestedPublicly")}
+                  onCheckedChange={(checked) => setValue("showInterestedPublicly", !!checked)}
+                  className="mt-0.5 h-5 w-5 border-2 border-yellow-500 dark:border-yellow-400 data-[state=checked]:bg-yellow-500 data-[state=checked]:border-yellow-500"
+                />
+                <div className="flex-1">
+                  <Label htmlFor="showInterestedPublicly" className="text-sm font-medium cursor-pointer text-gray-800 dark:text-white">
+                    Show "Interested" list publicly
+                  </Label>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                    When off (default), only you see who marked Interested — everyone still sees the count.
+                    Turn on to show names and avatars to all attendees.
+                  </p>
+                </div>
+              </div>
+            </div>
 
             {/* Submit Button - use onClick so submission always runs (fixes WebView/touch where type="submit" can be ignored) */}
             <div className="pt-4">

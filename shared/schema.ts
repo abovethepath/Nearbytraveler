@@ -534,7 +534,10 @@ export const events = pgTable("events", {
 
   // Cross-metro visibility - events can appear in multiple city searches
   additionalCities: text("additional_cities").array(), // Array of city names where event should also be visible (e.g., ["Los Angeles", "Long Beach"])
-  
+
+  // Interested list visibility — when false (default), only the host sees who's Interested
+  showInterestedPublicly: boolean("show_interested_publicly").default(false),
+
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
   index("idx_events_city_date").on(table.city, table.date),

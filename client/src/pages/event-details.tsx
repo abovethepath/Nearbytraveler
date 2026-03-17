@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, Calendar, Clock, Users, User, Info, Share2, Copy, Check, ArrowLeft, Mail, Link2, MessageCircle, Camera, Upload, Loader2 } from "lucide-react";
+import { MapPin, Calendar, Clock, Users, User, Info, Share2, Copy, Check, ArrowLeft, Mail, Link2, MessageCircle, Camera, Upload, Loader2, Bell, Star } from "lucide-react";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
@@ -152,6 +152,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const [copied, setCopied] = useState(false);
   const [viewAsGuest, setViewAsGuest] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [invitedUserIds, setInvitedUserIds] = useState<Set<number>>(new Set());
   
   // Auth is cookie/session based (source of truth is AuthContext, not localStorage).
   const { user: authedUser, authLoading } = useAuth();
@@ -356,6 +357,32 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message || "Failed to delete event", variant: "destructive" });
+    },
+  });
+
+  // Invite-to-go mutation — host sends notification to an interested user
+  const inviteToGoMutation = useMutation({
+    mutationFn: async (interestedUserId: number) => {
+      const resolvedEventId = event?.id ?? parseInt(eventId);
+      if (!currentUser?.id || !resolvedEventId) throw new Error("Missing user or event ID");
+      const response = await fetch(`${getApiBaseUrl()}/api/events/${resolvedEventId}/invite-to-go`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id.toString() },
+        credentials: 'include',
+        body: JSON.stringify({ interestedUserId }),
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to send invite');
+      }
+      return { interestedUserId };
+    },
+    onSuccess: ({ interestedUserId }) => {
+      setInvitedUserIds(prev => new Set(prev).add(interestedUserId));
+      toast({ title: "Invite sent!", description: "They'll get a notification to join." });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Failed to send invite", variant: "destructive" });
     },
   });
 
@@ -753,101 +780,191 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
           )}
 
           {/* Participants - Couchsurfing Style */}
-          {(() => {
-            // Use the already-calculated counts that include organizer
-            return (
-              <Card className="border border-gray-200 dark:border-gray-700 shadow-lg sticky top-4">
-                <CardHeader className="pb-2 border-b border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-blue-600 dark:text-blue-400" data-testid="badge-going-count">
-                      {goingCount} Going
-                    </span>
-                    {interestedCount > 0 && (
-                      <span className="text-sm text-yellow-600 dark:text-yellow-400" data-testid="badge-interested-count">
-                        +{interestedCount} Interested
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    Attendees
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-4">
-                  <div className="space-y-4">
-                    {goingParticipants
-                      .sort((a, b) => {
-                        if (a.userId === event?.organizerId) return -1;
-                        if (b.userId === event?.organizerId) return 1;
-                        const userA = users.find(u => u.id === a.userId);
-                        const userB = users.find(u => u.id === b.userId);
-                        return (userA?.username || '').localeCompare(userB?.username || '');
-                      })
-                      .slice(0, 15).map((participant) => {
-                      const user = users.find(u => u.id === participant.userId);
-                      const cityLine = deduplicateParts(
-                        [
-                          user?.hometownCity,
-                          user?.hometownState && user.hometownState !== user.hometownCity ? user.hometownState : null,
-                          user?.hometownCountry,
-                        ].filter(Boolean) as string[],
-                      );
-                      
-                      return (
-                        <div key={participant.id} className="flex items-start gap-3 pb-3 border-b border-gray-200 dark:border-gray-800 last:border-0 last:pb-0">
-                          <Avatar 
-                            className="w-10 h-10 cursor-pointer ring-2 ring-blue-100 dark:ring-blue-900"
+          <Card className="border border-gray-200 dark:border-gray-700 shadow-lg sticky top-4">
+            <CardHeader className="pb-2 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between">
+                <span className="text-lg font-bold text-blue-600 dark:text-blue-400" data-testid="badge-going-count">
+                  {goingCount} Going
+                </span>
+                {interestedCount > 0 && (
+                  <span className="text-sm text-yellow-600 dark:text-yellow-400" data-testid="badge-interested-count">
+                    +{interestedCount} Interested
+                  </span>
+                )}
+              </div>
+              <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Attendees
+              </div>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <div className="space-y-4">
+                {/* Going list — always public */}
+                {goingParticipants
+                  .sort((a, b) => {
+                    if (a.userId === event?.organizerId) return -1;
+                    if (b.userId === event?.organizerId) return 1;
+                    const userA = users.find(u => u.id === a.userId);
+                    const userB = users.find(u => u.id === b.userId);
+                    return (userA?.username || '').localeCompare(userB?.username || '');
+                  })
+                  .slice(0, 15).map((participant) => {
+                  const user = users.find(u => u.id === participant.userId);
+                  const cityLine = deduplicateParts(
+                    [
+                      user?.hometownCity,
+                      user?.hometownState && user.hometownState !== user.hometownCity ? user.hometownState : null,
+                      user?.hometownCountry,
+                    ].filter(Boolean) as string[],
+                  );
+                  return (
+                    <div key={participant.id} className="flex items-start gap-3 pb-3 border-b border-gray-200 dark:border-gray-800 last:border-0 last:pb-0">
+                      <Avatar
+                        className="w-10 h-10 cursor-pointer ring-2 ring-blue-100 dark:ring-blue-900"
+                        onClick={() => setLocation(`/profile/${user?.id}`)}
+                      >
+                        <AvatarImage src={user?.profileImage || undefined} />
+                        <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white">
+                          {user?.username?.charAt(0).toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <button
                             onClick={() => setLocation(`/profile/${user?.id}`)}
+                            className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline text-left truncate"
                           >
-                            <AvatarImage src={user?.profileImage || undefined} />
-                            <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white">
-                              {user?.username?.charAt(0).toUpperCase() || 'U'}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
+                            @{user?.username || 'unknown'}
+                          </button>
+                          {user?.id === event?.organizerId && event?.isOriginalOrganizer !== false && (
+                            <Badge variant="default" className="text-xs bg-orange-500 hover:bg-orange-600 shrink-0">Host</Badge>
+                          )}
+                          {participant.role === 'co-organizer' && user?.id !== event?.organizerId && (
+                            <Badge variant="default" className="text-xs bg-blue-500 hover:bg-blue-600 shrink-0">Co-Host</Badge>
+                          )}
+                          {user?.id === event?.sharedBy && (
+                            <Badge variant="outline" className="text-xs border-purple-500 text-purple-600 dark:text-purple-400 shrink-0">Shared</Badge>
+                          )}
+                        </div>
+                        {cityLine && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{cityLine}</p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+                {goingParticipants.length > 15 && (
+                  <button className="w-full text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 py-2">
+                    View all {goingParticipants.length} attendees
+                  </button>
+                )}
+
+                {/* Interested list — visible only to host OR if showInterestedPublicly */}
+                {interestedParticipants.length > 0 && (isOrganizer || (event as any).showInterestedPublicly) && (
+                  <>
+                    <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                      <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400 uppercase tracking-wide mb-3 flex items-center gap-1">
+                        <Star className="w-3 h-3" />
+                        Interested
+                      </p>
+                      <div className="space-y-3">
+                        {interestedParticipants.slice(0, 10).map((participant) => {
+                          const user = users.find(u => u.id === participant.userId);
+                          return (
+                            <div key={participant.id} className="flex items-center gap-3">
+                              <Avatar
+                                className="w-8 h-8 cursor-pointer ring-2 ring-yellow-100 dark:ring-yellow-900/50"
+                                onClick={() => setLocation(`/profile/${user?.id}`)}
+                              >
+                                <AvatarImage src={user?.profileImage || undefined} />
+                                <AvatarFallback className="bg-gradient-to-br from-yellow-400 to-orange-500 text-white text-xs">
+                                  {user?.username?.charAt(0).toUpperCase() || 'U'}
+                                </AvatarFallback>
+                              </Avatar>
                               <button
                                 onClick={() => setLocation(`/profile/${user?.id}`)}
-                                className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline text-left truncate"
+                                className="flex-1 text-left text-sm font-medium text-yellow-700 dark:text-yellow-400 hover:underline truncate"
                               >
                                 @{user?.username || 'unknown'}
                               </button>
-                              {user?.id === event?.organizerId && event?.isOriginalOrganizer !== false && (
-                                <Badge variant="default" className="text-xs bg-orange-500 hover:bg-orange-600 shrink-0">
-                                  Host
-                                </Badge>
-                              )}
-                              {participant.role === 'co-organizer' && user?.id !== event?.organizerId && (
-                                <Badge variant="default" className="text-xs bg-blue-500 hover:bg-blue-600 shrink-0">
-                                  Co-Host
-                                </Badge>
-                              )}
-                              {user?.id === event?.sharedBy && (
-                                <Badge variant="outline" className="text-xs border-purple-500 text-purple-600 dark:text-purple-400 shrink-0">
-                                  Shared
-                                </Badge>
-                              )}
                             </div>
-                            {cityLine && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                {cityLine}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                    {goingParticipants.length > 15 && (
-                      <button 
-                        className="w-full text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 py-2"
-                      >
-                        View all {goingParticipants.length} attendees
-                      </button>
-                    )}
+                          );
+                        })}
+                        {interestedParticipants.length > 10 && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                            +{interestedParticipants.length - 10} more interested
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Count-only for non-hosts when list is private */}
+                {interestedParticipants.length > 0 && !isOrganizer && !(event as any).showInterestedPublicly && (
+                  <div className="pt-2 border-t border-gray-200 dark:border-gray-700 text-center">
+                    <p className="text-xs text-yellow-600 dark:text-yellow-400">
+                      <Star className="w-3 h-3 inline mr-1" />
+                      {interestedCount} {interestedCount === 1 ? 'person' : 'people'} interested
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })()}
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Host-only: Interested users management with Invite to Go */}
+          {!!currentUser?.id && isOrganizer && !viewAsGuest && interestedParticipants.length > 0 && (
+            <Card className="border border-yellow-200 dark:border-yellow-800/50 shadow-lg bg-yellow-50/50 dark:bg-yellow-950/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base text-yellow-800 dark:text-yellow-300 flex items-center gap-2">
+                  <Star className="w-4 h-4" />
+                  Interested ({interestedCount})
+                </CardTitle>
+                <p className="text-xs text-yellow-700 dark:text-yellow-400">Invite them to officially join</p>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {interestedParticipants.map((participant) => {
+                  const user = users.find(u => u.id === participant.userId);
+                  const alreadyInvited = invitedUserIds.has(participant.userId);
+                  return (
+                    <div key={participant.id} className="flex items-center gap-3">
+                      <Avatar
+                        className="w-9 h-9 cursor-pointer shrink-0"
+                        onClick={() => setLocation(`/profile/${user?.id}`)}
+                      >
+                        <AvatarImage src={user?.profileImage || undefined} />
+                        <AvatarFallback className="bg-gradient-to-br from-yellow-400 to-orange-500 text-white text-xs">
+                          {user?.username?.charAt(0).toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <button
+                        onClick={() => setLocation(`/profile/${user?.id}`)}
+                        className="flex-1 text-left text-sm font-medium text-gray-800 dark:text-gray-200 hover:underline truncate"
+                      >
+                        @{user?.username || 'unknown'}
+                      </button>
+                      <Button
+                        size="sm"
+                        variant={alreadyInvited ? "outline" : "default"}
+                        disabled={alreadyInvited || inviteToGoMutation.isPending}
+                        onClick={() => inviteToGoMutation.mutate(participant.userId)}
+                        className={alreadyInvited
+                          ? "text-xs shrink-0 border-green-500 text-green-600 dark:text-green-400"
+                          : "text-xs shrink-0 bg-orange-500 hover:bg-orange-600 text-white border-0"
+                        }
+                      >
+                        {alreadyInvited ? (
+                          <><Check className="w-3 h-3 mr-1" />Invited</>
+                        ) : (
+                          <><Bell className="w-3 h-3 mr-1" />Invite to Go</>
+                        )}
+                      </Button>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          )}
           
         </div>
 
