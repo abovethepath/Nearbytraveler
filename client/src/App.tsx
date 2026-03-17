@@ -2032,6 +2032,8 @@ function Router() {
 }
 
 function App() {
+  const [location] = useLocation();
+
   useEffect(() => {
     if (isNativeIOSApp()) {
       document.body.setAttribute('data-native-ios', 'true');
@@ -2093,7 +2095,9 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <DarkModeSuggestionBanner />
-          <Router />
+          <div key={location} className="route-page">
+            <Router />
+          </div>
           {!isNativeIOSApp() && !disableFloatingChatbot && (
             <div className="hidden md:block"><HelpChatbot /></div>
           )}
