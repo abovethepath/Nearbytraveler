@@ -9,6 +9,8 @@ interface SubInterestSelectorProps {
   showOptionalLabel?: boolean;
   variant?: "default" | "dark";
   excludeCategories?: string[];
+  /** Sub-interest strings to hide (profile bio deduplication — not used in City Match) */
+  excludeSubInterests?: string[];
 }
 
 export default function SubInterestSelector({
@@ -16,13 +18,20 @@ export default function SubInterestSelector({
   onSubInterestsChange,
   showOptionalLabel = true,
   variant = "default",
-  excludeCategories = []
+  excludeCategories = [],
+  excludeSubInterests = []
 }: SubInterestSelectorProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  
-  const filteredCategories = excludeCategories.length > 0
-    ? SUB_INTEREST_CATEGORIES.filter(c => !excludeCategories.includes(c.id))
-    : SUB_INTEREST_CATEGORIES;
+
+  const excludeSubSet = new Set(excludeSubInterests);
+
+  const filteredCategories = SUB_INTEREST_CATEGORIES
+    .filter(c => excludeCategories.length === 0 || !excludeCategories.includes(c.id))
+    .map(c => excludeSubSet.size === 0 ? c : {
+      ...c,
+      subInterests: c.subInterests.filter(s => !excludeSubSet.has(s))
+    })
+    .filter(c => c.subInterests.length > 0);
   
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories(prev => {

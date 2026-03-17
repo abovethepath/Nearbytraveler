@@ -34,10 +34,21 @@ import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
 import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS } from "@shared/base-options";
 import { ReportUserButton } from "@/components/report-user-button";
+
 import type { ProfilePageProps } from "./profile-complete-types";
 import { profileEditButtonClass } from "@/components/profile/editButtonClass";
 import { useQuery as useTanstackQuery } from "@tanstack/react-query";
 import { SITE_URL } from "@/lib/constants";
+
+const PROFILE_BIO_EXCLUDED_SUB_INTERESTS: string[] = [
+  "Brunch Spots", "Food Trucks / Street Food", "Vegan / Vegetarian", "Farm-to-Table", "Food Tours",
+  "Craft Beer / Breweries", "Wine Bars", "Live Music Venues", "Karaoke Bars", "Late Night Eats",
+  "History Museums", "Cultural Festivals", "Photography Exhibitions",
+  "Comedy Shows", "Live Music Concerts", "Trivia Nights",
+  "Local Markets / Farmers Markets",
+  "Beach / Swimming", "Hiking / Trail Walking", "Golf",
+  "Pickleball", "Yoga",
+];
 
 function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profileImage }: {
   userId: number;
@@ -1593,6 +1604,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                         onSubInterestsChange={(newSubs) => setEditFormData(prev => ({ ...prev, subInterests: newSubs }))}
                         excludeCategories={["tours"]}
                         showOptionalLabel={true}
+                        excludeSubInterests={PROFILE_BIO_EXCLUDED_SUB_INTERESTS}
                       />
                     </div>
 
