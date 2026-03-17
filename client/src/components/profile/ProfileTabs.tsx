@@ -3992,17 +3992,14 @@ export function ProfileTabs(props: ProfilePageProps) {
                 id="panel-travel"
                 aria-labelledby="tab-travel"
                 ref={tabRefs.travel}
-                className="mt-6"
+                className="mt-6 space-y-4"
                 data-testid="travel-content"
               >
                 {/* Travel Plans Widget - No wrapper needed, widget has its own styling */}
                 <TravelPlansWidget userId={effectiveUserId} isOwnProfile={isOwnProfile} />
-              </div>
-            )}
 
-            {/* Travel Intent Widget - TangoTrips-inspired */}
-            {user?.userType !== 'business' && (
-              <Card className="hover:shadow-lg transition-all duration-200 hover:border-purple-300 dark:hover:border-purple-600 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+                {/* Travel Intent Widget - only shown in Travel tab */}
+                <Card className="hover:shadow-lg transition-all duration-200 hover:border-purple-300 dark:hover:border-purple-600 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <Sparkles className="w-5 h-5 text-purple-600" />
@@ -4114,6 +4111,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   )}
                 </CardContent>
               </Card>
+              </div>
             )}
 
 
