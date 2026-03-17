@@ -414,7 +414,7 @@ export default function SignupTraveling() {
   // No default date - user must pick their trip end date
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 pt-4 pb-12">
       {/* Vibrant header banner */}
       <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-orange-500 to-blue-600 py-3 px-4 text-center z-40 shadow-lg">
         <p className="text-white font-bold text-sm sm:text-base">
