@@ -32,7 +32,7 @@ import BusinessEventsWidget from "@/components/business-events-widget";
 import SubInterestSelector from "@/components/SubInterestSelector";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
-import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS } from "@shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS, PRIVATE_INTERESTS_BY_CATEGORY } from "@shared/base-options";
 import { ReportUserButton } from "@/components/report-user-button";
 
 import type { ProfilePageProps } from "./profile-complete-types";
@@ -1607,6 +1607,59 @@ export function ProfileTabs(props: ProfilePageProps) {
                         excludeSubInterests={PROFILE_BIO_EXCLUDED_SUB_INTERESTS}
                       />
                     </div>
+
+                    {/* LIFESTYLE & PRIVATE INTERESTS — edit section, non-business users only */}
+                    {user?.userType !== 'business' && (
+                      <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
+                        <div className="rounded-xl border border-red-200/70 dark:border-red-800/40 bg-red-50/50 dark:bg-red-950/20 p-4 space-y-3">
+                          <div>
+                            <h3 className="font-semibold text-red-800 dark:text-red-300 flex items-center gap-2 text-sm">
+                              <Eye className="w-4 h-4 flex-shrink-0" />
+                              Lifestyle &amp; Private Interests
+                              <span className="ml-auto text-xs font-normal text-red-600 dark:text-red-400 italic">Only visible to you</span>
+                            </h3>
+                            <p className="text-xs text-red-600/80 dark:text-red-400/70 mt-1">
+                              Never shown publicly — only matched with members who share the same interests. Optional.
+                            </p>
+                          </div>
+                          <div className="space-y-3">
+                            {Object.entries(PRIVATE_INTERESTS_BY_CATEGORY).map(([category, items]) => (
+                              <div key={category}>
+                                <p className="text-xs font-medium text-red-700 dark:text-red-400 mb-1.5 uppercase tracking-wide">{category}</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {items.map((item: string) => {
+                                    const isSelected = (editFormData.privateInterests || []).includes(item);
+                                    return (
+                                      <button
+                                        key={item}
+                                        type="button"
+                                        onClick={() => {
+                                          const current = editFormData.privateInterests || [];
+                                          setEditFormData(prev => ({
+                                            ...prev,
+                                            privateInterests: isSelected
+                                              ? current.filter((x: string) => x !== item)
+                                              : [...current, item]
+                                          }));
+                                        }}
+                                        style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
+                                          isSelected
+                                            ? 'bg-red-600 dark:bg-red-700 text-white border-red-600 dark:border-red-600'
+                                            : 'bg-white dark:bg-red-950/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800/50 hover:border-red-400 hover:bg-red-100 dark:hover:bg-red-900/30'
+                                        }`}
+                                      >
+                                        {isSelected && <span className="mr-1">✓</span>}{item}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* SAVE/CANCEL BUTTONS */}
                     <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-600">
