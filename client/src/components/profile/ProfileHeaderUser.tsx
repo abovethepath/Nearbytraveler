@@ -214,6 +214,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   return (
     <div
       className={`w-full overflow-hidden bg-gradient-to-r ${gradientOptions?.[selectedGradient]} px-3 sm:px-6 lg:px-10 relative isolate profile-hero-fixed ${isNativeIOSApp() ? 'py-6 sm:py-8 lg:py-12' : (isDesktopOwnProfile || isDesktopOtherUser) ? 'py-4 sm:py-5 lg:pt-6 lg:pb-16' : 'pt-12 sm:pt-14 lg:pt-20 pb-6 sm:pb-8 lg:pb-16'}`}
+      style={{ width: '100vw', position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
       data-profile-hero-owner={isOwnProfile ? "own" : "other"}
     >
       <div className="absolute inset-0 bg-black/30 z-0" />
@@ -275,9 +276,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold break-all crisp-hero-text text-white" style={{ color: '#ffffff' }}>
                     {((user as any)?.firstName || "").split(" ")[0] || user?.username}
                   </h1>
-                  {(user as any)?.firstName && (
-                    <span className="text-sm sm:text-base font-medium text-white/80 break-all">@{user?.username}</span>
-                  )}
+                  <span className="text-sm sm:text-base font-medium text-white/80 break-all">@{user?.username}</span>
                   <SupportBadge tier={(user as any)?.supportTier} />
                 </div>
                 {/* Own profile: ⋮ menu lives on username row (top-right) */}
@@ -535,9 +534,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); openTab('contacts'); setTimeout(() => { document.getElementById('connections-in-common-section')?.scrollIntoView({ behavior: 'smooth' }); }, 150); }}>{label}</sup>;
                                 })()}
                               </h1>
-                              {(user as any)?.firstName && (
-                                <div className="text-sm font-medium text-white/75 break-all mt-0.5">@{user?.username}</div>
-                              )}
+                              <div className="text-sm font-medium text-white/75 break-all mt-0.5">@{user?.username}</div>
                               <SupportBadge tier={(user as any)?.supportTier} />
                             </div>
 
@@ -1123,9 +1120,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); openTab('contacts'); setTimeout(() => { document.getElementById('connections-in-common-section')?.scrollIntoView({ behavior: 'smooth' }); }, 150); }}>{label}</sup>;
                             })()}
                           </h1>
-                          {(user as any)?.firstName && (
-                            <span className="text-sm font-medium text-white/75 break-all">@{user?.username}</span>
-                          )}
+                          <span className="text-sm font-medium text-white/75 break-all">@{user?.username}</span>
                           <SupportBadge tier={(user as any)?.supportTier} />
                           </div>
                           {!isOwnProfile && connectionStatus?.status === 'accepted' && (
