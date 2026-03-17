@@ -665,10 +665,10 @@ function Router() {
         let res = await doCheck();
 
         // Auth-transition hardening:
-        // Retry on 401 for (a) login/signup transitions and (b) any authenticated user
-        // hitting a transient session hiccup (Redis lag, proxy flush, etc).
-        if (res.status === 401 && (loginPending || isAuthenticating || user?.id)) {
-          for (const delayMs of [150, 400, 800]) {
+        // Immediately after login/signup, the session cookie can lag briefly.
+        // During this window, a single 401 should NOT clear state or redirect to landing.
+        if (res.status === 401 && (loginPending || isAuthenticating)) {
+          for (const delayMs of [150, 300, 600]) {
             await new Promise((r) => setTimeout(r, delayMs));
             res = await doCheck();
             if (res.ok) break;
@@ -698,7 +698,7 @@ function Router() {
 
         if (res.status === 401) {
           const msSinceLogin = Date.now() - loginSucceededAtRef.current;
-          if (msSinceLogin < 5_000) {
+          if (msSinceLogin < 30_000) {
             console.log("Auth sync: 401 within login grace period, keeping user state");
             return;
           }
@@ -863,7 +863,7 @@ function Router() {
         
         if (response.status === 401) {
           const msSinceLogin = Date.now() - loginSucceededAtRef.current;
-          if (msSinceLogin < 5_000) {
+          if (msSinceLogin < 30_000) {
             console.log("Initial auth check: 401 within login grace period, skipping clear");
           } else {
             writeSessionCache(null);
@@ -1140,8 +1140,8 @@ function Router() {
     if (loginPending) return;
     if (isPublicRoute) return;
     if (authValue.isAuthenticated) return;
-    // Don't redirect within 5s of login or 8s of page load — prevents flicker
-    if (Date.now() - loginSucceededAtRef.current < 5_000) return;
+    // Don't redirect within 30s of login or 8s of page load — prevents flicker
+    if (Date.now() - loginSucceededAtRef.current < 30_000) return;
     if (Date.now() - pageLoadTimeRef.current < 8_000) return;
 
     try {
@@ -1247,7 +1247,7 @@ function Router() {
 
     // Session-cookie-only auth: localStorage is NOT an auth source. If the server session
     // hasn't been verified in this tab, treat the user as logged out.
-    const isActuallyAuthenticated = authValue.isAuthenticated || (!!effectiveUser && isSessionVerified()) || (Date.now() - loginSucceededAtRef.current < 5_000 && !!effectiveUser);
+    const isActuallyAuthenticated = authValue.isAuthenticated || (!!effectiveUser && isSessionVerified()) || (Date.now() - loginSucceededAtRef.current < 30_000 && !!effectiveUser);
 
     if (!isActuallyAuthenticated && !isPublicRoute) {
       // Safety net: if a login/signup transition is in flight, show the
@@ -1947,7 +1947,7 @@ function Router() {
   }
 
 
-  const hasAnyAuthEvidence = authValue.isAuthenticated || (Date.now() - loginSucceededAtRef.current < 5_000 && !!user?.id);
+  const hasAnyAuthEvidence = authValue.isAuthenticated || (Date.now() - loginSucceededAtRef.current < 30_000 && !!user?.id);
 
   return (
     <AuthContext.Provider value={authValue}>
