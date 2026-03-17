@@ -1,8 +1,9 @@
 import { WebSocket } from 'ws';
 import { db } from '../db';
-import { chatroomMessages, chatroomMembers, users, messages, meetupChatroomMessages, meetupChatrooms, eventParticipants, availableNow, availableNowRequests, citychatrooms, chatroomModerationRecords } from '../../shared/schema';
+import { chatroomMessages, chatroomMembers, users, messages, meetupChatroomMessages, meetupChatrooms, eventParticipants, availableNow, availableNowRequests, citychatrooms, chatroomModerationRecords, notifications, events } from '../../shared/schema';
 import { eq, and, desc, gt, or, gte, isNull } from 'drizzle-orm';
 import { redisPubSub } from './redisPubSub';
+import { pushToUser } from '../pushNotifications';
 
 // WebSocket event types for WhatsApp-style chat
 export type ChatEventType =
@@ -50,6 +51,17 @@ export class ChatWebSocketService {
   private connectedUsers = new Map<number, Set<AuthenticatedWebSocket>>();
   private chatroomMembers = new Map<number, Set<number>>(); // chatroomId -> Set of userIds
   private typingUsers = new Map<string, { userId: number; username: string; expiresAt: number }>(); // chatroomId:userId -> expiry
+
+  // Smart batched chat notifications
+  private messageBatch = new Map<string, {
+    count: number;
+    senderUsername: string;
+    firstMessage: string;
+    timer: ReturnType<typeof setTimeout>;
+  }>();
+  private chatroomActivity = new Map<string, number>(); // `${chatroomId}:${userId}` -> last activity ms
+  private readonly BATCH_WINDOW_MS = 2 * 60 * 1000;    // 2-min batch window before firing
+  private readonly ACTIVE_THRESHOLD_MS = 2 * 60 * 1000; // 2 min = "actively in chatroom"
 
   // Send an already-serialised string (or object) to every open connection for a user
   private sendToUser(userId: number, data: string): void {
@@ -594,6 +606,20 @@ export class ChatWebSocketService {
       // Then broadcast to all other members (excluding sender to avoid duplicate)
       await this.broadcastToChatroom(chatroomId, broadcastEvent, ws.userId);
       console.log('✅ Message broadcast complete');
+
+      // Track sender as active in this chatroom
+      this.chatroomActivity.set(`${chatroomId}:${ws.userId}`, Date.now());
+
+      // Smart batched notifications (non-blocking)
+      setImmediate(() => {
+        this.sendChatroomMessageNotifications(
+          chatroomId,
+          chatType as 'chatroom' | 'event' | 'meetup',
+          ws.userId!,
+          sender?.username || 'Someone',
+          content,
+        ).catch(e => console.warn('[ChatNotif] Notification error:', e));
+      });
       
     } catch (insertError: any) {
       console.error('❌ ERROR during message insert/broadcast:', insertError.message, insertError.stack);
@@ -1095,6 +1121,9 @@ export class ChatWebSocketService {
     const { chatroomId, payload } = event;
     const { messageId } = payload;
 
+    // Track this user as active in the chatroom (suppresses batch notifications)
+    this.chatroomActivity.set(`${chatroomId}:${ws.userId!}`, Date.now());
+
     // Update last read timestamp for this user in this chatroom
     await db.update(chatroomMembers)
       .set({ lastReadAt: new Date() })
@@ -1552,6 +1581,178 @@ export class ChatWebSocketService {
   getConnectedUsersCount(): number {
     return this.connectedUsers.size;
   }
+
+  // ─── Smart Batched Chat Notifications ────────────────────────────────────
+
+  /**
+   * Called after every chatroom message broadcast (non-DM).
+   * Determines which members should be notified, handles @mentions
+   * immediately, and batches the rest into a 2-minute window.
+   */
+  private async sendChatroomMessageNotifications(
+    chatroomId: number,
+    chatType: 'chatroom' | 'event' | 'meetup',
+    senderId: number,
+    senderUsername: string,
+    content: string,
+  ): Promise<void> {
+    try {
+      // Resolve chatroom name and deep-link URL
+      let chatroomName = 'chat';
+      let chatUrl = '/messages';
+
+      if (chatType === 'chatroom') {
+        const [room] = await db
+          .select({ name: citychatrooms.name })
+          .from(citychatrooms)
+          .where(eq(citychatrooms.id, chatroomId))
+          .limit(1);
+        chatroomName = room?.name || 'City Chat';
+        chatUrl = `/messages?chatroom=${chatroomId}&type=chatroom`;
+      } else {
+        const [room] = await db
+          .select({ chatroomName: meetupChatrooms.chatroomName })
+          .from(meetupChatrooms)
+          .where(eq(meetupChatrooms.id, chatroomId))
+          .limit(1);
+        chatroomName = room?.chatroomName || (chatType === 'event' ? 'Event Chat' : 'Meetup Chat');
+        chatUrl = `/messages?chatroom=${chatroomId}&type=${chatType}`;
+      }
+
+      // Fetch all active members of this chatroom
+      const members = await db
+        .select({ userId: chatroomMembers.userId })
+        .from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.isActive, true)));
+
+      const now = Date.now();
+      const preview = content.length > 40 ? content.slice(0, 40) + '…' : content;
+
+      // Detect @mentions in the message
+      const mentionMatches = content.match(/@(\w+)/g);
+      const mentionedUsernames = new Set(
+        (mentionMatches || []).map(m => m.slice(1).toLowerCase()),
+      );
+
+      for (const member of members) {
+        const recipientId = member.userId;
+        if (recipientId === senderId) continue; // never notify sender
+
+        // Skip users who are actively in the chatroom (sent/read within last 2 min)
+        const activityKey = `${chatroomId}:${recipientId}`;
+        const lastActivity = this.chatroomActivity.get(activityKey);
+        if (lastActivity && now - lastActivity < this.ACTIVE_THRESHOLD_MS) continue;
+
+        // Check for @mention — notify immediately, bypass batching
+        const [recipientUser] = await db
+          .select({ username: users.username })
+          .from(users)
+          .where(eq(users.id, recipientId))
+          .limit(1);
+
+        const isMentioned =
+          recipientUser?.username &&
+          mentionedUsernames.has(recipientUser.username.toLowerCase());
+
+        if (isMentioned) {
+          await this.fireChatroomNotification(
+            recipientId, senderId, senderUsername, chatroomName, chatUrl, preview, chatroomId, 1,
+          );
+          continue;
+        }
+
+        // Batch: accumulate messages for 2 minutes then send one notification
+        const batchKey = `${chatroomId}:${recipientId}`;
+        const existing = this.messageBatch.get(batchKey);
+
+        if (existing) {
+          clearTimeout(existing.timer);
+          existing.count++;
+          existing.timer = setTimeout(() => {
+            this.flushBatch(batchKey, recipientId, senderId, senderUsername, chatroomName, chatUrl, chatroomId, existing.count, existing.firstMessage);
+          }, this.BATCH_WINDOW_MS);
+        } else {
+          const timer = setTimeout(() => {
+            const b = this.messageBatch.get(batchKey);
+            if (b) this.flushBatch(batchKey, recipientId, senderId, senderUsername, chatroomName, chatUrl, chatroomId, b.count, b.firstMessage);
+          }, this.BATCH_WINDOW_MS);
+          this.messageBatch.set(batchKey, { count: 1, senderUsername, firstMessage: preview, timer });
+        }
+      }
+    } catch (e) {
+      console.warn('[ChatNotif] sendChatroomMessageNotifications error:', e);
+    }
+  }
+
+  private flushBatch(
+    batchKey: string,
+    recipientId: number,
+    senderId: number,
+    senderUsername: string,
+    chatroomName: string,
+    chatUrl: string,
+    chatroomId: number,
+    count: number,
+    firstMessage: string,
+  ): void {
+    this.messageBatch.delete(batchKey);
+    this.fireChatroomNotification(
+      recipientId, senderId, senderUsername, chatroomName, chatUrl, firstMessage, chatroomId, count,
+    ).catch(e => console.warn('[ChatNotif] flushBatch error:', e));
+  }
+
+  private async fireChatroomNotification(
+    recipientId: number,
+    senderId: number,
+    senderUsername: string,
+    chatroomName: string,
+    chatUrl: string,
+    preview: string,
+    chatroomId: number,
+    count: number,
+  ): Promise<void> {
+    try {
+      const title = count > 1
+        ? `${count} new messages in ${chatroomName}`
+        : `@${senderUsername} in ${chatroomName}`;
+      const body = count > 1
+        ? `${count} new messages in ${chatroomName}`
+        : `@${senderUsername}: ${preview}`;
+
+      // Insert bell (in-app) notification
+      await db.insert(notifications).values({
+        userId: recipientId,
+        fromUserId: senderId,
+        type: 'chatroom_message',
+        title,
+        message: body,
+        data: JSON.stringify({ chatUrl, chatroomId, senderUsername }),
+        isRead: false,
+      });
+
+      // Push real-time bell update via WebSocket
+      this.sendToUser(recipientId, JSON.stringify({
+        type: 'notification',
+        payload: { type: 'chatroom_message', fromUserId: senderId },
+      }));
+
+      // OneSignal push notification
+      await pushToUser({
+        db,
+        users,
+        eq,
+        toUserId: recipientId,
+        title,
+        message: body,
+        url: chatUrl,
+        notifType: 'chatroom_message',
+        fromUserId: senderId,
+      });
+    } catch (e) {
+      console.warn('[ChatNotif] fireChatroomNotification error:', e);
+    }
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 }
 
 // Export singleton instance
