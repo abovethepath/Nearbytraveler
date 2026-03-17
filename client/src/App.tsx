@@ -335,6 +335,7 @@ function Router() {
   const [isVerifyingAuth, setIsVerifyingAuth] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const loginSucceededAtRef = React.useRef<number>(0);
+  const pageLoadTimeRef = React.useRef<number>(Date.now());
   const LOGIN_PENDING_KEY = "nt_login_pending";
   const [loginPending, setLoginPending] = useState(() => {
     try {
@@ -697,7 +698,7 @@ function Router() {
 
         if (res.status === 401) {
           const msSinceLogin = Date.now() - loginSucceededAtRef.current;
-          if (msSinceLogin < 10_000) {
+          if (msSinceLogin < 30_000) {
             console.log("Auth sync: 401 within login grace period, keeping user state");
             return;
           }
@@ -862,7 +863,7 @@ function Router() {
         
         if (response.status === 401) {
           const msSinceLogin = Date.now() - loginSucceededAtRef.current;
-          if (msSinceLogin < 10_000) {
+          if (msSinceLogin < 30_000) {
             console.log("Initial auth check: 401 within login grace period, skipping clear");
           } else {
             writeSessionCache(null);
@@ -1139,10 +1140,12 @@ function Router() {
     if (loginPending) return;
     if (isPublicRoute) return;
     if (authValue.isAuthenticated) return;
-    if (Date.now() - loginSucceededAtRef.current < 10_000) return;
+    // Don't redirect within 30s of login or 8s of page load — prevents flicker
+    if (Date.now() - loginSucceededAtRef.current < 30_000) return;
+    if (Date.now() - pageLoadTimeRef.current < 8_000) return;
 
     try {
-      localStorage.setItem("postAuthRedirect", location);
+      if (location !== "/") localStorage.setItem("postAuthRedirect", location);
     } catch {
       // ignore storage errors
     }
@@ -1153,7 +1156,9 @@ function Router() {
     isAuthenticating,
     loginPending,
     isPublicRoute,
-    location,
+    // NOTE: location intentionally omitted — this effect only needs to run when
+    // auth state changes, not on every navigation. Adding location here causes
+    // the redirect to fire on every page change and creates a bounce loop.
     setLocation,
   ]);
 
@@ -1242,7 +1247,7 @@ function Router() {
 
     // Session-cookie-only auth: localStorage is NOT an auth source. If the server session
     // hasn't been verified in this tab, treat the user as logged out.
-    const isActuallyAuthenticated = authValue.isAuthenticated || (!!effectiveUser && isSessionVerified()) || (Date.now() - loginSucceededAtRef.current < 10_000 && !!effectiveUser);
+    const isActuallyAuthenticated = authValue.isAuthenticated || (!!effectiveUser && isSessionVerified()) || (Date.now() - loginSucceededAtRef.current < 30_000 && !!effectiveUser);
 
     if (!isActuallyAuthenticated && !isPublicRoute) {
       // Safety net: if a login/signup transition is in flight, show the
@@ -1942,7 +1947,7 @@ function Router() {
   }
 
 
-  const hasAnyAuthEvidence = authValue.isAuthenticated || (Date.now() - loginSucceededAtRef.current < 10_000 && !!user?.id);
+  const hasAnyAuthEvidence = authValue.isAuthenticated || (Date.now() - loginSucceededAtRef.current < 30_000 && !!user?.id);
 
   return (
     <AuthContext.Provider value={authValue}>
