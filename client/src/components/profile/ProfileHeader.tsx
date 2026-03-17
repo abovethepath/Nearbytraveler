@@ -16,6 +16,7 @@ export function ProfileHeader(props: ProfilePageProps) {
     setLocation,
     isOwnProfile,
     shouldShowBackToChat,
+    handleBackToChat,
     gradientOptions,
     selectedGradient,
     setShowExpandedPhoto,
@@ -39,13 +40,7 @@ export function ProfileHeader(props: ProfilePageProps) {
         <div className={`w-full bg-gradient-to-r ${gradientOptions?.[selectedGradient]} text-white px-4 py-2 shadow-md border-b border-white/15`}>
           <div className="max-w-7xl mx-auto">
             <Button
-              onClick={() => {
-                const chatSource = sessionStorage.getItem('chatSource');
-                if (chatSource) {
-                  sessionStorage.removeItem('chatSource');
-                  setLocation(chatSource);
-                }
-              }}
+              onClick={() => handleBackToChat?.()}
               variant="ghost"
               size="sm"
               className="text-white/95 hover:text-white hover:bg-white/15 -ml-2"

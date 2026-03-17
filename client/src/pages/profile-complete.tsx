@@ -4012,7 +4012,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     );
   }
   const profileProps: ProfilePageProps = {
-    user, setLocation, isOwnProfile, shouldShowBackToChat, gradientOptions, selectedGradient, setSelectedGradient,
+    user, setLocation, isOwnProfile, shouldShowBackToChat, handleBackToChat, gradientOptions, selectedGradient, setSelectedGradient,
     setShowExpandedPhoto, uploadingPhoto, handleAvatarUpload, toast, connectionDegreeData, userVouches, travelPlans,
     openTab, hostelMatch, currentUser, handleMessage, setShowWriteReferenceModal, getMetropolitanArea,
     activeTab, userConnections, photos, userTravelMemories, userReferences, setTriggerQuickMeetup, isProfileIncomplete,
