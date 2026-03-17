@@ -2708,3 +2708,23 @@ html.dark .landing-quote {
   outline: none !important;
 }
 
+/* ── LIGHT MODE INPUT / TEXTAREA VISIBILITY ─────────────────────────────────
+   The --input CSS variable (hsl 214.3 31.8% 78%) is a pale blue-gray that's
+   nearly invisible on a white page. Force a clearly visible darker border.
+   ───────────────────────────────────────────────────────────────────────── */
+:root:not(.dark) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]) {
+  border: 1px solid #9ca3af !important; /* gray-400 — clear on white/light bg */
+  background-color: #ffffff !important;
+}
+
+:root:not(.dark) textarea {
+  border: 1px solid #9ca3af !important;
+  background-color: #ffffff !important;
+}
+
+:root:not(.dark) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):focus,
+:root:not(.dark) textarea:focus {
+  border-color: #6b7280 !important; /* gray-500 — slightly darker on focus */
+  outline: none !important;
+}
+
