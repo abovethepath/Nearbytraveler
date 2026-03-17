@@ -2693,18 +2693,22 @@ html.dark .landing-quote {
    Excludes checkboxes, radio buttons, and range sliders.
    ───────────────────────────────────────────────────────────────────────── */
 .dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]) {
-  border: 1px solid #4b5563 !important; /* gray-600 — visible on any dark bg */
-  background-color: #1f2937 !important; /* gray-800 */
+  border: 1px solid #6b7280 !important;    /* gray-500 — clearly visible on dark bg */
+  background-color: #374151 !important;    /* gray-700 — lighter than page bg (#0f1117) */
+  color: #f9fafb !important;               /* gray-50 — readable text */
+  -webkit-text-fill-color: #f9fafb !important;
 }
 
 .dark textarea {
-  border: 1px solid #4b5563 !important;
-  background-color: #1f2937 !important;
+  border: 1px solid #6b7280 !important;    /* gray-500 */
+  background-color: #374151 !important;    /* gray-700 */
+  color: #f9fafb !important;
+  -webkit-text-fill-color: #f9fafb !important;
 }
 
 .dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):focus,
 .dark textarea:focus {
-  border-color: #6b7280 !important; /* gray-500 — slightly brighter on focus */
+  border-color: #9ca3af !important; /* gray-400 — clearly brighter on focus */
   outline: none !important;
 }
 
