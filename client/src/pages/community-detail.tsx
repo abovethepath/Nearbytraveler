@@ -497,7 +497,7 @@ export default function CommunityDetail({ communityId }: { communityId: number }
 
         {activeSection === "chat" && community.chatroomId && (
           isMember ? (
-            <div className="h-[calc(100vh-320px)] min-h-[300px]">
+            <div className="h-[calc(100dvh-408px)] md:h-[calc(100dvh-320px)] min-h-[300px]">
               <WhatsAppChat
                 chatId={community.chatroomId}
                 chatType="chatroom"

@@ -1855,7 +1855,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6 px-2 sm:px-4 lg:px-8 mt-2 sm:mt-0 min-w-0 overflow-x-hidden w-full">
           
           {/* Main Content - Center column */}
-          <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-8 min-w-0 relative overflow-hidden flex flex-col w-full max-w-full">
+          <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-8 min-w-0 relative overflow-x-hidden flex flex-col w-full max-w-full">
 
             {/* Available Now Widget - FIRST THING on mobile, always visible at top */}
             {effectiveUser?.userType !== 'business' && (

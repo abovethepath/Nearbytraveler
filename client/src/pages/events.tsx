@@ -545,7 +545,7 @@ export default function Events() {
             <div className="h-7 w-36 rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse" />
           </div>
           <div className="h-10 w-full rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse mb-4" />
-          <div className="flex gap-2 mb-6 overflow-hidden">
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
             {[1,2,3,4].map(i => (
               <div key={i} className="h-8 w-20 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse flex-shrink-0" />
             ))}
@@ -929,7 +929,7 @@ export default function Events() {
           {!isLoading && (
             <>
           {/* Events Sections */}
-          <div className="space-y-6 sm:space-y-8 max-w-full overflow-hidden">
+          <div className="space-y-6 sm:space-y-8 max-w-full overflow-x-hidden">
             {/* User's Events Section - Show first */}
             {currentUser && (() => {
               // Filter events created by the user
