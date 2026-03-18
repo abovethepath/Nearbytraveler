@@ -64,7 +64,7 @@ export default function WhatsAppChatroom() {
 
   const isValidChatroomId = chatroomId > 0 && !isNaN(chatroomId);
 
-  const { data: chatroom, isLoading } = useQuery<ChatroomDetails>({
+  const { data: chatroom, isLoading, isError: chatroomError } = useQuery<ChatroomDetails>({
     queryKey: [`/api/chatrooms/${chatroomId}`],
     enabled: isValidChatroomId && !!currentUserId,
   });
@@ -128,9 +128,21 @@ export default function WhatsAppChatroom() {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Redirecting...</div>;
   }
 
+  if (chatroomError && !isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white px-6">
+        <p className="text-lg font-semibold mb-2">Chatroom unavailable</p>
+        <p className="text-sm text-gray-400 mb-6 text-center">This chatroom could not be loaded. Please go back and try again.</p>
+        <button onClick={() => navigate('/chatrooms')} className="px-6 py-3 bg-blue-600 rounded-full text-white font-semibold">
+          Go back
+        </button>
+      </div>
+    );
+  }
+
   if (isLoading || checkingMembership || !chatroom || !currentUserId) {
-    if (authLoading && !currentUserId) return <ChatPageSkeleton variant="light" />;
-    return <ChatPageSkeleton variant="light" />;
+    if (authLoading && !currentUserId) return <ChatPageSkeleton variant="dark" />;
+    return <ChatPageSkeleton variant="dark" />;
   }
 
   const isMember = hasJoined || membershipCheck?.isMember;
