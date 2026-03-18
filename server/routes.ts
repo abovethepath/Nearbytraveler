@@ -4086,6 +4086,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           hometownCountry: users.hometownCountry,
           userType: users.userType,
           createdAt: users.createdAt,
+          lastSeenAt: users.lastSeenAt,
         })
         .from(users)
         .where(

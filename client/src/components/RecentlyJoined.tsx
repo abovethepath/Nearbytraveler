@@ -117,7 +117,9 @@ export default function RecentlyJoined({ currentUserId, messagedUserIds }: Recen
                       {initial}
                     </div>
                   )}
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white dark:border-gray-800" />
+                  {user.lastSeenAt && (Date.now() - new Date(user.lastSeenAt).getTime() < 5 * 60 * 1000) && (
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white dark:border-gray-800" />
+                  )}
                 </div>
 
                 {/* Name */}

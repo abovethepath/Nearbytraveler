@@ -106,8 +106,8 @@ html, body { overflow-x: hidden; }
 }
 
 .dark [data-role="user-card-contacts"] span {
-  color: #FF6B35 !important;
-  -webkit-text-fill-color: #FF6B35 !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
 .dark [data-role="user-card-things-pill"] {
