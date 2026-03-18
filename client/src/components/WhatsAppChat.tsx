@@ -2382,10 +2382,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Main Chat Area */}
       <div className="flex-1 min-w-0 overflow-hidden h-full">
       <div className="flex flex-col h-full">
-      {/* ═══ MOBILE HEADER: Single-row layout (back | avatar+name+status | logo-menu) — DMs get taller header for bigger logo ═══ */}
+      {/* ═══ MOBILE HEADER: back | overlapping avatars | name+dot / subtitle | members+⋮ ═══ */}
       {isMobileWeb && (
-        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, paddingTop: 'env(safe-area-inset-top, 0px)', height: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, minHeight: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, maxHeight: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, transform: 'translateZ(0)', willChange: 'transform' }}>
-          <div className={`flex items-center ${chatType === 'dm' ? 'h-[62px]' : 'h-[52px]'} px-2 gap-2`}>
+        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, paddingTop: 'env(safe-area-inset-top, 0px)', height: `calc(env(safe-area-inset-top, 0px) + 52px)`, minHeight: `calc(env(safe-area-inset-top, 0px) + 52px)`, maxHeight: `calc(env(safe-area-inset-top, 0px) + 52px)`, transform: 'translateZ(0)', willChange: 'transform' }}>
+          <div className="flex items-center h-[52px] px-2 gap-2">
             <Button
               variant="ghost"
               size="icon"
@@ -2396,9 +2396,6 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               <ArrowLeft className="w-5 h-5" />
             </Button>
 
-            {/* Small logo — branding, visible on all mobile chat types */}
-            <img src="/new-logo.png" alt="Nearby Traveler" className="h-6 w-6 object-contain shrink-0" />
-
             {chatType === 'dm' ? (
               <Avatar
                 className="w-8 h-8 shrink-0 cursor-pointer"
@@ -2408,22 +2405,22 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 <AvatarFallback className="bg-green-600 text-white text-sm">{(title || '?')[0]}</AvatarFallback>
               </Avatar>
             ) : (chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 ? (
-              <div className="flex -space-x-1.5 shrink-0">
-                {members.slice(0, 2).map((member) => (
-                  <Avatar key={member.id} className="w-7 h-7 border border-gray-800">
+              <div className="flex shrink-0">
+                {members.slice(0, 4).map((member, idx) => (
+                  <Avatar key={member.id} className="w-7 h-7 border-2 border-gray-800" style={idx > 0 ? { marginLeft: -8 } : undefined}>
                     <AvatarImage src={getProfileImageUrl(member) || undefined} />
                     <AvatarFallback className="bg-green-600 text-white text-[8px]">{getFirstName(member.name, member.username)[0]}</AvatarFallback>
                   </Avatar>
                 ))}
-                {members.length > 2 && (
-                  <div className="w-7 h-7 rounded-full bg-gray-700 border border-gray-800 flex items-center justify-center">
-                    <span className="text-[8px] text-gray-300">+{members.length - 2}</span>
+                {members.length > 4 && (
+                  <div className="w-7 h-7 rounded-full bg-gray-700 border-2 border-gray-800 flex items-center justify-center" style={{ marginLeft: -8 }}>
+                    <span className="text-[8px] text-gray-300">+{members.length - 4}</span>
                   </div>
                 )}
               </div>
             ) : (
-              <div className={`${chatType === 'dm' ? 'w-10 h-10' : 'w-8 h-8'} rounded-full bg-gray-700 flex items-center justify-center shrink-0`}>
-                <span className={`${chatType === 'dm' ? 'text-sm' : 'text-xs'} text-gray-300 font-semibold`}>{(title || '?')[0]}</span>
+              <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0">
+                <span className="text-xs text-gray-300 font-semibold">{(title || '?')[0]}</span>
               </div>
             )}
 
@@ -2458,13 +2455,13 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         }
                       }}
                       maxLength={100}
-                      className="bg-gray-700 text-white text-[13px] font-semibold px-2 py-0.5 rounded border border-gray-500 focus:border-blue-400 outline-none flex-1 min-w-0"
+                      className="bg-gray-700 text-white text-sm font-semibold px-2 py-0.5 rounded border border-gray-500 focus:border-blue-400 outline-none flex-1 min-w-0"
                       autoFocus
                     />
                   </form>
                 ) : (
                   <span
-                    className={`${chatType === 'dm' ? 'text-base' : 'text-[13px]'} font-semibold text-white ${chatType === 'event' ? 'line-clamp-2' : 'truncate'} ${isCurrentUserAdmin && chatType !== 'dm' ? 'cursor-pointer hover:underline' : ''}`}
+                    className={`text-sm font-semibold text-white truncate ${isCurrentUserAdmin && chatType !== 'dm' ? 'cursor-pointer hover:underline' : ''}`}
                     onClick={() => {
                       if (isCurrentUserAdmin && chatType !== 'dm') {
                         setEditNameValue(displayTitle);
@@ -2478,20 +2475,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 )}
                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${messagesLoaded || isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
               </div>
-              {subtitle && <p className={`text-gray-400 truncate ${chatType === 'dm' ? 'text-xs' : 'text-[10px]'} leading-tight`}>{subtitle}</p>}
-              {chatType === "meetup" && meetupActivityTags.length > 0 && (
-                <div className="mt-1 flex flex-wrap gap-1">
-                  {meetupActivityTags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-700 text-gray-100 border border-gray-600"
-                      data-testid="meetup-activity-tag"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
+              {subtitle && <p className="text-gray-400 truncate text-[10px] leading-tight">{subtitle}</p>}
             </div>
 
             <div className="flex items-center gap-0 shrink-0">
@@ -3143,11 +3127,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Messages - Flex wrapper ensures proper spacing; min-h-0 allows flex child to shrink */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0 h-0">
         {/* Scrollable messages area */}
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pt-1 pb-2 bg-[#0f1117]" style={{
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pt-1 pb-2 bg-[#0f1117] relative" style={{
           overscrollBehavior: 'contain', touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' as any,
           paddingTop: isMobileWeb ? `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'} + ${pinnedMessage && chatType !== 'dm' ? '40px' : '4px'})` : undefined,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23999999' stroke-width='2' opacity='0.18'%3E%3Cpath d='M100 50 L100 150 M57 75 L143 125 M57 125 L143 75'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Cpath d='M150 270 L180 300 L150 330 L120 300 Z'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Cpath d='M100 460 L140 500 L100 540 L60 500 Z'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Cpath d='M150 665 L159 693 L188 693 L165 710 L174 738 L150 722 L126 738 L135 710 L112 693 L141 693 Z'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3Ctext x='400' y='380' text-anchor='middle' font-family='Arial, sans-serif' font-size='52' font-weight='bold' fill='%23aaaaaa' opacity='0.07' transform='rotate(-18 400 400)'%3ENearby Traveler%3C/text%3E%3Ctext x='400' y='700' text-anchor='middle' font-family='Arial, sans-serif' font-size='40' font-weight='bold' fill='%23aaaaaa' opacity='0.05' transform='rotate(-18 400 700)'%3ENearby Traveler%3C/text%3E%3C/svg%3E")`
         }}>
+          <img src="/chat-logo.png" alt="" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxWidth: 200, opacity: 0.06, pointerEvents: 'none' }} />
           <div className="flex flex-col min-h-full justify-end w-full">
             {readOnlyBanner && (
               <div className="mx-1 my-2 px-3 py-2 rounded-lg bg-amber-900/60 border border-amber-600/40 text-amber-200 text-sm text-center">
