@@ -598,12 +598,13 @@ export default function UserCard({
                     {thingsInCommon} things in common
                   </div>
                   <div
-                    className="w-full text-center mt-0.5"
-                    style={{ fontSize: 12, fontWeight: 600, color: '#FF6B35' }}
+                    className="w-full flex justify-center mt-0.5"
                     data-role="user-card-contacts"
                   >
-                    <span className="lg:hidden">{contactsInCommon} {contactsInCommon === 1 ? 'Mutual Contact' : 'Mutual Contacts'}</span>
-                    <span className="hidden lg:inline">{contactsInCommon} {contactsInCommon === 1 ? 'Connection' : 'Connections'} in Common</span>
+                    <span className="inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[12px] font-semibold text-white" style={{ backgroundColor: '#FF6B35' }}>
+                      <span className="lg:hidden">{contactsInCommon} {contactsInCommon === 1 ? 'Mutual Contact' : 'Mutual Contacts'}</span>
+                      <span className="hidden lg:inline">{contactsInCommon} {contactsInCommon === 1 ? 'Connection' : 'Connections'} in Common</span>
+                    </span>
                   </div>
                 </>
               )}
