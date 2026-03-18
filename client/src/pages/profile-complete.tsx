@@ -1768,6 +1768,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const profileForm = useForm<z.infer<typeof dynamicProfileSchema>>({
     resolver: zodResolver(dynamicProfileSchema),
     defaultValues: (currentUserType === 'business' ? {
+      firstName: "",
       bio: "",
       businessName: "",
       businessDescription: "",
@@ -1800,6 +1801,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       showFemaleOwned: true,
       showLGBTQIAOwned: true,
     } : {
+      firstName: "",
       bio: "",
       secretActivities: "",
       hometownCity: "",

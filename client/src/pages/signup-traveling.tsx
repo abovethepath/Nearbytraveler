@@ -171,6 +171,8 @@ export default function SignupTraveling() {
         password: (finalFormData.password || "").trim(),
         username: (finalFormData.username || "").toLowerCase().trim(),
         name: (finalFormData.name || "").trim(),
+        firstName: (finalFormData.firstName || "").trim() || undefined,
+        lastName: (finalFormData.lastName || "").trim() || undefined,
         phoneNumber: (finalFormData.phoneNumber || "").trim(),
         keepLoggedIn: finalFormData.keepLoggedIn !== false,
 
@@ -579,15 +581,18 @@ export default function SignupTraveling() {
                     <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                       This helps locals know when you'll be in their area
                     </p>
-                    <Input
-                      type="date"
-                      value={formData.travelReturnDate}
-                      onChange={(e) => setFormData(prev => ({ ...prev, travelReturnDate: e.target.value }))}
-                      min={today}
-                      required
-                      data-testid="input-travelReturnDate"
-                      className="w-full bg-white dark:bg-gray-600 text-gray-900 dark:text-white border-gray-300 dark:border-gray-500 rounded-lg"
-                    />
+                    <div className="relative w-full">
+                      <Input
+                        type="date"
+                        value={formData.travelReturnDate}
+                        onChange={(e) => setFormData(prev => ({ ...prev, travelReturnDate: e.target.value }))}
+                        min={today}
+                        required
+                        data-testid="input-travelReturnDate"
+                        className="w-full min-w-0 box-border bg-white dark:bg-gray-600 text-gray-900 dark:text-white border-gray-300 dark:border-gray-500 rounded-lg"
+                        style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

@@ -3473,8 +3473,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         db.execute(sql`
           SELECT COUNT(*)::int as count FROM events
           WHERE LOWER(city) = ${cityLower}
-            AND date >= ${todayStart.toISOString()}
             AND date < ${weekEnd.toISOString()}
+            AND COALESCE(end_date, date + INTERVAL '4 hours') > NOW()
         `),
         db.execute(sql`
           SELECT COUNT(*)::int as count FROM events
@@ -3661,10 +3661,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       const [tonightEventsRows, availableCountRows, hereNowRows] = await Promise.all([
         // Events happening today in this city (using city-local timezone window)
+        // FILTER: Exclude events whose end time has already passed.
+        // If endDate exists, use it; otherwise assume event ends 4 hours after start.
         db.select({
           id: events.id,
           title: events.title,
           date: events.date,
+          endDate: events.endDate,
           category: events.category,
           venueName: events.venueName,
           location: events.location,
@@ -3677,6 +3680,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             gte(events.date, todayStart),
             lt(events.date, todayEnd),
             eq(events.isActive, true),
+            // Only show events that haven't ended yet:
+            // If end_date exists, it must be in the future; otherwise start + 4 hours must be in the future
+            sql`COALESCE(${events.endDate}, ${events.date} + INTERVAL '4 hours') > NOW()`,
           ))
           .orderBy(events.date)
           .limit(5),
@@ -5776,6 +5782,11 @@ Questions? Just reply to this message!
       });
       
 
+      // Ensure firstName is set — extract from name if not provided
+      if (!processedData.firstName && processedData.name) {
+        processedData.firstName = processedData.name.trim().split(/\s+/)[0];
+      }
+
       const userData = insertUserSchema.parse(processedData);
 
       if (process.env.NODE_ENV === 'development') console.log("⚡ AFTER SCHEMA PARSING - userData location fields:", {
@@ -5979,12 +5990,7 @@ Questions? Just reply to this message!
         userType: user.userType
       };
       
-      // Handle "Keep me logged in" - extend session to 30 days
-      if (req.body.keepLoggedIn) {
-        const thirtyDays = 30 * 24 * 60 * 60 * 1000;
-        (req as any).session.cookie.maxAge = thirtyDays;
-        console.log("🔐 Extended session to 30 days for keepLoggedIn");
-      }
+      // Session cookie is always persistent (30 days) — configured in session middleware
 
       // CRITICAL FIX: Explicitly save session BEFORE sending response
       // Without this, the session data (user info) is set in memory but never
@@ -13627,7 +13633,8 @@ Questions? Just reply to this message. Welcome aboard!
                   eq(events.city, searchCities[0]),
                   arrayContains(events.additionalCities, [searchCities[0]])
                 ),
-                gte(events.date, now),
+                // Show events that haven't ended yet (end_date or start + 4h must be in the future)
+                sql`COALESCE(${events.endDate}, ${events.date} + INTERVAL '4 hours') > NOW()`,
                 lte(events.date, sixWeeksFromNow)
               ))
               .orderBy(asc(events.date));
@@ -13636,7 +13643,7 @@ Questions? Just reply to this message. Welcome aboard!
             eventsQuery = await db.select().from(events)
               .where(and(
                 eq(events.city, searchCities[0]),
-                gte(events.date, now),
+                sql`COALESCE(${events.endDate}, ${events.date} + INTERVAL '4 hours') > NOW()`,
                 lte(events.date, sixWeeksFromNow)
               ))
               .orderBy(asc(events.date));
@@ -13647,15 +13654,17 @@ Questions? Just reply to this message. Welcome aboard!
           const primaryCityEvents = await db.select().from(events)
             .where(and(
               inArray(events.city, searchCities),
-              gte(events.date, now),
+              // Show events that haven't ended yet
+              sql`COALESCE(${events.endDate}, ${events.date} + INTERVAL '4 hours') > NOW()`,
               lte(events.date, sixWeeksFromNow)
             ))
             .orderBy(asc(events.date));
-          
+
           // Then get events where any searchCity is in additionalCities
           const additionalCityEvents = await db.select().from(events)
             .where(and(
-              gte(events.date, now),
+              // Show events that haven't ended yet
+              sql`COALESCE(${events.endDate}, ${events.date} + INTERVAL '4 hours') > NOW()`,
               lte(events.date, sixWeeksFromNow)
             ))
             .orderBy(asc(events.date));
@@ -13725,7 +13734,8 @@ Questions? Just reply to this message. Welcome aboard!
         
         eventsQuery = await db.select().from(events)
           .where(and(
-            gte(events.date, now),
+            // Show events that haven't ended yet (end_date or start + 4h must be in the future)
+            sql`COALESCE(${events.endDate}, ${events.date} + INTERVAL '4 hours') > NOW()`,
             lte(events.date, sixWeeksFromNow),
             gt(events.organizerId, 0) // ONLY USER-CREATED EVENTS
           ));
@@ -17814,17 +17824,13 @@ Questions? Just reply to this message. Welcome aboard!
         };
       });
       
-      // Separate active and expired, then sort each group by newest first
+      // Filter out expired meetups entirely — only show active ones whose expiresAt is in the future
       const activeMeetups = allMeetups
         .filter(meetup => new Date(meetup.expiresAt) > now)
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        
-      const expiredMeetups = allMeetups
-        .filter(meetup => new Date(meetup.expiresAt) <= now)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-      // Combine: active first, then expired
-      const sortedMeetups = [...activeMeetups, ...expiredMeetups];
+      // Only return active (non-expired) meetups
+      const sortedMeetups = activeMeetups;
 
       // Add participantIds for each meetup (used by Active Quick Meetup card to show "Open Hangout" vs "Join")
       if (sortedMeetups.length > 0) {

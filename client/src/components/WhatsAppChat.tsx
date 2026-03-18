@@ -2382,10 +2382,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Main Chat Area */}
       <div className="flex-1 min-w-0 overflow-hidden h-full">
       <div className="flex flex-col h-full">
-      {/* ═══ MOBILE HEADER: Single-row layout (back | avatar+name+status | logo-menu) — DMs get taller header for bigger logo ═══ */}
+      {/* ═══ MOBILE HEADER: Two-line layout — Line 1: back + avatars + name + status + ⋮  Line 2: activity tags ═══ */}
       {isMobileWeb && (
-        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, paddingTop: 'env(safe-area-inset-top, 0px)', height: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, minHeight: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, maxHeight: `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'})`, transform: 'translateZ(0)', willChange: 'transform' }}>
-          <div className={`flex items-center ${chatType === 'dm' ? 'h-[62px]' : 'h-[52px]'} px-2 gap-2`}>
+        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, paddingTop: 'env(safe-area-inset-top, 0px)', transform: 'translateZ(0)', willChange: 'transform' }}>
+          {/* Line 1: Back + avatars + name + green dot + ⋮ */}
+          <div className="flex items-center h-[48px] px-2 gap-2">
             <Button
               variant="ghost"
               size="icon"
@@ -2395,9 +2396,6 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
-
-            {/* Small logo — branding, visible on all mobile chat types */}
-            <img src="/new-logo.png" alt="Nearby Traveler" className="h-6 w-6 object-contain shrink-0" />
 
             {chatType === 'dm' ? (
               <Avatar
@@ -2409,15 +2407,15 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               </Avatar>
             ) : (chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 ? (
               <div className="flex -space-x-1.5 shrink-0">
-                {members.slice(0, 2).map((member) => (
+                {members.slice(0, 4).map((member) => (
                   <Avatar key={member.id} className="w-7 h-7 border border-gray-800">
                     <AvatarImage src={getProfileImageUrl(member) || undefined} />
                     <AvatarFallback className="bg-green-600 text-white text-[8px]">{getFirstName(member.name, member.username)[0]}</AvatarFallback>
                   </Avatar>
                 ))}
-                {members.length > 2 && (
+                {members.length > 4 && (
                   <div className="w-7 h-7 rounded-full bg-gray-700 border border-gray-800 flex items-center justify-center">
-                    <span className="text-[8px] text-gray-300">+{members.length - 2}</span>
+                    <span className="text-[8px] text-gray-300">+{members.length - 4}</span>
                   </div>
                 )}
               </div>
@@ -2428,12 +2426,26 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             )}
 
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                {isEditingName && isCurrentUserAdmin && chatType !== 'dm' ? (
-                  <form
-                    className="flex items-center gap-1 flex-1 min-w-0"
-                    onSubmit={(e) => {
-                      e.preventDefault();
+              {isEditingName && isCurrentUserAdmin && chatType !== 'dm' ? (
+                <form
+                  className="flex items-center gap-1 flex-1 min-w-0"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const trimmed = editNameValue.trim();
+                    if (trimmed && trimmed !== displayTitle) {
+                      renameChatroomMutation.mutate(trimmed);
+                    } else {
+                      setIsEditingName(false);
+                      setEditNameValue(displayTitle);
+                    }
+                  }}
+                >
+                  <input
+                    ref={editNameInputRef}
+                    type="text"
+                    value={editNameValue}
+                    onChange={(e) => setEditNameValue(e.target.value)}
+                    onBlur={() => {
                       const trimmed = editNameValue.trim();
                       if (trimmed && trimmed !== displayTitle) {
                         renameChatroomMutation.mutate(trimmed);
@@ -2442,29 +2454,15 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         setEditNameValue(displayTitle);
                       }
                     }}
-                  >
-                    <input
-                      ref={editNameInputRef}
-                      type="text"
-                      value={editNameValue}
-                      onChange={(e) => setEditNameValue(e.target.value)}
-                      onBlur={() => {
-                        const trimmed = editNameValue.trim();
-                        if (trimmed && trimmed !== displayTitle) {
-                          renameChatroomMutation.mutate(trimmed);
-                        } else {
-                          setIsEditingName(false);
-                          setEditNameValue(displayTitle);
-                        }
-                      }}
-                      maxLength={100}
-                      className="bg-gray-700 text-white text-[13px] font-semibold px-2 py-0.5 rounded border border-gray-500 focus:border-blue-400 outline-none flex-1 min-w-0"
-                      autoFocus
-                    />
-                  </form>
-                ) : (
+                    maxLength={100}
+                    className="bg-gray-700 text-white text-sm font-semibold px-2 py-0.5 rounded border border-gray-500 focus:border-blue-400 outline-none flex-1 min-w-0"
+                    autoFocus
+                  />
+                </form>
+              ) : (
+                <div className="flex items-center gap-1.5">
                   <span
-                    className={`${chatType === 'dm' ? 'text-base' : 'text-[13px]'} font-semibold text-white ${chatType === 'event' ? 'line-clamp-2' : 'truncate'} ${isCurrentUserAdmin && chatType !== 'dm' ? 'cursor-pointer hover:underline' : ''}`}
+                    className={`${chatType === 'dm' ? 'text-base' : 'text-sm'} font-semibold text-white break-words ${isCurrentUserAdmin && chatType !== 'dm' ? 'cursor-pointer hover:underline' : ''}`}
                     onClick={() => {
                       if (isCurrentUserAdmin && chatType !== 'dm') {
                         setEditNameValue(displayTitle);
@@ -2475,48 +2473,133 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   >
                     {displayTitle || 'Chat'}
                   </span>
-                )}
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${messagesLoaded || isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
-              </div>
-              {subtitle && <p className={`text-gray-400 truncate ${chatType === 'dm' ? 'text-xs' : 'text-[10px]'} leading-tight`}>{subtitle}</p>}
-              {chatType === "meetup" && meetupActivityTags.length > 0 && (
-                <div className="mt-1 flex flex-wrap gap-1">
-                  {meetupActivityTags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-700 text-gray-100 border border-gray-600"
-                      data-testid="meetup-activity-tag"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${messagesLoaded || isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
                 </div>
               )}
+              {chatType === 'dm' && subtitle && <p className="text-gray-400 truncate text-xs leading-tight">{subtitle}</p>}
             </div>
 
             <div className="flex items-center gap-0 shrink-0">
-              {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
-                <Sheet open={showMembers} onOpenChange={setShowMembers}>
-                  <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700 h-9 w-9 touch-target" data-testid="button-members">
-                      <Users className="w-4 h-4" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="right" className="members-sheet-mobile bg-gray-900 border-l border-gray-700 text-white w-80">
-                    <SheetHeader>
-                      <div className="flex items-center justify-between">
-                        <SheetTitle className="!text-lg font-semibold text-white">Members ({members.length})</SheetTitle>
-                        {isCurrentUserAdmin && chatType === 'chatroom' && (
-                          <button
-                            onClick={() => adminsOnlyMutation.mutate(!isAdminsOnly)}
-                            disabled={adminsOnlyMutation.isPending}
-                            className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full border ${isAdminsOnly ? 'bg-orange-500/20 border-orange-500/50 text-orange-300' : 'border-gray-600 text-gray-500'}`}
-                          >
-                            📢 {isAdminsOnly ? 'On' : 'Off'}
+              <Sheet open={moreMenuOpen} onOpenChange={setMoreMenuOpen}>
+                <SheetTrigger asChild>
+                  <button
+                    type="button"
+                    className="h-9 w-9 flex items-center justify-center shrink-0 touch-target text-white hover:bg-gray-700 rounded-full"
+                    onClick={() => setMoreMenuOpen(true)}
+                    data-testid="button-chat-more-mobile"
+                  >
+                    <MoreVertical className="w-5 h-5" />
+                  </button>
+                </SheetTrigger>
+                <SheetContent side="bottom" className="bg-gray-900 border-t border-gray-700 text-white">
+                  <SheetHeader>
+                    <SheetTitle className="text-white">Options</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-4 space-y-2">
+                    {chatType === "dm" ? (
+                      <>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); navigate(`/profile/${chatId}`); }}>
+                          <UserIcon className="w-5 h-5" /><span className="font-semibold">View Profile</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); toggleNotificationsMuted(); }}>
+                          {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                          <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); blockDmUser(); }}>
+                          <ShieldAlert className="w-5 h-5" /><span className="font-semibold">Block User</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); reportConversation(); }}>
+                          <ShieldAlert className="w-5 h-5" /><span className="font-semibold">Report Conversation</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-red-300" onClick={() => { setMoreMenuOpen(false); deleteDmConversation(); }}>
+                          <Trash2 className="w-5 h-5" /><span className="font-semibold">Delete Conversation</span>
+                        </button>
+                      </>
+                    ) : chatType === "chatroom" ? (
+                      <>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); setShowMembers(true); }}>
+                          <Users className="w-5 h-5" /><span className="font-semibold">View Members</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-green-300" onClick={() => { setMoreMenuOpen(false); setShowInvitePanel(true); }}>
+                          <UserPlus className="w-5 h-5" /><span className="font-semibold">Add People</span>
+                        </button>
+                        {chatType !== 'dm' && (
+                          <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); setShowShareSheet(true); }}>
+                            <Share2 className="w-5 h-5" /><span className="font-semibold">Share Chatroom</span>
                           </button>
                         )}
-                      </div>
-                    </SheetHeader>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); toggleNotificationsMuted(); }}>
+                          {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                          <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); reportChatroom(); }}>
+                          <ShieldAlert className="w-5 h-5" /><span className="font-semibold">Report Chatroom</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-red-300" onClick={() => { setMoreMenuOpen(false); leaveChatroom(); }}>
+                          <LogOut className="w-5 h-5" /><span className="font-semibold">Leave Chatroom</span>
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); setShowMembers(true); }}>
+                          <Users className="w-5 h-5" /><span className="font-semibold">View Members</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-green-300" onClick={() => { setMoreMenuOpen(false); setShowInvitePanel(true); }}>
+                          <UserPlus className="w-5 h-5" /><span className="font-semibold">Add People / Invite Link</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); setShowShareSheet(true); }}>
+                          <Share2 className="w-5 h-5" /><span className="font-semibold">Share Chat</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); toggleNotificationsMuted(); }}>
+                          {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                          <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-red-300" onClick={() => { setMoreMenuOpen(false); leaveChatroom(); }}>
+                          <LogOut className="w-5 h-5" /><span className="font-semibold">Leave Chat</span>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </div>
+
+          {/* Line 2: Activity tags — meetup chats only */}
+          {chatType === "meetup" && meetupActivityTags.length > 0 && (
+            <div className="flex flex-wrap gap-1 px-3 pb-2">
+              {meetupActivityTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-700 text-gray-100 border border-gray-600"
+                  data-testid="meetup-activity-tag"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Members sheet — opened from ⋮ menu */}
+      {isMobileWeb && (chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
+        <Sheet open={showMembers} onOpenChange={setShowMembers}>
+          <SheetContent side="right" className="members-sheet-mobile bg-gray-900 border-l border-gray-700 text-white w-80">
+            <SheetHeader>
+              <div className="flex items-center justify-between">
+                <SheetTitle className="!text-lg font-semibold text-white">Members ({members.length})</SheetTitle>
+                {isCurrentUserAdmin && chatType === 'chatroom' && (
+                  <button
+                    onClick={() => adminsOnlyMutation.mutate(!isAdminsOnly)}
+                    disabled={adminsOnlyMutation.isPending}
+                    className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full border ${isAdminsOnly ? 'bg-orange-500/20 border-orange-500/50 text-orange-300' : 'border-gray-600 text-gray-500'}`}
+                  >
+                    📢 {isAdminsOnly ? 'On' : 'Off'}
+                  </button>
+                )}
+              </div>
+            </SheetHeader>
                     <div className="mt-4">
                       <input
                         type="text"
