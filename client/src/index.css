@@ -417,6 +417,7 @@ body.light {
     right: 0 !important;
     bottom: 0 !important;
     z-index: 9999 !important;
+    padding-bottom: env(safe-area-inset-bottom, 0) !important;
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: auto !important;
