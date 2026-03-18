@@ -137,6 +137,12 @@ html, body { overflow-x: hidden; }
   text-align: center !important;
 }
 
+/* Light mode: dark text on pale orange bg-orange-100 pill */
+:root:not(.dark) [data-role="user-card-things-pill"] {
+  color: #92400e !important;
+  -webkit-text-fill-color: #92400e !important;
+}
+
 [data-role="user-card-contacts"] {
   text-align: center !important;
   width: 100% !important;
