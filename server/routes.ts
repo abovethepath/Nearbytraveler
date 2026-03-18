@@ -17849,6 +17849,28 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
+      // Mark meetups where the requesting user is muted in the associated chatroom
+      const requestingUserId = req.session?.user?.id || req.headers['x-user-id'];
+      if (requestingUserId && sortedMeetups.length > 0) {
+        const meetupIds = sortedMeetups.map((m: any) => m.id);
+        const mutedRows = await db
+          .select({ meetupId: meetupChatrooms.meetupId })
+          .from(meetupChatrooms)
+          .innerJoin(chatroomMembers, and(
+            eq(chatroomMembers.chatroomId, meetupChatrooms.id),
+            eq(chatroomMembers.userId, Number(requestingUserId)),
+            eq(chatroomMembers.isMuted, true),
+          ))
+          .where(and(
+            inArray(meetupChatrooms.meetupId, meetupIds),
+            isNotNull(meetupChatrooms.meetupId),
+          ));
+        const mutedMeetupIds = new Set(mutedRows.map(r => r.meetupId));
+        for (const meetup of sortedMeetups) {
+          (meetup as any).currentUserMuted = mutedMeetupIds.has(meetup.id);
+        }
+      }
+
       if (process.env.NODE_ENV === 'development') console.log(`QUICK MEETS: Found ${activeMeetups.length} active + ${expiredMeetups.length} expired = ${sortedMeetups.length} total meets`);
 
       return res.json(sortedMeetups);
@@ -25656,7 +25678,7 @@ Questions? Just reply to this message. Welcome aboard!
             .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.userId, Number(userId)), eq(chatroomMembers.isActive, true)))
             .limit(1);
           if (!membership) return res.json({ chatroom: null });
-          const members = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage })
+          const members = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage, isMuted: chatroomMembers.isMuted })
             .from(chatroomMembers)
             .innerJoin(users, eq(users.id, chatroomMembers.userId))
             .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.isActive, true)));
@@ -25696,7 +25718,7 @@ Questions? Just reply to this message. Welcome aboard!
         .limit(1);
 
       if (!chatroom) return res.json({ chatroom: null });
-      const members = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage })
+      const members = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage, isMuted: chatroomMembers.isMuted })
         .from(chatroomMembers)
         .innerJoin(users, eq(users.id, chatroomMembers.userId))
         .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.isActive, true)));
@@ -25751,7 +25773,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Attach members to each chatroom
       const chatroomsWithMembers = await Promise.all(chatrooms.map(async (chat) => {
-        const memberRows = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage })
+        const memberRows = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage, isMuted: chatroomMembers.isMuted })
           .from(chatroomMembers)
           .innerJoin(users, eq(users.id, chatroomMembers.userId))
           .where(and(eq(chatroomMembers.chatroomId, chat.id), eq(chatroomMembers.isActive, true)));

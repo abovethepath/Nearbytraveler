@@ -381,16 +381,22 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const myAcceptedGroupChats = myGroupChatsData?.chatrooms || [];
   const hostGroupChat = groupChatData?.chatroom || null;
 
+  const isCurrentUserMutedInChat = (chat: any) => {
+    if (!currentUser?.id || !chat.members) return false;
+    const me = chat.members.find((m: any) => Number(m.userId) === currentUser.id);
+    return me?.isMuted === true;
+  };
+
   const allGroupChats = (() => {
     const chats: any[] = [];
     const seenIds = new Set<number>();
     const now = new Date();
-    if (hostGroupChat && new Date(hostGroupChat.expiresAt) > now) {
+    if (hostGroupChat && new Date(hostGroupChat.expiresAt) > now && hostGroupChat.isActive !== false && !isCurrentUserMutedInChat(hostGroupChat)) {
       chats.push(hostGroupChat);
       seenIds.add(hostGroupChat.id);
     }
     for (const c of myAcceptedGroupChats) {
-      if (!seenIds.has(c.id) && new Date(c.expiresAt) > now) {
+      if (!seenIds.has(c.id) && new Date(c.expiresAt) > now && c.isActive !== false && !isCurrentUserMutedInChat(c)) {
         chats.push(c);
         seenIds.add(c.id);
       }

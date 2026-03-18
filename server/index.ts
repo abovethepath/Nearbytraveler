@@ -871,6 +871,8 @@ app.use((req, res, next) => {
         UNIQUE(user_id, hidden_from_id)
       )
     `);
+    // Backfill firstName from name for existing users who never set it
+    await db.execute(sql`UPDATE users SET first_name = split_part(name, ' ', 1) WHERE first_name IS NULL AND name IS NOT NULL AND name != ''`);
     console.log("✅ Schema migration check complete");
   } catch (migrationError) {
     console.log(

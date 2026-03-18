@@ -306,7 +306,7 @@ export default function ResponsiveUserGrid({
                 {getThingsInCommon(user)} things in common
               </p>
               {connectionDegreesMap?.[user.id] && (
-                <p className="text-xs font-medium truncate mt-0.5" style={{ color: '#FF6B35' }}>
+                <p className="text-xs font-medium truncate mt-0.5" style={{ color: '#FFFFFF' }}>
                   {connectionDegreesMap[user.id].mutualCount} {connectionDegreesMap[user.id].mutualCount === 1 ? 'Connection' : 'Connections'} in Common
                 </p>
               )}

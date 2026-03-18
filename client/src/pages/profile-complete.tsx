@@ -1865,7 +1865,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           .filter((item: string) => safeGetAllActivities().includes(item));
         
         profileForm.reset({
-          firstName: (user as any).firstName || (user as any).first_name || "",
+          firstName: (user as any).firstName || (user as any).first_name || ((user as any).name ? String((user as any).name).split(' ')[0] : ""),
           bio: user.bio || "",
           businessName: (user as any).business_name || (user as any).businessName || "",
           hometownCity: user.hometownCity || "",
@@ -1895,7 +1895,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
         
         profileForm.reset({
-          firstName: (user as any).firstName || (user as any).first_name || "",
+          firstName: (user as any).firstName || (user as any).first_name || ((user as any).name ? String((user as any).name).split(' ')[0] : ""),
           bio: user.bio || "",
           secretActivities: user.secretActivities || "",
           hometownCity: user.hometownCity || "",
@@ -1968,7 +1968,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             .filter((item: string) => safeGetAllActivities().includes(item));
           
           profileForm.reset({
-            firstName: (user as any).firstName || (user as any).first_name || "",
+            firstName: (user as any).firstName || (user as any).first_name || ((user as any).name ? String((user as any).name).split(' ')[0] : ""),
             bio: user.bio || "",
             businessName: (user as any).business_name || (user as any).businessName || "",
             businessDescription: (user as any).business_description || (user as any).businessDescription || "",
@@ -2004,7 +2004,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         } else {
           // For non-business users, reset with their data
           profileForm.reset({
-            firstName: (user as any).firstName || (user as any).first_name || "",
+            firstName: (user as any).firstName || (user as any).first_name || ((user as any).name ? String((user as any).name).split(' ')[0] : ""),
             bio: user.bio || "",
             secretActivities: user.secretActivities || "",
             hometownCity: user.hometownCity || "",
@@ -2158,7 +2158,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       console.log('📅 FORM INIT - user.dateOfBirth raw:', user.dateOfBirth);
       console.log('📅 FORM INIT - formatted:', user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : "empty");
       profileForm.reset({
-        firstName: (user as any).firstName || (user as any).first_name || "",
+        firstName: (user as any).firstName || (user as any).first_name || ((user as any).name ? String((user as any).name).split(' ')[0] : ""),
         bio: user.bio || "",
         ...(user?.userType === 'business' ? { 
           businessName: (user as any).business_name || (user as any).businessName || "",
@@ -3671,7 +3671,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         console.log('🔥 Re-syncing form with updated user data');
         if (user?.userType !== 'business') {
           profileForm.reset({
-            firstName: (updatedUser as any).firstName || (updatedUser as any).first_name || "",
+            firstName: (updatedUser as any).firstName || (updatedUser as any).first_name || ((updatedUser as any).name ? String((updatedUser as any).name).split(' ')[0] : ""),
             bio: updatedUser.bio || "",
             secretActivities: updatedUser.secretActivities || "",
             hometownCity: updatedUser.hometownCity || "",

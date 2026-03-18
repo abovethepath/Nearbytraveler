@@ -2698,30 +2698,6 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   </SheetContent>
                 </Sheet>
               )}
-              {/* Add People + Share buttons — visible in header on all chatroom types */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowInvitePanel(true)}
-                className="text-white hover:bg-gray-700 h-9 w-9 touch-target shrink-0"
-                title="Add people"
-                data-testid="button-add-people"
-              >
-                <UserPlus className="w-4 h-4" />
-              </Button>
-              {chatType !== 'dm' && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowShareSheet(true)}
-                  className="text-white hover:bg-gray-700 h-9 w-9 touch-target shrink-0"
-                  title="Share chatroom"
-                  data-testid="button-share-chatroom"
-                >
-                  <Share2 className="w-4 h-4" />
-                </Button>
-              )}
-
               <Sheet open={moreMenuOpen} onOpenChange={setMoreMenuOpen}>
                 <SheetTrigger asChild>
                   <button
