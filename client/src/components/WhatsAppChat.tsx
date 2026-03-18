@@ -2208,15 +2208,16 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     <div 
       ref={chatContainerRef} 
       className={`flex bg-gray-900 text-white overflow-hidden w-full h-full min-h-0 ${isMobileWeb ? 'fixed left-0 right-0 z-50' : ''}`} 
-      style={isMobileWeb ? { 
-        top: 0, 
-        height: viewportHeight ? `${viewportHeight}px` : '100svh', 
-        maxHeight: viewportHeight ? `${viewportHeight}px` : '100svh',
+      style={isMobileWeb ? {
+        top: 0,
+        height: viewportHeight ? `${viewportHeight}px` : '100vh',
+        maxHeight: viewportHeight ? `${viewportHeight}px` : '100vh',
         position: 'fixed',
         left: 0,
         right: 0,
+        bottom: 0,
         backgroundColor: '#0b141a'
-      } : undefined} 
+      } : undefined}
       data-chat-page="true"
     >
       {/* Desktop Members Sidebar — matches approved DM left-panel design */}

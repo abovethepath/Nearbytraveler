@@ -3,11 +3,45 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import WhatsAppChat from "@/components/WhatsAppChat";
 import { getApiBaseUrl, apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Component } from "react";
+import type { ReactNode, ErrorInfo } from "react";
 import { ArrowLeft, MessageCircle, Users, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/App";
 import { ChatPageSkeleton } from "@/components/ui/chat-page-skeleton";
+
+class ChatroomErrorBoundary extends Component<
+  { children: ReactNode; onBack: () => void },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode; onBack: () => void }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("Chatroom render error:", error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white px-6">
+          <p className="text-lg font-semibold mb-2">Something went wrong</p>
+          <p className="text-sm text-gray-400 mb-6 text-center">The chatroom couldn't be loaded. Please go back and try again.</p>
+          <button
+            onClick={this.props.onBack}
+            className="px-6 py-3 bg-blue-600 rounded-full text-white font-semibold"
+          >
+            Go back
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 interface ChatroomDetails {
   id: number;
@@ -103,17 +137,20 @@ export default function WhatsAppChatroom() {
 
   if (isMember) {
     const isPrivateDM = chatroom.city === 'Private' && chatroom.country === 'DM';
+    const handleBack = () => (isPrivateDM ? navigate(-1 as any) : navigate('/chatrooms'));
     return (
-      <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
-        <WhatsAppChat
-          chatId={chatroomId}
-          chatType="chatroom"
-          title={chatroom.name}
-          subtitle={`${chatroom.memberCount} members`}
-          currentUserId={currentUserId}
-          onBack={() => (isPrivateDM ? navigate(-1 as any) : navigate('/chatrooms'))}
-        />
-      </div>
+      <ChatroomErrorBoundary onBack={handleBack}>
+        <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
+          <WhatsAppChat
+            chatId={chatroomId}
+            chatType="chatroom"
+            title={chatroom.name}
+            subtitle={`${chatroom.memberCount ?? 0} members`}
+            currentUserId={currentUserId}
+            onBack={handleBack}
+          />
+        </div>
+      </ChatroomErrorBoundary>
     );
   }
 

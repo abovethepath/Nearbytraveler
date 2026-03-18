@@ -5978,6 +5978,29 @@ Questions? Just reply to this message!
       const user = await storage.createUser(userData);
       const { password, ...userWithoutPassword } = user;
 
+      // Ensure city chatrooms exist and auto-join user to them
+      try {
+        // 1. Ensure hometown chatrooms exist
+        if (user.hometownCity && user.hometownCountry) {
+          await storage.ensureMeetLocalsChatrooms(user.hometownCity, user.hometownState, user.hometownCountry);
+        }
+        // 2. Ensure destination chatrooms exist (for travelers)
+        if (user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry) {
+          await storage.ensureMeetLocalsChatrooms(user.destinationCity, user.destinationState, user.destinationCountry);
+        }
+        // 3. Auto-join user to hometown and destination chatrooms
+        await storage.autoJoinUserCityChatrooms(
+          user.id,
+          user.hometownCity,
+          user.hometownCountry,
+          user.isCurrentlyTraveling && user.destinationCity ? user.destinationCity : undefined,
+          user.isCurrentlyTraveling && user.destinationCountry ? user.destinationCountry : undefined
+        );
+        console.log(`✅ REGISTRATION: Auto-joined user ${user.username} to city chatrooms`);
+      } catch (error) {
+        console.error('❌ REGISTRATION: Failed to auto-join user to city chatrooms:', error);
+      }
+
       // CRITICAL: Create user session immediately after user creation
       console.log("🔐 Creating session for newly registered user:", user.username);
       (req as any).session = (req as any).session || {};
@@ -13045,7 +13068,7 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log(`🏠 MY-LOCATIONS: User ${userId} requesting chatrooms`);
 
       // Get user data to determine relevant locations
-      const user = await storage.getUser(userId.toString());
+      const user = await storage.getUser(userId);
       const userLocations = new Set<string>();
 
       if (user) {
@@ -13061,6 +13084,16 @@ Questions? Just reply to this message. Welcome aboard!
           }
         }
         
+        // Add travel destination from user profile (destinationCity field)
+        if (user.isCurrentlyTraveling && user.destinationCity) {
+          userLocations.add(user.destinationCity);
+          const consolidatedDest = consolidateToMetropolitanArea(user.destinationCity, user.destinationState || '', user.destinationCountry || '');
+          if (consolidatedDest !== user.destinationCity) {
+            const metroAreaCities = getMetropolitanAreaCities(consolidatedDest, user.destinationState || '', user.destinationCountry || '');
+            metroAreaCities.forEach(city => userLocations.add(city));
+          }
+        }
+
         // Add travel destinations from active travel plans
         const currentDate = new Date();
         const userTravelPlans = await db.select().from(travelPlans)
@@ -13068,7 +13101,7 @@ Questions? Just reply to this message. Welcome aboard!
             eq(travelPlans.userId, userId),
             gte(travelPlans.endDate, currentDate)
           ));
-        
+
         userTravelPlans.forEach(plan => {
           if (plan.destinationCity) {
             userLocations.add(plan.destinationCity);
@@ -13087,8 +13120,10 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      // Get all active chatrooms
-      const allChatrooms = await db.select().from(citychatrooms).where(eq(citychatrooms.isActive, true));
+      // Get all active chatrooms (include null isActive — some chatrooms were created without explicit isActive flag)
+      const allChatrooms = await db.select().from(citychatrooms).where(
+        or(eq(citychatrooms.isActive, true), isNull(citychatrooms.isActive))
+      );
       
       // Get user memberships first to include user's joined chatrooms
       const userMembershipResults = await db.execute(sql`
