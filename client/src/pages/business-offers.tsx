@@ -674,7 +674,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
               </h2>
               <div className="flex gap-2 mt-2">
                 <Badge variant="outline">{viewingOffer.category}</Badge>
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
                   {getDiscountText(viewingOffer)}
                 </Badge>
               </div>

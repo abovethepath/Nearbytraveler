@@ -111,7 +111,7 @@ export default function About() {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="bg-blue-100 dark:bg-blue-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-blue-600">1</span>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Share Your Interests</h3>
@@ -120,7 +120,7 @@ export default function About() {
               </p>
             </div>
             <div className="text-center">
-              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="bg-orange-100 dark:bg-orange-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-orange-600">2</span>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Get Matched</h3>
@@ -129,7 +129,7 @@ export default function About() {
               </p>
             </div>
             <div className="text-center">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="bg-green-100 dark:bg-green-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-green-600">3</span>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Connect & Experience</h3>

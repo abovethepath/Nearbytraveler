@@ -13,12 +13,17 @@ export default function AmbassadorProgram() {
   };
 
   const pointActions = [
-    { action: "Refer a friend who signs up", points: "+50 pts", description: "Invite friends to join the community" },
+    { action: "Recruit a friend who signs up", points: "+50 pts", description: "Invite friends to join the community" },
     { action: "Refer a business lead", points: "+75 pts", description: "Connect local businesses to the platform" },
     { action: "Business becomes a paying partner", points: "+200 pts", description: "Successfully onboard a business partner" },
-    { action: "Create an event", points: "+20 pts", description: "Host community gatherings" },
-    { action: "Host verified event", points: "+50 pts", description: "Successfully run community events" },
-    { action: "Event hits attendance goal", points: "+30 pts", description: "Grow event participation" },
+    { action: "Create an event", points: "+5 pts", description: "Host community gatherings" },
+    { action: "Event with 10+ attendees", points: "+20 pts", description: "Events that attract real participation" },
+    { action: "Complete a Quick Meet", points: "+10 pts", description: "Max 1/day, 3/week" },
+    { action: "Complete an Available Now", points: "+5 pts", description: "Max 1/day, 3/week" },
+    { action: "Create a chatroom (5+ members)", points: "+15 pts", description: "Build active community spaces" },
+    { action: "Write a reference", points: "+10 pts", description: "Max 1 per person ever" },
+    { action: "Receive a reference", points: "+10 pts", description: "Max 1 per person ever" },
+    { action: "Every 25 connections reached", points: "+50 pts", description: "Grow your network" },
   ];
 
   return (
@@ -176,7 +181,7 @@ export default function AmbassadorProgram() {
                   <span><strong>Activity requirement to stay active:</strong></span>
                 </li>
                 <ul className="list-disc list-inside ml-4 space-y-1 text-gray-700 dark:text-gray-300">
-                  <li>Must earn at least 50 points every 6 months to stay active</li>
+                  <li>Must earn at least 200 points every 6 months to stay active</li>
                   <li>If inactive for 6 months, status changes to &quot;Inactive&quot;—points are frozen but not deleted</li>
                   <li>If inactive for 12 months, ambassador status is revoked and points stop counting toward equity</li>
                   <li>Ambassador can reapply after 12 months and start fresh</li>
@@ -216,7 +221,7 @@ export default function AmbassadorProgram() {
             <Card className="bg-gray-50 dark:bg-gray-900">
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">How do I stay active as an Ambassador?</h3>
-                <p className="text-gray-600 dark:text-gray-400">You must earn at least <strong>50 points every 6 months</strong> to stay active. If you don’t meet that minimum, your status changes to Inactive—your points are frozen but not deleted. If you’re inactive for 12 months (no points earned), your ambassador status is revoked and your points no longer count toward equity. You can reapply after 12 months and start fresh.</p>
+                <p className="text-gray-600 dark:text-gray-400">You must earn at least <strong>200 points every 6 months</strong> to stay active. If you don’t meet that minimum, your status changes to Inactive—your points are frozen but not deleted. If you’re inactive for 12 months (no points earned), your ambassador status is revoked and your points no longer count toward equity. You can reapply after 12 months and start fresh.</p>
               </CardContent>
             </Card>
           </div>

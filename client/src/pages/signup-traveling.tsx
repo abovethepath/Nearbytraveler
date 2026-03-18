@@ -40,6 +40,8 @@ export default function SignupTraveling() {
     destinationState: "",
     destinationCountry: "",
     travelReturnDate: "",
+    travelStartDate: "",
+    alreadyHere: false,
 
     // Preferences
     interests: [] as string[],
@@ -192,6 +194,7 @@ export default function SignupTraveling() {
         destinationCountry: formData.destinationCountry.trim(),
         travelDestination: destination,
         travelReturnDate: formData.travelReturnDate,
+        travelStartDate: formData.alreadyHere ? new Date().toISOString() : (formData.travelStartDate || new Date().toISOString()),
 
         // top choices (require at least 3)
         interests: formData.interests,
@@ -575,6 +578,37 @@ export default function SignupTraveling() {
                       </p>
                     </div>
                   )}
+
+                  {/* Arrival date / Already here */}
+                  <div className="mt-4 pt-4 border-t border-orange-200 dark:border-orange-600">
+                    <Label className="text-gray-700 dark:text-gray-200 font-semibold">When do you arrive? *</Label>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                      Locals will see when you'll be in their city
+                    </p>
+                    <label className="flex items-center gap-2 mb-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={formData.alreadyHere}
+                        onChange={(e) => setFormData(prev => ({ ...prev, alreadyHere: e.target.checked, travelStartDate: '' }))}
+                        className="w-4 h-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                      />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Already here</span>
+                    </label>
+                    {!formData.alreadyHere && (
+                      <div className="relative w-full">
+                        <Input
+                          type="date"
+                          value={formData.travelStartDate}
+                          onChange={(e) => setFormData(prev => ({ ...prev, travelStartDate: e.target.value }))}
+                          min={today}
+                          required={!formData.alreadyHere}
+                          data-testid="input-travelStartDate"
+                          className="w-full min-w-0 box-border bg-white dark:bg-gray-600 text-gray-900 dark:text-white border-gray-300 dark:border-gray-500 rounded-lg"
+                          style={{ WebkitAppearance: 'none', MozAppearance: 'none' } as React.CSSProperties}
+                        />
+                      </div>
+                    )}
+                  </div>
 
                   <div className="mt-4 pt-4 border-t border-orange-200 dark:border-orange-600">
                     <Label className="text-gray-700 dark:text-gray-200 font-semibold">When does your trip end? *</Label>

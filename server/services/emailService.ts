@@ -353,7 +353,7 @@ You're receiving this because you're part of the ${data.city} community on Nearb
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h2 style="color: #3b82f6;">Business Invitation to Nearby Traveler</h2>
         <p>Hello!</p>
-        <p>${data.referrerName} (${data.referrerUsername}) has invited you to join Nearby Traveler's business network.</p>
+        <p>${(data.referrerName || '').split(' ')[0] || data.referrerUsername} (@${data.referrerUsername}) has invited you to join Nearby Traveler's business network.</p>
         <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
           <p style="margin: 0;">${finalMessage}</p>
         </div>
@@ -368,7 +368,8 @@ You're receiving this because you're part of the ${data.city} community on Nearb
       </div>
     `;
     
-    const text = `Business Invitation to Nearby Traveler\n\n${data.referrerName} (${data.referrerUsername}) has invited you to join Nearby Traveler's business network.\n\n${finalMessage}\n\nJoin at: https://nearbytraveler.org/signup-business\n\nRemember to mention ${data.referrerUsername} when you sign up!`;
+    const referrerFirst = (data.referrerName || '').split(' ')[0] || data.referrerUsername;
+    const text = `Business Invitation to Nearby Traveler\n\n${referrerFirst} (@${data.referrerUsername}) has invited you to join Nearby Traveler's business network.\n\n${finalMessage}\n\nJoin at: https://nearbytraveler.org/signup-business\n\nRemember to mention @${data.referrerUsername} when you sign up!`;
     
     return this.sendEmail(
       data.to,

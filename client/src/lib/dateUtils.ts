@@ -429,3 +429,32 @@ export function formatTravelDestinationShort(destination: string | null | undefi
   }
   return parts[0];
 }
+
+/**
+ * Determine travel status label based on travelStartDate.
+ * - Past or today → "Currently Traveling" (or "Nearby Traveler")
+ * - Future → "Arriving Mar 30" (short format)
+ * - No date → defaults to "Currently Traveling"
+ */
+export function getTravelStatusLabel(
+  travelStartDate: string | Date | null | undefined,
+  style: 'short' | 'label' = 'short'
+): { label: string; isActiveNow: boolean } {
+  if (!travelStartDate) return { label: style === 'label' ? 'Nearby Traveler' : 'Currently Traveling', isActiveNow: true };
+
+  const start = new Date(travelStartDate);
+  if (isNaN(start.getTime())) return { label: style === 'label' ? 'Nearby Traveler' : 'Currently Traveling', isActiveNow: true };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const startDay = new Date(start);
+  startDay.setHours(0, 0, 0, 0);
+
+  if (startDay <= today) {
+    return { label: style === 'label' ? 'Nearby Traveler' : 'Currently Traveling', isActiveNow: true };
+  }
+
+  // Future date — format as "Arriving Mar 30"
+  const formatted = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return { label: `Arriving ${formatted}`, isActiveNow: false };
+}

@@ -663,7 +663,7 @@ function nudgeIncrementLogin(userId: number) {
 function NotificationPreferencesSection({ currentUserId }: { currentUserId?: number }) {
   const { toast } = useToast();
   const { data: prefs, isLoading } = useQuery<Record<string, boolean>>({
-    queryKey: ['/api/users/notification-preferences'],
+    queryKey: ['/api/notifications/preferences'],
     enabled: !!currentUserId,
   });
   const [saving, setSaving] = useState(false);
@@ -677,7 +677,7 @@ function NotificationPreferencesSection({ currentUserId }: { currentUserId?: num
     setLocal(next);
     setSaving(true);
     try {
-      await apiRequest('PUT', '/api/users/notification-preferences', next);
+      await apiRequest('PUT', '/api/notifications/preferences', next);
     } catch {
       toast({ description: 'Failed to save notification preference.', variant: 'destructive' });
       setLocal(effective);

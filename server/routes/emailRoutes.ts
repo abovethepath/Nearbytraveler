@@ -78,8 +78,10 @@ router.post('/send-connection-request', async (req, res) => {
     const profileUrl = `https://nearbytraveler.org/profile/${sender.id}`;
     const senderLocation = `${sender.hometownCity}, ${sender.hometownCountry}`;
 
+    const senderFirst = (sender.name || '').split(' ')[0] || sender.username;
+    const senderDisplay = `${senderFirst} (@${sender.username})`;
     const success = await emailService.sendConnectionRequestEmail(recipient.email, {
-      senderName: sender.name || sender.username,
+      senderName: senderDisplay,
       senderLocation,
       message,
       profileUrl
@@ -116,11 +118,13 @@ router.post('/send-event-invite', async (req, res) => {
       minute: '2-digit'
     });
 
+    const inviterFirst = (inviter.name || '').split(' ')[0] || inviter.username;
+    const inviterDisplay = `${inviterFirst} (@${inviter.username})`;
     const success = await emailService.sendEventInviteEmail(recipientEmail, {
       eventName: event.title,
       eventDate,
       eventLocation: `${event.city}, ${event.country}`,
-      inviterName: inviter.name || inviter.username,
+      inviterName: inviterDisplay,
       eventUrl
     });
 

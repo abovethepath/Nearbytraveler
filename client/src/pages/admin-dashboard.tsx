@@ -27,6 +27,8 @@ interface User {
   username: string;
   email: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   userType: string;
   location: string;
   phoneNumber: string;
@@ -36,7 +38,14 @@ interface User {
   isCurrentlyTraveling: boolean;
   travelDestination: string;
   createdAt: string;
+  lastLogin?: string;
+  lastSeenAt?: string;
   isActive: boolean;
+  isAdmin?: boolean;
+  ambassadorStatus?: string;
+  adminNotes?: string;
+  referralCount?: number;
+  profileImage?: string;
   subscriptionStatus?: string;
 }
 
@@ -75,11 +84,13 @@ export default function AdminDashboard() {
     enabled: !!user && user.id === 2,
   });
 
-  // Fetch all users
+  // Fetch all users — always refetch on mount to never serve stale data
   const { data: users, isLoading: usersLoading } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
     retry: 2,
     enabled: !!user && user.id === 2,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 
   // Fetch business subscriptions
@@ -347,6 +358,7 @@ export default function AdminDashboard() {
                       <TableRow>
                         <TableHead>User & Contact</TableHead>
                         <TableHead>Location Data</TableHead>
+                        <TableHead>Last Active</TableHead>
                         <TableHead>Travel Status</TableHead>
                         <TableHead>SMS Ready</TableHead>
                       </TableRow>
@@ -369,6 +381,21 @@ export default function AdminDashboard() {
                               <div className="text-sm text-blue-600">
                                 {user.hometownCity || 'Unknown'}, {user.hometownCountry || 'Unknown'}
                               </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              {user.lastSeenAt ? (() => {
+                                const diff = Date.now() - new Date(user.lastSeenAt!).getTime();
+                                const mins = Math.floor(diff / 60000);
+                                const hrs = Math.floor(diff / 3600000);
+                                const days = Math.floor(diff / 86400000);
+                                if (mins < 1) return <span className="text-green-600 font-medium">Online now</span>;
+                                if (mins < 60) return <span className="text-green-600">{mins}m ago</span>;
+                                if (hrs < 24) return <span className="text-blue-600">{hrs}h ago</span>;
+                                if (days < 7) return <span className="text-gray-600">{days}d ago</span>;
+                                return <span className="text-gray-400">{new Date(user.lastSeenAt!).toLocaleDateString()}</span>;
+                              })() : <span className="text-gray-400">Never</span>}
                             </div>
                           </TableCell>
                           <TableCell>

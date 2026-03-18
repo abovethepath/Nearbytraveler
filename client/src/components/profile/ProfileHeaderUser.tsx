@@ -11,7 +11,7 @@ import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { VouchButton } from "@/components/VouchButton";
 import { ReportUserButton } from "@/components/report-user-button";
-import { formatLocationCompact, formatTravelDestinationShort, getCurrentTravelDestination } from "@/lib/dateUtils";
+import { formatLocationCompact, formatTravelDestinationShort, getCurrentTravelDestination, getTravelStatusLabel } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { useTheme } from "@/components/theme-provider";
 import { useIsDesktop } from "@/hooks/useDeviceType";
@@ -78,6 +78,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     !isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan)
       ? formatTravelDestinationShort(currentTravelPlan)
       : currentTravelPlan;
+
+  const travelStatus = getTravelStatusLabel((user as any)?.travelStartDate, 'label');
+  const travelStatusLabel = travelStatus.label;
 
   const upcomingTrip = React.useMemo(() => {
     const today = new Date();
@@ -377,7 +380,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </div>
                 {hasValidTravelDestination && (
                   <div className="text-sm sm:text-base font-semibold crisp-hero-text text-white" title={currentTravelPlan} style={{ color: '#ffffff' }}>
-                    Nearby Traveler <span style={{ color: '#ffffff' }}>→</span>{" "}
+                    {travelStatusLabel} <span style={{ color: '#ffffff' }}>→</span>{" "}
                     <span style={{ color: '#ffffff' }}>
                       {travelDestinationDisplay}
                     </span>
@@ -400,7 +403,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               </div>
               {hasValidTravelDestination && (
                 <div className="text-sm sm:text-base font-semibold crisp-hero-text text-white" title={currentTravelPlan} style={{ color: '#ffffff' }}>
-                  Nearby Traveler <span style={{ color: '#ffffff' }}>→</span>{" "}
+                  {travelStatusLabel} <span style={{ color: '#ffffff' }}>→</span>{" "}
                   <span style={{ color: '#ffffff' }}>{travelDestinationDisplay}</span>
                 </div>
               )}
@@ -533,7 +536,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                             {hasValidTravelDestination && (
                               <>
                                 <span className="text-base sm:text-lg font-semibold mt-1 crisp-hero-text text-white" style={{ color: '#ffffff' }}>
-                                  Nearby Traveler
+                                  {travelStatusLabel}
                                 </span>
                                 <span className="text-base sm:text-lg font-medium break-words crisp-hero-text text-white" title={currentTravelPlan!} style={{ color: '#ffffff' }}>
                                   {travelDestinationDisplay}
@@ -575,7 +578,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 </div>
                                 {hasValidTravelDestination && (
                                   <div className="text-sm sm:text-base font-semibold crisp-hero-text text-white" title={currentTravelPlan!} style={{ color: '#ffffff' }}>
-                                    <span style={{ color: '#ffffff' }}>Nearby Traveler</span>
+                                    <span style={{ color: '#ffffff' }}>{travelStatusLabel}</span>
                                     <span style={{ color: '#ffffff' }}> → </span>
                                     <span style={{ color: '#ffffff' }}>{travelDestinationDisplay}</span>
                                   </div>
@@ -937,7 +940,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 {hasValidTravelDestination && (
                   <>
                     <span className="text-sm font-semibold mt-1 crisp-hero-text text-white" style={{ color: "#ffffff" }}>
-                      Nearby Traveler
+                      {travelStatusLabel}
                     </span>
                     <span className="text-sm font-medium break-words crisp-hero-text text-white" title={currentTravelPlan!} style={{ color: "#ffffff" }}>
                       {travelDestinationDisplay}
@@ -1042,7 +1045,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     className={`text-base sm:text-lg lg:text-sm font-semibold mt-1 crisp-hero-text text-white ${!isOwnProfile ? "" : ""}`}
                     style={{ color: '#ffffff' }}
                   >
-                    Nearby Traveler
+                    {travelStatusLabel}
                   </span>
                   <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text text-white ${isDesktopOtherUser ? '' : !isNativeIOSApp() ? '' : ''}`} title={currentTravelPlan!} style={{ color: '#ffffff' }}>
                     {travelDestinationDisplay}

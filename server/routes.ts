@@ -4733,9 +4733,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           profileImage: users.profileImage,
           adminNotes: users.adminNotes,
           referralCount: users.referralCount,
+          lastSeenAt: users.lastSeenAt,
         })
         .from(users)
-        .orderBy(sqlExpr`CASE WHEN ${users.lastLogin} IS NULL THEN 1 ELSE 0 END`, desc(users.lastLogin));
+        .orderBy(sqlExpr`CASE WHEN ${users.lastSeenAt} IS NULL THEN 1 ELSE 0 END`, desc(users.lastSeenAt));
       return res.json(allUsers);
     } catch (error: any) {
       console.error("Admin users endpoint error:", error);
@@ -6230,9 +6231,21 @@ Questions? Just reply to this message!
                 .where(eq(users.id, referrer.id));
 
               const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-              await addAmbassadorPoints(referrer.id, 10);
+              await addAmbassadorPoints(referrer.id, 50);
 
-              console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username} (+10 aura, +10 ambassador points)`);
+              // Track ambassador referral chain for 5% bonus
+              try {
+                const [refStatus] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, referrer.id)).limit(1);
+                if (refStatus?.ambassadorStatus === 'active' || refStatus?.ambassadorStatus === 'inactive') {
+                  await db.execute(sql`
+                    INSERT INTO ambassador_referral_chains (referrer_id, referred_id)
+                    VALUES (${referrer.id}, ${user.id})
+                    ON CONFLICT DO NOTHING
+                  `);
+                }
+              } catch (e) { console.error('Ambassador chain tracking error:', e); }
+
+              console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username} (+10 aura, +50 ambassador points)`);
             }
           } catch (error) {
             console.error('❌ BACKGROUND: Error processing referral:', error);
@@ -9226,6 +9239,39 @@ Questions? Just reply to this message. Welcome aboard!
           console.error('Failed to write reference notification:', e);
         }
       })();
+
+      // Ambassador points: +10 for writing/receiving a reference (max 1 per pair ever)
+      try {
+        const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+        const writerId = Number(reviewerId);
+        const recipientId = Number(revieweeId);
+
+        // Check if this pair already had a reference (the one just created counts as 1)
+        const existingPairRefs = await db.select({ id: userReferences.id })
+          .from(userReferences)
+          .where(and(
+            eq(userReferences.reviewerId, writerId),
+            eq(userReferences.revieweeId, recipientId)
+          ));
+        // Only award if this is the FIRST reference between this pair (count === 1 means just created)
+        if (existingPairRefs.length <= 1) {
+          // For the writer
+          const [writer] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, writerId)).limit(1);
+          if (writer?.ambassadorStatus === 'active' || writer?.ambassadorStatus === 'inactive') {
+            await addAmbassadorPoints(writerId, 10);
+            console.log(`✅ AMBASSADOR: +10 pts to user ${writerId} for writing a reference`);
+          }
+
+          // For the recipient
+          const [recipient] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, recipientId)).limit(1);
+          if (recipient?.ambassadorStatus === 'active' || recipient?.ambassadorStatus === 'inactive') {
+            await addAmbassadorPoints(recipientId, 10);
+            console.log(`✅ AMBASSADOR: +10 pts to user ${recipientId} for receiving a reference`);
+          }
+        } else {
+          console.log(`ℹ️ AMBASSADOR: Skipping reference points for pair ${writerId}→${recipientId} (already awarded previously)`);
+        }
+      } catch (e) { console.error('Ambassador reference points error:', e); }
 
       return res.json(newReference);
     } catch (error: any) {
@@ -12369,6 +12415,27 @@ Questions? Just reply to this message. Welcome aboard!
               console.error('❌ CONNECTION ACCEPTED EMAIL: Failed:', emailErr);
             }
           });
+
+          // Ambassador points: +50 for every 25 connections milestone
+          try {
+            for (const checkUserId of [requesterId, receiverId]) {
+              const [checkUser] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, checkUserId)).limit(1);
+              if (checkUser?.ambassadorStatus === 'active' || checkUser?.ambassadorStatus === 'inactive') {
+                const connCount = await db.select({ count: sql<number>`count(*)` }).from(connections)
+                  .where(and(
+                    or(eq(connections.requesterId, checkUserId), eq(connections.receiverId, checkUserId)),
+                    eq(connections.status, 'accepted')
+                  ));
+                const totalConns = connCount[0]?.count || 0;
+                if (totalConns > 0 && totalConns % 25 === 0) {
+                  const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+                  await addAmbassadorPoints(checkUserId, 50);
+                  console.log(`✅ AMBASSADOR: +50 pts to user ${checkUserId} for reaching ${totalConns} connections milestone`);
+                }
+              }
+            }
+          } catch (e) { console.error('Ambassador connections milestone error:', e); }
+
         } catch (e) {
           console.error("❌ CONNECTION ACCEPTED NOTIFICATION: Failed:", e);
         }
@@ -15249,6 +15316,25 @@ Questions? Just reply to this message. Welcome aboard!
       // Award 1 aura point for creating an event
       await awardAuraPoints(newEvent.organizerId, 1, 'creating an event');
 
+      // Save co-ambassador records if provided
+      if (Array.isArray(body.coAmbassadors) && body.coAmbassadors.length > 0) {
+        try {
+          for (const coUsername of body.coAmbassadors.slice(0, 3)) {
+            const uname = String(coUsername).toLowerCase().trim();
+            if (!uname) continue;
+            const [coUser] = await db.select({ id: users.id, ambassadorStatus: users.ambassadorStatus })
+              .from(users).where(eq(users.username, uname)).limit(1);
+            if (coUser && coUser.id !== newEvent.organizerId && (coUser.ambassadorStatus === 'active' || coUser.ambassadorStatus === 'inactive')) {
+              await db.execute(sql`
+                INSERT INTO event_cohost_splits (event_id, organizer_id, cohost_id, status)
+                VALUES (${newEvent.id}, ${newEvent.organizerId}, ${coUser.id}, 'confirmed')
+              `);
+              console.log(`✅ CO-AMBASSADOR: Added @${uname} (${coUser.id}) to event ${newEvent.id}`);
+            }
+          }
+        } catch (e) { console.error('Co-ambassador save error:', e); }
+      }
+
       // Log event creation to activity feed (used by city live feed)
       try {
         writeActivityLog({
@@ -15269,7 +15355,7 @@ Questions? Just reply to this message. Welcome aboard!
         const organizerStatus = organizer?.[0]?.ambassadorStatus as string | null | undefined;
         if (organizerStatus === "active" || organizerStatus === "inactive") {
           const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-          await addAmbassadorPoints(newEvent.organizerId, 20);
+          await addAmbassadorPoints(newEvent.organizerId, 5);
         }
       } catch (ambassadorPointsError: any) {
         console.error(`⚠️ AMBASSADOR POINTS: Failed to award create-event points for event ${newEvent.id}:`, ambassadorPointsError);
@@ -18023,7 +18109,29 @@ Questions? Just reply to this message. Welcome aboard!
       // Join the meetup
       const result = await storage.joinQuickMeetup(meetupId, parseInt(userId as string || '0'));
       if (process.env.NODE_ENV === 'development') console.log(`✅ USER ${userId} SUCCESSFULLY JOINED QUICK MEET ${meetupId}`);
-      
+
+      // Ambassador points: +10 for completing a Quick Meet (organizer gets points, max 1/day, 3/week)
+      try {
+        const organizerId = meetup.organizerId;
+        const [org] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, organizerId)).limit(1);
+        if (org?.ambassadorStatus === 'active' || org?.ambassadorStatus === 'inactive') {
+          const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+          const todayKey = `amb_qm_${organizerId}_${todayStart.toISOString().slice(0,10)}`;
+          const weekStart = new Date(); weekStart.setDate(weekStart.getDate() - weekStart.getDay()); weekStart.setHours(0, 0, 0, 0);
+          const weekKey = `amb_qm_week_${organizerId}_${weekStart.toISOString().slice(0,10)}`;
+          const tracker = (global as any).__ambPointTracker || ((global as any).__ambPointTracker = new Map());
+          const dailyCount = tracker.get(todayKey) || 0;
+          const weeklyCount = tracker.get(weekKey) || 0;
+          if (dailyCount < 1 && weeklyCount < 3) {
+            const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+            await addAmbassadorPoints(organizerId, 10);
+            tracker.set(todayKey, dailyCount + 1);
+            tracker.set(weekKey, weeklyCount + 1);
+            console.log(`✅ AMBASSADOR: +10 pts to user ${organizerId} for Quick Meet join (day: ${dailyCount+1}/1, week: ${weeklyCount+1}/3)`);
+          }
+        }
+      } catch (e) { console.error('Ambassador quick-meet points error:', e); }
+
       // NOTIFY the organizer that someone joined their meetup
       setImmediate(async () => {
         try {
@@ -21271,6 +21379,26 @@ Questions? Just reply to this message. Welcome aboard!
           linkUrl: `/chatroom/${roomId}`,
         });
       } catch {}
+
+      // Ambassador points: award 15 pts when chatroom reaches 5 members (one-time per chatroom creator)
+      try {
+        const memberCountResult = await db.select({ count: sql<number>`count(*)` })
+          .from(chatroomMembers)
+          .where(and(eq(chatroomMembers.chatroomId, roomId), eq(chatroomMembers.isActive, true)));
+        const memberCount = memberCountResult[0]?.count || 0;
+        if (memberCount === 5) {
+          // Find chatroom creator
+          const [chatroom_row] = await db.select({ createdById: citychatrooms.createdById }).from(citychatrooms).where(eq(citychatrooms.id, roomId)).limit(1);
+          if (chatroom_row?.createdById) {
+            const [creator] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, chatroom_row.createdById)).limit(1);
+            if (creator?.ambassadorStatus === 'active' || creator?.ambassadorStatus === 'inactive') {
+              const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+              await addAmbassadorPoints(chatroom_row.createdById, 15);
+              console.log(`✅ AMBASSADOR: +15 pts to user ${chatroom_row.createdById} for chatroom reaching 5 members`);
+            }
+          }
+        }
+      } catch (e) { console.error('Ambassador chatroom points error:', e); }
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM JOIN: User ${userId} successfully joined chatroom ${roomId}`);
       res.json({ success: true, message: "Successfully joined chatroom!", newMember: true });
@@ -24849,6 +24977,49 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Set co-ambassador usernames for an event (up to 3, points split evenly)
+  app.put("/api/events/:eventId/coambassadors", async (req: any, res) => {
+    try {
+      const eventId = parseInt(req.params.eventId);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { usernames } = req.body as { usernames: string[] };
+      if (!Array.isArray(usernames) || usernames.length > 3) return res.status(400).json({ error: "Max 3 co-ambassadors" });
+
+      // Verify user is the event organizer
+      const [event] = await db.select({ organizerId: events.organizerId }).from(events).where(eq(events.id, eventId)).limit(1);
+      if (!event || event.organizerId !== userId) return res.status(403).json({ error: "Only the event organizer can set co-ambassadors" });
+
+      // Resolve usernames to IDs
+      const resolvedIds: number[] = [];
+      for (const uname of usernames.filter(u => u.trim())) {
+        const [u] = await db.select({ id: users.id, ambassadorStatus: users.ambassadorStatus })
+          .from(users).where(eq(users.username, uname.toLowerCase().trim())).limit(1);
+        if (!u) return res.status(404).json({ error: `User @${uname} not found` });
+        if (u.ambassadorStatus !== 'active' && u.ambassadorStatus !== 'inactive') {
+          return res.status(400).json({ error: `@${uname} is not an active ambassador` });
+        }
+        if (u.id === userId) continue; // skip self
+        resolvedIds.push(u.id);
+      }
+
+      // Clear old entries, insert new
+      await db.execute(sql`DELETE FROM event_cohost_splits WHERE event_id = ${eventId}`);
+      for (const coId of resolvedIds) {
+        await db.execute(sql`
+          INSERT INTO event_cohost_splits (event_id, organizer_id, cohost_id, status)
+          VALUES (${eventId}, ${userId}, ${coId}, 'confirmed')
+        `);
+      }
+
+      res.json({ success: true, coambassadorIds: resolvedIds });
+    } catch (error: any) {
+      console.error("Error setting co-ambassadors:", error);
+      res.status(500).json({ error: "Failed to set co-ambassadors" });
+    }
+  });
+
   // POST /api/admin/events/:eventId/ambassador-award - Award event-based ambassador points and split evenly among organizers
   app.post("/api/admin/events/:eventId/ambassador-award", async (req: any, res) => {
     try {
@@ -24860,12 +25031,11 @@ Questions? Just reply to this message. Welcome aboard!
       if (isNaN(eventId)) return res.status(400).json({ error: "Invalid event ID" });
 
       const { awardType } = req.body as { awardType?: string };
-      const validAwardType = awardType === "host_verified" || awardType === "attendance_goal";
-      if (!validAwardType) {
-        return res.status(400).json({ error: "awardType must be 'host_verified' or 'attendance_goal'" });
+      if (awardType !== "event_10_attendees") {
+        return res.status(400).json({ error: "awardType must be 'event_10_attendees'" });
       }
 
-      const points = awardType === "host_verified" ? 50 : 30;
+      const points = 20; // Event with 10+ attendees after event date passes
 
       // Find all event organizers/co-organizers (can be multiple)
       const roles = ["organizer", "co-organizer"];
@@ -24889,39 +25059,58 @@ Questions? Just reply to this message. Welcome aboard!
         .filter(u => u.ambassadorStatus === "active" || u.ambassadorStatus === "inactive")
         .map(u => u.id);
 
-      if (eligibleIds.length === 0) {
+      // Gather all ambassadors: organizer + any co-ambassadors from event_cohost_splits
+      const cohostResult = await db.execute(sql`
+        SELECT cohost_id FROM event_cohost_splits WHERE event_id = ${eventId} AND points_awarded = false
+      `);
+      const cohostIds = (cohostResult.rows as any[]).map(r => r.cohost_id).filter(Boolean);
+
+      // Combine organizer eligible IDs with co-ambassador IDs (also check ambassador status)
+      const allAmbassadorIds = [...new Set([...eligibleIds, ...cohostIds])];
+
+      // Filter to only enrolled ambassadors
+      const allEnrolled = allAmbassadorIds.length > 0 ? await db
+        .select({ id: users.id, ambassadorStatus: users.ambassadorStatus })
+        .from(users)
+        .where(inArray(users.id, allAmbassadorIds)) : [];
+      const finalEligible = allEnrolled
+        .filter(u => u.ambassadorStatus === "active" || u.ambassadorStatus === "inactive")
+        .map(u => u.id);
+
+      if (finalEligible.length === 0) {
         return res.json({
           success: true,
           awardType,
           pointsConfigured: points,
-          eligibleAmbassadors: [],
-          pointsEach: 0,
+          awarded: [],
           totalAwarded: 0,
-          message: "No enrolled ambassadors among event organizers/co-organizers."
+          message: "No enrolled ambassadors found."
         });
       }
 
-      const pointsEach = Math.floor(points / eligibleIds.length);
-      if (pointsEach <= 0) {
-        return res.status(400).json({
-          error: "Too many eligible ambassadors to split points evenly with integer points.",
-          pointsConfigured: points,
-          eligibleAmbassadors: eligibleIds.length
-        });
-      }
-
+      // Split points evenly: 2 = 10 each, 3 = 7 each, 4 = 5 each
+      const pointsEach = Math.floor(points / finalEligible.length);
       const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-      for (const userId of eligibleIds) {
-        await addAmbassadorPoints(userId, pointsEach);
+      const awarded: { userId: number; points: number }[] = [];
+
+      if (pointsEach > 0) {
+        for (const uid of finalEligible) {
+          await addAmbassadorPoints(uid, pointsEach);
+          awarded.push({ userId: uid, points: pointsEach });
+        }
+      }
+
+      // Mark co-host entries as awarded
+      if (cohostIds.length > 0) {
+        await db.execute(sql`UPDATE event_cohost_splits SET points_awarded = true WHERE event_id = ${eventId}`);
       }
 
       return res.json({
         success: true,
         awardType,
         pointsConfigured: points,
-        eligibleAmbassadors: eligibleIds,
-        pointsEach,
-        totalAwarded: pointsEach * eligibleIds.length
+        awarded,
+        totalAwarded: awarded.reduce((s, a) => s + a.points, 0),
       });
     } catch (error: any) {
       console.error("Admin event ambassador award error:", error);
@@ -25569,6 +25758,32 @@ Questions? Just reply to this message. Welcome aboard!
           });
         }
       } catch {}
+
+      // Ambassador points: +5 for completing an Available Now (host is userId, max 1/day, 3/week)
+      if (status === "accepted") {
+        try {
+          const hostId = Number(userId);
+          const [host] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, hostId)).limit(1);
+          if (host?.ambassadorStatus === 'active' || host?.ambassadorStatus === 'inactive') {
+            // Check daily limit (max 1 per day)
+            const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+            const todayKey = `amb_avail_${hostId}_${todayStart.toISOString().slice(0,10)}`;
+            const weekStart = new Date(); weekStart.setDate(weekStart.getDate() - weekStart.getDay()); weekStart.setHours(0, 0, 0, 0);
+            const weekKey = `amb_avail_week_${hostId}_${weekStart.toISOString().slice(0,10)}`;
+            // Use a simple in-memory tracker (same pattern used elsewhere in this file)
+            const tracker = (global as any).__ambPointTracker || ((global as any).__ambPointTracker = new Map());
+            const dailyCount = tracker.get(todayKey) || 0;
+            const weeklyCount = tracker.get(weekKey) || 0;
+            if (dailyCount < 1 && weeklyCount < 3) {
+              const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+              await addAmbassadorPoints(hostId, 5);
+              tracker.set(todayKey, dailyCount + 1);
+              tracker.set(weekKey, weeklyCount + 1);
+              console.log(`✅ AMBASSADOR: +5 pts to user ${hostId} for Available Now accepted (day: ${dailyCount+1}/1, week: ${weeklyCount+1}/3)`);
+            }
+          }
+        } catch (e) { console.error('Ambassador available-now points error:', e); }
+      }
 
       let groupChatroomId: number | null = null;
 
@@ -29588,7 +29803,7 @@ Questions? Just reply to this message. Welcome aboard!
   // ─── OneSignal push notification endpoints ───────────────────────────────
 
   // Register or update OneSignal player/subscription ID for the current user
-  app.put("/api/users/onesignal-player", async (req: any, res) => {
+  app.put("/api/notifications/onesignal-player", async (req: any, res) => {
     try {
       const sessionUser = req.session?.user;
       if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
@@ -29605,7 +29820,7 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Get notification preferences for the current user
-  app.get("/api/users/notification-preferences", async (req: any, res) => {
+  app.get("/api/notifications/preferences", async (req: any, res) => {
     try {
       const sessionUser = req.session?.user;
       if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
@@ -29624,7 +29839,7 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Update notification preferences for the current user
-  app.put("/api/users/notification-preferences", async (req: any, res) => {
+  app.put("/api/notifications/preferences", async (req: any, res) => {
     try {
       const sessionUser = req.session?.user;
       if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });

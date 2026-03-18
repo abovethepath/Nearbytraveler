@@ -61,9 +61,9 @@ export function ContextualBusinessRecommendations({ userId, limit = 8 }: Context
   });
 
   const getScoreColor = (score: number) => {
-    if (score >= 0.8) return 'text-green-600 bg-green-100';
-    if (score >= 0.6) return 'text-blue-600 bg-blue-100';
-    if (score >= 0.4) return 'text-yellow-600 bg-yellow-100';
+    if (score >= 0.8) return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30';
+    if (score >= 0.6) return 'text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30';
+    if (score >= 0.4) return 'text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30';
     return 'text-gray-600 bg-gray-100 dark:bg-gray-800';
   };
 

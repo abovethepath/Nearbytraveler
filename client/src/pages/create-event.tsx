@@ -117,6 +117,8 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   const [additionalCities, setAdditionalCities] = useState<string[]>([]);
   const [showAdditionalCities, setShowAdditionalCities] = useState(false);
   const [openQuickPanel, setOpenQuickPanel] = useState<"import" | "ai" | null>(null);
+  const [coAmbassadors, setCoAmbassadors] = useState<string[]>([]);
+  const [coAmbassadorInput, setCoAmbassadorInput] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -755,6 +757,8 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
         // External RSVP link
         externalRsvpUrl: data.externalRsvpUrl || null,
         externalRsvpProvider: data.externalRsvpProvider || null,
+        // Co-ambassadors for point splitting
+        coAmbassadors: coAmbassadors.length > 0 ? coAmbassadors : undefined,
       };
 
       await createEventMutation.mutateAsync(eventData);
@@ -2223,6 +2227,55 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                 </div>
               </div>
             </div>
+
+            {/* Co-Ambassadors — only show for active ambassadors */}
+            {(currentUser?.ambassadorStatus === 'active' || currentUser?.ambassadorStatus === 'inactive') && (
+              <div className="space-y-2 pt-2">
+                <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Add Co-Ambassadors (optional)</Label>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Add up to 3 ambassador usernames. Event points (+20 pts for 10+ attendees) will be split evenly.
+                </p>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="@username"
+                    value={coAmbassadorInput}
+                    onChange={(e) => setCoAmbassadorInput(e.target.value.replace('@', ''))}
+                    className="flex-1"
+                    disabled={coAmbassadors.length >= 3}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={!coAmbassadorInput.trim() || coAmbassadors.length >= 3}
+                    onClick={() => {
+                      const u = coAmbassadorInput.trim().toLowerCase();
+                      if (u && !coAmbassadors.includes(u)) {
+                        setCoAmbassadors(prev => [...prev, u]);
+                        setCoAmbassadorInput("");
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
+                {coAmbassadors.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {coAmbassadors.map((u) => (
+                      <Badge key={u} variant="secondary" className="gap-1 pr-1">
+                        @{u}
+                        <button type="button" className="ml-1 hover:text-red-500" onClick={() => setCoAmbassadors(prev => prev.filter(x => x !== u))}>
+                          <X className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                    <span className="text-xs text-gray-500 self-center">
+                      Points split: {Math.floor(20 / (coAmbassadors.length + 1))} pts each
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Submit Button - use onClick so submission always runs (fixes WebView/touch where type="submit" can be ignored) */}
             <div className="pt-4">

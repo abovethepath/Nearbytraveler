@@ -87,19 +87,19 @@ export default function SMSTest() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span>Twilio Service</span>
-                <span className="text-sm px-2 py-1 bg-yellow-100 text-yellow-800 rounded">
+                <span className="text-sm px-2 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 rounded">
                   Configured (requires API keys)
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Phone Number Validation</span>
-                <span className="text-sm px-2 py-1 bg-green-100 text-green-800 rounded">
+                <span className="text-sm px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 rounded">
                   Active
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Event RSVP Integration</span>
-                <span className="text-sm px-2 py-1 bg-green-100 text-green-800 rounded">
+                <span className="text-sm px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 rounded">
                   Active
                 </span>
               </div>

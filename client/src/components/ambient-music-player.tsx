@@ -284,13 +284,13 @@ export default function AmbientMusicPlayer({
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      nature: 'bg-green-100 text-green-800',
-      urban: 'bg-blue-100 text-blue-800',
-      cultural: 'bg-blue-100 text-blue-800',
+      nature: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+      urban: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      cultural: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
       coastal: 'bg-cyan-100 text-cyan-800',
       mountain: 'bg-gray-100 dark:bg-gray-800 text-gray-800',
       forest: 'bg-emerald-100 text-emerald-800',
-      desert: 'bg-orange-100 text-orange-800'
+      desert: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
     };
     return colors[category as keyof typeof colors] || 'bg-gray-100 dark:bg-gray-800 text-gray-800';
   };

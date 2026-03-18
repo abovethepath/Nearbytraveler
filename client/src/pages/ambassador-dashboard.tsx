@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,19 +6,24 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   Award, Star, Users, Copy, ExternalLink, ChevronRight,
-  ArrowLeft, CheckCircle, Calendar, Trophy, Mail
+  ArrowLeft, CheckCircle, Calendar, Trophy, Mail, X
 } from "lucide-react";
 import { AuthContext } from "@/App";
 import { useToast } from "@/hooks/use-toast";
 import { SITE_URL } from "@/lib/constants";
 
 const POINT_ACTIONS = [
-  { action: "Refer a friend who signs up", points: "+50 pts" },
+  { action: "Recruit a friend who signs up", points: "+50 pts" },
   { action: "Refer a business lead", points: "+75 pts" },
   { action: "Business becomes a paying partner", points: "+200 pts" },
-  { action: "Create an event", points: "+20 pts" },
-  { action: "Host a verified event", points: "+50 pts" },
-  { action: "Event hits attendance goal", points: "+30 pts" },
+  { action: "Create an event", points: "+5 pts" },
+  { action: "Event with 10+ attendees", points: "+20 pts" },
+  { action: "Complete a Quick Meet", points: "+10 pts" },
+  { action: "Complete an Available Now", points: "+5 pts" },
+  { action: "Create a chatroom (5+ members)", points: "+15 pts" },
+  { action: "Write a reference", points: "+10 pts" },
+  { action: "Receive a reference", points: "+10 pts" },
+  { action: "Every 25 connections reached", points: "+50 pts" },
 ];
 
 function statusBadge(status: string | null | undefined) {
@@ -34,6 +39,7 @@ export default function AmbassadorDashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
+  const [showProgramDetails, setShowProgramDetails] = useState(false);
   const points = user?.ambassadorPoints ?? 0;
   const periodPoints = (user as any)?.ambassadorPointsInPeriod ?? 0;
   const status = (user as any)?.ambassadorStatus as string | null | undefined;
@@ -42,7 +48,7 @@ export default function AmbassadorDashboard() {
     ? `${SITE_URL}/join?ref=${referralCode}`
     : null;
 
-  const PERIOD_GOAL = 50;
+  const PERIOD_GOAL = 200;
   const periodProgress = Math.min(100, Math.round((periodPoints / PERIOD_GOAL) * 100));
 
   const copyReferralLink = () => {
@@ -204,9 +210,9 @@ export default function AmbassadorDashboard() {
           </CardContent>
         </Card>
 
-        {/* Link to full program page */}
+        {/* Link to full program details modal */}
         <button
-          onClick={() => setLocation("/ambassador-program")}
+          onClick={() => setShowProgramDetails(true)}
           className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
         >
           <div className="flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -217,6 +223,141 @@ export default function AmbassadorDashboard() {
         </button>
 
       </div>
+
+      {/* Full Program Details Modal */}
+      {showProgramDetails && (
+        <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center" onClick={() => setShowProgramDetails(false)}>
+          <div className="absolute inset-0 bg-black/60" />
+          <div
+            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-gray-900 text-white rounded-t-2xl sm:rounded-2xl shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-gray-900/95 backdrop-blur border-b border-gray-800">
+              <h2 className="text-lg font-bold">Program Details & FAQ</h2>
+              <button onClick={() => setShowProgramDetails(false)} className="p-2 rounded-full hover:bg-gray-800 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="px-6 pb-8 space-y-8">
+              {/* How It Works */}
+              <div className="pt-4">
+                <h3 className="text-xl font-bold text-orange-400 mb-4">How It Works</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { n: "1", title: "Do Helpful Actions", desc: "Invite friends, refer businesses, host events", color: "blue" },
+                    { n: "2", title: "Earn Points", desc: "Points stack over time based on impact", color: "orange" },
+                    { n: "3", title: "Calculate Share", desc: "Your points / total points = your share", color: "green" },
+                    { n: "4", title: "Exit Only", desc: "Value only upon acquisition or IPO", color: "purple" },
+                  ].map((step) => (
+                    <div key={step.n} className="text-center p-3 bg-gray-800 rounded-xl">
+                      <div className={`w-10 h-10 rounded-full bg-${step.color}-900/50 flex items-center justify-center mx-auto mb-2`}>
+                        <span className={`text-sm font-bold text-${step.color}-400`}>{step.n}</span>
+                      </div>
+                      <p className="font-semibold text-sm">{step.title}</p>
+                      <p className="text-xs text-gray-400 mt-1">{step.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Equity Pool */}
+              <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
+                <h3 className="text-lg font-bold text-orange-400 mb-3">How Points Turn Into Equity</h3>
+                <p className="text-sm text-gray-300 mb-3">
+                  Points track your contribution over time. There are <strong>no periodic cash distributions</strong> from this program.
+                </p>
+                <p className="text-sm text-gray-300 mb-3">
+                  If there is ever a future <strong>liquidity event</strong> (acquisition or IPO) and the program terms are met,
+                  we calculate your share of the <strong className="text-orange-400">4% Ambassador Ownership Pool</strong> based on your portion of total points.
+                </p>
+                <div className="bg-gray-900 rounded-lg p-3 text-xs text-gray-400">
+                  <strong>Example:</strong> If you earn 1,000 points and the community earns 100,000 points total,
+                  you earned 1% of the points → you receive 1% of the 4% pool (i.e., 0.04% equity), subject to the program terms.
+                </div>
+              </div>
+
+              {/* LA Bonus */}
+              <div className="bg-blue-900/30 rounded-xl p-5 border border-blue-800">
+                <h3 className="text-lg font-bold mb-2">LA Ambassadors: Extra 1% Local Pool</h3>
+                <p className="text-sm text-gray-300">
+                  Los Angeles city ambassadors share an <strong>additional 1% ownership pool</strong> on top of the global 4%.
+                  LA ambassadors can earn from both pools.
+                </p>
+              </div>
+
+              {/* Ways to Earn */}
+              <div>
+                <h3 className="text-xl font-bold text-orange-400 mb-3">Ways to Earn Points</h3>
+                <p className="text-xs text-gray-400 mb-3">If an event has multiple Ambassadors, event-based points are split evenly.</p>
+                <div className="grid sm:grid-cols-2 gap-2">
+                  {POINT_ACTIONS.map((item, i) => (
+                    <div key={i} className="flex items-center justify-between bg-gray-800 rounded-lg px-4 py-3">
+                      <span className="text-sm">{item.action}</span>
+                      <span className="text-orange-400 font-semibold text-sm ml-2 whitespace-nowrap">{item.points}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Safety Rules */}
+              <div className="bg-amber-900/20 rounded-xl p-5 border border-amber-800/50">
+                <h3 className="text-lg font-bold text-amber-400 mb-3">Safety & Quality Rules</h3>
+                <ul className="space-y-2 text-sm text-gray-300">
+                  <li>• Points may require verification (e.g., event hosted, business activated)</li>
+                  <li>• We remove points for fake accounts, spam invites, or low-quality events</li>
+                  <li>• Some actions may have limits (to prevent gaming)</li>
+                  <li>• <strong>Activity requirement:</strong> Must earn at least 200 points every 6 months</li>
+                  <li>• Inactive for 6 months → points frozen (not deleted)</li>
+                  <li>• Inactive for 12 months → ambassador status revoked, can reapply later</li>
+                  <li>• Admins can manually reactivate or revoke any ambassador</li>
+                </ul>
+              </div>
+
+              {/* FAQ */}
+              <div>
+                <h3 className="text-xl font-bold text-orange-400 mb-4">Frequently Asked Questions</h3>
+                <div className="space-y-3">
+                  {[
+                    { q: "Is this paid work?", a: "No. This is not a job and points are not income." },
+                    { q: "Can points be converted to cash?", a: "No. Points are for tracking contribution. They may never be worth anything." },
+                    { q: "When could points matter?", a: "Only if there's a future exit (like an acquisition or IPO), and only under the official terms." },
+                    { q: "How do I stay active as an Ambassador?", a: "Earn at least 200 points every 6 months. If inactive for 6 months, points are frozen. After 12 months inactive, status is revoked — you can reapply and start fresh." },
+                  ].map((faq, i) => (
+                    <div key={i} className="bg-gray-800 rounded-lg p-4">
+                      <p className="font-semibold text-sm mb-1">{faq.q}</p>
+                      <p className="text-sm text-gray-400">{faq.a}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Important Notice */}
+              <div className="bg-red-900/20 rounded-xl p-5 border border-red-800/50">
+                <h3 className="text-lg font-bold text-red-400 mb-3">Important Notice</h3>
+                <ul className="space-y-2 text-sm text-gray-300">
+                  <li>• Points are not money, wages, or guaranteed rewards</li>
+                  <li>• Points may have no value now or ever</li>
+                  <li>• Any potential payout/value is <strong>only upon a liquidity event</strong> (acquisition or IPO) and only if the program terms are met</li>
+                  <li>• We may change, pause, or end the program to prevent fraud or keep it fair</li>
+                </ul>
+                <p className="text-xs text-gray-500 mt-3 pt-3 border-t border-red-800/30">
+                  The Ambassador Ownership Pool is offered only under the program's official terms and eligibility rules.
+                  Points don't guarantee equity and may be adjusted for fraud prevention, verification, and quality standards.
+                </p>
+              </div>
+
+              {/* Contact */}
+              <div className="text-center py-4">
+                <p className="text-sm text-gray-400">
+                  Questions? Email <a href="mailto:ambassadors@nearbytraveler.org" className="text-orange-400 underline">ambassadors@nearbytraveler.org</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

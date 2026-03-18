@@ -324,7 +324,7 @@ export default function SignupAccount() {
 
           <CardContent className="p-6 space-y-4">
             {currentError && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              <div className="bg-red-100 border border-red-400 text-red-700 dark:bg-red-900/30 dark:border-red-700 dark:text-red-300 px-4 py-3 rounded mb-4">
                 <div className="flex items-center">
                   <span className="text-red-500 text-xl mr-2">❌</span>
                   <span className="font-medium">

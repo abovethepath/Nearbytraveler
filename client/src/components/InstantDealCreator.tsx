@@ -142,7 +142,7 @@ export default function InstantDealCreator({ businessId, businessName, businessL
       <DialogTrigger asChild>
         <Card className="cursor-pointer hover:shadow-lg transition-shadow border-2 border-dashed border-orange-300 hover:border-orange-400">
           <CardContent className="flex flex-col items-center justify-center p-6">
-            <div className="rounded-full bg-orange-100 p-3 mb-3">
+            <div className="rounded-full bg-orange-100 dark:bg-orange-900/30 p-3 mb-3">
               <Zap className="h-6 w-6 text-orange-600" />
             </div>
             <h3 className="font-semibold text-lg mb-2">Create Instant Deal</h3>
