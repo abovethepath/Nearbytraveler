@@ -155,6 +155,7 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
           src={displayImageUrl}
           alt={`${user?.username} avatar`}
           className={`w-full h-full object-cover rounded-full ${cursorClass}`}
+          style={{ objectPosition: 'top center' }}
           onClick={handleClick}
           onError={(e) => {
             // Hide image on error to show letter fallback

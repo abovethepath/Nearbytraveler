@@ -416,6 +416,7 @@ export interface IStorage {
   isUserMutedInChatroom(chatroomId: number, userId: number): Promise<boolean>;
   getChatroomModerationRecords(chatroomId: number): Promise<any[]>;
   isUserChatroomAdmin(chatroomId: number, userId: number): Promise<boolean>;
+  isUserChatroomOwner(chatroomId: number, userId: number): Promise<boolean>;
   createChatroomInvitation(): Promise<any>;
   getChatroomInvitations(): Promise<any>;
   getUserChatroomInvitations(): Promise<any>;
@@ -863,6 +864,18 @@ export class DatabaseStorage implements IStorage {
         
         chatroom = newChatroom;
         if (process.env.NODE_ENV === 'development') console.log("✨ CHATROOM: Created new chatroom", chatroom.name);
+
+        // Always ensure nearbytrav (user ID 2) is owner of system chatrooms
+        try {
+          const [existingNT] = await db.select().from(chatroomMembers)
+            .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.userId, 2))).limit(1);
+          if (!existingNT) {
+            await db.insert(chatroomMembers).values({ chatroomId: chatroom.id, userId: 2, role: 'owner', isActive: true });
+          } else if (existingNT.role !== 'owner') {
+            await db.update(chatroomMembers).set({ role: 'owner' })
+              .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.userId, 2)));
+          }
+        } catch (e) { /* ignore - nearbytrav may not exist */ }
       }
       
       // Check if user is already a member
@@ -4641,7 +4654,7 @@ export class DatabaseStorage implements IStorage {
       await db.insert(chatroomMembers).values({
         chatroomId: chatroom.id,
         userId: data.createdById,
-        role: 'admin',
+        role: 'owner',
         isActive: true
       });
 
@@ -4976,7 +4989,7 @@ export class DatabaseStorage implements IStorage {
         ))
         .limit(1);
 
-      if (member?.role === 'admin') return true;
+      if (member?.role === 'admin' || member?.role === 'owner') return true;
 
       // For event chatrooms (stored in meetupChatrooms), also check if user is the event organizer
       const [meetupRoom] = await db
@@ -5000,7 +5013,46 @@ export class DatabaseStorage implements IStorage {
       return false;
     }
   }
-  
+
+  async isUserChatroomOwner(chatroomId: number, userId: number): Promise<boolean> {
+    try {
+      // User ID 2 (nearbytrav) is owner of all system chatrooms
+      if (userId === 2) {
+        const [chatroom] = await db
+          .select({ createdById: citychatrooms.createdById })
+          .from(citychatrooms)
+          .where(eq(citychatrooms.id, chatroomId))
+          .limit(1);
+        // System chatrooms are created by userId 1 or 2
+        if (chatroom && (chatroom.createdById === 1 || chatroom.createdById === 2)) return true;
+      }
+
+      // Check if user has owner role
+      const [member] = await db
+        .select({ role: chatroomMembers.role })
+        .from(chatroomMembers)
+        .where(and(
+          eq(chatroomMembers.chatroomId, chatroomId),
+          eq(chatroomMembers.userId, userId)
+        ))
+        .limit(1);
+      if (member?.role === 'owner') return true;
+
+      // Check if user is the chatroom creator
+      const [chatroom] = await db
+        .select({ createdById: citychatrooms.createdById })
+        .from(citychatrooms)
+        .where(eq(citychatrooms.id, chatroomId))
+        .limit(1);
+      if (chatroom && chatroom.createdById === userId) return true;
+
+      return false;
+    } catch (error) {
+      console.error('Error checking chatroom owner status:', error);
+      return false;
+    }
+  }
+
   async getChatroomsCreatedByUser(userId: number): Promise<any[]> {
     try {
       console.log('getChatroomsCreatedByUser called for userId:', userId);
@@ -8220,16 +8272,16 @@ export class DatabaseStorage implements IStorage {
             const newChatroom = await this.createCityChatroom(chatroomData);
             console.log(`Created "${chatroomType.name}" chatroom for ${chatroomCity}`);
             
-            // Automatically add nearbytraveler as first member/admin
+            // Automatically add nearbytraveler as first member/owner
             if (newChatroom?.id) {
               await db.insert(chatroomMembers).values({
                 chatroomId: newChatroom.id,
                 userId: 2, // nearbytraveler
-                role: 'admin',
+                role: 'owner',
                 isActive: true,
                 joinedAt: new Date()
               });
-              console.log(`Added nearbytraveler as admin to ${chatroomType.name}`);
+              console.log(`Added nearbytraveler as owner to ${chatroomType.name}`);
             }
           }
         }

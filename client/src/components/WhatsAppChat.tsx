@@ -1086,6 +1086,40 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     onError: () => toast({ title: "Failed to change role", variant: "destructive" })
   });
 
+  const kickMutation = useMutation({
+    mutationFn: async (targetUserId: number) => {
+      const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/kick`, {
+        method: 'POST',
+        body: JSON.stringify({ targetUserId }),
+        headers: { 'Content-Type': 'application/json', 'x-user-id': currentUserId?.toString() || '' }
+      });
+      if (!response.ok) { const err = await response.json().catch(() => ({})); throw new Error(err.message || 'Failed to kick user'); }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "User removed from chatroom" });
+      queryClient.invalidateQueries({ queryKey: [membersEndpoint] });
+    },
+    onError: (err: Error) => toast({ title: err.message || "Failed to kick user", variant: "destructive" }),
+  });
+
+  const banMutation = useMutation({
+    mutationFn: async ({ targetUserId, reason }: { targetUserId: number; reason?: string }) => {
+      const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/ban`, {
+        method: 'POST',
+        body: JSON.stringify({ targetUserId, reason }),
+        headers: { 'Content-Type': 'application/json', 'x-user-id': currentUserId?.toString() || '' }
+      });
+      if (!response.ok) { const err = await response.json().catch(() => ({})); throw new Error(err.message || 'Failed to ban user'); }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "User banned from chatroom" });
+      queryClient.invalidateQueries({ queryKey: [membersEndpoint] });
+    },
+    onError: (err: Error) => toast({ title: err.message || "Failed to ban user", variant: "destructive" }),
+  });
+
   // If members fetch fails for a meetup/chatroom, treat the room as expired (closed).
   // Don't show a red toast — silently switch to read-only mode with a gentle banner.
   useEffect(() => {
@@ -2371,6 +2405,25 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                           <VolumeX className="w-3.5 h-3.5" />
                         </Button>
                       )}
+                    {/* Kick & Ban */}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 w-7 p-0 text-orange-400 hover:text-orange-300 hover:bg-gray-700"
+                      onClick={() => { if (confirm(`Remove ${member.username} from this chatroom?`)) kickMutation.mutate(member.id); }}
+                      title="Kick from chatroom"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-gray-700"
+                      onClick={() => { if (confirm(`Ban ${member.username} permanently from this chatroom?`)) banMutation.mutate({ targetUserId: member.id }); }}
+                      title="Ban from chatroom"
+                    >
+                      <ShieldAlert className="w-3.5 h-3.5" />
+                    </Button>
                     </div>
                   )}
                 </div>
@@ -3133,7 +3186,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           paddingTop: isMobileWeb ? `calc(env(safe-area-inset-top, 0px) + ${chatType === 'dm' ? '62px' : '52px'} + ${pinnedMessage && chatType !== 'dm' ? '40px' : '4px'})` : undefined,
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23999999' stroke-width='2' opacity='0.18'%3E%3Cpath d='M100 50 L100 150 M57 75 L143 125 M57 125 L143 75'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Cpath d='M150 270 L180 300 L150 330 L120 300 Z'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Cpath d='M100 460 L140 500 L100 540 L60 500 Z'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Cpath d='M150 665 L159 693 L188 693 L165 710 L174 738 L150 722 L126 738 L135 710 L112 693 L141 693 Z'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3Ctext x='400' y='380' text-anchor='middle' font-family='Arial, sans-serif' font-size='52' font-weight='bold' fill='%23aaaaaa' opacity='0.07' transform='rotate(-18 400 400)'%3ENearby Traveler%3C/text%3E%3Ctext x='400' y='700' text-anchor='middle' font-family='Arial, sans-serif' font-size='40' font-weight='bold' fill='%23aaaaaa' opacity='0.05' transform='rotate(-18 400 700)'%3ENearby Traveler%3C/text%3E%3C/svg%3E")`,
         }}>
-          {isMobileWeb && <img src="/new-logo.png" alt="" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxWidth: 200, opacity: 0.07, pointerEvents: 'none', zIndex: 0 }} />}
+          <img src="/new-logo.png" alt="" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxWidth: 200, opacity: 0.07, pointerEvents: 'none', zIndex: 0 }} />
           <div className="flex flex-col min-h-full justify-end w-full">
             {readOnlyBanner && (
               <div className="mx-1 my-2 px-3 py-2 rounded-lg bg-amber-900/60 border border-amber-600/40 text-amber-200 text-sm text-center">
@@ -3763,28 +3816,81 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   </button>
                 </>
               ) : (
-                /* OTHER PERSON'S MESSAGE: Reply */
-                <button 
-                  type="button" 
-                  onTouchEnd={(e) => { 
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setReplyingTo(selectedMessage); 
-                    setSelectedMessage(null); 
-                  }}
-                  onClick={(e) => { 
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setReplyingTo(selectedMessage); 
-                    setSelectedMessage(null); 
-                  }}
-                  className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                  style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(34, 197, 94, 0.3)' }}
-                  data-testid="button-reply-message"
-                >
-                  <Reply className="w-5 h-5 text-green-400 pointer-events-none" />
-                  <span className="text-sm pointer-events-none">Reply</span>
-                </button>
+                /* OTHER PERSON'S MESSAGE: Reply + Admin actions */
+                <>
+                  <button
+                    type="button"
+                    onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setReplyingTo(selectedMessage); setSelectedMessage(null); }}
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setReplyingTo(selectedMessage); setSelectedMessage(null); }}
+                    className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                    style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(34, 197, 94, 0.3)' }}
+                    data-testid="button-reply-message"
+                  >
+                    <Reply className="w-5 h-5 text-green-400 pointer-events-none" />
+                    <span className="text-sm pointer-events-none">Reply</span>
+                  </button>
+
+                  {/* Admin actions on other user's messages */}
+                  {isCurrentUserAdmin && chatType === 'chatroom' && (
+                    <>
+                      <div className="mx-1 border-t border-gray-700 my-1" />
+                      <button
+                        type="button"
+                        onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteMessage(selectedMessage.id); }}
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteMessage(selectedMessage.id); }}
+                        className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                        style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+                      >
+                        <Trash2 className="w-5 h-5 text-red-400 pointer-events-none" />
+                        <span className="text-sm pointer-events-none">Delete Message</span>
+                      </button>
+                      <button
+                        type="button"
+                        onTouchEnd={(e) => {
+                          e.preventDefault(); e.stopPropagation();
+                          const sender = members.find(m => m.id === selectedMessage.senderId);
+                          if (sender && !sender.isMuted) { setSelectedMember(sender); setMuteDialogOpen(true); }
+                          else if (sender?.isMuted) { unmuteMutation.mutate(sender.id); }
+                          setSelectedMessage(null);
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault(); e.stopPropagation();
+                          const sender = members.find(m => m.id === selectedMessage.senderId);
+                          if (sender && !sender.isMuted) { setSelectedMember(sender); setMuteDialogOpen(true); }
+                          else if (sender?.isMuted) { unmuteMutation.mutate(sender.id); }
+                          setSelectedMessage(null);
+                        }}
+                        className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                        style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+                      >
+                        <VolumeX className="w-5 h-5 text-yellow-400 pointer-events-none" />
+                        <span className="text-sm pointer-events-none">
+                          {members.find(m => m.id === selectedMessage.senderId)?.isMuted ? 'Unmute Sender' : 'Mute Sender'}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); kickMutation.mutate(selectedMessage.senderId); setSelectedMessage(null); }}
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); kickMutation.mutate(selectedMessage.senderId); setSelectedMessage(null); }}
+                        className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                        style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+                      >
+                        <LogOut className="w-5 h-5 text-orange-400 pointer-events-none" />
+                        <span className="text-sm pointer-events-none">Kick from Chatroom</span>
+                      </button>
+                      <button
+                        type="button"
+                        onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); banMutation.mutate({ targetUserId: selectedMessage.senderId }); setSelectedMessage(null); }}
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); banMutation.mutate({ targetUserId: selectedMessage.senderId }); setSelectedMessage(null); }}
+                        className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-red-400"
+                        style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+                      >
+                        <ShieldAlert className="w-5 h-5 pointer-events-none" />
+                        <span className="text-sm pointer-events-none">Ban from Chatroom</span>
+                      </button>
+                    </>
+                  )}
+                </>
               )}
 
               {/* Pin / Unpin — host/admin only, non-DM chatrooms */}

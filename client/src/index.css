@@ -2173,13 +2173,14 @@ p, span, div, button, input, textarea, select {
 }
 
 /* CRITICAL: Force avatar to be circular with proper image cropping */
-[role="img"], 
+[role="img"],
 img[alt*="avatar" i],
 img[alt*="profile" i],
 .avatar img,
 [class*="avatar"] img {
   border-radius: 50% !important;
   object-fit: cover !important;
+  object-position: top center !important;
   aspect-ratio: 1 / 1 !important;
 }
 

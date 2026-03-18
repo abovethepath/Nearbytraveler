@@ -93,7 +93,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords, chatroomBlocks } from "../shared/schema";
 import { writeActivityLog } from "./services/activityLogService";
 import { alias } from "drizzle-orm/pg-core";
 
@@ -19373,10 +19373,25 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = req.headers['x-user-id'];
 
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
-      if (role !== 'admin' && role !== 'member') return res.status(400).json({ message: "role must be 'admin' or 'member'" });
+      if (role !== 'admin' && role !== 'member' && role !== 'owner') return res.status(400).json({ message: "role must be 'admin', 'member', or 'owner'" });
 
       const isAdmin = await storage.isUserChatroomAdmin(chatroomId, parseInt(userId as string));
       if (!isAdmin) return res.status(403).json({ message: "Only admins can change member roles" });
+
+      // Only owners can demote admins — check if target is currently admin
+      if (role === 'member') {
+        const [targetMember] = await db.select({ role: chatroomMembers.role }).from(chatroomMembers)
+          .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId))).limit(1);
+        if (targetMember?.role === 'admin' || targetMember?.role === 'owner') {
+          const isOwner = await storage.isUserChatroomOwner(chatroomId, parseInt(userId as string));
+          if (!isOwner) return res.status(403).json({ message: "Only the chatroom owner can remove admin status" });
+        }
+      }
+      // Only owners can promote to owner
+      if (role === 'owner') {
+        const isOwner = await storage.isUserChatroomOwner(chatroomId, parseInt(userId as string));
+        if (!isOwner) return res.status(403).json({ message: "Only the chatroom owner can transfer ownership" });
+      }
 
       // Update the role in chatroom_members
       const updated = await db
@@ -19403,6 +19418,92 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error changing member role:", error);
       res.status(500).json({ message: "Failed to change role" });
+    }
+  });
+
+  // Kick user from chatroom (admin only)
+  app.post("/api/chatrooms/:chatroomId/kick", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const { targetUserId } = req.body;
+      const userId = req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+      if (!targetUserId) return res.status(400).json({ message: "targetUserId is required" });
+
+      const actorId = parseInt(userId as string);
+      const isAdmin = await storage.isUserChatroomAdmin(chatroomId, actorId);
+      if (!isAdmin) return res.status(403).json({ message: "Only admins can kick users" });
+
+      // Cannot kick owners
+      const [targetMember] = await db.select({ role: chatroomMembers.role }).from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId))).limit(1);
+      if (targetMember?.role === 'owner') return res.status(403).json({ message: "Cannot kick the chatroom owner" });
+      // Only owners can kick admins
+      if (targetMember?.role === 'admin') {
+        const isOwner = await storage.isUserChatroomOwner(chatroomId, actorId);
+        if (!isOwner) return res.status(403).json({ message: "Only the owner can kick admins" });
+      }
+
+      await db.update(chatroomMembers).set({ isActive: false })
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId)));
+
+      // System message
+      const targetUser = await db.select({ username: users.username, firstName: users.firstName }).from(users).where(eq(users.id, targetUserId)).limit(1);
+      const targetName = targetUser[0]?.firstName || targetUser[0]?.username || 'User';
+      const sysMsg = await storage.createChatroomMessage(chatroomId, actorId, `${targetName} was removed from the chatroom.`, 'system', null);
+      if (sysMsg) await chatWebSocketService.broadcastSystemMessage(chatroomId, 'chatroom', sysMsg.id, sysMsg.message, actorId, 'Admin');
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error kicking user:", error);
+      res.status(500).json({ message: "Failed to kick user" });
+    }
+  });
+
+  // Ban user from chatroom permanently (admin only)
+  app.post("/api/chatrooms/:chatroomId/ban", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const { targetUserId, reason } = req.body;
+      const userId = req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+      if (!targetUserId) return res.status(400).json({ message: "targetUserId is required" });
+
+      const actorId = parseInt(userId as string);
+      const isAdmin = await storage.isUserChatroomAdmin(chatroomId, actorId);
+      if (!isAdmin) return res.status(403).json({ message: "Only admins can ban users" });
+
+      // Cannot ban owners
+      const [targetMember] = await db.select({ role: chatroomMembers.role }).from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId))).limit(1);
+      if (targetMember?.role === 'owner') return res.status(403).json({ message: "Cannot ban the chatroom owner" });
+      if (targetMember?.role === 'admin') {
+        const isOwner = await storage.isUserChatroomOwner(chatroomId, actorId);
+        if (!isOwner) return res.status(403).json({ message: "Only the owner can ban admins" });
+      }
+
+      // Deactivate membership
+      await db.update(chatroomMembers).set({ isActive: false })
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId)));
+
+      // Add to blocks table for permanent ban
+      await db.insert(chatroomBlocks).values({
+        chatroomId,
+        userId: targetUserId,
+        blockedById: actorId,
+        reason: reason || null,
+      }).onConflictDoNothing();
+
+      // System message
+      const targetUser = await db.select({ username: users.username, firstName: users.firstName }).from(users).where(eq(users.id, targetUserId)).limit(1);
+      const targetName = targetUser[0]?.firstName || targetUser[0]?.username || 'User';
+      const sysMsg = await storage.createChatroomMessage(chatroomId, actorId, `${targetName} was banned from the chatroom.`, 'system', null);
+      if (sysMsg) await chatWebSocketService.broadcastSystemMessage(chatroomId, 'chatroom', sysMsg.id, sysMsg.message, actorId, 'Admin');
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error banning user:", error);
+      res.status(500).json({ message: "Failed to ban user" });
     }
   });
 
@@ -20977,22 +21078,36 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // Delete chatroom message (only sender can delete their own messages)
+  // Delete chatroom message (sender or admin can delete)
   app.delete("/api/chatroom-messages/:messageId", async (req, res) => {
     try {
       const messageId = parseInt(req.params.messageId);
       const userId = req.headers['x-user-id'] || req.body?.userId;
-      
+
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
-      
-      const deleted = await storage.deleteChatroomMessage(messageId, parseInt(userId as string));
-      
+
+      const actorId = parseInt(userId as string);
+
+      // First try: sender deleting their own message
+      const deleted = await storage.deleteChatroomMessage(messageId, actorId);
+
       if (!deleted) {
-        return res.status(404).json({ message: "Message not found" });
+        // Second try: admin deleting any message
+        // Look up the message to get the chatroomId
+        const [msg] = await db.select({ chatroomId: chatroomMessages.chatroomId, senderId: chatroomMessages.senderId })
+          .from(chatroomMessages).where(eq(chatroomMessages.id, messageId)).limit(1);
+
+        if (!msg) return res.status(404).json({ message: "Message not found" });
+
+        const isAdmin = await storage.isUserChatroomAdmin(msg.chatroomId, actorId);
+        if (!isAdmin) return res.status(403).json({ message: "You can only delete your own messages" });
+
+        // Admin override: delete the message regardless of sender
+        await db.delete(chatroomMessages).where(eq(chatroomMessages.id, messageId));
       }
-      
+
       return res.json({ success: true });
     } catch (error: any) {
       if (error.message?.includes('Unauthorized')) {
