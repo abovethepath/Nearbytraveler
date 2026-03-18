@@ -96,7 +96,7 @@ export default function ProfilePageResponsive() {
   const isAvailableNow = user?.id ? availableNowIds.includes(user.id) : false;
 
   // Extract user data
-  const displayName = user.name || user.username || "User";
+  const displayName = (user as any).firstName || user.name?.split(' ')[0] || user.username || "User";
   const profileImage = user.profileImage || "https://placehold.co/320x320";
   const bio = user.bio || "No bio available";
   

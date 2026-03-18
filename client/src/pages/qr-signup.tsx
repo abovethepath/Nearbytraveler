@@ -224,7 +224,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
     
     toast({
       title: "Starting signup process",
-      description: `You'll be automatically connected to ${referrer?.name} after creating your account!`,
+      description: `You'll be automatically connected to ${referrer?.firstName || referrer?.name?.split(' ')[0]} after creating your account!`,
       duration: 4000,
     });
   };
@@ -316,14 +316,14 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
                 <>
                   <CardTitle className="text-2xl text-green-600 dark:text-green-400">Already Connected!</CardTitle>
                   <CardDescription>
-                    You're already connected with {referrer?.name}.
+                    You're already connected with {referrer?.firstName || referrer?.name?.split(' ')[0]}.
                   </CardDescription>
                 </>
               ) : connectionStatus === 'pending' ? (
                 <>
                   <CardTitle className="text-2xl text-orange-600 dark:text-orange-400">Request Sent!</CardTitle>
                   <CardDescription>
-                    Your connection request to {referrer?.name} is pending.
+                    Your connection request to {referrer?.firstName || referrer?.name?.split(' ')[0]} is pending.
                   </CardDescription>
                 </>
               ) : (
@@ -331,7 +331,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
                   <CardTitle className="text-2xl text-gray-900 dark:text-white">Connect Instantly!</CardTitle>
                   <CardDescription>
                     Tap to connect with{' '}
-                    <span className="font-semibold text-blue-600 dark:text-blue-400">{referrer?.name}</span>
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">{referrer?.firstName || referrer?.name?.split(' ')[0]}</span>
                   </CardDescription>
                 </>
               )}
@@ -348,7 +348,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-lg">{referrer?.name}</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-lg">{referrer?.firstName || referrer?.name?.split(' ')[0]}</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">@{referrer?.username}</p>
                   </div>
                   <Badge className={displayBadge.color}>
@@ -428,7 +428,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
                     <span className="font-medium">Connection request pending</span>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {referrer?.name} will be notified and can accept your request.
+                    {referrer?.firstName || referrer?.name?.split(' ')[0]} will be notified and can accept your request.
                   </p>
                 </div>
               )}
@@ -485,7 +485,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
             <CardTitle className="text-2xl">You're Invited!</CardTitle>
             <CardDescription>
               Join Nearby Traveler and connect with{' '}
-              <span className="font-semibold text-blue-600">{referrer?.name}</span>
+              <span className="font-semibold text-blue-600">{referrer?.firstName || referrer?.name?.split(' ')[0]}</span>
             </CardDescription>
           </CardHeader>
 
@@ -500,7 +500,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">{referrer?.name}</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">{referrer?.firstName || referrer?.name?.split(' ')[0]}</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">@{referrer?.username}</p>
                 </div>
                 <Badge className={getUserTypeColor(referrer?.userType || '')}>
@@ -537,7 +537,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
             {/* Connection Note */}
             <div className="space-y-2">
               <Label htmlFor="connectionNote" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                How do you know {referrer?.name}? (optional)
+                How do you know {referrer?.firstName || referrer?.name?.split(' ')[0]}? (optional)
               </Label>
               <Input
                 id="connectionNote"
@@ -596,7 +596,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
 
             <div className="text-center pt-4 border-t dark:border-gray-700">
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                After signing up, you'll automatically connect with {referrer?.name}
+                After signing up, you'll automatically connect with {referrer?.firstName || referrer?.name?.split(' ')[0]}
               </p>
             </div>
           </CardContent>

@@ -860,7 +860,7 @@ function QuickMeetupsPage() {
                               className="object-cover" 
                             />
                             <AvatarFallback className="bg-gradient-to-br from-blue-500 to-orange-500 text-white font-semibold">
-                              {(participant.user.username || participant.user.name || 'U').charAt(0).toUpperCase()}
+                              {(participant.user.firstName || participant.user.username || 'U').charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
@@ -872,7 +872,7 @@ function QuickMeetupsPage() {
                               }}
                               data-testid={`name-participant-${participant.userId}`}
                             >
-                              {participant.user.name || participant.user.username}
+                              {participant.user.firstName || participant.user.name?.split(' ')[0] || participant.user.username}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
                               @{participant.user.username}
@@ -917,7 +917,7 @@ function QuickMeetupsPage() {
                                   <AlertDialogHeader>
                                     <AlertDialogTitle>Remove Participant?</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Are you sure you want to remove {participant.user.name || participant.user.username} from this meetup? They will be removed from the chatroom as well.
+                                      Are you sure you want to remove {participant.user.firstName || participant.user.name?.split(' ')[0] || participant.user.username} from this meetup? They will be removed from the chatroom as well.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>

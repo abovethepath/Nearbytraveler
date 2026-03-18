@@ -492,7 +492,6 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
     const eventUrl = getEventUrl();
     const shareData = {
       title: event?.title,
-      text: getShareMessage(),
       url: eventUrl,
     };
 

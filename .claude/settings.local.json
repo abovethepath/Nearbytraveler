@@ -10,7 +10,8 @@
       "Bash(awk 'NR>=3592 && NR<=3944' client/src/components/WhatsAppChat.tsx)",
       "Bash(npx esbuild:*)",
       "Bash(node -e \":*)",
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "Bash(grep -rn \"member\\\\.name\\\\|member\\\\.name\\\\||coOrg\\\\.user\\\\|participant\\\\.user\" client/src/pages/*.tsx client/src/components/*.tsx)"
     ]
   }
 }

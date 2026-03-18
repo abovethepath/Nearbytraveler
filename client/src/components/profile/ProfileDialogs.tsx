@@ -1251,7 +1251,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                         <div className="space-y-0.5">
                           <FormLabel>Show Age</FormLabel>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
                             Display your age on your profile
                           </div>
                           <div className="text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">

@@ -943,7 +943,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                               <Users className="w-4 h-4" />
                             </div>
                           )}
-                          <span>{participant.user?.username || participant.user?.name}</span>
+                          <span>{participant.user?.firstName || participant.user?.name?.split(' ')[0] || participant.user?.username}</span>
                           <Badge variant="outline" className="text-xs bg-transparent text-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600">
                             {participant.status === 'going' ? 'Going' : 'Interested'}
                           </Badge>

@@ -348,11 +348,11 @@ export function TravelCrew({ travelPlanId, userId, isOwner }: TravelCrewProps) {
                       ) : (
                         <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
                           <span className="text-orange-600 text-sm font-medium">
-                            {(member.name || member.username || '?').charAt(0).toUpperCase()}
+                            {(member.firstName || member.name || member.username || '?').charAt(0).toUpperCase()}
                           </span>
                         </div>
                       )}
-                      <span className="text-gray-900 dark:text-white">{member.name || member.username}</span>
+                      <span className="text-gray-900 dark:text-white">{member.firstName || member.name?.split(' ')[0] || member.username}</span>
                       {member.role === 'owner' && (
                         <span className="text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded">Organizer</span>
                       )}

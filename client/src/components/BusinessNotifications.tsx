@@ -219,7 +219,7 @@ export default function BusinessNotifications({ businessId }: BusinessNotificati
                           )}
                         </div>
                         <div>
-                          <div className="font-medium">{notification.user.name}</div>
+                          <div className="font-medium">{notification.user.firstName || notification.user.name?.split(' ')[0]}</div>
                           <div className="text-sm text-gray-600">@{notification.user.username}</div>
                         </div>
                         <Badge variant="outline" className="ml-auto">

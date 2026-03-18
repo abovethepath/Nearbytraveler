@@ -2646,7 +2646,7 @@ body.native-ios-app .native-ios-messages {
     width: auto !important;
     max-width: none !important;
     height: auto !important;
-    max-height: 80vh !important;
+    max-height: 80dvh !important;
     border-radius: 1rem !important;
     border: 1px solid #374151 !important;
   }

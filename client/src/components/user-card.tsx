@@ -383,7 +383,8 @@ export default function UserCard({
                 <div className="w-full flex justify-center">
                   <span
                     data-role="user-card-things-pill"
-                    className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13.5px] font-bold border bg-orange-100 text-orange-700 border-orange-300 dark:bg-[rgba(59,130,246,0.12)] dark:text-[#FF6B35] dark:border-[rgba(59,130,246,0.25)]"
+                    className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13.5px] font-bold border bg-orange-100 border-orange-300 dark:bg-[rgba(59,130,246,0.12)] dark:border-[rgba(59,130,246,0.25)]"
+                    style={{ color: '#FFFFFF' }}
                   >
                     {thingsInCommon} things in common
                   </span>
@@ -444,7 +445,7 @@ export default function UserCard({
                     className="w-full flex justify-center mt-1"
                     data-role="user-card-things"
                   >
-                    <span className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13.5px] font-bold border bg-orange-100 text-orange-700 border-orange-300 dark:bg-[rgba(59,130,246,0.12)] dark:text-[#FF6B35] dark:border-[rgba(59,130,246,0.25)]">
+                    <span className="inline-flex items-center justify-center rounded-full px-3.5 py-1.5 text-[13.5px] font-bold border bg-orange-100 border-orange-300 dark:bg-[rgba(59,130,246,0.12)] dark:border-[rgba(59,130,246,0.25)]" style={{ color: '#FFFFFF' }}>
                       {thingsInCommon} things in common
                     </span>
                   </div>
@@ -531,7 +532,8 @@ export default function UserCard({
                 <div className="w-full flex justify-center">
                   <span
                     data-role="user-card-things-pill"
-                    className="inline-flex items-center justify-center text-center rounded-full px-3.5 py-1.5 text-[13px] font-bold border bg-orange-100 text-orange-700 border-orange-300 dark:bg-[rgba(59,130,246,0.12)] dark:text-[#FF6B35] dark:border-[rgba(59,130,246,0.25)]"
+                    className="inline-flex items-center justify-center text-center rounded-full px-3.5 py-1.5 text-[13px] font-bold border bg-orange-100 border-orange-300 dark:bg-[rgba(59,130,246,0.12)] dark:border-[rgba(59,130,246,0.25)]"
+                    style={{ color: '#FFFFFF' }}
                   >
                     {thingsInCommon} things in common
                   </span>
@@ -590,7 +592,7 @@ export default function UserCard({
                 <>
                   <div
                     className="w-full text-center mt-1"
-                    style={{ fontSize: 12, fontWeight: 700, color: pickTextColor("#3b82f6", "#FF6B35") }}
+                    style={{ fontSize: 12, fontWeight: 700, color: '#FFFFFF' }}
                     data-role="user-card-things"
                   >
                     {thingsInCommon} things in common

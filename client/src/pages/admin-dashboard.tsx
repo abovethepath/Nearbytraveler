@@ -356,7 +356,7 @@ export default function AdminDashboard() {
                         <TableRow key={user.id} className={!user.phoneNumber ? 'opacity-50' : ''}>
                           <TableCell>
                             <div>
-                              <div className="font-medium">{user.name}</div>
+                              <div className="font-medium">{user.firstName || user.name?.split(' ')[0]}</div>
                               <div className="text-sm text-muted-foreground">@{user.username}</div>
                               <div className="text-sm font-mono text-green-600 mt-1">
                                 {user.phoneNumber || '❌ No Phone'}
@@ -534,7 +534,7 @@ export default function AdminDashboard() {
                       <TableRow key={user.id}>
                         <TableCell>
                           <div>
-                            <div className="font-medium">{user.name}</div>
+                            <div className="font-medium">{user.firstName || user.name?.split(' ')[0]}</div>
                             <div className="text-sm text-muted-foreground">@{user.username}</div>
                           </div>
                         </TableCell>

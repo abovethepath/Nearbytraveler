@@ -432,12 +432,12 @@ export default function EventHistory() {
                               <Avatar className="h-10 w-10">
                                 <AvatarImage src={participant.profileImage || undefined} />
                                 <AvatarFallback>
-                                  {(participant.name || participant.username).charAt(0).toUpperCase()}
+                                  {(participant.firstName || participant.name || participant.username).charAt(0).toUpperCase()}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
                                 <p className="font-medium text-gray-900 dark:text-white">
-                                  {participant.name || participant.username}
+                                  {participant.firstName || participant.name?.split(' ')[0] || participant.username}
                                 </p>
                                 <p className="text-sm text-gray-500">@{participant.username}</p>
                               </div>

@@ -93,7 +93,7 @@ export function ProfileHeader(props: ProfilePageProps) {
           <div className="max-w-2xl mx-auto px-4 sm:px-6 -mt-6 sm:-mt-8 relative z-20">
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-5 sm:p-6 text-left">
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                {user.businessName || user.name || `@${user.username}`}
+                {user.businessName || user.firstName || user.name?.split(' ')[0] || `@${user.username}`}
               </h1>
               <div className="flex flex-wrap gap-2 mb-4">
                 <span className="inline-flex items-center h-7 rounded-full px-3 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 border border-blue-200 dark:border-blue-700">

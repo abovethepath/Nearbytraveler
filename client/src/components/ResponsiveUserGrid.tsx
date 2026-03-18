@@ -202,7 +202,7 @@ export default function ResponsiveUserGrid({
           </p>
           {!isCurrentUser && (
             <>
-              <p className="text-sm font-medium truncate mt-0.5" style={{ color: '#3b82f6' }}>
+              <p className="text-sm font-medium truncate mt-0.5" style={{ color: '#FFFFFF' }}>
                 {getThingsInCommon(user)} things in common
               </p>
               {connectionDegreesMap?.[user.id] && (
@@ -302,7 +302,7 @@ export default function ResponsiveUserGrid({
           </p>
           {!isCurrentUser && (
             <>
-              <p className="text-xs font-medium truncate mt-0.5" style={{ color: '#3b82f6' }}>
+              <p className="text-xs font-medium truncate mt-0.5" style={{ color: '#FFFFFF' }}>
                 {getThingsInCommon(user)} things in common
               </p>
               {connectionDegreesMap?.[user.id] && (
