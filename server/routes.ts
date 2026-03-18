@@ -2881,7 +2881,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const currentUserId = req.session?.user?.id || req.headers['x-user-id'];
       const uid = currentUserId ? Number(currentUserId) : null;
       const now = new Date();
-      const thirtyDaysOut = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+      // No time limit — show ALL upcoming travelers
 
       // Use getExpandedCityList — battle-tested metro expansion used everywhere else
       const allCities = getExpandedCityList(city);
@@ -2905,7 +2905,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         sql`u.hometown_city ILIKE ${'%,' + c}`,
       ]);
 
-      // Query travelers (here now + coming soon within 30 days)
+      // Query travelers (here now + all upcoming, no time limit)
       const rows = await db.execute(sql`
         -- ARM 1: users with explicit travel_plans rows
         SELECT
@@ -2923,7 +2923,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         INNER JOIN users u ON tp.user_id = u.id
         WHERE
           tp.end_date >= ${now}
-          AND tp.start_date <= ${thirtyDaysOut}
           AND u.user_type != 'business'
           AND (${sql.join(tpCityConditions, sql` OR `)})
 
@@ -2933,7 +2932,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         SELECT
           u.id              AS "userId",
           COALESCE(u.travel_start_date, ${now}) AS "startDate",
-          COALESCE(u.travel_end_date, ${thirtyDaysOut}) AS "endDate",
+          COALESCE(u.travel_end_date, ${now}) AS "endDate",
           u.travel_destination AS destination,
           u.username,
           u.first_name      AS "firstName",
@@ -2951,7 +2950,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             SELECT 1 FROM travel_plans tp2
             WHERE tp2.user_id = u.id
               AND tp2.end_date >= ${now}
-              AND tp2.start_date <= ${thirtyDaysOut}
               AND (${sql.join(
                 allCities.flatMap(c => [
                   sql`LOWER(tp2.destination_city) = LOWER(${c})`,
@@ -3049,7 +3047,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         };
         if (start && end && start <= now && end >= now) {
           hereNow.push(user);
-        } else if (start && start > now && start <= thirtyDaysOut) {
+        } else if (start && start > now) {
           comingSoon.push(user);
         }
         seenUsers.add(r.userId);

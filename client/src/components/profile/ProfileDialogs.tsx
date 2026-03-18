@@ -898,7 +898,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
                   name={"firstName" as any}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">First name or nickname</FormLabel>
+                      <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">Display name</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="How people will see your name" className="text-base" />
                       </FormControl>

@@ -170,15 +170,9 @@ export default function DMChat() {
     const dest = (activePlan.destination || activePlan.destinationCity || "").trim();
     const home = hometownDisplay?.trim() || "";
     if (!dest || dest.toLowerCase() === home.toLowerCase()) return null;
-    // Shorten: "Austin, Texas, United States" → "Austin, Texas"
-    //          "Paris, Île-de-France, France" → "Paris, France"
+    // Show city name only (first part before comma)
     const parts = dest.split(",").map((s: string) => s.trim()).filter(Boolean);
-    if (parts.length >= 3) {
-      const country = parts[parts.length - 1];
-      const isUS = /united states|usa/i.test(country);
-      return isUS ? `${parts[0]}, ${parts[1]}` : `${parts[0]}, ${country}`;
-    }
-    return dest;
+    return parts[0];
   })();
 
   // Counts for the stat pills
