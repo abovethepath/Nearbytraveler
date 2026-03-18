@@ -2615,30 +2615,6 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   </SheetContent>
                 </Sheet>
               )}
-              {/* Add People + Share buttons — visible in header on all chatroom types */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowInvitePanel(true)}
-                className="text-white hover:bg-gray-700 h-9 w-9 touch-target shrink-0"
-                title="Add people"
-                data-testid="button-add-people"
-              >
-                <UserPlus className="w-4 h-4" />
-              </Button>
-              {chatType !== 'dm' && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowShareSheet(true)}
-                  className="text-white hover:bg-gray-700 h-9 w-9 touch-target shrink-0"
-                  title="Share chatroom"
-                  data-testid="button-share-chatroom"
-                >
-                  <Share2 className="w-4 h-4" />
-                </Button>
-              )}
-
               <Sheet open={moreMenuOpen} onOpenChange={setMoreMenuOpen}>
                 <SheetTrigger asChild>
                   <button
@@ -2679,6 +2655,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); setShowMembers(true); }}>
                           <Users className="w-5 h-5" /><span className="font-semibold">View Members</span>
                         </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-green-300" onClick={() => { setMoreMenuOpen(false); setShowInvitePanel(true); }}>
+                          <UserPlus className="w-5 h-5" /><span className="font-semibold">Add People</span>
+                        </button>
                         <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); toggleNotificationsMuted(); }}>
                           {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
                           <span className="font-semibold">{notificationsMuted ? "Unmute Notifications" : "Mute Notifications"}</span>
@@ -2702,6 +2681,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         </button>
                         <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left text-green-300" onClick={() => { setMoreMenuOpen(false); setShowInvitePanel(true); }}>
                           <UserPlus className="w-5 h-5" /><span className="font-semibold">Add People / Invite Link</span>
+                        </button>
+                        <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); setShowShareSheet(true); }}>
+                          <Share2 className="w-5 h-5" /><span className="font-semibold">Share Chat</span>
                         </button>
                         <button type="button" className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-800 transition-colors text-left" onClick={() => { setMoreMenuOpen(false); toggleNotificationsMuted(); }}>
                           {notificationsMuted ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
