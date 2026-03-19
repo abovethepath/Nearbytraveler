@@ -1019,19 +1019,6 @@ export default function Messages() {
                                 )}
                               </div>
                             )}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setDismissTarget({ type: 'meetup', id: mc.id, name: mc.chatroomName || 'Meetup Chat' });
-                              }}
-                              className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
-                                isSelected ? 'text-white/70 hover:text-white hover:bg-white/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                              }`}
-                              title="Remove from inbox"
-                              aria-label="Remove chatroom"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
                           </div>
                         </div>
                       );
@@ -1121,19 +1108,6 @@ export default function Messages() {
                                 )}
                               </div>
                             )}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setDismissTarget({ type: 'meetup', id: mc.id, name: eventDisplayName });
-                              }}
-                              className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
-                                isSelected ? 'text-white/70 hover:text-white hover:bg-white/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                              }`}
-                              title="Remove from inbox"
-                              aria-label="Remove chatroom"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
                           </div>
                         </div>
                       );
@@ -1169,6 +1143,7 @@ export default function Messages() {
                         : ''
                     }`}
                     onClick={() => {
+                      if (selectedConversation === conv.userId) return;
                       setSelectedMeetupChat(null);
                       setSelectedConversation(conv.userId);
                       navigate(`/messages/${conv.userId}`);
@@ -1253,21 +1228,6 @@ export default function Messages() {
                       ) : selectedConversation === conv.userId ? (
                         <div className="w-2 h-2 bg-blue-500 rounded-full shrink-0"></div>
                       ) : null}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setDismissTarget({ type: 'dm', id: conv.userId, name: conv.username });
-                        }}
-                        className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
-                          selectedConversation === conv.userId
-                            ? 'text-white/70 hover:text-white hover:bg-white/20'
-                            : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                        }`}
-                        title="Remove from inbox"
-                        aria-label="Remove conversation"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
                     </div>
                   </div>
                 ))}
@@ -1467,19 +1427,6 @@ export default function Messages() {
                                 )}
                               </div>
                             )}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setDismissTarget({ type: 'meetup', id: mc.id, name: mc.chatroomName || 'Meetup Chat' });
-                              }}
-                              className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
-                                isSelected ? 'text-white/70 hover:text-white hover:bg-white/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                              }`}
-                              title="Remove from inbox"
-                              aria-label="Remove chatroom"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
                           </div>
                         </div>
                       );
