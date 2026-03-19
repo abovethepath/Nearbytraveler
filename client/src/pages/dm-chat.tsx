@@ -45,13 +45,6 @@ function getOtherUserIdFromLocation(location: string): number {
   return numFromQuery;
 }
 
-class _DMBoundary extends React.Component<{ children: React.ReactNode }, { k: number }> {
-  state = { k: 0 };
-  static getDerivedStateFromError() { return {}; }
-  componentDidCatch() { if (this.state.k < 3) this.setState(s => ({ k: s.k + 1 })); }
-  render() { return <React.Fragment key={this.state.k}>{this.props.children}</React.Fragment>; }
-}
-
 export default function DMChat() {
   const [location, setLocation] = useLocation();
   const otherUserId = useMemo(() => getOtherUserIdFromLocation(location), [location]);
@@ -230,7 +223,6 @@ export default function DMChat() {
   );
 
   return (
-    <_DMBoundary>
     <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
       {/* LEFT PANEL — desktop only, same height as WhatsAppChat so layout locks perfectly */}
       <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 overflow-hidden h-full border-l-[3px] border-r-[3px] border-[#e0e0e0] dark:border-[#2d2d2d]" style={{ backgroundColor: '#0d1117' }}>
@@ -402,6 +394,5 @@ export default function DMChat() {
         />
       )}
     </div>
-    </_DMBoundary>
   );
 }

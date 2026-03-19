@@ -84,13 +84,6 @@ function getStoredUser() {
   return null;
 }
 
-class _MsgBoundary extends React.Component<{ children: React.ReactNode }, { k: number }> {
-  state = { k: 0 };
-  static getDerivedStateFromError() { return {}; }
-  componentDidCatch() { if (this.state.k < 3) this.setState(s => ({ k: s.k + 1 })); }
-  render() { return <React.Fragment key={this.state.k}>{this.props.children}</React.Fragment>; }
-}
-
 export default function Messages() {
   const authContext = useContext(AuthContext);
   const contextUser = authContext?.user;
@@ -866,7 +859,6 @@ export default function Messages() {
   // Removed full-page skeleton block — page renders immediately, conversations list shows inline loader
 
   return (
-    <_MsgBoundary>
     <div
       data-chat-page={selectedConversation || selectedMeetupChat ? "true" : undefined}
       className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-[calc(100dvh-144px)] md:h-[calc(100dvh-117px)] lg:h-[calc(100dvh-117px)]'} min-h-0`}
@@ -2028,6 +2020,5 @@ export default function Messages() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-    </_MsgBoundary>
   );
 }
