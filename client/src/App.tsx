@@ -2084,25 +2084,12 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <GlobalHotfixes />
       <ThemeProvider defaultTheme="dark" storageKey="nearby-traveler-theme">
-        {typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches ? (
-          <TooltipProvider>
-            <Toaster />
-            <DarkModeSuggestionBanner />
-            <Router />
-            {!isNativeIOSApp() && !disableFloatingChatbot && (
-              <div className="hidden md:block"><HelpChatbot /></div>
-            )}
-          </TooltipProvider>
-        ) : (
-          <>
-            <Toaster />
-            <DarkModeSuggestionBanner />
-            <Router />
-            {!isNativeIOSApp() && !disableFloatingChatbot && (
-              <div className="hidden md:block"><HelpChatbot /></div>
-            )}
-          </>
-        )}
+          <Toaster />
+          <DarkModeSuggestionBanner />
+          <Router />
+          {!isNativeIOSApp() && !disableFloatingChatbot && (
+            <div className="hidden md:block"><HelpChatbot /></div>
+          )}
       </ThemeProvider>
     </QueryClientProvider>
   );
