@@ -2979,7 +2979,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           u.user_type != 'business'
           AND (u.is_currently_traveling = false OR u.is_currently_traveling IS NULL)
           AND (${sql.join(hometownConditions, sql` OR `)})
-        ORDER BY u.last_active DESC NULLS LAST
+        ORDER BY u.last_seen_at DESC NULLS LAST
         LIMIT 20
       `);
 
