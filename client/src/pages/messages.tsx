@@ -1171,7 +1171,9 @@ export default function Messages() {
                     onClick={() => {
                       setSelectedMeetupChat(null);
                       setSelectedConversation(conv.userId);
-                      queueMicrotask(() => navigate(`/messages/${conv.userId}`));
+                      if (window.innerWidth >= 1024) {
+                        queueMicrotask(() => navigate(`/messages/${conv.userId}`));
+                      }
                     }}
                   >
                     <div className="flex items-center gap-3">
