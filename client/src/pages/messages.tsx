@@ -1024,7 +1024,7 @@ export default function Messages() {
                                 e.stopPropagation();
                                 setDismissTarget({ type: 'meetup', id: mc.id, name: mc.chatroomName || 'Meetup Chat' });
                               }}
-                              className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
+                              className={`shrink-0 p-1.5 rounded-full hidden md:inline-flex opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
                                 isSelected ? 'text-white/70 hover:text-white hover:bg-white/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
                               }`}
                               title="Remove from inbox"
@@ -1126,7 +1126,7 @@ export default function Messages() {
                                 e.stopPropagation();
                                 setDismissTarget({ type: 'meetup', id: mc.id, name: eventDisplayName });
                               }}
-                              className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
+                              className={`shrink-0 p-1.5 rounded-full hidden md:inline-flex opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
                                 isSelected ? 'text-white/70 hover:text-white hover:bg-white/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
                               }`}
                               title="Remove from inbox"
@@ -1171,7 +1171,7 @@ export default function Messages() {
                     onClick={() => {
                       setSelectedMeetupChat(null);
                       setSelectedConversation(conv.userId);
-                      navigate(`/messages/${conv.userId}`);
+                      queueMicrotask(() => navigate(`/messages/${conv.userId}`));
                     }}
                   >
                     <div className="flex items-center gap-3">
@@ -1258,7 +1258,7 @@ export default function Messages() {
                           e.stopPropagation();
                           setDismissTarget({ type: 'dm', id: conv.userId, name: conv.username });
                         }}
-                        className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
+                        className={`shrink-0 p-1.5 rounded-full hidden md:inline-flex opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
                           selectedConversation === conv.userId
                             ? 'text-white/70 hover:text-white hover:bg-white/20'
                             : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
@@ -1351,7 +1351,7 @@ export default function Messages() {
                                 e.stopPropagation();
                                 setDismissTarget({ type: 'meetup', id: mc.id, name: mc.chatroomName || 'Group Chat' });
                               }}
-                              className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
+                              className={`shrink-0 p-1.5 rounded-full hidden md:inline-flex opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
                                 isSelected ? 'text-white/70 hover:text-white hover:bg-white/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
                               }`}
                               title="Remove from inbox"
@@ -1472,7 +1472,7 @@ export default function Messages() {
                                 e.stopPropagation();
                                 setDismissTarget({ type: 'meetup', id: mc.id, name: mc.chatroomName || 'Meetup Chat' });
                               }}
-                              className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
+                              className={`shrink-0 p-1.5 rounded-full hidden md:inline-flex opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
                                 isSelected ? 'text-white/70 hover:text-white hover:bg-white/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
                               }`}
                               title="Remove from inbox"
