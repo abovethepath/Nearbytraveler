@@ -45,6 +45,13 @@ function getOtherUserIdFromLocation(location: string): number {
   return numFromQuery;
 }
 
+class _DMBoundary extends React.Component<{ children: React.ReactNode }, { k: number }> {
+  state = { k: 0 };
+  static getDerivedStateFromError() { return {}; }
+  componentDidCatch() { if (this.state.k < 3) this.setState(s => ({ k: s.k + 1 })); }
+  render() { return <React.Fragment key={this.state.k}>{this.props.children}</React.Fragment>; }
+}
+
 export default function DMChat() {
   const [location, setLocation] = useLocation();
   const otherUserId = useMemo(() => getOtherUserIdFromLocation(location), [location]);
@@ -52,10 +59,18 @@ export default function DMChat() {
   const authContext = useContext(AuthContext);
   const contextUser = authContext?.user;
   const authLoading = authContext?.authLoading;
-  const resolvedUser = contextUser?.id ? contextUser : {};
+  const [resolvedUser, setResolvedUser] = useState<any>(contextUser ?? {});
   const [showThingsModal, setShowThingsModal] = useState(false);
   const [showContactsModal, setShowContactsModal] = useState(false);
   const [showGroupDialog, setShowGroupDialog] = useState(false);
+
+  useEffect(() => {
+    if (contextUser?.id) {
+      setResolvedUser(contextUser);
+      return;
+    }
+    setResolvedUser({});
+  }, [contextUser?.id]);
 
   const user = resolvedUser;
 
@@ -162,9 +177,15 @@ export default function DMChat() {
     const dest = (activePlan.destination || activePlan.destinationCity || "").trim();
     const home = hometownDisplay?.trim() || "";
     if (!dest || dest.toLowerCase() === home.toLowerCase()) return null;
-    // Show city name only (first part before comma)
+    // Shorten: "Austin, Texas, United States" → "Austin, Texas"
+    //          "Paris, Île-de-France, France" → "Paris, France"
     const parts = dest.split(",").map((s: string) => s.trim()).filter(Boolean);
-    return parts[0];
+    if (parts.length >= 3) {
+      const country = parts[parts.length - 1];
+      const isUS = /united states|usa/i.test(country);
+      return isUS ? `${parts[0]}, ${parts[1]}` : `${parts[0]}, ${country}`;
+    }
+    return dest;
   })();
 
   // Counts for the stat pills
@@ -209,6 +230,7 @@ export default function DMChat() {
   );
 
   return (
+    <_DMBoundary>
     <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
       {/* LEFT PANEL — desktop only, same height as WhatsAppChat so layout locks perfectly */}
       <aside className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 overflow-hidden h-full border-l-[3px] border-r-[3px] border-[#e0e0e0] dark:border-[#2d2d2d]" style={{ backgroundColor: '#0d1117' }}>
@@ -380,5 +402,6 @@ export default function DMChat() {
         />
       )}
     </div>
+    </_DMBoundary>
   );
 }
