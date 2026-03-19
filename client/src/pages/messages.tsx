@@ -134,16 +134,12 @@ export default function Messages() {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
 
-  // Navigation guard: separate state updates from route changes to prevent React error #300.
-  // Click handlers set pendingNav, then this effect fires navigate after the render settles.
-  const pendingNav = useRef<string | null>(null);
-  useEffect(() => {
-    if (pendingNav.current) {
-      const target = pendingNav.current;
-      pendingNav.current = null;
-      navigate(target);
-    }
-  });
+  // Mobile-safe navigation: on mobile (< 1024px), state changes alone control
+  // the view (conversation list vs chat). navigate() is only called on desktop
+  // to update the URL. This prevents React error #300 on mobile.
+  const safeNavigate = (url: string) => {
+    if (window.innerWidth >= 1024) navigate(url);
+  };
 
   // Long-press detection for iOS (500ms like WhatsApp)
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -968,11 +964,11 @@ export default function Messages() {
                             );
                             apiRequest('POST', `/api/meetup-chatrooms/${mc.id}/mark-read`).catch(() => {});
                             if (window.innerWidth < 1024) {
-                              pendingNav.current = `/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`;
+                              navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`);
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              pendingNav.current = `/messages?meetupChat=${mc.id}`;
+                              safeNavigate(`/messages?meetupChat=${mc.id}`);
                             }
                           }}
                         >
@@ -1069,11 +1065,11 @@ export default function Messages() {
                             );
                             apiRequest('POST', `/api/meetup-chatrooms/${mc.id}/mark-read`).catch(() => {});
                             if (window.innerWidth < 1024) {
-                              pendingNav.current = `/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(eventDisplayName)}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`;
+                              navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(eventDisplayName)}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`);
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              pendingNav.current = `/messages?meetupChat=${mc.id}`;
+                              safeNavigate(`/messages?meetupChat=${mc.id}`);
                             }
                           }}
                         >
@@ -1157,7 +1153,7 @@ export default function Messages() {
                       if (selectedConversation === conv.userId) return;
                       setSelectedMeetupChat(null);
                       setSelectedConversation(conv.userId);
-                      pendingNav.current = `/messages/${conv.userId}`;
+                      safeNavigate(`/messages/${conv.userId}`);
                     }}
                   >
                     <div className="flex items-center gap-3">
@@ -1277,11 +1273,11 @@ export default function Messages() {
                             );
                             apiRequest('POST', `/api/meetup-chatrooms/${mc.id}/mark-read`).catch(() => {});
                             if (window.innerWidth < 1024) {
-                              pendingNav.current = `/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Group Chat')}&subtitle=${encodeURIComponent(mobileSubtitle)}`;
+                              navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Group Chat')}&subtitle=${encodeURIComponent(mobileSubtitle)}`);
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              pendingNav.current = `/messages?meetupChat=${mc.id}`;
+                              safeNavigate(`/messages?meetupChat=${mc.id}`);
                             }
                           }}
                         >
@@ -1376,11 +1372,11 @@ export default function Messages() {
                             );
                             apiRequest('POST', `/api/meetup-chatrooms/${mc.id}/mark-read`).catch(() => {});
                             if (window.innerWidth < 1024) {
-                              pendingNav.current = `/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`;
+                              navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`);
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              pendingNav.current = `/messages?meetupChat=${mc.id}`;
+                              safeNavigate(`/messages?meetupChat=${mc.id}`);
                             }
                           }}
                         >
