@@ -84,42 +84,7 @@ function getStoredUser() {
   return null;
 }
 
-class MessagesErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { hasError: boolean; retryCount: number }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false, retryCount: 0 };
-  }
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-  componentDidCatch(error: Error) {
-    // Auto-retry on React error #300 (concurrent update during render)
-    if (this.state.retryCount < 3) {
-      this.setState((prev) => ({ hasError: false, retryCount: prev.retryCount + 1 }));
-    }
-  }
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="flex flex-col items-center justify-center h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-6">
-          <p className="text-lg font-semibold mb-2">Something went wrong</p>
-          <button
-            onClick={() => this.setState({ hasError: false, retryCount: 0 })}
-            className="px-6 py-3 bg-blue-600 rounded-full text-white font-semibold"
-          >
-            Try again
-          </button>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
-
-function MessagesInner() {
+export default function Messages() {
   const authContext = useContext(AuthContext);
   const contextUser = authContext?.user;
   const [resolvedUser, setResolvedUser] = useState<any>(contextUser || getStoredUser() || {});
@@ -2002,13 +1967,5 @@ function MessagesInner() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  );
-}
-
-export default function Messages() {
-  return (
-    <MessagesErrorBoundary>
-      <MessagesInner />
-    </MessagesErrorBoundary>
   );
 }
