@@ -52,18 +52,10 @@ export default function DMChat() {
   const authContext = useContext(AuthContext);
   const contextUser = authContext?.user;
   const authLoading = authContext?.authLoading;
-  const [resolvedUser, setResolvedUser] = useState<any>(contextUser ?? {});
+  const resolvedUser = contextUser?.id ? contextUser : {};
   const [showThingsModal, setShowThingsModal] = useState(false);
   const [showContactsModal, setShowContactsModal] = useState(false);
   const [showGroupDialog, setShowGroupDialog] = useState(false);
-
-  useEffect(() => {
-    if (contextUser?.id) {
-      setResolvedUser(contextUser);
-      return;
-    }
-    setResolvedUser({});
-  }, [contextUser?.id]);
 
   const user = resolvedUser;
 

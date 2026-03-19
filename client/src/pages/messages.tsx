@@ -87,20 +87,7 @@ function getStoredUser() {
 export default function Messages() {
   const authContext = useContext(AuthContext);
   const contextUser = authContext?.user;
-  const [resolvedUser, setResolvedUser] = useState<any>(contextUser || getStoredUser() || {});
-
-  useEffect(() => {
-    if (contextUser?.id) {
-      setResolvedUser(contextUser);
-      return;
-    }
-    const stored = getStoredUser();
-    if (stored?.id) {
-      setResolvedUser(stored);
-      return;
-    }
-  }, [contextUser?.id]);
-
+  const resolvedUser = contextUser?.id ? contextUser : (getStoredUser() || {});
   const user = resolvedUser;
   const userId = Number(user?.id) || null;
   const hasUser = !!userId;

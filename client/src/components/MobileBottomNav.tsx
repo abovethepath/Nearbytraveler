@@ -31,22 +31,19 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   const authContext = React.useContext(AuthContext);
-  const [resolvedUser, setResolvedUser] = useState<any>(null);
+  const [fetchedUser, setFetchedUser] = useState<any>(null);
 
   useEffect(() => {
-    if (authContext?.user?.id) {
-      setResolvedUser(authContext.user);
-      return;
-    }
+    if (authContext?.user?.id) return;
     fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' })
       .then(res => res.ok ? res.json() : null)
       .then(sessionUser => {
-        if (sessionUser?.id) {
-          setResolvedUser(sessionUser);
-        }
+        if (sessionUser?.id) setFetchedUser(sessionUser);
       })
       .catch(() => {});
   }, [authContext?.user?.id]);
+
+  const resolvedUser = authContext?.user?.id ? authContext.user : fetchedUser;
 
   const user = resolvedUser;
 
