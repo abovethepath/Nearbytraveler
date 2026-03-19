@@ -957,11 +957,11 @@ export default function Messages() {
                             );
                             apiRequest('POST', `/api/meetup-chatrooms/${mc.id}/mark-read`).catch(() => {});
                             if (window.innerWidth < 1024) {
-                              navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`);
+                              setTimeout(() => navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`), 0);
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              navigate(`/messages?meetupChat=${mc.id}`);
+                              setTimeout(() => navigate(`/messages?meetupChat=${mc.id}`), 0);
                             }
                           }}
                         >
@@ -1058,11 +1058,11 @@ export default function Messages() {
                             );
                             apiRequest('POST', `/api/meetup-chatrooms/${mc.id}/mark-read`).catch(() => {});
                             if (window.innerWidth < 1024) {
-                              navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(eventDisplayName)}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`);
+                              setTimeout(() => navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(eventDisplayName)}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`), 0);
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              navigate(`/messages?meetupChat=${mc.id}`);
+                              setTimeout(() => navigate(`/messages?meetupChat=${mc.id}`), 0);
                             }
                           }}
                         >
@@ -1146,7 +1146,7 @@ export default function Messages() {
                       if (selectedConversation === conv.userId) return;
                       setSelectedMeetupChat(null);
                       setSelectedConversation(conv.userId);
-                      navigate(`/messages/${conv.userId}`);
+                      setTimeout(() => navigate(`/messages/${conv.userId}`), 0);
                     }}
                   >
                     <div className="flex items-center gap-3">
@@ -1266,11 +1266,11 @@ export default function Messages() {
                             );
                             apiRequest('POST', `/api/meetup-chatrooms/${mc.id}/mark-read`).catch(() => {});
                             if (window.innerWidth < 1024) {
-                              navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Group Chat')}&subtitle=${encodeURIComponent(mobileSubtitle)}`);
+                              setTimeout(() => navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Group Chat')}&subtitle=${encodeURIComponent(mobileSubtitle)}`), 0);
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              navigate(`/messages?meetupChat=${mc.id}`);
+                              setTimeout(() => navigate(`/messages?meetupChat=${mc.id}`), 0);
                             }
                           }}
                         >
@@ -1365,11 +1365,11 @@ export default function Messages() {
                             );
                             apiRequest('POST', `/api/meetup-chatrooms/${mc.id}/mark-read`).catch(() => {});
                             if (window.innerWidth < 1024) {
-                              navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`);
+                              setTimeout(() => navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`), 0);
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              navigate(`/messages?meetupChat=${mc.id}`);
+                              setTimeout(() => navigate(`/messages?meetupChat=${mc.id}`), 0);
                             }
                           }}
                         >

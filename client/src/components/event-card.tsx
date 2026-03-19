@@ -405,7 +405,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
           )}
 
           {/* Action buttons — always at bottom */}
-          <div className="flex flex-wrap gap-2 pt-2 mt-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="flex flex-col sm:flex-row gap-2 pt-2 mt-auto" onClick={(e) => e.stopPropagation()}>
             {isOrganizer ? (
               // Organizer: View Event + Open Chat
               <>
