@@ -961,7 +961,7 @@ export default function Messages() {
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              window.history.replaceState(null, '', `/messages?meetupChat=${mc.id}`);
+                              navigate(`/messages?meetupChat=${mc.id}`);
                             }
                           }}
                         >
@@ -1062,7 +1062,7 @@ export default function Messages() {
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              window.history.replaceState(null, '', `/messages?meetupChat=${mc.id}`);
+                              navigate(`/messages?meetupChat=${mc.id}`);
                             }
                           }}
                         >
@@ -1146,8 +1146,7 @@ export default function Messages() {
                       if (selectedConversation === conv.userId) return;
                       setSelectedMeetupChat(null);
                       setSelectedConversation(conv.userId);
-                      // Update URL without wouter navigate to avoid React error #300
-                      window.history.replaceState(null, '', `/messages/${conv.userId}`);
+                      navigate(`/messages/${conv.userId}`);
                     }}
                   >
                     <div className="flex items-center gap-3">
@@ -1271,7 +1270,7 @@ export default function Messages() {
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              window.history.replaceState(null, '', `/messages?meetupChat=${mc.id}`);
+                              navigate(`/messages?meetupChat=${mc.id}`);
                             }
                           }}
                         >
@@ -1370,7 +1369,7 @@ export default function Messages() {
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              window.history.replaceState(null, '', `/messages?meetupChat=${mc.id}`);
+                              navigate(`/messages?meetupChat=${mc.id}`);
                             }
                           }}
                         >
