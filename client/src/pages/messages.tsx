@@ -133,14 +133,7 @@ export default function Messages() {
   const headerRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
-
-  // Mobile-safe navigation: on mobile (< 1024px), state changes alone control
-  // the view (conversation list vs chat). navigate() is only called on desktop
-  // to update the URL. This prevents React error #300 on mobile.
-  const safeNavigate = (url: string) => {
-    if (window.innerWidth >= 1024) navigate(url);
-  };
-
+  
   // Long-press detection for iOS (500ms like WhatsApp)
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
@@ -968,7 +961,7 @@ export default function Messages() {
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              safeNavigate(`/messages?meetupChat=${mc.id}`);
+                              navigate(`/messages?meetupChat=${mc.id}`);
                             }
                           }}
                         >
@@ -1069,7 +1062,7 @@ export default function Messages() {
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              safeNavigate(`/messages?meetupChat=${mc.id}`);
+                              navigate(`/messages?meetupChat=${mc.id}`);
                             }
                           }}
                         >
@@ -1153,7 +1146,7 @@ export default function Messages() {
                       if (selectedConversation === conv.userId) return;
                       setSelectedMeetupChat(null);
                       setSelectedConversation(conv.userId);
-                      safeNavigate(`/messages/${conv.userId}`);
+                      navigate(`/messages/${conv.userId}`);
                     }}
                   >
                     <div className="flex items-center gap-3">
@@ -1277,7 +1270,7 @@ export default function Messages() {
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              safeNavigate(`/messages?meetupChat=${mc.id}`);
+                              navigate(`/messages?meetupChat=${mc.id}`);
                             }
                           }}
                         >
@@ -1376,7 +1369,7 @@ export default function Messages() {
                             } else {
                               setSelectedMeetupChat(mc.id);
                               setSelectedConversation(null);
-                              safeNavigate(`/messages?meetupChat=${mc.id}`);
+                              navigate(`/messages?meetupChat=${mc.id}`);
                             }
                           }}
                         >
