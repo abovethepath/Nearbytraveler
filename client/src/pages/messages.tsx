@@ -133,22 +133,22 @@ export default function Messages() {
   const headerRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
-  
+
   // Long-press detection for iOS (500ms like WhatsApp)
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
-  
+
   const handleMessageTouchStart = (e: React.TouchEvent, msg: any) => {
     const touch = e.touches[0];
     touchStartRef.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
-    
+
     longPressTimerRef.current = setTimeout(() => {
       console.log('Long press detected on message:', msg.id);
       if (navigator.vibrate) navigator.vibrate(50);
       setSelectedMessage(msg);
     }, 500);
   };
-  
+
   const handleMessageTouchMove = (e: React.TouchEvent) => {
     if (!touchStartRef.current) return;
     const touch = e.touches[0];
@@ -161,7 +161,7 @@ export default function Messages() {
       }
     }
   };
-  
+
   const handleMessageTouchEnd = () => {
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current);
@@ -169,16 +169,16 @@ export default function Messages() {
     }
     touchStartRef.current = null;
   };
-  
+
   // Get target user ID from URL - supports both path (/messages/123) and query (?userId=123)
   const [location] = useLocation();
   const urlParts = location.split('/');
   const pathUserId = urlParts[2]; // /messages/:userId
-  
+
   // Also check for query parameters (?userId=123 or ?user=123)
   const urlParams = new URLSearchParams(window.location.search);
   const queryUserId = urlParams.get('userId') || urlParams.get('user');
-  
+
   // Use path format first, fall back to query parameter
   const targetUserId = pathUserId || queryUserId;
 
@@ -448,7 +448,7 @@ export default function Messages() {
   // Build conversations list
   const conversations = React.useMemo(() => {
     const conversationMap = new Map();
-    
+
     // Add connections — skip ghost users (no real username or name set)
     (connections as any[]).forEach((connection: any) => {
       const connectedUser = connection.connectedUser;
@@ -496,12 +496,12 @@ export default function Messages() {
       if (otherUserId !== userId) {
         const existing = conversationMap.get(otherUserId);
         // Count unread messages (messages received by current user that aren't read)
-        const unreadCount = (messages as any[]).filter((m: any) => 
-          Number(m.senderId) === otherUserId && 
-          Number(m.receiverId) === userId && 
+        const unreadCount = (messages as any[]).filter((m: any) =>
+          Number(m.senderId) === otherUserId &&
+          Number(m.receiverId) === userId &&
           !m.isRead
         ).length;
-        
+
         const isOpener = message.messageType === 'conversation_opened';
         if (existing) {
           // For opener markers: mark the flag but don't clobber a real lastMessage
@@ -552,7 +552,7 @@ export default function Messages() {
         // For connections with NO messages and not opened, skip ghost/placeholder users
         return conv.username !== `User ${conv.userId}` && conv.username !== `DM ${conv.userId}`;
       })
-      .sort((a: any, b: any) => 
+      .sort((a: any, b: any) =>
         new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
       );
   }, [connections, messages, allUsers, targetUserId, userId]);
@@ -633,14 +633,14 @@ export default function Messages() {
       if (targetConv && selectedConversation !== targetUserIdNum) {
         setSelectedConversation(targetUserIdNum);
         console.log(`🎯 Auto-selected conversation for user ${targetUserId}:`, targetConv.username);
-        
+
         // Scroll target conversation into view after a brief delay
         setTimeout(() => {
           const conversationElement = document.querySelector(`[data-conversation-id="${targetUserId}"]`);
           if (conversationElement) {
-            conversationElement.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'center' 
+            conversationElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
             });
             console.log(`📍 Scrolled to conversation for user ${targetUserId}`);
           }
@@ -657,13 +657,13 @@ export default function Messages() {
   }, [targetUserId, conversations]);
 
   // Get messages for selected conversation (simplified to avoid duplication)
-  const conversationMessages = selectedConversation 
-    ? (messages as any[]).filter((message: any) => 
+  const conversationMessages = selectedConversation
+    ? (messages as any[]).filter((message: any) =>
         message.messageType !== 'conversation_opened' && (
           (Number(message.senderId) === userId && Number(message.receiverId) === selectedConversation) ||
           (Number(message.receiverId) === userId && Number(message.senderId) === selectedConversation)
         )
-      ).sort((a: any, b: any) => 
+      ).sort((a: any, b: any) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       )
     : [];
@@ -694,7 +694,7 @@ export default function Messages() {
       console.log('Message sent successfully:', newMessage);
       setNewMessage('');
       refetchMessages();
-      
+
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ['/api/messages', userId] });
         queryClient.invalidateQueries({ queryKey: ['/api/connections', userId] });
@@ -712,10 +712,10 @@ export default function Messages() {
 
   const handleSendMessage = () => {
     if (!newMessage.trim() || !selectedConversation) return;
-    
+
     // Mark any unread messages from target user as read (since user is responding)
     markAsReadMutation.mutate(selectedConversation);
-    
+
     // Always use regular API call to avoid message duplication issues
     console.log('📤 Sending message via API');
     sendMessageMutation.mutate({
@@ -723,7 +723,7 @@ export default function Messages() {
       content: newMessage.trim(),
       replyToId: replyingTo?.id || undefined,
     });
-    
+
     // Stop typing indicator on send
     if (websocketService.isConnected()) {
       websocketService.sendTypingIndicator(selectedConversation, false);
@@ -744,7 +744,7 @@ export default function Messages() {
   // Handle typing indicators
   const handleTyping = (value: string) => {
     setNewMessage(value);
-    
+
     if (selectedConversation && websocketService.isConnected()) {
       websocketService.sendTypingIndicator(selectedConversation, value.length > 0);
     }
@@ -753,13 +753,13 @@ export default function Messages() {
   // Handle message editing
   const handleEditMessage = async (messageId: number) => {
     if (!editText.trim()) return;
-    
+
     try {
       await apiRequest('PATCH', `/api/messages/${messageId}`, {
         content: editText.trim(),
         userId
       });
-      
+
       toast({ title: "Message edited successfully" });
       setEditingMessageId(null);
       setEditText("");
@@ -771,19 +771,19 @@ export default function Messages() {
 
   const handleDeleteMessage = async (messageId: number) => {
     if (!confirm('Are you sure you want to delete this message?')) return;
-    
+
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/messages/${messageId}`, {
         method: 'DELETE',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'x-user-id': String(userId || '') 
+          'x-user-id': String(userId || '')
         },
         credentials: 'include',
       });
-      
+
       if (!response.ok) throw new Error('Failed to delete message');
-      
+
       toast({ title: "Message deleted successfully" });
       setSelectedMessage(null);
       queryClient.invalidateQueries({ queryKey: ['/api/messages', userId] });
@@ -797,11 +797,11 @@ export default function Messages() {
   const handleReaction = async (messageId: number, emoji: string) => {
     if (isReacting) return; // Prevent double-tap
     setIsReacting(true);
-    
+
     try {
       console.log('👍 Sending reaction:', messageId, emoji);
       await apiRequest('POST', `/api/messages/${messageId}/reaction`, { emoji });
-      
+
       toast({ title: "Liked!" });
       setSelectedMessage(null);
       queryClient.invalidateQueries({ queryKey: ['/api/messages', userId] });
@@ -834,7 +834,7 @@ export default function Messages() {
     });
   }, [conversations]);
 
-  const selectedUser = selectedConversation 
+  const selectedUser = selectedConversation
     ? conversations.find((conv: any) => conv.userId === selectedConversation)
     : null;
 
@@ -867,7 +867,7 @@ export default function Messages() {
       <div className={`${(selectedConversation || selectedMeetupChat) ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-[#f0f2f5] dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500 min-w-0 flex-shrink-0`}>
         <div className={`border-b border-gray-200 dark:border-gray-700 ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'}`} style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: 'inherit' }}>
           <div className={`flex items-center gap-3 ${isNativeIOSApp() ? 'mb-2' : 'mb-3'}`}>
-            <UniversalBackButton 
+            <UniversalBackButton
               destination="/discover"
               label=""
               className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent border-none shadow-none hover:bg-gray-200 dark:hover:bg-gray-700/50 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center touch-target"
@@ -1019,19 +1019,6 @@ export default function Messages() {
                                 )}
                               </div>
                             )}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setDismissTarget({ type: 'meetup', id: mc.id, name: mc.chatroomName || 'Meetup Chat' });
-                              }}
-                              className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
-                                isSelected ? 'text-white/70 hover:text-white hover:bg-white/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                              }`}
-                              title="Remove from inbox"
-                              aria-label="Remove chatroom"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
                           </div>
                         </div>
                       );
@@ -1121,19 +1108,6 @@ export default function Messages() {
                                 )}
                               </div>
                             )}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setDismissTarget({ type: 'meetup', id: mc.id, name: eventDisplayName });
-                              }}
-                              className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
-                                isSelected ? 'text-white/70 hover:text-white hover:bg-white/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                              }`}
-                              title="Remove from inbox"
-                              aria-label="Remove chatroom"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
                           </div>
                         </div>
                       );
@@ -1148,9 +1122,9 @@ export default function Messages() {
                 </div>
               )}
               {activeTab === 'dms' && conversations
-                .filter((conv: any) => 
+                .filter((conv: any) =>
                   !dismissedDMs.includes(conv.userId) &&
-                  (!connectionSearch || 
+                  (!connectionSearch ||
                   conv.username.toLowerCase().includes(connectionSearch.toLowerCase()))
                 )
                 .map((conv: any) => (
@@ -1158,8 +1132,8 @@ export default function Messages() {
                     key={conv.userId}
                     data-conversation-id={conv.userId}
                     className={`group ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
-                      selectedConversation === conv.userId 
-                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 border-l-4 border-l-blue-400 shadow-lg text-white' 
+                      selectedConversation === conv.userId
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 border-l-4 border-l-blue-400 shadow-lg text-white'
                         : conv.unreadCount > 0
                           ? 'bg-white/70 dark:bg-gray-800/40 border-l-4 border-l-orange-400 hover:bg-white/90 dark:hover:bg-gray-800/55'
                           : 'hover:bg-gray-200 dark:hover:bg-gray-700 hover:border-l-4 hover:border-l-gray-400 dark:hover:border-l-gray-500'
@@ -1175,7 +1149,7 @@ export default function Messages() {
                     }}
                   >
                     <div className="flex items-center gap-3">
-                      <div 
+                      <div
                         className="cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1183,8 +1157,8 @@ export default function Messages() {
                         }}
                       >
                         <Avatar className={`${isNativeIOSApp() ? 'w-12 h-12' : 'w-10 h-10'}`}>
-                          <AvatarImage 
-                            src={getProfileImageUrl(conv) || undefined} 
+                          <AvatarImage
+                            src={getProfileImageUrl(conv) || undefined}
                             alt={`${conv.username} avatar`}
                           />
                           <AvatarFallback className="bg-blue-600 text-white">
@@ -1195,8 +1169,8 @@ export default function Messages() {
                       <div className="flex-1 min-w-0 overflow-hidden">
                         <div className="flex items-center gap-2 min-w-0 flex-wrap">
                           <h3 className={`text-sm truncate ${
-                            selectedConversation === conv.userId 
-                              ? 'text-white font-semibold' 
+                            selectedConversation === conv.userId
+                              ? 'text-white font-semibold'
                               : conv.unreadCount > 0
                                 ? 'text-gray-900 dark:text-white font-extrabold'
                                 : 'text-gray-900 dark:text-white font-semibold'
@@ -1253,21 +1227,6 @@ export default function Messages() {
                       ) : selectedConversation === conv.userId ? (
                         <div className="w-2 h-2 bg-blue-500 rounded-full shrink-0"></div>
                       ) : null}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setDismissTarget({ type: 'dm', id: conv.userId, name: conv.username });
-                        }}
-                        className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
-                          selectedConversation === conv.userId
-                            ? 'text-white/70 hover:text-white hover:bg-white/20'
-                            : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                        }`}
-                        title="Remove from inbox"
-                        aria-label="Remove conversation"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
                     </div>
                   </div>
                 ))}
@@ -1346,19 +1305,6 @@ export default function Messages() {
                                 )}
                               </div>
                             )}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setDismissTarget({ type: 'meetup', id: mc.id, name: mc.chatroomName || 'Group Chat' });
-                              }}
-                              className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
-                                isSelected ? 'text-white/70 hover:text-white hover:bg-white/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                              }`}
-                              title="Remove from inbox"
-                              aria-label="Remove chatroom"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
                           </div>
                         </div>
                       );
@@ -1467,19 +1413,6 @@ export default function Messages() {
                                 )}
                               </div>
                             )}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setDismissTarget({ type: 'meetup', id: mc.id, name: mc.chatroomName || 'Meetup Chat' });
-                              }}
-                              className={`shrink-0 p-1.5 rounded-full opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity ${
-                                isSelected ? 'text-white/70 hover:text-white hover:bg-white/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                              }`}
-                              title="Remove from inbox"
-                              aria-label="Remove chatroom"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
                           </div>
                         </div>
                       );
@@ -1565,7 +1498,7 @@ export default function Messages() {
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </Button>
-                
+
                 <div className="cursor-pointer shrink-0" onClick={() => navigate(`/profile/${selectedUser.userId}`)}>
                   <Avatar className="w-9 h-9">
                     <AvatarImage src={selectedUser.profileImage} />
@@ -1602,9 +1535,9 @@ export default function Messages() {
                         const hasReactions = msg.reactions && msg.reactions.length > 0;
                         return (
                           <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} ${hasReactions ? 'mb-6 pb-1' : ''}`}>
-                            <div 
-                              className="relative max-w-[70%] overflow-visible" 
-                              style={{ 
+                            <div
+                              className="relative max-w-[70%] overflow-visible"
+                              style={{
                                 WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.2)',
                                 WebkitUserSelect: 'none',
                                 userSelect: 'none',
@@ -1642,45 +1575,45 @@ export default function Messages() {
                                 </div>
                               ) : (
                                 <div className={`relative px-4 py-2 rounded-2xl cursor-pointer overflow-visible ${
-                                  isOwnMessage 
-                                    ? 'bg-[#DCF8C6] dark:bg-[#005C4B]' 
+                                  isOwnMessage
+                                    ? 'bg-[#DCF8C6] dark:bg-[#005C4B]'
                                     : 'bg-gray-200 dark:bg-gray-700'
                                 }`} style={{ overflow: 'visible' }}>
                                   {/* Reply Context */}
                                   {msg.replyToId && msg.repliedMessage && (
                                     <div className={`mb-2 pl-2 border-l-2 ${
-                                      isOwnMessage 
-                                        ? 'border-black/20 dark:border-white/35' 
+                                      isOwnMessage
+                                        ? 'border-black/20 dark:border-white/35'
                                         : 'border-gray-400 dark:border-gray-500'
                                     }`}>
                                       <p className={`text-xs opacity-70 ${
-                                        isOwnMessage 
-                                          ? 'text-black/70 dark:text-white/80' 
+                                        isOwnMessage
+                                          ? 'text-black/70 dark:text-white/80'
                                           : 'text-gray-600 dark:text-gray-400'
                                       }`}>
                                         {Number(msg.repliedMessage.senderId) === userId ? 'You' : `@${selectedUser?.username}`}
                                       </p>
                                       <p className={`text-xs opacity-80 truncate ${
-                                        isOwnMessage 
-                                          ? 'text-black/80 dark:text-white/90' 
+                                        isOwnMessage
+                                          ? 'text-black/80 dark:text-white/90'
                                           : 'text-gray-700 dark:text-gray-300'
                                       }`}>
                                         {msg.repliedMessage.content}
                                       </p>
                                     </div>
                                   )}
-                                  
+
                                   <p className={`text-sm whitespace-pre-wrap break-words ${
-                                    isOwnMessage 
-                                      ? 'text-gray-900 dark:text-white' 
+                                    isOwnMessage
+                                      ? 'text-gray-900 dark:text-white'
                                       : 'text-gray-900 dark:text-gray-100'
                                   }`}>
                                     {msg.content}
                                   </p>
                                   <div className="flex items-center justify-end gap-1 mt-1">
                                     <p className={`text-xs opacity-70 ${
-                                      isOwnMessage 
-                                        ? 'text-black/60 dark:text-white/70' 
+                                      isOwnMessage
+                                        ? 'text-black/60 dark:text-white/70'
                                         : 'text-gray-600 dark:text-gray-400'
                                     }`}>
                                       {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -1691,7 +1624,7 @@ export default function Messages() {
                                       </span>
                                     )}
                                   </div>
-                                  
+
                                   {/* Reactions display */}
                                   {msg.reactions && msg.reactions.length > 0 && (
                                     <div className={`absolute -bottom-3 ${isOwnMessage ? 'right-2' : 'left-2'} bg-white dark:bg-gray-800 rounded-full px-2 py-0.5 shadow-md border border-gray-200 dark:border-gray-600`}>
@@ -1742,7 +1675,7 @@ export default function Messages() {
                     </Button>
                   </div>
                 )}
-                
+
                 {selectedConversation && (
                   <TypingIndicator
                     conversationUserId={selectedConversation}
@@ -1798,7 +1731,7 @@ export default function Messages() {
             {(connections as any[]).length} connection{(connections as any[]).length !== 1 ? 's' : ''}
           </p>
         </div>
-        
+
         <div className="flex-1 overflow-y-auto">
           {(connections as any[]).length === 0 ? (
             <div className="p-4 text-center text-gray-500 dark:text-gray-400">
@@ -1810,15 +1743,15 @@ export default function Messages() {
             (connections as any[]).map((connection: any) => {
               const contact = connection.connectedUser;
               if (!contact) return null;
-              
+
               const isActive = selectedConversation === contact.id;
-              
+
               return (
                 <div
                   key={contact.id}
                   className={`p-3 border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all ${
-                    isActive 
-                      ? 'bg-blue-100 dark:bg-blue-900/30 border-l-4 border-l-blue-500' 
+                    isActive
+                      ? 'bg-blue-100 dark:bg-blue-900/30 border-l-4 border-l-blue-500'
                       : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                   onClick={() => navigate(`/messages/${contact.id}`)}
@@ -1867,32 +1800,32 @@ export default function Messages() {
           )}
         </div>
       </div>
-      
+
       {/* Message Action Menu - Portal rendered at body level for iOS */}
       {selectedMessage && createPortal(
         <>
           {/* Backdrop */}
-          <div 
+          <div
             className="fixed inset-0 bg-transparent z-[99998]"
             onClick={() => setSelectedMessage(null)}
             style={{ touchAction: 'auto' }}
           />
           {/* Bottom Sheet Menu - centered on mobile, right side on desktop */}
-          <div 
+          <div
             className="fixed left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-4 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl z-[99999] border border-gray-200 dark:border-gray-700"
             style={{ touchAction: 'auto', bottom: 'max(120px, 20vh)' }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-2 py-3 space-y-1">
               {/* Like reaction */}
-              <button 
-                type="button" 
-                onTouchEnd={(e) => { 
+              <button
+                type="button"
+                onTouchEnd={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   handleReaction(selectedMessage.id, '👍');
                 }}
-                onClick={(e) => { 
+                onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   handleReaction(selectedMessage.id, '👍');
@@ -1903,22 +1836,22 @@ export default function Messages() {
                 <ThumbsUp className="w-5 h-5 text-blue-500 pointer-events-none" />
                 <span className="text-sm pointer-events-none">Like</span>
               </button>
-              
+
               {/* Copy */}
-              <button 
-                type="button" 
-                onTouchEnd={(e) => { 
+              <button
+                type="button"
+                onTouchEnd={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  navigator.clipboard.writeText(selectedMessage.content); 
-                  toast({ title: "Copied" }); 
+                  navigator.clipboard.writeText(selectedMessage.content);
+                  toast({ title: "Copied" });
                   setSelectedMessage(null);
                 }}
-                onClick={(e) => { 
+                onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  navigator.clipboard.writeText(selectedMessage.content); 
-                  toast({ title: "Copied" }); 
+                  navigator.clipboard.writeText(selectedMessage.content);
+                  toast({ title: "Copied" });
                   setSelectedMessage(null);
                 }}
                 className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded-xl text-gray-900 dark:text-white"
@@ -1927,20 +1860,20 @@ export default function Messages() {
                 <Copy className="w-5 h-5 text-gray-500 pointer-events-none" />
                 <span className="text-sm pointer-events-none">Copy</span>
               </button>
-              
+
               {/* Reply */}
-              <button 
-                type="button" 
-                onTouchEnd={(e) => { 
+              <button
+                type="button"
+                onTouchEnd={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setReplyingTo(selectedMessage); 
+                  setReplyingTo(selectedMessage);
                   setSelectedMessage(null);
                 }}
-                onClick={(e) => { 
+                onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setReplyingTo(selectedMessage); 
+                  setReplyingTo(selectedMessage);
                   setSelectedMessage(null);
                 }}
                 className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded-xl text-gray-900 dark:text-white"
@@ -1949,22 +1882,22 @@ export default function Messages() {
                 <Reply className="w-5 h-5 text-green-500 pointer-events-none" />
                 <span className="text-sm pointer-events-none">Reply</span>
               </button>
-              
+
               {/* Edit/Delete for own messages */}
               {Number(selectedMessage.senderId) === userId && (
                 <>
-                  <button 
-                    type="button" 
-                    onTouchEnd={(e) => { 
+                  <button
+                    type="button"
+                    onTouchEnd={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      startEdit(selectedMessage); 
+                      startEdit(selectedMessage);
                       setSelectedMessage(null);
                     }}
-                    onClick={(e) => { 
+                    onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      startEdit(selectedMessage); 
+                      startEdit(selectedMessage);
                       setSelectedMessage(null);
                     }}
                     className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded-xl text-gray-900 dark:text-white"
@@ -1973,14 +1906,14 @@ export default function Messages() {
                     <Edit2 className="w-5 h-5 text-blue-500 pointer-events-none" />
                     <span className="text-sm pointer-events-none">Edit</span>
                   </button>
-                  <button 
-                    type="button" 
-                    onTouchEnd={(e) => { 
+                  <button
+                    type="button"
+                    onTouchEnd={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       handleDeleteMessage(selectedMessage.id);
                     }}
-                    onClick={(e) => { 
+                    onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       handleDeleteMessage(selectedMessage.id);
