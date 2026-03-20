@@ -118,6 +118,16 @@
         </div>
       </div>
     </div>
+    <script>
+      // Hide boot screen immediately on public/auth routes to prevent flash
+      (function() {
+        var p = window.location.pathname;
+        if (p === '/auth' || p === '/signin' || p === '/join' || p.indexOf('/signup') === 0 || p === '/landing' || p === '/landing-new' || p === '/about') {
+          var b = document.getElementById('boot');
+          if (b) b.style.display = 'none';
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
     
     
