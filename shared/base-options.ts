@@ -104,7 +104,8 @@ export const INTERESTS = [
   "Sunset Watching",
   "Park Picnics",
   "Cultural Learning",
-  "Blogging"
+  "Blogging",
+  "CouchSurfing"
 ];
 
 // ========================================
