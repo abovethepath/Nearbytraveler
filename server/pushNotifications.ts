@@ -123,6 +123,8 @@ export async function sendPushNotification(opts: {
       app_url: webUrl, // for iOS/Android deep links
     };
 
+    console.log('📱 OneSignal request:', JSON.stringify({ url: ONESIGNAL_API_URL, app_id: ONESIGNAL_APP_ID, playerId, hasApiKey: !!ONESIGNAL_REST_API_KEY }));
+
     const resp = await fetch(ONESIGNAL_API_URL, {
       method: 'POST',
       headers: {
