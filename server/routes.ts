@@ -28616,6 +28616,7 @@ Questions? Just reply to this message. Welcome aboard!
     { name: "solo-travelers", displayName: "Solo Travelers", category: "lifestyle", icon: "🧳", color: "#F59E0B", description: "Traveling solo? Find meetups and tips from other solo travelers." },
     { name: "foodies", displayName: "Foodies", category: "interest", icon: "🍳", color: "#EF4444", description: "Love food and local eats? Connect with fellow foodies." },
     { name: "veterans", displayName: "Veterans", category: "identity", icon: "🎖️", color: "#6366F1", description: "Veterans and military community. Connect with those who serve." },
+    { name: "couchsurfing-community", displayName: "CouchSurfing Community", category: "lifestyle", icon: "🛋️", color: "#E11D48", description: "For CouchSurfers and hospitality exchange travelers. Share hosting tips, find hosts, and connect with the CS community." },
   ];
   // One-time backfill flag: ensures the expensive DB backfill only runs once per server boot.
   let communityBackfillDone = false;
