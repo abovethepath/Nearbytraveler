@@ -28609,14 +28609,14 @@ Questions? Just reply to this message. Welcome aboard!
   // ---------- COMMUNITY TAGS ----------
 
   // Default (site-wide) communities — shown for every city. Ensured on first fetch.
-  const DEFAULT_COMMUNITIES: Array<{ name: string; displayName: string; category: string; icon: string; color: string; description: string }> = [
+  const DEFAULT_COMMUNITIES: Array<{ name: string; displayName: string; category: string; icon: string; color: string; description: string; createdBy?: number }> = [
     { name: "solo-female-travelers", displayName: "Solo Female Travelers", category: "identity", icon: "👩", color: "#EC4899", description: "Connect with other solo female travelers. Safe, supportive community for women who travel alone." },
     { name: "lgbtq-plus", displayName: "LGBTQ+", category: "identity", icon: "🏳️‍🌈", color: "#8B5CF6", description: "LGBTQ+ friendly community. Meet travelers and locals in a welcoming space." },
     { name: "digital-nomads", displayName: "Digital Nomads", category: "lifestyle", icon: "💻", color: "#06B6D4", description: "Remote workers and location-independent travelers." },
     { name: "solo-travelers", displayName: "Solo Travelers", category: "lifestyle", icon: "🧳", color: "#F59E0B", description: "Traveling solo? Find meetups and tips from other solo travelers." },
     { name: "foodies", displayName: "Foodies", category: "interest", icon: "🍳", color: "#EF4444", description: "Love food and local eats? Connect with fellow foodies." },
     { name: "veterans", displayName: "Veterans", category: "identity", icon: "🎖️", color: "#6366F1", description: "Veterans and military community. Connect with those who serve." },
-    { name: "couchsurfing-community", displayName: "CouchSurfing Community", category: "lifestyle", icon: "🛋️", color: "#E11D48", description: "For CouchSurfers and hospitality exchange travelers. Share hosting tips, find hosts, and connect with the CS community." },
+    { name: "couchsurfing-community", displayName: "CouchSurfing Community", category: "lifestyle", icon: "🛋️", color: "#E11D48", description: "For CouchSurfers and hospitality exchange travelers. Share hosting tips, find hosts, and connect with the CS community.", createdBy: 2 },
   ];
   // One-time backfill flag: ensures the expensive DB backfill only runs once per server boot.
   let communityBackfillDone = false;
@@ -28645,7 +28645,7 @@ Questions? Just reply to this message. Welcome aboard!
               isPrivate: false,
               isFlagged: false,
               memberCount: 0,
-              createdBy: systemUserId,
+              createdBy: c.createdBy ?? systemUserId,
             });
           } else {
             // Backfill legacy rows so presets don't disappear due to NULL/false flags.
