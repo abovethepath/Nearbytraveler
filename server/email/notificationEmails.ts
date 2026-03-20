@@ -319,32 +319,32 @@ export async function sendNewMessageEmail(recipientId: number, senderId: number,
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 16px;">
     <tr>
       <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); max-width: 100%;">
           <tr>
-            <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center;">
-              <h1 style="color: #ffffff; margin: 0; font-size: 24px;">New Message! 💬</h1>
+            <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px 24px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 26px;">New Message! 💬</h1>
             </td>
           </tr>
           <tr>
-            <td style="padding: 40px;">
-              <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
-              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
+            <td style="padding: 32px 24px;">
+              <p style="font-size: 20px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
+              <p style="font-size: 18px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
                 You have a new message from <strong>${senderDisplay}</strong>:
               </p>
-              <div style="background-color: #f3f4f6; border-left: 4px solid #10b981; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0;">
-                <p style="font-size: 15px; color: #555555; margin: 0; font-style: italic;">"${truncatedMessage}"</p>
+              <div style="background-color: #f3f4f6; border-left: 4px solid #10b981; padding: 18px 22px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+                <p style="font-size: 18px; color: #333333; margin: 0; font-style: italic; line-height: 1.5;">"${truncatedMessage}"</p>
               </div>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${APP_URL}/messages/${senderId}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">View Message</a>
+                <a href="${APP_URL}/messages/${senderId}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 16px 44px; border-radius: 8px; font-size: 18px; font-weight: 600;">View Message</a>
               </div>
             </td>
           </tr>
           <tr>
             <td style="background-color: #f8f9fa; padding: 20px; text-align: center;">
-              <p style="font-size: 12px; color: #888888; margin: 0;">
+              <p style="font-size: 13px; color: #888888; margin: 0;">
                 <a href="${APP_URL}/settings" style="color: #10b981;">Manage email preferences</a>
               </p>
             </td>
