@@ -3,6 +3,7 @@ import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { formatCityDisplay } from "@/lib/locationDisplay";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -273,6 +274,43 @@ export function ProfileTabs(props: ProfilePageProps) {
 
   const outgoingConnectionRequests = (props as any)?.outgoingConnectionRequests || [];
 
+  // CouchSurfing community chatroom prompt
+  const [showCsPrompt, setShowCsPrompt] = useState(false);
+  const [csJoining, setCsJoining] = useState(false);
+
+  const checkCouchSurfingPrompt = (interests: string[]) => {
+    if (!interests.includes('CouchSurfing')) return;
+    const dismissed = localStorage.getItem('nt_cs_chatroom_dismissed');
+    if (dismissed) return;
+    setShowCsPrompt(true);
+  };
+
+  const handleJoinCsChatroom = async () => {
+    setCsJoining(true);
+    try {
+      const apiBase = getApiBaseUrl();
+      const lookupRes = await fetch(`${apiBase}/api/chatrooms/by-community/couchsurfing-community`, { credentials: 'include' });
+      if (!lookupRes.ok) throw new Error('Chatroom not found');
+      const { chatroomId } = await lookupRes.json();
+      await fetch(`${apiBase}/api/chatrooms/${chatroomId}/join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+      setShowCsPrompt(false);
+      toast?.({ title: "Joined!", description: "You're now in the CouchSurfing Community chatroom." });
+    } catch (error) {
+      console.error('Failed to join CS chatroom:', error);
+      toast?.({ title: "Couldn't join", description: "Please try again later.", variant: "destructive" });
+    } finally {
+      setCsJoining(false);
+    }
+  };
+
+  const handleDismissCsPrompt = () => {
+    localStorage.setItem('nt_cs_chatroom_dismissed', '1');
+    setShowCsPrompt(false);
+  };
 
   /* Desktop user profiles: tabs are integrated into hero (ProfileTabBar); hide duplicate card. iOS + business: show tabs card. */
   const showTabsCard = isNativeIOSApp() || user?.userType === 'business';
@@ -433,6 +471,26 @@ export function ProfileTabs(props: ProfilePageProps) {
   };
 
   return (
+    <>
+    {/* CouchSurfing Community chatroom prompt */}
+    <Dialog open={showCsPrompt} onOpenChange={setShowCsPrompt}>
+      <DialogContent className="sm:max-w-sm bg-white dark:bg-gray-900">
+        <DialogHeader>
+          <DialogTitle className="text-base">🛋️ CouchSurfing Community</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          Want to join the CouchSurfing Community chatroom on Nearby Traveler?
+        </p>
+        <div className="flex gap-2 mt-2">
+          <Button onClick={handleJoinCsChatroom} disabled={csJoining} className="bg-blue-600 hover:bg-blue-700 text-white flex-1">
+            {csJoining ? "Joining..." : "Join Chatroom"}
+          </Button>
+          <Button variant="outline" onClick={handleDismissCsPrompt} className="flex-1">
+            Maybe Later
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
     <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900 md:mt-0">
       {/* Main Content Container - with overflow-x-hidden for rest of page */}
 
@@ -1310,6 +1368,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                             if (!response.ok) throw new Error('Failed to save');
                             queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
                             setIsEditingPublicInterests(false);
+                            checkCouchSurfingPrompt(editFormData.interests);
                             setTimeout(() => {
                               const section = document.getElementById('interests-activities-section');
                               if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1323,8 +1382,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                       >
                         Save All
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => setIsEditingPublicInterests(false)}
                         className="border-orange-500 text-orange-600 hover:bg-orange-50"
                         size="sm"
@@ -1695,6 +1754,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                             
                             queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
                             setIsEditingPublicInterests(false);
+                            checkCouchSurfingPrompt(editFormData.interests);
                             setTimeout(() => {
                               const section = document.getElementById('interests-activities-section');
                               if (section) {
@@ -1710,8 +1770,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                       >
                         Save All
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => setIsEditingPublicInterests(false)}
                         className="border-orange-500 text-orange-600 hover:bg-orange-50"
                         size="sm"
@@ -4720,5 +4780,6 @@ export function ProfileTabs(props: ProfilePageProps) {
         </div>
       </div>
       </div>
+    </>
   );
 }

@@ -21412,6 +21412,20 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Lookup chatroom by community tag name
+  app.get("/api/chatrooms/by-community/:tagName", async (req, res) => {
+    try {
+      const [tag] = await db.select({ chatroomId: communityTags.chatroomId })
+        .from(communityTags)
+        .where(eq(communityTags.name, req.params.tagName))
+        .limit(1);
+      if (!tag?.chatroomId) return res.status(404).json({ message: "Community chatroom not found" });
+      res.json({ chatroomId: tag.chatroomId });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to lookup community chatroom" });
+    }
+  });
+
   // Join a chatroom
   app.post("/api/chatrooms/:roomId/join", async (req, res) => {
     try {
