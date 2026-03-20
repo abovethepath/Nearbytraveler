@@ -880,9 +880,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             event_invite: { title: '📅 Event invitation', msg: notif.message || 'You\'ve been invited to an event!', url: notif.data ? (tryParseJson(notif.data)?.eventUrl || '/events') : '/events', cat: 'events' },
             event_invite_to_go: { title: '📅 Event invite', msg: notif.message || 'Your host thinks you\'d love this event!', url: notif.data ? (tryParseJson(notif.data)?.eventUrl || '/events') : '/events', cat: 'events' },
             available_now_request: { title: '👋 Meetup request!', msg: notif.message || 'Someone wants to meet up!', url: '/available-now', cat: 'meet_requests' },
+            available_now_meet_request: { title: '👋 Meet request!', msg: notif.message || 'Someone wants to meet up with you!', url: '/available-now', cat: 'meet_requests' },
             available_now_accepted: { title: '🎉 Meetup accepted!', msg: notif.message || 'Your meet request was accepted!', url: notif.data ? (tryParseJson(notif.data)?.chatroomUrl || '/messages') : '/messages', cat: 'meet_requests' },
             quick_meetup_request: { title: '⚡ Quick meetup request', msg: notif.message || 'Someone wants a quick meetup!', url: '/quick-meetups', cat: 'meet_requests' },
             quick_meetup_accepted: { title: '🎉 Quick meetup accepted!', msg: notif.message || 'Your quick meetup was accepted!', url: '/messages', cat: 'meet_requests' },
+            quick_meetup_joined: { title: '🤝 Someone joined!', msg: notif.message || 'Someone joined your meetup!', url: '/quick-meetups', cat: 'meet_requests' },
             message: { title: '💬 New message', msg: notif.message || 'You have a new message!', url: notif.data ? (tryParseJson(notif.data)?.chatUrl || '/messages') : '/messages', cat: 'messages' },
             chatroom_message: { title: '💬 New message', msg: notif.message || 'New message in a chat!', url: notif.data ? (tryParseJson(notif.data)?.chatUrl || '/messages') : '/messages', cat: 'messages' },
             traveler_arriving: { title: '✈️ Traveler arriving', msg: notif.message || 'A traveler is visiting your city!', url: notif.data ? (tryParseJson(notif.data)?.profileUrl || '/discover') : '/discover', cat: 'events' },
@@ -15354,6 +15356,42 @@ Questions? Just reply to this message. Welcome aboard!
           linkUrl: `/events/${newEvent.id}`,
         });
       } catch {}
+
+      // Push notification: notify users in the event's city (max 1/day per user, background)
+      if (newEvent.city) {
+        setImmediate(async () => {
+          try {
+            const cityLower = (newEvent.city || '').toLowerCase();
+            const recipientRows = await db.execute(sql`
+              SELECT u.id, u.expo_push_token
+              FROM users u
+              WHERE u.id != ${newEvent.organizerId}
+                AND u.expo_push_token IS NOT NULL
+                AND u.expo_push_token != ''
+                AND (
+                  LOWER(u.hometown_city) = ${cityLower}
+                  OR (u.is_currently_traveling = true AND LOWER(u.destination_city) = ${cityLower})
+                )
+                AND u.last_seen_at > NOW() - INTERVAL '7 days'
+              LIMIT 50
+            `);
+            const recipients = (recipientRows as any).rows || [];
+            if (recipients.length > 0) {
+              const { sendPushNotification } = await import('./services/pushNotificationService');
+              for (const r of recipients) {
+                await sendPushNotification(
+                  r.id,
+                  `📅 New event in ${newEvent.city}!`,
+                  `${newEvent.title} just posted in ${newEvent.city}!`,
+                  { type: "new_event_city", eventId: newEvent.id },
+                  { priority: "normal" }
+                ).catch(() => {});
+              }
+              console.log(`✅ EVENT CITY PUSH: Notified ${recipients.length} users about event ${newEvent.id} in ${newEvent.city}`);
+            }
+          } catch (e) { console.error('Event city push error:', e); }
+        });
+      }
 
       // Ambassador program: award points for creating an event (ambassadors only)
       try {
