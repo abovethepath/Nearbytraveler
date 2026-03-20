@@ -125,6 +125,21 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
     };
   }, []);
 
+  // iOS Safari fix: keep bottom nav anchored during address bar show/hide
+  // MUST be before the early return — hooks cannot come after a conditional return
+  const [iosBottom, setIosBottom] = useState(0);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const sync = () => {
+      const offset = window.innerHeight - (vv.height + vv.offsetTop);
+      setIosBottom(Math.max(0, offset));
+    };
+    vv.addEventListener('resize', sync);
+    vv.addEventListener('scroll', sync);
+    return () => { vv.removeEventListener('resize', sync); vv.removeEventListener('scroll', sync); };
+  }, []);
+
   if (hideOnMobile && isMobileSize) return null;
 
   const isBusinessUser = user?.userType === 'business';
@@ -170,22 +185,6 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
   // Light mode: use black/dark for nav (keep Create orange)
   const lightNavInactive = "#111827";
   const lightNavActive = "#000000";
-
-  // iOS Safari fix: keep bottom nav anchored during address bar show/hide
-  const [iosBottom, setIosBottom] = useState(0);
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-    const sync = () => {
-      // On iOS, when the address bar appears, visualViewport.offsetTop > 0
-      // and the viewport shrinks. Adjust bottom to stay at the true screen bottom.
-      const offset = window.innerHeight - (vv.height + vv.offsetTop);
-      setIosBottom(Math.max(0, offset));
-    };
-    vv.addEventListener('resize', sync);
-    vv.addEventListener('scroll', sync);
-    return () => { vv.removeEventListener('resize', sync); vv.removeEventListener('scroll', sync); };
-  }, []);
 
   const bottomNav = (
     <div
