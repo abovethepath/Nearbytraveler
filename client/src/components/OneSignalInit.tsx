@@ -20,6 +20,13 @@ export function OneSignalInit({ userId }: { userId: number | null | undefined })
   useEffect(() => {
     if (!ONESIGNAL_APP_ID || !userId || registered.current) return;
 
+    // iOS Safari only supports Web Push when running as an installed PWA (standalone).
+    // Skip OneSignal init entirely on iOS if not in standalone mode.
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isStandalone = (navigator as any).standalone === true
+      || window.matchMedia('(display-mode: standalone)').matches;
+    if (isIOS && !isStandalone) return;
+
     // SDK may have been loaded via <script> in index.html — wait for it
     const init = () => {
       if (!window.OneSignalDeferred) window.OneSignalDeferred = [];
