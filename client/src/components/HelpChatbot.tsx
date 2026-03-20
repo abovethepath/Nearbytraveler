@@ -105,6 +105,7 @@ export function HelpChatbot() {
   }, []);
 
   // Early return AFTER all hooks
+  console.log('HelpChatbot rendering, path:', location, 'isMobile:', isMobileViewport, 'isMessage:', isMessagePage, 'isLanding:', isLandingPage);
   if (isMobileViewport || isMessagePage || isLandingPage) return null;
 
   const sendMessage = async (messageText: string) => {

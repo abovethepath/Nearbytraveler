@@ -2087,6 +2087,7 @@ function App() {
           <Toaster />
           <DarkModeSuggestionBanner />
           <Router />
+          {(() => { console.log('HelpChatbot gate:', { isNative: isNativeIOSApp(), disableFloating: disableFloatingChatbot }); return null; })()}
           {!isNativeIOSApp() && !disableFloatingChatbot && (
             <div className="hidden md:block"><HelpChatbot /></div>
           )}
