@@ -2062,7 +2062,7 @@ function App() {
           <DarkModeSuggestionBanner />
           <Router />
           {!isNativeIOSApp() && !disableFloatingChatbot && (
-            <div className="hidden md:block"><HelpChatbot /></div>
+            <div className="hidden md:contents"><HelpChatbot /></div>
           )}
       </ThemeProvider>
     </QueryClientProvider>

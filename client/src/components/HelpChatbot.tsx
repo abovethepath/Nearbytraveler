@@ -45,7 +45,7 @@ export function HelpChatbot() {
   });
 
   // Hide on landing/public pages - chatbot is for logged-in users only
-  const landingPaths = ['/', '/landing', '/landing-new', '/locals-landing', '/travelers-landing', '/events-landing', '/business-landing', '/couchsurfing', '/cs', '/networking-landing', '/signup', '/signin', '/auth', '/join', '/launching-soon', '/about', '/privacy', '/terms', '/cookies', '/support', '/ambassador-program', '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/b', '/preview-landing', '/preview-first-landing', '/getting-started', '/quick-login'];
+  const landingPaths = ['/landing', '/landing-new', '/locals-landing', '/travelers-landing', '/events-landing', '/business-landing', '/couchsurfing', '/cs', '/networking-landing', '/signup', '/signin', '/auth', '/join', '/launching-soon', '/about', '/privacy', '/terms', '/cookies', '/support', '/ambassador-program', '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/b', '/preview-landing', '/preview-first-landing', '/getting-started', '/quick-login'];
   const isLandingPage = landingPaths.includes(location);
   // Hide on all chat pages to avoid blocking input
   const isMessagePage = location.startsWith('/messages') || location.startsWith('/chatroom') || location.startsWith('/event-chat') || location.startsWith('/quick-meetup-chat') || location.startsWith('/meetup-chat');
@@ -133,8 +133,8 @@ export function HelpChatbot() {
   };
 
   const floatingStyle = {
-    right: 'calc(env(safe-area-inset-right, 0px) + 16px)',
-    bottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)',
+    right: '20px',
+    bottom: '20px',
   } as any;
 
   return (
