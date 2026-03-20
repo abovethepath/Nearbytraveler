@@ -453,27 +453,60 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               </div>
             )}
 
-            {/* Inline QR install card — desktop own profile, first 5 visits */}
+            {/* Inline install card — desktop own profile, first 5 visits */}
             {showInlineQr && (
               <div className="hidden lg:block absolute right-4 top-4 z-20">
-                <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl shadow-xl p-4 w-[240px]">
-                  <div className="flex flex-col items-center gap-3">
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://nearbytraveler.org")}`}
-                      alt="QR code to install Nearby Traveler"
-                      className="w-[200px] h-[200px] rounded-lg"
-                    />
-                    <div className="space-y-1.5 text-xs text-gray-700 dark:text-gray-300 w-full">
-                      <div className="flex items-start gap-1.5">
-                        <span className="leading-none mt-0.5">🍎</span>
-                        <p><strong>iPhone:</strong> Scan → tap Share ⬆️ → Add to Home Screen</p>
+                <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl shadow-xl p-3 w-[300px]">
+                  <div className="flex gap-3">
+                    {/* Decorative QR code */}
+                    <svg width="100" height="100" viewBox="0 0 21 21" className="flex-shrink-0 rounded" shapeRendering="crispEdges">
+                      <rect width="21" height="21" fill="white"/>
+                      <g fill="black">
+                        <rect x="0" y="0" width="7" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="10" y="0" width="2" height="1"/><rect x="14" y="0" width="7" height="1"/>
+                        <rect x="0" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/><rect x="11" y="1" width="1" height="1"/><rect x="14" y="1" width="1" height="1"/><rect x="20" y="1" width="1" height="1"/>
+                        <rect x="0" y="2" width="1" height="1"/><rect x="2" y="2" width="3" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="10" y="2" width="3" height="1"/><rect x="14" y="2" width="1" height="1"/><rect x="16" y="2" width="3" height="1"/><rect x="20" y="2" width="1" height="1"/>
+                        <rect x="0" y="3" width="1" height="1"/><rect x="2" y="3" width="3" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="9" y="3" width="2" height="1"/><rect x="14" y="3" width="1" height="1"/><rect x="16" y="3" width="3" height="1"/><rect x="20" y="3" width="1" height="1"/>
+                        <rect x="0" y="4" width="1" height="1"/><rect x="2" y="4" width="3" height="1"/><rect x="6" y="4" width="1" height="1"/><rect x="8" y="4" width="2" height="1"/><rect x="11" y="4" width="2" height="1"/><rect x="14" y="4" width="1" height="1"/><rect x="16" y="4" width="3" height="1"/><rect x="20" y="4" width="1" height="1"/>
+                        <rect x="0" y="5" width="1" height="1"/><rect x="6" y="5" width="1" height="1"/><rect x="10" y="5" width="1" height="1"/><rect x="14" y="5" width="1" height="1"/><rect x="20" y="5" width="1" height="1"/>
+                        <rect x="0" y="6" width="7" height="1"/><rect x="8" y="6" width="1" height="1"/><rect x="10" y="6" width="1" height="1"/><rect x="12" y="6" width="1" height="1"/><rect x="14" y="6" width="7" height="1"/>
+                        <rect x="9" y="7" width="1" height="1"/><rect x="11" y="7" width="2" height="1"/>
+                        <rect x="0" y="8" width="3" height="1"/><rect x="4" y="8" width="2" height="1"/><rect x="8" y="8" width="2" height="1"/><rect x="11" y="8" width="1" height="1"/><rect x="13" y="8" width="2" height="1"/><rect x="16" y="8" width="1" height="1"/><rect x="18" y="8" width="3" height="1"/>
+                        <rect x="1" y="9" width="2" height="1"/><rect x="4" y="9" width="1" height="1"/><rect x="7" y="9" width="2" height="1"/><rect x="10" y="9" width="3" height="1"/><rect x="15" y="9" width="2" height="1"/><rect x="19" y="9" width="1" height="1"/>
+                        <rect x="0" y="10" width="1" height="1"/><rect x="2" y="10" width="2" height="1"/><rect x="5" y="10" width="3" height="1"/><rect x="9" y="10" width="1" height="1"/><rect x="12" y="10" width="2" height="1"/><rect x="15" y="10" width="1" height="1"/><rect x="17" y="10" width="2" height="1"/><rect x="20" y="10" width="1" height="1"/>
+                        <rect x="1" y="11" width="1" height="1"/><rect x="3" y="11" width="2" height="1"/><rect x="8" y="11" width="1" height="1"/><rect x="10" y="11" width="2" height="1"/><rect x="14" y="11" width="1" height="1"/><rect x="16" y="11" width="3" height="1"/><rect x="20" y="11" width="1" height="1"/>
+                        <rect x="0" y="12" width="2" height="1"/><rect x="3" y="12" width="1" height="1"/><rect x="5" y="12" width="2" height="1"/><rect x="9" y="12" width="3" height="1"/><rect x="13" y="12" width="1" height="1"/><rect x="16" y="12" width="1" height="1"/><rect x="18" y="12" width="1" height="1"/>
+                        <rect x="8" y="13" width="2" height="1"/><rect x="11" y="13" width="1" height="1"/><rect x="15" y="13" width="1" height="1"/><rect x="17" y="13" width="2" height="1"/>
+                        <rect x="0" y="14" width="7" height="1"/><rect x="8" y="14" width="1" height="1"/><rect x="10" y="14" width="3" height="1"/><rect x="14" y="14" width="2" height="1"/><rect x="17" y="14" width="1" height="1"/><rect x="19" y="14" width="2" height="1"/>
+                        <rect x="0" y="15" width="1" height="1"/><rect x="6" y="15" width="1" height="1"/><rect x="9" y="15" width="2" height="1"/><rect x="12" y="15" width="1" height="1"/><rect x="15" y="15" width="3" height="1"/><rect x="20" y="15" width="1" height="1"/>
+                        <rect x="0" y="16" width="1" height="1"/><rect x="2" y="16" width="3" height="1"/><rect x="6" y="16" width="1" height="1"/><rect x="8" y="16" width="3" height="1"/><rect x="12" y="16" width="2" height="1"/><rect x="15" y="16" width="2" height="1"/><rect x="18" y="16" width="3" height="1"/>
+                        <rect x="0" y="17" width="1" height="1"/><rect x="2" y="17" width="3" height="1"/><rect x="6" y="17" width="1" height="1"/><rect x="9" y="17" width="1" height="1"/><rect x="11" y="17" width="2" height="1"/><rect x="14" y="17" width="1" height="1"/><rect x="16" y="17" width="1" height="1"/><rect x="19" y="17" width="2" height="1"/>
+                        <rect x="0" y="18" width="1" height="1"/><rect x="2" y="18" width="3" height="1"/><rect x="6" y="18" width="1" height="1"/><rect x="8" y="18" width="2" height="1"/><rect x="11" y="18" width="1" height="1"/><rect x="14" y="18" width="3" height="1"/><rect x="18" y="18" width="1" height="1"/><rect x="20" y="18" width="1" height="1"/>
+                        <rect x="0" y="19" width="1" height="1"/><rect x="6" y="19" width="1" height="1"/><rect x="10" y="19" width="1" height="1"/><rect x="12" y="19" width="2" height="1"/><rect x="15" y="19" width="1" height="1"/><rect x="17" y="19" width="1" height="1"/><rect x="20" y="19" width="1" height="1"/>
+                        <rect x="0" y="20" width="7" height="1"/><rect x="9" y="20" width="2" height="1"/><rect x="12" y="20" width="1" height="1"/><rect x="14" y="20" width="2" height="1"/><rect x="17" y="20" width="2" height="1"/><rect x="20" y="20" width="1" height="1"/>
+                      </g>
+                    </svg>
+                    {/* Instructions */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] font-bold text-gray-900 dark:text-white mb-1.5">📱 Get the app on your phone:</p>
+                      <div className="space-y-1.5 text-[10px] text-gray-600 dark:text-gray-300 leading-tight">
+                        <div>
+                          <p className="font-semibold text-gray-800 dark:text-gray-200">iPhone (Safari):</p>
+                          <ol className="list-decimal ml-3 space-y-0.5">
+                            <li>Go to <span className="font-medium">nearbytraveler.org</span></li>
+                            <li>Tap Share ⬆️ → Add to Home Screen</li>
+                            <li>Tap Add — done!</li>
+                          </ol>
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-800 dark:text-gray-200">🤖 Android (Chrome):</p>
+                          <ol className="list-decimal ml-3 space-y-0.5">
+                            <li>Go to <span className="font-medium">nearbytraveler.org</span></li>
+                            <li>Tap Install when prompted</li>
+                          </ol>
+                        </div>
                       </div>
-                      <div className="flex items-start gap-1.5">
-                        <span className="leading-none mt-0.5">🤖</span>
-                        <p><strong>Android:</strong> Scan → tap Install when prompted</p>
-                      </div>
+                      <p className="text-[9px] text-gray-400 dark:text-gray-500 mt-1.5">Find this again → tap ⋮ menu</p>
                     </div>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center">To find this again, tap ⋮ to the right →</p>
                   </div>
                 </div>
               </div>
@@ -1438,30 +1471,32 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Get App QR Code Modal */}
+      {/* Get App Install Modal */}
       <Dialog open={qrInstallOpen} onOpenChange={setQrInstallOpen}>
-        <DialogContent className="sm:max-w-sm bg-white dark:bg-gray-900">
+        <DialogContent className="sm:max-w-xs bg-white dark:bg-gray-900">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-lg">
+            <DialogTitle className="flex items-center gap-2 text-base">
               <Smartphone className="w-5 h-5" />
-              Get Nearby Traveler on your phone
+              Get the app on your phone
             </DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col items-center gap-4 py-2">
-            <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://nearbytraveler.org")}`}
-              alt="QR code to install Nearby Traveler"
-              className="w-48 h-48 rounded-lg"
-            />
-            <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300 w-full">
-              <div className="flex items-start gap-2">
-                <span className="text-lg leading-none mt-0.5">🍎</span>
-                <p><strong>iPhone:</strong> Scan → tap Share ⬆️ → Add to Home Screen</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-lg leading-none mt-0.5">🤖</span>
-                <p><strong>Android:</strong> Scan → tap Install when prompted</p>
-              </div>
+          <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+            <div>
+              <p className="font-semibold text-gray-900 dark:text-white mb-1">📱 iPhone (Safari):</p>
+              <ol className="list-decimal ml-5 space-y-0.5 text-xs">
+                <li>Open Safari on your iPhone</li>
+                <li>Go to <span className="font-medium">nearbytraveler.org</span></li>
+                <li>Tap Share ⬆️ → Add to Home Screen</li>
+                <li>Tap Add — done!</li>
+              </ol>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 dark:text-white mb-1">🤖 Android (Chrome):</p>
+              <ol className="list-decimal ml-5 space-y-0.5 text-xs">
+                <li>Open Chrome on your phone</li>
+                <li>Go to <span className="font-medium">nearbytraveler.org</span></li>
+                <li>Tap Install when prompted</li>
+              </ol>
             </div>
           </div>
         </DialogContent>
