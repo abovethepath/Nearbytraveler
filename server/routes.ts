@@ -21232,6 +21232,39 @@ Questions? Just reply to this message. Welcome aboard!
       const safeContent = hasContent ? String(content) : '[Photo]';
       const safeType = typeof messageType === 'string' ? messageType : (hasMedia ? 'image' : 'text');
       const message = await storage.createChatroomMessage(roomId, parseInt(userId as string), safeContent, safeType, hasMedia ? String(mediaUrl) : null);
+
+      // OneSignal push to all chatroom members except sender (non-blocking)
+      const senderIdNum = parseInt(userId as string);
+      ;(async () => {
+        try {
+          const [room] = await db.select({ name: citychatrooms.name }).from(citychatrooms).where(eq(citychatrooms.id, roomId)).limit(1);
+          const roomName = room?.name || 'Chatroom';
+          const [sender] = await db.select({ username: users.username }).from(users).where(eq(users.id, senderIdNum));
+          const senderName = sender?.username || 'Someone';
+          const preview = safeContent.substring(0, 80);
+
+          const members = await db.select({ userId: chatroomMembers.userId })
+            .from(chatroomMembers)
+            .where(and(eq(chatroomMembers.chatroomId, roomId), eq(chatroomMembers.isActive, true)));
+
+          const { pushToUser: doPush } = await import('./pushNotifications');
+          for (const m of members) {
+            if (m.userId === senderIdNum) continue;
+            doPush({
+              db, users, eq,
+              toUserId: m.userId,
+              title: roomName,
+              message: `@${senderName}: ${preview}`,
+              url: `/chatroom/${roomId}`,
+              notifType: `chatroom_message_${roomId}`,
+              fromUserId: senderIdNum,
+            }).catch(() => {});
+          }
+        } catch (e) {
+          console.warn('OneSignal chatroom-message push failed:', e);
+        }
+      })();
+
       return res.json(message);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error sending chatroom message:", error);
@@ -26743,6 +26776,21 @@ Questions? Just reply to this message. Welcome aboard!
             message: `You've been added to this chat`,
             data: JSON.stringify({ chatroomId, chatroomType: type, chatroomName: chatName }),
           });
+          // OneSignal push for chatroom added
+          try {
+            const { pushToUser: doPush } = await import('./pushNotifications');
+            await doPush({
+              db, users, eq,
+              toUserId: targetUserId,
+              title: "You've been added to a chatroom 💬",
+              message: `You're now in ${chatName}`,
+              url: '/chatrooms',
+              notifType: 'chatroom_added',
+              fromUserId: Number(userId),
+            });
+          } catch (osFallback) {
+            console.warn('OneSignal chatroom-added push failed:', osFallback);
+          }
           try {
             const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
             const targetWs = wsMap?.get(targetUserId);
@@ -26795,6 +26843,21 @@ Questions? Just reply to this message. Welcome aboard!
               message: `You've been added to this chat`,
               data: JSON.stringify({ chatroomId, chatroomType: type, chatroomName: chatName }),
             });
+            // OneSignal push for chatroom added
+            try {
+              const { pushToUser: doPush } = await import('./pushNotifications');
+              await doPush({
+                db, users, eq,
+                toUserId: tid,
+                title: "You've been added to a chatroom 💬",
+                message: `You're now in ${chatName}`,
+                url: '/chatrooms',
+                notifType: 'chatroom_added',
+                fromUserId: Number(userId),
+              });
+            } catch (osFallback) {
+              console.warn('OneSignal chatroom-added push failed:', osFallback);
+            }
             try {
               const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
               const targetWs = wsMap?.get(tid);
@@ -29800,6 +29863,41 @@ Questions? Just reply to this message. Welcome aboard!
         messageType: 'text',
         replyToId: replyToId ? Number(replyToId) : null,
       }).returning();
+
+      // OneSignal push to all event attendees except sender (non-blocking)
+      const senderIdNum = Number(userId);
+      ;(async () => {
+        try {
+          const [chatMeta] = await db.select({ eventId: meetupChatrooms.eventId, chatroomName: meetupChatrooms.chatroomName })
+            .from(meetupChatrooms).where(eq(meetupChatrooms.id, chatroomId)).limit(1);
+          if (!chatMeta?.eventId) return;
+
+          const [evt] = await db.select({ title: events.title }).from(events).where(eq(events.id, chatMeta.eventId)).limit(1);
+          const eventName = evt?.title || chatMeta.chatroomName || 'Event';
+          const senderName = user?.username || 'Someone';
+          const preview = message.trim().substring(0, 80);
+
+          const attendees = await db.select({ userId: eventParticipants.userId })
+            .from(eventParticipants)
+            .where(eq(eventParticipants.eventId, chatMeta.eventId));
+
+          const { pushToUser: doPush } = await import('./pushNotifications');
+          for (const a of attendees) {
+            if (a.userId === senderIdNum) continue;
+            doPush({
+              db, users, eq,
+              toUserId: a.userId,
+              title: `${eventName} chat`,
+              message: `@${senderName}: ${preview}`,
+              url: `/event-chat/${chatroomId}`,
+              notifType: `event_chat_message_${chatroomId}`,
+              fromUserId: senderIdNum,
+            }).catch(() => {});
+          }
+        } catch (e) {
+          console.warn('OneSignal event-chat push failed:', e);
+        }
+      })();
 
       res.json(newMessage);
     } catch (error: any) {

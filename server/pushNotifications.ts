@@ -95,7 +95,9 @@ export async function sendPushNotification(opts: {
 
   // Check notification preferences
   if (notifType) {
-    const category = TYPE_TO_CATEGORY[notifType];
+    // Support dynamic notifTypes like chatroom_message_42 by stripping trailing _<id>
+    const baseType = notifType.replace(/_\d+$/, '');
+    const category = TYPE_TO_CATEGORY[notifType] || TYPE_TO_CATEGORY[baseType];
     if (category) {
       const prefs = parsePrefs(notifPrefsRaw);
       if (!prefs[category]) return;
