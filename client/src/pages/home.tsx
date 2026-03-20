@@ -2107,8 +2107,8 @@ export default function Home() {
                   </h2>
                 </div>
                 
-                {/* Quick Meetup Widget - "Let's Meet Now" - MOVED HERE for better visibility - HIDE FOR BUSINESS USERS */}
-                {loadedSections.has('quickMeets') && effectiveUser?.userType !== 'business' && (
+                {/* Quick Meetup Widget - "Let's Meet Now" - HIDE when user has active Available Now session or is a business */}
+                {loadedSections.has('quickMeets') && effectiveUser?.userType !== 'business' && !myAvailableStatus?.isAvailable && (
                   <div className="mb-8">
                     <QuickMeetupWidget
                       currentUser={effectiveUser}
