@@ -1443,7 +1443,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               <ol className="list-decimal ml-5 space-y-0.5 text-xs">
                 <li>Open Safari on your iPhone</li>
                 <li>Go to <span className="font-medium">nearbytraveler.org</span></li>
-                <li>Tap Share ⬆️ → Add to Home Screen</li>
+                <li>Tap the Share button (box with arrow) → Add to Home Screen</li>
                 <li>Tap Add — done!</li>
               </ol>
             </div>
