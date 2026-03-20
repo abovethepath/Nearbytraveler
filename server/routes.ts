@@ -6252,6 +6252,24 @@ Questions? Just reply here — I read every message.
                 }
               } catch (e) { console.error('Ambassador chain tracking error:', e); }
 
+              // OneSignal push fallback for referral accepted
+              try {
+                const { pushToUser: doPush } = await import('./pushNotifications');
+                await doPush({
+                  db,
+                  users,
+                  eq,
+                  toUserId: referrer.id,
+                  title: 'Your referral joined! 🎉',
+                  message: `${user.name || user.username} just joined Nearby Traveler using your referral`,
+                  url: `/profile/${user.id}`,
+                  notifType: 'connection_accepted',
+                  fromUserId: user.id,
+                });
+              } catch (osFallback) {
+                console.warn('OneSignal referral push fallback failed:', osFallback);
+              }
+
               console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username} (+10 aura, +50 ambassador points)`);
             }
           } catch (error) {
@@ -24712,6 +24730,24 @@ Questions? Just reply to this message. Welcome aboard!
           }
         } catch (e) {
           console.error('Failed to write vouch notification:', e);
+        }
+
+        // OneSignal push fallback for vouch received
+        try {
+          const { pushToUser: doPush } = await import('./pushNotifications');
+          await doPush({
+            db,
+            users,
+            eq,
+            toUserId: Number(vouchedUserId),
+            title: 'New Vouch! 🏅',
+            message: `@${voucherName} vouched for you`,
+            url: `/profile/${vouchedUserId}`,
+            notifType: 'vouch_received',
+            fromUserId: Number(voucherUserId),
+          });
+        } catch (osFallback) {
+          console.warn('OneSignal vouch push fallback failed:', osFallback);
         }
       })();
 
