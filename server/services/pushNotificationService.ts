@@ -1,6 +1,6 @@
 import { db } from "../db";
-import { users, userNotificationSettings } from "@shared/schema";
-import { eq, and, isNotNull, inArray } from "drizzle-orm";
+import { users, userNotificationSettings, messages } from "@shared/schema";
+import { eq, and, isNotNull, inArray, sql } from "drizzle-orm";
 
 const EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
 
@@ -60,12 +60,23 @@ export async function sendPushNotification(
       return { success: false, error: "Invalid push token format" };
     }
 
+    // Query real unread DM count for accurate badge
+    let badgeCount = 1;
+    try {
+      const unreadResult = await db
+        .select({ count: sql`count(*)` })
+        .from(messages)
+        .where(and(eq(messages.receiverId, userId), eq(messages.isRead, false)));
+      badgeCount = Math.max(1, Number(unreadResult[0]?.count || 1));
+    } catch { /* fall back to 1 */ }
+
     const message: ExpoPushMessage = {
       to: user.expoPushToken,
       title,
       body,
       data: data || {},
       sound: options?.sound !== false ? "default" : null,
+      badge: badgeCount,
       priority: options?.priority || "high",
     };
 

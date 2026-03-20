@@ -49,6 +49,13 @@ export function OneSignalInit({ userId }: { userId: number | null | undefined })
               registerSubscription(userId);
             });
           } catch (e) { /* v16 event API may not exist */ }
+
+          // Set app badge when a notification is received in the foreground
+          try {
+            OneSignal.Notifications?.addEventListener?.('foregroundWillDisplay', () => {
+              (navigator as any).setAppBadge?.(1)?.catch?.(() => {});
+            });
+          } catch (e) { /* badge API may not exist */ }
         } catch (e) {
           console.warn("[OneSignal] init error:", e);
         }

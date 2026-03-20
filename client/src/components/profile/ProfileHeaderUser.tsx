@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette, Heart } from "lucide-react";
+import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette, Heart, Smartphone, X } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { VouchButton } from "@/components/VouchButton";
@@ -133,6 +133,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
   const [shareWithFriendsOpen, setShareWithFriendsOpen] = React.useState(false);
   const [seeAllCommonOpen, setSeeAllCommonOpen] = React.useState(false);
+  const [qrInstallOpen, setQrInstallOpen] = React.useState(false);
 
   React.useEffect(() => {
     const handler = () => setSeeAllCommonOpen(true);
@@ -282,9 +283,21 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <span className="text-sm sm:text-base font-medium text-white/80 break-all">@{user?.username}</span>
                   <SupportBadge tier={(user as any)?.supportTier} />
                 </div>
-                {/* Own profile: ⋮ menu lives on username row (top-right) */}
+                {/* Own profile: install app + ⋮ menu lives on username row (top-right) */}
                 {isOwnProfile && (
-                  <div className="ml-auto">
+                  <div className="ml-auto flex items-center gap-1">
+                    {/* Get app QR button — desktop only */}
+                    {isDesktop && (
+                      <button
+                        type="button"
+                        onClick={() => setQrInstallOpen(true)}
+                        className="hidden md:inline-flex items-center justify-center h-9 w-9 rounded-md bg-transparent hover:bg-white/20 border-0 ring-0 shadow-none transition-colors"
+                        title="Get the app"
+                        aria-label="Get the app"
+                      >
+                        <Smartphone className="w-5 h-5 text-white" />
+                      </button>
+                    )}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button
@@ -1387,6 +1400,35 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               <MessageCircle className="w-4 h-4" />
               Telegram
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Get App QR Code Modal */}
+      <Dialog open={qrInstallOpen} onOpenChange={setQrInstallOpen}>
+        <DialogContent className="sm:max-w-sm bg-white dark:bg-gray-900">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <Smartphone className="w-5 h-5" />
+              Get Nearby Traveler on your phone
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-4 py-2">
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://nearbytraveler.org")}`}
+              alt="QR code to install Nearby Traveler"
+              className="w-48 h-48 rounded-lg"
+            />
+            <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300 w-full">
+              <div className="flex items-start gap-2">
+                <span className="text-lg leading-none mt-0.5">🍎</span>
+                <p><strong>iPhone:</strong> Scan → tap Share ⬆️ → Add to Home Screen</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-lg leading-none mt-0.5">🤖</span>
+                <p><strong>Android:</strong> Scan → tap Install when prompted</p>
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

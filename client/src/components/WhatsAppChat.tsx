@@ -1178,7 +1178,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   // Initialize WebSocket connection with auto-reconnect
   useEffect(() => {
     if (!currentUserId || !chatId) return;
-    
+
+    // Clear app badge when opening a DM conversation
+    (navigator as any).clearAppBadge?.()?.catch?.(() => {});
+
     // Reset messages state when chatId changes
     setMessages([]);
     setMessagesLoaded(false);

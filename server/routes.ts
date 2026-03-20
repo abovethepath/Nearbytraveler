@@ -6252,22 +6252,30 @@ Questions? Just reply here — I read every message.
                 }
               } catch (e) { console.error('Ambassador chain tracking error:', e); }
 
-              // OneSignal push fallback for referral accepted
+              // Expo push for referral joined
               try {
-                const { pushToUser: doPush } = await import('./pushNotifications');
-                await doPush({
-                  db,
-                  users,
-                  eq,
-                  toUserId: referrer.id,
-                  title: 'Your referral joined! 🎉',
-                  message: `${user.name || user.username} just joined Nearby Traveler using your referral`,
-                  url: `/profile/${user.id}`,
-                  notifType: 'connection_accepted',
-                  fromUserId: user.id,
-                });
-              } catch (osFallback) {
-                console.warn('OneSignal referral push fallback failed:', osFallback);
+                const { sendPushNotification: expoPush } = await import('./services/pushNotificationService');
+                const pushResult = await expoPush(
+                  referrer.id,
+                  'Your referral joined! 🎉',
+                  `${user.name || user.username} just joined Nearby Traveler`,
+                  { type: 'referral_joined', fromUserId: user.id }
+                );
+                if (!pushResult.success) {
+                  // OneSignal fallback
+                  const { pushToUser: doPush } = await import('./pushNotifications');
+                  await doPush({
+                    db, users, eq,
+                    toUserId: referrer.id,
+                    title: 'Your referral joined! 🎉',
+                    message: `${user.name || user.username} just joined Nearby Traveler`,
+                    url: `/messages`,
+                    notifType: 'connection_accepted',
+                    fromUserId: user.id,
+                  });
+                }
+              } catch (pushErr) {
+                console.warn('Referral push notification failed:', pushErr);
               }
 
               console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username} (+10 aura, +50 ambassador points)`);
@@ -6325,17 +6333,23 @@ Start by creating your first offer from your Business Dashboard!
 Aaron`
               : `Welcome to Nearby Traveler, ${firstName}! ✈️
 
-I'm Aaron - excited to have you join our community connecting travelers and locals through shared interests.
+I'm Aaron — I built this community to connect travelers and locals through real shared experiences, not just swiping.
 
-Get Started:
-• Complete your profile to match better with others
-• Visit your city match page to connect on local activities
-• Browse people and events in ${user.hometownCity || 'your city'}
-• Join city chat rooms to start conversations
+Here's how to get started:
+• Complete your profile so people know who you are and what you're into
+• Hit Available Now if you're free to meet someone today
+• Check Explore to find locals and travelers near you
+• Browse Events happening in your city
+• Join your city chatroom to say hello
 
-Questions? Just reply to this message!
+A few things to know:
+• You've been added to the Nearby Traveler and your local city chatrooms automatically
+• Use Available Now — I'm Out if you're already somewhere and want company
+• Connect with people you vibe with and message them directly
 
-- Aaron`;
+Questions? Just reply here — I read every message.
+
+— Aaron`;
 
             await storage.sendSystemMessage(NEARBYTRAV_USER_ID, user.id, welcomeMessage);
             console.log(`✅ BACKGROUND: Sent welcome message to ${user.username}`);
@@ -24765,22 +24779,30 @@ Questions? Just reply to this message. Welcome aboard!
           console.error('Failed to write vouch notification:', e);
         }
 
-        // OneSignal push fallback for vouch received
+        // Expo push for vouch received
         try {
-          const { pushToUser: doPush } = await import('./pushNotifications');
-          await doPush({
-            db,
-            users,
-            eq,
-            toUserId: Number(vouchedUserId),
-            title: 'New Vouch! 🏅',
-            message: `@${voucherName} vouched for you`,
-            url: `/profile/${vouchedUserId}`,
-            notifType: 'vouch_received',
-            fromUserId: Number(voucherUserId),
-          });
-        } catch (osFallback) {
-          console.warn('OneSignal vouch push fallback failed:', osFallback);
+          const { sendPushNotification: expoPush } = await import('./services/pushNotificationService');
+          const pushResult = await expoPush(
+            Number(vouchedUserId),
+            'New Vouch! 🏅',
+            `@${voucherName} vouched for you`,
+            { type: 'vouch_received', fromUserId: Number(voucherUserId) }
+          );
+          if (!pushResult.success) {
+            // OneSignal fallback
+            const { pushToUser: doPush } = await import('./pushNotifications');
+            await doPush({
+              db, users, eq,
+              toUserId: Number(vouchedUserId),
+              title: 'New Vouch! 🏅',
+              message: `@${voucherName} vouched for you`,
+              url: `/messages`,
+              notifType: 'vouch_received',
+              fromUserId: Number(voucherUserId),
+            });
+          }
+        } catch (pushErr) {
+          console.warn('Vouch push notification failed:', pushErr);
         }
       })();
 
