@@ -149,7 +149,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
     { icon: User, label: "Profile", path: profilePath },
   ] : [
     { icon: Home, label: "Home", path: "/" },
-    { icon: Search, label: "Explore", path: "/discover" },
+    { icon: Search, label: "Explore", path: "/explore" },
     { icon: MessageSquare, label: "Messages", path: "/messages" },
     { icon: User, label: "Profile", path: profilePath },
   ];
@@ -169,6 +169,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
     { label: "Create Event", path: "/create-event", icon: Calendar, color: "#f97316" },
     { label: "Plan Trip", path: "/plan-trip", icon: MapPin, color: "#3b82f6" },
     { label: "Available Now", path: "/quick-meetups", icon: Users, color: "#10b981" },
+    { label: "Cities", path: "/discover", icon: Search, color: "#6366f1" },
   ];
 
   const handleCreateTap = (e: React.MouseEvent | React.TouchEvent) => {
