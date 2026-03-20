@@ -2032,41 +2032,14 @@ function App() {
     }
   }, []);
 
-  // Disable floating chatbot on mobile/touch devices (including iPad/tablets),
-  // not just small viewport widths.
-  const [disableFloatingChatbot, setDisableFloatingChatbot] = React.useState(false);
+  // Disable floating chatbot on small screens only (< 768px)
+  const [disableFloatingChatbot, setDisableFloatingChatbot] = React.useState(
+    () => typeof window !== "undefined" && window.innerWidth < 768
+  );
   useEffect(() => {
-    const compute = () => {
-      if (typeof window === "undefined") return false;
-      const ua = (navigator.userAgent || "").toLowerCase();
-      const uaMobile =
-        ua.includes("mobi") ||
-        ua.includes("android") ||
-        ua.includes("iphone") ||
-        ua.includes("ipad") ||
-        ua.includes("ipod");
-      const coarsePointer =
-        !!window.matchMedia &&
-        (window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(hover: none)").matches);
-      const smallViewport = !!window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
-      return uaMobile || coarsePointer || smallViewport;
-    };
-
-    const update = () => setDisableFloatingChatbot(compute());
-    update();
+    const update = () => setDisableFloatingChatbot(window.innerWidth < 768);
     window.addEventListener("resize", update);
-    window.addEventListener("orientationchange", update);
-
-    const mqCoarse = window.matchMedia?.("(pointer: coarse)");
-    const mqSmall = window.matchMedia?.("(max-width: 768px)");
-    mqCoarse?.addEventListener?.("change", update);
-    mqSmall?.addEventListener?.("change", update);
-    return () => {
-      window.removeEventListener("resize", update);
-      window.removeEventListener("orientationchange", update);
-      mqCoarse?.removeEventListener?.("change", update);
-      mqSmall?.removeEventListener?.("change", update);
-    };
+    return () => window.removeEventListener("resize", update);
   }, []);
 
   // Initialize Google Analytics when app loads
@@ -2087,7 +2060,6 @@ function App() {
           <Toaster />
           <DarkModeSuggestionBanner />
           <Router />
-          {(() => { console.log('HelpChatbot gate:', { isNative: isNativeIOSApp(), disableFloating: disableFloatingChatbot }); return null; })()}
           {!isNativeIOSApp() && !disableFloatingChatbot && (
             <div className="hidden md:block"><HelpChatbot /></div>
           )}

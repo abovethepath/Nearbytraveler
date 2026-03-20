@@ -41,18 +41,7 @@ export function HelpChatbot() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isMobileViewport, setIsMobileViewport] = useState(() => {
     if (typeof window === 'undefined') return false;
-    const ua = (navigator.userAgent || '').toLowerCase();
-    const uaMobile =
-      ua.includes('mobi') ||
-      ua.includes('android') ||
-      ua.includes('iphone') ||
-      ua.includes('ipad') ||
-      ua.includes('ipod');
-    const coarsePointer =
-      !!window.matchMedia &&
-      (window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(hover: none)').matches);
-    const smallViewport = !!window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
-    return uaMobile || coarsePointer || smallViewport;
+    return window.innerWidth < 768;
   });
 
   // Hide on landing/public pages - chatbot is for logged-in users only
@@ -73,39 +62,12 @@ export function HelpChatbot() {
   }, [isOpen]);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return;
-    const mqSmall = window.matchMedia('(max-width: 768px)');
-    const mqCoarse = window.matchMedia('(pointer: coarse)');
-    const mqHoverNone = window.matchMedia('(hover: none)');
-    const update = () => {
-      const ua = (navigator.userAgent || '').toLowerCase();
-      const uaMobile =
-        ua.includes('mobi') ||
-        ua.includes('android') ||
-        ua.includes('iphone') ||
-        ua.includes('ipad') ||
-        ua.includes('ipod');
-      const coarsePointer = !!mqCoarse.matches || !!mqHoverNone.matches;
-      const smallViewport = !!mqSmall.matches;
-      setIsMobileViewport(uaMobile || coarsePointer || smallViewport);
-    };
-    update();
-    mqSmall.addEventListener?.('change', update);
-    mqCoarse.addEventListener?.('change', update);
-    mqHoverNone.addEventListener?.('change', update);
+    const update = () => setIsMobileViewport(window.innerWidth < 768);
     window.addEventListener('resize', update);
-    window.addEventListener('orientationchange', update);
-    return () => {
-      mqSmall.removeEventListener?.('change', update);
-      mqCoarse.removeEventListener?.('change', update);
-      mqHoverNone.removeEventListener?.('change', update);
-      window.removeEventListener('resize', update);
-      window.removeEventListener('orientationchange', update);
-    };
+    return () => window.removeEventListener('resize', update);
   }, []);
 
   // Early return AFTER all hooks
-  console.log('HelpChatbot rendering, path:', location, 'isMobile:', isMobileViewport, 'isMessage:', isMessagePage, 'isLanding:', isLandingPage);
   if (isMobileViewport || isMessagePage || isLandingPage) return null;
 
   const sendMessage = async (messageText: string) => {
@@ -172,8 +134,7 @@ export function HelpChatbot() {
 
   const floatingStyle = {
     right: 'calc(env(safe-area-inset-right, 0px) + 16px)',
-    // 60px = MobileBottomNav height; 44px = breathing room above it.
-    bottom: 'calc(env(safe-area-inset-bottom, 0px) + 104px)',
+    bottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)',
   } as any;
 
   return (
