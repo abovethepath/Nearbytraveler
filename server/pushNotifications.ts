@@ -118,9 +118,7 @@ export async function sendPushNotification(opts: {
       include_subscription_ids: [playerId],
       headings: { en: title },
       contents: { en: message },
-      url: webUrl,
       web_url: webUrl,
-      app_url: webUrl, // for iOS/Android deep links
     };
 
     console.log('📱 OneSignal request:', JSON.stringify({ url: ONESIGNAL_API_URL, app_id: ONESIGNAL_APP_ID, playerId, hasApiKey: !!ONESIGNAL_REST_API_KEY }));
