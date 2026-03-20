@@ -441,7 +441,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   }}
                   data-testid="button-lets-meet-now-hero-mobile"
                 >
-                  I'm Available Now
+                  ⚡ Available Now
                 </Button>
               </div>
             </div>

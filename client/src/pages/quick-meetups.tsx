@@ -985,7 +985,7 @@ function QuickMeetupsPage() {
         <div className="mb-6">
           <UniversalBackButton />
           <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-red-800 bg-clip-text text-transparent mb-2">
-            Available Now — I'm Out
+            Available Now
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
             Find spontaneous hangouts and activities in your area
@@ -1012,7 +1012,7 @@ function QuickMeetupsPage() {
             className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
-            I'm Out — Join Me
+            ⚡ Available Now
           </Button>
         </div>
 
@@ -1020,7 +1020,7 @@ function QuickMeetupsPage() {
         <Dialog open={showCreateForm} onOpenChange={(open) => { setShowCreateForm(open); if (!open) setCreateSimilarData(null); }}>
           <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-900 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{createSimilarData ? 'Post Something Similar' : 'I\'m Out — Share What You\'re Doing'}</DialogTitle>
+              <DialogTitle>{createSimilarData ? 'Post Something Similar' : 'I\'m Out — Share Where You Are'}</DialogTitle>
             </DialogHeader>
             <QuickMeetupWidget
               city={effectiveCity}

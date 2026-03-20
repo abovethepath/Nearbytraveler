@@ -688,7 +688,7 @@ function NotificationPreferencesSection({ currentUserId }: { currentUserId?: num
 
   const categories = [
     { key: 'messages', label: 'Messages', desc: 'DMs and chatroom messages' },
-    { key: 'meet_requests', label: 'Meet Requests', desc: 'Available Now and Quick Meet requests' },
+    { key: 'meet_requests', label: 'Meet Requests', desc: 'Available Now requests' },
     { key: 'connections', label: 'Connections', desc: 'Connection requests and acceptances' },
     { key: 'events', label: 'Events', desc: 'RSVPs, invites, and traveler arrivals' },
     { key: 'vouches', label: 'Vouches & References', desc: 'Vouches and written references' },

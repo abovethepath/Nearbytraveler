@@ -10,7 +10,7 @@ export default function Create() {
   const createOptions = [
     {
       icon: Users,
-      title: "Available Now — I'm Out",
+      title: "Available Now",
       description: "Let others know you're out and about — join up!",
       color: "bg-blue-500",
       path: "/quick-meetups"
