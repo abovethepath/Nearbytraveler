@@ -12953,6 +12953,25 @@ Questions? Just reply to this message. Welcome aboard!
           console.log('📱 Push notification result for DM:', JSON.stringify(pushResult));
           if (pushResult.success) {
             console.log(`✅ MESSAGE PUSH: Sent to user ${receiverId}`);
+          } else {
+            // Expo push failed — try OneSignal fallback
+            try {
+              const { pushToUser: doPush } = await import('./pushNotifications');
+              await doPush({
+                db,
+                users,
+                eq,
+                toUserId: recipientIdNum,
+                title: `New message from @${senderUsername}`,
+                message: preview.substring(0, 100),
+                url: `/messages/${senderIdNum}`,
+                notifType: 'message',
+                fromUserId: senderIdNum,
+              });
+              console.log(`✅ MESSAGE PUSH (OneSignal fallback): Sent to user ${receiverId}`);
+            } catch (osFallback) {
+              console.log('📱 OneSignal fallback also failed:', osFallback);
+            }
           }
 
           // Create in-app notification for receiver (rate-limited: one per sender per hour)

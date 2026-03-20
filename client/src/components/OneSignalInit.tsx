@@ -39,11 +39,16 @@ export function OneSignalInit({ userId }: { userId: number | null | undefined })
             autoRegister: false,
           });
 
-          // Subscribe passively — only if permission was already granted
-          const permission = await OneSignal.getNotificationPermission?.();
-          if (permission === "granted") {
-            await registerSubscription(userId);
-          }
+          // Always try to register the subscription ID after init
+          // This covers: permission already granted, returning users, and fresh grants
+          await registerSubscription(userId);
+
+          // Also listen for future subscription changes
+          try {
+            OneSignal.User?.pushSubscription?.addEventListener?.('change', () => {
+              registerSubscription(userId);
+            });
+          } catch (e) { /* v16 event API may not exist */ }
         } catch (e) {
           console.warn("[OneSignal] init error:", e);
         }
