@@ -93,7 +93,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords, chatroomBlocks } from "../shared/schema";
 import { writeActivityLog } from "./services/activityLogService";
 import { alias } from "drizzle-orm/pg-core";
 
@@ -2881,7 +2881,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const currentUserId = req.session?.user?.id || req.headers['x-user-id'];
       const uid = currentUserId ? Number(currentUserId) : null;
       const now = new Date();
-      const thirtyDaysOut = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+      // No time limit — show ALL upcoming travelers
 
       // Use getExpandedCityList — battle-tested metro expansion used everywhere else
       const allCities = getExpandedCityList(city);
@@ -2905,7 +2905,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         sql`u.hometown_city ILIKE ${'%,' + c}`,
       ]);
 
-      // Query travelers (here now + coming soon within 30 days)
+      // Query travelers (here now + all upcoming, no time limit)
       const rows = await db.execute(sql`
         -- ARM 1: users with explicit travel_plans rows
         SELECT
@@ -2923,7 +2923,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         INNER JOIN users u ON tp.user_id = u.id
         WHERE
           tp.end_date >= ${now}
-          AND tp.start_date <= ${thirtyDaysOut}
           AND u.user_type != 'business'
           AND (${sql.join(tpCityConditions, sql` OR `)})
 
@@ -2933,7 +2932,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         SELECT
           u.id              AS "userId",
           COALESCE(u.travel_start_date, ${now}) AS "startDate",
-          COALESCE(u.travel_end_date, ${thirtyDaysOut}) AS "endDate",
+          COALESCE(u.travel_end_date, ${now}) AS "endDate",
           u.travel_destination AS destination,
           u.username,
           u.first_name      AS "firstName",
@@ -2951,7 +2950,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             SELECT 1 FROM travel_plans tp2
             WHERE tp2.user_id = u.id
               AND tp2.end_date >= ${now}
-              AND tp2.start_date <= ${thirtyDaysOut}
               AND (${sql.join(
                 allCities.flatMap(c => [
                   sql`LOWER(tp2.destination_city) = LOWER(${c})`,
@@ -2981,7 +2979,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           u.user_type != 'business'
           AND (u.is_currently_traveling = false OR u.is_currently_traveling IS NULL)
           AND (${sql.join(hometownConditions, sql` OR `)})
-        ORDER BY u.last_active DESC NULLS LAST
+        ORDER BY u.last_seen_at DESC NULLS LAST
         LIMIT 20
       `);
 
@@ -3049,7 +3047,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         };
         if (start && end && start <= now && end >= now) {
           hereNow.push(user);
-        } else if (start && start > now && start <= thirtyDaysOut) {
+        } else if (start && start > now) {
           comingSoon.push(user);
         }
         seenUsers.add(r.userId);
@@ -3473,8 +3471,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         db.execute(sql`
           SELECT COUNT(*)::int as count FROM events
           WHERE LOWER(city) = ${cityLower}
-            AND date >= ${todayStart.toISOString()}
             AND date < ${weekEnd.toISOString()}
+            AND COALESCE(end_date, date + INTERVAL '4 hours') > NOW()
         `),
         db.execute(sql`
           SELECT COUNT(*)::int as count FROM events
@@ -3661,10 +3659,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       const [tonightEventsRows, availableCountRows, hereNowRows] = await Promise.all([
         // Events happening today in this city (using city-local timezone window)
+        // FILTER: Exclude events whose end time has already passed.
+        // If endDate exists, use it; otherwise assume event ends 4 hours after start.
         db.select({
           id: events.id,
           title: events.title,
           date: events.date,
+          endDate: events.endDate,
           category: events.category,
           venueName: events.venueName,
           location: events.location,
@@ -3677,6 +3678,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             gte(events.date, todayStart),
             lt(events.date, todayEnd),
             eq(events.isActive, true),
+            // Only show events that haven't ended yet:
+            // If end_date exists, it must be in the future; otherwise start + 4 hours must be in the future
+            sql`COALESCE(${events.endDate}, ${events.date} + INTERVAL '4 hours') > NOW()`,
           ))
           .orderBy(events.date)
           .limit(5),
@@ -4082,6 +4086,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           hometownCountry: users.hometownCountry,
           userType: users.userType,
           createdAt: users.createdAt,
+          lastSeenAt: users.lastSeenAt,
         })
         .from(users)
         .where(
@@ -4729,9 +4734,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           profileImage: users.profileImage,
           adminNotes: users.adminNotes,
           referralCount: users.referralCount,
+          lastSeenAt: users.lastSeenAt,
         })
         .from(users)
-        .orderBy(sqlExpr`CASE WHEN ${users.lastLogin} IS NULL THEN 1 ELSE 0 END`, desc(users.lastLogin));
+        .orderBy(sqlExpr`CASE WHEN ${users.lastSeenAt} IS NULL THEN 1 ELSE 0 END`, desc(users.lastSeenAt));
       return res.json(allUsers);
     } catch (error: any) {
       console.error("Admin users endpoint error:", error);
@@ -5776,6 +5782,11 @@ Questions? Just reply to this message!
       });
       
 
+      // Ensure firstName is set — extract from name if not provided
+      if (!processedData.firstName && processedData.name) {
+        processedData.firstName = processedData.name.trim().split(/\s+/)[0];
+      }
+
       const userData = insertUserSchema.parse(processedData);
 
       if (process.env.NODE_ENV === 'development') console.log("⚡ AFTER SCHEMA PARSING - userData location fields:", {
@@ -5969,6 +5980,29 @@ Questions? Just reply to this message!
       const user = await storage.createUser(userData);
       const { password, ...userWithoutPassword } = user;
 
+      // Ensure city chatrooms exist and auto-join user to them
+      try {
+        // 1. Ensure hometown chatrooms exist
+        if (user.hometownCity && user.hometownCountry) {
+          await storage.ensureMeetLocalsChatrooms(user.hometownCity, user.hometownState, user.hometownCountry);
+        }
+        // 2. Ensure destination chatrooms exist (for travelers)
+        if (user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry) {
+          await storage.ensureMeetLocalsChatrooms(user.destinationCity, user.destinationState, user.destinationCountry);
+        }
+        // 3. Auto-join user to hometown and destination chatrooms
+        await storage.autoJoinUserCityChatrooms(
+          user.id,
+          user.hometownCity,
+          user.hometownCountry,
+          user.isCurrentlyTraveling && user.destinationCity ? user.destinationCity : undefined,
+          user.isCurrentlyTraveling && user.destinationCountry ? user.destinationCountry : undefined
+        );
+        console.log(`✅ REGISTRATION: Auto-joined user ${user.username} to city chatrooms`);
+      } catch (error) {
+        console.error('❌ REGISTRATION: Failed to auto-join user to city chatrooms:', error);
+      }
+
       // CRITICAL: Create user session immediately after user creation
       console.log("🔐 Creating session for newly registered user:", user.username);
       (req as any).session = (req as any).session || {};
@@ -5979,12 +6013,7 @@ Questions? Just reply to this message!
         userType: user.userType
       };
       
-      // Handle "Keep me logged in" - extend session to 30 days
-      if (req.body.keepLoggedIn) {
-        const thirtyDays = 30 * 24 * 60 * 60 * 1000;
-        (req as any).session.cookie.maxAge = thirtyDays;
-        console.log("🔐 Extended session to 30 days for keepLoggedIn");
-      }
+      // Session cookie is always persistent (30 days) — configured in session middleware
 
       // CRITICAL FIX: Explicitly save session BEFORE sending response
       // Without this, the session data (user info) is set in memory but never
@@ -6203,9 +6232,21 @@ Questions? Just reply to this message!
                 .where(eq(users.id, referrer.id));
 
               const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-              await addAmbassadorPoints(referrer.id, 10);
+              await addAmbassadorPoints(referrer.id, 50);
 
-              console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username} (+10 aura, +10 ambassador points)`);
+              // Track ambassador referral chain for 5% bonus
+              try {
+                const [refStatus] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, referrer.id)).limit(1);
+                if (refStatus?.ambassadorStatus === 'active' || refStatus?.ambassadorStatus === 'inactive') {
+                  await db.execute(sql`
+                    INSERT INTO ambassador_referral_chains (referrer_id, referred_id)
+                    VALUES (${referrer.id}, ${user.id})
+                    ON CONFLICT DO NOTHING
+                  `);
+                }
+              } catch (e) { console.error('Ambassador chain tracking error:', e); }
+
+              console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username} (+10 aura, +50 ambassador points)`);
             }
           } catch (error) {
             console.error('❌ BACKGROUND: Error processing referral:', error);
@@ -9199,6 +9240,39 @@ Questions? Just reply to this message. Welcome aboard!
           console.error('Failed to write reference notification:', e);
         }
       })();
+
+      // Ambassador points: +10 for writing/receiving a reference (max 1 per pair ever)
+      try {
+        const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+        const writerId = Number(reviewerId);
+        const recipientId = Number(revieweeId);
+
+        // Check if this pair already had a reference (the one just created counts as 1)
+        const existingPairRefs = await db.select({ id: userReferences.id })
+          .from(userReferences)
+          .where(and(
+            eq(userReferences.reviewerId, writerId),
+            eq(userReferences.revieweeId, recipientId)
+          ));
+        // Only award if this is the FIRST reference between this pair (count === 1 means just created)
+        if (existingPairRefs.length <= 1) {
+          // For the writer
+          const [writer] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, writerId)).limit(1);
+          if (writer?.ambassadorStatus === 'active' || writer?.ambassadorStatus === 'inactive') {
+            await addAmbassadorPoints(writerId, 10);
+            console.log(`✅ AMBASSADOR: +10 pts to user ${writerId} for writing a reference`);
+          }
+
+          // For the recipient
+          const [recipient] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, recipientId)).limit(1);
+          if (recipient?.ambassadorStatus === 'active' || recipient?.ambassadorStatus === 'inactive') {
+            await addAmbassadorPoints(recipientId, 10);
+            console.log(`✅ AMBASSADOR: +10 pts to user ${recipientId} for receiving a reference`);
+          }
+        } else {
+          console.log(`ℹ️ AMBASSADOR: Skipping reference points for pair ${writerId}→${recipientId} (already awarded previously)`);
+        }
+      } catch (e) { console.error('Ambassador reference points error:', e); }
 
       return res.json(newReference);
     } catch (error: any) {
@@ -12342,6 +12416,27 @@ Questions? Just reply to this message. Welcome aboard!
               console.error('❌ CONNECTION ACCEPTED EMAIL: Failed:', emailErr);
             }
           });
+
+          // Ambassador points: +50 for every 25 connections milestone
+          try {
+            for (const checkUserId of [requesterId, receiverId]) {
+              const [checkUser] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, checkUserId)).limit(1);
+              if (checkUser?.ambassadorStatus === 'active' || checkUser?.ambassadorStatus === 'inactive') {
+                const connCount = await db.select({ count: sql<number>`count(*)` }).from(connections)
+                  .where(and(
+                    or(eq(connections.requesterId, checkUserId), eq(connections.receiverId, checkUserId)),
+                    eq(connections.status, 'accepted')
+                  ));
+                const totalConns = connCount[0]?.count || 0;
+                if (totalConns > 0 && totalConns % 25 === 0) {
+                  const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+                  await addAmbassadorPoints(checkUserId, 50);
+                  console.log(`✅ AMBASSADOR: +50 pts to user ${checkUserId} for reaching ${totalConns} connections milestone`);
+                }
+              }
+            }
+          } catch (e) { console.error('Ambassador connections milestone error:', e); }
+
         } catch (e) {
           console.error("❌ CONNECTION ACCEPTED NOTIFICATION: Failed:", e);
         }
@@ -13041,7 +13136,7 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log(`🏠 MY-LOCATIONS: User ${userId} requesting chatrooms`);
 
       // Get user data to determine relevant locations
-      const user = await storage.getUser(userId.toString());
+      const user = await storage.getUser(userId);
       const userLocations = new Set<string>();
 
       if (user) {
@@ -13057,6 +13152,16 @@ Questions? Just reply to this message. Welcome aboard!
           }
         }
         
+        // Add travel destination from user profile (destinationCity field)
+        if (user.isCurrentlyTraveling && user.destinationCity) {
+          userLocations.add(user.destinationCity);
+          const consolidatedDest = consolidateToMetropolitanArea(user.destinationCity, user.destinationState || '', user.destinationCountry || '');
+          if (consolidatedDest !== user.destinationCity) {
+            const metroAreaCities = getMetropolitanAreaCities(consolidatedDest, user.destinationState || '', user.destinationCountry || '');
+            metroAreaCities.forEach(city => userLocations.add(city));
+          }
+        }
+
         // Add travel destinations from active travel plans
         const currentDate = new Date();
         const userTravelPlans = await db.select().from(travelPlans)
@@ -13064,7 +13169,7 @@ Questions? Just reply to this message. Welcome aboard!
             eq(travelPlans.userId, userId),
             gte(travelPlans.endDate, currentDate)
           ));
-        
+
         userTravelPlans.forEach(plan => {
           if (plan.destinationCity) {
             userLocations.add(plan.destinationCity);
@@ -13083,8 +13188,10 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      // Get all active chatrooms
-      const allChatrooms = await db.select().from(citychatrooms).where(eq(citychatrooms.isActive, true));
+      // Get all active chatrooms (include null isActive — some chatrooms were created without explicit isActive flag)
+      const allChatrooms = await db.select().from(citychatrooms).where(
+        or(eq(citychatrooms.isActive, true), isNull(citychatrooms.isActive))
+      );
       
       // Get user memberships first to include user's joined chatrooms
       const userMembershipResults = await db.execute(sql`
@@ -13627,7 +13734,8 @@ Questions? Just reply to this message. Welcome aboard!
                   eq(events.city, searchCities[0]),
                   arrayContains(events.additionalCities, [searchCities[0]])
                 ),
-                gte(events.date, now),
+                // Show events that haven't ended yet (end_date or start + 4h must be in the future)
+                sql`COALESCE(${events.endDate}, ${events.date} + INTERVAL '4 hours') > NOW()`,
                 lte(events.date, sixWeeksFromNow)
               ))
               .orderBy(asc(events.date));
@@ -13636,7 +13744,7 @@ Questions? Just reply to this message. Welcome aboard!
             eventsQuery = await db.select().from(events)
               .where(and(
                 eq(events.city, searchCities[0]),
-                gte(events.date, now),
+                sql`COALESCE(${events.endDate}, ${events.date} + INTERVAL '4 hours') > NOW()`,
                 lte(events.date, sixWeeksFromNow)
               ))
               .orderBy(asc(events.date));
@@ -13647,15 +13755,17 @@ Questions? Just reply to this message. Welcome aboard!
           const primaryCityEvents = await db.select().from(events)
             .where(and(
               inArray(events.city, searchCities),
-              gte(events.date, now),
+              // Show events that haven't ended yet
+              sql`COALESCE(${events.endDate}, ${events.date} + INTERVAL '4 hours') > NOW()`,
               lte(events.date, sixWeeksFromNow)
             ))
             .orderBy(asc(events.date));
-          
+
           // Then get events where any searchCity is in additionalCities
           const additionalCityEvents = await db.select().from(events)
             .where(and(
-              gte(events.date, now),
+              // Show events that haven't ended yet
+              sql`COALESCE(${events.endDate}, ${events.date} + INTERVAL '4 hours') > NOW()`,
               lte(events.date, sixWeeksFromNow)
             ))
             .orderBy(asc(events.date));
@@ -13725,7 +13835,8 @@ Questions? Just reply to this message. Welcome aboard!
         
         eventsQuery = await db.select().from(events)
           .where(and(
-            gte(events.date, now),
+            // Show events that haven't ended yet (end_date or start + 4h must be in the future)
+            sql`COALESCE(${events.endDate}, ${events.date} + INTERVAL '4 hours') > NOW()`,
             lte(events.date, sixWeeksFromNow),
             gt(events.organizerId, 0) // ONLY USER-CREATED EVENTS
           ));
@@ -15206,6 +15317,25 @@ Questions? Just reply to this message. Welcome aboard!
       // Award 1 aura point for creating an event
       await awardAuraPoints(newEvent.organizerId, 1, 'creating an event');
 
+      // Save co-ambassador records if provided
+      if (Array.isArray(body.coAmbassadors) && body.coAmbassadors.length > 0) {
+        try {
+          for (const coUsername of body.coAmbassadors.slice(0, 3)) {
+            const uname = String(coUsername).toLowerCase().trim();
+            if (!uname) continue;
+            const [coUser] = await db.select({ id: users.id, ambassadorStatus: users.ambassadorStatus })
+              .from(users).where(eq(users.username, uname)).limit(1);
+            if (coUser && coUser.id !== newEvent.organizerId && (coUser.ambassadorStatus === 'active' || coUser.ambassadorStatus === 'inactive')) {
+              await db.execute(sql`
+                INSERT INTO event_cohost_splits (event_id, organizer_id, cohost_id, status)
+                VALUES (${newEvent.id}, ${newEvent.organizerId}, ${coUser.id}, 'confirmed')
+              `);
+              console.log(`✅ CO-AMBASSADOR: Added @${uname} (${coUser.id}) to event ${newEvent.id}`);
+            }
+          }
+        } catch (e) { console.error('Co-ambassador save error:', e); }
+      }
+
       // Log event creation to activity feed (used by city live feed)
       try {
         writeActivityLog({
@@ -15226,7 +15356,7 @@ Questions? Just reply to this message. Welcome aboard!
         const organizerStatus = organizer?.[0]?.ambassadorStatus as string | null | undefined;
         if (organizerStatus === "active" || organizerStatus === "inactive") {
           const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-          await addAmbassadorPoints(newEvent.organizerId, 20);
+          await addAmbassadorPoints(newEvent.organizerId, 5);
         }
       } catch (ambassadorPointsError: any) {
         console.error(`⚠️ AMBASSADOR POINTS: Failed to award create-event points for event ${newEvent.id}:`, ambassadorPointsError);
@@ -17814,17 +17944,13 @@ Questions? Just reply to this message. Welcome aboard!
         };
       });
       
-      // Separate active and expired, then sort each group by newest first
+      // Filter out expired meetups entirely — only show active ones whose expiresAt is in the future
       const activeMeetups = allMeetups
         .filter(meetup => new Date(meetup.expiresAt) > now)
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        
-      const expiredMeetups = allMeetups
-        .filter(meetup => new Date(meetup.expiresAt) <= now)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-      // Combine: active first, then expired
-      const sortedMeetups = [...activeMeetups, ...expiredMeetups];
+      // Only return active (non-expired) meetups
+      const sortedMeetups = activeMeetups;
 
       // Add participantIds for each meetup (used by Active Quick Meetup card to show "Open Hangout" vs "Join")
       if (sortedMeetups.length > 0) {
@@ -17840,6 +17966,28 @@ Questions? Just reply to this message. Welcome aboard!
         }
         for (const meetup of sortedMeetups) {
           (meetup as any).participantIds = participantIdsByMeetup.get(meetup.id) || [];
+        }
+      }
+
+      // Mark meetups where the requesting user is muted in the associated chatroom
+      const requestingUserId = req.session?.user?.id || req.headers['x-user-id'];
+      if (requestingUserId && sortedMeetups.length > 0) {
+        const meetupIds = sortedMeetups.map((m: any) => m.id);
+        const mutedRows = await db
+          .select({ meetupId: meetupChatrooms.meetupId })
+          .from(meetupChatrooms)
+          .innerJoin(chatroomMembers, and(
+            eq(chatroomMembers.chatroomId, meetupChatrooms.id),
+            eq(chatroomMembers.userId, Number(requestingUserId)),
+            eq(chatroomMembers.isMuted, true),
+          ))
+          .where(and(
+            inArray(meetupChatrooms.meetupId, meetupIds),
+            isNotNull(meetupChatrooms.meetupId),
+          ));
+        const mutedMeetupIds = new Set(mutedRows.map(r => r.meetupId));
+        for (const meetup of sortedMeetups) {
+          (meetup as any).currentUserMuted = mutedMeetupIds.has(meetup.id);
         }
       }
 
@@ -17962,7 +18110,29 @@ Questions? Just reply to this message. Welcome aboard!
       // Join the meetup
       const result = await storage.joinQuickMeetup(meetupId, parseInt(userId as string || '0'));
       if (process.env.NODE_ENV === 'development') console.log(`✅ USER ${userId} SUCCESSFULLY JOINED QUICK MEET ${meetupId}`);
-      
+
+      // Ambassador points: +10 for completing a Quick Meet (organizer gets points, max 1/day, 3/week)
+      try {
+        const organizerId = meetup.organizerId;
+        const [org] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, organizerId)).limit(1);
+        if (org?.ambassadorStatus === 'active' || org?.ambassadorStatus === 'inactive') {
+          const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+          const todayKey = `amb_qm_${organizerId}_${todayStart.toISOString().slice(0,10)}`;
+          const weekStart = new Date(); weekStart.setDate(weekStart.getDate() - weekStart.getDay()); weekStart.setHours(0, 0, 0, 0);
+          const weekKey = `amb_qm_week_${organizerId}_${weekStart.toISOString().slice(0,10)}`;
+          const tracker = (global as any).__ambPointTracker || ((global as any).__ambPointTracker = new Map());
+          const dailyCount = tracker.get(todayKey) || 0;
+          const weeklyCount = tracker.get(weekKey) || 0;
+          if (dailyCount < 1 && weeklyCount < 3) {
+            const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+            await addAmbassadorPoints(organizerId, 10);
+            tracker.set(todayKey, dailyCount + 1);
+            tracker.set(weekKey, weeklyCount + 1);
+            console.log(`✅ AMBASSADOR: +10 pts to user ${organizerId} for Quick Meet join (day: ${dailyCount+1}/1, week: ${weeklyCount+1}/3)`);
+          }
+        }
+      } catch (e) { console.error('Ambassador quick-meet points error:', e); }
+
       // NOTIFY the organizer that someone joined their meetup
       setImmediate(async () => {
         try {
@@ -19312,10 +19482,25 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = req.headers['x-user-id'];
 
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
-      if (role !== 'admin' && role !== 'member') return res.status(400).json({ message: "role must be 'admin' or 'member'" });
+      if (role !== 'admin' && role !== 'member' && role !== 'owner') return res.status(400).json({ message: "role must be 'admin', 'member', or 'owner'" });
 
       const isAdmin = await storage.isUserChatroomAdmin(chatroomId, parseInt(userId as string));
       if (!isAdmin) return res.status(403).json({ message: "Only admins can change member roles" });
+
+      // Only owners can demote admins — check if target is currently admin
+      if (role === 'member') {
+        const [targetMember] = await db.select({ role: chatroomMembers.role }).from(chatroomMembers)
+          .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId))).limit(1);
+        if (targetMember?.role === 'admin' || targetMember?.role === 'owner') {
+          const isOwner = await storage.isUserChatroomOwner(chatroomId, parseInt(userId as string));
+          if (!isOwner) return res.status(403).json({ message: "Only the chatroom owner can remove admin status" });
+        }
+      }
+      // Only owners can promote to owner
+      if (role === 'owner') {
+        const isOwner = await storage.isUserChatroomOwner(chatroomId, parseInt(userId as string));
+        if (!isOwner) return res.status(403).json({ message: "Only the chatroom owner can transfer ownership" });
+      }
 
       // Update the role in chatroom_members
       const updated = await db
@@ -19342,6 +19527,92 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error changing member role:", error);
       res.status(500).json({ message: "Failed to change role" });
+    }
+  });
+
+  // Kick user from chatroom (admin only)
+  app.post("/api/chatrooms/:chatroomId/kick", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const { targetUserId } = req.body;
+      const userId = req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+      if (!targetUserId) return res.status(400).json({ message: "targetUserId is required" });
+
+      const actorId = parseInt(userId as string);
+      const isAdmin = await storage.isUserChatroomAdmin(chatroomId, actorId);
+      if (!isAdmin) return res.status(403).json({ message: "Only admins can kick users" });
+
+      // Cannot kick owners
+      const [targetMember] = await db.select({ role: chatroomMembers.role }).from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId))).limit(1);
+      if (targetMember?.role === 'owner') return res.status(403).json({ message: "Cannot kick the chatroom owner" });
+      // Only owners can kick admins
+      if (targetMember?.role === 'admin') {
+        const isOwner = await storage.isUserChatroomOwner(chatroomId, actorId);
+        if (!isOwner) return res.status(403).json({ message: "Only the owner can kick admins" });
+      }
+
+      await db.update(chatroomMembers).set({ isActive: false })
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId)));
+
+      // System message
+      const targetUser = await db.select({ username: users.username, firstName: users.firstName }).from(users).where(eq(users.id, targetUserId)).limit(1);
+      const targetName = targetUser[0]?.firstName || targetUser[0]?.username || 'User';
+      const sysMsg = await storage.createChatroomMessage(chatroomId, actorId, `${targetName} was removed from the chatroom.`, 'system', null);
+      if (sysMsg) await chatWebSocketService.broadcastSystemMessage(chatroomId, 'chatroom', sysMsg.id, sysMsg.message, actorId, 'Admin');
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error kicking user:", error);
+      res.status(500).json({ message: "Failed to kick user" });
+    }
+  });
+
+  // Ban user from chatroom permanently (admin only)
+  app.post("/api/chatrooms/:chatroomId/ban", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const { targetUserId, reason } = req.body;
+      const userId = req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+      if (!targetUserId) return res.status(400).json({ message: "targetUserId is required" });
+
+      const actorId = parseInt(userId as string);
+      const isAdmin = await storage.isUserChatroomAdmin(chatroomId, actorId);
+      if (!isAdmin) return res.status(403).json({ message: "Only admins can ban users" });
+
+      // Cannot ban owners
+      const [targetMember] = await db.select({ role: chatroomMembers.role }).from(chatroomMembers)
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId))).limit(1);
+      if (targetMember?.role === 'owner') return res.status(403).json({ message: "Cannot ban the chatroom owner" });
+      if (targetMember?.role === 'admin') {
+        const isOwner = await storage.isUserChatroomOwner(chatroomId, actorId);
+        if (!isOwner) return res.status(403).json({ message: "Only the owner can ban admins" });
+      }
+
+      // Deactivate membership
+      await db.update(chatroomMembers).set({ isActive: false })
+        .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.userId, targetUserId)));
+
+      // Add to blocks table for permanent ban
+      await db.insert(chatroomBlocks).values({
+        chatroomId,
+        userId: targetUserId,
+        blockedById: actorId,
+        reason: reason || null,
+      }).onConflictDoNothing();
+
+      // System message
+      const targetUser = await db.select({ username: users.username, firstName: users.firstName }).from(users).where(eq(users.id, targetUserId)).limit(1);
+      const targetName = targetUser[0]?.firstName || targetUser[0]?.username || 'User';
+      const sysMsg = await storage.createChatroomMessage(chatroomId, actorId, `${targetName} was banned from the chatroom.`, 'system', null);
+      if (sysMsg) await chatWebSocketService.broadcastSystemMessage(chatroomId, 'chatroom', sysMsg.id, sysMsg.message, actorId, 'Admin');
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error banning user:", error);
+      res.status(500).json({ message: "Failed to ban user" });
     }
   });
 
@@ -20916,22 +21187,36 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // Delete chatroom message (only sender can delete their own messages)
+  // Delete chatroom message (sender or admin can delete)
   app.delete("/api/chatroom-messages/:messageId", async (req, res) => {
     try {
       const messageId = parseInt(req.params.messageId);
       const userId = req.headers['x-user-id'] || req.body?.userId;
-      
+
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
-      
-      const deleted = await storage.deleteChatroomMessage(messageId, parseInt(userId as string));
-      
+
+      const actorId = parseInt(userId as string);
+
+      // First try: sender deleting their own message
+      const deleted = await storage.deleteChatroomMessage(messageId, actorId);
+
       if (!deleted) {
-        return res.status(404).json({ message: "Message not found" });
+        // Second try: admin deleting any message
+        // Look up the message to get the chatroomId
+        const [msg] = await db.select({ chatroomId: chatroomMessages.chatroomId, senderId: chatroomMessages.senderId })
+          .from(chatroomMessages).where(eq(chatroomMessages.id, messageId)).limit(1);
+
+        if (!msg) return res.status(404).json({ message: "Message not found" });
+
+        const isAdmin = await storage.isUserChatroomAdmin(msg.chatroomId, actorId);
+        if (!isAdmin) return res.status(403).json({ message: "You can only delete your own messages" });
+
+        // Admin override: delete the message regardless of sender
+        await db.delete(chatroomMessages).where(eq(chatroomMessages.id, messageId));
       }
-      
+
       return res.json({ success: true });
     } catch (error: any) {
       if (error.message?.includes('Unauthorized')) {
@@ -21095,6 +21380,26 @@ Questions? Just reply to this message. Welcome aboard!
           linkUrl: `/chatroom/${roomId}`,
         });
       } catch {}
+
+      // Ambassador points: award 15 pts when chatroom reaches 5 members (one-time per chatroom creator)
+      try {
+        const memberCountResult = await db.select({ count: sql<number>`count(*)` })
+          .from(chatroomMembers)
+          .where(and(eq(chatroomMembers.chatroomId, roomId), eq(chatroomMembers.isActive, true)));
+        const memberCount = memberCountResult[0]?.count || 0;
+        if (memberCount === 5) {
+          // Find chatroom creator
+          const [chatroom_row] = await db.select({ createdById: citychatrooms.createdById }).from(citychatrooms).where(eq(citychatrooms.id, roomId)).limit(1);
+          if (chatroom_row?.createdById) {
+            const [creator] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, chatroom_row.createdById)).limit(1);
+            if (creator?.ambassadorStatus === 'active' || creator?.ambassadorStatus === 'inactive') {
+              const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+              await addAmbassadorPoints(chatroom_row.createdById, 15);
+              console.log(`✅ AMBASSADOR: +15 pts to user ${chatroom_row.createdById} for chatroom reaching 5 members`);
+            }
+          }
+        }
+      } catch (e) { console.error('Ambassador chatroom points error:', e); }
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM JOIN: User ${userId} successfully joined chatroom ${roomId}`);
       res.json({ success: true, message: "Successfully joined chatroom!", newMember: true });
@@ -24673,6 +24978,49 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Set co-ambassador usernames for an event (up to 3, points split evenly)
+  app.put("/api/events/:eventId/coambassadors", async (req: any, res) => {
+    try {
+      const eventId = parseInt(req.params.eventId);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { usernames } = req.body as { usernames: string[] };
+      if (!Array.isArray(usernames) || usernames.length > 3) return res.status(400).json({ error: "Max 3 co-ambassadors" });
+
+      // Verify user is the event organizer
+      const [event] = await db.select({ organizerId: events.organizerId }).from(events).where(eq(events.id, eventId)).limit(1);
+      if (!event || event.organizerId !== userId) return res.status(403).json({ error: "Only the event organizer can set co-ambassadors" });
+
+      // Resolve usernames to IDs
+      const resolvedIds: number[] = [];
+      for (const uname of usernames.filter(u => u.trim())) {
+        const [u] = await db.select({ id: users.id, ambassadorStatus: users.ambassadorStatus })
+          .from(users).where(eq(users.username, uname.toLowerCase().trim())).limit(1);
+        if (!u) return res.status(404).json({ error: `User @${uname} not found` });
+        if (u.ambassadorStatus !== 'active' && u.ambassadorStatus !== 'inactive') {
+          return res.status(400).json({ error: `@${uname} is not an active ambassador` });
+        }
+        if (u.id === userId) continue; // skip self
+        resolvedIds.push(u.id);
+      }
+
+      // Clear old entries, insert new
+      await db.execute(sql`DELETE FROM event_cohost_splits WHERE event_id = ${eventId}`);
+      for (const coId of resolvedIds) {
+        await db.execute(sql`
+          INSERT INTO event_cohost_splits (event_id, organizer_id, cohost_id, status)
+          VALUES (${eventId}, ${userId}, ${coId}, 'confirmed')
+        `);
+      }
+
+      res.json({ success: true, coambassadorIds: resolvedIds });
+    } catch (error: any) {
+      console.error("Error setting co-ambassadors:", error);
+      res.status(500).json({ error: "Failed to set co-ambassadors" });
+    }
+  });
+
   // POST /api/admin/events/:eventId/ambassador-award - Award event-based ambassador points and split evenly among organizers
   app.post("/api/admin/events/:eventId/ambassador-award", async (req: any, res) => {
     try {
@@ -24684,12 +25032,11 @@ Questions? Just reply to this message. Welcome aboard!
       if (isNaN(eventId)) return res.status(400).json({ error: "Invalid event ID" });
 
       const { awardType } = req.body as { awardType?: string };
-      const validAwardType = awardType === "host_verified" || awardType === "attendance_goal";
-      if (!validAwardType) {
-        return res.status(400).json({ error: "awardType must be 'host_verified' or 'attendance_goal'" });
+      if (awardType !== "event_10_attendees") {
+        return res.status(400).json({ error: "awardType must be 'event_10_attendees'" });
       }
 
-      const points = awardType === "host_verified" ? 50 : 30;
+      const points = 20; // Event with 10+ attendees after event date passes
 
       // Find all event organizers/co-organizers (can be multiple)
       const roles = ["organizer", "co-organizer"];
@@ -24713,39 +25060,58 @@ Questions? Just reply to this message. Welcome aboard!
         .filter(u => u.ambassadorStatus === "active" || u.ambassadorStatus === "inactive")
         .map(u => u.id);
 
-      if (eligibleIds.length === 0) {
+      // Gather all ambassadors: organizer + any co-ambassadors from event_cohost_splits
+      const cohostResult = await db.execute(sql`
+        SELECT cohost_id FROM event_cohost_splits WHERE event_id = ${eventId} AND points_awarded = false
+      `);
+      const cohostIds = (cohostResult.rows as any[]).map(r => r.cohost_id).filter(Boolean);
+
+      // Combine organizer eligible IDs with co-ambassador IDs (also check ambassador status)
+      const allAmbassadorIds = [...new Set([...eligibleIds, ...cohostIds])];
+
+      // Filter to only enrolled ambassadors
+      const allEnrolled = allAmbassadorIds.length > 0 ? await db
+        .select({ id: users.id, ambassadorStatus: users.ambassadorStatus })
+        .from(users)
+        .where(inArray(users.id, allAmbassadorIds)) : [];
+      const finalEligible = allEnrolled
+        .filter(u => u.ambassadorStatus === "active" || u.ambassadorStatus === "inactive")
+        .map(u => u.id);
+
+      if (finalEligible.length === 0) {
         return res.json({
           success: true,
           awardType,
           pointsConfigured: points,
-          eligibleAmbassadors: [],
-          pointsEach: 0,
+          awarded: [],
           totalAwarded: 0,
-          message: "No enrolled ambassadors among event organizers/co-organizers."
+          message: "No enrolled ambassadors found."
         });
       }
 
-      const pointsEach = Math.floor(points / eligibleIds.length);
-      if (pointsEach <= 0) {
-        return res.status(400).json({
-          error: "Too many eligible ambassadors to split points evenly with integer points.",
-          pointsConfigured: points,
-          eligibleAmbassadors: eligibleIds.length
-        });
-      }
-
+      // Split points evenly: 2 = 10 each, 3 = 7 each, 4 = 5 each
+      const pointsEach = Math.floor(points / finalEligible.length);
       const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-      for (const userId of eligibleIds) {
-        await addAmbassadorPoints(userId, pointsEach);
+      const awarded: { userId: number; points: number }[] = [];
+
+      if (pointsEach > 0) {
+        for (const uid of finalEligible) {
+          await addAmbassadorPoints(uid, pointsEach);
+          awarded.push({ userId: uid, points: pointsEach });
+        }
+      }
+
+      // Mark co-host entries as awarded
+      if (cohostIds.length > 0) {
+        await db.execute(sql`UPDATE event_cohost_splits SET points_awarded = true WHERE event_id = ${eventId}`);
       }
 
       return res.json({
         success: true,
         awardType,
         pointsConfigured: points,
-        eligibleAmbassadors: eligibleIds,
-        pointsEach,
-        totalAwarded: pointsEach * eligibleIds.length
+        awarded,
+        totalAwarded: awarded.reduce((s, a) => s + a.points, 0),
       });
     } catch (error: any) {
       console.error("Admin event ambassador award error:", error);
@@ -25394,6 +25760,32 @@ Questions? Just reply to this message. Welcome aboard!
         }
       } catch {}
 
+      // Ambassador points: +5 for completing an Available Now (host is userId, max 1/day, 3/week)
+      if (status === "accepted") {
+        try {
+          const hostId = Number(userId);
+          const [host] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, hostId)).limit(1);
+          if (host?.ambassadorStatus === 'active' || host?.ambassadorStatus === 'inactive') {
+            // Check daily limit (max 1 per day)
+            const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+            const todayKey = `amb_avail_${hostId}_${todayStart.toISOString().slice(0,10)}`;
+            const weekStart = new Date(); weekStart.setDate(weekStart.getDate() - weekStart.getDay()); weekStart.setHours(0, 0, 0, 0);
+            const weekKey = `amb_avail_week_${hostId}_${weekStart.toISOString().slice(0,10)}`;
+            // Use a simple in-memory tracker (same pattern used elsewhere in this file)
+            const tracker = (global as any).__ambPointTracker || ((global as any).__ambPointTracker = new Map());
+            const dailyCount = tracker.get(todayKey) || 0;
+            const weeklyCount = tracker.get(weekKey) || 0;
+            if (dailyCount < 1 && weeklyCount < 3) {
+              const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+              await addAmbassadorPoints(hostId, 5);
+              tracker.set(todayKey, dailyCount + 1);
+              tracker.set(weekKey, weeklyCount + 1);
+              console.log(`✅ AMBASSADOR: +5 pts to user ${hostId} for Available Now accepted (day: ${dailyCount+1}/1, week: ${weeklyCount+1}/3)`);
+            }
+          }
+        } catch (e) { console.error('Ambassador available-now points error:', e); }
+      }
+
       let groupChatroomId: number | null = null;
 
       if (status === "accepted" && updated) {
@@ -25650,7 +26042,7 @@ Questions? Just reply to this message. Welcome aboard!
             .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.userId, Number(userId)), eq(chatroomMembers.isActive, true)))
             .limit(1);
           if (!membership) return res.json({ chatroom: null });
-          const members = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage })
+          const members = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage, isMuted: chatroomMembers.isMuted })
             .from(chatroomMembers)
             .innerJoin(users, eq(users.id, chatroomMembers.userId))
             .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.isActive, true)));
@@ -25690,7 +26082,7 @@ Questions? Just reply to this message. Welcome aboard!
         .limit(1);
 
       if (!chatroom) return res.json({ chatroom: null });
-      const members = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage })
+      const members = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage, isMuted: chatroomMembers.isMuted })
         .from(chatroomMembers)
         .innerJoin(users, eq(users.id, chatroomMembers.userId))
         .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.isActive, true)));
@@ -25745,7 +26137,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Attach members to each chatroom
       const chatroomsWithMembers = await Promise.all(chatrooms.map(async (chat) => {
-        const memberRows = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage })
+        const memberRows = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage, isMuted: chatroomMembers.isMuted })
           .from(chatroomMembers)
           .innerJoin(users, eq(users.id, chatroomMembers.userId))
           .where(and(eq(chatroomMembers.chatroomId, chat.id), eq(chatroomMembers.isActive, true)));
@@ -29412,7 +29804,7 @@ Questions? Just reply to this message. Welcome aboard!
   // ─── OneSignal push notification endpoints ───────────────────────────────
 
   // Register or update OneSignal player/subscription ID for the current user
-  app.put("/api/users/onesignal-player", async (req: any, res) => {
+  app.put("/api/notifications/onesignal-player", async (req: any, res) => {
     try {
       const sessionUser = req.session?.user;
       if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
@@ -29429,7 +29821,7 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Get notification preferences for the current user
-  app.get("/api/users/notification-preferences", async (req: any, res) => {
+  app.get("/api/notifications/preferences", async (req: any, res) => {
     try {
       const sessionUser = req.session?.user;
       if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
@@ -29448,7 +29840,7 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Update notification preferences for the current user
-  app.put("/api/users/notification-preferences", async (req: any, res) => {
+  app.put("/api/notifications/preferences", async (req: any, res) => {
     try {
       const sessionUser = req.session?.user;
       if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });

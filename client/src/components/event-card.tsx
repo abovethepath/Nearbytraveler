@@ -405,7 +405,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
           )}
 
           {/* Action buttons — always at bottom */}
-          <div className="flex gap-2 pt-2 mt-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="flex flex-col sm:flex-row gap-2 pt-2 mt-auto" onClick={(e) => e.stopPropagation()}>
             {isOrganizer ? (
               // Organizer: View Event + Open Chat
               <>
@@ -433,7 +433,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 <Button
                   size="sm"
                   variant="outline"
-                  className="flex-1 border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/30"
+                  className="flex-1 min-w-[4.5rem] border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/30"
                   onClick={() => leaveEventMutation.mutate()}
                   disabled={leaveEventMutation.isPending}
                   data-testid="button-leave"
@@ -442,7 +442,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 </Button>
                 <Button
                   size="sm"
-                  className="flex-1 text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                  className="flex-1 min-w-[4.5rem] text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
                   onClick={() => setLocation(`/events/${event.id}`)}
                   data-testid="button-view"
                 >
@@ -450,7 +450,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 </Button>
                 <Button
                   size="sm"
-                  className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
+                  className="flex-1 min-w-[4.5rem] bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
                   onClick={() => setLocation(`/event-chat/${event.id}`)}
                   data-testid="button-chat"
                 >
@@ -463,7 +463,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
               <>
                 <Button
                   size="sm"
-                  className="flex-1 text-white border-0 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+                  className="flex-1 min-w-[4.5rem] text-white border-0 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
                   onClick={() => handleJoinEvent('going')}
                   disabled={joinEventMutation.isPending}
                   data-testid="button-join"
@@ -473,7 +473,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 <Button
                   size="sm"
                   variant="outline"
-                  className="flex-1 dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:hover:bg-gray-600"
+                  className="flex-1 min-w-[4.5rem] dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:hover:bg-gray-600"
                   onClick={() => handleJoinEvent('interested')}
                   disabled={joinEventMutation.isPending}
                   data-testid="button-interested"
@@ -482,7 +482,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 </Button>
                 <Button
                   size="sm"
-                  className="flex-1 text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                  className="flex-1 min-w-[4.5rem] text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
                   onClick={() => setLocation(`/events/${event.id}`)}
                   data-testid="button-view"
                 >

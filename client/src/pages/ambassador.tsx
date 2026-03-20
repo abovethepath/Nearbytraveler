@@ -48,12 +48,17 @@ export default function AmbassadorLanding() {
   useScrollReveal();
 
   const points: PointItem[] = [
-    { title: "Refer a Friend (Signs Up)", description: "Friend creates account via your link", points: "+50 pts" },
+    { title: "Recruit a Friend (Signs Up)", description: "Friend creates account via your link", points: "+50 pts" },
     { title: "Refer a Business Lead", description: "Connect a local business to the platform", points: "+75 pts" },
     { title: "Business Becomes Partner", description: "Business signs up and pays", points: "+200 pts" },
-    { title: "Create an Event", description: "Host a community gathering", points: "+20 pts" },
-    { title: "Host Verified Event", description: "Event runs with verified attendance", points: "+50 pts" },
-    { title: "Event Hits Attendance Goal", description: "Grow participation to target", points: "+30 pts" },
+    { title: "Create an Event", description: "Host a community gathering", points: "+5 pts" },
+    { title: "Event with 10+ Attendees", description: "Events that attract real participation", points: "+20 pts" },
+    { title: "Complete a Quick Meet", description: "Max 1/day, 3/week", points: "+10 pts" },
+    { title: "Complete an Available Now", description: "Max 1/day, 3/week", points: "+5 pts" },
+    { title: "Create a Chatroom (5+ members)", description: "Build active community spaces", points: "+15 pts" },
+    { title: "Write a Reference", description: "Max 1 per person ever", points: "+10 pts" },
+    { title: "Receive a Reference", description: "Max 1 per person ever", points: "+10 pts" },
+    { title: "Every 25 Connections", description: "Milestone bonus", points: "+50 pts" },
   ];
 
   const faqs = [
@@ -71,7 +76,7 @@ export default function AmbassadorLanding() {
     },
     {
       q: "What's the minimum to stay active?",
-      a: "50 points every 6 months. Fall below that and your status becomes Inactive — points frozen but not deleted. Inactive for 12 months and status is fully revoked.",
+      a: "200 points every 6 months. Fall below that and your status becomes Inactive — points frozen but not deleted. Inactive for 12 months and status is fully revoked.",
     },
     {
       q: "What's the LA ambassador bonus?",
@@ -337,8 +342,8 @@ export default function AmbassadorLanding() {
                     <CardTitle className="text-base">Staying Active</CardTitle>
                   </CardHeader>
                   <CardContent className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
-                    <p>Earn at least 50 points every 6 months to stay active.</p>
-                    <p>Under 50 pts in 6 months → status becomes Inactive (points frozen, not deleted).</p>
+                    <p>Earn at least 200 points every 6 months to stay active.</p>
+                    <p>Under 200 pts in 6 months → status becomes Inactive (points frozen, not deleted).</p>
                     <p>Inactive for 12 months → status revoked, points no longer count toward equity. You can reapply after 12 months and start fresh.</p>
                   </CardContent>
                 </Card>

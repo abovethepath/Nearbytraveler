@@ -31,22 +31,19 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   const authContext = React.useContext(AuthContext);
-  const [resolvedUser, setResolvedUser] = useState<any>(null);
+  const [fetchedUser, setFetchedUser] = useState<any>(null);
 
   useEffect(() => {
-    if (authContext?.user?.id) {
-      setResolvedUser(authContext.user);
-      return;
-    }
+    if (authContext?.user?.id) return;
     fetch(`${getApiBaseUrl()}/api/auth/user`, { credentials: 'include' })
       .then(res => res.ok ? res.json() : null)
       .then(sessionUser => {
-        if (sessionUser?.id) {
-          setResolvedUser(sessionUser);
-        }
+        if (sessionUser?.id) setFetchedUser(sessionUser);
       })
       .catch(() => {});
   }, [authContext?.user?.id]);
+
+  const resolvedUser = authContext?.user?.id ? authContext.user : fetchedUser;
 
   const user = resolvedUser;
 
@@ -174,15 +171,31 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
   const lightNavInactive = "#111827";
   const lightNavActive = "#000000";
 
+  // iOS Safari fix: keep bottom nav anchored during address bar show/hide
+  const [iosBottom, setIosBottom] = useState(0);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const sync = () => {
+      // On iOS, when the address bar appears, visualViewport.offsetTop > 0
+      // and the viewport shrinks. Adjust bottom to stay at the true screen bottom.
+      const offset = window.innerHeight - (vv.height + vv.offsetTop);
+      setIosBottom(Math.max(0, offset));
+    };
+    vv.addEventListener('resize', sync);
+    vv.addEventListener('scroll', sync);
+    return () => { vv.removeEventListener('resize', sync); vv.removeEventListener('scroll', sync); };
+  }, []);
+
   const bottomNav = (
-    <div 
+    <div
       className="mobile-bottom-nav"
-      style={{ 
+      style={{
         position: 'fixed',
-        bottom: 0,
+        bottom: iosBottom,
         left: 0,
         right: 0,
-        zIndex: 9999, 
+        zIndex: 9999,
         width: '100vw',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         background: isDark ? '#1c1c1e' : '#f8f8f8',
@@ -192,6 +205,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
         WebkitTransform: 'translateZ(0)',
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
+        willChange: 'transform',
       }}
     >
       <div style={{ 

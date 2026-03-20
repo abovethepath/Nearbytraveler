@@ -222,38 +222,7 @@ console.log(
 
 // Password reset token verification now handled by server/routes/passwordReset.ts
 
-// Notification preferences — registered EARLY so PUT /api/users/:id doesn't swallow the route
-app.get("/api/users/notification-preferences", async (req: any, res: any) => {
-  try {
-    const sessionUser = req.session?.user;
-    if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
-    const [row] = await db.select({ prefs: users.notificationPreferences }).from(users).where(eq(users.id, sessionUser.id)).limit(1);
-    const defaults = { messages: true, meet_requests: true, connections: true, events: true, vouches: true };
-    try {
-      const parsed = row?.prefs ? JSON.parse(row.prefs) : {};
-      return res.json({ ...defaults, ...parsed });
-    } catch {
-      return res.json(defaults);
-    }
-  } catch (e: any) {
-    console.error("[notification-prefs] get error:", e);
-    return res.status(500).json({ error: "Server error" });
-  }
-});
-
-app.put("/api/users/notification-preferences", async (req: any, res: any) => {
-  try {
-    const sessionUser = req.session?.user;
-    if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
-    const { messages, meet_requests, connections, events, vouches } = req.body;
-    const prefs = { messages: !!messages, meet_requests: !!meet_requests, connections: !!connections, events: !!events, vouches: !!vouches };
-    await db.update(users).set({ notificationPreferences: JSON.stringify(prefs) }).where(eq(users.id, sessionUser.id));
-    return res.json({ ok: true, prefs });
-  } catch (e: any) {
-    console.error("[notification-prefs] put error:", e);
-    return res.status(500).json({ error: "Server error" });
-  }
-});
+// Notification preferences moved after session middleware — see below line 660+
 
 app.get("/api/quick-meetups", async (req, res) => {
   try {
@@ -703,6 +672,53 @@ app.post("/api/client-error", (req, res) => {
   res.status(204).end();
 });
 
+// Notification preferences — after session middleware so req.session.user is available
+app.get("/api/notifications/preferences", async (req: any, res: any) => {
+  try {
+    const sessionUser = req.session?.user;
+    if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
+    const [row] = await db.select({ prefs: users.notificationPreferences }).from(users).where(eq(users.id, sessionUser.id)).limit(1);
+    const defaults = { messages: true, meet_requests: true, connections: true, events: true, vouches: true };
+    try {
+      const parsed = row?.prefs ? JSON.parse(row.prefs) : {};
+      return res.json({ ...defaults, ...parsed });
+    } catch {
+      return res.json(defaults);
+    }
+  } catch (e: any) {
+    console.error("[notification-prefs] get error:", e);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.put("/api/notifications/preferences", async (req: any, res: any) => {
+  try {
+    const sessionUser = req.session?.user;
+    if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
+    const { messages, meet_requests, connections, events, vouches } = req.body;
+    const prefs = { messages: !!messages, meet_requests: !!meet_requests, connections: !!connections, events: !!events, vouches: !!vouches };
+    await db.update(users).set({ notificationPreferences: JSON.stringify(prefs) }).where(eq(users.id, sessionUser.id));
+    return res.json({ ok: true, prefs });
+  } catch (e: any) {
+    console.error("[notification-prefs] put error:", e);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.put("/api/notifications/onesignal-player", async (req: any, res: any) => {
+  try {
+    const sessionUser = req.session?.user;
+    if (!sessionUser) return res.status(401).json({ error: "Not authenticated" });
+    const { playerId } = req.body;
+    if (!playerId || typeof playerId !== 'string') return res.status(400).json({ error: "playerId required" });
+    await db.update(users).set({ onesignalPlayerId: playerId }).where(eq(users.id, sessionUser.id));
+    return res.json({ ok: true });
+  } catch (e: any) {
+    console.error("[onesignal] register player error:", e);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
 // Password reset routes (Brevo email)
 app.use("/api/auth", passwordResetRouter);
 
@@ -871,6 +887,37 @@ app.use((req, res, next) => {
         UNIQUE(user_id, hidden_from_id)
       )
     `);
+    // Backfill firstName from name for existing users who never set it
+    await db.execute(sql`UPDATE users SET first_name = split_part(name, ' ', 1) WHERE first_name IS NULL AND name IS NOT NULL AND name != ''`);
+    // Ambassador referral chain table for 5% override bonus
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS ambassador_referral_chains (
+        id SERIAL PRIMARY KEY,
+        referrer_id INTEGER NOT NULL REFERENCES users(id),
+        referred_id INTEGER NOT NULL REFERENCES users(id),
+        created_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(referrer_id, referred_id)
+      )
+    `);
+    // Event co-ambassador table (up to 3 co-ambassadors per event, points split evenly)
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS event_cohost_splits (
+        id SERIAL PRIMARY KEY,
+        event_id INTEGER NOT NULL,
+        organizer_id INTEGER NOT NULL,
+        cohost_id INTEGER NOT NULL,
+        organizer_split INTEGER NOT NULL DEFAULT 0,
+        cohost_split INTEGER NOT NULL DEFAULT 0,
+        status TEXT NOT NULL DEFAULT 'confirmed',
+        points_awarded BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        confirmed_at TIMESTAMP
+      )
+    `);
+    // Drop the old unique constraint if it exists (allows multiple co-hosts per event)
+    await db.execute(sql`
+      ALTER TABLE event_cohost_splits DROP CONSTRAINT IF EXISTS event_cohost_splits_event_id_key
+    `).catch(() => {});
     console.log("✅ Schema migration check complete");
   } catch (migrationError) {
     console.log(

@@ -11,7 +11,7 @@ import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { VouchButton } from "@/components/VouchButton";
 import { ReportUserButton } from "@/components/report-user-button";
-import { formatLocationCompact, formatTravelDestinationShort, getCurrentTravelDestination } from "@/lib/dateUtils";
+import { formatLocationCompact, formatTravelDestinationShort, getCurrentTravelDestination, getTravelStatusLabel } from "@/lib/dateUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { useTheme } from "@/components/theme-provider";
 import { useIsDesktop } from "@/hooks/useDeviceType";
@@ -78,6 +78,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
     !isNativeIOSApp() && formatTravelDestinationShort(currentTravelPlan)
       ? formatTravelDestinationShort(currentTravelPlan)
       : currentTravelPlan;
+
+  const travelStatus = getTravelStatusLabel((user as any)?.travelStartDate, 'label');
+  const travelStatusLabel = travelStatus.label;
 
   const upcomingTrip = React.useMemo(() => {
     const today = new Date();
@@ -377,7 +380,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 </div>
                 {hasValidTravelDestination && (
                   <div className="text-sm sm:text-base font-semibold crisp-hero-text text-white" title={currentTravelPlan} style={{ color: '#ffffff' }}>
-                    Nearby Traveler <span style={{ color: '#ffffff' }}>→</span>{" "}
+                    {travelStatusLabel} <span style={{ color: '#ffffff' }}>→</span>{" "}
                     <span style={{ color: '#ffffff' }}>
                       {travelDestinationDisplay}
                     </span>
@@ -400,7 +403,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               </div>
               {hasValidTravelDestination && (
                 <div className="text-sm sm:text-base font-semibold crisp-hero-text text-white" title={currentTravelPlan} style={{ color: '#ffffff' }}>
-                  Nearby Traveler <span style={{ color: '#ffffff' }}>→</span>{" "}
+                  {travelStatusLabel} <span style={{ color: '#ffffff' }}>→</span>{" "}
                   <span style={{ color: '#ffffff' }}>{travelDestinationDisplay}</span>
                 </div>
               )}
@@ -509,7 +512,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <>
                     <div className={`flex ${isMobileWeb ? "flex-row items-start" : "flex-col"} lg:flex-row lg:items-start gap-4 lg:gap-6`}>
                       {/* LEFT: avatar + status */}
-                      <div className="flex-shrink-0">
+                      <div className={`flex-shrink-0 ${isMobileWeb ? 'flex flex-col items-start' : ''}`}>
                         <div
                           className={`w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-full overflow-hidden shadow-2xl cursor-pointer ${user?.ambassadorStatus === 'active' ? 'ring-4 ring-amber-400 ring-offset-2' : 'ring-4 ring-white/90'}`}
                           onClick={() => { if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 0); }}
@@ -518,6 +521,30 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
                         </div>
 
+                        {/* MOBILE ONLY: Nearby Local/Traveler labels under avatar (matches own-profile mobile layout) */}
+                        {isMobileWeb && (
+                          <div className="flex flex-col gap-1 min-w-0 w-full max-w-[280px] sm:max-w-none mt-4">
+                            {isNewToTown && (
+                              <span className="inline-flex items-center self-start whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm text-green-800 mb-1">
+                                New to Town
+                              </span>
+                            )}
+                            <span className="text-base sm:text-lg font-semibold crisp-hero-text text-white" style={{ color: '#ffffff' }}>
+                              Nearby Local
+                            </span>
+                            <span className="text-base sm:text-lg font-medium break-words crisp-hero-text text-white" title={hometown} style={{ color: '#ffffff' }}>{hometown}</span>
+                            {hasValidTravelDestination && (
+                              <>
+                                <span className="text-base sm:text-lg font-semibold mt-1 crisp-hero-text text-white" style={{ color: '#ffffff' }}>
+                                  {travelStatusLabel}
+                                </span>
+                                <span className="text-base sm:text-lg font-medium break-words crisp-hero-text text-white" title={currentTravelPlan!} style={{ color: '#ffffff' }}>
+                                  {travelDestinationDisplay}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {/* MIDDLE: content (no extra card; sit directly on gradient) */}
@@ -538,46 +565,26 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               <SupportBadge tier={(user as any)?.supportTier} />
                             </div>
 
-                            <div className="mt-2 space-y-1">
-                              {isMobileWeb ? (
-                                <>
-                                  <div className="text-sm sm:text-base font-semibold text-white crisp-hero-text leading-tight" style={{ color: '#ffffff' }}>
-                                    <div style={{ color: '#ffffff' }}>Nearby Local</div>
-                                    <div className="font-medium" style={{ color: '#ffffff' }}>{hometown}</div>
-                                  </div>
-
-                                  {hasValidTravelDestination && (
-                                    <div className="text-sm sm:text-base font-semibold text-white crisp-hero-text leading-tight" title={currentTravelPlan!} style={{ color: '#ffffff' }}>
-                                      <div style={{ color: '#ffffff' }}>Nearby Traveler</div>
-                                      <div className="font-medium" style={{ color: '#ffffff' }}>
-                                        {travelDestinationDisplay}
-                                      </div>
-                                    </div>
+                            {/* DESKTOP ONLY: Nearby Local/Traveler labels in content area (unchanged) */}
+                            {!isMobileWeb && (
+                              <div className="mt-2 space-y-1">
+                                <div className="text-sm sm:text-base font-semibold crisp-hero-text flex items-center gap-2 flex-wrap text-white" style={{ color: '#ffffff' }}>
+                                  Nearby Local · <span style={{ color: '#ffffff' }}>{hometown}</span>
+                                  {isNewToTown && (
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
+                                      New to Town
+                                    </span>
                                   )}
-                                </>
-                              ) : (
-                                <>
-                                  <div className="text-sm sm:text-base font-semibold crisp-hero-text flex items-center gap-2 flex-wrap text-white" style={{ color: '#ffffff' }}>
-                                    Nearby Local · <span style={{ color: '#ffffff' }}>{hometown}</span>
-                                    {!isMobileWeb && isNewToTown && (
-                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
-                                        New to Town
-                                      </span>
-                                    )}
+                                </div>
+                                {hasValidTravelDestination && (
+                                  <div className="text-sm sm:text-base font-semibold crisp-hero-text text-white" title={currentTravelPlan!} style={{ color: '#ffffff' }}>
+                                    <span style={{ color: '#ffffff' }}>{travelStatusLabel}</span>
+                                    <span style={{ color: '#ffffff' }}> → </span>
+                                    <span style={{ color: '#ffffff' }}>{travelDestinationDisplay}</span>
                                   </div>
-
-                                  {hasValidTravelDestination && (
-                                    <div className="text-sm sm:text-base font-semibold crisp-hero-text text-white" title={currentTravelPlan!} style={{ color: '#ffffff' }}>
-                                      <span style={{ color: '#ffffff' }}>Nearby Traveler</span>
-                                      <span style={{ color: '#ffffff' }}> → </span>
-                                      <span style={{ color: '#ffffff' }}>
-                                        {travelDestinationDisplay}
-                                      </span>
-                                    </div>
-                                  )}
-                                </>
-                              )}
-                            </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -933,7 +940,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 {hasValidTravelDestination && (
                   <>
                     <span className="text-sm font-semibold mt-1 crisp-hero-text text-white" style={{ color: "#ffffff" }}>
-                      Nearby Traveler
+                      {travelStatusLabel}
                     </span>
                     <span className="text-sm font-medium break-words crisp-hero-text text-white" title={currentTravelPlan!} style={{ color: "#ffffff" }}>
                       {travelDestinationDisplay}
@@ -1038,7 +1045,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     className={`text-base sm:text-lg lg:text-sm font-semibold mt-1 crisp-hero-text text-white ${!isOwnProfile ? "" : ""}`}
                     style={{ color: '#ffffff' }}
                   >
-                    Nearby Traveler
+                    {travelStatusLabel}
                   </span>
                   <span className={`text-base sm:text-lg font-medium break-words crisp-hero-text text-white ${isDesktopOtherUser ? '' : !isNativeIOSApp() ? '' : ''}`} title={currentTravelPlan!} style={{ color: '#ffffff' }}>
                     {travelDestinationDisplay}

@@ -743,7 +743,7 @@ export function ProfileTabs(props: ProfilePageProps) {
               className="space-y-4"
               data-testid="about-content"
             >
-            <Card className="mt-2 relative overflow-visible bg-white dark:bg-gray-800 shadow-sm">
+            <Card className="mt-2 relative overflow-visible bg-card border border-white/20 dark:border-white/20 dark:bg-gray-700 shadow-sm">
               <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-4 lg:px-6 pt-3 sm:pt-4 lg:pt-6">
                 <div className="flex items-center justify-between w-full">
                   <CardTitle className="text-base sm:text-lg lg:text-xl font-bold break-words text-left leading-tight flex-1 pr-2 text-gray-900 dark:text-white">
@@ -2784,7 +2784,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   <CardHeader className="bg-white dark:bg-gray-900">
                     <CardTitle className="flex items-center gap-2 text-black dark:text-white">
                       <MessageCircle className="w-5 h-5" />
-                      My Chatrooms ({userChatrooms?.length || 0})
+                      {isOwnProfile ? 'My Chatrooms' : 'Chatrooms'} ({userChatrooms?.length || 0})
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -2858,7 +2858,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                         })}
                       </div>
                     ) : (
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">You haven't joined any chatrooms yet. Visit a city page to join its chatroom!</p>
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">{isOwnProfile ? "You haven't joined any chatrooms yet. Visit a city page to join its chatroom!" : "This user hasn't joined any chatrooms yet."}</p>
                     )}
                   </CardContent>
                 </Card>

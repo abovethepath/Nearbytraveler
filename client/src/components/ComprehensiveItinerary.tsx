@@ -365,11 +365,11 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
 
   const getItemColor = (type: ItineraryItem['type']) => {
     const colors = {
-      flight: 'bg-blue-100 text-blue-800 border-blue-200',
-      accommodation: 'bg-green-100 text-green-800 border-green-200',
-      activity: 'bg-orange-100 text-orange-800 border-orange-200',
-      restaurant: 'bg-red-100 text-red-800 border-red-200',
-      transportation: 'bg-purple-100 text-purple-800 border-purple-200',
+      flight: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700',
+      accommodation: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700',
+      activity: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700',
+      restaurant: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700',
+      transportation: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700',
       note: 'bg-gray-100 dark:bg-gray-800 text-gray-800 border-gray-200 dark:border-gray-700',
     };
     return colors[type];

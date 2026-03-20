@@ -87,7 +87,7 @@ export default function BusinessProfile() {
                 <Building className="h-8 w-8 text-blue-600" />
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{businessData.name}</h1>
                 {businessData.verified && (
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
+                  <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
                     <CheckCircle className="h-4 w-4 mr-1" />
                     Verified Business
                   </Badge>

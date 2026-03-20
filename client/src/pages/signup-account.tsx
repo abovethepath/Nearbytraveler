@@ -31,7 +31,7 @@ export default function SignupAccount() {
   const [usernameAvailable, setUsernameAvailable] = useState(null as boolean | null);
   const [currentError, setCurrentError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [keepLoggedIn, setKeepLoggedIn] = useState(true);
+  const keepLoggedIn = true;
   const [phoneChecking, setPhoneChecking] = useState(false);
   const [phoneInUse, setPhoneInUse] = useState(false);
   const [phoneLastCheckedDigits, setPhoneLastCheckedDigits] = useState<string>("");
@@ -324,7 +324,7 @@ export default function SignupAccount() {
 
           <CardContent className="p-6 space-y-4">
             {currentError && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              <div className="bg-red-100 border border-red-400 text-red-700 dark:bg-red-900/30 dark:border-red-700 dark:text-red-300 px-4 py-3 rounded mb-4">
                 <div className="flex items-center">
                   <span className="text-red-500 text-xl mr-2">❌</span>
                   <span className="font-medium">
@@ -511,20 +511,6 @@ export default function SignupAccount() {
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2 mt-4">
-                <button
-                  type="button"
-                  onClick={() => setKeepLoggedIn(!keepLoggedIn)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
-                    !!keepLoggedIn
-                      ? "bg-orange-500 text-white border-orange-500"
-                      : "bg-transparent border border-gray-300 dark:border-white/30 text-gray-600 dark:text-white/70 hover:border-orange-400"
-                  }`}
-                >
-                  Keep me logged in
-                </button>
               </div>
 
               <Button

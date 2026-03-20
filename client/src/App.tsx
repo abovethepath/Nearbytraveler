@@ -2084,14 +2084,12 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <GlobalHotfixes />
       <ThemeProvider defaultTheme="dark" storageKey="nearby-traveler-theme">
-        <TooltipProvider>
           <Toaster />
           <DarkModeSuggestionBanner />
           <Router />
           {!isNativeIOSApp() && !disableFloatingChatbot && (
             <div className="hidden md:block"><HelpChatbot /></div>
           )}
-        </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

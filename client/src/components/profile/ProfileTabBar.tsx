@@ -221,7 +221,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           </button>
         )}
 
-        {isOwnProfile && user?.userType !== "business" && (
+        {user?.userType !== "business" && (
           <button
             role="tab"
             aria-selected={activeTab === "chatrooms"}

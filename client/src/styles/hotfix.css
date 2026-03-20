@@ -106,8 +106,8 @@ html, body { overflow-x: hidden; }
 }
 
 .dark [data-role="user-card-contacts"] span {
-  color: #FF6B35 !important;
-  -webkit-text-fill-color: #FF6B35 !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
 .dark [data-role="user-card-things-pill"] {
@@ -135,6 +135,12 @@ html, body { overflow-x: hidden; }
   margin-left: auto !important;
   margin-right: auto !important;
   text-align: center !important;
+}
+
+/* Light mode: dark text on pale orange bg-orange-100 pill */
+:root:not(.dark) [data-role="user-card-things-pill"] {
+  color: #92400e !important;
+  -webkit-text-fill-color: #92400e !important;
 }
 
 [data-role="user-card-contacts"] {

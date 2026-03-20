@@ -28,6 +28,8 @@ interface SimpleAvatarProps {
     profilePhoto?: string | null;
     avatarColor?: string | null;
     avatarGradient?: string | null;
+    isCurrentlyTraveling?: boolean;
+    ambassadorStatus?: string | null;
   } | null;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
@@ -136,15 +138,24 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
     ? avatarData.imageUrl 
     : (usePlaceholderPhoto ? avatarData.placeholderUrl : null);
 
+  // Determine status border: ambassador = skip (caller handles), traveling = orange, home = white
+  const isAmbassador = !!(user as any)?.ambassadorStatus && (user as any).ambassadorStatus !== 'none';
+  const statusBorderStyle: React.CSSProperties | undefined = isAmbassador
+    ? undefined
+    : (user as any)?.isCurrentlyTraveling
+      ? { border: '2px solid rgba(255, 107, 53, 0.9)' }
+      : { border: '2px solid rgba(255, 255, 255, 0.8)' };
+
   // Always render both image and letter fallback, but show only one
   return (
-    <div className={`relative ${sizeClasses[size]} ${className} rounded-full overflow-hidden`}>
+    <div className={`relative ${sizeClasses[size]} ${className} rounded-full overflow-hidden`} style={statusBorderStyle}>
       {/* Profile image or placeholder - show if available */}
       {displayImageUrl && (
         <img
           src={displayImageUrl}
           alt={`${user?.username} avatar`}
           className={`w-full h-full object-cover rounded-full ${cursorClass}`}
+          style={{ objectPosition: 'top center' }}
           onClick={handleClick}
           onError={(e) => {
             // Hide image on error to show letter fallback

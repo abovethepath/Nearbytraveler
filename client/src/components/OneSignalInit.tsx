@@ -77,7 +77,7 @@ async function registerSubscription(userId: number) {
     const subscription = OneSignal.User?.pushSubscription;
     const playerId = subscription?.id || await OneSignal.getUserId?.();
     if (!playerId) return;
-    await apiRequest("PUT", "/api/users/onesignal-player", { playerId });
+    await apiRequest("PUT", "/api/notifications/onesignal-player", { playerId });
     console.log("[OneSignal] player registered:", playerId);
   } catch (e) {
     console.warn("[OneSignal] registration error:", e);

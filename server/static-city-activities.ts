@@ -759,7 +759,6 @@ export const STATIC_CITY_ACTIVITIES: Record<string, Array<{name: string, descrip
     { name: "Museum of Contemporary Art", description: "MOCA showcases cutting-edge modern art", category: "culture" },
     
     // SHOPPING & LUXURY
-    { name: "Rodeo Drive", description: "World-famous luxury shopping street in Beverly Hills", category: "shopping" },
     { name: "The Grove", description: "Popular outdoor shopping and entertainment complex", category: "shopping" },
     { name: "Beverly Center", description: "Luxury shopping mall with designer boutiques", category: "shopping" },
     { name: "Melrose Avenue", description: "Trendy street with vintage shops, boutiques, and restaurants", category: "shopping" },
@@ -772,13 +771,10 @@ export const STATIC_CITY_ACTIVITIES: Record<string, Array<{name: string, descrip
     { name: "LA Live", description: "Entertainment complex with venues, restaurants, and nightlife", category: "entertainment" },
     
     // UNIQUE LA EXPERIENCES
-    { name: "La Brea Tar Pits", description: "Active paleontological site with Ice Age fossils and museum", category: "science" },
-    { name: "Sunset Strip", description: "Legendary nightlife district with iconic music venues and clubs", category: "nightlife" },
     { name: "Food Truck Culture", description: "Diverse mobile food scene with gourmet trucks citywide", category: "food" },
     { name: "In-N-Out Burger", description: "California's beloved burger chain - a must-try local institution", category: "food" },
     
     // OUTDOOR & NATURE
-    { name: "Mulholland Drive", description: "Scenic mountain road with panoramic city and valley views", category: "outdoor" },
     { name: "Topanga Canyon", description: "Bohemian mountain community with hiking trails and vintage shops", category: "outdoor" },
     { name: "Malibu Wine Safari", description: "Wine tasting with exotic animals in Malibu mountains", category: "outdoor" },
     

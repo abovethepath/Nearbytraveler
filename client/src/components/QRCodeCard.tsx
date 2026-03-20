@@ -254,7 +254,7 @@ export default function QRCodeCard() {
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-semibold text-sm">{currentUser?.name}</p>
+            <p className="font-semibold text-sm">{currentUser?.firstName || currentUser?.name?.split(' ')[0]}</p>
             <p className="text-xs text-gray-600 dark:text-gray-400">@{currentUser?.username}</p>
           </div>
         </div>

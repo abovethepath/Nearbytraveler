@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npx tsc:*)",
+      "Bash(awk 'NR>=3221 && NR<=3591' client/src/components/WhatsAppChat.tsx)",
+      "Bash(awk 'NR>=3592 && NR<=3944' client/src/components/WhatsAppChat.tsx)",
+      "Bash(npx esbuild:*)",
+      "Bash(node -e \":*)",
+      "Bash(npx vite:*)",
+      "Bash(grep -rn \"member\\\\.name\\\\|member\\\\.name\\\\||coOrg\\\\.user\\\\|participant\\\\.user\" client/src/pages/*.tsx client/src/components/*.tsx)"
+    ]
+  }
+}

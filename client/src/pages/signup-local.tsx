@@ -155,6 +155,8 @@ export default function SignupLocal() {
         password: (finalFormData.password || "").trim(),
         username: (finalFormData.username || "").toLowerCase().trim(),
         name: (finalFormData.name || "").trim(),
+        firstName: (finalFormData.firstName || "").trim() || undefined,
+        lastName: (finalFormData.lastName || "").trim() || undefined,
         phoneNumber: (finalFormData.phoneNumber || "").trim(),
         keepLoggedIn: finalFormData.keepLoggedIn !== false,
 

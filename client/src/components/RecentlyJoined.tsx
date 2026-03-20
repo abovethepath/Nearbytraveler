@@ -85,8 +85,13 @@ export default function RecentlyJoined({ currentUserId, messagedUserIds }: Recen
         {/* Card row */}
         <div
           ref={scrollRef}
-          className="flex flex-nowrap gap-3 px-4 pb-4 overflow-x-auto lg:overflow-x-hidden lg:px-8"
-          style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
+          className="recently-joined-scroll flex flex-nowrap gap-3 px-4 pb-4 overflow-x-auto lg:overflow-x-hidden lg:px-8"
+          style={{
+            WebkitOverflowScrolling: "touch",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            flexWrap: "nowrap",
+          }}
         >
           {filtered.map((user) => {
             const city = cityLabel(user);
@@ -96,7 +101,7 @@ export default function RecentlyJoined({ currentUserId, messagedUserIds }: Recen
             return (
               <div
                 key={user.id}
-                className="flex-shrink-0 flex flex-col items-center gap-2 w-[120px] bg-gray-50 dark:bg-gray-800 rounded-xl p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors"
+                className="flex-shrink-0 flex flex-col items-center gap-2 w-[140px] lg:w-[120px] bg-gray-50 dark:bg-gray-800 rounded-xl p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors"
                 onClick={() => setLocation(`/profile/${user.id}`)}
               >
                 {/* Avatar */}
@@ -112,7 +117,9 @@ export default function RecentlyJoined({ currentUserId, messagedUserIds }: Recen
                       {initial}
                     </div>
                   )}
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white dark:border-gray-800" />
+                  {user.lastSeenAt && (Date.now() - new Date(user.lastSeenAt).getTime() < 5 * 60 * 1000) && (
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white dark:border-gray-800" />
+                  )}
                 </div>
 
                 {/* Name */}

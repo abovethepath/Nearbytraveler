@@ -262,7 +262,7 @@ export default function DestinationModal({ isOpen, onComplete, onClose, user }: 
               <p className="text-sm text-muted-foreground mb-3">Add specific events you plan to attend</p>
               <div className="flex flex-wrap gap-2 mb-2">
                 {plannedEvents.map((event, index) => (
-                  <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm">
+                  <div key={index} className="flex items-center gap-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-1 rounded-md text-sm">
                     {event}
                     <button
                       onClick={() => setPlannedEvents(prev => prev.filter((_, i) => i !== index))}

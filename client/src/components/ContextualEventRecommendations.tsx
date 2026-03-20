@@ -63,9 +63,9 @@ export function ContextualEventRecommendations({ userId, limit = 8 }: Contextual
   });
 
   const getScoreColor = (score: number) => {
-    if (score >= 0.8) return 'text-green-600 bg-green-100';
-    if (score >= 0.6) return 'text-blue-600 bg-blue-100';
-    if (score >= 0.4) return 'text-yellow-600 bg-yellow-100';
+    if (score >= 0.8) return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30';
+    if (score >= 0.6) return 'text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30';
+    if (score >= 0.4) return 'text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30';
     return 'text-gray-600 bg-gray-100 dark:bg-gray-800';
   };
 
@@ -187,14 +187,14 @@ export function ContextualEventRecommendations({ userId, limit = 8 }: Contextual
                 </div>
                 {event.freeEvent && (
                   <div className="absolute top-2 left-2">
-                    <Badge variant="outline" className="text-xs bg-green-100 text-green-800 border-green-300">
+                    <Badge variant="outline" className="text-xs bg-green-100 text-green-800 border-green-300 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700">
                       FREE
                     </Badge>
                   </div>
                 )}
                 {event.price && !event.freeEvent && (
                   <div className="absolute top-2 left-2">
-                    <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800 border-blue-300">
+                    <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700">
                       ${event.price}
                     </Badge>
                   </div>

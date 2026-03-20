@@ -139,7 +139,7 @@ export default function JoinTrip() {
               {invitedBy.profileImage ? (
                 <img src={invitedBy.profileImage} className="w-12 h-12 rounded-full object-cover" alt="" />
               ) : (
-                <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
                   <span className="text-orange-600 font-medium">
                     {(invitedBy.name || invitedBy.username || '?').charAt(0).toUpperCase()}
                   </span>

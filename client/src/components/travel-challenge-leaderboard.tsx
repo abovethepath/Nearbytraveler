@@ -288,7 +288,7 @@ export default function TravelChallengeLeaderboard() {
                         className="w-10 h-10 rounded-full"
                       />
                       <div>
-                        <p className="font-medium">{entry.user?.name}</p>
+                        <p className="font-medium">{entry.user?.firstName || entry.user?.name?.split(' ')[0]}</p>
                         <div className="flex items-center space-x-3 text-sm text-gray-600">
                           <span>{entry.challengesCompleted} challenges</span>
                           <span>🔥 {entry.currentStreak} streak</span>

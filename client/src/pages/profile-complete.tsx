@@ -663,7 +663,7 @@ function nudgeIncrementLogin(userId: number) {
 function NotificationPreferencesSection({ currentUserId }: { currentUserId?: number }) {
   const { toast } = useToast();
   const { data: prefs, isLoading } = useQuery<Record<string, boolean>>({
-    queryKey: ['/api/users/notification-preferences'],
+    queryKey: ['/api/notifications/preferences'],
     enabled: !!currentUserId,
   });
   const [saving, setSaving] = useState(false);
@@ -677,7 +677,7 @@ function NotificationPreferencesSection({ currentUserId }: { currentUserId?: num
     setLocal(next);
     setSaving(true);
     try {
-      await apiRequest('PUT', '/api/users/notification-preferences', next);
+      await apiRequest('PUT', '/api/notifications/preferences', next);
     } catch {
       toast({ description: 'Failed to save notification preference.', variant: 'destructive' });
       setLocal(effective);
@@ -1020,6 +1020,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     return () => window.removeEventListener('coverPhotoUpdated', handleCoverPhotoRefresh);
   }, []);
   const [showCropModal, setShowCropModal] = useState(false);
+  const [showAvatarCropModal, setShowAvatarCropModal] = useState(false);
+  const [avatarCropSrc, setAvatarCropSrc] = useState<string | null>(null);
+  const [avatarCropOffset, setAvatarCropOffset] = useState({ x: 0, y: 0 });
+  const [avatarCropScale, setAvatarCropScale] = useState(1);
+  const avatarCropDragging = React.useRef(false);
+  const avatarCropDragStart = React.useRef({ x: 0, y: 0, ox: 0, oy: 0 });
   const [customInterestInput, setCustomInterestInput] = useState("");
   const [customActivityInput, setCustomActivityInput] = useState("");
   const [showCoverPhotoSelector, setShowCoverPhotoSelector] = useState(false);
@@ -1768,6 +1774,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const profileForm = useForm<z.infer<typeof dynamicProfileSchema>>({
     resolver: zodResolver(dynamicProfileSchema),
     defaultValues: (currentUserType === 'business' ? {
+      firstName: "",
       bio: "",
       businessName: "",
       businessDescription: "",
@@ -1800,6 +1807,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       showFemaleOwned: true,
       showLGBTQIAOwned: true,
     } : {
+      firstName: "",
       bio: "",
       secretActivities: "",
       hometownCity: "",
@@ -1863,7 +1871,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           .filter((item: string) => safeGetAllActivities().includes(item));
         
         profileForm.reset({
-          firstName: (user as any).firstName || (user as any).first_name || "",
+          firstName: (user as any).firstName || (user as any).first_name || ((user as any).name ? String((user as any).name).split(' ')[0] : ""),
           bio: user.bio || "",
           businessName: (user as any).business_name || (user as any).businessName || "",
           hometownCity: user.hometownCity || "",
@@ -1893,7 +1901,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
         
         profileForm.reset({
-          firstName: (user as any).firstName || (user as any).first_name || "",
+          firstName: (user as any).firstName || (user as any).first_name || ((user as any).name ? String((user as any).name).split(' ')[0] : ""),
           bio: user.bio || "",
           secretActivities: user.secretActivities || "",
           hometownCity: user.hometownCity || "",
@@ -1966,7 +1974,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             .filter((item: string) => safeGetAllActivities().includes(item));
           
           profileForm.reset({
-            firstName: (user as any).firstName || (user as any).first_name || "",
+            firstName: (user as any).firstName || (user as any).first_name || ((user as any).name ? String((user as any).name).split(' ')[0] : ""),
             bio: user.bio || "",
             businessName: (user as any).business_name || (user as any).businessName || "",
             businessDescription: (user as any).business_description || (user as any).businessDescription || "",
@@ -2002,7 +2010,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         } else {
           // For non-business users, reset with their data
           profileForm.reset({
-            firstName: (user as any).firstName || (user as any).first_name || "",
+            firstName: (user as any).firstName || (user as any).first_name || ((user as any).name ? String((user as any).name).split(' ')[0] : ""),
             bio: user.bio || "",
             secretActivities: user.secretActivities || "",
             hometownCity: user.hometownCity || "",
@@ -2156,7 +2164,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       console.log('📅 FORM INIT - user.dateOfBirth raw:', user.dateOfBirth);
       console.log('📅 FORM INIT - formatted:', user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : "empty");
       profileForm.reset({
-        firstName: (user as any).firstName || (user as any).first_name || "",
+        firstName: (user as any).firstName || (user as any).first_name || ((user as any).name ? String((user as any).name).split(' ')[0] : ""),
         bio: user.bio || "",
         ...(user?.userType === 'business' ? { 
           businessName: (user as any).business_name || (user as any).businessName || "",
@@ -2645,167 +2653,104 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
-  // Handle avatar upload from file input
+  // Handle avatar upload: compress → open crop modal (don't upload yet)
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Validate file size (max 2MB for avatar)
-      if (file.size > 2 * 1024 * 1024) {
-        toast({
-          title: "File Too Large",
-          description: "Please select an avatar image smaller than 2MB.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: "Invalid File Type",
-          description: "Please select an image file.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      console.log('Avatar upload starting for file:', file.name, 'size:', file.size);
-      setUploadingPhoto(true);
-      
-      // Direct upload function call with adaptive compression
-      try {
-        // Use adaptive compression for profile photos
-        const compressedFile = await compressPhotoAdaptive(file);
-        
-        const reader = new FileReader();
-        reader.onload = async () => {
-          try {
-            const base64 = reader.result as string;
-            console.log('Compressed file converted to base64, uploading...');
-            
-            const apiBase = getApiBaseUrl();
-            const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ profileImage: base64 })
-            });
-          
-          if (!response.ok) {
-            throw new Error(`Upload failed: ${response.statusText}`);
-          }
-          
-          const updatedUser = await response.json();
-          console.log('Avatar upload successful:', updatedUser.username);
-          
-          // Update auth immediately
-          authStorage.setUser(updatedUser);
-          if (setAuthUser && isOwnProfile) {
-            setAuthUser(updatedUser);
-          }
-          
-          // Invalidate queries
-          queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-          queryClient.invalidateQueries({ queryKey: ["/api/users"] });
-          
-          // Trigger navbar refresh
-          window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
-          
-          toast({
-            title: "Success",
-            description: "Avatar updated successfully!",
-          });
-          
-        } catch (error: any) {
-          console.error('Avatar upload error:', error);
-          toast({
-            title: "Upload Failed",
-            description: error?.message || "Failed to upload avatar",
-            variant: "destructive",
-          });
-        } finally {
-          setUploadingPhoto(false);
-        }
-      };
-      
-      reader.onerror = () => {
-        console.error('Failed to read file');
-        toast({
-          title: "Error",
-          description: "Failed to read image file",
-          variant: "destructive",
-        });
-        setUploadingPhoto(false);
-      };
-      
-      reader.readAsDataURL(compressedFile);
-      } catch (compressionError: any) {
-        console.warn('Photo compression failed, using original file:', compressionError);
-        // Fall back to original file if compression fails
-        const reader = new FileReader();
-        reader.onload = async () => {
-          try {
-            const base64 = reader.result as string;
-            console.log('Original file converted to base64, uploading...');
-            
-            const apiBase = getApiBaseUrl();
-            const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ profileImage: base64 })
-            });
-            
-            if (!response.ok) {
-              throw new Error(`Upload failed: ${response.statusText}`);
-            }
-            
-            const updatedUser = await response.json();
-            console.log('Avatar upload successful:', updatedUser.username);
-            
-            // Update auth immediately
-            authStorage.setUser(updatedUser);
-            if (setAuthUser && isOwnProfile) {
-              setAuthUser(updatedUser);
-            }
-            
-            // Invalidate queries
-            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-            queryClient.invalidateQueries({ queryKey: ["/api/users"] });
-            
-            // Trigger navbar refresh
-            window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
-            
-            toast({
-              title: "Success",
-              description: "Avatar updated successfully!",
-            });
-            
-          } catch (error: any) {
-            console.error('Avatar upload error:', error);
-            toast({
-              title: "Upload Failed",
-              description: error?.message || "Failed to upload avatar",
-              variant: "destructive",
-            });
-          } finally {
-            setUploadingPhoto(false);
-          }
-        };
-        
-        reader.onerror = () => {
-          console.error('Failed to read file');
-          toast({
-            title: "Error",
-            description: "Failed to read image file",
-            variant: "destructive",
-          });
-          setUploadingPhoto(false);
-        };
-        
-        reader.readAsDataURL(file);
-      }
-    }
-    // Clear the input to allow same file selection
+    if (!file) return;
     e.target.value = '';
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast({ title: "File Too Large", description: "Please select an avatar image smaller than 2MB.", variant: "destructive" });
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      toast({ title: "Invalid File Type", description: "Please select an image file.", variant: "destructive" });
+      return;
+    }
+
+    try {
+      const compressed = await compressPhotoAdaptive(file).catch(() => file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result as string;
+        setAvatarCropSrc(base64);
+        setAvatarCropOffset({ x: 0, y: 0 });
+        setAvatarCropScale(1);
+        setShowAvatarCropModal(true);
+      };
+      reader.onerror = () => toast({ title: "Error", description: "Failed to read image file", variant: "destructive" });
+      reader.readAsDataURL(compressed);
+    } catch {
+      toast({ title: "Error", description: "Failed to process image", variant: "destructive" });
+    }
+  };
+
+  // Save cropped avatar: render to canvas with the user's chosen position, then upload
+  const saveAvatarCrop = async () => {
+    if (!avatarCropSrc) return;
+    setShowAvatarCropModal(false);
+    setUploadingPhoto(true);
+
+    try {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error('Image load failed'));
+        img.src = avatarCropSrc;
+      });
+
+      const outputSize = 512;
+      const canvas = document.createElement('canvas');
+      canvas.width = outputSize;
+      canvas.height = outputSize;
+      const ctx = canvas.getContext('2d')!;
+
+      // Calculate crop: the image fills the circle at avatarCropScale, offset by avatarCropOffset
+      const scale = avatarCropScale;
+      const imgAspect = img.width / img.height;
+      let drawW: number, drawH: number;
+      if (imgAspect > 1) {
+        drawH = outputSize * scale;
+        drawW = drawH * imgAspect;
+      } else {
+        drawW = outputSize * scale;
+        drawH = drawW / imgAspect;
+      }
+      const drawX = (outputSize - drawW) / 2 + avatarCropOffset.x * scale;
+      const drawY = (outputSize - drawH) / 2 + avatarCropOffset.y * scale;
+
+      // Clip to circle
+      ctx.beginPath();
+      ctx.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+      const base64 = canvas.toDataURL('image/jpeg', 0.9);
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profileImage: base64 }),
+      });
+
+      if (!response.ok) throw new Error(`Upload failed: ${response.statusText}`);
+      const updatedUser = await response.json();
+
+      authStorage.setUser(updatedUser);
+      if (setAuthUser && isOwnProfile) setAuthUser(updatedUser);
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+      window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
+      toast({ title: "Success", description: "Avatar updated successfully!" });
+    } catch (error: any) {
+      console.error('Avatar crop/upload error:', error);
+      toast({ title: "Upload Failed", description: error?.message || "Failed to upload avatar", variant: "destructive" });
+    } finally {
+      setUploadingPhoto(false);
+      setAvatarCropSrc(null);
+    }
   };
 
   // Handle profile photo upload (separate from avatar)
@@ -3669,7 +3614,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         console.log('🔥 Re-syncing form with updated user data');
         if (user?.userType !== 'business') {
           profileForm.reset({
-            firstName: (updatedUser as any).firstName || (updatedUser as any).first_name || "",
+            firstName: (updatedUser as any).firstName || (updatedUser as any).first_name || ((updatedUser as any).name ? String((updatedUser as any).name).split(' ')[0] : ""),
             bio: updatedUser.bio || "",
             secretActivities: updatedUser.secretActivities || "",
             hometownCity: updatedUser.hometownCity || "",
@@ -4325,6 +4270,83 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {isOwnProfile && <NotificationPreferencesSection currentUserId={currentUser?.id} />}
       {isNearbytrav && <AdminDashboard />}
       <ProfileDialogs {...profileProps} />
+
+      {/* Avatar Crop/Reposition Modal */}
+      {showAvatarCropModal && avatarCropSrc && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70" onClick={() => setShowAvatarCropModal(false)}>
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 max-w-sm w-[90vw] mx-4" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-center mb-1 text-gray-900 dark:text-white">Position Your Photo</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-4">Drag to reposition</p>
+
+            {/* Circular crop viewport */}
+            <div
+              className="relative mx-auto rounded-full overflow-hidden border-4 border-gray-200 dark:border-gray-700 cursor-grab active:cursor-grabbing select-none"
+              style={{ width: 240, height: 240, touchAction: 'none' }}
+              onPointerDown={(e) => {
+                avatarCropDragging.current = true;
+                avatarCropDragStart.current = { x: e.clientX, y: e.clientY, ox: avatarCropOffset.x, oy: avatarCropOffset.y };
+                (e.target as HTMLElement).setPointerCapture(e.pointerId);
+              }}
+              onPointerMove={(e) => {
+                if (!avatarCropDragging.current) return;
+                const dx = e.clientX - avatarCropDragStart.current.x;
+                const dy = e.clientY - avatarCropDragStart.current.y;
+                setAvatarCropOffset({ x: avatarCropDragStart.current.ox + dx, y: avatarCropDragStart.current.oy + dy });
+              }}
+              onPointerUp={() => { avatarCropDragging.current = false; }}
+              onPointerCancel={() => { avatarCropDragging.current = false; }}
+            >
+              <img
+                src={avatarCropSrc}
+                alt="Crop preview"
+                draggable={false}
+                className="absolute"
+                style={{
+                  width: `${avatarCropScale * 100}%`,
+                  height: `${avatarCropScale * 100}%`,
+                  objectFit: 'cover',
+                  left: '50%',
+                  top: '50%',
+                  transform: `translate(calc(-50% + ${avatarCropOffset.x}px), calc(-50% + ${avatarCropOffset.y}px))`,
+                }}
+              />
+            </div>
+
+            {/* Zoom slider */}
+            <div className="flex items-center gap-3 mt-4 px-2">
+              <span className="text-xs text-gray-500">−</span>
+              <input
+                type="range"
+                min="1"
+                max="3"
+                step="0.05"
+                value={avatarCropScale}
+                onChange={(e) => setAvatarCropScale(parseFloat(e.target.value))}
+                className="flex-1 accent-blue-600"
+              />
+              <span className="text-xs text-gray-500">+</span>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-3 mt-5">
+              <button
+                type="button"
+                onClick={() => { setShowAvatarCropModal(false); setAvatarCropSrc(null); }}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveAvatarCrop}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

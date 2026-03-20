@@ -10,12 +10,17 @@ export default function AmbassadorInfo() {
   const [, setLocation] = useLocation();
 
   const pointActions = [
-    { action: "Refer a friend who signs up", points: "+50 pts", icon: Users, description: "Invite friends to join the community" },
+    { action: "Recruit a friend who signs up", points: "+50 pts", icon: Users, description: "Invite friends to join the community" },
     { action: "Refer a business lead", points: "+75 pts", icon: Building2, description: "Connect local businesses to the platform" },
     { action: "Business becomes a paying partner", points: "+200 pts", icon: Star, description: "Successfully onboard a business partner" },
-    { action: "Create an event", points: "+20 pts", icon: Calendar, description: "Host community gatherings" },
-    { action: "Host verified event", points: "+50 pts", icon: Shield, description: "Successfully run community events" },
-    { action: "Event hits attendance goal", points: "+30 pts", icon: Target, description: "Grow event participation" },
+    { action: "Create an event", points: "+5 pts", icon: Calendar, description: "Host community gatherings" },
+    { action: "Event with 10+ attendees", points: "+20 pts", icon: Target, description: "Events that attract real participation" },
+    { action: "Complete a Quick Meet", points: "+10 pts", icon: Users, description: "Max 1/day, 3/week" },
+    { action: "Complete an Available Now", points: "+5 pts", icon: Users, description: "Max 1/day, 3/week" },
+    { action: "Create a chatroom (5+ members)", points: "+15 pts", icon: Users, description: "Build active community spaces" },
+    { action: "Write a reference", points: "+10 pts", icon: Star, description: "Max 1 per person ever" },
+    { action: "Receive a reference", points: "+10 pts", icon: Star, description: "Max 1 per person ever" },
+    { action: "Every 25 connections reached", points: "+50 pts", icon: Users, description: "Grow your network" },
   ];
 
   return (
@@ -133,7 +138,7 @@ export default function AmbassadorInfo() {
             <div className="mt-3 rounded-xl bg-white dark:bg-gray-900 border border-amber-200 dark:border-amber-700 p-3">
               <p className="text-xs font-semibold text-gray-900 dark:text-white mb-1">Activity requirement:</p>
               <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
-                <li>Must earn at least 50 points every 6 months to stay active</li>
+                <li>Must earn at least 200 points every 6 months to stay active</li>
                 <li>Inactive for 6 months → status changes to "Inactive" (points frozen, not deleted)</li>
                 <li>Inactive for 12 months → ambassador status revoked, points stop counting</li>
                 <li>Can reapply after 12 months and start fresh</li>
@@ -151,7 +156,7 @@ export default function AmbassadorInfo() {
                 { q: "Is this paid work?", a: "No. This is not a job and points are not income." },
                 { q: "Can points be converted to cash?", a: "No. Points are for tracking contribution. They may never be worth anything." },
                 { q: "When could points matter?", a: "Only if there's a future exit (like an acquisition or IPO), and only under the official terms." },
-                { q: "How do I stay active?", a: "Earn at least 50 points every 6 months. If inactive for 6 months, your status becomes Inactive (points frozen). If inactive for 12 months, ambassador status is revoked." },
+                { q: "How do I stay active?", a: "Earn at least 200 points every 6 months. If inactive for 6 months, your status becomes Inactive (points frozen). If inactive for 12 months, ambassador status is revoked." },
               ].map(({ q, a }) => (
                 <div key={q} className="border-b border-gray-100 dark:border-gray-800 pb-3 last:border-0 last:pb-0">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">{q}</h3>

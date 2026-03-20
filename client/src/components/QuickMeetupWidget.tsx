@@ -510,8 +510,11 @@ export function QuickMeetupWidget({
   }
 
   // Get ALL active meetups to show prominently at the top
-  const allActiveMeetups = quickMeetups?.filter((meetup: any) => 
-    new Date(meetup.expiresAt).getTime() > Date.now()
+  // Filter out expired meetups and meetups where the current user is muted
+  const allActiveMeetups = quickMeetups?.filter((meetup: any) =>
+    new Date(meetup.expiresAt).getTime() > Date.now() &&
+    meetup.isActive !== false &&
+    !meetup.currentUserMuted
   ) || [];
 
   const openDetails = (meetup: any) => {
@@ -1198,7 +1201,7 @@ export function QuickMeetupWidget({
       {!compactOnly && quickMeetups && quickMeetups.length > 0 && (
         <div className="grid gap-3 mt-4">
           {quickMeetups
-            .filter((meetup: any) => new Date(meetup.expiresAt).getTime() > Date.now())
+            .filter((meetup: any) => new Date(meetup.expiresAt).getTime() > Date.now() && meetup.isActive !== false && !meetup.currentUserMuted)
             .slice(0, 3)
             .map((meetup: any) => {
               const isOwn = meetup.organizerId === actualUser?.id;

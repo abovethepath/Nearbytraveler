@@ -202,13 +202,13 @@ export default function ResponsiveUserGrid({
           </p>
           {!isCurrentUser && (
             <>
-              <p className="text-sm font-medium truncate mt-0.5" style={{ color: '#3b82f6' }}>
+              <p className="text-sm font-medium truncate mt-0.5" style={{ color: '#FFFFFF' }}>
                 {getThingsInCommon(user)} things in common
               </p>
               {connectionDegreesMap?.[user.id] && (
-                <p className="text-sm font-medium truncate mt-0.5" style={{ color: '#FF6B35' }}>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold mt-0.5 truncate" style={{ backgroundColor: '#3B82F6', color: 'white' }}>
                   {connectionDegreesMap[user.id].mutualCount} {connectionDegreesMap[user.id].mutualCount === 1 ? 'Connection' : 'Connections'} in Common
-                </p>
+                </span>
               )}
             </>
           )}
@@ -302,13 +302,13 @@ export default function ResponsiveUserGrid({
           </p>
           {!isCurrentUser && (
             <>
-              <p className="text-xs font-medium truncate mt-0.5" style={{ color: '#3b82f6' }}>
+              <p className="text-xs font-medium truncate mt-0.5" style={{ color: '#FFFFFF' }}>
                 {getThingsInCommon(user)} things in common
               </p>
               {connectionDegreesMap?.[user.id] && (
-                <p className="text-xs font-medium truncate mt-0.5" style={{ color: '#FF6B35' }}>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold mt-0.5 truncate" style={{ backgroundColor: '#3B82F6', color: 'white' }}>
                   {connectionDegreesMap[user.id].mutualCount} {connectionDegreesMap[user.id].mutualCount === 1 ? 'Connection' : 'Connections'} in Common
-                </p>
+                </span>
               )}
             </>
           )}

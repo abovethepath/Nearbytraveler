@@ -978,8 +978,8 @@ export default function Events() {
                               <div className="flex flex-col gap-1 ml-2">
                                 <Badge variant="secondary" className={`shrink-0 ${
                                   createdEvents.some(e => e.id === event.id) 
-                                    ? 'bg-green-100 text-green-800' 
-                                    : 'bg-blue-100 text-blue-800'
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                                    : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
                                 }`}>
                                   {createdEvents.some(e => e.id === event.id) ? 'Organizer' : 'Joined'}
                                 </Badge>
@@ -1535,7 +1535,7 @@ export default function Events() {
                       <Card key={event.id} className="hover:shadow-lg transition-shadow duration-200 border border-gray-200 dark:border-gray-700 w-full overflow-hidden">
                         <CardContent className="p-6">
                           <div className="flex items-start flex-wrap gap-2 mb-3">
-                            <Badge className="bg-green-100 text-green-800">
+                            <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
                               Meetup
                             </Badge>
                             {event.attendees > 0 && (

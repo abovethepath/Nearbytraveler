@@ -2,7 +2,7 @@
  * Ambassador program: activity rules and status updates.
  *
  * Activity requirement to stay active:
- * - Must earn at least 50 points every 6 months to stay active.
+ * - Must earn at least 200 points every 6 months to stay active.
  * - If inactive for 6 months → status "Inactive" (points frozen but not deleted).
  * - If inactive for 12 months → status "Revoked" (points stop counting toward equity).
  * - Ambassador can reapply after 12 months and start fresh (admin may set status back to active).
@@ -13,11 +13,11 @@
 
 import { db } from "../db";
 import { users } from "../../shared/schema";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, inArray, sql } from "drizzle-orm";
 
 const SIX_MONTHS_MS = 6 * 30 * 24 * 60 * 60 * 1000;
 const TWELVE_MONTHS_MS = 12 * 30 * 24 * 60 * 60 * 1000;
-const MIN_POINTS_PER_PERIOD = 50;
+const MIN_POINTS_PER_PERIOD = 200;
 
 /**
  * Apply ambassador points and update activity window.
@@ -61,6 +61,22 @@ export async function addAmbassadorPoints(
     .where(eq(users.id, userId));
 
   await recomputeAmbassadorStatusForUser(userId);
+
+  // 5% referral chain bonus: if this ambassador was referred by another ambassador, award 5% to the referrer
+  try {
+    const chainRows = await db.execute(sql`
+      SELECT referrer_id FROM ambassador_referral_chains WHERE referred_id = ${userId}
+    `);
+    for (const row of chainRows.rows as any[]) {
+      const bonusPoints = Math.floor(points * 0.05);
+      if (bonusPoints > 0 && row.referrer_id) {
+        await db.update(users).set({
+          ambassadorPoints: sql`COALESCE(ambassador_points, 0) + ${bonusPoints}`,
+          ambassadorLastEarnedAt: new Date(),
+        }).where(eq(users.id, row.referrer_id));
+      }
+    }
+  } catch (e) { console.error('Ambassador 5% chain bonus error:', e); }
 }
 
 /**

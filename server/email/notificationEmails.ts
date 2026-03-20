@@ -153,6 +153,8 @@ export async function sendConnectionRequestEmail(recipientId: number, senderName
     }
 
     const displayName = recipient.name?.split(" ")[0] || recipient.username;
+    const senderFirst = (senderName || '').split(' ')[0] || senderUsername;
+    const senderDisplay = `${senderFirst} (@${senderUsername})`;
     const viewRequestUrl = `https://nearbytraveler.org/activity`;
 
     const htmlContent = `
@@ -176,7 +178,7 @@ export async function sendConnectionRequestEmail(recipientId: number, senderName
             <td style="padding: 40px;">
               <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
               <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
-                <strong>${senderName}</strong> (@${senderUsername}) saw your profile and wants to connect.
+                <strong>${senderDisplay}</strong> saw your profile and wants to connect.
               </p>
               <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 30px;">
                 Check out what you have in common and send them a message — you might end up grabbing coffee or exploring the city together.
@@ -202,8 +204,8 @@ export async function sendConnectionRequestEmail(recipientId: number, senderName
 
     const result = await sendBrevoEmail({
       toEmail: recipient.email,
-      subject: `${senderUsername} wants to connect with you on Nearby Traveler.`,
-      textContent: `Hi ${displayName}! ${senderName} (@${senderUsername}) saw your profile and wants to connect. View request: ${viewRequestUrl}`,
+      subject: `${senderDisplay} wants to connect with you on Nearby Traveler`,
+      textContent: `Hi ${displayName}! ${senderDisplay} saw your profile and wants to connect. View request: ${viewRequestUrl}`,
       htmlContent,
     });
 
@@ -304,7 +306,9 @@ export async function sendNewMessageEmail(recipientId: number, senderId: number,
     }
 
     const displayName = recipient.name?.split(" ")[0] || recipient.username;
+    const senderFirst = (sender.name || '').split(' ')[0] || sender.username;
     const senderName = sender.username || 'User';
+    const senderDisplay = `${senderFirst} (@${senderName})`;
     const truncatedMessage = messagePreview.length > 100 ? messagePreview.substring(0, 100) + "..." : messagePreview;
 
     const htmlContent = `
@@ -328,7 +332,7 @@ export async function sendNewMessageEmail(recipientId: number, senderId: number,
             <td style="padding: 40px;">
               <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
               <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
-                You have a new message from <strong>@${senderName}</strong>:
+                You have a new message from <strong>${senderDisplay}</strong>:
               </p>
               <div style="background-color: #f3f4f6; border-left: 4px solid #10b981; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0;">
                 <p style="font-size: 15px; color: #555555; margin: 0; font-style: italic;">"${truncatedMessage}"</p>
@@ -354,8 +358,8 @@ export async function sendNewMessageEmail(recipientId: number, senderId: number,
 
     const result = await sendBrevoEmail({
       toEmail: recipient.email,
-      subject: `New message from @${senderName}`,
-      textContent: `Hi ${displayName}! You have a new message from @${senderName}: "${truncatedMessage}" View it at ${APP_URL}/messages/${senderId}`,
+      subject: `New message from ${senderDisplay}`,
+      textContent: `Hi ${displayName}! You have a new message from ${senderDisplay}: "${truncatedMessage}" View it at ${APP_URL}/messages/${senderId}`,
       htmlContent,
     });
 
@@ -467,7 +471,8 @@ export async function sendEventJoinedEmail(
     }
 
     const organizerName = organizer.name?.split(" ")[0] || organizer.username;
-    const attendeeName = attendee.name || attendee.username;
+    const attendeeFirst = (attendee.name || '').split(' ')[0] || attendee.username;
+    const attendeeName = `${attendeeFirst} (@${attendee.username})`;
     const eventUrl = `${APP_URL}/events/${eventId}`;
 
     const htmlContent = `
@@ -870,6 +875,8 @@ export async function sendConnectionAcceptedEmail(requesterId: number, acceptorN
     }
 
     const displayName = requester.name?.split(" ")[0] || requester.username;
+    const acceptorFirst = (acceptorName || '').split(' ')[0] || acceptorUsername;
+    const acceptorDisplay = `${acceptorFirst} (@${acceptorUsername})`;
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -892,7 +899,7 @@ export async function sendConnectionAcceptedEmail(requesterId: number, acceptorN
             <td style="padding: 40px;">
               <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
               <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
-                <strong>${acceptorName}</strong> (@${acceptorUsername}) accepted your connection request.
+                <strong>${acceptorDisplay}</strong> accepted your connection request.
               </p>
               <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 30px;">
                 Say hello and see what you have in common — you might end up grabbing coffee or exploring the city together.
@@ -918,8 +925,8 @@ export async function sendConnectionAcceptedEmail(requesterId: number, acceptorN
 
     const result = await sendBrevoEmail({
       toEmail: requester.email,
-      subject: `You're now connected with ${acceptorName}! 🎉`,
-      textContent: `Hi ${displayName}! ${acceptorName} (@${acceptorUsername}) accepted your connection request. Say hello and see what you have in common — you might end up grabbing coffee or exploring the city together. Send them a message at ${acceptorId ? `${APP_URL}/messages/${acceptorId}` : `${APP_URL}/profile/${acceptorUsername}`}`,
+      subject: `You're now connected with ${acceptorDisplay}! 🎉`,
+      textContent: `Hi ${displayName}! ${acceptorDisplay} accepted your connection request. Say hello and see what you have in common — you might end up grabbing coffee or exploring the city together. Send them a message at ${acceptorId ? `${APP_URL}/messages/${acceptorId}` : `${APP_URL}/profile/${acceptorUsername}`}`,
       htmlContent,
     });
 
@@ -943,6 +950,8 @@ export async function sendMeetupJoinEmail(organizerId: number, joinerName: strin
     }
 
     const displayName = organizer.name?.split(" ")[0] || organizer.username;
+    const joinerFirst = (joinerName || '').split(' ')[0] || joinerUsername;
+    const joinerDisplay = `${joinerFirst} (@${joinerUsername})`;
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -965,7 +974,7 @@ export async function sendMeetupJoinEmail(organizerId: number, joinerName: strin
             <td style="padding: 40px;">
               <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
               <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
-                <strong>${joinerName}</strong> (@${joinerUsername}) just joined your meetup:
+                <strong>${joinerDisplay}</strong> just joined your meetup:
               </p>
               <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="color: #111827; margin: 0 0 8px; font-size: 18px;">${meetupTitle}</h3>
@@ -995,8 +1004,8 @@ export async function sendMeetupJoinEmail(organizerId: number, joinerName: strin
 
     const result = await sendBrevoEmail({
       toEmail: organizer.email,
-      subject: `${joinerName} joined your meetup: ${meetupTitle}`,
-      textContent: `Hi ${displayName}! ${joinerName} (@${joinerUsername}) just joined your meetup "${meetupTitle}" at ${meetingPoint}. View the meetup at ${meetupId ? `${APP_URL}/quick-meetups/${meetupId}` : `${APP_URL}/profile/${joinerUsername}`}`,
+      subject: `${joinerDisplay} joined your meetup: ${meetupTitle}`,
+      textContent: `Hi ${displayName}! ${joinerDisplay} just joined your meetup "${meetupTitle}" at ${meetingPoint}. View the meetup at ${meetupId ? `${APP_URL}/quick-meetups/${meetupId}` : `${APP_URL}/profile/${joinerUsername}`}`,
       htmlContent,
     });
 

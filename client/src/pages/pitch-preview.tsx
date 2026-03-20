@@ -81,7 +81,7 @@ export function PitchPreview() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-sm font-medium text-gray-900 dark:text-white">Username Only</span>
-                            <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">RECOMMENDED</span>
+                            <span className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 px-2 py-0.5 rounded">RECOMMENDED</span>
                           </div>
                           <p className="text-xs text-gray-600 mb-2">
                             Shows only your username (e.g., "nearbytrav")

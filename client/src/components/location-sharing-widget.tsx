@@ -314,11 +314,11 @@ export function LocationSharingWidget() {
                       }}
                     >
                       <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                        {notification.nearbyUser?.name?.charAt(0) || notification.nearbyUser?.username?.charAt(0) || 'U'}
+                        {notification.nearbyUser?.firstName?.charAt(0) || notification.nearbyUser?.name?.charAt(0) || notification.nearbyUser?.username?.charAt(0) || 'U'}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium truncate">{notification.nearbyUser?.name || notification.nearbyUser?.username}</p>
+                          <p className="font-medium truncate">{notification.nearbyUser?.firstName || notification.nearbyUser?.name?.split(' ')[0] || notification.nearbyUser?.username}</p>
                           <Badge variant="secondary" className="text-xs">
                             {notification.nearbyUser?.userType === 'local' ? 'Local' : 'Traveler'}
                           </Badge>

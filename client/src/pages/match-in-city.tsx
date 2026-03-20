@@ -2425,12 +2425,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     .filter(activity => isFeatured(activity) && baseFilter(activity))
                     .sort((a, b) => ((a as any).rank || 999) - ((b as any).rank || 999));
                   
-                  const group2Static = cityActivities
-                    .filter(activity => !isFeatured(activity) && !isGeneric(activity) && baseFilter(activity));
-                  
                   const group3Generic = cityActivities
                     .filter(activity => isGeneric(activity))
                     .filter(activity => !activitySearchFilter || activity.activityName.toLowerCase().includes(activitySearchFilter.toLowerCase()));
+
+                  // Build a set of Group 3 names so duplicates don't also appear in Group 2
+                  const genericNames = new Set(group3Generic.map(a => a.activityName.toLowerCase().trim()));
+
+                  const group2Static = cityActivities
+                    .filter(activity => !isFeatured(activity) && !isGeneric(activity) && baseFilter(activity))
+                    .filter(activity => !genericNames.has(activity.activityName.toLowerCase().trim()));
                   
                   const allCityActivities = [...group1Featured, ...group2Static, ...group3Generic];
                   

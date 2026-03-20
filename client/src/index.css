@@ -417,6 +417,7 @@ body.light {
     right: 0 !important;
     bottom: 0 !important;
     z-index: 9999 !important;
+    padding-bottom: env(safe-area-inset-bottom, 0) !important;
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: auto !important;
@@ -784,10 +785,22 @@ button.user-card:first-child > div:first-of-type {
   }
   
   /* Fix button groups and action bars */
-  .flex.gap-4,
-  .flex.gap-3,
-  .flex.gap-2 {
+  .flex.gap-4:not(.recently-joined-scroll),
+  .flex.gap-3:not(.recently-joined-scroll),
+  .flex.gap-2:not(.recently-joined-scroll) {
     flex-wrap: wrap !important;
+  }
+
+  /* Recently Joined horizontal scroll row — must stay single-row on mobile */
+  .recently-joined-scroll {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  .recently-joined-scroll::-webkit-scrollbar {
+    display: none !important;
   }
   
   /* Ensure all interactive elements fit viewport */
@@ -2160,13 +2173,14 @@ p, span, div, button, input, textarea, select {
 }
 
 /* CRITICAL: Force avatar to be circular with proper image cropping */
-[role="img"], 
+[role="img"],
 img[alt*="avatar" i],
 img[alt*="profile" i],
 .avatar img,
 [class*="avatar"] img {
   border-radius: 50% !important;
   object-fit: cover !important;
+  object-position: top center !important;
   aspect-ratio: 1 / 1 !important;
 }
 
@@ -2633,7 +2647,7 @@ body.native-ios-app .native-ios-messages {
     width: auto !important;
     max-width: none !important;
     height: auto !important;
-    max-height: 80vh !important;
+    max-height: 80dvh !important;
     border-radius: 1rem !important;
     border: 1px solid #374151 !important;
   }
@@ -2741,4 +2755,22 @@ html.dark .landing-quote {
 
 .route-page {
   animation: routeFadeIn 180ms ease both;
+}
+
+/* Mobile date input: prevent date text overflow and center calendar popover */
+@media (max-width: 767px) {
+  input[type="date"] {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  input[type="date"]::-webkit-date-and-time-value {
+    text-align: left;
+  }
+  input[type="date"]::-webkit-datetime-edit {
+    width: 100%;
+    padding: 0;
+  }
 }

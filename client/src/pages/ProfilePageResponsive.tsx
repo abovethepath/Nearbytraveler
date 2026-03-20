@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { formatCityDisplay } from "@/lib/locationDisplay";
+import { getTravelStatusLabel } from "@/lib/dateUtils";
 import { Zap } from "lucide-react";
 
 export default function ProfilePageResponsive() {
@@ -96,7 +97,7 @@ export default function ProfilePageResponsive() {
   const isAvailableNow = user?.id ? availableNowIds.includes(user.id) : false;
 
   // Extract user data
-  const displayName = user.name || user.username || "User";
+  const displayName = (user as any).firstName || user.name?.split(' ')[0] || user.username || "User";
   const profileImage = user.profileImage || "https://placehold.co/320x320";
   const bio = user.bio || "No bio available";
   
@@ -151,7 +152,7 @@ export default function ProfilePageResponsive() {
               <div className="flex flex-col gap-0 text-sm font-medium min-w-0">
                 <p className="text-sm sm:text-base font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap" data-testid="text-hometown-label">Nearby Local</p>
                 <p className="text-gray-600 dark:text-gray-400 truncate" data-testid="text-hometown-location" title={hometownLocation}>{hometownLocation}</p>
-                <p className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-1" data-testid="text-destination-label">Nearby Traveler</p>
+                <p className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap mt-1" data-testid="text-destination-label">{getTravelStatusLabel(user.travelStartDate, 'label').label}</p>
                 {destinationLocation ? (
                   <p className="text-blue-600 dark:text-blue-400 truncate" data-testid="text-destination-location" title={destinationLocation}>{destinationLocation}</p>
                 ) : (
