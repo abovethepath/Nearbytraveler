@@ -119,9 +119,10 @@ export async function sendPushNotification(opts: {
       headings: { en: title },
       contents: { en: message },
       web_url: webUrl,
+      ios_badgeType: 'Increase',
+      ios_badgeCount: 1,
+      priority: 10,
     };
-
-    console.log('📱 OneSignal request:', JSON.stringify({ url: ONESIGNAL_API_URL, app_id: ONESIGNAL_APP_ID, playerId, hasApiKey: !!ONESIGNAL_REST_API_KEY }));
 
     const resp = await fetch(ONESIGNAL_API_URL, {
       method: 'POST',
@@ -132,8 +133,10 @@ export async function sendPushNotification(opts: {
       body: JSON.stringify(body),
     });
 
-    const responseText = await resp.text();
-    console.log('📱 OneSignal raw response:', resp.status, responseText);
+    if (!resp.ok) {
+      const err = await resp.text();
+      console.warn('[push] OneSignal error:', resp.status, err);
+    }
   } catch (e) {
     console.warn('[push] Failed to send push notification:', e);
   }

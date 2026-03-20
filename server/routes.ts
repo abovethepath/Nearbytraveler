@@ -12945,12 +12945,10 @@ Questions? Just reply to this message. Welcome aboard!
         
         // Send push notification
         try {
-          console.log('📱 Attempting push notification for DM to user:', recipientIdNum);
           const sender = await db.select({ name: users.name, username: users.username, profileImage: users.profileImage }).from(users).where(eq(users.id, senderIdNum)).then(r => r[0]);
           const senderUsername = sender?.username || 'User';
           const { sendNewMessagePush } = await import('./services/pushNotificationService');
           const pushResult = await sendNewMessagePush(recipientIdNum, senderUsername, preview);
-          console.log('📱 Push notification result for DM:', JSON.stringify(pushResult));
           if (pushResult.success) {
             console.log(`✅ MESSAGE PUSH: Sent to user ${receiverId}`);
           } else {
@@ -12968,9 +12966,8 @@ Questions? Just reply to this message. Welcome aboard!
                 notifType: 'message',
                 fromUserId: senderIdNum,
               });
-              console.log(`✅ MESSAGE PUSH (OneSignal fallback): Sent to user ${receiverId}`);
             } catch (osFallback) {
-              console.log('📱 OneSignal fallback also failed:', osFallback);
+              console.warn('OneSignal DM fallback failed:', osFallback);
             }
           }
 
