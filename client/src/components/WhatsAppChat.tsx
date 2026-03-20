@@ -3246,8 +3246,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                     className={`chat-message-container relative max-w-[65%] ${isOwnMessage ? 'mr-4' : 'ml-1'}`}
                     style={{ 
                       WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.2)',
-                      WebkitUserSelect: 'none',
-                      userSelect: 'none',
+                      WebkitUserSelect: 'text',
+                      userSelect: 'text',
                       touchAction: 'pan-y',
                       transform: swipingMessageId === message.id ? `translateX(${isOwnMessage ? -swipeOffset : swipeOffset}px)` : 'none',
                       transition: swipingMessageId === message.id ? 'none' : 'transform 0.2s ease-out',

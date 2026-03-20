@@ -1541,8 +1541,8 @@ export default function Messages() {
                               className="relative max-w-[70%] overflow-visible"
                               style={{
                                 WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.2)',
-                                WebkitUserSelect: 'none',
-                                userSelect: 'none',
+                                WebkitUserSelect: 'text',
+                                userSelect: 'text',
                                 touchAction: 'pan-y',
                                 cursor: 'pointer',
                                 overflow: 'visible'

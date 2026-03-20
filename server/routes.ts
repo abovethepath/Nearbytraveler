@@ -4995,19 +4995,23 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             const firstName = user.firstName || (user.name || user.username || 'Traveler').split(' ')[0];
             await storage.sendSystemMessage(2, user.id, `Welcome to Nearby Traveler, ${firstName}! ✈️
 
-I'm Aaron - excited to have you join our community connecting travelers and locals through shared interests.
+I'm Aaron — I built this community to connect travelers and locals through real shared experiences, not just swiping.
 
-Get Started:
-• Complete your profile to match better with others
-• Visit your city match page to connect on local activities
-• Browse people and events in ${user.hometownCity}${user.travelDestination ? ` and ${user.travelDestination}` : ''}
-• Join city chat rooms to start conversations
+Here's how to get started:
+- Complete your profile so people know who you are and what you're into
+- Hit Available Now if you're free to meet someone today
+- Check Explore to find locals and travelers near you
+- Browse Events happening in your city
+- Join your city chatroom to say hello to the community
 
-${user.travelDestination ? `As a traveler to ${user.travelDestination}, you'll be matched with locals and other travelers there!` : `As a local, you'll be notified when travelers visit ${user.hometownCity} who share your interests!`}
+A few things to know:
+- You've been added to the Nearby Traveler and your local city chatrooms automatically
+- Use Available Now — I'm Out if you're already somewhere and want company
+- Connect with people you vibe with and message them directly
 
-Questions? Just reply to this message!
+Questions? Just reply here — I read every message.
 
-- Aaron`);
+— Aaron`);
             console.log(`✓ PROFILE COMPLETION: Sent welcome message from nearbytrav to ${user.username}`);
           } else {
             console.error('PROFILE COMPLETION ERROR: nearbytrav account (ID 2) not found');
