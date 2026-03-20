@@ -551,7 +551,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       <div className="flex-1 min-w-0 lg:max-w-[400px]">
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-0 sm:gap-2 sm:flex-wrap">
                               <h1 className="text-xl sm:text-3xl font-extrabold text-white break-all leading-tight crisp-hero-text" style={{ color: '#ffffff' }}>
                                 {((user as any)?.firstName || "").split(" ")[0] || user?.username}
                                 {!isOwnProfile && (() => {
@@ -561,7 +561,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); openTab('contacts'); setTimeout(() => { document.getElementById('connections-in-common-section')?.scrollIntoView({ behavior: 'smooth' }); }, 150); }}>{label}</sup>;
                                 })()}
                               </h1>
-                              <div className="text-sm font-medium text-white/75 break-all mt-0.5">@{user?.username}</div>
+                              <div className="text-sm font-medium text-white/75 break-all">@{user?.username}</div>
                               <SupportBadge tier={(user as any)?.supportTier} />
                             </div>
 
