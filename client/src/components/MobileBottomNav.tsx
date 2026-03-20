@@ -63,6 +63,16 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
 
   const unreadCount = (unreadData as any)?.unreadCount || 0;
 
+  // Sync PWA home screen badge via Web App Badge API (iOS 16.4+, modern Android)
+  useEffect(() => {
+    if (!('setAppBadge' in navigator)) return;
+    if (unreadCount > 0) {
+      (navigator as any).setAppBadge(unreadCount).catch(() => {});
+    } else {
+      (navigator as any).clearAppBadge().catch(() => {});
+    }
+  }, [unreadCount]);
+
   // Notification count for Activity tab badge
   const { data: activityNotifications = [] } = useQuery<any[]>({
     queryKey: ['/api/notifications', user?.id],
