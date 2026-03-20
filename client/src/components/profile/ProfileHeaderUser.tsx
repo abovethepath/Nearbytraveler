@@ -136,17 +136,17 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const [qrInstallOpen, setQrInstallOpen] = React.useState(false);
 
   // Track profile visits for inline QR promo (desktop, own profile, first 5 visits)
-  // Track profile visits for inline "Get App" pill (desktop, own profile, first 5 visits)
+  // Track profile visits for inline "Get App" pill (desktop, own profile, first 20 visits)
   const [showInlineQr, setShowInlineQr] = React.useState(() => {
     if (typeof window === 'undefined') return false;
     const count = parseInt(localStorage.getItem('nt_app_promo_count') || '0', 10);
-    return count < 5;
+    return count < 20;
   });
   React.useEffect(() => {
     if (!isOwnProfile || !isDesktop || !showInlineQr) return;
     const key = 'nt_app_promo_count';
     const count = parseInt(localStorage.getItem(key) || '0', 10);
-    if (count < 5) {
+    if (count < 20) {
       localStorage.setItem(key, String(count + 1));
     } else {
       setShowInlineQr(false);
