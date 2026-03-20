@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette, Heart, Smartphone, X } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
@@ -134,6 +134,18 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const [shareWithFriendsOpen, setShareWithFriendsOpen] = React.useState(false);
   const [seeAllCommonOpen, setSeeAllCommonOpen] = React.useState(false);
   const [qrInstallOpen, setQrInstallOpen] = React.useState(false);
+
+  // Track profile visits for inline QR promo (desktop, own profile, first 5 visits)
+  const [showInlineQr, setShowInlineQr] = React.useState(false);
+  React.useEffect(() => {
+    if (!isOwnProfile || !isDesktop) return;
+    const key = 'nt_app_promo_count';
+    const count = parseInt(localStorage.getItem(key) || '0', 10);
+    if (count < 5) {
+      setShowInlineQr(true);
+      localStorage.setItem(key, String(count + 1));
+    }
+  }, [isOwnProfile, isDesktop]);
 
   React.useEffect(() => {
     const handler = () => setSeeAllCommonOpen(true);
@@ -283,21 +295,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <span className="text-sm sm:text-base font-medium text-white/80 break-all">@{user?.username}</span>
                   <SupportBadge tier={(user as any)?.supportTier} />
                 </div>
-                {/* Own profile: install app + ⋮ menu lives on username row (top-right) */}
+                {/* Own profile: ⋮ menu lives on username row (top-right) */}
                 {isOwnProfile && (
-                  <div className="ml-auto flex items-center gap-1">
-                    {/* Get app QR button — desktop only */}
-                    {isDesktop && (
-                      <button
-                        type="button"
-                        onClick={() => setQrInstallOpen(true)}
-                        className="hidden md:inline-flex items-center justify-center h-9 w-9 rounded-md bg-transparent hover:bg-white/20 border-0 ring-0 shadow-none transition-colors"
-                        title="Get the app"
-                        aria-label="Get the app"
-                      >
-                        <Smartphone className="w-5 h-5 text-white" />
-                      </button>
-                    )}
+                  <div className="ml-auto">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button
@@ -375,6 +375,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <Sun className="w-4 h-4 mr-2" />
                           Switch to Light Mode
                         </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => setQrInstallOpen(true)}
+                          className="text-black focus:text-black dark:text-white dark:focus:text-white"
+                        >
+                          <Smartphone className="w-4 h-4 mr-2" />
+                          📱 Get the App
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -442,6 +450,32 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             {!isNativeIOSApp() && (
               <div className="w-full mt-4 lg:pl-[23rem]">
                 <ProfileTabBar {...props} variant="hero" />
+              </div>
+            )}
+
+            {/* Inline QR install card — desktop own profile, first 5 visits */}
+            {showInlineQr && (
+              <div className="hidden lg:block absolute right-4 top-4 z-20">
+                <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl shadow-xl p-4 w-[240px]">
+                  <div className="flex flex-col items-center gap-3">
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://nearbytraveler.org")}`}
+                      alt="QR code to install Nearby Traveler"
+                      className="w-[200px] h-[200px] rounded-lg"
+                    />
+                    <div className="space-y-1.5 text-xs text-gray-700 dark:text-gray-300 w-full">
+                      <div className="flex items-start gap-1.5">
+                        <span className="leading-none mt-0.5">🍎</span>
+                        <p><strong>iPhone:</strong> Scan → tap Share ⬆️ → Add to Home Screen</p>
+                      </div>
+                      <div className="flex items-start gap-1.5">
+                        <span className="leading-none mt-0.5">🤖</span>
+                        <p><strong>Android:</strong> Scan → tap Install when prompted</p>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center">To find this again, tap ⋮ to the right →</p>
+                  </div>
+                </div>
               </div>
             )}
           </div>
