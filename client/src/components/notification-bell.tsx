@@ -167,7 +167,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
       if (action === "accept") {
         const data = await res.json().catch(() => ({}));
         if (data.chatroomId) {
-          setLocation(`/meetup-chatroom-chat/${data.chatroomId}?title=${encodeURIComponent(data.chatroomName || 'Chat')}&subtitle=Group+chat`);
+          setLocation('/messages');
         }
       }
     },
@@ -199,11 +199,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     markAsReadMutation.mutate(notification.id);
     try {
       const data = notification.data ? JSON.parse(notification.data) : {};
-      if (data.meetupId) {
-        setLocation(`/quick-meetups?id=${data.meetupId}`);
-      } else {
-        setLocation('/quick-meetups');
-      }
+      setLocation('/quick-meetups');
     } catch {
       setLocation('/quick-meetups');
     }
@@ -568,7 +564,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                   className="cursor-pointer p-3 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"
                   onClick={() => {
                     markAsReadMutation.mutate(notification.id);
-                    setLocation(notification.fromUserId ? `/messages/${notification.fromUserId}` : '/messages');
+                    setLocation('/messages');
                   }}
                 >
                   <div className="flex items-center gap-3 w-full">

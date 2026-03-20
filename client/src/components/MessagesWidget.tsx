@@ -127,9 +127,7 @@ function MessagesWidget({ userId: propUserId }: MessagesWidgetProps) {
                   key={message.id || index} 
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (otherUserId) {
-                      setLocation(`/messages?user=${otherUserId}`);
-                    }
+                    setLocation('/messages');
                   }}
                   className={`cursor-pointer rounded-2xl p-4 transition-all duration-300 ${
                     isYourTurn 
