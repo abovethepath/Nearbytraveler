@@ -6,7 +6,7 @@
 
 const ONESIGNAL_APP_ID = process.env.ONESIGNAL_APP_ID || '';
 const ONESIGNAL_REST_API_KEY = process.env.ONESIGNAL_API_KEY || '';
-const ONESIGNAL_API_URL = 'https://onesignal.com/api/v1/notifications';
+const ONESIGNAL_API_URL = 'https://api.onesignal.com/notifications';
 
 // In-memory dedup: prevent sending the same push to the same user within 5 minutes
 // Key: `${userId}:${type}:${fromUserId}` → timestamp
@@ -127,7 +127,7 @@ export async function sendPushNotification(opts: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Key ${ONESIGNAL_REST_API_KEY}`,
+        'Authorization': `Basic ${ONESIGNAL_REST_API_KEY}`,
       },
       body: JSON.stringify(body),
     });
