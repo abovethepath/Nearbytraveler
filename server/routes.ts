@@ -21255,7 +21255,7 @@ Questions? Just reply to this message. Welcome aboard!
               toUserId: m.userId,
               title: roomName,
               message: `@${senderName}: ${preview}`,
-              url: `/chatroom/${roomId}`,
+              url: '/messages',
               notifType: `chatroom_message_${roomId}`,
               fromUserId: senderIdNum,
             }).catch(() => {});
@@ -29889,7 +29889,7 @@ Questions? Just reply to this message. Welcome aboard!
               toUserId: a.userId,
               title: `${eventName} chat`,
               message: `@${senderName}: ${preview}`,
-              url: `/event-chat/${chatroomId}`,
+              url: '/messages',
               notifType: `event_chat_message_${chatroomId}`,
               fromUserId: senderIdNum,
             }).catch(() => {});

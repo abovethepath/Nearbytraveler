@@ -81,13 +81,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
 
-  // Smart back: use provided onBack, else try history.back with /messages fallback
+  // Always navigate to /messages — no history.back()
   const handleBack = onBack || (() => {
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      navigate('/messages');
-    }
+    navigate('/messages');
   });
   const isMobileWeb =
     !isNativeIOSApp() &&
@@ -2276,7 +2272,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-300 transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              {chatType === 'event' ? 'Event' : chatType === 'meetup' ? 'Meetup' : 'Chatrooms'}
+              Messages
             </button>
           </div>
 
