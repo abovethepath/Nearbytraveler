@@ -115,7 +115,7 @@ export default function Messages() {
   const [newMessage, setNewMessage] = useState('');
   const prefillAppliedRef = useRef(false);
   const [connectionSearch, setConnectionSearch] = useState('');
-  const [activeTab, setActiveTab] = useState<'dms' | 'events' | 'meetups' | 'expired'>('dms');
+  const [activeTab, setActiveTab] = useState<'dms' | 'events' | 'meetups' | 'chatrooms'>('dms');
   const [tabInitialized, setTabInitialized] = useState(false);
   const lastMeetupChatParam = useRef<number | null>(null);
   const [countdownTick, setCountdownTick] = useState(0);
@@ -247,6 +247,12 @@ export default function Messages() {
     enabled: !!userId,
     staleTime: 30000,
     refetchInterval: 30000,
+  });
+
+  const { data: userChatrooms = [] } = useQuery<any[]>({
+    queryKey: ['/api/chatrooms/my-locations'],
+    enabled: !!userId,
+    staleTime: 60000,
   });
 
   const { data: meetupChatMessages = [], refetch: refetchMeetupMessages } = useQuery({
@@ -606,7 +612,7 @@ export default function Messages() {
       const mc = (meetupChatrooms as any[]).find((c: any) => c.id === currentMeetupChatId);
       if (mc) {
         lastMeetupChatParam.current = currentMeetupChatId;
-        if (isEndedChat(mc)) { setActiveTab('expired'); setTabInitialized(true); return; }
+        if (isEndedChat(mc)) { setActiveTab('meetups'); setTabInitialized(true); return; }
         if (mc.chatType === 'event') { setActiveTab('events'); setTabInitialized(true); return; }
         if (mc.chatType === 'group_dm') { setActiveTab('dms'); setTabInitialized(true); return; }
         setActiveTab('meetups'); setTabInitialized(true); return;
@@ -618,7 +624,7 @@ export default function Messages() {
       if (dmUnread > 0) { setActiveTab('dms'); }
       else if (meetupUnread > 0) { setActiveTab('meetups'); }
       else if (eventUnread > 0) { setActiveTab('events'); }
-      else if (expiredUnread > 0) { setActiveTab('expired'); }
+      else if (expiredUnread > 0) { setActiveTab('meetups'); }
       else { setActiveTab('dms'); }
       setTabInitialized(true);
     }
@@ -888,7 +894,7 @@ export default function Messages() {
             { key: 'dms' as const, label: 'DMs', icon: MessageCircle, count: dmUnread },
             { key: 'meetups' as const, label: 'Meetup Chats', icon: Zap, count: meetupUnread },
             { key: 'events' as const, label: 'Event Chats', icon: Calendar, count: eventUnread },
-            { key: 'expired' as const, label: 'Expired', icon: Clock, count: expiredUnread },
+            { key: 'chatrooms' as const, label: 'Chatrooms', icon: MessageCircle, count: 0 },
           ]).map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.key;
@@ -1024,6 +1030,71 @@ export default function Messages() {
                       );
                     })}
                 </>
+              )}
+
+              {/* Ended meetup chats — shown below active meetups with divider */}
+              {activeTab === 'meetups' && expiredChats.length > 0 && (
+                <div style={{ opacity: 0.6 }}>
+                  <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-b border-t border-gray-200 dark:border-gray-700">
+                    <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> Ended Chats
+                    </p>
+                  </div>
+                  {expiredChats
+                    .filter((mc: any) =>
+                      !connectionSearch ||
+                      (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase())
+                    )
+                    .sort((a: any, b: any) => {
+                      const aExp = a.expiresAt ? new Date(a.expiresAt).getTime() : 0;
+                      const bExp = b.expiresAt ? new Date(b.expiresAt).getTime() : 0;
+                      return bExp - aExp;
+                    })
+                    .map((mc: any) => {
+                      const isSelected = selectedMeetupChat === mc.id;
+                      return (
+                        <div
+                          key={`ended-mc-${mc.id}`}
+                          className={`group ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
+                            isSelected
+                              ? 'bg-gradient-to-r from-gray-500 to-gray-600 shadow-lg text-white'
+                              : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                          }`}
+                          onClick={() => {
+                            queryClient.setQueryData(['/api/meetup-chatrooms/mine'], (old: any[]) =>
+                              Array.isArray(old) ? old.map(r => r.id === mc.id ? { ...r, unreadCount: 0 } : r) : old
+                            );
+                            apiRequest('POST', `/api/meetup-chatrooms/${mc.id}/mark-read`).catch(() => {});
+                            if (window.innerWidth < 1024) {
+                              navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`);
+                            } else {
+                              setSelectedMeetupChat(mc.id);
+                              setSelectedConversation(null);
+                              navigate(`/messages?meetupChat=${mc.id}`);
+                            }
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                              isSelected ? 'bg-white/20' : 'bg-gray-200 dark:bg-gray-700'
+                            }`}>
+                              <Users className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-gray-500 dark:text-gray-400'}`} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className={`text-sm ${isSelected ? 'text-white font-semibold' : 'text-gray-700 dark:text-gray-300 font-medium'}`}>
+                                {mc.chatroomName || 'Meetup Chat'}
+                              </h3>
+                              {mc.lastMessage && (
+                                <p className={`text-xs truncate mt-0.5 ${isSelected ? 'text-white/70' : 'text-gray-400 dark:text-gray-500'}`}>
+                                  {mc.lastMessage}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
               )}
 
               {/* Event Chats Section */}
@@ -1313,110 +1384,47 @@ export default function Messages() {
               )}
 
               {/* Expired Meetup Chats (Ended) */}
-              {activeTab === 'expired' && expiredChats.length > 0 && (
+              {/* Chatrooms Tab */}
+              {activeTab === 'chatrooms' && (
                 <>
-                  <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
-                    <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> Ended Chats
-                    </p>
-                  </div>
-                  {expiredChats
-                    .filter((mc: any) =>
-                      !connectionSearch ||
-                      (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase())
-                    )
-                    .sort((a: any, b: any) => {
-                      const aExp = a.expiresAt ? new Date(a.expiresAt).getTime() : 0;
-                      const bExp = b.expiresAt ? new Date(b.expiresAt).getTime() : 0;
-                      if (aExp !== bExp) return bExp - aExp;
-                      const aTime = a.lastMessageTime ? new Date(a.lastMessageTime).getTime() : 0;
-                      const bTime = b.lastMessageTime ? new Date(b.lastMessageTime).getTime() : 0;
-                      return bTime - aTime;
-                    })
-                    .map((mc: any) => {
-                      const isSelected = selectedMeetupChat === mc.id;
-                      return (
+                  {(userChatrooms as any[]).filter((c: any) => c.userIsMember).length > 0 ? (
+                    <>
+                      {(userChatrooms as any[]).filter((c: any) => c.userIsMember).map((chatroom: any) => (
                         <div
-                          key={`ended-mc-${mc.id}`}
-                          className={`group ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
-                            isSelected
-                              ? 'bg-gradient-to-r from-orange-500 to-orange-600 border-l-4 border-l-orange-300 shadow-lg text-white'
-                              : mc.unreadCount > 0
-                                ? 'bg-white/70 dark:bg-gray-800/40 border-l-4 border-l-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20'
-                                : 'hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-l-4 hover:border-l-orange-400'
-                          }`}
-                          onClick={() => {
-                            queryClient.setQueryData(['/api/meetup-chatrooms/mine'], (old: any[]) =>
-                              Array.isArray(old) ? old.map(r => r.id === mc.id ? { ...r, unreadCount: 0 } : r) : old
-                            );
-                            apiRequest('POST', `/api/meetup-chatrooms/${mc.id}/mark-read`).catch(() => {});
-                            if (window.innerWidth < 1024) {
-                              navigate(`/meetup-chatroom-chat/${mc.id}?title=${encodeURIComponent(mc.chatroomName || 'Meetup Chat')}&subtitle=${encodeURIComponent(mc.city || 'Group chat')}`);
-                            } else {
-                              setSelectedMeetupChat(mc.id);
-                              setSelectedConversation(null);
-                              navigate(`/messages?meetupChat=${mc.id}`);
-                            }
-                          }}
+                          key={`cr-${chatroom.id}`}
+                          className={`${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800`}
+                          onClick={() => navigate(`/chatroom/${chatroom.id}`)}
                         >
-                          <div className="flex items-start gap-3">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
-                              isSelected ? 'bg-white/20' : 'bg-orange-100 dark:bg-orange-900/40'
-                            }`}>
-                              <Users className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-orange-600 dark:text-orange-400'}`} />
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-orange-500 flex items-center justify-center shrink-0">
+                              <MessageCircle className="w-5 h-5 text-white" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h3 className={`text-sm leading-snug ${
-                                isSelected ? 'text-white font-semibold' : mc.unreadCount > 0 ? 'text-gray-900 dark:text-white font-extrabold' : 'text-gray-900 dark:text-white font-semibold'
-                              }`}>
-                                {mc.chatroomName || 'Meetup Chat'}
+                              <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                {chatroom.name}
                               </h3>
-                              <div className="flex items-center gap-1.5 mt-1">
-                                <span className={`text-[10px] px-2 py-0.5 rounded-full shrink-0 font-bold text-white shadow-sm ${
-                                  isSelected
-                                    ? 'bg-white/20'
-                                    : mc.chatType === 'available_now'
-                                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 ring-1 ring-emerald-400/30'
-                                      : mc.chatType === 'quick_meetup'
-                                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 ring-1 ring-blue-400/30'
-                                        : 'bg-gradient-to-r from-purple-500 to-pink-600 ring-1 ring-purple-400/30'
-                                }`}>
-                                  {mc.chatType === 'available_now' ? 'Available Now' : mc.chatType === 'quick_meetup' ? 'Available Now' : 'Meetup'}
-                                </span>
-                                {mc.lifecycleState === 'grace' && (() => {
-                                  const expiresAt = mc.expiresAt ? new Date(mc.expiresAt) : null;
-                                  const hoursLeft = expiresAt ? Math.max(0, Math.ceil((expiresAt.getTime() + 24 * 60 * 60 * 1000 - Date.now()) / (1000 * 60 * 60))) : 0;
-                                  return (
-                                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full shrink-0 font-medium ${
-                                      isSelected ? 'text-white/60' : 'text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800'
-                                    }`}>
-                                      Ended{hoursLeft > 0 ? ` · ${hoursLeft}h left` : ''}
-                                    </span>
-                                  );
-                                })()}
-                              </div>
-                              {mc.lastMessage && (
-                                <p className={`text-xs truncate mt-1 ${
-                                  isSelected ? 'text-orange-100' : mc.unreadCount > 0 ? 'text-gray-700 dark:text-gray-200 font-bold' : 'text-gray-500 dark:text-gray-400'
-                                }`}>
-                                  {mc.lastMessageType === 'system' ? mc.lastMessage : `${mc.lastMessageUsername}: ${mc.lastMessage}`}
-                                </p>
-                              )}
+                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                {chatroom.memberCount || 0} members{chatroom.city ? ` · ${chatroom.city}` : ''}
+                              </p>
                             </div>
-                            {mc.unreadCount > 0 && !isSelected && (
-                              <div className="shrink-0 flex items-center gap-2 mt-1">
-                                <div className="w-2.5 h-2.5 rounded-full bg-orange-500 dark:bg-orange-400 animate-pulse" />
-                                {mc.unreadCount > 1 && (
-                                  <div className="bg-orange-500 text-white text-[11px] font-bold rounded-full min-w-[22px] h-[22px] flex items-center justify-center px-1.5">
-                                    {mc.unreadCount > 99 ? '99+' : mc.unreadCount}
-                                  </div>
-                                )}
-                              </div>
-                            )}
                           </div>
                         </div>
-                      );
-                    })}
+                      ))}
+                      <div className="p-3 text-center">
+                        <button onClick={() => navigate('/chatrooms')} className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                          Browse & join more chatrooms →
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="p-6 text-center text-gray-500 dark:text-gray-400">
+                      <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                      <p className="text-sm">You haven't joined any chatrooms yet</p>
+                      <button onClick={() => navigate('/chatrooms')} className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium mt-2 block mx-auto">
+                        Browse & join chatrooms →
+                      </button>
+                    </div>
+                  )}
                 </>
               )}
 
@@ -1426,22 +1434,16 @@ export default function Messages() {
                   <p className="text-sm">No direct messages yet</p>
                 </div>
               )}
-              {activeTab === 'meetups' && activeMeetups.length === 0 && (
+              {activeTab === 'meetups' && activeMeetups.length === 0 && expiredChats.length === 0 && (
                 <div className="p-6 text-center text-gray-500 dark:text-gray-400">
                   <Zap className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                  <p className="text-sm">No active meetup chats</p>
+                  <p className="text-sm">No meetup chats</p>
                 </div>
               )}
               {activeTab === 'events' && eventChats.length === 0 && (
                 <div className="p-6 text-center text-gray-500 dark:text-gray-400">
                   <Calendar className="w-8 h-8 mx-auto mb-2 opacity-40" />
                   <p className="text-sm">No event chats yet</p>
-                </div>
-              )}
-              {activeTab === 'expired' && expiredChats.length === 0 && (
-                <div className="p-6 text-center text-gray-500 dark:text-gray-400">
-                  <Clock className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                  <p className="text-sm">No expired chats</p>
                 </div>
               )}
             </>
