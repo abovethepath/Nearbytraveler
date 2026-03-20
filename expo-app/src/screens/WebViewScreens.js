@@ -232,6 +232,8 @@ function WebViewWithChrome({ path, navigation }) {
   const onRetry = useCallback(() => { setError(null); setLoading(true); webViewRef.current?.reload(); }, []);
   const onRefresh = useCallback(() => { setRefreshing(true); setError(null); webViewRef.current?.reload(); }, []);
   const onShouldStartLoadWithRequest = useCallback((req) => {
+    // Allow blob: and data: URLs for file picker / photo upload
+    if (req?.url?.startsWith('blob:') || req?.url?.startsWith('data:')) return true;
     if (isExternalUrl(req?.url)) {
       Linking.openURL(req.url).catch(() => {});
       return false;
@@ -465,6 +467,11 @@ true;
         pullToRefreshEnabled={true}
         sharedCookiesEnabled={true}
         thirdPartyCookiesEnabled={true}
+        allowFileAccess={true}
+        allowFileAccessFromFileURLs={true}
+        allowUniversalAccessFromFileURLs={true}
+        allowsInlineMediaPlayback={true}
+        onFileDownload={({ nativeEvent }) => { /* prevent default download, files open inline */ }}
         fadeDuration={0}
         renderLoading={() => (
           <View style={{ flex: 1, backgroundColor: loadingBg }} />
@@ -486,10 +493,16 @@ function NTWebView({ uri }) {
       style={[styles.webview, { backgroundColor: loadingBg }]}
       sharedCookiesEnabled={true}
       thirdPartyCookiesEnabled={true}
+      allowFileAccess={true}
+      allowFileAccessFromFileURLs={true}
+      allowUniversalAccessFromFileURLs={true}
+      allowsInlineMediaPlayback={true}
       injectedJavaScriptBeforeContentLoaded={NATIVE_INJECT_JS}
       startInLoadingState={true}
       renderLoading={() => <View style={{ flex: 1, backgroundColor: loadingBg }} />}
+      onFileDownload={({ nativeEvent }) => {}}
       onShouldStartLoadWithRequest={(request) => {
+        if (request?.url?.startsWith('blob:') || request?.url?.startsWith('data:')) return true;
         if (isExternalUrl(request.url)) {
           Linking.openURL(request.url).catch(() => {});
           return false;
