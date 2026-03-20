@@ -103,11 +103,15 @@ export async function sendPushNotification(opts: {
   }
 
   // Dedup: don't spam same type from same sender within 5 min
-  cleanupDedup();
-  const dedupKey = `${toUserId}:${notifType || 'generic'}:${fromUserId || 0}`;
-  const lastSent = recentPushes.get(dedupKey);
-  if (lastSent && Date.now() - lastSent < DEDUP_MS) return;
-  recentPushes.set(dedupKey, Date.now());
+  // Exception: DM notifications ('message') always fire — every new message gets a push
+  const isDM = notifType === 'message' || notifType === 'dm' || notifType === 'new_message';
+  if (!isDM) {
+    cleanupDedup();
+    const dedupKey = `${toUserId}:${notifType || 'generic'}:${fromUserId || 0}`;
+    const lastSent = recentPushes.get(dedupKey);
+    if (lastSent && Date.now() - lastSent < DEDUP_MS) return;
+    recentPushes.set(dedupKey, Date.now());
+  }
 
   // Build absolute URL for the web push action
   const webUrl = url.startsWith('http') ? url : `https://nearbytraveler.org${url}`;
