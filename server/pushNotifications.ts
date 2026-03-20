@@ -4,6 +4,9 @@
  * Gracefully no-ops when ONESIGNAL_APP_ID / ONESIGNAL_API_KEY are not set.
  */
 
+import { messages } from '../shared/schema';
+import { sql, and } from 'drizzle-orm';
+
 const ONESIGNAL_APP_ID = process.env.ONESIGNAL_APP_ID || '';
 const ONESIGNAL_REST_API_KEY = process.env.ONESIGNAL_API_KEY || '';
 const ONESIGNAL_API_URL = 'https://api.onesignal.com/notifications';
@@ -81,8 +84,9 @@ export async function sendPushNotification(opts: {
   fromUserId?: number | null;
   toUserId?: number | null;
   notifPrefsRaw?: string | null;
+  badgeCount?: number;
 }): Promise<void> {
-  const { playerId, title, message, url, notifType, fromUserId, toUserId, notifPrefsRaw } = opts;
+  const { playerId, title, message, url, notifType, fromUserId, toUserId, notifPrefsRaw, badgeCount } = opts;
 
   // Skip if OneSignal not configured
   if (!ONESIGNAL_APP_ID || !ONESIGNAL_REST_API_KEY) return;
@@ -125,8 +129,8 @@ export async function sendPushNotification(opts: {
       headings: { en: title },
       contents: { en: message },
       web_url: webUrl,
-      ios_badgeType: 'Increase',
-      ios_badgeCount: 1,
+      ios_badgeType: badgeCount != null ? 'SetTo' : 'Increase',
+      ios_badgeCount: badgeCount ?? 1,
       priority: 10,
     };
 
@@ -176,6 +180,21 @@ export async function pushToUser(opts: {
 
     if (!user?.playerId) return;
 
+    // Query actual unread DM count for accurate badge
+    let badgeCount: number | undefined;
+    try {
+      const unreadResult = await db
+        .select({ count: sql`count(*)` })
+        .from(messages)
+        .where(and(
+          eq(messages.receiverId, toUserId),
+          eq(messages.isRead, false)
+        ));
+      badgeCount = Number(unreadResult[0]?.count || 1);
+    } catch {
+      // Fall back to increment if query fails
+    }
+
     await sendPushNotification({
       playerId: user.playerId,
       title,
@@ -185,6 +204,7 @@ export async function pushToUser(opts: {
       fromUserId,
       toUserId,
       notifPrefsRaw: user.prefs,
+      badgeCount,
     });
   } catch (e) {
     console.warn('[push] pushToUser error:', e);

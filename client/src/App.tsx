@@ -11,6 +11,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import GlobalHotfixes from "@/GlobalHotfixes";
 import { DarkModeSuggestionBanner } from "@/components/DarkModeSuggestionBanner";
+import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { FullPageSkeleton } from "@/components/FullPageSkeleton";
 import { OneSignalInit } from "@/components/OneSignalInit";
 import { NotificationPermissionModal } from "@/components/NotificationPermissionModal";
@@ -2021,6 +2022,8 @@ function Router() {
           )}
         </>
       )}
+
+      <PWAInstallBanner />
     </AuthContext.Provider>
   );
 }
