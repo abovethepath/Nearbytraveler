@@ -136,16 +136,22 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const [qrInstallOpen, setQrInstallOpen] = React.useState(false);
 
   // Track profile visits for inline QR promo (desktop, own profile, first 5 visits)
-  const [showInlineQr, setShowInlineQr] = React.useState(false);
+  // Track profile visits for inline "Get App" pill (desktop, own profile, first 5 visits)
+  const [showInlineQr, setShowInlineQr] = React.useState(() => {
+    if (typeof window === 'undefined') return false;
+    const count = parseInt(localStorage.getItem('nt_app_promo_count') || '0', 10);
+    return count < 5;
+  });
   React.useEffect(() => {
-    if (!isOwnProfile || !isDesktop) return;
+    if (!isOwnProfile || !isDesktop || !showInlineQr) return;
     const key = 'nt_app_promo_count';
     const count = parseInt(localStorage.getItem(key) || '0', 10);
     if (count < 5) {
-      setShowInlineQr(true);
       localStorage.setItem(key, String(count + 1));
+    } else {
+      setShowInlineQr(false);
     }
-  }, [isOwnProfile, isDesktop]);
+  }, [isOwnProfile, isDesktop, showInlineQr]);
 
   React.useEffect(() => {
     const handler = () => setSeeAllCommonOpen(true);
@@ -402,9 +408,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     <button
                       type="button"
                       onClick={() => setQrInstallOpen(true)}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/90 hover:bg-white border border-white/60 text-gray-800 cursor-pointer transition-colors"
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 hover:bg-blue-200 border border-blue-300 text-blue-800 cursor-pointer transition-colors"
                     >
-                      📱 Get the App
+                      📱 Get App
                     </button>
                   )}
                 </div>
