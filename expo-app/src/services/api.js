@@ -366,6 +366,24 @@ const api = {
     return r.json();
   },
 
+  // Register Expo push token with the backend
+  async registerPushToken(expoPushToken) {
+    try {
+      const r = await fetchWithConnectionMessage(`${BASE_URL}/api/users/push-token`, {
+        method: 'POST',
+        headers: getHeaders(),
+        credentials: 'include',
+        body: JSON.stringify({ expoPushToken }),
+      });
+      if (!r.ok) console.log('Push token registration failed:', r.status);
+      else console.log('✅ Push token registered with backend');
+      return r.ok;
+    } catch (e) {
+      console.log('Push token registration error:', e);
+      return false;
+    }
+  },
+
   // Check if app is online
   async checkOnlineStatus() {
     return await offlineStorage.isOnline();
