@@ -132,10 +132,8 @@ export async function sendPushNotification(opts: {
       body: JSON.stringify(body),
     });
 
-    if (!resp.ok) {
-      const err = await resp.text();
-      console.warn('[push] OneSignal error:', resp.status, err);
-    }
+    const responseText = await resp.text();
+    console.log('📱 OneSignal raw response:', resp.status, responseText);
   } catch (e) {
     console.warn('[push] Failed to send push notification:', e);
   }
