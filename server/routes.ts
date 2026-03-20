@@ -26784,7 +26784,7 @@ Questions? Just reply to this message. Welcome aboard!
               toUserId: targetUserId,
               title: "You've been added to a chatroom 💬",
               message: `You're now in ${chatName}`,
-              url: '/chatrooms',
+              url: '/messages',
               notifType: 'chatroom_added',
               fromUserId: Number(userId),
             });
