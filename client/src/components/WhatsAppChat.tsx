@@ -80,6 +80,15 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const { chatId, chatType, title, subtitle, chatLocation, currentUserId, onBack, eventId, eventImageUrl, meetupId, readOnly, readOnlyBanner, graceBanner } = props;
   const [, navigate] = useLocation();
   const { toast } = useToast();
+
+  // Smart back: use provided onBack, else try history.back with /messages fallback
+  const handleBack = onBack || (() => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      navigate('/messages');
+    }
+  });
   const isMobileWeb =
     !isNativeIOSApp() &&
     typeof window !== "undefined" &&
@@ -2263,7 +2272,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           {/* Back button */}
           <div className="px-6 pt-5 pb-2">
             <button
-              onClick={onBack ? onBack : () => navigate(-1 as any)}
+              onClick={handleBack}
               className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-300 transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
@@ -2443,7 +2452,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => onBack ? onBack() : window.history.back()}
+              onClick={handleBack}
               className="text-white hover:bg-gray-700 h-10 w-10 shrink-0 touch-target"
               data-testid="button-chat-back"
             >
