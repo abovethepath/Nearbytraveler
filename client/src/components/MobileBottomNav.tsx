@@ -176,7 +176,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
       className="mobile-bottom-nav"
       style={{
         position: 'fixed',
-        bottom: iosBottom,
+        bottom: 0,
         left: 0,
         right: 0,
         zIndex: 9999,
@@ -189,7 +189,6 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
         WebkitTransform: 'translateZ(0)',
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
-        willChange: 'transform',
       }}
     >
       <div style={{ 
