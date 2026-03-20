@@ -2307,11 +2307,12 @@ export function ProfileDialogs(props: ProfilePageProps) {
       </Dialog>
 
       {/* Expanded Profile Photo Modal */}
-      <Dialog open={showExpandedPhoto} onOpenChange={setShowExpandedPhoto}>
+      <Dialog open={showExpandedPhoto} onOpenChange={(open) => { if (!open) setShowExpandedPhoto(false); }}>
         <DialogContent
           className="max-w-[90vw] sm:max-w-2xl md:max-w-3xl lg:max-w-4xl max-h-[90vh] overflow-y-auto p-2 sm:p-4 bg-black/95 border-gray-700"
           onPointerDownOutside={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
+          onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <DialogHeader className="sr-only">
             <DialogTitle>Profile Photo</DialogTitle>

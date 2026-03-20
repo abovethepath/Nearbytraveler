@@ -233,7 +233,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               <div className="relative">
                 <div
                   className={`w-48 h-48 rounded-full overflow-hidden cursor-pointer shadow-2xl ${user?.ambassadorStatus === 'active' ? 'ring-4 ring-amber-400 ring-offset-2' : 'ring-4 ring-white/90'}`}
-                  onClick={() => { if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 0); }}
+                  onClick={(e) => { e.stopPropagation(); if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 50); }}
                   title={user?.profileImage ? "Click to enlarge photo" : undefined}
                 >
                   <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
@@ -255,7 +255,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               <div className="relative">
                 <div
                   className={`w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full overflow-hidden cursor-pointer ${user?.ambassadorStatus === 'active' ? 'ring-4 ring-amber-400 ring-offset-2' : ''}`}
-                  onClick={() => { if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 0); }}
+                  onClick={(e) => { e.stopPropagation(); if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 50); }}
                   title={user?.profileImage ? "Click to enlarge photo" : undefined}
                 >
                   <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
@@ -515,7 +515,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       <div className={`flex-shrink-0 ${isMobileWeb ? 'flex flex-col items-start' : ''}`}>
                         <div
                           className={`w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-full overflow-hidden shadow-2xl cursor-pointer ${user?.ambassadorStatus === 'active' ? 'ring-4 ring-amber-400 ring-offset-2' : 'ring-4 ring-white/90'}`}
-                          onClick={() => { if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 0); }}
+                          onClick={(e) => { e.stopPropagation(); if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 50); }}
                           title={user?.profileImage ? "Click to enlarge photo" : undefined}
                         >
                           <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
@@ -916,7 +916,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             <div className="relative flex flex-col items-center">
               <div
                 className={`w-40 h-40 rounded-full overflow-hidden cursor-pointer shadow-2xl ${user?.ambassadorStatus === 'active' ? 'ring-4 ring-amber-400 ring-offset-2' : `ring-4 ring-white/90 ${user?.profileImage ? 'hover:ring-white transition-all' : ''}`}`}
-                onClick={() => { if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 0); }}
+                onClick={(e) => { e.stopPropagation(); if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 50); }}
                 title={user?.profileImage ? "Click to enlarge photo" : undefined}
               >
                 <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
@@ -986,7 +986,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               <div className="relative">
                 <div
                   className={`rounded-full shadow-xl overflow-hidden ${user?.ambassadorStatus === 'active' ? 'border-4 border-amber-400' : `border-4 border-white dark:border-gray-600 ${!isOwnProfile && user?.profileImage ? 'cursor-pointer hover:border-orange-400 transition-all' : ''}`}`}
-                  onClick={() => { if (!isOwnProfile && user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 0); }}
+                  onClick={(e) => { e.stopPropagation(); if (!isOwnProfile && user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 50); }}
                   title={!isOwnProfile && user?.profileImage ? "Click to enlarge photo" : undefined}
                 >
                   <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
