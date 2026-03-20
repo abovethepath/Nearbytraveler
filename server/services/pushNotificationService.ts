@@ -160,7 +160,7 @@ export async function sendNewMessagePush(
   return sendPushNotification(
     recipientId,
     `New message from @${senderName}`,
-    messagePreview.substring(0, 100),
+    `@${senderName}: ${messagePreview.substring(0, 100)}`,
     { type: "new_message", senderId: recipientId }
   );
 }

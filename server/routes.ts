@@ -12979,7 +12979,7 @@ Questions? Just reply to this message. Welcome aboard!
                 eq,
                 toUserId: recipientIdNum,
                 title: `New message from @${senderUsername}`,
-                message: preview.substring(0, 100),
+                message: `@${senderUsername}: ${preview.substring(0, 100)}`,
                 url: `/messages/${senderIdNum}`,
                 notifType: 'message',
                 fromUserId: senderIdNum,
@@ -21241,7 +21241,7 @@ Questions? Just reply to this message. Welcome aboard!
           const roomName = room?.name || 'Chatroom';
           const [sender] = await db.select({ username: users.username }).from(users).where(eq(users.id, senderIdNum));
           const senderName = sender?.username || 'Someone';
-          const preview = safeContent.substring(0, 80);
+          const preview = safeContent.substring(0, 100);
 
           const members = await db.select({ userId: chatroomMembers.userId })
             .from(chatroomMembers)
@@ -29875,7 +29875,7 @@ Questions? Just reply to this message. Welcome aboard!
           const [evt] = await db.select({ title: events.title }).from(events).where(eq(events.id, chatMeta.eventId)).limit(1);
           const eventName = evt?.title || chatMeta.chatroomName || 'Event';
           const senderName = user?.username || 'Someone';
-          const preview = message.trim().substring(0, 80);
+          const preview = message.trim().substring(0, 100);
 
           const attendees = await db.select({ userId: eventParticipants.userId })
             .from(eventParticipants)
