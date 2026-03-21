@@ -24906,7 +24906,16 @@ Questions? Just reply to this message. Welcome aboard!
         gender: users.gender,
         phoneNumber: users.phoneNumber,
         createdAt: users.createdAt,
-      }).from(users).orderBy(desc(users.createdAt));
+        lastSeenAt: users.lastSeenAt,
+        lastLogin: users.lastLogin,
+        ambassadorStatus: users.ambassadorStatus,
+        adminNotes: users.adminNotes,
+        referralCount: users.referralCount,
+        isAdmin: users.isAdmin,
+        subscriptionStatus: users.subscriptionStatus,
+        isCurrentlyTraveling: users.isCurrentlyTraveling,
+        travelDestination: users.travelDestination,
+      }).from(users).orderBy(sql`CASE WHEN ${users.lastSeenAt} IS NULL THEN 1 ELSE 0 END`, desc(users.lastSeenAt));
 
       res.json(allUsers);
     } catch (error: any) {
