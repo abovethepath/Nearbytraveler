@@ -1495,7 +1495,7 @@ export default function Messages() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => isNativeIOSApp() ? window.history.back() : navigate('/messages')}
+                  onClick={() => navigate('/messages')}
                   className="lg:hidden text-gray-600 dark:text-gray-400 min-h-[44px] min-w-[44px] h-11 w-11 shrink-0 touch-target"
                 >
                   <ArrowLeft className="w-4 h-4" />

@@ -2755,7 +2755,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => onBack ? onBack() : window.history.back()}
+          onClick={() => onBack ? onBack() : navigate('/messages')}
           className="text-white hover:bg-gray-700 h-8 w-8 shrink-0"
         >
           <ArrowLeft className="w-4 h-4" />

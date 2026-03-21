@@ -23,7 +23,7 @@ export const TOP_CHOICES = [
   "Live Music",
   "Karaoke",
   "Comedy Shows",
-  "Local Hidden Gems",
+  "Off the Beaten Path",
   "Historical Sites & Tours",
   "Museums",
   "Cultural Experiences",

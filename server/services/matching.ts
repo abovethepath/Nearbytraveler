@@ -1037,39 +1037,8 @@ export class TravelMatchingService {
   }
 
   private areInterestsSimilar(interest1: string, interest2: string): boolean {
-    const int1 = interest1.toLowerCase();
-    const int2 = interest2.toLowerCase();
-    
-    // Exact match
-    if (int1 === int2) return true;
-    
-    // Substring matching
-    if (int1.includes(int2) || int2.includes(int1)) return true;
-    
-    // Enhanced semantic similarity mappings for common travel interests
-    const similarityMap = {
-      'music': ['jazz', 'concerts', 'nightlife', 'dancing', 'clubs', 'jazz clubs', 'music & concerts'],
-      'food': ['dining', 'restaurants', 'cuisine', 'cooking', 'culinary', 'food'],
-      'adventure': ['hiking', 'extreme sports', 'rock climbing', 'hang gliding', 'adventure'],
-      'culture': ['history', 'museums', 'art', 'cultural events', 'lgbtqia+'],
-      'nightlife': ['bars', 'clubs', 'happy hours', 'cocktails', 'dancing', 'nightlife', 'craft beer'],
-      'social': ['meet locals', 'networking', 'friends', 'volunteering', 'meet locals/travelers', 'freinds'],
-      'entertainment': ['shows', 'concerts', 'festivals', 'events', 'underground scene'],
-      'nature': ['beach', 'hiking', 'outdoor', 'wildlife', 'dolphin watching', 'beach activities'],
-      'shopping': ['vintage shopping', 'markets', 'boutiques', 'shopping'],
-      'sports': ['extreme sports', 'rock climbing', 'beach activities'],
-      'photography': ['photography', 'art', 'visual arts'],
-      'activities': ['language practice', 'walking tours', 'city tours', 'food tours', 'bar hopping']
-    };
-    
-    // Check if interests belong to the same category
-    for (const [category, keywords] of Object.entries(similarityMap)) {
-      const int1HasKeyword = keywords.some(keyword => int1.includes(keyword));
-      const int2HasKeyword = keywords.some(keyword => int2.includes(keyword));
-      if (int1HasKeyword && int2HasKeyword) return true;
-    }
-    
-    return false;
+    // Exact match only (case-insensitive) — no fuzzy/substring/category matching
+    return interest1.toLowerCase().trim() === interest2.toLowerCase().trim();
   }
 
   private areLocationsSimilar(location1: string, location2: string): boolean {
