@@ -340,7 +340,7 @@ export function CityArrivalsWidget({ cityName }: Props) {
           <span className="text-base leading-none">✈️</span>
           <div>
             <p className="text-white font-bold text-sm leading-tight tracking-tight">
-              Visiting {cityName}
+              In {cityName}
             </p>
             <p className="text-slate-400 text-[10px] leading-tight font-medium tracking-wide">
               {[
