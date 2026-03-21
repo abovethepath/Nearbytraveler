@@ -25,8 +25,7 @@ export function useNavigationHistory() {
     if (historyIndex > 0) {
       historyIndex--;
       const previousPath = navigationHistory[historyIndex];
-      // Use browser's back() which should work correctly
-      window.history.back();
+      window.location.href = previousPath;
       return true;
     } else {
       // No history available, use fallback

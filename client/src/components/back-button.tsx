@@ -19,14 +19,7 @@ export default function BackButton({
   const [, setLocation] = useLocation();
 
   const handleBack = () => {
-    // Simple and reliable: always use browser's back() first
-    try {
-      window.history.back();
-    } catch (error) {
-      // Only fallback if back() completely fails (very rare)
-      console.warn('Browser back failed, using fallback:', error);
-      setLocation(fallbackRoute);
-    }
+    setLocation(fallbackRoute);
   };
 
   return (

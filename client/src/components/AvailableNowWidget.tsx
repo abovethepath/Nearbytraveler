@@ -321,7 +321,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
           // remaining transient errors, so no error flash will be visible.
           const title = encodeURIComponent(data.chatroomName || 'Meetup Chat');
           const subtitle = encodeURIComponent(data.chatroomCity || 'Group chat');
-          toast({ title: "It's a meet!", description: "Setting up your chat…" });
+          toast({ title: "✅ You're in!", description: "Setting up your group chat…" });
           void waitForChatroomReady(Number(data.groupChatroomId)).then((ok) => {
             if (!ok) {
               // Navigate anyway — the chat page's own retry logic will handle it
@@ -331,7 +331,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             setLocation(`/meetup-chatroom-chat/${data.groupChatroomId}?title=${title}&subtitle=${subtitle}`);
           });
         } else {
-          toast({ title: "It's a meet!", description: "Check your Messages for the meetup chat." });
+          toast({ title: "✅ You're in!", description: "Go to the group chat to coordinate." });
         }
       } else {
         toast({ title: "Request declined" });

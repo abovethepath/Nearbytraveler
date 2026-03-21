@@ -25995,7 +25995,7 @@ Questions? Just reply to this message. Welcome aboard!
               state: activeSession.state,
               country: activeSession.country || 'USA',
               activityType: primaryActivity,
-              expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
+              expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
             });
             groupChatroomId = result.chatroomId;
             console.log(`[MEET ACCEPT] ${result.isNew ? 'Created' : 'Joined'} chatroom ${result.chatroomId}`);
@@ -26031,30 +26031,7 @@ Questions? Just reply to this message. Welcome aboard!
           console.error('[MEET ACCEPT] WS notification failed (non-fatal):', wsErr);
         }
 
-        // Send a single DM so the requester sees the acceptance (guard against duplicate PATCH calls)
-        const acceptanceContent = groupChatroomId
-          ? `Hey! I accepted your meet request — check the group chat to coordinate! 🤝`
-          : `Hey! I accepted your meet request — let's figure out where to meet up! 🤝`;
-        const recentCutoff = new Date(Date.now() - 60 * 1000);
-        const existingAcceptance = await db.select({ id: messages.id })
-          .from(messages)
-          .where(and(
-            eq(messages.senderId, Number(userId)),
-            eq(messages.receiverId, updated.fromUserId),
-            like(messages.content, "%accepted your meet request%"),
-            gte(messages.createdAt, recentCutoff)
-          ))
-          .limit(1);
-        if (existingAcceptance.length === 0) {
-          await db.insert(messages).values({
-            senderId: Number(userId),
-            receiverId: updated.fromUserId,
-            content: acceptanceContent,
-            messageType: 'text',
-            isRead: false,
-            createdAt: new Date(),
-          });
-        }
+        // Auto-DM removed — toast notification on the frontend is sufficient
 
         try {
           const { sendPushNotification } = await import('./services/pushNotificationService');

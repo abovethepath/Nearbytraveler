@@ -16,15 +16,7 @@ export function UniversalBackButton({
   const [, setLocation] = useLocation();
 
   const handleBack = () => {
-    // Simple and reliable: always use browser's back() first
-    // Modern browsers and SPAs handle this correctly
-    try {
-      window.history.back();
-    } catch (error) {
-      // Only fallback if back() completely fails (very rare)
-      console.warn('Browser back failed, using fallback:', error);
-      setLocation(destination);
-    }
+    setLocation(destination);
   };
 
   return (
