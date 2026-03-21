@@ -80,7 +80,7 @@ export const INTERESTS = [
   "Running & Jogging",
   "Yoga & Meditation",
   "Extreme Sports",
-  "Camping & RV Travel",
+  "Camping",
   "Rock Climbing",
   "Surfing",
   "Skiing & Snowboarding",
@@ -470,7 +470,6 @@ export const SUB_INTEREST_CATEGORIES: SubInterestCategory[] = [
       "Rock Climbing",
       "Golf",
       "Biking / Mountain Biking",
-      "Camping",
       "Fishing",
       "Skiing / Snowboarding",
       "Sailing / Boating"
