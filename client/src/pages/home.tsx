@@ -1719,7 +1719,7 @@ export default function Home() {
           data-testid="button-show-hero"
         >
           <ChevronDown className="w-4 h-4 mr-2" />
-          Show Welcome Message
+          Show Intro
         </Button>
       )}
       <ThemeToggle />
