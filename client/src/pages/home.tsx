@@ -398,6 +398,8 @@ export default function Home() {
         queryClient.invalidateQueries({ queryKey: ['/api/available-now/my-status'] });
         queryClient.invalidateQueries({ queryKey: ['/api/available-now'] });
         queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/events/all-locations'] });
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -553,9 +555,19 @@ export default function Home() {
       }
       
       // ONLY INCLUDE EVENTS WITH organizerId (user-created events) and remove duplicates
+      const now = new Date();
       const userCreatedEvents = allEvents
         .filter((event: any) => event.organizerId && event.organizerId > 0)
-        .filter((event, index, arr) => arr.findIndex(e => e.id === event.id) === index); // Remove duplicates
+        .filter((event: any) => {
+          // Client-side expiry guard matching server rule: COALESCE(endDate, date + 4h) > NOW()
+          const startDate = event.date || event.startDate;
+          if (!startDate) return false;
+          const effectiveEnd = event.endDate
+            ? new Date(event.endDate)
+            : new Date(new Date(startDate).getTime() + 4 * 60 * 60 * 1000);
+          return effectiveEnd > now;
+        })
+        .filter((event: any, index: number, arr: any[]) => arr.findIndex((e: any) => e.id === event.id) === index); // Remove duplicates
       
       return userCreatedEvents.sort((a, b) => {
         // USER CREATED EVENTS PRIORITY BY USER
@@ -917,14 +929,13 @@ export default function Home() {
   const events = useMemo(() => {
     if (!allEvents.length) return [];
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
+    const now = new Date();
     const upcomingEvents = allEvents.filter(event => {
-      const eventDate = new Date(event.date);
-      eventDate.setHours(0, 0, 0, 0);
-      return eventDate >= yesterday;
+      // Mirror the server-side rule: COALESCE(endDate, date + 4h) > NOW()
+      const effectiveEnd = event.endDate
+        ? new Date(event.endDate)
+        : new Date(new Date(event.date).getTime() + 4 * 60 * 60 * 1000);
+      return effectiveEnd > now;
     });
 
     // Handle recurring events - only show one instance per series
