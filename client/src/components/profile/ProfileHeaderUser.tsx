@@ -408,7 +408,8 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     <button
                       type="button"
                       onClick={() => setQrInstallOpen(true)}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 hover:bg-orange-200 border border-orange-400 text-orange-900 cursor-pointer animate-pulse"
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold cursor-pointer animate-pulse"
+                      style={{ backgroundColor: '#3B82F6', color: '#ffffff', border: '2px solid #ffffff' }}
                     >
                       Add Nearby Traveler App on Phone Here
                     </button>
