@@ -410,7 +410,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       onClick={() => setQrInstallOpen(true)}
                       className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 hover:bg-blue-200 border border-blue-300 text-blue-800 cursor-pointer transition-colors"
                     >
-                      📱 Get App
+                      Add Nearby Traveler App on Phone Here
                     </button>
                   )}
                 </div>
