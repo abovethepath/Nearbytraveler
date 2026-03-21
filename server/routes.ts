@@ -27921,7 +27921,7 @@ Questions? Just reply to this message. Welcome aboard!
   runAvailableNowChatroomCleanup().catch(err => console.error('[Cleanup] Startup cleanup failed:', err));
   setInterval(() => {
     runAvailableNowChatroomCleanup().catch(err => console.error('[Cleanup] Scheduled cleanup failed:', err));
-  }, 24 * 60 * 60 * 1000);
+  }, 30 * 60 * 1000); // every 30 minutes — marks expired sessions/meetups as inactive
 
   app.post("/api/meetup-chatrooms/cleanup-expired", async (req: any, res) => {
     try {

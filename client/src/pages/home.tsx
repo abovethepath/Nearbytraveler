@@ -380,6 +380,7 @@ export default function Home() {
   const { data: availableNowIds = [] } = useQuery<number[]>({
     queryKey: ['/api/available-now/active-ids'],
     refetchInterval: 30000,
+    staleTime: 0,
   });
 
   // My "available now" status so the current user's card shows the green badge when they're available
@@ -387,6 +388,21 @@ export default function Home() {
     queryKey: ['/api/available-now/my-status'],
     enabled: !!effectiveUser?.id,
   });
+
+  // When the PWA comes back to the foreground, immediately re-fetch meetup data
+  // so expired Available Now sessions and Quick Meets disappear instantly.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        queryClient.invalidateQueries({ queryKey: ['/api/available-now/active-ids'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/available-now/my-status'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/available-now'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
   const effectiveAvailableNowIds = React.useMemo(() => {
     const ids = new Set(
       (Array.isArray(availableNowIds) ? availableNowIds : []).map((id) => Number(id))
