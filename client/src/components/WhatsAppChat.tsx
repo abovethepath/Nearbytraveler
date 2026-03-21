@@ -2517,7 +2517,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       <div className="flex flex-col h-full">
       {/* ═══ MOBILE HEADER: back | overlapping avatars | name+dot / subtitle | members+⋮ ═══ */}
       {isMobileWeb && (
-        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, paddingTop: 'env(safe-area-inset-top, 0px)', height: `calc(env(safe-area-inset-top, 0px) + 52px)`, minHeight: `calc(env(safe-area-inset-top, 0px) + 52px)`, maxHeight: `calc(env(safe-area-inset-top, 0px) + 52px)`, transform: 'translateZ(0)', willChange: 'transform' }}>
+        <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 md:hidden" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, paddingTop: 'env(safe-area-inset-top, 0px)', height: `calc(env(safe-area-inset-top, 0px) + 52px)`, minHeight: `calc(env(safe-area-inset-top, 0px) + 52px)`, maxHeight: `calc(env(safe-area-inset-top, 0px) + 52px)`, transform: 'translateZ(0)' }}>
           <div className="flex items-center h-[52px] px-2 gap-2">
             <Button
               variant="ghost"
