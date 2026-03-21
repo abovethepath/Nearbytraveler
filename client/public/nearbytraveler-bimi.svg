@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     version="1.2" baseProfile="tiny-ps"
+     viewBox="0 0 1000 1000"
+     width="1000" height="1000">
+  <title>Nearby Traveler</title>
+
+  <rect width="1000" height="1000" rx="130" ry="130" fill="#000000"/>
+
+  <text x="500" y="460"
+        font-family="Arial Black, Arial, sans-serif"
+        font-size="200"
+        font-weight="900"
+        fill="#29ABE2"
+        text-anchor="middle">Nearby</text>
+
+  <text x="500" y="660"
+        font-family="Arial Black, Arial, sans-serif"
+        font-size="200"
+        font-weight="900"
+        fill="#F7941D"
+        text-anchor="middle">Traveler</text>
+
+</svg>
