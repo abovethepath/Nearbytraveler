@@ -189,8 +189,14 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
       };
 
       recognition.onend = () => {
-        setIsListening(false);
-        recognitionRef.current = null;
+        // iOS Safari fires onend after pauses even with continuous=true.
+        // Auto-restart unless the user explicitly pressed stop (which nulls the ref first).
+        if (recognitionRef.current) {
+          try { recognitionRef.current.start(); } catch {
+            setIsListening(false);
+            recognitionRef.current = null;
+          }
+        }
       };
 
       recognitionRef.current = recognition;
