@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AuthContext } from "@/App";
 import type { User, UserCityInterest, TravelPlan } from "@/../../shared/schema";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
+import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
 
 interface PersonCard {
   id: number;
@@ -121,10 +122,7 @@ export function PeopleDiscoveryWidget({
     // COMPUTE VALUES AFTER ALL HOOKS
     // NEW: count + list the top common items
     const compatData = compatibilityData as any;
-    const countInCommon =
-      (compatData?.sharedInterests?.length || 0) +
-      (compatData?.sharedActivities?.length || 0) +
-      (compatData?.sharedEvents?.length || 0);
+    const countInCommon = computeCommonStats(compatData, null).totalCommon;
 
     const topCommon: string[] = [
       ...(compatData?.sharedInterests ?? []),

@@ -7,6 +7,7 @@ import { SimpleAvatar } from "@/components/simple-avatar";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
 import { formatHometownForDisplay } from "@/lib/locationDisplay";
 import { truncateBioToSentences } from "@/lib/bioPreview";
+import { computeCommonStats, type CompatibilityLike } from "@/lib/whatYouHaveInCommonStats";
 
 interface User {
   id: number;
@@ -35,7 +36,7 @@ interface ResponsiveUserGridProps {
   onViewAll?: () => void;
   limit?: number;
   currentUserId?: number;
-  compatibilityDataMap?: Record<number, { sharedInterests?: any[]; sharedActivities?: any[]; sharedEvents?: any[] }>;
+  compatibilityDataMap?: Record<number, CompatibilityLike>;
   connectionDegreesMap?: Record<number, { degree: number; mutualCount: number }>;
 }
 
@@ -129,7 +130,7 @@ export default function ResponsiveUserGrid({
   const getThingsInCommon = (user: User) => {
     const data = compatibilityDataMap?.[user.id];
     if (!data) return 0;
-    return (data.sharedInterests?.length || 0) + (data.sharedActivities?.length || 0) + (data.sharedEvents?.length || 0);
+    return computeCommonStats(data, null).totalCommon;
   };
 
   const getBioSnippet = (user: User) => {

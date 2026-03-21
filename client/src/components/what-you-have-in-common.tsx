@@ -674,7 +674,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
               className="inline-flex items-center justify-center rounded-full bg-blue-600 dark:bg-blue-500 text-white shadow-md border border-blue-700 dark:border-blue-600 text-sm font-bold px-4 py-2.5 min-h-[2.5rem]"
               data-testid="common-count-badge"
             >
-              {renderedLabel}
+              {thingsInCommonLabel}
             </span>
           </div>
         </div>
