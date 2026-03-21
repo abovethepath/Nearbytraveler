@@ -78,8 +78,8 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
   const { data: connectionRequests = [] } = useQuery<ConnectionRequest[]>({
     queryKey: [`/api/connections/${userId}/requests`],
     enabled: !!userId,
-    // If the user is offline (or WS isn't connected), still surface new requests without a full reload.
-    refetchInterval: 30000,
+    // WS pushes real-time updates; this is just a fallback
+    refetchInterval: 60000,
     refetchOnWindowFocus: true,
   });
 

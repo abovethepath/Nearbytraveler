@@ -229,7 +229,7 @@ export default function Messages() {
     gcTime: 300000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    refetchInterval: 5000,
+    refetchInterval: 30000,
     placeholderData: (previousData: any) => previousData,
   });
 
@@ -266,8 +266,8 @@ export default function Messages() {
       return res.json();
     },
     enabled: !!userId && !!selectedMeetupChat,
-    staleTime: 5000,
-    refetchInterval: 5000,
+    staleTime: 30000,
+    refetchInterval: 30000,
   });
 
   const sendMeetupMessageMutation = useMutation({

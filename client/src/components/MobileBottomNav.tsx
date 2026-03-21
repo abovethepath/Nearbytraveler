@@ -58,7 +58,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
       return res.json();
     },
     enabled: !!user?.id,
-    refetchInterval: 5000,
+    refetchInterval: 30000,
   });
 
   const unreadCount = (unreadData as any)?.unreadCount || 0;
@@ -99,7 +99,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
       return res.json();
     },
     enabled: !!user?.id,
-    refetchInterval: 30000,
+    refetchInterval: 60000,
   });
 
   const unreadNotifCount = (activityNotifications.filter((n: any) => !n.isRead).length) + connectionRequests.length;
@@ -123,6 +123,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
       if (userIdRef.current) {
         qcRef.current.invalidateQueries({ queryKey: ['/api/notifications', userIdRef.current] });
         qcRef.current.invalidateQueries({ queryKey: ['/api/connections', userIdRef.current, 'requests'] });
+        qcRef.current.invalidateQueries({ queryKey: [`/api/activity-feed/${userIdRef.current}`] });
       }
     };
     websocketService.on('instant_message_received', refreshMessages);
