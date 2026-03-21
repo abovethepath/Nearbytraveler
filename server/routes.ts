@@ -17906,7 +17906,10 @@ Questions? Just reply to this message. Welcome aboard!
       console.log(`🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info`);
 
       // Build conditions array for proper AND/OR logic
-      const conditions = [eq(quickMeetups.isActive, true)];
+      const conditions = [
+        eq(quickMeetups.isActive, true),
+        gt(quickMeetups.expiresAt, now),
+      ];
 
       // CRITICAL FIX: Get country for filtering to prevent cross-border meetup leaking
       let userCountry: string | null = null;
@@ -20964,7 +20967,13 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/chatrooms/:roomId/messages", async (req, res) => {
     try {
       const roomId = parseInt(req.params.roomId || '0');
-      const userId = req.headers['x-user-id'];
+      // Accept user ID from header OR from session (header may be stripped by security middleware,
+      // or may arrive as '0' if client-side auth hasn't resolved yet)
+      const sessionUserId = (req as any)?.session?.user?.id;
+      const headerUserId = req.headers['x-user-id'];
+      const headerUserIdNum = headerUserId ? parseInt(headerUserId as string) : 0;
+      // Prefer session user when header is missing or 0; header takes precedence when valid
+      const userId = (headerUserIdNum > 0 ? headerUserId : null) || (sessionUserId ? String(sessionUserId) : null);
       const chatType = req.query.chatType as string || 'city';
       const format = req.query.format as string || 'legacy';
       
