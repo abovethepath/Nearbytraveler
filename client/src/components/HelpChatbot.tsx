@@ -134,7 +134,7 @@ export function HelpChatbot() {
 
   const floatingStyle = {
     right: '20px',
-    bottom: '20px',
+    bottom: '90px',
   } as any;
 
   return (
