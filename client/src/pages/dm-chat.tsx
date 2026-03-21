@@ -87,6 +87,7 @@ export default function DMChat() {
       return res.json();
     },
     enabled: !!otherUserId,
+    staleTime: 5 * 60 * 1000, // 5 min — don't refetch mid-session and cause name flicker
     retry: 2,
     retryDelay: 1000
   });

@@ -130,7 +130,15 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [showHostLeaveModal, setShowHostLeaveModal] = useState(false);
   const [hostLeaveStep, setHostLeaveStep] = useState<'choice' | 'transfer' | 'dissolve-confirm'>('choice');
   const [transferTargetUserId, setTransferTargetUserId] = useState<number | null>(null);
-  useEffect(() => { setDisplayTitle(title?.replace(/ - Group Chat$/i, '') ?? title); }, [title]);
+  useEffect(() => {
+    const cleaned = title?.replace(/ - Group Chat$/i, '') ?? title;
+    // Never downgrade: don't replace a real name with a username (shorter/starts with @)
+    setDisplayTitle(prev => {
+      if (!cleaned) return prev;
+      if (prev && prev.length > cleaned.length && !prev.startsWith('@') && cleaned.startsWith('@')) return prev;
+      return cleaned;
+    });
+  }, [title]);
 
   // Available Now / Meetup chats: show the selected activities in the header.
   const { data: meetupChatInfo } = useQuery<{
