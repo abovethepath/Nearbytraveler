@@ -100,6 +100,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [forwardMessage, setForwardMessage] = useState<Message | null>(null);
+  const [forwardConversations, setForwardConversations] = useState<any[]>([]);
+  const [forwardLoading, setForwardLoading] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
   const [memberSearch, setMemberSearch] = useState("");
   const [muteDialogOpen, setMuteDialogOpen] = useState(false);
@@ -2194,6 +2197,72 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
   };
 
+  const handleForwardInNT = async (msg: Message) => {
+    setSelectedMessage(null);
+    setForwardMessage(msg);
+    setForwardLoading(true);
+    try {
+      let user: any = {};
+      try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('current_user') || '{}'); } catch { user = {}; }
+      const uid = currentUserId || user.id;
+      const res = await fetch(`${getApiBaseUrl()}/api/messages/${uid}`, { credentials: 'include', headers: { 'x-user-id': String(uid) } });
+      if (res.ok) {
+        const data = await res.json();
+        const convos = Array.isArray(data) ? data : [];
+        // Deduplicate by otherUserId
+        const seen = new Set<number>();
+        const unique = convos.filter((m: any) => {
+          const otherId = m.senderId == uid ? m.receiverId : m.senderId;
+          if (seen.has(otherId)) return false;
+          seen.add(otherId);
+          return true;
+        });
+        setForwardConversations(unique);
+      }
+    } catch { /* silent */ }
+    setForwardLoading(false);
+  };
+
+  const handleForwardSend = async (recipientId: number) => {
+    if (!forwardMessage || !currentUserId) return;
+    try {
+      await fetch(`${getApiBaseUrl()}/api/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-user-id': String(currentUserId) },
+        credentials: 'include',
+        body: JSON.stringify({
+          senderId: currentUserId,
+          receiverId: recipientId,
+          content: forwardMessage.content,
+          messageType: forwardMessage.messageType || 'text',
+          mediaUrl: forwardMessage.mediaUrl || null,
+        }),
+      });
+      toast({ title: "Message forwarded" });
+    } catch {
+      toast({ title: "Failed to forward", variant: "destructive" });
+    }
+    setForwardMessage(null);
+    setForwardConversations([]);
+  };
+
+  const handleShareOutside = async (msg: Message) => {
+    setSelectedMessage(null);
+    const text = msg.content || '';
+    if (navigator.share) {
+      try {
+        await navigator.share({ text, url: 'https://nearbytraveler.org' });
+      } catch { /* user cancelled */ }
+    } else {
+      try {
+        await navigator.clipboard.writeText(text);
+        toast({ title: "Copied to clipboard" });
+      } catch {
+        toast({ title: "Couldn't share", variant: "destructive" });
+      }
+    }
+  };
+
   const handleDeleteMessage = async (messageId: number) => {
     // Close the menu first
     setSelectedMessage(null);
@@ -3903,6 +3972,29 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 </>
               )}
 
+              {/* Forward & Share — all messages */}
+              <div className="mx-1 border-t border-gray-700 my-1" />
+              <button
+                type="button"
+                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleForwardInNT(selectedMessage); }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleForwardInNT(selectedMessage); }}
+                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+              >
+                <Reply className="w-5 h-5 text-blue-400 pointer-events-none scale-x-[-1]" />
+                <span className="text-sm pointer-events-none">Forward in NT</span>
+              </button>
+              <button
+                type="button"
+                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleShareOutside(selectedMessage); }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleShareOutside(selectedMessage); }}
+                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+              >
+                <Share2 className="w-5 h-5 text-purple-400 pointer-events-none" />
+                <span className="text-sm pointer-events-none">Share Outside</span>
+              </button>
+
               {/* Pin / Unpin — host/admin only, non-DM chatrooms */}
               {isCurrentUserAdmin && chatType !== 'dm' && (
                 <>
@@ -3933,6 +4025,52 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                     )}
                   </button>
                 </>
+              )}
+            </div>
+          </div>
+        </>,
+        document.body
+      )}
+
+      {/* Forward message modal */}
+      {forwardMessage && createPortal(
+        <>
+          <div className="fixed inset-0 bg-black/60 z-[99998]" onClick={() => { setForwardMessage(null); setForwardConversations([]); }} />
+          <div className="fixed z-[99999] bg-gray-900 rounded-2xl shadow-2xl border border-gray-700 w-[320px] max-h-[400px] flex flex-col"
+            style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+            <div className="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
+              <span className="text-white font-semibold text-sm">Forward to...</span>
+              <button onClick={() => { setForwardMessage(null); setForwardConversations([]); }} className="text-gray-400 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              {forwardLoading ? (
+                <p className="text-gray-400 text-sm text-center py-8">Loading...</p>
+              ) : forwardConversations.length === 0 ? (
+                <p className="text-gray-400 text-sm text-center py-8">No conversations</p>
+              ) : (
+                forwardConversations.map((c: any) => {
+                  const uid = currentUserId;
+                  const otherId = c.senderId == uid ? c.receiverId : c.senderId;
+                  const other = c.senderId == uid ? c.receiverUser : c.senderUser;
+                  const name = other?.name || other?.username || `User ${otherId}`;
+                  const img = other?.profileImage;
+                  return (
+                    <button
+                      key={otherId}
+                      onClick={() => handleForwardSend(otherId)}
+                      className="flex items-center gap-3 w-full px-4 py-3 hover:bg-gray-800 text-left"
+                    >
+                      {img ? (
+                        <img src={img} alt="" className="w-8 h-8 rounded-full object-cover" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 flex items-center justify-center text-white text-xs font-bold">{(name[0] || '?').toUpperCase()}</div>
+                      )}
+                      <span className="text-white text-sm truncate">{name}</span>
+                    </button>
+                  );
+                })
               )}
             </div>
           </div>
