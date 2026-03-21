@@ -974,7 +974,7 @@ export function QuickMeetupWidget({
                   className="cta-gradient w-full text-lg font-bold py-5 h-14 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 dark:from-blue-600 dark:to-orange-500 dark:hover:from-blue-700 dark:hover:to-orange-600 border-0 rounded-xl shadow-lg text-gray-900 dark:text-white"
                 >
                   <Plus className="h-5 w-5 mr-2" />
-                  I'm Out, Come Join Me
+                  ⚡ Available Now
                 </Button>
               </div>
             </div>
@@ -983,7 +983,7 @@ export function QuickMeetupWidget({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Zap className="h-6 w-6 text-orange-500 animate-bounce" />
-                  <h4 className="font-bold text-lg bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">I'm Out — Share What You're Doing</h4>
+                  <h4 className="font-bold text-lg bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">I'm Out — Share Where You Are</h4>
                 </div>
                 <Button
                   onClick={() => {

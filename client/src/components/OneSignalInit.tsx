@@ -20,6 +20,13 @@ export function OneSignalInit({ userId }: { userId: number | null | undefined })
   useEffect(() => {
     if (!ONESIGNAL_APP_ID || !userId || registered.current) return;
 
+    // iOS Safari only supports Web Push when running as an installed PWA (standalone).
+    // Skip OneSignal init entirely on iOS if not in standalone mode.
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isStandalone = (navigator as any).standalone === true
+      || window.matchMedia('(display-mode: standalone)').matches;
+    if (isIOS && !isStandalone) return;
+
     // SDK may have been loaded via <script> in index.html — wait for it
     const init = () => {
       if (!window.OneSignalDeferred) window.OneSignalDeferred = [];
@@ -32,11 +39,40 @@ export function OneSignalInit({ userId }: { userId: number | null | undefined })
             autoRegister: false,
           });
 
-          // Subscribe passively — only if permission was already granted
-          const permission = await OneSignal.getNotificationPermission?.();
-          if (permission === "granted") {
-            await registerSubscription(userId);
-          }
+          // Always try to register the subscription ID after init
+          // This covers: permission already granted, returning users, and fresh grants
+          await registerSubscription(userId);
+
+          // Also listen for future subscription changes
+          try {
+            OneSignal.User?.pushSubscription?.addEventListener?.('change', () => {
+              registerSubscription(userId);
+            });
+          } catch (e) { /* v16 event API may not exist */ }
+
+          // Set app badge when a notification is received in the foreground
+          try {
+            OneSignal.Notifications?.addEventListener?.('foregroundWillDisplay', () => {
+              (navigator as any).setAppBadge?.(1)?.catch?.(() => {});
+            });
+          } catch (e) { /* badge API may not exist */ }
+
+          // Auto-prompt for push permission after 3rd login if not yet granted
+          try {
+            const permission = await OneSignal.getNotificationPermission?.();
+            if (permission !== 'granted' && permission !== 'denied') {
+              const key = 'nt_login_count';
+              const count = parseInt(localStorage.getItem(key) || '0', 10) + 1;
+              localStorage.setItem(key, String(count));
+              if (count >= 3) {
+                await OneSignal.showNativePrompt?.();
+                const newPerm = await OneSignal.getNotificationPermission?.();
+                if (newPerm === 'granted') {
+                  await registerSubscription(userId);
+                }
+              }
+            }
+          } catch (e) { /* permission prompt may not be available */ }
         } catch (e) {
           console.warn("[OneSignal] init error:", e);
         }

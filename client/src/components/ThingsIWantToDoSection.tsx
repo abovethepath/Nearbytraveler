@@ -658,14 +658,11 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                 variant="ghost"
                 size="sm"
                 onClick={() => setConfirmDialog({ open: true, cityName: cityKey })}
-                className={`h-8 text-xs ${cityData.travelPlan?.isPast
-                  ? "text-gray-500 hover:text-red-400 hover:bg-red-900/20 border border-gray-400 dark:border-gray-600"
-                  : "text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                }`}
-                title={cityData.travelPlan?.isPast ? `Clear past trip to ${displayName}` : `Remove all from ${displayName}`}
+                className="h-8 text-xs text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                title={`Remove all from ${displayName}`}
               >
                 <Trash2 className="w-3.5 h-3.5 mr-1" />
-                {cityData.travelPlan?.isPast ? 'Clear' : 'Remove'}
+                Remove
               </Button>
             )}
           </div>

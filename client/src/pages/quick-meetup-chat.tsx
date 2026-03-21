@@ -71,7 +71,7 @@ export default function QuickMeetupChat() {
           description: "This meetup has expired or been deleted.",
           variant: "default",
         });
-        setLocation('/quick-meetups');
+        setLocation('/messages');
       }
     }
   }, [meetupError, error, failureCount, toast, setLocation]);
@@ -80,9 +80,9 @@ export default function QuickMeetupChat() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">Invalid meetup ID</p>
-        <Button onClick={() => setLocation('/quick-meetups')} variant="outline" data-testid="button-back-to-quick-meetups">
+        <Button onClick={() => setLocation('/messages')} variant="outline" data-testid="button-back-to-quick-meetups">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Available Now
+          Back to Messages
         </Button>
       </div>
     );
@@ -98,9 +98,9 @@ export default function QuickMeetupChat() {
         <p className="text-lg">
           {meetupError ? `Error loading meetup: ${error instanceof Error ? error.message : 'Unknown error'}` : 'Meetup not found'}
         </p>
-        <Button onClick={() => setLocation('/quick-meetups')} variant="outline" data-testid="button-back-to-quick-meetups-error">
+        <Button onClick={() => setLocation('/messages')} variant="outline" data-testid="button-back-to-quick-meetups-error">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Available Now
+          Back to Messages
         </Button>
       </div>
     );
@@ -110,9 +110,9 @@ export default function QuickMeetupChat() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">Chatroom not found</p>
-        <Button onClick={() => setLocation('/quick-meetups')} variant="outline" data-testid="button-back-to-quick-meetups-no-chatroom">
+        <Button onClick={() => setLocation('/messages')} variant="outline" data-testid="button-back-to-quick-meetups-no-chatroom">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Available Now
+          Back to Messages
         </Button>
       </div>
     );
@@ -123,9 +123,9 @@ export default function QuickMeetupChat() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">Please log in to view this chat</p>
-        <Button onClick={() => setLocation('/quick-meetups')} variant="outline">
+        <Button onClick={() => setLocation('/messages')} variant="outline">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Available Now
+          Back to Messages
         </Button>
       </div>
     );
@@ -143,6 +143,7 @@ export default function QuickMeetupChat() {
           title={meetup.title}
           subtitle={`${meetup.participantCount || 1} participants`}
           currentUserId={user.id}
+          onBack={() => setLocation('/messages')}
         />
       </div>
     );
@@ -168,6 +169,7 @@ export default function QuickMeetupChat() {
           title={meetup.title}
           subtitle={`${meetup.participantCount || 1} participants`}
           currentUserId={user.id}
+          onBack={() => setLocation('/messages')}
         />
       </div>
     </div>

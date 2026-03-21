@@ -33,9 +33,9 @@ export default function MeetupChat() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">Invalid meetup ID</p>
-        <Button onClick={() => setLocation(isNativeIOSApp() ? '/home' : '/')} variant="outline" data-testid="button-go-home">
+        <Button onClick={() => setLocation('/messages')} variant="outline" data-testid="button-go-home">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Go Home
+          Back to Messages
         </Button>
       </div>
     );
@@ -51,9 +51,9 @@ export default function MeetupChat() {
         <p className="text-lg">
           {isError ? `Error loading meetup: ${error instanceof Error ? error.message : 'Unknown error'}` : 'Meetup not found'}
         </p>
-        <Button onClick={() => setLocation(isNativeIOSApp() ? '/home' : '/')} variant="outline" data-testid="button-go-home-error">
+        <Button onClick={() => setLocation('/messages')} variant="outline" data-testid="button-go-home-error">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Go Home
+          Back to Messages
         </Button>
       </div>
     );
@@ -68,6 +68,7 @@ export default function MeetupChat() {
         title={meetup.title}
         subtitle={`${meetup.participantCount} participants`}
         currentUserId={user?.id}
+        onBack={() => setLocation('/messages')}
       />
     </div>
   );

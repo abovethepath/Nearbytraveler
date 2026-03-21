@@ -77,6 +77,7 @@ interface AvailableNowWidgetProps {
 
 export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: AvailableNowWidgetProps) {
   const [, setLocation] = useLocation();
+  const [showPicker, setShowPicker] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
   const [liveExpanded, setLiveExpanded] = useState(false);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
@@ -192,7 +193,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
       setShowSetup(false);
-      toast({ title: "You're Available Now — I'm Free!", description: "Others in your city can see you're ready to hang out." });
+      toast({ title: "You're Available Now!", description: "Others in your city can see you're ready to hang out." });
     },
     onError: (error: any) => {
       console.error("Go Available error:", error);
@@ -320,7 +321,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
           // remaining transient errors, so no error flash will be visible.
           const title = encodeURIComponent(data.chatroomName || 'Meetup Chat');
           const subtitle = encodeURIComponent(data.chatroomCity || 'Group chat');
-          toast({ title: "It's a meet!", description: "Setting up your chat…" });
+          toast({ title: "✅ You're in!", description: "Setting up your group chat…" });
           void waitForChatroomReady(Number(data.groupChatroomId)).then((ok) => {
             if (!ok) {
               // Navigate anyway — the chat page's own retry logic will handle it
@@ -330,7 +331,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             setLocation(`/meetup-chatroom-chat/${data.groupChatroomId}?title=${title}&subtitle=${subtitle}`);
           });
         } else {
-          toast({ title: "It's a meet!", description: "Check your Messages for the meetup chat." });
+          toast({ title: "✅ You're in!", description: "Go to the group chat to coordinate." });
         }
       } else {
         toast({ title: "Request declined" });
@@ -761,25 +762,46 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
           </div>
         ) : (
           <div className="mb-4 rounded-xl bg-white border border-gray-200 p-3 dark:bg-gray-900/40 dark:border-gray-800">
-            <button
-              type="button"
-              onClick={() => setShowSetup(true)}
-              className="available-now-primary-cta w-full py-3.5 px-4 rounded-xl bg-white hover:bg-gray-50 text-gray-900 font-bold text-base text-center border border-gray-200 shadow-sm cursor-pointer active:scale-[0.98] transition-all relative z-30 dark:border-transparent dark:bg-gradient-to-r dark:from-purple-600 dark:via-orange-500 dark:to-green-500 dark:hover:from-purple-700 dark:hover:via-orange-600 dark:hover:to-green-600 dark:text-white dark:shadow-lg dark:shadow-orange-500/30"
-            >
-              <span className="flex items-center justify-center gap-2 pointer-events-none">
-                <Zap className="w-5 h-5 text-yellow-300" />
-                I'm Available to Hang Out
-              </span>
-            </button>
+            {!showPicker ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setShowPicker(true)}
+                  className="available-now-primary-cta w-full py-3.5 px-4 rounded-xl bg-white hover:bg-gray-50 text-gray-900 font-bold text-base text-center border border-gray-200 shadow-sm cursor-pointer active:scale-[0.98] transition-all relative z-30 dark:border-transparent dark:bg-gradient-to-r dark:from-purple-600 dark:via-orange-500 dark:to-green-500 dark:hover:from-purple-700 dark:hover:via-orange-600 dark:hover:to-green-600 dark:text-white dark:shadow-lg dark:shadow-orange-500/30"
+                >
+                  <span className="flex items-center justify-center gap-2 pointer-events-none">
+                    <Zap className="w-5 h-5 text-yellow-300" />
+                    ⚡ Available Now
+                  </span>
+                </button>
 
-            {onSortByAvailableNow && (
-              <Button
-                size="sm"
-                className="available-now-secondary-cta w-full mt-3 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 font-semibold text-xs py-2 rounded-full dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white dark:border-transparent"
-                onClick={() => { refetchAvailableUsers(); onSortByAvailableNow(); }}
-              >
-                🟢 See Who's Available Now
-              </Button>
+                {onSortByAvailableNow && (
+                  <Button
+                    size="sm"
+                    className="available-now-secondary-cta w-full mt-3 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 font-semibold text-xs py-2 rounded-full dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white dark:border-transparent"
+                    onClick={() => { refetchAvailableUsers(); onSortByAvailableNow(); }}
+                  >
+                    🟢 See Who's Available Now
+                  </Button>
+                )}
+              </>
+            ) : (
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowPicker(false); setShowSetup(true); }}
+                  className="w-full py-3 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-gray-900 font-semibold text-sm text-left border border-emerald-200 cursor-pointer active:scale-[0.98] transition-all dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 dark:text-white dark:border-emerald-700"
+                >
+                  🏠 I'm Free — open to plans
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setShowPicker(false); setLocation('/quick-meetups'); }}
+                  className="w-full py-3 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-gray-900 font-semibold text-sm text-left border border-blue-200 cursor-pointer active:scale-[0.98] transition-all dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-white dark:border-blue-700"
+                >
+                  📍 I'm Out — come join me
+                </button>
+              </div>
             )}
           </div>
         )}
@@ -1048,7 +1070,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
           </button>
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {myStatus ? "Edit Your Availability" : "Set Your Availability"}
+              {myStatus ? "Edit Your Availability" : "I'm Free — Set Your Availability"}
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               {myStatus ? "Update your activities, note, or time window" : "Let others know you're ready to hang out"}

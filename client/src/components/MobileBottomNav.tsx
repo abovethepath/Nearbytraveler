@@ -58,10 +58,20 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
       return res.json();
     },
     enabled: !!user?.id,
-    refetchInterval: 5000,
+    refetchInterval: 30000,
   });
 
   const unreadCount = (unreadData as any)?.unreadCount || 0;
+
+  // Sync PWA home screen badge via Web App Badge API (iOS 16.4+, modern Android)
+  useEffect(() => {
+    if (!('setAppBadge' in navigator)) return;
+    if (unreadCount > 0) {
+      (navigator as any).setAppBadge(unreadCount).catch(() => {});
+    } else {
+      (navigator as any).clearAppBadge().catch(() => {});
+    }
+  }, [unreadCount]);
 
   // Notification count for Activity tab badge
   const { data: activityNotifications = [] } = useQuery<any[]>({
@@ -89,7 +99,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
       return res.json();
     },
     enabled: !!user?.id,
-    refetchInterval: 30000,
+    refetchInterval: 60000,
   });
 
   const unreadNotifCount = (activityNotifications.filter((n: any) => !n.isRead).length) + connectionRequests.length;
@@ -113,6 +123,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
       if (userIdRef.current) {
         qcRef.current.invalidateQueries({ queryKey: ['/api/notifications', userIdRef.current] });
         qcRef.current.invalidateQueries({ queryKey: ['/api/connections', userIdRef.current, 'requests'] });
+        qcRef.current.invalidateQueries({ queryKey: [`/api/activity-feed/${userIdRef.current}`] });
       }
     };
     websocketService.on('instant_message_received', refreshMessages);
@@ -139,7 +150,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
     { icon: User, label: "Profile", path: profilePath },
   ] : [
     { icon: Home, label: "Home", path: "/" },
-    { icon: Search, label: "Explore", path: "/discover" },
+    { icon: Search, label: "Explore", path: "/explore" },
     { icon: MessageSquare, label: "Messages", path: "/messages" },
     { icon: User, label: "Profile", path: profilePath },
   ];
@@ -159,6 +170,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
     { label: "Create Event", path: "/create-event", icon: Calendar, color: "#f97316" },
     { label: "Plan Trip", path: "/plan-trip", icon: MapPin, color: "#3b82f6" },
     { label: "Available Now", path: "/quick-meetups", icon: Users, color: "#10b981" },
+    { label: "Cities", path: "/discover", icon: Search, color: "#6366f1" },
   ];
 
   const handleCreateTap = (e: React.MouseEvent | React.TouchEvent) => {

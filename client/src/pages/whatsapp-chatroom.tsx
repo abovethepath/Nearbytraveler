@@ -148,8 +148,9 @@ export default function WhatsAppChatroom() {
   const isMember = hasJoined || membershipCheck?.isMember;
 
   if (isMember) {
-    const isPrivateDM = chatroom.city === 'Private' && chatroom.country === 'DM';
-    const handleBack = () => (isPrivateDM ? navigate(-1 as any) : navigate('/chatrooms'));
+    const handleBack = () => {
+      navigate('/messages');
+    };
     return (
       <ChatroomErrorBoundary onBack={handleBack}>
         <div className="flex overflow-hidden h-full max-w-[1100px] mx-auto w-full">
@@ -171,7 +172,7 @@ export default function WhatsAppChatroom() {
       <div className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="flex items-center gap-3 px-4 h-12">
           <button
-            onClick={() => navigate(-1 as any)}
+            onClick={() => navigate('/messages')}
             className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
             style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' } as React.CSSProperties}
           >

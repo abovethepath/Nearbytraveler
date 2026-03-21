@@ -4,9 +4,12 @@
  * Gracefully no-ops when ONESIGNAL_APP_ID / ONESIGNAL_API_KEY are not set.
  */
 
+import { messages } from '../shared/schema';
+import { sql, and } from 'drizzle-orm';
+
 const ONESIGNAL_APP_ID = process.env.ONESIGNAL_APP_ID || '';
 const ONESIGNAL_REST_API_KEY = process.env.ONESIGNAL_API_KEY || '';
-const ONESIGNAL_API_URL = 'https://onesignal.com/api/v1/notifications';
+const ONESIGNAL_API_URL = 'https://api.onesignal.com/notifications';
 
 // In-memory dedup: prevent sending the same push to the same user within 5 minutes
 // Key: `${userId}:${type}:${fromUserId}` → timestamp
@@ -81,8 +84,9 @@ export async function sendPushNotification(opts: {
   fromUserId?: number | null;
   toUserId?: number | null;
   notifPrefsRaw?: string | null;
+  badgeCount?: number;
 }): Promise<void> {
-  const { playerId, title, message, url, notifType, fromUserId, toUserId, notifPrefsRaw } = opts;
+  const { playerId, title, message, url, notifType, fromUserId, toUserId, notifPrefsRaw, badgeCount } = opts;
 
   // Skip if OneSignal not configured
   if (!ONESIGNAL_APP_ID || !ONESIGNAL_REST_API_KEY) return;
@@ -95,7 +99,9 @@ export async function sendPushNotification(opts: {
 
   // Check notification preferences
   if (notifType) {
-    const category = TYPE_TO_CATEGORY[notifType];
+    // Support dynamic notifTypes like chatroom_message_42 by stripping trailing _<id>
+    const baseType = notifType.replace(/_\d+$/, '');
+    const category = TYPE_TO_CATEGORY[notifType] || TYPE_TO_CATEGORY[baseType];
     if (category) {
       const prefs = parsePrefs(notifPrefsRaw);
       if (!prefs[category]) return;
@@ -103,11 +109,15 @@ export async function sendPushNotification(opts: {
   }
 
   // Dedup: don't spam same type from same sender within 5 min
-  cleanupDedup();
-  const dedupKey = `${toUserId}:${notifType || 'generic'}:${fromUserId || 0}`;
-  const lastSent = recentPushes.get(dedupKey);
-  if (lastSent && Date.now() - lastSent < DEDUP_MS) return;
-  recentPushes.set(dedupKey, Date.now());
+  // Exception: DM notifications ('message') always fire — every new message gets a push
+  const isDM = notifType === 'message' || notifType === 'dm' || notifType === 'new_message';
+  if (!isDM) {
+    cleanupDedup();
+    const dedupKey = `${toUserId}:${notifType || 'generic'}:${fromUserId || 0}`;
+    const lastSent = recentPushes.get(dedupKey);
+    if (lastSent && Date.now() - lastSent < DEDUP_MS) return;
+    recentPushes.set(dedupKey, Date.now());
+  }
 
   // Build absolute URL for the web push action
   const webUrl = url.startsWith('http') ? url : `https://nearbytraveler.org${url}`;
@@ -118,16 +128,17 @@ export async function sendPushNotification(opts: {
       include_subscription_ids: [playerId],
       headings: { en: title },
       contents: { en: message },
-      url: webUrl,
       web_url: webUrl,
-      app_url: webUrl, // for iOS/Android deep links
+      ios_badgeType: badgeCount != null ? 'SetTo' : 'Increase',
+      ios_badgeCount: badgeCount ?? 1,
+      priority: 10,
     };
 
     const resp = await fetch(ONESIGNAL_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Key ${ONESIGNAL_REST_API_KEY}`,
+        'Authorization': `Basic ${ONESIGNAL_REST_API_KEY}`,
       },
       body: JSON.stringify(body),
     });
@@ -169,6 +180,21 @@ export async function pushToUser(opts: {
 
     if (!user?.playerId) return;
 
+    // Query actual unread DM count for accurate badge
+    let badgeCount: number | undefined;
+    try {
+      const unreadResult = await db
+        .select({ count: sql`count(*)` })
+        .from(messages)
+        .where(and(
+          eq(messages.receiverId, toUserId),
+          eq(messages.isRead, false)
+        ));
+      badgeCount = Number(unreadResult[0]?.count || 1);
+    } catch {
+      // Fall back to increment if query fails
+    }
+
     await sendPushNotification({
       playerId: user.playerId,
       title,
@@ -178,6 +204,7 @@ export async function pushToUser(opts: {
       fromUserId,
       toUserId,
       notifPrefsRaw: user.prefs,
+      badgeCount,
     });
   } catch (e) {
     console.warn('[push] pushToUser error:', e);

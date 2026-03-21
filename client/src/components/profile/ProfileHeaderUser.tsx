@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette, Heart } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette, Heart, Smartphone } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { VouchButton } from "@/components/VouchButton";
@@ -133,6 +133,25 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
   const [shareWithFriendsOpen, setShareWithFriendsOpen] = React.useState(false);
   const [seeAllCommonOpen, setSeeAllCommonOpen] = React.useState(false);
+  const [qrInstallOpen, setQrInstallOpen] = React.useState(false);
+
+  // Track profile visits for inline QR promo (desktop, own profile, first 5 visits)
+  // Track profile visits for inline "Get App" pill (desktop, own profile, first 20 visits)
+  const [showInlineQr, setShowInlineQr] = React.useState(() => {
+    if (typeof window === 'undefined') return false;
+    const count = parseInt(localStorage.getItem('nt_app_promo_count') || '0', 10);
+    return count < 20;
+  });
+  React.useEffect(() => {
+    if (!isOwnProfile || !isDesktop || !showInlineQr) return;
+    const key = 'nt_app_promo_count';
+    const count = parseInt(localStorage.getItem(key) || '0', 10);
+    if (count < 20) {
+      localStorage.setItem(key, String(count + 1));
+    } else {
+      setShowInlineQr(false);
+    }
+  }, [isOwnProfile, isDesktop, showInlineQr]);
 
   React.useEffect(() => {
     const handler = () => setSeeAllCommonOpen(true);
@@ -362,6 +381,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <Sun className="w-4 h-4 mr-2" />
                           Switch to Light Mode
                         </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => setQrInstallOpen(true)}
+                          className="text-black focus:text-black dark:text-white dark:focus:text-white"
+                        >
+                          <Smartphone className="w-4 h-4 mr-2" />
+                          📱 Get the App
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -376,6 +403,16 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
                       New to Town
                     </span>
+                  )}
+                  {showInlineQr && (
+                    <button
+                      type="button"
+                      onClick={() => setQrInstallOpen(true)}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold cursor-pointer animate-pulse"
+                      style={{ backgroundColor: '#3B82F6', color: '#ffffff', border: '2px solid #ffffff' }}
+                    >
+                      Add Nearby Traveler App on Phone Here
+                    </button>
                   )}
                 </div>
                 {hasValidTravelDestination && (
@@ -420,7 +457,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   }}
                   data-testid="button-lets-meet-now-hero-mobile"
                 >
-                  I'm Available Now
+                  ⚡ Available Now
                 </Button>
               </div>
             </div>
@@ -431,6 +468,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 <ProfileTabBar {...props} variant="hero" />
               </div>
             )}
+
           </div>
         ) : (
         <div className="flex flex-col lg:relative">
@@ -551,7 +589,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       <div className="flex-1 min-w-0 lg:max-w-[400px]">
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-0 sm:gap-2 sm:flex-wrap">
                               <h1 className="text-xl sm:text-3xl font-extrabold text-white break-all leading-tight crisp-hero-text" style={{ color: '#ffffff' }}>
                                 {((user as any)?.firstName || "").split(" ")[0] || user?.username}
                                 {!isOwnProfile && (() => {
@@ -561,7 +599,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); openTab('contacts'); setTimeout(() => { document.getElementById('connections-in-common-section')?.scrollIntoView({ behavior: 'smooth' }); }, 150); }}>{label}</sup>;
                                 })()}
                               </h1>
-                              <div className="text-sm font-medium text-white/75 break-all mt-0.5">@{user?.username}</div>
+                              <div className="text-sm font-medium text-white/75 break-all">@{user?.username}</div>
                               <SupportBadge tier={(user as any)?.supportTier} />
                             </div>
 
@@ -1387,6 +1425,37 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               <MessageCircle className="w-4 h-4" />
               Telegram
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Get App Install Modal */}
+      <Dialog open={qrInstallOpen} onOpenChange={setQrInstallOpen}>
+        <DialogContent className="sm:max-w-xs bg-white dark:bg-gray-900">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Smartphone className="w-5 h-5" />
+              Get the app on your phone
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+            <div>
+              <p className="font-semibold text-gray-900 dark:text-white mb-1">📱 iPhone (Safari):</p>
+              <ol className="list-decimal ml-5 space-y-0.5 text-xs">
+                <li>Open Safari on your iPhone</li>
+                <li>Go to <span className="font-medium">nearbytraveler.org</span></li>
+                <li>Tap the Share button (box with arrow) → Add to Home Screen</li>
+                <li>Tap Add — done!</li>
+              </ol>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 dark:text-white mb-1">🤖 Android (Chrome):</p>
+              <ol className="list-decimal ml-5 space-y-0.5 text-xs">
+                <li>Open Chrome on your phone</li>
+                <li>Go to <span className="font-medium">nearbytraveler.org</span></li>
+                <li>Tap Install when prompted</li>
+              </ol>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

@@ -328,7 +328,7 @@ export default function MeetupsPage() {
           </DialogTrigger>
           <DialogContent className="max-w-2xl w-full">
             <DialogHeader>
-              <DialogTitle>I'm Out — Share What You're Doing</DialogTitle>
+              <DialogTitle>I'm Out — Share Where You Are</DialogTitle>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-6">
               {/* Left Column */}

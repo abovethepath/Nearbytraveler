@@ -771,17 +771,12 @@ export default function ActivityFeed() {
               }
 
               if (type === "chatroom_added") {
-                const d = n.data;
-                if (d?.chatroomId) {
-                  const chatName = d.chatroomName || "Chat";
-                  setLocation(`/meetup-chatroom-chat/${d.chatroomId}?title=${encodeURIComponent(chatName)}&subtitle=${encodeURIComponent("Group chat")}`);
-                }
+                setLocation("/messages");
                 return;
               }
 
               if (type === "new_message") {
-                if (n.actor?.id) setLocation(`/messages/${n.actor.id}`);
-                else setLocation("/messages");
+                setLocation("/messages");
                 return;
               }
 

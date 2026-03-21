@@ -23,7 +23,7 @@ export const TOP_CHOICES = [
   "Live Music",
   "Karaoke",
   "Comedy Shows",
-  "Local Hidden Gems",
+  "Off the Beaten Path",
   "Historical Sites & Tours",
   "Museums",
   "Cultural Experiences",
@@ -80,7 +80,7 @@ export const INTERESTS = [
   "Running & Jogging",
   "Yoga & Meditation",
   "Extreme Sports",
-  "Camping & RV Travel",
+  "Camping",
   "Rock Climbing",
   "Surfing",
   "Skiing & Snowboarding",
@@ -104,7 +104,8 @@ export const INTERESTS = [
   "Sunset Watching",
   "Park Picnics",
   "Cultural Learning",
-  "Blogging"
+  "Blogging",
+  "CouchSurfing"
 ];
 
 // ========================================
@@ -469,7 +470,6 @@ export const SUB_INTEREST_CATEGORIES: SubInterestCategory[] = [
       "Rock Climbing",
       "Golf",
       "Biking / Mountain Biking",
-      "Camping",
       "Fishing",
       "Skiing / Snowboarding",
       "Sailing / Boating"

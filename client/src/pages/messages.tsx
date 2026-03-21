@@ -26,7 +26,6 @@ import { SimpleAvatar, getProfileImageUrl } from '@/components/simple-avatar';
 import websocketService from '@/services/websocketService';
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
-import { UniversalBackButton } from '@/components/UniversalBackButton';
 import { isNativeIOSApp } from '@/lib/nativeApp';
 import { AuthContext } from '@/App';
 import { FullPageSkeleton } from '@/components/FullPageSkeleton';
@@ -230,7 +229,7 @@ export default function Messages() {
     gcTime: 300000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    refetchInterval: 5000,
+    refetchInterval: 30000,
     placeholderData: (previousData: any) => previousData,
   });
 
@@ -267,8 +266,8 @@ export default function Messages() {
       return res.json();
     },
     enabled: !!userId && !!selectedMeetupChat,
-    staleTime: 5000,
-    refetchInterval: 5000,
+    staleTime: 30000,
+    refetchInterval: 30000,
   });
 
   const sendMeetupMessageMutation = useMutation({
@@ -873,11 +872,12 @@ export default function Messages() {
       <div className={`${(selectedConversation || selectedMeetupChat) ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-[#f0f2f5] dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500 min-w-0 flex-shrink-0`}>
         <div className={`border-b border-gray-200 dark:border-gray-700 ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'}`} style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: 'inherit' }}>
           <div className={`flex items-center gap-3 ${isNativeIOSApp() ? 'mb-2' : 'mb-3'}`}>
-            <UniversalBackButton
-              destination="/discover"
-              label=""
-              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent border-none shadow-none hover:bg-gray-200 dark:hover:bg-gray-700/50 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center touch-target"
-            />
+            <button
+              onClick={() => navigate('/home')}
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent border-none shadow-none hover:bg-gray-200 dark:hover:bg-gray-700/50 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center touch-target inline-flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Messages</h1>
           </div>
           <input
@@ -1495,7 +1495,7 @@ export default function Messages() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => isNativeIOSApp() ? window.history.back() : navigate('/messages')}
+                  onClick={() => navigate('/messages')}
                   className="lg:hidden text-gray-600 dark:text-gray-400 min-h-[44px] min-w-[44px] h-11 w-11 shrink-0 touch-target"
                 >
                   <ArrowLeft className="w-4 h-4" />

@@ -25,6 +25,13 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+self.addEventListener('push', (event) => {
+  // Set app badge when a push notification arrives
+  if (self.navigator && self.navigator.setAppBadge) {
+    self.navigator.setAppBadge(1).catch(function() {});
+  }
+});
+
 self.addEventListener('fetch', (event) => {
   // Force fresh fetch for main app files
   if (event.request.url.includes('App.tsx') || event.request.url.includes('main.tsx')) {

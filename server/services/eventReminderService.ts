@@ -143,6 +143,15 @@ export class EventReminderService {
             });
 
             await markReminderSent(event.id, participant.userId, reminderType);
+
+            // Also send push notification
+            try {
+              const { sendEventReminderPush } = await import('./pushNotificationService');
+              const timeText = reminderType === '24h' ? 'tomorrow' : 'in 1 hour';
+              await sendEventReminderPush(participant.userId, event.title, timeText, event.id);
+            } catch (pushErr) {
+              console.error(`Push reminder failed for user ${participant.userId}:`, pushErr);
+            }
           }
         }
       }

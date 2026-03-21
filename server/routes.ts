@@ -880,9 +880,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             event_invite: { title: '📅 Event invitation', msg: notif.message || 'You\'ve been invited to an event!', url: notif.data ? (tryParseJson(notif.data)?.eventUrl || '/events') : '/events', cat: 'events' },
             event_invite_to_go: { title: '📅 Event invite', msg: notif.message || 'Your host thinks you\'d love this event!', url: notif.data ? (tryParseJson(notif.data)?.eventUrl || '/events') : '/events', cat: 'events' },
             available_now_request: { title: '👋 Meetup request!', msg: notif.message || 'Someone wants to meet up!', url: '/available-now', cat: 'meet_requests' },
+            available_now_meet_request: { title: '👋 Meet request!', msg: notif.message || 'Someone wants to meet up with you!', url: '/available-now', cat: 'meet_requests' },
             available_now_accepted: { title: '🎉 Meetup accepted!', msg: notif.message || 'Your meet request was accepted!', url: notif.data ? (tryParseJson(notif.data)?.chatroomUrl || '/messages') : '/messages', cat: 'meet_requests' },
             quick_meetup_request: { title: '⚡ Quick meetup request', msg: notif.message || 'Someone wants a quick meetup!', url: '/quick-meetups', cat: 'meet_requests' },
             quick_meetup_accepted: { title: '🎉 Quick meetup accepted!', msg: notif.message || 'Your quick meetup was accepted!', url: '/messages', cat: 'meet_requests' },
+            quick_meetup_joined: { title: '🤝 Someone joined!', msg: notif.message || 'Someone joined your meetup!', url: '/quick-meetups', cat: 'meet_requests' },
             message: { title: '💬 New message', msg: notif.message || 'You have a new message!', url: notif.data ? (tryParseJson(notif.data)?.chatUrl || '/messages') : '/messages', cat: 'messages' },
             chatroom_message: { title: '💬 New message', msg: notif.message || 'New message in a chat!', url: notif.data ? (tryParseJson(notif.data)?.chatUrl || '/messages') : '/messages', cat: 'messages' },
             traveler_arriving: { title: '✈️ Traveler arriving', msg: notif.message || 'A traveler is visiting your city!', url: notif.data ? (tryParseJson(notif.data)?.profileUrl || '/discover') : '/discover', cat: 'events' },
@@ -6250,6 +6252,32 @@ Questions? Just reply here — I read every message.
                 }
               } catch (e) { console.error('Ambassador chain tracking error:', e); }
 
+              // Expo push for referral joined
+              try {
+                const { sendPushNotification: expoPush } = await import('./services/pushNotificationService');
+                const pushResult = await expoPush(
+                  referrer.id,
+                  'Your referral joined! 🎉',
+                  `${user.name || user.username} just joined Nearby Traveler`,
+                  { type: 'referral_joined', fromUserId: user.id }
+                );
+                if (!pushResult.success) {
+                  // OneSignal fallback
+                  const { pushToUser: doPush } = await import('./pushNotifications');
+                  await doPush({
+                    db, users, eq,
+                    toUserId: referrer.id,
+                    title: 'Your referral joined! 🎉',
+                    message: `${user.name || user.username} just joined Nearby Traveler`,
+                    url: `/messages`,
+                    notifType: 'connection_accepted',
+                    fromUserId: user.id,
+                  });
+                }
+              } catch (pushErr) {
+                console.warn('Referral push notification failed:', pushErr);
+              }
+
               console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username} (+10 aura, +50 ambassador points)`);
             }
           } catch (error) {
@@ -6305,17 +6333,23 @@ Start by creating your first offer from your Business Dashboard!
 Aaron`
               : `Welcome to Nearby Traveler, ${firstName}! ✈️
 
-I'm Aaron - excited to have you join our community connecting travelers and locals through shared interests.
+I'm Aaron — I built this community to connect travelers and locals through real shared experiences, not just swiping.
 
-Get Started:
-• Complete your profile to match better with others
-• Visit your city match page to connect on local activities
-• Browse people and events in ${user.hometownCity || 'your city'}
-• Join city chat rooms to start conversations
+Here's how to get started:
+• Complete your profile so people know who you are and what you're into
+• Hit Available Now if you're free to meet someone today
+• Check Explore to find locals and travelers near you
+• Browse Events happening in your city
+• Join your city chatroom to say hello
 
-Questions? Just reply to this message!
+A few things to know:
+• You've been added to the Nearby Traveler and your local city chatrooms automatically
+• Use Available Now — I'm Out if you're already somewhere and want company
+• Connect with people you vibe with and message them directly
 
-- Aaron`;
+Questions? Just reply here — I read every message.
+
+— Aaron`;
 
             await storage.sendSystemMessage(NEARBYTRAV_USER_ID, user.id, welcomeMessage);
             console.log(`✅ BACKGROUND: Sent welcome message to ${user.username}`);
@@ -12949,6 +12983,24 @@ Questions? Just reply to this message. Welcome aboard!
           const pushResult = await sendNewMessagePush(recipientIdNum, senderUsername, preview);
           if (pushResult.success) {
             console.log(`✅ MESSAGE PUSH: Sent to user ${receiverId}`);
+          } else {
+            // Expo push failed — try OneSignal fallback
+            try {
+              const { pushToUser: doPush } = await import('./pushNotifications');
+              await doPush({
+                db,
+                users,
+                eq,
+                toUserId: recipientIdNum,
+                title: `New message from @${senderUsername}`,
+                message: `@${senderUsername}: ${preview.substring(0, 100)}`,
+                url: `/messages/${senderIdNum}`,
+                notifType: 'message',
+                fromUserId: senderIdNum,
+              });
+            } catch (osFallback) {
+              console.warn('OneSignal DM fallback failed:', osFallback);
+            }
           }
 
           // Create in-app notification for receiver (rate-limited: one per sender per hour)
@@ -15354,6 +15406,42 @@ Questions? Just reply to this message. Welcome aboard!
           linkUrl: `/events/${newEvent.id}`,
         });
       } catch {}
+
+      // Push notification: notify users in the event's city (max 1/day per user, background)
+      if (newEvent.city) {
+        setImmediate(async () => {
+          try {
+            const cityLower = (newEvent.city || '').toLowerCase();
+            const recipientRows = await db.execute(sql`
+              SELECT u.id, u.expo_push_token
+              FROM users u
+              WHERE u.id != ${newEvent.organizerId}
+                AND u.expo_push_token IS NOT NULL
+                AND u.expo_push_token != ''
+                AND (
+                  LOWER(u.hometown_city) = ${cityLower}
+                  OR (u.is_currently_traveling = true AND LOWER(u.destination_city) = ${cityLower})
+                )
+                AND u.last_seen_at > NOW() - INTERVAL '7 days'
+              LIMIT 50
+            `);
+            const recipients = (recipientRows as any).rows || [];
+            if (recipients.length > 0) {
+              const { sendPushNotification } = await import('./services/pushNotificationService');
+              for (const r of recipients) {
+                await sendPushNotification(
+                  r.id,
+                  `📅 New event in ${newEvent.city}!`,
+                  `${newEvent.title} just posted in ${newEvent.city}!`,
+                  { type: "new_event_city", eventId: newEvent.id },
+                  { priority: "normal" }
+                ).catch(() => {});
+              }
+              console.log(`✅ EVENT CITY PUSH: Notified ${recipients.length} users about event ${newEvent.id} in ${newEvent.city}`);
+            }
+          } catch (e) { console.error('Event city push error:', e); }
+        });
+      }
 
       // Ambassador program: award points for creating an event (ambassadors only)
       try {
@@ -21158,6 +21246,39 @@ Questions? Just reply to this message. Welcome aboard!
       const safeContent = hasContent ? String(content) : '[Photo]';
       const safeType = typeof messageType === 'string' ? messageType : (hasMedia ? 'image' : 'text');
       const message = await storage.createChatroomMessage(roomId, parseInt(userId as string), safeContent, safeType, hasMedia ? String(mediaUrl) : null);
+
+      // OneSignal push to all chatroom members except sender (non-blocking)
+      const senderIdNum = parseInt(userId as string);
+      ;(async () => {
+        try {
+          const [room] = await db.select({ name: citychatrooms.name }).from(citychatrooms).where(eq(citychatrooms.id, roomId)).limit(1);
+          const roomName = room?.name || 'Chatroom';
+          const [sender] = await db.select({ username: users.username }).from(users).where(eq(users.id, senderIdNum));
+          const senderName = sender?.username || 'Someone';
+          const preview = safeContent.substring(0, 100);
+
+          const members = await db.select({ userId: chatroomMembers.userId })
+            .from(chatroomMembers)
+            .where(and(eq(chatroomMembers.chatroomId, roomId), eq(chatroomMembers.isActive, true)));
+
+          const { pushToUser: doPush } = await import('./pushNotifications');
+          for (const m of members) {
+            if (m.userId === senderIdNum) continue;
+            doPush({
+              db, users, eq,
+              toUserId: m.userId,
+              title: roomName,
+              message: `@${senderName}: ${preview}`,
+              url: '/messages',
+              notifType: `chatroom_message_${roomId}`,
+              fromUserId: senderIdNum,
+            }).catch(() => {});
+          }
+        } catch (e) {
+          console.warn('OneSignal chatroom-message push failed:', e);
+        }
+      })();
+
       return res.json(message);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error sending chatroom message:", error);
@@ -21288,6 +21409,20 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching chatroom details:", error);
       res.status(500).json({ message: "Failed to fetch chatroom details" });
+    }
+  });
+
+  // Lookup chatroom by community tag name
+  app.get("/api/chatrooms/by-community/:tagName", async (req, res) => {
+    try {
+      const [tag] = await db.select({ chatroomId: communityTags.chatroomId })
+        .from(communityTags)
+        .where(eq(communityTags.name, req.params.tagName))
+        .limit(1);
+      if (!tag?.chatroomId) return res.status(404).json({ message: "Community chatroom not found" });
+      res.json({ chatroomId: tag.chatroomId });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to lookup community chatroom" });
     }
   });
 
@@ -24657,6 +24792,32 @@ Questions? Just reply to this message. Welcome aboard!
         } catch (e) {
           console.error('Failed to write vouch notification:', e);
         }
+
+        // Expo push for vouch received
+        try {
+          const { sendPushNotification: expoPush } = await import('./services/pushNotificationService');
+          const pushResult = await expoPush(
+            Number(vouchedUserId),
+            'New Vouch! 🏅',
+            `@${voucherName} vouched for you`,
+            { type: 'vouch_received', fromUserId: Number(voucherUserId) }
+          );
+          if (!pushResult.success) {
+            // OneSignal fallback
+            const { pushToUser: doPush } = await import('./pushNotifications');
+            await doPush({
+              db, users, eq,
+              toUserId: Number(vouchedUserId),
+              title: 'New Vouch! 🏅',
+              message: `@${voucherName} vouched for you`,
+              url: `/messages`,
+              notifType: 'vouch_received',
+              fromUserId: Number(voucherUserId),
+            });
+          }
+        } catch (pushErr) {
+          console.warn('Vouch push notification failed:', pushErr);
+        }
       })();
 
       res.status(201).json(newVouch);
@@ -25834,7 +25995,7 @@ Questions? Just reply to this message. Welcome aboard!
               state: activeSession.state,
               country: activeSession.country || 'USA',
               activityType: primaryActivity,
-              expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
+              expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
             });
             groupChatroomId = result.chatroomId;
             console.log(`[MEET ACCEPT] ${result.isNew ? 'Created' : 'Joined'} chatroom ${result.chatroomId}`);
@@ -25870,30 +26031,7 @@ Questions? Just reply to this message. Welcome aboard!
           console.error('[MEET ACCEPT] WS notification failed (non-fatal):', wsErr);
         }
 
-        // Send a single DM so the requester sees the acceptance (guard against duplicate PATCH calls)
-        const acceptanceContent = groupChatroomId
-          ? `Hey! I accepted your meet request — check the group chat to coordinate! 🤝`
-          : `Hey! I accepted your meet request — let's figure out where to meet up! 🤝`;
-        const recentCutoff = new Date(Date.now() - 60 * 1000);
-        const existingAcceptance = await db.select({ id: messages.id })
-          .from(messages)
-          .where(and(
-            eq(messages.senderId, Number(userId)),
-            eq(messages.receiverId, updated.fromUserId),
-            like(messages.content, "%accepted your meet request%"),
-            gte(messages.createdAt, recentCutoff)
-          ))
-          .limit(1);
-        if (existingAcceptance.length === 0) {
-          await db.insert(messages).values({
-            senderId: Number(userId),
-            receiverId: updated.fromUserId,
-            content: acceptanceContent,
-            messageType: 'text',
-            isRead: false,
-            createdAt: new Date(),
-          });
-        }
+        // Auto-DM removed — toast notification on the frontend is sufficient
 
         try {
           const { sendPushNotification } = await import('./services/pushNotificationService');
@@ -26651,6 +26789,21 @@ Questions? Just reply to this message. Welcome aboard!
             message: `You've been added to this chat`,
             data: JSON.stringify({ chatroomId, chatroomType: type, chatroomName: chatName }),
           });
+          // OneSignal push for chatroom added
+          try {
+            const { pushToUser: doPush } = await import('./pushNotifications');
+            await doPush({
+              db, users, eq,
+              toUserId: targetUserId,
+              title: "You've been added to a chatroom 💬",
+              message: `You're now in ${chatName}`,
+              url: '/messages',
+              notifType: 'chatroom_added',
+              fromUserId: Number(userId),
+            });
+          } catch (osFallback) {
+            console.warn('OneSignal chatroom-added push failed:', osFallback);
+          }
           try {
             const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
             const targetWs = wsMap?.get(targetUserId);
@@ -26703,6 +26856,21 @@ Questions? Just reply to this message. Welcome aboard!
               message: `You've been added to this chat`,
               data: JSON.stringify({ chatroomId, chatroomType: type, chatroomName: chatName }),
             });
+            // OneSignal push for chatroom added
+            try {
+              const { pushToUser: doPush } = await import('./pushNotifications');
+              await doPush({
+                db, users, eq,
+                toUserId: tid,
+                title: "You've been added to a chatroom 💬",
+                message: `You're now in ${chatName}`,
+                url: '/chatrooms',
+                notifType: 'chatroom_added',
+                fromUserId: Number(userId),
+              });
+            } catch (osFallback) {
+              console.warn('OneSignal chatroom-added push failed:', osFallback);
+            }
             try {
               const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
               const targetWs = wsMap?.get(tid);
@@ -28432,13 +28600,14 @@ Questions? Just reply to this message. Welcome aboard!
   // ---------- COMMUNITY TAGS ----------
 
   // Default (site-wide) communities — shown for every city. Ensured on first fetch.
-  const DEFAULT_COMMUNITIES: Array<{ name: string; displayName: string; category: string; icon: string; color: string; description: string }> = [
+  const DEFAULT_COMMUNITIES: Array<{ name: string; displayName: string; category: string; icon: string; color: string; description: string; createdBy?: number }> = [
     { name: "solo-female-travelers", displayName: "Solo Female Travelers", category: "identity", icon: "👩", color: "#EC4899", description: "Connect with other solo female travelers. Safe, supportive community for women who travel alone." },
     { name: "lgbtq-plus", displayName: "LGBTQ+", category: "identity", icon: "🏳️‍🌈", color: "#8B5CF6", description: "LGBTQ+ friendly community. Meet travelers and locals in a welcoming space." },
     { name: "digital-nomads", displayName: "Digital Nomads", category: "lifestyle", icon: "💻", color: "#06B6D4", description: "Remote workers and location-independent travelers." },
     { name: "solo-travelers", displayName: "Solo Travelers", category: "lifestyle", icon: "🧳", color: "#F59E0B", description: "Traveling solo? Find meetups and tips from other solo travelers." },
     { name: "foodies", displayName: "Foodies", category: "interest", icon: "🍳", color: "#EF4444", description: "Love food and local eats? Connect with fellow foodies." },
     { name: "veterans", displayName: "Veterans", category: "identity", icon: "🎖️", color: "#6366F1", description: "Veterans and military community. Connect with those who serve." },
+    { name: "couchsurfing-community", displayName: "CouchSurfing Community", category: "lifestyle", icon: "🛋️", color: "#E11D48", description: "For CouchSurfers and hospitality exchange travelers. Share hosting tips, find hosts, and connect with the CS community.", createdBy: 2 },
   ];
   // One-time backfill flag: ensures the expensive DB backfill only runs once per server boot.
   let communityBackfillDone = false;
@@ -28467,7 +28636,7 @@ Questions? Just reply to this message. Welcome aboard!
               isPrivate: false,
               isFlagged: false,
               memberCount: 0,
-              createdBy: systemUserId,
+              createdBy: c.createdBy ?? systemUserId,
             });
           } else {
             // Backfill legacy rows so presets don't disappear due to NULL/false flags.
@@ -29708,6 +29877,41 @@ Questions? Just reply to this message. Welcome aboard!
         messageType: 'text',
         replyToId: replyToId ? Number(replyToId) : null,
       }).returning();
+
+      // OneSignal push to all event attendees except sender (non-blocking)
+      const senderIdNum = Number(userId);
+      ;(async () => {
+        try {
+          const [chatMeta] = await db.select({ eventId: meetupChatrooms.eventId, chatroomName: meetupChatrooms.chatroomName })
+            .from(meetupChatrooms).where(eq(meetupChatrooms.id, chatroomId)).limit(1);
+          if (!chatMeta?.eventId) return;
+
+          const [evt] = await db.select({ title: events.title }).from(events).where(eq(events.id, chatMeta.eventId)).limit(1);
+          const eventName = evt?.title || chatMeta.chatroomName || 'Event';
+          const senderName = user?.username || 'Someone';
+          const preview = message.trim().substring(0, 100);
+
+          const attendees = await db.select({ userId: eventParticipants.userId })
+            .from(eventParticipants)
+            .where(eq(eventParticipants.eventId, chatMeta.eventId));
+
+          const { pushToUser: doPush } = await import('./pushNotifications');
+          for (const a of attendees) {
+            if (a.userId === senderIdNum) continue;
+            doPush({
+              db, users, eq,
+              toUserId: a.userId,
+              title: `${eventName} chat`,
+              message: `@${senderName}: ${preview}`,
+              url: '/messages',
+              notifType: `event_chat_message_${chatroomId}`,
+              fromUserId: senderIdNum,
+            }).catch(() => {});
+          }
+        } catch (e) {
+          console.warn('OneSignal event-chat push failed:', e);
+        }
+      })();
 
       res.json(newMessage);
     } catch (error: any) {

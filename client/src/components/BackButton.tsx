@@ -25,14 +25,7 @@ export function BackButton({
     
     console.log('BackButton clicked - current location:', location);
     
-    // Simple and reliable: always use browser's back() first
-    try {
-      window.history.back();
-    } catch (error) {
-      // Only fallback if back() completely fails (very rare)
-      console.warn('Browser back failed, using fallback:', error);
-      setLocation(fallbackPath);
-    }
+    setLocation(fallbackPath);
   };
 
   const getVariantClasses = () => {

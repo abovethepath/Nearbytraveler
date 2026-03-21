@@ -74,7 +74,7 @@ export default function EventChat() {
       const msg = eventErr instanceof Error ? eventErr.message : String(eventErr);
       if (msg.includes('404') || msg.includes('not found')) {
         toast({ title: "Event No Longer Available", description: "This event has been deleted or is no longer accessible." });
-        setLocation('/events');
+        setLocation('/messages');
       }
     }
   }, [eventError, eventErr, failureCount, toast, setLocation]);
@@ -83,9 +83,9 @@ export default function EventChat() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">Invalid event ID</p>
-        <Button onClick={() => setLocation('/events')} variant="outline" className="border-gray-600 text-gray-300" data-testid="button-back-to-events">
+        <Button onClick={() => setLocation('/messages')} variant="outline" className="border-gray-600 text-gray-300" data-testid="button-back-to-events">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Events
+          Back to Messages
         </Button>
       </div>
     );
@@ -99,9 +99,9 @@ export default function EventChat() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">Please log in to view this chat</p>
-        <Button onClick={() => setLocation('/events')} variant="outline" className="border-gray-600 text-gray-300">
+        <Button onClick={() => setLocation('/messages')} variant="outline" className="border-gray-600 text-gray-300">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Events
+          Back to Messages
         </Button>
       </div>
     );
@@ -111,9 +111,9 @@ export default function EventChat() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">Event not found</p>
-        <Button onClick={() => setLocation('/events')} variant="outline" className="border-gray-600 text-gray-300" data-testid="button-back-to-events-error">
+        <Button onClick={() => setLocation('/messages')} variant="outline" className="border-gray-600 text-gray-300" data-testid="button-back-to-events-error">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Events
+          Back to Messages
         </Button>
       </div>
     );
@@ -128,9 +128,9 @@ export default function EventChat() {
           <Button onClick={() => window.location.reload()} className="bg-orange-500 hover:bg-orange-600 text-white">
             Try Again
           </Button>
-          <Button onClick={() => setLocation('/events')} variant="outline" className="border-gray-600 text-gray-300">
+          <Button onClick={() => setLocation('/messages')} variant="outline" className="border-gray-600 text-gray-300">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Events
+            Back to Messages
           </Button>
         </div>
       </div>
@@ -148,6 +148,7 @@ export default function EventChat() {
         currentUserId={userId}
         eventId={eventId}
         eventImageUrl={event.imageUrl || undefined}
+        onBack={() => setLocation('/messages')}
       />
     </div>
   );

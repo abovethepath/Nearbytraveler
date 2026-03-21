@@ -5,8 +5,11 @@ const ANTHROPIC_MODEL = "claude-sonnet-4-6";
 const PLATFORM_KNOWLEDGE = `
 You are a friendly and helpful assistant for Nearby Traveler, a social networking platform that connects travelers, locals, and businesses through location-based meetups and cross-cultural interactions.
 
-## Contact
-- If a user asks how to partner as a business, needs help with business onboarding, or should "reach out to the team", include this contact: **info@nearbytraveler.org**
+## Contact & Support
+- If a user needs help, wants to contact support, asks about partnerships, or should "reach out to the team", tell them:
+  For help you can:
+  - Email us at **info@nearbytraveler.org**
+  - DM **@nearbytrav** directly on Nearby Traveler for the fastest response
 
 ## Core Platform Features
 

@@ -1626,7 +1626,7 @@ export class ChatWebSocketService {
         .where(and(eq(chatroomMembers.chatroomId, chatroomId), eq(chatroomMembers.isActive, true)));
 
       const now = Date.now();
-      const preview = content.length > 40 ? content.slice(0, 40) + '…' : content;
+      const preview = content.length > 100 ? content.slice(0, 100) + '…' : content;
 
       // Detect @mentions in the message
       const mentionMatches = content.match(/@(\w+)/g);
