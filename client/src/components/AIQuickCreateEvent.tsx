@@ -226,13 +226,20 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
   };
 
   const stopListening = () => {
+    setIsListening(false);
     if (recognitionRef.current) {
-      recognitionRef.current.stop();
+      try { recognitionRef.current.abort(); } catch {}
+      try { recognitionRef.current.stop(); } catch {}
       recognitionRef.current = null;
-      setIsListening(false);
-    } else if (isNativeIOSApp() && typeof (window as any).ReactNativeWebView?.postMessage === "function") {
+    }
+    // Stop any lingering microphone tracks (required on iOS)
+    try {
+      navigator.mediaDevices?.getUserMedia?.({ audio: true }).then(stream => {
+        stream.getTracks().forEach(track => track.stop());
+      }).catch(() => {});
+    } catch {}
+    if (isNativeIOSApp() && typeof (window as any).ReactNativeWebView?.postMessage === "function") {
       (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: "STOP_SPEECH_RECOGNITION" }));
-      setIsListening(false);
     }
   };
 
@@ -373,8 +380,10 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
                   variant={isListening ? "destructive" : "outline"}
                   size="sm"
                   onClick={toggleListening}
+                  onTouchEnd={(e) => { if (isListening) { e.preventDefault(); stopListening(); } }}
                   disabled={generateDraftMutation.isPending}
                   className={`gap-1 ${isListening ? "animate-pulse" : ""}`}
+                  style={{ position: 'relative', zIndex: 10 }}
                 >
                   {isListening ? (
                     <>

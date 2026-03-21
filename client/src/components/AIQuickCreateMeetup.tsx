@@ -188,10 +188,18 @@ export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel, autoS
   };
 
   const stopListening = () => {
+    setIsListening(false);
     if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsListening(false);
+      try { recognitionRef.current.abort(); } catch {}
+      try { recognitionRef.current.stop(); } catch {}
+      recognitionRef.current = null;
     }
+    // Stop any lingering microphone tracks (required on iOS)
+    try {
+      navigator.mediaDevices?.getUserMedia?.({ audio: true }).then(stream => {
+        stream.getTracks().forEach(track => track.stop());
+      }).catch(() => {});
+    } catch {}
   };
 
   const toggleListening = () => {
@@ -320,7 +328,9 @@ export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel, autoS
                   variant={isListening ? "destructive" : "outline"}
                   className="absolute right-2 bottom-2 h-10 w-10 sm:h-9 sm:w-9"
                   onClick={toggleListening}
+                  onTouchEnd={(e) => { if (isListening) { e.preventDefault(); stopListening(); } }}
                   disabled={parseMutation.isPending}
+                  style={{ zIndex: 10 }}
                 >
                   {isListening ? (
                     <MicOff className="h-5 w-5 sm:h-4 sm:w-4 animate-pulse" />
