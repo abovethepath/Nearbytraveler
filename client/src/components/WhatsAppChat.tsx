@@ -81,10 +81,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
 
-  // Always navigate to /messages — no history.back()
-  const handleBack = onBack || (() => {
-    navigate('/messages');
-  });
+  // DM chats always go to /messages; group chats use onBack if provided
+  const handleBack = chatType === 'dm'
+    ? () => navigate('/messages')
+    : (onBack || (() => navigate('/messages')));
   const isMobileWeb =
     !isNativeIOSApp() &&
     typeof window !== "undefined" &&
@@ -2755,7 +2755,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => onBack ? onBack() : navigate('/messages')}
+          onClick={handleBack}
           className="text-white hover:bg-gray-700 h-8 w-8 shrink-0"
         >
           <ArrowLeft className="w-4 h-4" />

@@ -56,6 +56,23 @@ export function OneSignalInit({ userId }: { userId: number | null | undefined })
               (navigator as any).setAppBadge?.(1)?.catch?.(() => {});
             });
           } catch (e) { /* badge API may not exist */ }
+
+          // Auto-prompt for push permission after 3rd login if not yet granted
+          try {
+            const permission = await OneSignal.getNotificationPermission?.();
+            if (permission !== 'granted' && permission !== 'denied') {
+              const key = 'nt_login_count';
+              const count = parseInt(localStorage.getItem(key) || '0', 10) + 1;
+              localStorage.setItem(key, String(count));
+              if (count >= 3) {
+                await OneSignal.showNativePrompt?.();
+                const newPerm = await OneSignal.getNotificationPermission?.();
+                if (newPerm === 'granted') {
+                  await registerSubscription(userId);
+                }
+              }
+            }
+          } catch (e) { /* permission prompt may not be available */ }
         } catch (e) {
           console.warn("[OneSignal] init error:", e);
         }
