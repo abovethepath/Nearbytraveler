@@ -206,6 +206,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const loadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const longPressActivatedAtRef = useRef<number>(0);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const prevMessageCountRef = useRef<number>(0);
 
@@ -556,6 +557,25 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
   };
   
+  // Normalize reactions to { [emoji]: number[] } format.
+  // Old REST endpoint stored reactions as [{userId, emoji}] array — convert that on the fly.
+  const normalizeReactions = (raw: any): { [emoji: string]: number[] } => {
+    if (!raw) return {};
+    if (Array.isArray(raw)) {
+      const out: { [emoji: string]: number[] } = {};
+      raw.forEach((r: any) => {
+        if (r && r.emoji) {
+          if (!out[r.emoji]) out[r.emoji] = [];
+          if (r.userId != null && !out[r.emoji].includes(Number(r.userId))) {
+            out[r.emoji].push(Number(r.userId));
+          }
+        }
+      });
+      return out;
+    }
+    return raw as { [emoji: string]: number[] };
+  };
+
   // WhatsApp-style long press detection (500ms)
   const handleTouchStart = (e: React.TouchEvent, message: Message) => {
     const touch = e.touches?.[0];
@@ -569,6 +589,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       console.log('Long press detected! Opening action menu for message:', message.id);
       // Vibrate if supported (haptic feedback)
       if (navigator.vibrate) navigator.vibrate(50);
+      longPressActivatedAtRef.current = Date.now();
       setSelectedMessage(message);
       touchStartRef.current = null;
     }, 500);
@@ -2107,7 +2128,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     setMessages(prev => prev.map(msg => {
       if (msg.id !== messageId) return msg;
       
-      const reactions = { ...(msg.reactions || {}) };
+      const reactions = { ...normalizeReactions(msg.reactions) };
       if (!reactions[emoji]) {
         reactions[emoji] = [];
       }
@@ -3476,10 +3497,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
                     {message.reactions && Object.keys(message.reactions).length > 0 && (
                       <div className="flex gap-1 mt-1 ml-2">
-                        {Object.entries(message.reactions).map(([emoji, users]) => (
+                        {Object.entries(normalizeReactions(message.reactions)).map(([emoji, users]) => (
                           <div key={emoji} className="flex items-center gap-1 px-2 py-0.5 bg-gray-800 rounded-full text-xs">
                             <span>{emoji}</span>
-                            <span className="text-gray-400">{users.length}</span>
+                            <span className="text-gray-400">{(users as number[]).length}</span>
                           </div>
                         ))}
                       </div>
@@ -3804,7 +3825,13 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           {/* Backdrop */}
           <div 
             className="fixed inset-0 bg-transparent z-[99998]"
-            onClick={() => setSelectedMessage(null)}
+            onClick={() => {
+              // iOS fires a synthetic click ~100-300ms after a long press ends.
+              // Guard against it immediately closing the panel we just opened.
+              if (Date.now() - longPressActivatedAtRef.current < 600) return;
+              setSelectedMessage(null);
+            }}
+            onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedMessage(null); }}
             style={{ touchAction: 'auto' }}
           />
           {/* Bottom Sheet Menu - aligned to chat container width */}
@@ -3826,8 +3853,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             <div className="px-3 pt-3 pb-2">
               <div className="flex items-center justify-between gap-1">
                 {['❤️', '😂', '😮', '😢', '🙏', '👍'].map((emoji) => {
-                  const hasReacted = currentUserId ? selectedMessage.reactions?.[emoji]?.includes(currentUserId) : false;
-                  const count = selectedMessage.reactions?.[emoji]?.length || 0;
+                  const normalizedReactions = normalizeReactions(selectedMessage.reactions);
+                  const hasReacted = currentUserId ? normalizedReactions[emoji]?.includes(currentUserId) : false;
+                  const count = normalizedReactions[emoji]?.length || 0;
                   return (
                     <button
                       key={emoji}
