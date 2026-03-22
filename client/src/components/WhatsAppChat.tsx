@@ -19,6 +19,21 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 
+// Emoji auto-substitution map — defined outside component to avoid recreation
+const EMOJI_MAP: Record<string, string> = {
+  shrug: '🤷', kiss: '😘', smile: '😊', happy: '😊',
+  doh: '🤦', "d'oh": '🤦', facepalm: '🤦',
+  'rolling eyes': '🙄', eyeroll: '🙄',
+  laugh: '😂', lol: '😂',
+  heart: '❤️', love: '❤️',
+  'thumbs up': '👍', thumbsup: '👍',
+  'thumbs down': '👎', thumbsdown: '👎',
+  wave: '👋', clap: '👏', fire: '🔥', '100': '💯',
+  pray: '🙏', wink: '😉', cry: '😢', angry: '😠',
+  confused: '😕', naughty: '😈',
+  hmm: '🤔', hmmm: '🤔',
+};
+
 interface Message {
   id: number;
   senderId: number;
@@ -106,15 +121,6 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [showMembers, setShowMembers] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [emojiSuggestion, setEmojiSuggestion] = useState<{ word: string; emoji: string } | null>(null);
-
-  const EMOJI_MAP: Record<string, string> = {
-    shrug: '🤷', kiss: '😘', smile: '😊', doh: '🤦', "d'oh": '🤦',
-    'rolling eyes': '🙄', eyeroll: '🙄', laugh: '😂', lol: '😂',
-    heart: '❤️', 'thumbs up': '👍', thumbsup: '👍', 'thumbs down': '👎',
-    thumbsdown: '👎', wave: '👋', clap: '👏', fire: '🔥', '100': '💯',
-    pray: '🙏', facepalm: '🤦', wink: '😉', cry: '😢', angry: '😠',
-    confused: '😕', naughty: '😈',
-  };
   const [memberSearch, setMemberSearch] = useState("");
   const [muteDialogOpen, setMuteDialogOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<ChatMember | null>(null);
@@ -2214,17 +2220,15 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const acceptEmojiSuggestion = () => {
     if (!emojiSuggestion) return;
     const { word, emoji } = emojiSuggestion;
-    setMessageText(prev => {
-      const trimmed = prev.trimEnd();
-      const wordLen = word.length;
-      const idx = trimmed.toLowerCase().lastIndexOf(word);
-      if (idx >= 0) {
-        return trimmed.substring(0, idx) + emoji + ' ';
-      }
-      return prev;
-    });
+    const currentText = messageText;
+    const trimmed = currentText.trimEnd();
+    const idx = trimmed.toLowerCase().lastIndexOf(word);
+    if (idx >= 0) {
+      const newText = trimmed.substring(0, idx) + emoji + ' ';
+      setMessageText(newText);
+    }
     setEmojiSuggestion(null);
-    inputRef.current?.focus();
+    setTimeout(() => inputRef.current?.focus(), 50);
   };
 
   const handleReaction = (messageId: number, emoji: string) => {
