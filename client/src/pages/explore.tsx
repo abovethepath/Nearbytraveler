@@ -76,18 +76,31 @@ export default function Explore() {
     enabled: !!currentUser?.id,
   });
 
-  // Prefer active travel destination when set; allow switching between travel city and hometown.
+  // Prefer active travel destination when set; also include trips starting within 7 days.
   const activeTravelDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
+  const upcomingTravelDestination = useMemo(() => {
+    if (activeTravelDestination) return null; // Already have an active trip
+    const plans = Array.isArray(travelPlans) ? travelPlans : [];
+    const now = new Date();
+    const sevenDays = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    for (const p of plans) {
+      const start = new Date(p.startDate || p.start_date);
+      const dest = p.destination || p.destinationCity || p.destination_city;
+      if (dest && start > now && start <= sevenDays) return String(dest);
+    }
+    return null;
+  }, [travelPlans, activeTravelDestination]);
+  const effectiveTravelDest = activeTravelDestination || upcomingTravelDestination;
   const travelResolved = useMemo(() => {
-    if (!activeTravelDestination) return { city: "", country: "" };
-    const parts = String(activeTravelDestination).split(/,\s*/);
+    if (!effectiveTravelDest) return { city: "", country: "" };
+    const parts = String(effectiveTravelDest).split(/,\s*/);
     const city = parts[0]?.trim() || "";
     const country =
       parts.length > 1
         ? parts[parts.length - 1].trim()
         : (currentUser?.hometownCountry || "United States");
     return { city, country };
-  }, [activeTravelDestination, currentUser?.hometownCountry]);
+  }, [effectiveTravelDest, currentUser?.hometownCountry]);
   const hometownResolved = useMemo(() => resolveCurrentCity({ ...(currentUser || {}), isCurrentlyTraveling: false }), [currentUser]);
   const hasTravelCity = !!travelResolved.city;
   const hasHometownCity = !!hometownResolved.city;
@@ -422,7 +435,7 @@ export default function Explore() {
                 size="sm"
                 variant="secondary"
                 onClick={() => setCityView("hometown")}
-                className={`${cityView === "hometown" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white dark:bg-gray-900/20 text-white hover:bg-white dark:bg-gray-900/30"} border border-white/30 text-xs h-7`}
+                className={`${cityView === "hometown" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30 text-xs h-7`}
               >
                 🏠 Hometown
               </Button>
@@ -430,7 +443,7 @@ export default function Explore() {
                 size="sm"
                 variant="secondary"
                 onClick={() => setCityView("travel")}
-                className={`${cityView === "travel" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white dark:bg-gray-900/20 text-white hover:bg-white dark:bg-gray-900/30"} border border-white/30 text-xs h-7`}
+                className={`${cityView === "travel" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30 text-xs h-7`}
               >
                 ✈️ Travel city
               </Button>
