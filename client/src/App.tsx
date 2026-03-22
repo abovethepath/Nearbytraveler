@@ -809,13 +809,17 @@ function Router() {
     const checkServerAuth = async () => {
       try {
         console.log('🔍 Checking server-side authentication...');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
         const doCheck = async () =>
           fetch(`${getApiBaseUrl()}/api/auth/user`, {
             credentials: "include",
             headers: { Accept: "application/json" },
+            signal: controller.signal,
           });
 
         let response = await doCheck();
+        clearTimeout(timeoutId);
 
         // iOS WebView can sometimes lag cookie propagation; retry a few times before
         // concluding the session is missing. This does NOT trust localStorage as auth.
@@ -1241,6 +1245,19 @@ function Router() {
       // Safety net: if a login/signup transition is in flight, show the
       // loading spinner instead of briefly flashing the landing page.
       if (loginPending || isAuthenticating || authLoading || !authInitialized) {
+        // If offline, show a helpful message instead of spinning forever
+        if (!navigator.onLine) {
+          return (
+            <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center px-6 text-center">
+              <div className="text-4xl mb-4">📡</div>
+              <h1 className="text-xl font-bold text-white mb-2">You're Offline</h1>
+              <p className="text-gray-400 mb-6">Connect to the internet to use Nearby Traveler.</p>
+              <button onClick={() => window.location.reload()} className="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full transition-colors">
+                Try Again
+              </button>
+            </div>
+          );
+        }
         return <FullPageSkeleton />;
       }
       return <LandingStreamlined />;
