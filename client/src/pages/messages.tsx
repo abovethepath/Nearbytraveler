@@ -226,11 +226,10 @@ export default function Messages() {
     },
     enabled: !!userId,
     staleTime: 0,
-    gcTime: 300000,
-    refetchOnMount: true,
+    gcTime: 60000,
+    refetchOnMount: 'always' as const,
     refetchOnWindowFocus: true,
     refetchInterval: 30000,
-    placeholderData: (previousData: any) => previousData,
   });
 
   const { data: meetupChatrooms = [], isLoading: meetupChatsLoading } = useQuery({
