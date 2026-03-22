@@ -1780,9 +1780,65 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     setMessageText("");
     setReplyingTo(null);
 
-    // For DMs, always send via HTTP so the sender reliably sees the message immediately.
-    // WebSocket is still used for real-time receipt/typing/sync.
-    if (chatType !== 'dm' && wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+    // Optimistic update for DMs — show immediately, send via HTTP in background
+    if (chatType === 'dm') {
+      let currentUserData: any = {};
+      try { currentUserData = JSON.parse(localStorage.getItem('travelconnect_user') || localStorage.getItem('user') || localStorage.getItem('current_user') || '{}'); } catch { /**/ }
+      const tempId = -(Date.now());
+      const optimisticMsg: Message = {
+        id: tempId,
+        senderId: currentUserId,
+        content,
+        messageType: 'text',
+        replyToId,
+        replyTo: replyingToSnapshot ? {
+          id: replyingToSnapshot.id,
+          senderId: replyingToSnapshot.senderId,
+          content: replyingToSnapshot.content,
+          sender: replyingToSnapshot.sender,
+        } : undefined,
+        createdAt: new Date().toISOString(),
+        sender: {
+          id: currentUserId,
+          username: currentUserData.username || '',
+          name: currentUserData.name || '',
+          profileImage: currentUserData.profileImage
+        }
+      };
+      setMessages(prev => [...prev, optimisticMsg]);
+      scrollToBottom();
+
+      // Send via HTTP in background — replace temp message with real one on success
+      (async () => {
+        try {
+          let user: any = {};
+          try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('current_user') || '{}'); } catch { user = {}; }
+          const response = await fetch(`${getApiBaseUrl()}/api/messages`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-user-id': (currentUserId || user.id || '').toString() },
+            body: JSON.stringify({ senderId: currentUserId || user.id, receiverId: chatId, content, messageType: 'text', replyToId })
+          });
+          if (response.ok) {
+            const resp = await response.json();
+            const real = resp.message || resp;
+            if (real?.id) {
+              setMessages(prev => prev.map(m => m.id === tempId ? { ...m, id: real.id } : m));
+            }
+          } else {
+            // Remove optimistic message on failure
+            setMessages(prev => prev.filter(m => m.id !== tempId));
+            toast({ title: "Failed to send", variant: "destructive" });
+          }
+        } catch {
+          setMessages(prev => prev.filter(m => m.id !== tempId));
+          toast({ title: "Failed to send", variant: "destructive" });
+        }
+      })();
+      return;
+    }
+
+    // Non-DM: send via WebSocket if connected
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       console.log('✅ Sending message via WebSocket...');
 
       // Optimistic update — show the message immediately without waiting for server echo
@@ -1876,6 +1932,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 senderId: newMessage.senderId,
                 content: newMessage.content,
                 messageType: newMessage.messageType || 'text',
+                mediaUrl: newMessage.mediaUrl || null,
                 replyToId: newMessage.replyToId,
                 createdAt: newMessage.createdAt || new Date().toISOString(),
                 isEdited: newMessage.isEdited,
@@ -1895,6 +1952,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 senderId: newMessage.userId ?? newMessage.senderId ?? currentUserId,
                 content: newMessage.message ?? newMessage.content ?? content,
                 messageType: newMessage.messageType || 'text',
+                mediaUrl: newMessage.mediaUrl || null,
                 createdAt: newMessage.sentAt || newMessage.createdAt || new Date().toISOString(),
                 sender: senderUser?.id ? {
                   id: senderUser.id,
@@ -1910,6 +1968,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               senderId: currentUserId,
               content: newMessage.content ?? content,
               messageType: newMessage.messageType || 'text',
+              mediaUrl: newMessage.mediaUrl || null,
               replyToId: newMessage.replyToId,
               replyTo: replyingToSnapshot ? {
                 id: replyingToSnapshot.id,
@@ -3490,6 +3549,14 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   window.open(src, "_blank", "noopener,noreferrer");
+                                }}
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                  const fallback = document.createElement('p');
+                                  fallback.textContent = '[Photo unavailable]';
+                                  fallback.className = 'text-xs text-gray-400 italic';
+                                  target.parentElement?.appendChild(fallback);
                                 }}
                               />
                             </div>
