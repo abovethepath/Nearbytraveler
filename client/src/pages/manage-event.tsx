@@ -1359,6 +1359,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                   <div className="flex items-center gap-2">
                     <Camera className="w-4 h-4 text-pink-500" />
                     <h4 className="font-medium">Instagram</h4>
+                    <span className="text-xs text-gray-400 ml-1">Not available in beta</span>
                   </div>
                   {currentUser?.instagramHandle ? (
                     <div className="space-y-2">
@@ -1431,6 +1432,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 bg-blue-600 rounded"></div>
                     <h4 className="font-medium">Facebook</h4>
+                    <span className="text-xs text-gray-400 ml-1">Not available in beta</span>
                   </div>
                   <div className="space-y-2">
                     <div className="flex flex-wrap gap-2">
