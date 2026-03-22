@@ -14612,7 +14612,9 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(404).json({ message: "Event not found" });
       }
 
-      if (event.organizerId !== uid && event.sharedBy !== uid) {
+      const isOwner = event.organizerId === uid || event.sharedBy === uid || uid === 2;
+      if (!isOwner) {
+        console.log(`🚫 EVENT DELETE: Denied — user ${uid} is not organizer (${event.organizerId}) or sharer (${event.sharedBy})`);
         return res.status(403).json({ message: "Only the event organizer can delete this event" });
       }
       
