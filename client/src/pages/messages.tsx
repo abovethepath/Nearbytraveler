@@ -1314,6 +1314,17 @@ export default function Messages() {
                       >
                         <MessageCircle className="w-4 h-4" />
                       </button>
+                      {/* Delete conversation — visible on hover */}
+                      <button
+                        className="shrink-0 w-6 h-6 items-center justify-center rounded-full text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors hidden group-hover:flex"
+                        title="Remove conversation"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDismissTarget({ type: 'dm', id: conv.userId, name: conv.username || 'this user' });
+                        }}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
                       {conv.unreadCount > 0 && selectedConversation !== conv.userId ? (
                         <div className="shrink-0 flex items-center gap-2">
                           <div className="bg-orange-500 text-white text-xs font-bold rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1.5">
