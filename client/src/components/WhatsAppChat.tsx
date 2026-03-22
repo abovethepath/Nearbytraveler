@@ -104,6 +104,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [forwardConversations, setForwardConversations] = useState<any[]>([]);
   const [forwardLoading, setForwardLoading] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [memberSearch, setMemberSearch] = useState("");
   const [muteDialogOpen, setMuteDialogOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<ChatMember | null>(null);
@@ -3551,7 +3552,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                                 loading="lazy"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  window.open(src, "_blank", "noopener,noreferrer");
+                                  setLightboxSrc(src);
                                 }}
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement;
@@ -4181,6 +4182,31 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             </div>
           </div>
         </>,
+        document.body
+      )}
+
+      {/* Image lightbox */}
+      {lightboxSrc && createPortal(
+        <div
+          className="fixed inset-0 z-[99999] bg-black/95 flex items-center justify-center"
+          onClick={() => setLightboxSrc(null)}
+          style={{ touchAction: 'pinch-zoom' }}
+        >
+          <button
+            onClick={(e) => { e.stopPropagation(); setLightboxSrc(null); }}
+            className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+            style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <img
+            src={lightboxSrc}
+            alt="Full size photo"
+            className="max-w-[95vw] max-h-[90vh] object-contain rounded-lg"
+            onClick={(e) => e.stopPropagation()}
+            style={{ touchAction: 'pinch-zoom' }}
+          />
+        </div>,
         document.body
       )}
 
