@@ -1,8 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useRef, useState } from "react";
 import { useLocation } from "wouter";
-import { getApiBaseUrl } from "@/lib/queryClient";
-import { Zap, UserPlus, MessageCircle, ChevronLeft, ChevronRight, ChevronRight as ArrowRight, Check, Loader2 } from "lucide-react";
+import { getApiBaseUrl, apiRequest } from "@/lib/queryClient";
+import { Zap, UserPlus, MessageCircle, ChevronLeft, ChevronRight, ChevronRight as ArrowRight, Check, Loader2, XCircle } from "lucide-react";
 
 function timeAgo(dateStr: string): string {
   const ms = Date.now() - new Date(dateStr).getTime();
@@ -67,6 +67,21 @@ export default function AvailableNowStrip({ currentUserId, userCity }: Available
     return map;
   }, [myGroupChats]);
 
+  const queryClient = useQueryClient();
+  const { data: myStatus } = useQuery<{ isAvailable: boolean } | null>({
+    queryKey: ["/api/available-now/my-status"],
+    enabled: !!currentUserId,
+    staleTime: 0,
+  });
+  const stopAvailable = useMutation({
+    mutationFn: () => apiRequest("DELETE", "/api/available-now"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-status"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/active-ids"] });
+    },
+  });
+
   const { data: availableUsers = [] } = useQuery<any[]>({
     queryKey: ["/api/available-now", userCity || ""],
     queryFn: async () => {
@@ -92,6 +107,22 @@ export default function AvailableNowStrip({ currentUserId, userCity }: Available
 
   return (
     <div className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
+      {myStatus?.isAvailable && (
+        <div className="px-4 pt-3 pb-2 bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <span className="text-sm font-semibold text-green-800 dark:text-green-300">You're Live</span>
+          </div>
+          <button
+            onClick={() => stopAvailable.mutate()}
+            disabled={stopAvailable.isPending}
+            className="text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-700 flex items-center gap-1"
+          >
+            <XCircle className="w-3.5 h-3.5" />
+            {stopAvailable.isPending ? "Stopping..." : "No Longer Available"}
+          </button>
+        </div>
+      )}
       <div className="px-4 pt-4 pb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Zap className="w-4 h-4 text-green-500 shrink-0" />

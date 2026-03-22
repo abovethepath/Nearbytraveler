@@ -765,6 +765,15 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 )}
               </div>
             )}
+            {/* Prominent stop button */}
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); clearAvailableMutation.mutate(); }}
+              disabled={clearAvailableMutation.isPending}
+              className="w-full mt-3 py-2 px-4 rounded-xl text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 dark:text-red-400 dark:bg-red-900/20 dark:hover:bg-red-900/40 dark:border-red-800 transition-colors"
+            >
+              {clearAvailableMutation.isPending ? "Stopping..." : "No Longer Available"}
+            </button>
             {allGroupChats.length > 0 && allGroupChats.map((chat: any) => (
               <div
                 key={chat.id}
