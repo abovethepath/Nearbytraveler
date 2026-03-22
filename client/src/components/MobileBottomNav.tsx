@@ -102,7 +102,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
     refetchInterval: 60000,
   });
 
-  const unreadNotifCount = (activityNotifications.filter((n: any) => !n.isRead).length) + connectionRequests.length;
+  const unreadNotifCount = (Array.isArray(activityNotifications) ? activityNotifications.filter((n: any) => !n.isRead).length : 0) + (Array.isArray(connectionRequests) ? connectionRequests.length : 0);
 
   const queryClientInst = useQueryClient();
 

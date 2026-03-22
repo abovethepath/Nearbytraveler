@@ -555,8 +555,9 @@ export default function Home() {
           const userId = effectiveUser?.id;
           const userParam = userId ? `&userId=${userId}` : '';
           const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(city)}${userParam}`);
+          if (!response.ok) continue;
           const cityEvents = await response.json();
-          allEvents.push(...cityEvents);
+          if (Array.isArray(cityEvents)) allEvents.push(...cityEvents);
         } catch (error) {
           console.error(`Failed to fetch events for ${city}:`, error);
         }

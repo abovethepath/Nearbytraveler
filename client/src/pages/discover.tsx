@@ -48,7 +48,7 @@ export default function DiscoverPage() {
   // Fetch user's travel plans for destination cities
   const { data: travelPlans } = useQuery<any[]>({
     queryKey: ['/api/travel-plans', user?.id],
-    queryFn: () => fetch(`${getApiBaseUrl()}/api/travel-plans/${user?.id}`).then(res => res.json()),
+    queryFn: () => fetch(`${getApiBaseUrl()}/api/travel-plans/${user?.id}`).then(res => res.ok ? res.json() : []),
     enabled: !!user?.id,
     staleTime: 3 * 60 * 1000,
   });
