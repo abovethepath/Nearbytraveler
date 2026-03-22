@@ -491,12 +491,10 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
           toast({
             title: "Meet request accepted! 🤝",
             description: "Tap to open the group chat",
-            action: {
-              altText: "Open chat",
-              onClick: () => setLocation(`/meetup-chatroom-chat/${chatroomId}?title=${encodeURIComponent('Meetup Chat')}`),
-            } as any,
             duration: 10000,
           });
+          // Navigate to chatroom after a brief delay so the toast is visible
+          setTimeout(() => setLocation(`/meetup-chatroom-chat/${chatroomId}?title=${encodeURIComponent('Meetup Chat')}`), 1500);
         } else {
           toast({ title: "Meet request accepted! 🤝", description: "Check your messages." });
         }
