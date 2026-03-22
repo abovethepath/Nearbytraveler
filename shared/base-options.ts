@@ -78,7 +78,6 @@ export const INTERESTS = [
   "Community Events",
   "Tennis",
   "Running & Jogging",
-  "Yoga & Meditation",
   "Extreme Sports",
   "Camping",
   "Rock Climbing",
@@ -222,7 +221,6 @@ export const BUSINESS_ACTIVITIES = [
   "Tennis Courts",
   "Basketball Courts",
   "Yoga Classes",
-  "Fitness Classes",
   "Gym/Workout Facility",
   "Swimming Pool",
   "Hot Tub/Spa",
@@ -329,7 +327,7 @@ export const LEGACY_TO_NEW_MAPPING: Record<string, string[]> = {
   "Museums & Culture": ["Museums", "Cultural Experiences"],
   "Beach & Water Activities": ["Beach Activities", "Water Sports"],
   "Hiking & Nature": ["Hiking"],
-  "Fitness & Workouts": ["Fitness Classes", "Working Out"],
+  "Fitness & Workouts": ["Working Out"],
   
   // INTERESTS legacy mappings
   "Volunteering & Activism": ["Animal Rescue & Shelters"],
@@ -660,7 +658,7 @@ export const getAllSubInterests = (): string[] => {
 // - "Museums & Culture" → "Museums", "Cultural Experiences"
 // - "Beach & Water Activities" → "Beach Activities", "Water Sports"
 // - "Hiking & Nature" → "Hiking" (Nature Walks removed as duplicate)
-// - "Fitness & Workouts" → "Fitness Classes", "Working Out"
+// - "Fitness & Workouts" → "Working Out" (Fitness Classes removed, Yoga & Meditation in TOP_CHOICES)
 // 
 // REMOVED REDUNDANCIES (October 2025):
 // - "Digital Nomads" (not relevant for meeting travelers/locals)

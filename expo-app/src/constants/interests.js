@@ -22,7 +22,7 @@ export const SIGNUP_INTERESTS = [
   'Beach Activities',
   'Water Sports',
   'Hiking',
-  'Fitness Classes',
+  'Yoga & Meditation',
   'Working Out',
   'Golf',
   'Pickleball',
