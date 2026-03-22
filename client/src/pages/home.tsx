@@ -388,6 +388,8 @@ export default function Home() {
   const { data: myAvailableStatus } = useQuery<{ isAvailable?: boolean }>({
     queryKey: ['/api/available-now/my-status'],
     enabled: !!effectiveUser?.id,
+    staleTime: 0,
+    refetchInterval: 15000,
   });
 
   // When the PWA comes back to the foreground, immediately re-fetch meetup data
