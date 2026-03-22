@@ -96,7 +96,7 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
 
   // Check if speech recognition is supported
   useEffect(() => {
-    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition || (window as any).mozSpeechRecognition || (window as any).msSpeechRecognition;
     setSpeechSupported(!!SpeechRecognitionAPI);
   }, []);
 
@@ -128,17 +128,22 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
     }
 
     if (!SpeechRecognitionAPI) {
-      const msg = inNativeIOS
-        ? "Tap the text area below, then use the microphone on your keyboard to dictate."
-        : "Voice input isn't supported. Please type your event details or use keyboard dictation.";
-      setInlineError(msg);
-      toast({ title: "Voice not available", description: msg, variant: "destructive" });
-      return;
+      // Fallback: try alternative access patterns for older/quirky browsers
+      const fallbackAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || (window as any).mozSpeechRecognition || (window as any).msSpeechRecognition;
+      if (!fallbackAPI) {
+        const msg = inNativeIOS
+          ? "Tap the text area below, then use the microphone on your keyboard to dictate."
+          : "Voice input isn't supported in this browser. Try Chrome or Safari, or type your event details.";
+        setInlineError(msg);
+        toast({ title: "Voice not available", description: msg, variant: "destructive" });
+        return;
+      }
     }
 
     try {
       // Call recognition.start() directly - let Speech API request permission (avoids double-prompt on iOS)
-      const recognition = new SpeechRecognitionAPI();
+      const RecognitionClass = SpeechRecognitionAPI || (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const recognition = new RecognitionClass();
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.lang = "en-US";
