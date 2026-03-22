@@ -748,9 +748,15 @@ export default function Messages() {
     setReplyingTo(null);
   };
 
-  // Mark messages as read when conversation is selected — optimistic local update
+  // Mark messages as read when conversation is selected OR new messages arrive while open
   useEffect(() => {
     if (selectedConversation && userId) {
+      // Check if there are any unread messages from this sender
+      const hasUnread = (messages as any[]).some((m: any) =>
+        Number(m.senderId) === selectedConversation && Number(m.receiverId) === userId && !m.isRead
+      );
+      if (!hasUnread) return; // Nothing to mark — skip to avoid unnecessary API calls
+
       // Optimistically mark messages as read locally so the orange dot disappears instantly
       queryClient.setQueryData(['/api/messages', userId], (old: any) => {
         if (!Array.isArray(old)) return old;
@@ -763,7 +769,7 @@ export default function Messages() {
       // Then confirm with server
       markAsReadMutation.mutate(selectedConversation);
     }
-  }, [selectedConversation, userId]);
+  }, [selectedConversation, userId, messages]);
 
   // Handle typing indicators
   const handleTyping = (value: string) => {
