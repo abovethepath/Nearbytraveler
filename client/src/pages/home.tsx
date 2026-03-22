@@ -2206,6 +2206,11 @@ export default function Home() {
           {/* Right Sidebar - Weather, Messages, Quick Meetups, Events */}
           <div className="col-span-1 space-y-6 sm:space-y-8 md:space-y-10 min-w-0 overflow-x-hidden max-w-full w-full">
 
+            {/* Available Now activation widget — top of sidebar */}
+            {effectiveUser?.userType !== 'business' && (
+              <AvailableNowWidget currentUser={effectiveUser} />
+            )}
+
             {/* Tonight in [City] */}
             {effectiveUser && (() => {
               const rawCity = effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination

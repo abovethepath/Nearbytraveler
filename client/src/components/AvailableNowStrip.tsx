@@ -51,12 +51,6 @@ export default function AvailableNowStrip({ currentUserId, userCity }: Available
     setSendingTo(null);
   };
 
-  const { data: myStatus } = useQuery<{ isAvailable: boolean } | null>({
-    queryKey: ["/api/available-now/my-status"],
-    enabled: !!currentUserId,
-    staleTime: 30000,
-  });
-
   const { data: availableUsers = [] } = useQuery<any[]>({
     queryKey: ["/api/available-now", userCity || ""],
     queryFn: async () => {
@@ -73,7 +67,7 @@ export default function AvailableNowStrip({ currentUserId, userCity }: Available
   });
 
   const filtered = availableUsers.filter((e) => e.user?.id !== currentUserId && e.isAvailable);
-  const isActive = !!myStatus?.isAvailable;
+  if (filtered.length === 0) return null;
 
   const scroll = (dir: "left" | "right") => {
     if (!scrollRef.current) return;
@@ -115,27 +109,6 @@ export default function AvailableNowStrip({ currentUserId, userCity }: Available
           className="flex flex-nowrap gap-3 px-4 pb-4 overflow-x-auto lg:overflow-x-hidden lg:px-8"
           style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {/* CTA card — first in row */}
-          <div
-            className="flex-shrink-0 w-[160px] rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow flex flex-col items-center justify-center gap-3 border-2 border-dashed border-green-500/50 bg-green-950/30"
-            style={{ minHeight: 210 }}
-            onClick={() => setLocation("/available-now")}
-          >
-            <div className="relative">
-              <Zap className="w-10 h-10 text-green-400" />
-              <span className={`absolute -top-0.5 -right-0.5 flex h-3 w-3 ${isActive ? '' : 'opacity-40'}`}>
-                {isActive && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />}
-                <span className={`relative inline-flex rounded-full h-3 w-3 ${isActive ? 'bg-green-500' : 'bg-gray-500'}`} />
-              </span>
-            </div>
-            <p className="text-sm font-bold text-white text-center px-2 leading-tight">
-              {isActive ? "You're Live" : "I'm Available Now"}
-            </p>
-            {isActive && (
-              <span className="text-[10px] text-green-400 font-medium">Tap to manage</span>
-            )}
-          </div>
-
           {filtered.slice(0, 8).map((entry) => {
             const user = entry.user || {};
             const name = user.firstName || (user.fullName || user.username || "User").split(" ")[0];
