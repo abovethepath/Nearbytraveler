@@ -14604,31 +14604,51 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       const uid = Number(userId);
-      if (process.env.NODE_ENV === 'development') console.log(`🗑️ EVENT DELETE: User ${uid} attempting to delete event ${eventId}`);
+      console.log(`🗑️ EVENT DELETE: User ${uid} attempting to delete event ${eventId}`);
 
-      // Get event to check if user is organizer
+      // Get event to verify it exists
       const event = await storage.getEvent(eventId);
       if (!event) {
         return res.status(404).json({ message: "Event not found" });
       }
 
+      // Allow delete if user is organizer, sharer, or admin
       const isOwner = event.organizerId === uid || event.sharedBy === uid || uid === 2;
       if (!isOwner) {
-        console.log(`🚫 EVENT DELETE: Denied — user ${uid} is not organizer (${event.organizerId}) or sharer (${event.sharedBy})`);
+        console.log(`🚫 EVENT DELETE: Denied — user ${uid}, organizer=${event.organizerId}, sharedBy=${event.sharedBy}`);
         return res.status(403).json({ message: "Only the event organizer can delete this event" });
       }
-      
-      // Delete the event
-      const success = await storage.deleteEvent(eventId);
-      if (success) {
-        if (process.env.NODE_ENV === 'development') console.log(`🗑️ EVENT DELETE: Event ${eventId} successfully deleted by organizer ${userId}`);
-        return res.json({ success: true, message: "Event successfully deleted" });
-      } else {
-        return res.status(500).json({ message: "Failed to delete event" });
-      }
+
+      // Delete related records first to avoid FK constraint violations
+      try {
+        await db.delete(eventParticipants).where(eq(eventParticipants.eventId, eventId));
+      } catch (e) { /* table may not have rows */ }
+      try {
+        await db.execute(sql`DELETE FROM event_rsvps WHERE event_id = ${eventId}`);
+      } catch (e) { /* ignore */ }
+      try {
+        await db.execute(sql`DELETE FROM instagram_posts WHERE event_id = ${eventId}`);
+      } catch (e) { /* ignore */ }
+      try {
+        await db.execute(sql`DELETE FROM meetup_chatrooms WHERE event_id = ${eventId}`);
+      } catch (e) { /* ignore */ }
+      try {
+        await db.execute(sql`DELETE FROM mood_entries WHERE event_id = ${eventId}`);
+      } catch (e) { /* ignore */ }
+      try {
+        await db.execute(sql`DELETE FROM passport_stamps WHERE event_id = ${eventId}`);
+      } catch (e) { /* ignore */ }
+      try {
+        await db.execute(sql`DELETE FROM user_event_interests WHERE event_id = ${eventId}`);
+      } catch (e) { /* ignore */ }
+
+      // Now delete the event itself
+      await db.delete(events).where(eq(events.id, eventId));
+      console.log(`✅ EVENT DELETE: Event ${eventId} deleted by user ${uid}`);
+      return res.json({ success: true, message: "Event successfully deleted" });
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error deleting event:", error);
-      return res.status(500).json({ message: "Failed to delete event" });
+      console.error("❌ EVENT DELETE ERROR:", error.message, error.detail || '');
+      return res.status(500).json({ message: "Failed to delete event: " + (error.message || "Unknown error") });
     }
   });
 
