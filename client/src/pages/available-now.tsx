@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "@/App";
 import { getApiBaseUrl } from "@/lib/queryClient";
-import { Zap, MessageCircle, ArrowLeft, MapPin } from "lucide-react";
+import { Zap, UserPlus, ArrowLeft, MapPin, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function timeAgo(dateStr: string): string {
@@ -43,6 +43,25 @@ export default function AvailableNowPage() {
   });
 
   const filtered = availableUsers.filter((e) => e.user?.id !== user?.id && e.isAvailable);
+  const [sentRequests, setSentRequests] = useState<Set<number>>(new Set());
+  const [sendingTo, setSendingTo] = useState<number | null>(null);
+
+  const sendJoinRequest = async (toUserId: number) => {
+    if (!user?.id || sentRequests.has(toUserId) || sendingTo) return;
+    setSendingTo(toUserId);
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/available-now/request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-user-id': String(user.id) },
+        credentials: 'include',
+        body: JSON.stringify({ toUserId }),
+      });
+      if (res.ok || res.status === 409) {
+        setSentRequests(prev => new Set(prev).add(toUserId));
+      }
+    } catch { /* silent */ }
+    setSendingTo(null);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -157,14 +176,26 @@ export default function AvailableNowPage() {
                     @{username}
                   </p>
 
-                  {/* Say Hello button */}
-                  <Button
-                    onClick={() => setLocation(`/messages/${u.id}`)}
-                    className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold"
-                  >
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Say Hello
-                  </Button>
+                  {/* Join button */}
+                  {sentRequests.has(u.id) ? (
+                    <Button disabled className="w-full bg-gray-600 text-white font-semibold">
+                      <Check className="w-4 h-4 mr-2" />
+                      Request Sent
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => sendJoinRequest(u.id)}
+                      disabled={sendingTo === u.id}
+                      className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold"
+                    >
+                      {sendingTo === u.id ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <UserPlus className="w-4 h-4 mr-2" />
+                      )}
+                      Join
+                    </Button>
+                  )}
                 </div>
               </div>
             );

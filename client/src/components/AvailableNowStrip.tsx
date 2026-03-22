@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { getApiBaseUrl } from "@/lib/queryClient";
-import { Zap, MessageCircle, ChevronLeft, ChevronRight, ChevronRight as ArrowRight } from "lucide-react";
+import { Zap, UserPlus, ChevronLeft, ChevronRight, ChevronRight as ArrowRight, Check, Loader2 } from "lucide-react";
 
 function timeAgo(dateStr: string): string {
   const ms = Date.now() - new Date(dateStr).getTime();
@@ -31,6 +31,25 @@ const SCROLL_AMOUNT = 170;
 export default function AvailableNowStrip({ currentUserId, userCity }: AvailableNowStripProps) {
   const [, setLocation] = useLocation();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [sentRequests, setSentRequests] = useState<Set<number>>(new Set());
+  const [sendingTo, setSendingTo] = useState<number | null>(null);
+
+  const sendJoinRequest = async (toUserId: number) => {
+    if (!currentUserId || sentRequests.has(toUserId) || sendingTo) return;
+    setSendingTo(toUserId);
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/available-now/request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-user-id': String(currentUserId) },
+        credentials: 'include',
+        body: JSON.stringify({ toUserId }),
+      });
+      if (res.ok || res.status === 409) {
+        setSentRequests(prev => new Set(prev).add(toUserId));
+      }
+    } catch { /* silent */ }
+    setSendingTo(null);
+  };
 
   const { data: availableUsers = [] } = useQuery<any[]>({
     queryKey: ["/api/available-now", userCity || ""],
@@ -133,18 +152,30 @@ export default function AvailableNowStrip({ currentUserId, userCity }: Available
                   </p>
                 </div>
 
-                {/* Say Hello */}
+                {/* Join */}
                 <div className="px-2.5 pb-2.5">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setLocation(`/messages/${user.id}`);
-                    }}
-                    className="flex items-center gap-1 w-full justify-center px-2 py-1.5 rounded-full bg-green-500 hover:bg-green-600 text-white text-[11px] font-semibold transition-colors"
-                  >
-                    <MessageCircle className="w-3 h-3" />
-                    Say Hello
-                  </button>
+                  {sentRequests.has(user.id) ? (
+                    <div className="flex items-center gap-1 w-full justify-center px-2 py-1.5 rounded-full bg-gray-600 text-white text-[11px] font-semibold">
+                      <Check className="w-3 h-3" />
+                      Requested
+                    </div>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        sendJoinRequest(user.id);
+                      }}
+                      disabled={sendingTo === user.id}
+                      className="flex items-center gap-1 w-full justify-center px-2 py-1.5 rounded-full bg-green-500 hover:bg-green-600 text-white text-[11px] font-semibold transition-colors disabled:opacity-50"
+                    >
+                      {sendingTo === user.id ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <UserPlus className="w-3 h-3" />
+                      )}
+                      Join
+                    </button>
+                  )}
                 </div>
               </div>
             );

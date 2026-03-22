@@ -1885,19 +1885,6 @@ export default function Home() {
           {/* Main Content - Center column */}
           <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-8 min-w-0 relative overflow-x-hidden flex flex-col w-full max-w-full">
 
-            {/* Available Now Widget - FIRST THING on mobile, always visible at top */}
-            {effectiveUser?.userType !== 'business' && (
-              <div className="lg:hidden" id="available-now-section">
-                <AvailableNowWidget currentUser={effectiveUser} onSortByAvailableNow={() => {
-                  setSortBy('available_now');
-                  setTimeout(() => {
-                    const discoverSection = document.querySelector('[data-testid="discover-people-section"]');
-                    discoverSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 100);
-                }} />
-              </div>
-            )}
-
             {/* Meetup Alert Banner - Shows when there are new meetups nearby */}
             {effectiveUser?.id && effectiveUser?.userType !== 'business' && (
               <MeetupAlertBanner userId={effectiveUser.id} />
@@ -2257,18 +2244,6 @@ export default function Home() {
             {/* People You Almost Met */}
             {effectiveUser?.userType !== 'business' && <PeopleAlmostMet />}
 
-            {/* Available Now Widget - Hangout Mode (desktop sidebar only, mobile version is at top of main content) */}
-            {!shouldDeferSecondarySections && effectiveUser?.userType !== 'business' && (
-              <div className="hidden lg:block" id="available-now-section-desktop">
-                <AvailableNowWidget currentUser={effectiveUser} onSortByAvailableNow={() => {
-                  setSortBy('available_now');
-                  setTimeout(() => {
-                    const discoverSection = document.querySelector('[data-testid="discover-people-section"]');
-                    discoverSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 100);
-                }} />
-              </div>
-            )}
 
             {/* Weather Widget */}
             {!shouldDeferSecondarySections && loadedSections.has('weather') && (
