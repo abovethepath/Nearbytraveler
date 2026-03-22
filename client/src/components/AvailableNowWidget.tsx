@@ -392,12 +392,14 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     const chats: any[] = [];
     const seenIds = new Set<number>();
     const now = new Date();
-    if (hostGroupChat && new Date(hostGroupChat.expiresAt) > now && hostGroupChat.isActive !== false && !isCurrentUserMutedInChat(hostGroupChat)) {
+    if (hostGroupChat && (!hostGroupChat.expiresAt || new Date(hostGroupChat.expiresAt) > now) && hostGroupChat.isActive !== false && !isCurrentUserMutedInChat(hostGroupChat) && (!hostGroupChat.lifecycleState || hostGroupChat.lifecycleState === 'active')) {
       chats.push(hostGroupChat);
       seenIds.add(hostGroupChat.id);
     }
     for (const c of myAcceptedGroupChats) {
-      if (!seenIds.has(c.id) && new Date(c.expiresAt) > now && c.isActive !== false && !isCurrentUserMutedInChat(c)) {
+      const notExpired = !c.expiresAt || new Date(c.expiresAt) > now;
+      const isActiveLifecycle = !c.lifecycleState || c.lifecycleState === 'active';
+      if (!seenIds.has(c.id) && c.isActive !== false && !isCurrentUserMutedInChat(c) && notExpired && isActiveLifecycle) {
         chats.push(c);
         seenIds.add(c.id);
       }
