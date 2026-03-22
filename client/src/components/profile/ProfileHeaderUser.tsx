@@ -404,18 +404,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       New to Town
                     </span>
                   )}
-                  {upcomingTrip && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const el = document.getElementById('travel-plans-section');
-                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      }}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 border border-blue-300 text-blue-800 cursor-pointer hover:bg-blue-200 transition-colors"
-                    >
-                      ✈️ See Travel Plans
-                    </button>
-                  )}
                   {showInlineQr && (
                     <button
                       type="button"
@@ -435,6 +423,18 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     </span>
                   </div>
                 )}
+                {upcomingTrip && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const el = document.getElementById('travel-plans-section');
+                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 border border-blue-300 text-blue-800 cursor-pointer hover:bg-blue-200 transition-colors mt-0.5"
+                  >
+                    ✈️ See Travel Plans
+                  </button>
+                )}
               </div>
 
             </div>
@@ -448,18 +448,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     New to Town
                   </span>
                 )}
-                {upcomingTrip && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const el = document.getElementById('travel-plans-section');
-                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}
-                    className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 border border-blue-300 shadow-sm text-blue-800 cursor-pointer"
-                  >
-                    ✈️ See Travel Plans
-                  </button>
-                )}
               </div>
               <div className="text-sm sm:text-base font-semibold crisp-hero-text text-white" style={{ color: '#ffffff' }}>
                 Nearby Local · <span style={{ color: '#ffffff' }}>{hometown}</span>
@@ -469,6 +457,18 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   {travelStatusLabel} <span style={{ color: '#ffffff' }}>→</span>{" "}
                   <span style={{ color: '#ffffff' }}>{travelDestinationDisplay}</span>
                 </div>
+              )}
+              {upcomingTrip && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById('travel-plans-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
+                  className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 border border-blue-300 shadow-sm text-blue-800 cursor-pointer mt-1"
+                >
+                  ✈️ See Travel Plans
+                </button>
               )}
               <div className="flex flex-wrap items-center gap-2 mt-2">
                 <Button
@@ -639,18 +639,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                       New to Town
                                     </span>
                                   )}
-                                  {upcomingTrip && (
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const el = document.getElementById('travel-plans-section');
-                                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                      }}
-                                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 border border-blue-300 text-blue-800 cursor-pointer hover:bg-blue-200 transition-colors"
-                                    >
-                                      ✈️ See Travel Plans
-                                    </button>
-                                  )}
                                 </div>
                                 {hasValidTravelDestination && (
                                   <div className="text-sm sm:text-base font-semibold crisp-hero-text text-white" title={currentTravelPlan!} style={{ color: '#ffffff' }}>
@@ -658,6 +646,18 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     <span style={{ color: '#ffffff' }}> → </span>
                                     <span style={{ color: '#ffffff' }}>{travelDestinationDisplay}</span>
                                   </div>
+                                )}
+                                {upcomingTrip && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const el = document.getElementById('travel-plans-section');
+                                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }}
+                                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 border border-blue-300 text-blue-800 cursor-pointer hover:bg-blue-200 transition-colors mt-0.5"
+                                  >
+                                    ✈️ See Travel Plans
+                                  </button>
                                 )}
                               </div>
                             )}
