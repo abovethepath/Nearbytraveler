@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { useIsOnline } from "@/components/NetworkStatus";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getProfileImageUrl } from "@/components/simple-avatar";
@@ -95,6 +96,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const { chatId, chatType, title, subtitle, chatLocation, currentUserId, onBack, eventId, eventImageUrl, meetupId, readOnly, readOnlyBanner, graceBanner } = props;
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const isOnline = useIsOnline();
 
   // DM chats always go to /messages; group chats use onBack if provided
   const handleBack = chatType === 'dm'
@@ -1786,6 +1788,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     
     if (!messageText.trim() || !currentUserId) {
       console.log('❌ sendMessage blocked - missing text or userId');
+      return;
+    }
+    if (!isOnline) {
+      toast({ title: "No internet connection", description: "Connect to the internet to send messages.", variant: "destructive" });
       return;
     }
 
@@ -3732,7 +3738,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             />
             <Button
               onClick={() => photoInputRef.current?.click()}
-              disabled={!currentUserId || isSendingPhoto || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))}
+              disabled={!currentUserId || !isOnline || isSendingPhoto || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))}
               size="icon"
               variant="ghost"
               className="rounded-full min-h-[44px] min-w-[44px] h-11 w-11 md:h-9 md:w-9 shrink-0 text-white hover:bg-gray-700 touch-target"
@@ -3768,14 +3774,14 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             />
             <Button 
               onClick={sendMessage} 
-              disabled={!messageText.trim() || !currentUserId || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))} 
-              size="icon" 
+              disabled={!messageText.trim() || !currentUserId || !isOnline || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))}
+              size="icon"
               className={`rounded-full min-h-[44px] min-w-[44px] h-11 w-11 md:h-9 md:w-9 shrink-0 touch-target ${
-                !currentUserId || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))
-                  ? 'bg-gray-500 cursor-not-allowed' 
+                !currentUserId || !isOnline || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))
+                  ? 'bg-gray-500 cursor-not-allowed'
                   : 'bg-green-600 hover:bg-green-700'
               }`}
-              title={!currentUserId ? 'Not logged in' : 'Send message'}
+              title={!isOnline ? 'No internet connection' : !currentUserId ? 'Not logged in' : 'Send message'}
             >
               <Send className="w-4 h-4" />
             </Button>

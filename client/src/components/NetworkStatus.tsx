@@ -1,28 +1,39 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import { WifiOff } from "lucide-react";
 
+// Shared online status hook — use this anywhere to check connectivity
+const onlineListeners = new Set<() => void>();
+function subscribeOnline(cb: () => void) {
+  onlineListeners.add(cb);
+  const onChange = () => onlineListeners.forEach(fn => fn());
+  window.addEventListener("online", onChange);
+  window.addEventListener("offline", onChange);
+  return () => {
+    onlineListeners.delete(cb);
+    window.removeEventListener("online", onChange);
+    window.removeEventListener("offline", onChange);
+  };
+}
+function getOnlineSnapshot() { return navigator.onLine; }
+function getServerSnapshot() { return true; }
+
+export function useIsOnline(): boolean {
+  return useSyncExternalStore(subscribeOnline, getOnlineSnapshot, getServerSnapshot);
+}
+
 export function NetworkStatus() {
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const isOnline = useIsOnline();
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
-    const goOnline = () => {
-      setIsOnline(true);
-      // Keep banner for 2s after reconnection to show "Back online"
-      setTimeout(() => setShowBanner(false), 2000);
-    };
-    const goOffline = () => {
-      setIsOnline(false);
+    if (!isOnline) {
       setShowBanner(true);
-    };
-
-    window.addEventListener("online", goOnline);
-    window.addEventListener("offline", goOffline);
-    return () => {
-      window.removeEventListener("online", goOnline);
-      window.removeEventListener("offline", goOffline);
-    };
-  }, []);
+    } else if (showBanner) {
+      // Keep "Back online" for 2s
+      const t = setTimeout(() => setShowBanner(false), 2000);
+      return () => clearTimeout(t);
+    }
+  }, [isOnline]);
 
   if (!showBanner) return null;
 
@@ -36,7 +47,7 @@ export function NetworkStatus() {
       ) : (
         <span className="flex items-center justify-center gap-2">
           <WifiOff className="w-4 h-4" />
-          Connection lost — retrying...
+          You're offline — showing cached data
         </span>
       )}
     </div>
