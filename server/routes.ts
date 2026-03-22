@@ -26627,6 +26627,8 @@ Questions? Just reply to this message. Welcome aboard!
       for (const c of chatrooms) {
         let lifecycleState = "active";
         let deleteAt: string | null = null;
+
+        // Determine expiry for Available Now chats (check the session)
         if (c.availableNowId && anSessionCache[c.availableNowId]) {
           const session = anSessionCache[c.availableNowId]!;
           let sessionEndedAt: Date | null = null;
@@ -26643,14 +26645,24 @@ Questions? Just reply to this message. Welcome aboard!
               lifecycleState = "grace";
             }
           }
-        } else if (!c.availableNowId && !c.eventId && c.groupType !== 'group_dm') {
-          const isExpired = c.expiresAt && new Date(c.expiresAt) < now;
-          if (isExpired) continue;
+        }
+        // Determine expiry for all other non-event, non-group-DM chats (Quick Meet, etc.)
+        else if (!c.eventId && c.groupType !== 'group_dm') {
+          if (c.expiresAt && new Date(c.expiresAt) < now) {
+            const hoursSinceEnd = (now.getTime() - new Date(c.expiresAt).getTime()) / (1000 * 60 * 60);
+            if (hoursSinceEnd >= 168) continue;
+            else if (hoursSinceEnd >= 24) {
+              lifecycleState = "readonly";
+              deleteAt = new Date(new Date(c.expiresAt).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+            } else {
+              lifecycleState = "grace";
+            }
+          }
         }
         const latest = latestMessages[c.id];
         result.push({
           ...c,
-          isExpired: lifecycleState === "readonly",
+          isExpired: lifecycleState === "readonly" || lifecycleState === "grace",
           lifecycleState,
           deleteAt,
           chatType: c.groupType === 'group_dm' ? "group_dm" : c.availableNowId ? "available_now" : c.meetupId ? "quick_meetup" : c.eventId ? "event" : "meetup",
