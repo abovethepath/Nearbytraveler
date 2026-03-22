@@ -4121,7 +4121,9 @@ export function ProfileTabs(props: ProfilePageProps) {
                 data-testid="travel-content"
               >
                 {/* Travel Plans Widget - No wrapper needed, widget has its own styling */}
-                <TravelPlansWidget userId={effectiveUserId} isOwnProfile={isOwnProfile} />
+                <div id="travel-plans-section">
+                  <TravelPlansWidget userId={effectiveUserId} isOwnProfile={isOwnProfile} />
+                </div>
 
                 {/* Travel Intent Widget - only shown in Travel tab */}
                 <Card className="hover:shadow-lg transition-all duration-200 hover:border-purple-300 dark:hover:border-purple-600 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">

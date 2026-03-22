@@ -404,6 +404,18 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       New to Town
                     </span>
                   )}
+                  {upcomingTrip && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const el = document.getElementById('travel-plans-section');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 border border-blue-300 text-blue-800 cursor-pointer hover:bg-blue-200 transition-colors"
+                    >
+                      ✈️ See Travel Plans
+                    </button>
+                  )}
                   {showInlineQr && (
                     <button
                       type="button"
@@ -430,11 +442,25 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
             {/* MOBILE ONLY: full-width badge + city lines + CTA below avatar/name row */}
             <div className="lg:hidden mt-2 space-y-1">
-              {isNewToTown && (
-                <span className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm text-green-800">
-                  New to Town
-                </span>
-              )}
+              <div className="flex flex-wrap items-center gap-2">
+                {isNewToTown && (
+                  <span className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm text-green-800">
+                    New to Town
+                  </span>
+                )}
+                {upcomingTrip && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const el = document.getElementById('travel-plans-section');
+                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
+                    className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 border border-blue-300 shadow-sm text-blue-800 cursor-pointer"
+                  >
+                    ✈️ See Travel Plans
+                  </button>
+                )}
+              </div>
               <div className="text-sm sm:text-base font-semibold crisp-hero-text text-white" style={{ color: '#ffffff' }}>
                 Nearby Local · <span style={{ color: '#ffffff' }}>{hometown}</span>
               </div>
@@ -612,6 +638,18 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
                                       New to Town
                                     </span>
+                                  )}
+                                  {upcomingTrip && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const el = document.getElementById('travel-plans-section');
+                                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                      }}
+                                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 border border-blue-300 text-blue-800 cursor-pointer hover:bg-blue-200 transition-colors"
+                                    >
+                                      ✈️ See Travel Plans
+                                    </button>
                                   )}
                                 </div>
                                 {hasValidTravelDestination && (
