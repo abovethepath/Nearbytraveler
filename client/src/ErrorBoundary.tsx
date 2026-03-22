@@ -95,7 +95,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
         })();
 
         // Recover to a stable route (never leave user stuck).
-        window.location.replace(isAuthed ? "/home" : "/login");
+        window.location.replace(isAuthed ? "/home" : "/auth");
       }, 2000);
     }
   }

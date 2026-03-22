@@ -7,6 +7,7 @@ import { queryClient, invalidateUserCache, getApiBaseUrl, startSessionRefresh, s
 import { posthogIdentifyUser, posthogReset } from "@/lib/posthog";
 import { QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
+import { NetworkStatus } from "@/components/NetworkStatus";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import GlobalHotfixes from "@/GlobalHotfixes";
@@ -2062,6 +2063,7 @@ function App() {
       <GlobalHotfixes />
       <ThemeProvider defaultTheme="dark" storageKey="nearby-traveler-theme">
           <Toaster />
+          <NetworkStatus />
           <DarkModeSuggestionBanner />
           <Router />
           {!isNativeIOSApp() && !disableFloatingChatbot && (

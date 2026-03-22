@@ -208,7 +208,10 @@ export async function apiRequest(
       console.error('Fetch error:', error);
     }
     if ((error as Error).name === 'AbortError') {
-      throw new Error('Request timed out after 30 seconds');
+      throw new Error('Request timed out. Please check your connection and try again.');
+    }
+    if ((error as Error).message === 'Failed to fetch') {
+      throw new Error('Unable to connect to the server. Please check your internet connection.');
     }
     throw error;
   }
@@ -276,20 +279,28 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes — stale-while-revalidate: cached data shows instantly
-      gcTime: 30 * 60 * 1000, // 30 minutes — keep cache in memory for return visits
+      staleTime: 5 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
       retry: (failureCount, error: any) => {
-        // Don't retry on 4xx errors except 429 (rate limit)
-        if (error?.message?.includes('4') && !error?.message?.includes('429')) {
-          return false;
-        }
-        return failureCount < 2; // Retry up to 2 times for production
+        const status = error?.status || error?.response?.status;
+        // Don't retry on auth or client errors (except 429 rate limit)
+        if (status && status >= 400 && status < 500 && status !== 429) return false;
+        return failureCount < 2;
       },
     },
     mutations: {
+      onError: (error: any) => {
+        // Global mutation error handler — log for debugging
+        const msg = error?.message || 'Something went wrong';
+        if (msg.includes('401') || msg.includes('Unauthorized')) {
+          // Session expired — redirect to auth
+          window.location.href = '/auth';
+          return;
+        }
+        console.error('[Mutation Error]', msg);
+      },
       retry: (failureCount, error: any) => {
-        // Retry mutations on network errors only
-        if (error?.message?.includes('NetworkError') || error?.message?.includes('timeout')) {
+        if (error?.message?.includes('NetworkError') || error?.message?.includes('Failed to fetch') || error?.message?.includes('timeout')) {
           return failureCount < 2;
         }
         return false;
