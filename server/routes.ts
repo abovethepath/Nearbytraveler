@@ -858,6 +858,29 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   await setupAuth(app);
   console.log("✅ Replit Auth setup complete");
 
+  // ─── Per-endpoint rate limiters for expensive operations ────────
+  const { default: rateLimit } = await import("express-rate-limit");
+
+  const getUserId = (req: any): string =>
+    String(req.session?.user?.id || req.headers?.['x-user-id'] || req.ip || 'anon');
+
+  const aiLimit = rateLimit({ windowMs: 60 * 60 * 1000, max: 10, keyGenerator: getUserId, standardHeaders: true, legacyHeaders: false, message: { error: "You've reached the AI limit. Try again in about an hour." } });
+  const importLimit = rateLimit({ windowMs: 60 * 60 * 1000, max: 20, keyGenerator: getUserId, standardHeaders: true, legacyHeaders: false, message: { error: "You've reached the import limit. Try again in about an hour." } });
+  const uploadLimit = rateLimit({ windowMs: 60 * 60 * 1000, max: 30, keyGenerator: getUserId, standardHeaders: true, legacyHeaders: false, message: { error: "You've reached the upload limit. Try again in about an hour." } });
+  const signupLimit = rateLimit({ windowMs: 60 * 60 * 1000, max: 5, standardHeaders: true, legacyHeaders: false, message: { error: "Too many signup attempts. Try again in about an hour." } });
+
+  // Apply to specific routes only (not global)
+  app.use("/api/ai/event-draft", aiLimit);
+  app.use("/api/ai/meetup-draft", aiLimit);
+  app.use("/api/ai/help-chat", aiLimit);
+  app.use("/api/events/import-url", importLimit);
+  app.use("/api/users/:id/video-intro/upload", uploadLimit);
+  app.use("/api/users/:id/cover-photo", uploadLimit);
+  app.use("/api/city-photos", uploadLimit);
+  app.use("/api/businesses/:businessId/customer-photos", uploadLimit);
+
+  console.log("✅ Per-endpoint rate limits configured");
+
   // ─── OneSignal: wrap createNotification to fire push notifications ────────
   // This single hook covers ALL notification creation points automatically.
   {
@@ -6418,7 +6441,7 @@ Questions? Just reply here — I read every message.
   // ---------- REGISTRATION ENDPOINT COMPLETE ----------
 
   // Registration endpoint
-  app.post("/api/register", handleRegistration);
+  app.post("/api/register", signupLimit, handleRegistration);
 
   // WAITLIST ENDPOINT - for collecting launch leads - BULLETPROOF VERSION
   app.post("/api/waitlist", async (req, res) => {
