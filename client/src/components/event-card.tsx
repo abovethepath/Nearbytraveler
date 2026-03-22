@@ -303,7 +303,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
   return (
     <>
-      <article className="event-card rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 cursor-pointer text-left flex flex-col h-full"
+      <article className="event-card rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 cursor-pointer text-left flex flex-col h-full max-w-full box-border"
                onClick={() => setLocation(`/events/${event.id}`)}>
         {event.imageUrl && (
           <div className="relative overflow-hidden h-[180px] md:h-[200px] lg:h-[220px]">
@@ -316,8 +316,8 @@ export default function EventCard({ event, compact = false, featured = false }: 
           </div>
         )}
 
-        <div className="p-4 md:p-5 flex flex-col flex-1 gap-3">
-          <h3 className="text-gray-900 dark:text-white text-lg font-semibold leading-snug line-clamp-2 break-normal">
+        <div className="p-4 md:p-5 flex flex-col flex-1 gap-3 min-w-0 overflow-hidden">
+          <h3 className="text-gray-900 dark:text-white text-lg font-semibold leading-snug line-clamp-2 break-words [overflow-wrap:anywhere]">
             {event.title}
           </h3>
 
@@ -397,7 +397,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
           {/* Organizer badge */}
           {isOrganizer && (
             <div className="pt-1">
-              <Badge className="flex items-center gap-1 bg-gradient-to-r from-[#2563EB] to-[#E85D2F] text-white px-3 py-1">
+              <Badge className="inline-flex items-center gap-1 bg-gradient-to-r from-[#2563EB] to-[#E85D2F] text-white px-3 py-1 max-w-full">
                 <Users className="h-3 w-3" />
                 Organizer
               </Badge>
@@ -405,13 +405,13 @@ export default function EventCard({ event, compact = false, featured = false }: 
           )}
 
           {/* Action buttons — always at bottom */}
-          <div className="flex flex-col sm:flex-row gap-2 pt-2 mt-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="flex flex-col gap-2 pt-2 mt-auto w-full min-w-0" onClick={(e) => e.stopPropagation()}>
             {isOrganizer ? (
               // Organizer: View Event + Open Chat
               <>
                 <Button
                   size="sm"
-                  className="flex-1 text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                  className="w-full text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
                   onClick={() => setLocation(`/events/${event.id}`)}
                   data-testid="button-view"
                 >
@@ -419,7 +419,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 </Button>
                 <Button
                   size="sm"
-                  className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
+                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
                   onClick={() => setLocation(`/event-chat/${event.id}`)}
                   data-testid="button-chat"
                 >
@@ -433,7 +433,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 <Button
                   size="sm"
                   variant="outline"
-                  className="flex-1 min-w-[4.5rem] border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/30"
+                  className="w-full border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/30"
                   onClick={() => leaveEventMutation.mutate()}
                   disabled={leaveEventMutation.isPending}
                   data-testid="button-leave"
@@ -442,7 +442,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 </Button>
                 <Button
                   size="sm"
-                  className="flex-1 min-w-[4.5rem] text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                  className="w-full text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
                   onClick={() => setLocation(`/events/${event.id}`)}
                   data-testid="button-view"
                 >
@@ -450,7 +450,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 </Button>
                 <Button
                   size="sm"
-                  className="flex-1 min-w-[4.5rem] bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
+                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
                   onClick={() => setLocation(`/event-chat/${event.id}`)}
                   data-testid="button-chat"
                 >
@@ -463,7 +463,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
               <>
                 <Button
                   size="sm"
-                  className="flex-1 min-w-[4.5rem] text-white border-0 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+                  className="w-full text-white border-0 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
                   onClick={() => handleJoinEvent('going')}
                   disabled={joinEventMutation.isPending}
                   data-testid="button-join"
@@ -473,7 +473,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 <Button
                   size="sm"
                   variant="outline"
-                  className="flex-1 min-w-[4.5rem] dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:hover:bg-gray-600"
+                  className="w-full dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:hover:bg-gray-600"
                   onClick={() => handleJoinEvent('interested')}
                   disabled={joinEventMutation.isPending}
                   data-testid="button-interested"
@@ -482,7 +482,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 </Button>
                 <Button
                   size="sm"
-                  className="flex-1 min-w-[4.5rem] text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                  className="w-full text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
                   onClick={() => setLocation(`/events/${event.id}`)}
                   data-testid="button-view"
                 >
