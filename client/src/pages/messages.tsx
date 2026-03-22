@@ -501,7 +501,9 @@ export default function Messages() {
       if (otherUserId !== userId) {
         const existing = conversationMap.get(otherUserId);
         // Count unread messages (messages received by current user that aren't read)
+        // Exclude temp optimistic messages (negative IDs)
         const unreadCount = (messages as any[]).filter((m: any) =>
+          Number(m.id) > 0 &&
           Number(m.senderId) === otherUserId &&
           Number(m.receiverId) === userId &&
           !m.isRead
@@ -1295,16 +1297,9 @@ export default function Messages() {
                       </div>
                       {conv.unreadCount > 0 && selectedConversation !== conv.userId ? (
                         <div className="shrink-0 flex items-center gap-2">
-                          <div
-                            className="w-2.5 h-2.5 rounded-full bg-orange-500 dark:bg-orange-400 animate-pulse"
-                            aria-label="Unread messages"
-                            title="Unread messages"
-                          />
-                          {conv.unreadCount > 1 && (
-                            <div className="bg-orange-500 text-white text-xs font-bold rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1.5">
-                              {conv.unreadCount > 99 ? '99+' : conv.unreadCount}
-                            </div>
-                          )}
+                          <div className="bg-orange-500 text-white text-xs font-bold rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1.5">
+                            {conv.unreadCount > 99 ? '99+' : conv.unreadCount}
+                          </div>
                         </div>
                       ) : selectedConversation === conv.userId ? (
                         <div className="w-2 h-2 bg-blue-500 rounded-full shrink-0"></div>
