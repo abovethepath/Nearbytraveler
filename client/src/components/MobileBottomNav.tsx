@@ -50,7 +50,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
   const { data: unreadData } = useQuery({
     queryKey: ['/api/messages', user?.id, 'unread-count'],
     queryFn: async () => {
-      const res = await fetch(`${getApiBaseUrl()}/api/messages/${user.id}/unread-count`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/messages/${user.id}/unread-count?_t=${Date.now()}`, {
         credentials: 'include',
         headers: user?.id ? { 'x-user-id': user.id.toString() } : {},
       });
@@ -78,7 +78,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
   const { data: activityNotifications = [] } = useQuery<any[]>({
     queryKey: ['/api/notifications', user?.id],
     queryFn: async () => {
-      const res = await fetch(`${getApiBaseUrl()}/api/notifications/${user.id}`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/notifications/${user.id}?_t=${Date.now()}`, {
         credentials: 'include',
         headers: user?.id ? { 'x-user-id': user.id.toString() } : {},
       });
@@ -92,7 +92,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
   const { data: connectionRequests = [] } = useQuery<any[]>({
     queryKey: ['/api/connections', user?.id, 'requests'],
     queryFn: async () => {
-      const res = await fetch(`${getApiBaseUrl()}/api/connections/${user.id}/requests`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/connections/${user.id}/requests?_t=${Date.now()}`, {
         credentials: 'include',
         headers: user?.id ? { 'x-user-id': user.id.toString() } : {},
       });

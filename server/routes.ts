@@ -12674,7 +12674,11 @@ Questions? Just reply to this message. Welcome aboard!
         );
       
       const unreadCount = unreadMessages[0]?.count || 0;
-      
+
+      // Prevent any browser/PWA caching of this endpoint
+      res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
       return res.json({ unreadCount });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching unread count:", error);
