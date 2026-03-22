@@ -2563,7 +2563,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           );
                           const isFeatured = (activity as any).isFeatured || (activity as any).source === 'featured';
                           const isAICreated = activity.createdByUserId === 1;
-                          const isUserCreated = activity.createdByUserId != null && activity.createdByUserId !== 1;
+                          const isUserCreated = (activity as any).source === 'user' && activity.createdByUserId != null;
                           const isCreatedByMe = !!currentUserId && activity.createdByUserId === currentUserId; // only creator can edit/delete what they added
                           const userActivity = userActivities.find(ua => ua.activityId === activity.id || (ua.activityName === activity.activityName && ua.cityName === selectedCity));
                           
@@ -2681,7 +2681,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           <div className="flex flex-wrap gap-2">
                             {displayedGroup2.map((activity) => {
                               const isAICreated = activity.createdByUserId === 1;
-                              const isUserCreated = activity.createdByUserId != null && activity.createdByUserId !== 1;
+                              const isUserCreated = (activity as any).source === 'user' && activity.createdByUserId != null;
                               const isCreatedByMe = !!currentUserId && activity.createdByUserId === currentUserId;
                               const isSelected = userActivities.some(ua => 
                                 ua.activityId === activity.id || 

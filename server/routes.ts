@@ -22753,15 +22753,20 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ error: 'Invalid activity ID' });
       }
 
-      // Check if this is a static/system activity (createdByUserId === 1)
+      // Check if this is a system/static/AI activity — only user-created activities can be deleted
       const activity = await db
         .select()
         .from(cityActivities)
         .where(eq(cityActivities.id, activityId))
         .limit(1);
-      
-      if (activity.length > 0 && activity[0].createdByUserId === 1) {
-        return res.status(403).json({ error: 'Cannot delete static city activities' });
+
+      if (activity.length === 0) {
+        return res.status(404).json({ error: 'Activity not found' });
+      }
+
+      const source = (activity[0] as any).source || '';
+      if (source !== 'user') {
+        return res.status(403).json({ error: 'Cannot delete system city activities' });
       }
 
       // Protect activities that any user has selected — they must never disappear
