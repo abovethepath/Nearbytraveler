@@ -14612,7 +14612,7 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(404).json({ message: "Event not found" });
       }
 
-      if (event.organizerId !== uid) {
+      if (event.organizerId !== uid && event.sharedBy !== uid) {
         return res.status(403).json({ message: "Only the event organizer can delete this event" });
       }
       
