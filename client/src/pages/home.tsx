@@ -1078,9 +1078,9 @@ export default function Home() {
       }
     },
     enabled: true,
-    staleTime: 3 * 60 * 1000,  // fresh for 3 minutes
+    staleTime: 60 * 1000,      // fresh for 60 seconds — new users appear within ~2 min
     gcTime: 10 * 60 * 1000,    // keep in cache for 10 minutes
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     placeholderData: keepPreviousData, // show previous results instantly on return visits — no skeleton
   });

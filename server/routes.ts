@@ -4097,6 +4097,12 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     try {
       const limit = Math.min(parseInt(req.query.limit as string || '30'), 50);
       const days = parseInt(req.query.days as string || '14');
+
+      // 60-second server cache
+      const cacheKey = `recently-joined:${limit}:${days}`;
+      const cached = await cache.get<any[]>(cacheKey);
+      if (cached) return res.json(cached);
+
       const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
       const results = await db
         .select({
@@ -4122,6 +4128,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         )
         .orderBy(desc(users.createdAt))
         .limit(limit);
+      cache.set(cacheKey, results, 60).catch(() => {});
       res.json(results);
     } catch (error: any) {
       console.error("Error fetching recently joined users:", error);
