@@ -278,7 +278,14 @@ function PopoverInner({
       {isLoading ? (
         <div className="py-6 text-center text-gray-400 text-sm">Loading…</div>
       ) : users.length === 0 ? (
-        <div className="py-6 text-center text-gray-400 text-sm">Nobody to show right now.</div>
+        <div className="py-6 text-center text-gray-400 text-sm">
+          {type === "travelers" ? "No travelers arriving today." :
+           type === "available-now" ? "No one available right now. Be the first!" :
+           type === "new-members" ? "No new members today." :
+           type === "connections-today" ? "No new connections today." :
+           type === "connection-requests" ? "No pending requests." :
+           "Nothing new right now."}
+        </div>
       ) : (
         <ScrollArea className="max-h-[60vh]">
           <div className="pr-2">

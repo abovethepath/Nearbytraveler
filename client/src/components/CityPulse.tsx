@@ -203,14 +203,13 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
         setLocation("/messages");
       },
     },
-    // 💬 Unread messages → navigate and immediately clear count
+    // 💬 Unread messages → navigate to messages
     {
       emoji: "💬",
       count: Number(unreadMsgData?.unreadCount) || 0,
       label: `unread message${(Number(unreadMsgData?.unreadCount) || 0) === 1 ? "" : "s"} →`,
       onClick: () => {
         setLocation("/messages");
-        // Invalidate so the count re-fetches (and clears) once messages page marks them read
         if (currentUserId) {
           queryClient.invalidateQueries({ queryKey: ['/api/messages', currentUserId, 'unread-count'] });
         }
