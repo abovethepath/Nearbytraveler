@@ -86,6 +86,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
       return res.json();
     },
     enabled: !!user?.id,
+    staleTime: 0,
     refetchInterval: 30000,
   });
 
@@ -100,6 +101,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
       return res.json();
     },
     enabled: !!user?.id,
+    staleTime: 0,
     refetchInterval: 60000,
   });
 
