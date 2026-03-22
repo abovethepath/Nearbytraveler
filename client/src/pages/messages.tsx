@@ -684,8 +684,10 @@ export default function Messages() {
       return apiRequest('POST', `/api/messages/${userId}/mark-read`, { senderId });
     },
     onSuccess: () => {
+      // Only invalidate unread count — do NOT refetch the full messages list here
+      // because it would overwrite the optimistic isRead:true with stale server data
+      // (race: server may not have processed the mark-read yet)
       queryClient.invalidateQueries({ queryKey: ['/api/messages', userId, 'unread-count'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/messages', userId] });
     },
   });
 
