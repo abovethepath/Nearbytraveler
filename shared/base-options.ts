@@ -32,7 +32,7 @@ export const TOP_CHOICES = [
   "Beach Activities",
   "Water Sports",
   "Hiking",
-  "Fitness Classes",
+  "Yoga & Meditation",
   "Working Out",
   "Golf",
   "Pickleball",
