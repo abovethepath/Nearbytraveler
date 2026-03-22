@@ -637,10 +637,10 @@ app.use((req: any, res: any, next: any) => {
   }
 });
 
-// CRITICAL FIX: Increase payload limits to prevent 431 "Request Header Fields Too Large" errors
-app.use(express.json({ limit: "50mb" }));
+// JSON body limit — images are resized client-side to ~300KB; video uses multer with its own 50MB limit
+app.use(express.json({ limit: "10mb" }));
 app.use(
-  express.urlencoded({ extended: true, limit: "50mb", parameterLimit: 100000 }),
+  express.urlencoded({ extended: true, limit: "10mb", parameterLimit: 100000 }),
 );
 
 // Capture client-side crashes so we can debug "Something went wrong" production screens.
