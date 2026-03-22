@@ -28699,7 +28699,7 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       if (!communityBackfillDone) {
         communityBackfillDone = true;
-      const systemUserId = 1; // for community chatrooms created by system
+      const systemUserId = 2; // nearbytrav admin account
       // Ensure default communities exist (idempotent)
       for (const c of DEFAULT_COMMUNITIES) {
         try {
