@@ -652,11 +652,14 @@ export default function Messages() {
         }, 500);
       }
     } else if (!targetUserId && !getInitialMeetupChatId() && !selectedConversation && conversations.length > 0) {
-      // Auto-select the first conversation that has unread messages so the badge click is useful
-      const firstUnread = conversations.find((conv: any) => conv.unreadCount > 0);
-      if (firstUnread) {
-        setSelectedConversation(firstUnread.userId);
-        console.log(`📬 Auto-selected first unread conversation:`, firstUnread.username);
+      // Desktop only: auto-select the first unread conversation for the split-pane layout.
+      // On mobile, always show the conversation list first — let the user tap to enter.
+      const isDesktop = window.innerWidth >= 1024;
+      if (isDesktop) {
+        const firstUnread = conversations.find((conv: any) => conv.unreadCount > 0);
+        if (firstUnread) {
+          setSelectedConversation(firstUnread.userId);
+        }
       }
     }
   }, [targetUserId, conversations]);
