@@ -427,8 +427,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      const el = document.getElementById('travel-plans-section');
-                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      if (openTab) openTab('travel');
+                      setTimeout(() => {
+                        document.getElementById('travel-plans-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }, 200);
                     }}
                     className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 border border-blue-300 text-blue-800 cursor-pointer hover:bg-blue-200 transition-colors mt-0.5"
                   >
