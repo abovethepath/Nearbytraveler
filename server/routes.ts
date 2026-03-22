@@ -26259,6 +26259,18 @@ Questions? Just reply to this message. Welcome aboard!
       //   - the host had multiple sessions and session IDs didn't match
       // Now we directly query which active meetup chatrooms the user is a member of.
       const rightNow = new Date();
+
+      // First: deactivate any chatrooms whose linked Available Now session has ended
+      // This catches sessions that expired naturally without the user cancelling
+      await db.execute(sql`
+        UPDATE meetup_chatrooms SET is_active = false
+        WHERE is_active = true
+          AND available_now_id IS NOT NULL
+          AND available_now_id IN (
+            SELECT id FROM available_now WHERE is_available = false OR expires_at < NOW()
+          )
+      `).catch(() => {});
+
       const chatrooms = await db
         .select({
           id: meetupChatrooms.id,

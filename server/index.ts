@@ -1286,9 +1286,21 @@ app.use((req, res, next) => {
               console.log(`🧹 Deleted ${ids.length} expired quick-meetup chatroom(s) and their messages`);
             }
 
-            // Also mark expired Available Now sessions as inactive
+            // Mark expired Available Now sessions as inactive
             try {
               await db.execute(sql`UPDATE available_now SET is_available = false WHERE is_available = true AND expires_at < NOW()`);
+            } catch { /* ignore */ }
+
+            // Deactivate chatrooms for ended Available Now sessions
+            try {
+              await db.execute(sql`
+                UPDATE meetup_chatrooms SET is_active = false
+                WHERE is_active = true
+                  AND available_now_id IS NOT NULL
+                  AND available_now_id IN (
+                    SELECT id FROM available_now WHERE is_available = false OR expires_at < NOW()
+                  )
+              `);
             } catch { /* ignore */ }
 
             // Find expired quick meetup IDs
