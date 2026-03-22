@@ -105,6 +105,16 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [forwardLoading, setForwardLoading] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const [emojiSuggestion, setEmojiSuggestion] = useState<{ word: string; emoji: string } | null>(null);
+
+  const EMOJI_MAP: Record<string, string> = {
+    shrug: '🤷', kiss: '😘', smile: '😊', doh: '🤦', "d'oh": '🤦',
+    'rolling eyes': '🙄', eyeroll: '🙄', laugh: '😂', lol: '😂',
+    heart: '❤️', 'thumbs up': '👍', thumbsup: '👍', 'thumbs down': '👎',
+    thumbsdown: '👎', wave: '👋', clap: '👏', fire: '🔥', '100': '💯',
+    pray: '🙏', facepalm: '🤦', wink: '😉', cry: '😢', angry: '😠',
+    confused: '😕', naughty: '😈',
+  };
   const [memberSearch, setMemberSearch] = useState("");
   const [muteDialogOpen, setMuteDialogOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<ChatMember | null>(null);
@@ -2167,6 +2177,21 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const handleTyping = (text: string) => {
     setMessageText(text);
 
+    // Emoji auto-suggestion: check if last word matches a trigger
+    if (text.endsWith(' ') || text.endsWith('\n')) {
+      const words = text.trimEnd().toLowerCase().split(/\s+/);
+      const lastWord = words[words.length - 1];
+      const lastTwo = words.length >= 2 ? `${words[words.length - 2]} ${lastWord}` : '';
+      const match = EMOJI_MAP[lastTwo] || EMOJI_MAP[lastWord];
+      if (match) {
+        setEmojiSuggestion({ word: EMOJI_MAP[lastTwo] ? lastTwo : lastWord, emoji: match });
+      } else {
+        setEmojiSuggestion(null);
+      }
+    } else {
+      setEmojiSuggestion(null);
+    }
+
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
 
     wsRef.current.send(JSON.stringify({
@@ -2184,6 +2209,22 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         chatroomId: chatId
       }));
     }, 3000);
+  };
+
+  const acceptEmojiSuggestion = () => {
+    if (!emojiSuggestion) return;
+    const { word, emoji } = emojiSuggestion;
+    setMessageText(prev => {
+      const trimmed = prev.trimEnd();
+      const wordLen = word.length;
+      const idx = trimmed.toLowerCase().lastIndexOf(word);
+      if (idx >= 0) {
+        return trimmed.substring(0, idx) + emoji + ' ';
+      }
+      return prev;
+    });
+    setEmojiSuggestion(null);
+    inputRef.current?.focus();
   };
 
   const handleReaction = (messageId: number, emoji: string) => {
@@ -3677,7 +3718,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               </Button>
             </div>
           )}
-          <div className="flex items-end gap-2">
+          <div className="flex items-end gap-2 relative">
             <input
               ref={photoInputRef}
               type="file"
@@ -3696,6 +3737,18 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             >
               <Camera className="w-4 h-4" />
             </Button>
+            {/* Emoji suggestion popup */}
+            {emojiSuggestion && (
+              <div className="absolute bottom-full left-12 mb-1 z-20">
+                <button
+                  onClick={acceptEmojiSuggestion}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-gray-700 border border-gray-600 rounded-lg shadow-lg text-sm text-white hover:bg-gray-600 transition-colors"
+                >
+                  <span className="text-lg">{emojiSuggestion.emoji}</span>
+                  <span className="text-xs text-gray-300">Replace "{emojiSuggestion.word}"</span>
+                </button>
+              </div>
+            )}
             <Textarea
               ref={inputRef}
               value={messageText}
