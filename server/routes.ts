@@ -1,43 +1,6 @@
 import type { Express, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import multer from "multer";
-import rateLimit from "express-rate-limit";
-
-// Per-endpoint rate limiters for expensive operations
-const aiRateLimit = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10,
-  keyGenerator: (req: any) => req.session?.user?.id?.toString() || req.headers['x-user-id'] as string || req.ip,
-  message: { error: "You've reached the limit for AI features. Try again in about an hour." },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const importRateLimit = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 20,
-  keyGenerator: (req: any) => req.session?.user?.id?.toString() || req.headers['x-user-id'] as string || req.ip,
-  message: { error: "You've reached the limit for event imports. Try again in about an hour." },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const uploadRateLimit = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 30,
-  keyGenerator: (req: any) => req.session?.user?.id?.toString() || req.headers['x-user-id'] as string || req.ip,
-  message: { error: "You've reached the limit for uploads. Try again in about an hour." },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const signupRateLimit = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 5,
-  message: { error: "Too many signup attempts. Try again in about an hour." },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
 
 // Extend session interface to include user property and Sign in with Apple pending data
 declare module 'express-session' {
@@ -6455,7 +6418,7 @@ Questions? Just reply here — I read every message.
   // ---------- REGISTRATION ENDPOINT COMPLETE ----------
 
   // Registration endpoint
-  app.post("/api/register", signupRateLimit, handleRegistration);
+  app.post("/api/register", handleRegistration);
 
   // WAITLIST ENDPOINT - for collecting launch leads - BULLETPROOF VERSION
   app.post("/api/waitlist", async (req, res) => {
@@ -8321,7 +8284,7 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Video Intro - server-side upload (avoids CORS; client POSTs file here, server uploads to storage)
-  app.post("/api/users/:id/video-intro/upload", uploadRateLimit, videoIntroUpload.single("video"), async (req, res) => {
+  app.post("/api/users/:id/video-intro/upload", videoIntroUpload.single("video"), async (req, res) => {
     try {
       const userId = parseInt(req.params.id || "0");
       if (!userId) return res.status(400).json({ message: "Invalid user ID" });
@@ -8528,7 +8491,7 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // CRITICAL: Cover photo upload endpoint (POST)
-  app.post("/api/users/:id/cover-photo", uploadRateLimit, async (req, res) => {
+  app.post("/api/users/:id/cover-photo", async (req, res) => {
     try {
       const userId = parseInt(req.params.id || '0');
       const { imageData } = req.body;
@@ -14760,7 +14723,7 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Import event from external URL (Couchsurfing, Meetup, etc.)
-  app.post("/api/events/import-url", importRateLimit, async (req, res) => {
+  app.post("/api/events/import-url", async (req, res) => {
     try {
       const { url } = req.body;
       
@@ -19217,7 +19180,7 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // POST new customer photo for a business
-  app.post("/api/businesses/:businessId/customer-photos", uploadRateLimit, async (req, res) => {
+  app.post("/api/businesses/:businessId/customer-photos", async (req, res) => {
     try {
       const businessId = parseInt(req.params.businessId);
       const { photoUrl, caption, uploaderName, uploaderType } = req.body;
@@ -19399,7 +19362,7 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // RESTORED: Upload city photo endpoint (legacy base64 support)
-  app.post("/api/city-photos", uploadRateLimit, async (req, res) => {
+  app.post("/api/city-photos", async (req, res) => {
     try {
       const { cityName, imageData, photographerUsername } = req.body;
       const photo = await storage.createCityPhoto({ cityName, imageData, photographerUsername });
@@ -23323,7 +23286,7 @@ Questions? Just reply to this message. Welcome aboard!
   // ---------- AI EVENT DRAFT FROM NATURAL LANGUAGE ----------
   
   // POST extract structured event data from natural language description
-  app.post("/api/ai/event-draft", aiRateLimit, async (req, res) => {
+  app.post("/api/ai/event-draft", async (req, res) => {
     try {
       const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
       if (!userId) {
@@ -23354,7 +23317,7 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // POST extract structured meetup data from natural language description (AI voice input)
-  app.post("/api/ai/meetup-draft", aiRateLimit, async (req, res) => {
+  app.post("/api/ai/meetup-draft", async (req, res) => {
     try {
       const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
       if (!userId) {
@@ -23597,7 +23560,7 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // POST AI Help Chatbot - answers questions about platform features
-  app.post("/api/ai/help-chat", aiRateLimit, async (req, res) => {
+  app.post("/api/ai/help-chat", async (req, res) => {
     try {
       const { message, conversationHistory } = req.body;
       
