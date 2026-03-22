@@ -28064,7 +28064,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Create a live location share ("I'm at [place]")
   app.post("/api/live-shares", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const { placeName, placeAddress, activity, note, city, state, country, latitude, longitude, durationMinutes } = req.body;
@@ -28196,7 +28196,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Delete/deactivate my live share
   app.delete("/api/live-shares", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       await db.update(liveLocationShares)
@@ -28212,7 +28212,7 @@ Questions? Just reply to this message. Welcome aboard!
   // React to a live share ("I'm interested" / "On my way")
   app.post("/api/live-shares/:id/react", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const shareId = parseInt(req.params.id);
@@ -28268,7 +28268,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Create a micro-experience
   app.post("/api/micro-experiences", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const { title, description, category, durationMinutes, meetingPoint, city, state, country,
@@ -28405,7 +28405,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Join a micro-experience
   app.post("/api/micro-experiences/:id/join", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const experienceId = parseInt(req.params.id);
@@ -28458,7 +28458,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Leave a micro-experience
   app.delete("/api/micro-experiences/:id/leave", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const experienceId = parseInt(req.params.id);
@@ -28513,7 +28513,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Create a custom activity template
   app.post("/api/activity-templates", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const { title, description, category, durationMinutes, defaultCost, energyLevel,
@@ -28551,7 +28551,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Create a meetup share card
   app.post("/api/share-cards", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const { meetupType, meetupId, user2Id, placeName, city, country, cardStyle } = req.body;
@@ -28614,7 +28614,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Get share cards for a user
   app.get("/api/share-cards", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.json([]);
 
       const cards = await db.select()
@@ -28817,7 +28817,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Create a user community
   app.post("/api/community-tags", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const { displayName, category, icon, color, description, isPrivate, password } = req.body;
@@ -28946,7 +28946,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Flag a community
   app.post("/api/community-tags/:id/flag", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const tagId = parseInt(req.params.id);
@@ -28970,7 +28970,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Admin: get flagged communities
   app.get("/api/community-tags/flagged", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const [user] = await db.select({ isAdmin: users.isAdmin }).from(users).where(eq(users.id, userId));
@@ -28986,7 +28986,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Admin: resolve flag (deactivate or clear flag)
   app.post("/api/community-tags/:id/resolve-flag", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const [user] = await db.select({ isAdmin: users.isAdmin }).from(users).where(eq(users.id, userId));
@@ -29010,7 +29010,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Delete community (only creator or admin)
   app.delete("/api/community-tags/:id", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const tagId = parseInt(req.params.id);
@@ -29031,7 +29031,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Get my community tags
   app.get("/api/community-tags/mine", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.json([]);
 
       const myTags = await db.select({
@@ -29051,7 +29051,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Join a community tag
   app.post("/api/community-tags/:id/join", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const tagId = parseInt(req.params.id);
@@ -29105,7 +29105,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Leave a community tag
   app.delete("/api/community-tags/:id/leave", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const tagId = parseInt(req.params.id);
@@ -29210,7 +29210,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Create a community post
   app.post("/api/community-tags/:id/posts", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const tagId = parseInt(req.params.id);
@@ -29241,7 +29241,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Delete a community post (author or admin only)
   app.delete("/api/community-tags/:communityId/posts/:postId", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const postId = parseInt(req.params.postId);
@@ -29261,7 +29261,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Toggle like on a community post
   app.post("/api/community-posts/:postId/like", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
       const postId = parseInt(req.params.postId);
 
@@ -29338,7 +29338,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Create a reply on a post
   app.post("/api/community-posts/:postId/replies", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
       const postId = parseInt(req.params.postId);
       const { content } = req.body;
@@ -29371,7 +29371,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Delete a reply (author or admin)
   app.delete("/api/community-posts/replies/:replyId", async (req: any, res) => {
     try {
-      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
       const replyId = parseInt(req.params.replyId);
 
