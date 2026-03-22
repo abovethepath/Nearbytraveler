@@ -14597,21 +14597,22 @@ Questions? Just reply to this message. Welcome aboard!
   app.delete("/api/events/:id", async (req, res) => {
     try {
       const eventId = parseInt(req.params.id);
-      const userId = req.user?.claims?.sub;
-      
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
-      
-      if (process.env.NODE_ENV === 'development') console.log(`🗑️ EVENT DELETE: User ${userId} attempting to delete event ${eventId}`);
-      
+
+      const uid = Number(userId);
+      if (process.env.NODE_ENV === 'development') console.log(`🗑️ EVENT DELETE: User ${uid} attempting to delete event ${eventId}`);
+
       // Get event to check if user is organizer
       const event = await storage.getEvent(eventId);
       if (!event) {
         return res.status(404).json({ message: "Event not found" });
       }
-      
-      if (event.organizerId !== userId) {
+
+      if (event.organizerId !== uid) {
         return res.status(403).json({ message: "Only the event organizer can delete this event" });
       }
       
