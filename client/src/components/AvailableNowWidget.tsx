@@ -79,6 +79,19 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const [, setLocation] = useLocation();
   const [showPicker, setShowPicker] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
+  const [dismissedChats, setDismissedChats] = useState<Set<number>>(() => {
+    try {
+      const stored = localStorage.getItem('nt_dismissed_meetup_chats');
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch { return new Set(); }
+  });
+  const dismissChat = (chatId: number) => {
+    setDismissedChats(prev => {
+      const next = new Set(prev).add(chatId);
+      localStorage.setItem('nt_dismissed_meetup_chats', JSON.stringify([...next]));
+      return next;
+    });
+  };
   const [liveExpanded, setLiveExpanded] = useState(false);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [customNote, setCustomNote] = useState("");
@@ -392,14 +405,27 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     const chats: any[] = [];
     const seenIds = new Set<number>();
     const now = new Date();
-    if (hostGroupChat && (!hostGroupChat.expiresAt || new Date(hostGroupChat.expiresAt) > now) && hostGroupChat.isActive !== false && !isCurrentUserMutedInChat(hostGroupChat) && (!hostGroupChat.lifecycleState || hostGroupChat.lifecycleState === 'active')) {
+    const isValidChat = (c: any) => {
+      if (!c || seenIds.has(c.id)) return false;
+      if (c.isActive === false) return false;
+      if (dismissedChats.has(c.id)) return false;
+      if (!isCurrentUserMutedInChat(c) === false) return false;
+      if (c.lifecycleState && c.lifecycleState !== 'active') return false;
+      // Check chatroom expiry
+      if (c.expiresAt && new Date(c.expiresAt) <= now) return false;
+      // Check linked session expiry (createdAt + 12h as fallback)
+      if (c.createdAt) {
+        const chatAge = now.getTime() - new Date(c.createdAt).getTime();
+        if (chatAge > 24 * 60 * 60 * 1000) return false; // 24h hard cutoff
+      }
+      return true;
+    };
+    if (hostGroupChat && isValidChat(hostGroupChat)) {
       chats.push(hostGroupChat);
       seenIds.add(hostGroupChat.id);
     }
     for (const c of myAcceptedGroupChats) {
-      const notExpired = !c.expiresAt || new Date(c.expiresAt) > now;
-      const isActiveLifecycle = !c.lifecycleState || c.lifecycleState === 'active';
-      if (!seenIds.has(c.id) && c.isActive !== false && !isCurrentUserMutedInChat(c) && notExpired && isActiveLifecycle) {
+      if (isValidChat(c)) {
         chats.push(c);
         seenIds.add(c.id);
       }
@@ -755,6 +781,9 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                   >
                     Open
                   </button>
+                  <button type="button" onClick={(e) => { e.stopPropagation(); dismissChat(chat.id); }} className="text-gray-400 hover:text-gray-200 p-0.5 rounded-full hover:bg-gray-700/50 flex-shrink-0" aria-label="Dismiss">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
                 </div>
                 <MemberAvatarStack members={chat.members || []} />
               </div>
@@ -824,19 +853,22 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 key={chat.id}
                 className="px-3 py-2.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl transition-all"
               >
-                <button
-                  type="button"
-                  onClick={() => setLocation(`/meetup-chatroom-chat/${chat.id}?title=${encodeURIComponent(chat.chatroomName || 'Meetup Chat')}`)}
-                  className="w-full flex items-center justify-between gap-2 text-sm font-semibold text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-100 transition-colors"
-                >
-                  <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setLocation(`/meetup-chatroom-chat/${chat.id}?title=${encodeURIComponent(chat.chatroomName || 'Meetup Chat')}`)}
+                    className="flex-1 flex items-center gap-2 text-sm font-semibold text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-100 transition-colors text-left min-w-0"
+                  >
                     <MessageCircle className="w-4 h-4 flex-shrink-0" />
-                    <span>{chat.chatroomName}</span>
-                  </div>
-                  <Badge className="bg-blue-500 text-white text-[10px] flex-shrink-0">
+                    <span className="truncate">{chat.chatroomName}</span>
+                  </button>
+                  <Badge className="bg-blue-500 text-white text-[10px] flex-shrink-0 cursor-pointer" onClick={() => setLocation(`/meetup-chatroom-chat/${chat.id}?title=${encodeURIComponent(chat.chatroomName || 'Meetup Chat')}`)}>
                     Go to Chat
                   </Badge>
-                </button>
+                  <button type="button" onClick={(e) => { e.stopPropagation(); dismissChat(chat.id); }} className="text-gray-400 hover:text-red-400 p-0.5 rounded-full hover:bg-gray-700/50 flex-shrink-0" aria-label="Dismiss">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
                 {chat.members?.length > 0 && (
                   <MemberAvatarStack members={chat.members} />
                 )}
