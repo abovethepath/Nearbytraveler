@@ -58,6 +58,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
       return res.json();
     },
     enabled: !!user?.id,
+    staleTime: 0, // Always refetch on invalidation so badges update instantly
     refetchInterval: 30000,
   });
 

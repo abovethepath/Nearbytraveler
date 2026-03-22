@@ -684,10 +684,14 @@ export default function Messages() {
       return apiRequest('POST', `/api/messages/${userId}/mark-read`, { senderId });
     },
     onSuccess: () => {
-      // Only invalidate unread count — do NOT refetch the full messages list here
-      // because it would overwrite the optimistic isRead:true with stale server data
-      // (race: server may not have processed the mark-read yet)
+      // Force-refetch all badge sources so all 3 badge locations update instantly
       queryClient.invalidateQueries({ queryKey: ['/api/messages', userId, 'unread-count'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/notifications', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/connections', userId, 'requests'] });
+      // Delayed refetch of messages list — gives server time to process mark-read
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['/api/messages', userId] });
+      }, 1500);
     },
   });
 
