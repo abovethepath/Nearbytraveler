@@ -763,7 +763,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             ))}
           </div>
         ) : (
-          <div className="mb-4 rounded-xl bg-white border border-gray-200 p-3 dark:bg-gray-900/40 dark:border-gray-800">
+          <div className="rounded-xl bg-white border border-gray-200 p-3 dark:bg-gray-900/40 dark:border-gray-800">
             {!showPicker ? (
               <>
                 <button
@@ -789,6 +789,16 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               </>
             ) : (
               <div className="space-y-2">
+                <div className="flex justify-end -mt-1 -mr-1 mb-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowPicker(false)}
+                    className="text-gray-400 hover:text-gray-200 p-1 rounded-md hover:bg-gray-700/50 transition-colors"
+                    aria-label="Back"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
                 <button
                   type="button"
                   onClick={() => { setShowPicker(false); setShowSetup(true); }}
