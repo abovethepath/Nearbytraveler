@@ -5,6 +5,7 @@ import { AuthContext } from "@/App";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { Zap, UserPlus, ArrowLeft, MapPin, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AvailableNowWidget } from "@/components/AvailableNowWidget";
 
 function timeAgo(dateStr: string): string {
   const ms = Date.now() - new Date(dateStr).getTime();
@@ -88,6 +89,9 @@ export default function AvailableNowPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
+        {/* Activation widget — set yourself as Available Now */}
+        <AvailableNowWidget currentUser={user} />
+
         {isLoading ? (
           <div className="text-center py-16">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto mb-3" />

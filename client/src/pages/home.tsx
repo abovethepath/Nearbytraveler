@@ -2127,20 +2127,6 @@ export default function Home() {
                   </h2>
                 </div>
                 
-                {/* Quick Meetup Widget - "Let's Meet Now" - HIDE when user has active Available Now session or is a business */}
-                {loadedSections.has('quickMeets') && effectiveUser?.userType !== 'business' && !myAvailableStatus?.isAvailable && (
-                  <div className="mb-8">
-                    <QuickMeetupWidget
-                      currentUser={effectiveUser}
-                      compactOnly
-                      city={
-                        effectiveUser?.isCurrentlyTraveling
-                          ? ((effectiveUser as any)?.destinationCity || (effectiveUser as any)?.travelDestination?.split(',')[0]?.trim() || effectiveUser?.hometownCity || '')
-                          : (effectiveUser?.hometownCity || '')
-                      }
-                    />
-                  </div>
-                )}
                 
                 {/* User-Created Events */}
                 <div className="mb-8">
