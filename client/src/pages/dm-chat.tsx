@@ -53,6 +53,21 @@ export default function DMChat() {
   const contextUser = authContext?.user;
   const authLoading = authContext?.authLoading;
   const [resolvedUser, setResolvedUser] = useState<any>(contextUser ?? {});
+
+  // Replace history entry so browser back gesture goes to /messages, not a broken DM URL
+  useEffect(() => {
+    window.history.replaceState(null, '', location);
+    // Push /messages as the "back" destination so swipe-back lands there
+    if (window.history.length <= 1) {
+      window.history.pushState(null, '', '/messages');
+      window.history.pushState(null, '', location);
+    }
+    const handlePopState = () => {
+      setLocation('/messages');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const [showThingsModal, setShowThingsModal] = useState(false);
   const [showContactsModal, setShowContactsModal] = useState(false);
   const [showGroupDialog, setShowGroupDialog] = useState(false);
