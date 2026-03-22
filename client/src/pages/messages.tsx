@@ -1295,6 +1295,19 @@ export default function Messages() {
                           </p>
                         )}
                       </div>
+                      {/* Message button — desktop only */}
+                      <button
+                        className="hidden lg:flex shrink-0 w-7 h-7 items-center justify-center rounded-full hover:bg-blue-500/20 text-gray-400 hover:text-blue-400 transition-colors"
+                        title="Open DM"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedMeetupChat(null);
+                          setSelectedConversation(conv.userId);
+                          navigate(`/messages/${conv.userId}`);
+                        }}
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                      </button>
                       {conv.unreadCount > 0 && selectedConversation !== conv.userId ? (
                         <div className="shrink-0 flex items-center gap-2">
                           <div className="bg-orange-500 text-white text-xs font-bold rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1.5">
