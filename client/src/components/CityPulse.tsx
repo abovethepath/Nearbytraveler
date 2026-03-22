@@ -67,13 +67,13 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
     queryKey: currentUserId ? ['/api/messages', currentUserId, 'unread-count'] : [],
     queryFn: async () => {
       const base = getApiBaseUrl();
-      const res = await fetch(`${base}/api/messages/${currentUserId}/unread-count`, { credentials: 'include' });
+      const res = await fetch(`${base}/api/messages/${currentUserId}/unread-count?_t=${Date.now()}`, { credentials: 'include' });
       if (!res.ok) return { unreadCount: 0 };
       return res.json();
     },
     enabled: !!currentUserId,
     refetchInterval: 30_000,
-    staleTime: 20_000,
+    staleTime: 0,
   });
 
   const unreadNotifs = Array.isArray(notifications)

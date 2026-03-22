@@ -367,6 +367,8 @@ export default function Messages() {
 
     // Initial connection check when component mounts
     websocketService.ensureConnected().catch(console.error);
+    // Clear unread badge on home page pill when entering messages
+    queryClient.invalidateQueries({ queryKey: ['/api/messages', userId, 'unread-count'] });
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
