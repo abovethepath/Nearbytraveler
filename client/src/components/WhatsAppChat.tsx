@@ -3758,10 +3758,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               className="flex-1 min-h-[36px] max-h-[100px] bg-gray-700 border-gray-600 text-white resize-none rounded-full px-3 py-2 text-sm"
               rows={1}
               disabled={chatType !== 'dm' && !messagesLoaded && !isWsConnected}
-              autoComplete="off"
               autoCorrect="on"
               autoCapitalize="sentences"
-              spellCheck="true"
+              spellCheck={true}
             />
             <Button 
               onClick={sendMessage} 
