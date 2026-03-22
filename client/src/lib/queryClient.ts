@@ -282,9 +282,9 @@ export const queryClient = new QueryClient({
       staleTime: 5 * 60 * 1000,
       gcTime: 30 * 60 * 1000,
       retry: (failureCount, error: any) => {
-        const status = error?.status || error?.response?.status;
-        // Don't retry on auth or client errors (except 429 rate limit)
-        if (status && status >= 400 && status < 500 && status !== 429) return false;
+        // Don't retry on client errors (4xx) except 429 (rate limit)
+        const msg = error?.message || '';
+        if (/^4\d\d/.test(msg) && !msg.startsWith('429')) return false;
         return failureCount < 2;
       },
     },
