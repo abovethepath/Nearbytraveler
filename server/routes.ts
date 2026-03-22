@@ -26238,42 +26238,9 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json({ chatroom: null });
       }
 
-      // User is NOT currently live — allow them to still see the chatroom from
-      // their most recent session for up to 24 h (so the chat isn't lost immediately
-      // after their session expires).  We still require isActive so deactivated
-      // (old-session) chatrooms are excluded.
-      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-      const recentSessions = await db.select({ id: availableNow.id })
-        .from(availableNow)
-        .where(and(
-          eq(availableNow.userId, Number(userId)),
-          gte(availableNow.expiresAt, twentyFourHoursAgo)
-        ))
-        .orderBy(desc(availableNow.createdAt))
-        .limit(5);
-
-      if (recentSessions.length === 0) {
-        return res.json({ chatroom: null });
-      }
-
-      const sessionIds = recentSessions.map(s => s.id);
-      // Also verify user still has active membership in the chatroom
-      const [chatroom] = await db.select({ id: meetupChatrooms.id, availableNowId: meetupChatrooms.availableNowId, chatroomName: meetupChatrooms.chatroomName, description: meetupChatrooms.description, city: meetupChatrooms.city, state: meetupChatrooms.state, country: meetupChatrooms.country, activityType: meetupChatrooms.activityType, isActive: meetupChatrooms.isActive, expiresAt: meetupChatrooms.expiresAt, participantCount: meetupChatrooms.participantCount, createdAt: meetupChatrooms.createdAt })
-        .from(meetupChatrooms)
-        .innerJoin(chatroomMembers, and(eq(chatroomMembers.chatroomId, meetupChatrooms.id), eq(chatroomMembers.userId, Number(userId)), eq(chatroomMembers.isActive, true)))
-        .where(and(
-          inArray(meetupChatrooms.availableNowId, sessionIds),
-          eq(meetupChatrooms.isActive, true)
-        ))
-        .orderBy(desc(meetupChatrooms.createdAt))
-        .limit(1);
-
-      if (!chatroom) return res.json({ chatroom: null });
-      const members = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage, isMuted: chatroomMembers.isMuted })
-        .from(chatroomMembers)
-        .innerJoin(users, eq(users.id, chatroomMembers.userId))
-        .where(and(eq(chatroomMembers.chatroomId, chatroom.id), eq(chatroomMembers.isActive, true)));
-      res.json({ chatroom: { ...chatroom, members } });
+      // User is NOT currently live — no chatroom to show on home page.
+      // Expired chats are accessible from the messages page only.
+      return res.json({ chatroom: null });
     } catch (error: any) {
       console.error("Error fetching group chat:", error);
       res.status(500).json({ error: "Failed to fetch group chat" });
