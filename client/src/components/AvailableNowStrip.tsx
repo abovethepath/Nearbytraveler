@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { getApiBaseUrl } from "@/lib/queryClient";
-import { Zap, UserPlus, ChevronLeft, ChevronRight, ChevronRight as ArrowRight, Check, Loader2 } from "lucide-react";
+import { Zap, UserPlus, MessageCircle, ChevronLeft, ChevronRight, ChevronRight as ArrowRight, Check, Loader2 } from "lucide-react";
 
 function timeAgo(dateStr: string): string {
   const ms = Date.now() - new Date(dateStr).getTime();
@@ -50,6 +50,22 @@ export default function AvailableNowStrip({ currentUserId, userCity }: Available
     } catch { /* silent */ }
     setSendingTo(null);
   };
+
+  // Fetch user's existing meetup chatrooms to detect already-joined hangouts
+  const { data: myGroupChats } = useQuery<{ chatrooms: any[] }>({
+    queryKey: ["/api/available-now/my-group-chats"],
+    enabled: !!currentUserId,
+    staleTime: 15000,
+  });
+
+  // Map availableNowId → chatroomId for quick lookup
+  const joinedChatroomMap = React.useMemo(() => {
+    const map = new Map<number, number>();
+    for (const chat of myGroupChats?.chatrooms || []) {
+      if (chat.availableNowId) map.set(chat.availableNowId, chat.id);
+    }
+    return map;
+  }, [myGroupChats]);
 
   const { data: availableUsers = [] } = useQuery<any[]>({
     queryKey: ["/api/available-now", userCity || ""],
@@ -152,9 +168,21 @@ export default function AvailableNowStrip({ currentUserId, userCity }: Available
                   </p>
                 </div>
 
-                {/* Join */}
+                {/* Join / Go to Chat */}
                 <div className="px-2.5 pb-2.5">
-                  {sentRequests.has(user.id) ? (
+                  {joinedChatroomMap.has(entry.id) ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const chatroomId = joinedChatroomMap.get(entry.id);
+                        setLocation(`/meetup-chatroom-chat/${chatroomId}?title=${encodeURIComponent(entry.chatroomName || 'Meetup Chat')}`);
+                      }}
+                      className="flex items-center gap-1 w-full justify-center px-2 py-1.5 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-[11px] font-semibold transition-colors"
+                    >
+                      <MessageCircle className="w-3 h-3" />
+                      Go to Chat
+                    </button>
+                  ) : sentRequests.has(user.id) ? (
                     <div className="flex items-center gap-1 w-full justify-center px-2 py-1.5 rounded-full bg-gray-600 text-white text-[11px] font-semibold">
                       <Check className="w-3 h-3" />
                       Requested

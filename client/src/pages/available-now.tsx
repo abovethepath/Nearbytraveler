@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "@/App";
 import { getApiBaseUrl } from "@/lib/queryClient";
-import { Zap, UserPlus, ArrowLeft, MapPin, Check, Loader2 } from "lucide-react";
+import { Zap, UserPlus, MessageCircle, ArrowLeft, MapPin, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AvailableNowWidget } from "@/components/AvailableNowWidget";
 
@@ -46,6 +46,19 @@ export default function AvailableNowPage() {
   const filtered = availableUsers.filter((e) => e.user?.id !== user?.id && e.isAvailable);
   const [sentRequests, setSentRequests] = useState<Set<number>>(new Set());
   const [sendingTo, setSendingTo] = useState<number | null>(null);
+
+  const { data: myGroupChats } = useQuery<{ chatrooms: any[] }>({
+    queryKey: ["/api/available-now/my-group-chats"],
+    enabled: !!user?.id,
+    staleTime: 15000,
+  });
+  const joinedChatroomMap = React.useMemo(() => {
+    const map = new Map<number, number>();
+    for (const chat of myGroupChats?.chatrooms || []) {
+      if (chat.availableNowId) map.set(chat.availableNowId, chat.id);
+    }
+    return map;
+  }, [myGroupChats]);
 
   const sendJoinRequest = async (toUserId: number) => {
     if (!user?.id || sentRequests.has(toUserId) || sendingTo) return;
@@ -180,8 +193,19 @@ export default function AvailableNowPage() {
                     @{username}
                   </p>
 
-                  {/* Join button */}
-                  {sentRequests.has(u.id) ? (
+                  {/* Join / Go to Chat button */}
+                  {joinedChatroomMap.has(entry.id) ? (
+                    <Button
+                      onClick={() => {
+                        const chatroomId = joinedChatroomMap.get(entry.id);
+                        setLocation(`/meetup-chatroom-chat/${chatroomId}?title=${encodeURIComponent(entry.chatroomName || 'Meetup Chat')}`);
+                      }}
+                      className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold"
+                    >
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Go to Chat
+                    </Button>
+                  ) : sentRequests.has(u.id) ? (
                     <Button disabled className="w-full bg-gray-600 text-white font-semibold">
                       <Check className="w-4 h-4 mr-2" />
                       Request Sent
