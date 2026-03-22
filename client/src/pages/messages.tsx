@@ -740,11 +740,19 @@ export default function Messages() {
     setReplyingTo(null);
   };
 
-  // Mark messages as read when conversation is selected
+  // Mark messages as read when conversation is selected — optimistic local update
   useEffect(() => {
     if (selectedConversation && userId) {
-      console.log('📬 MARKING MESSAGES AS READ for conversation:', selectedConversation);
-      // Always mark as read when opening a conversation (even if already read)
+      // Optimistically mark messages as read locally so the orange dot disappears instantly
+      queryClient.setQueryData(['/api/messages', userId], (old: any) => {
+        if (!Array.isArray(old)) return old;
+        return old.map((m: any) =>
+          Number(m.senderId) === selectedConversation && Number(m.receiverId) === userId && !m.isRead
+            ? { ...m, isRead: true }
+            : m
+        );
+      });
+      // Then confirm with server
       markAsReadMutation.mutate(selectedConversation);
     }
   }, [selectedConversation, userId]);
