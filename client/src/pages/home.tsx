@@ -412,8 +412,13 @@ export default function Home() {
     const ids = new Set(
       (Array.isArray(availableNowIds) ? availableNowIds : []).map((id) => Number(id))
     );
-    if (myAvailableStatus?.isAvailable && effectiveUser?.id) {
-      ids.add(Number(effectiveUser.id));
+    if (effectiveUser?.id) {
+      if (myAvailableStatus?.isAvailable) {
+        ids.add(Number(effectiveUser.id));
+      } else {
+        // Remove own ID immediately when turned off, even if active-ids hasn't refetched yet
+        ids.delete(Number(effectiveUser.id));
+      }
     }
     return ids;
   }, [availableNowIds, myAvailableStatus?.isAvailable, effectiveUser?.id]);
