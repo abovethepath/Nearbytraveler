@@ -3977,11 +3977,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         const existingUserIds = new Set(users.map((u: any) => u.id));
         const newTravelerIds = activePlanRows.map(r => r.userId).filter(id => !existingUserIds.has(id));
         if (newTravelerIds.length > 0) {
-          for (const uid of newTravelerIds) {
-            const travelerUser = await storage.getUser(uid);
-            if (travelerUser) users.push(travelerUser);
-          }
-          if (process.env.NODE_ENV === 'development') console.log(`✈️ TRAVELERS: Added ${newTravelerIds.length} active travelers to ${searchCity} results`);
+          const travelerUsers = await db.select().from(users).where(inArray(users.id, newTravelerIds));
+          users.push(...travelerUsers);
+          if (process.env.NODE_ENV === 'development') console.log(`✈️ TRAVELERS: Added ${travelerUsers.length} active travelers to ${searchCity} results`);
         }
       } catch (travelErr) {
         if (process.env.NODE_ENV === 'development') console.error('Error fetching active travelers for search-by-location:', travelErr);
@@ -21028,46 +21026,47 @@ Questions? Just reply to this message. Welcome aboard!
             limit: 50,
           });
           
-          messagesData = await Promise.all(dmMessages.map(async (msg) => {
-            const sender = await db.query.users.findFirst({
-              where: eq(users.id, msg.senderId),
-              columns: {
-                id: true,
-                username: true,
-                name: true,
-                profileImage: true,
-                ambassadorStatus: true,
-              }
-            });
-            
+          // Batch fetch all unique senders in one query
+          const senderIds = [...new Set(dmMessages.map(m => m.senderId))];
+          const replyIds = dmMessages.map(m => m.replyToId).filter(Boolean) as number[];
+
+          const [senderRows, replyRows] = await Promise.all([
+            senderIds.length > 0
+              ? db.select({ id: users.id, username: users.username, name: users.name, profileImage: users.profileImage, ambassadorStatus: users.ambassadorStatus })
+                  .from(users).where(inArray(users.id, senderIds))
+              : [],
+            replyIds.length > 0
+              ? db.select().from(messages).where(inArray(messages.id, replyIds))
+              : [],
+          ]);
+
+          const senderMap = new Map((senderRows as any[]).map(s => [s.id, s]));
+          const replyMap = new Map((replyRows as any[]).map(r => [r.id, r]));
+
+          // Fetch reply senders if needed
+          const replySenderIds = [...new Set((replyRows as any[]).map(r => r.senderId))].filter(id => !senderMap.has(id));
+          if (replySenderIds.length > 0) {
+            const extraSenders = await db.select({ id: users.id, username: users.username, name: users.name, profileImage: users.profileImage })
+              .from(users).where(inArray(users.id, replySenderIds));
+            for (const s of extraSenders) senderMap.set(s.id, s);
+          }
+
+          messagesData = dmMessages.map(msg => {
+            const sender = senderMap.get(msg.senderId) || null;
             let replyTo = null;
             if (msg.replyToId) {
-              const replyMessage = await db.query.messages.findFirst({
-                where: eq(messages.id, msg.replyToId),
-              });
-              
+              const replyMessage = replyMap.get(msg.replyToId);
               if (replyMessage) {
-                const replySender = await db.query.users.findFirst({
-                  where: eq(users.id, replyMessage.senderId),
-                  columns: {
-                    id: true,
-                    username: true,
-                    name: true,
-                    profileImage: true,
-                  }
-                });
-                
                 replyTo = {
                   id: replyMessage.id,
                   content: replyMessage.content,
                   createdAt: replyMessage.createdAt,
                   senderId: replyMessage.senderId,
                   messageType: replyMessage.messageType ?? 'text',
-                  sender: replySender,
+                  sender: senderMap.get(replyMessage.senderId) || null,
                 };
               }
             }
-            
             return {
               id: msg.id,
               content: msg.content,
@@ -21081,7 +21080,7 @@ Questions? Just reply to this message. Welcome aboard!
               sender,
               replyTo,
             };
-          }));
+          });
           
           console.log(`📨 HTTP MESSAGES: Returning ${messagesData.length} DM messages for conversation ${currentUserId} <-> ${otherUserId}`);
           return res.json({ messages: messagesData });
@@ -21157,30 +21156,25 @@ Questions? Just reply to this message. Welcome aboard!
             limit: 50,
           });
           
-          messagesData = await Promise.all(meetupMessages.map(async (msg) => {
-            const sender = await db.query.users.findFirst({
-              where: eq(users.id, msg.userId),
-              columns: {
-                id: true,
-                username: true,
-                name: true,
-                profileImage: true,
-                ambassadorStatus: true,
-              }
-            });
-            
-            return {
-              id: msg.id,
-              content: msg.message,
-              createdAt: msg.sentAt,
-              senderId: msg.userId,
-              messageType: msg.messageType ?? 'text',
-              replyToId: msg.replyToId,
-              reactions: msg.reactions,
-              isEdited: msg.isEdited,
-              editedAt: msg.editedAt,
-              sender,
-            };
+          // Batch fetch all senders in one query
+          const meetupSenderIds = [...new Set(meetupMessages.map(m => m.userId))];
+          const meetupSenders = meetupSenderIds.length > 0
+            ? await db.select({ id: users.id, username: users.username, name: users.name, profileImage: users.profileImage, ambassadorStatus: users.ambassadorStatus })
+                .from(users).where(inArray(users.id, meetupSenderIds))
+            : [];
+          const meetupSenderMap = new Map(meetupSenders.map(s => [s.id, s]));
+
+          messagesData = meetupMessages.map(msg => ({
+            id: msg.id,
+            content: msg.message,
+            createdAt: msg.sentAt,
+            senderId: msg.userId,
+            messageType: msg.messageType ?? 'text',
+            replyToId: msg.replyToId,
+            reactions: msg.reactions,
+            isEdited: msg.isEdited,
+            editedAt: msg.editedAt,
+            sender: meetupSenderMap.get(msg.userId) || null,
           }));
         }
         
@@ -26306,14 +26300,20 @@ Questions? Just reply to this message. Welcome aboard!
           isNotNull(meetupChatrooms.availableNowId),
         ));
 
-      // Attach members to each chatroom
-      const chatroomsWithMembers = await Promise.all(chatrooms.map(async (chat) => {
-        const memberRows = await db.select({ userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage, isMuted: chatroomMembers.isMuted })
+      // Batch fetch all members for all chatrooms in one query
+      const chatroomIds = chatrooms.map(c => c.id);
+      let allMembers: any[] = [];
+      if (chatroomIds.length > 0) {
+        allMembers = await db.select({ chatroomId: chatroomMembers.chatroomId, userId: chatroomMembers.userId, username: users.username, firstName: users.firstName, profilePhoto: users.profileImage, isMuted: chatroomMembers.isMuted })
           .from(chatroomMembers)
           .innerJoin(users, eq(users.id, chatroomMembers.userId))
-          .where(and(eq(chatroomMembers.chatroomId, chat.id), eq(chatroomMembers.isActive, true)));
-        return { ...chat, members: memberRows };
-      }));
+          .where(and(inArray(chatroomMembers.chatroomId, chatroomIds), eq(chatroomMembers.isActive, true)));
+      }
+      const membersByRoom: Record<number, any[]> = {};
+      for (const m of allMembers) {
+        (membersByRoom[m.chatroomId] ||= []).push(m);
+      }
+      const chatroomsWithMembers = chatrooms.map(chat => ({ ...chat, members: membersByRoom[chat.id] || [] }));
 
       res.json({ chatrooms: chatroomsWithMembers });
     } catch (error: any) {
@@ -26609,20 +26609,24 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      // Count unread messages per chatroom (messages sent after user's lastReadAt, excluding own messages)
+      // Batch count unread messages per chatroom in a single query
       const unreadByRoom: Record<number, number> = {};
       if (chatroomIds.length > 0) {
-        await Promise.all(chatroomIds.map(async (cid) => {
-          const lastRead = lastReadByRoom[cid] ?? new Date(0);
-          const [row] = await db.select({ count: sql<number>`count(*)` })
-            .from(meetupChatroomMessages)
-            .where(and(
-              eq(meetupChatroomMessages.meetupChatroomId, cid),
-              gt(meetupChatroomMessages.sentAt, lastRead),
-              ne(meetupChatroomMessages.userId, uid),
-            ));
-          unreadByRoom[cid] = Number(row?.count ?? 0);
-        }));
+        // Build a single SQL query that counts unread per chatroom
+        const unreadRows = await db.execute(sql`
+          SELECT mcm.meetup_chatroom_id AS cid, COUNT(*)::int AS cnt
+          FROM meetup_chatroom_messages mcm
+          WHERE mcm.meetup_chatroom_id = ANY(${chatroomIds})
+            AND mcm.user_id != ${uid}
+            AND mcm.sent_at > COALESCE(
+              (SELECT last_read_at FROM chatroom_members WHERE chatroom_id = mcm.meetup_chatroom_id AND user_id = ${uid} LIMIT 1),
+              '1970-01-01'::timestamp
+            )
+          GROUP BY mcm.meetup_chatroom_id
+        `);
+        for (const row of (unreadRows as any).rows || []) {
+          unreadByRoom[row.cid] = Number(row.cnt);
+        }
       }
 
       const anSessionCache: Record<number, { expiresAt: Date; isAvailable: boolean } | null> = {};
