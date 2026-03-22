@@ -14619,30 +14619,30 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(403).json({ message: "Only the event organizer can delete this event" });
       }
 
-      // Delete related records first to avoid FK constraint violations
+      // Cascade delete: chatroom messages → chatroom members → chatrooms → then event refs → event
+      // Step 1: Find linked chatrooms and delete their messages + members first
       try {
-        await db.delete(eventParticipants).where(eq(eventParticipants.eventId, eventId));
-      } catch (e) { /* table may not have rows */ }
-      try {
-        await db.execute(sql`DELETE FROM event_rsvps WHERE event_id = ${eventId}`);
-      } catch (e) { /* ignore */ }
-      try {
-        await db.execute(sql`DELETE FROM instagram_posts WHERE event_id = ${eventId}`);
-      } catch (e) { /* ignore */ }
-      try {
-        await db.execute(sql`DELETE FROM meetup_chatrooms WHERE event_id = ${eventId}`);
-      } catch (e) { /* ignore */ }
-      try {
-        await db.execute(sql`DELETE FROM mood_entries WHERE event_id = ${eventId}`);
-      } catch (e) { /* ignore */ }
-      try {
-        await db.execute(sql`DELETE FROM passport_stamps WHERE event_id = ${eventId}`);
-      } catch (e) { /* ignore */ }
-      try {
-        await db.execute(sql`DELETE FROM user_event_interests WHERE event_id = ${eventId}`);
-      } catch (e) { /* ignore */ }
+        const linkedChatrooms = await db.execute(sql`SELECT id FROM meetup_chatrooms WHERE event_id = ${eventId}`);
+        const chatroomIds = (linkedChatrooms as any).rows?.map((r: any) => r.id) || [];
+        for (const cid of chatroomIds) {
+          await db.execute(sql`DELETE FROM meetup_chatroom_messages WHERE meetup_chatroom_id = ${cid}`).catch(() => {});
+          await db.execute(sql`DELETE FROM chatroom_members WHERE chatroom_id = ${cid}`).catch(() => {});
+        }
+        if (chatroomIds.length > 0) {
+          await db.execute(sql`DELETE FROM meetup_chatrooms WHERE event_id = ${eventId}`);
+        }
+      } catch (e) { console.log('EVENT DELETE: chatroom cleanup note:', (e as any).message?.slice(0, 80)); }
 
-      // Now delete the event itself
+      // Step 2: Delete all other FK-referencing records
+      await db.delete(eventParticipants).where(eq(eventParticipants.eventId, eventId)).catch(() => {});
+      await db.execute(sql`DELETE FROM event_rsvps WHERE event_id = ${eventId}`).catch(() => {});
+      await db.execute(sql`DELETE FROM instagram_posts WHERE event_id = ${eventId}`).catch(() => {});
+      await db.execute(sql`DELETE FROM mood_entries WHERE event_id = ${eventId}`).catch(() => {});
+      await db.execute(sql`DELETE FROM passport_stamps WHERE event_id = ${eventId}`).catch(() => {});
+      await db.execute(sql`DELETE FROM user_event_interests WHERE event_id = ${eventId}`).catch(() => {});
+      await db.execute(sql`DELETE FROM notifications WHERE data::text LIKE ${'%"eventId":' + eventId + '%'}`).catch(() => {});
+
+      // Step 3: Delete the event itself
       await db.delete(events).where(eq(events.id, eventId));
       console.log(`✅ EVENT DELETE: Event ${eventId} deleted by user ${uid}`);
       return res.json({ success: true, message: "Event successfully deleted" });

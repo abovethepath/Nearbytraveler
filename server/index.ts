@@ -1265,8 +1265,8 @@ app.use((req, res, next) => {
         const runExpiredChatCleanup = async () => {
           try {
             const { db } = await import("./db");
-            const { meetupChatrooms, meetupChatroomMessages, quickMeetups, quickMeetupParticipants } = await import("../shared/schema");
-            const { lt, inArray, isNull, and } = await import("drizzle-orm");
+            const { meetupChatrooms, meetupChatroomMessages, chatroomMembers, quickMeetups, quickMeetupParticipants } = await import("../shared/schema");
+            const { lt, inArray, isNull, and, sql } = await import("drizzle-orm");
             const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
             // Only delete quick-meetup chatrooms — EXCLUDE any row with an eventId
@@ -1279,10 +1279,17 @@ app.use((req, res, next) => {
               ));
             if (expiredChatrooms.length > 0) {
               const ids = expiredChatrooms.map((r: { id: number }) => r.id);
-              await db.delete(meetupChatroomMessages).where(inArray(meetupChatroomMessages.meetupChatroomId, ids));
+              // Cascade: messages → members → chatrooms
+              await db.delete(meetupChatroomMessages).where(inArray(meetupChatroomMessages.meetupChatroomId, ids)).catch(() => {});
+              await db.delete(chatroomMembers).where(inArray(chatroomMembers.chatroomId, ids)).catch(() => {});
               await db.delete(meetupChatrooms).where(inArray(meetupChatrooms.id, ids));
               console.log(`🧹 Deleted ${ids.length} expired quick-meetup chatroom(s) and their messages`);
             }
+
+            // Also mark expired Available Now sessions as inactive
+            try {
+              await db.execute(sql`UPDATE available_now SET is_available = false WHERE is_available = true AND expires_at < NOW()`);
+            } catch { /* ignore */ }
 
             // Find expired quick meetup IDs
             const expiredMeetups = await db
