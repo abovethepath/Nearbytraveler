@@ -14644,6 +14644,10 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Step 3: Delete the event itself
       await db.delete(events).where(eq(events.id, eventId));
+
+      // Step 4: Clear all event caches so the deleted event disappears immediately
+      cache.deletePattern('events:*').catch(() => {});
+
       console.log(`✅ EVENT DELETE: Event ${eventId} deleted by user ${uid}`);
       return res.json({ success: true, message: "Event successfully deleted" });
     } catch (error: any) {

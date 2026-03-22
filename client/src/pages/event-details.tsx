@@ -352,6 +352,10 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate all event queries so deleted event disappears from lists immediately
+      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}/participants`] });
       toast({ title: "Event Deleted", description: "Your event has been deleted." });
       setLocation('/events');
     },
