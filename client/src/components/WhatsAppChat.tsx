@@ -1746,11 +1746,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     const prev = prevMessageCountRef.current;
     const next = messages.length;
     prevMessageCountRef.current = next;
-    if (prev === 0) {
-      // Initial load: two-pass scroll to ensure mobile layout has settled
-      scrollToBottom("auto", 50);
-      scrollToBottom("auto", 300);
-    } else {
+    if (prev === 0 && next > 0) {
+      // Initial load: triple-pass scroll with instant behavior to guarantee bottom position
+      scrollToBottom("instant" as ScrollBehavior, 50);
+      scrollToBottom("instant" as ScrollBehavior, 200);
+      scrollToBottom("instant" as ScrollBehavior, 500);
+    } else if (next > prev) {
       // New message arrived: smooth scroll
       scrollToBottom("smooth", 100);
     }
