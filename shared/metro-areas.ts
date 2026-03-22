@@ -11,16 +11,40 @@
 
 export const METRO_AREAS = {
   "Los Angeles Metro": [
-    'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo',
-    'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 'Burbank',
-    'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 'Compton', 'Downey',
-    'Pomona', 'Playa del Rey', 'Redondo Beach', 'Culver City', 'Marina del Rey',
-    'Hermosa Beach', 'Hawthorne', 'Gardena', 'Carson', 'Lakewood', 'Norwalk',
-    'Whittier', 'Montebello', 'East Los Angeles', 'Monterey Park', 'Alhambra',
-    'South Pasadena', 'San Fernando', 'North Hollywood', 'Hollywood', 'Studio City',
-    'Sherman Oaks', 'Encino', 'Reseda', 'Van Nuys', 'Northridge', 'Malibu',
-    'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City', 'West LA',
-    'LAX', 'El Monte', 'Arcadia', 'Monrovia', 'Covina', 'West Covina'
+    // Core LA
+    'Los Angeles', 'Hollywood', 'North Hollywood', 'West Hollywood', 'East Los Angeles',
+    'Downtown LA', 'Koreatown', 'Mid-City', 'Miracle Mile', 'Crenshaw',
+    'Leimert Park', 'Baldwin Hills', 'Ladera Heights', 'View Park', 'Watts',
+    'South LA', 'Boyle Heights', 'Silver Lake', 'Echo Park', 'Los Feliz',
+    'Atwater Village', 'Eagle Rock', 'Highland Park', 'Century City', 'West LA',
+    'Westwood', 'Brentwood', 'Pacific Palisades', 'LAX',
+    // San Fernando Valley
+    'Burbank', 'Glendale', 'San Fernando', 'Studio City', 'Sherman Oaks',
+    'Encino', 'Reseda', 'Van Nuys', 'Northridge', 'Tarzana', 'Woodland Hills',
+    'Canoga Park', 'Chatsworth', 'Granada Hills', 'Panorama City', 'Sun Valley',
+    'Pacoima', 'Sylmar', 'Mission Hills',
+    // Westside & Beach Cities
+    'Santa Monica', 'Venice', 'Venice Beach', 'Malibu', 'Playa del Rey',
+    'Marina del Rey', 'Culver City', 'El Segundo', 'Manhattan Beach',
+    'Hermosa Beach', 'Redondo Beach',
+    // South Bay
+    'Torrance', 'Hawthorne', 'Gardena', 'Carson', 'Lomita', 'Lawndale',
+    'Palos Verdes Estates', 'Rancho Palos Verdes', 'Rolling Hills',
+    // Gateway Cities
+    'Long Beach', 'Signal Hill', 'Lakewood', 'Cerritos', 'Bellflower',
+    'Norwalk', 'Downey', 'Paramount', 'Compton', 'Lynwood', 'South Gate',
+    'Bell', 'Bell Gardens', 'Maywood', 'Huntington Park', 'Commerce',
+    'Montebello', 'Pico Rivera', 'Santa Fe Springs', 'La Mirada',
+    // San Gabriel Valley
+    'Pasadena', 'South Pasadena', 'Alhambra', 'Monterey Park', 'Arcadia',
+    'Monrovia', 'El Monte', 'South El Monte', 'Rosemead', 'Temple City',
+    'San Gabriel', 'San Marino', 'Sierra Madre', 'Duarte', 'Azusa',
+    'Glendora', 'Covina', 'West Covina', 'La Puente', 'Baldwin Park',
+    'La Verne', 'San Dimas', 'Claremont', 'Diamond Bar', 'Pomona',
+    'Walnut', 'Industry', 'La Canada Flintridge', 'La Habra Heights',
+    // Inland/North
+    'Beverly Hills', 'Inglewood', 'Whittier', 'Santa Clarita', 'Lancaster',
+    'Palmdale', 'Hidden Hills', 'Westlake Village', 'Vernon', 'Irwindale',
   ],
   
   "New York Metro": [
