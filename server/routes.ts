@@ -9014,6 +9014,9 @@ Questions? Just reply to this message. Welcome aboard!
         if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: NO CONDITIONS - returning ALL users (this is the bug!)`);
       }
       
+      // Hard cap to prevent full table scans at scale
+      const pageSize = Math.min(parseInt(req.query.limit as string) || 500, 500);
+      query = query.limit(pageSize);
       const filteredUsers = await query;
       
       if (!filteredUsers || filteredUsers.length === 0) {
