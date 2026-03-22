@@ -31,6 +31,7 @@ import ExternalEventDetails from "@/pages/external-event-details";
 import ManageEvent from "@/pages/manage-event";
 import Meetups from "@/pages/meetups";
 import QuickMeetupsPage from "@/pages/quick-meetups";
+import AvailableNowPage from "@/pages/available-now";
 import MeetupManagePage from "@/pages/meetup-manage";
 import MeetupChat from "@/pages/meetup-chat";
 import MeetupChatroomChat from "@/pages/meetup-chatroom-chat";
@@ -1735,6 +1736,8 @@ function Router() {
         return <Meetups />;
       case '/quick-meetups':
         return <QuickMeetupsPage />;
+      case '/available-now':
+        return <AvailableNowPage />;
       case '/create':
         return <Create />;
       case '/create-event':
