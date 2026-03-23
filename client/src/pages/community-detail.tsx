@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, Users, MessageSquare, Send, Lock, Trash2, Clock, Heart, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { SkeletonList, SkeletonUserCard } from "@/components/ui/skeleton-loaders";
 import WhatsAppChat from "@/components/WhatsAppChat";

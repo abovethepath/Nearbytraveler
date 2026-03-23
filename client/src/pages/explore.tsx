@@ -759,18 +759,31 @@ export default function Explore() {
                             </div>
                           </div>
 
-                          <div className="mt-2">
+                          <div className="mt-2 flex gap-1">
                             {isJoined ? (
-                              <Button
-                                size="sm"
-                                className="w-full h-7 text-xs bg-orange-500 hover:bg-orange-600 text-white"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setLocation(`/community/${tag.id}`);
-                                }}
-                              >
-                                Open
-                              </Button>
+                              <>
+                                <Button
+                                  size="sm"
+                                  className="flex-1 h-7 text-xs bg-orange-500 hover:bg-orange-600 text-white"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setLocation(`/community/${tag.id}`);
+                                  }}
+                                >
+                                  Open
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 text-xs px-2"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    leaveCommunityMutation.mutate(tag.id);
+                                  }}
+                                >
+                                  Leave
+                                </Button>
+                              </>
                             ) : tag.isPrivate ? (
                               <Button
                                 size="sm"
