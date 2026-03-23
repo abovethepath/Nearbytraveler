@@ -29062,13 +29062,14 @@ Questions? Just reply to this message. Welcome aboard!
 
       const myTags = await db.select({
         tag: communityTags,
-        userTag: userCommunityTags,
+        userTagId: userCommunityTags.id,
+        joinedAt: userCommunityTags.joinedAt,
       })
         .from(userCommunityTags)
         .innerJoin(communityTags, eq(userCommunityTags.tagId, communityTags.id))
         .where(eq(userCommunityTags.userId, userId));
 
-      res.json(myTags.map(t => ({ ...t.tag, visibility: t.userTag.visibility, joinedAt: t.userTag.joinedAt })));
+      res.json(myTags.map(t => ({ ...t.tag, joinedAt: t.joinedAt })));
     } catch (error: any) {
       res.json([]);
     }
@@ -29165,10 +29166,7 @@ Questions? Just reply to this message. Welcome aboard!
         userId: userCommunityTags.userId,
       })
         .from(userCommunityTags)
-        .where(and(
-          eq(userCommunityTags.tagId, tagId),
-          eq(userCommunityTags.visibility, "public")
-        ));
+        .where(eq(userCommunityTags.tagId, tagId));
 
       const memberIds = members.map(m => m.userId);
       if (memberIds.length === 0) return res.json([]);
@@ -29208,7 +29206,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Check user is a member
       if (userId) {
-        const [membership] = await db.select().from(userCommunityTags)
+        const [membership] = await db.select({ id: userCommunityTags.id }).from(userCommunityTags)
           .where(and(eq(userCommunityTags.userId, userId), eq(userCommunityTags.tagId, tagId)));
         if (!membership) return res.status(403).json({ error: "You must be a member to view posts" });
       }
@@ -29252,7 +29250,7 @@ Questions? Just reply to this message. Welcome aboard!
       if (!hasContent && !hasMedia) return res.status(400).json({ error: "Post content or a photo is required" });
 
       // Check user is a member
-      const [membership] = await db.select().from(userCommunityTags)
+      const [membership] = await db.select({ id: userCommunityTags.id }).from(userCommunityTags)
         .where(and(eq(userCommunityTags.userId, userId), eq(userCommunityTags.tagId, tagId)));
       if (!membership) return res.status(403).json({ error: "You must be a member to post" });
 
