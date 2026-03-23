@@ -29094,8 +29094,9 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(403).json({ error: "Incorrect password" });
       }
 
-      // Check not already joined
-      const [existing] = await db.select()
+      // Check not already joined (select only id — avoids pulling columns like
+      // visibility that may not exist yet in all environments)
+      const [existing] = await db.select({ id: userCommunityTags.id })
         .from(userCommunityTags)
         .where(and(eq(userCommunityTags.userId, userId), eq(userCommunityTags.tagId, tagId)));
 
