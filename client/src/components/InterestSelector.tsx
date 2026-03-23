@@ -12,6 +12,8 @@ interface InterestSelectorProps {
   placeholder?: string;
   className?: string;
   extraSelectedCount?: number;
+  /** Called when an interest is newly selected (not when deselected). */
+  onInterestAdded?: (interest: string) => void;
 }
 
 export function InterestSelector({
@@ -23,7 +25,8 @@ export function InterestSelector({
   showSearch = true,
   placeholder = "Search interests...",
   className = "",
-  extraSelectedCount = 0
+  extraSelectedCount = 0,
+  onInterestAdded
 }: InterestSelectorProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [touchedRecently, setTouchedRecently] = useState(false);
@@ -39,6 +42,7 @@ export function InterestSelector({
       onChange(selected.filter(i => i !== interest));
     } else if (selected.length < maxAllowed) {
       onChange([...selected, interest]);
+      onInterestAdded?.(interest);
     }
   }
 

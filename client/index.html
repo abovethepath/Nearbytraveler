@@ -116,10 +116,14 @@
       </div>
     </div>
     <script>
-      // Hide boot screen immediately on public/auth routes to prevent flash
+      // Hide boot screen immediately on public/auth routes to prevent flash.
+      // For logged-out users these pages render directly — no auth check needed.
       (function() {
         var p = window.location.pathname;
-        if (p === '/auth' || p === '/signin' || p === '/join' || p.indexOf('/signup') === 0 || p === '/landing' || p === '/landing-new' || p === '/about') {
+        var isPublic = p === '/' || p === '/auth' || p === '/signin' || p === '/join'
+          || p.indexOf('/signup') === 0 || p.indexOf('/landing') === 0 || p === '/about'
+          || p === '/privacy' || p === '/terms';
+        if (isPublic) {
           var b = document.getElementById('boot');
           if (b) b.style.display = 'none';
         }

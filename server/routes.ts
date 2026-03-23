@@ -28835,8 +28835,17 @@ Questions? Just reply to this message. Welcome aboard!
       const name = displayName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       if (!name) return res.status(400).json({ error: "Invalid community name" });
 
-      const [existing] = await db.select().from(communityTags).where(eq(communityTags.name, name));
-      if (existing) return res.status(400).json({ error: "A community with this name already exists" });
+      // Check for duplicate by slug OR case-insensitive display name
+      const [existingBySlug] = await db.select().from(communityTags).where(eq(communityTags.name, name));
+      const [existingByName] = await db.select().from(communityTags)
+        .where(sql`LOWER(${communityTags.displayName}) = LOWER(${displayName.trim()})`);
+      const existing = existingBySlug || existingByName;
+      if (existing) {
+        return res.status(409).json({
+          error: `A community called "${existing.displayName}" already exists. Would you like to join it instead?`,
+          existingCommunity: { id: existing.id, displayName: existing.displayName, icon: existing.icon },
+        });
+      }
 
       if (isPrivate && !password) return res.status(400).json({ error: "Private communities require a password" });
 
@@ -29082,7 +29091,7 @@ Questions? Just reply to this message. Welcome aboard!
         .from(userCommunityTags)
         .where(and(eq(userCommunityTags.userId, userId), eq(userCommunityTags.tagId, tagId)));
 
-      if (existing) return res.status(400).json({ error: "Already joined" });
+      if (existing) return res.json({ ok: true, alreadyMember: true });
 
       await db.insert(userCommunityTags).values({ userId, tagId }).onConflictDoNothing();
 
@@ -29111,7 +29120,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       res.json({ ok: true });
     } catch (error: any) {
-      console.error("❌ Failed to join community:", error?.message || error);
+      console.error("Failed to join community:", error);
       res.status(500).json({ error: "Failed to join community" });
     }
   });

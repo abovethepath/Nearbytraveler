@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
+import { useCommunityJoinPrompt, CommunityJoinPrompt } from "@/components/CommunityJoinPrompt";
+import { hasCommunityMapping } from "@/lib/interestCommunityMap";
 import { formatCityDisplay } from "@/lib/locationDisplay";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -274,43 +276,8 @@ export function ProfileTabs(props: ProfilePageProps) {
 
   const outgoingConnectionRequests = (props as any)?.outgoingConnectionRequests || [];
 
-  // CouchSurfing community chatroom prompt
-  const [showCsPrompt, setShowCsPrompt] = useState(false);
-  const [csJoining, setCsJoining] = useState(false);
-
-  const checkCouchSurfingPrompt = (interests: string[]) => {
-    if (!interests.includes('CouchSurfing')) return;
-    const dismissed = localStorage.getItem('nt_cs_chatroom_dismissed');
-    if (dismissed) return;
-    setShowCsPrompt(true);
-  };
-
-  const handleJoinCsChatroom = async () => {
-    setCsJoining(true);
-    try {
-      const apiBase = getApiBaseUrl();
-      const lookupRes = await fetch(`${apiBase}/api/chatrooms/by-community/couchsurfing-community`, { credentials: 'include' });
-      if (!lookupRes.ok) throw new Error('Chatroom not found');
-      const { chatroomId } = await lookupRes.json();
-      await fetch(`${apiBase}/api/chatrooms/${chatroomId}/join`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-      setShowCsPrompt(false);
-      toast?.({ title: "Joined!", description: "You're now in the CouchSurfing Community chatroom." });
-    } catch (error) {
-      console.error('Failed to join CS chatroom:', error);
-      toast?.({ title: "Couldn't join", description: "Please try again later.", variant: "destructive" });
-    } finally {
-      setCsJoining(false);
-    }
-  };
-
-  const handleDismissCsPrompt = () => {
-    localStorage.setItem('nt_cs_chatroom_dismissed', '1');
-    setShowCsPrompt(false);
-  };
+  // Community join prompt — shown when user selects an interest that maps to a community
+  const communityPrompt = useCommunityJoinPrompt(toast);
 
   /* Desktop user profiles: tabs are integrated into hero (ProfileTabBar); hide duplicate card. iOS + business: show tabs card. */
   const showTabsCard = isNativeIOSApp() || user?.userType === 'business';
@@ -472,25 +439,13 @@ export function ProfileTabs(props: ProfilePageProps) {
 
   return (
     <>
-    {/* CouchSurfing Community chatroom prompt */}
-    <Dialog open={showCsPrompt} onOpenChange={setShowCsPrompt}>
-      <DialogContent className="sm:max-w-sm bg-white dark:bg-gray-900">
-        <DialogHeader>
-          <DialogTitle className="text-base">🛋️ CouchSurfing Community</DialogTitle>
-        </DialogHeader>
-        <p className="text-sm text-gray-600 dark:text-gray-300">
-          Want to join the CouchSurfing Community chatroom on Nearby Traveler?
-        </p>
-        <div className="flex gap-2 mt-2">
-          <Button onClick={handleJoinCsChatroom} disabled={csJoining} className="bg-blue-600 hover:bg-blue-700 text-white flex-1">
-            {csJoining ? "Joining..." : "Join Chatroom"}
-          </Button>
-          <Button variant="outline" onClick={handleDismissCsPrompt} className="flex-1">
-            Maybe Later
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    {/* Community join prompt — triggered when an interest maps to a community */}
+    <CommunityJoinPrompt
+      pending={communityPrompt.pending}
+      isJoining={communityPrompt.isJoining}
+      onJoin={communityPrompt.handleJoin}
+      onSkip={communityPrompt.handleSkip}
+    />
     <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900 md:mt-0">
       {/* Main Content Container - with overflow-x-hidden for rest of page */}
 
@@ -1368,7 +1323,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                             if (!response.ok) throw new Error('Failed to save');
                             queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
                             setIsEditingPublicInterests(false);
-                            checkCouchSurfingPrompt(editFormData.interests);
+                            communityPrompt.checkInterests(editFormData.interests);
                             setTimeout(() => {
                               const section = document.getElementById('interests-activities-section');
                               if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1398,6 +1353,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
                         {MOST_POPULAR_INTERESTS.map((interest) => {
                           const isSelected = editFormData.interests.includes(interest);
+                          const communityMatch = hasCommunityMapping(interest);
                           return (
                             <button
                               key={interest}
@@ -1407,6 +1363,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                   setEditFormData(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
                                 } else {
                                   setEditFormData(prev => ({ ...prev, interests: [...prev.interests, interest] }));
+                                  communityPrompt.checkInterest(interest);
                                 }
                               }}
                               className={`h-8 px-3 rounded-full text-sm font-medium transition-all border ${
@@ -1414,8 +1371,10 @@ export function ProfileTabs(props: ProfilePageProps) {
                                   ? 'bg-white text-gray-900 border-gray-200 ring-1 ring-gray-900/10 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:text-black dark:shadow-md dark:border-0 dark:ring-0'
                                   : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 shadow-none dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600'
                               }`}
+                              title={communityMatch ? `Community: ${communityMatch.communityDisplayName}` : undefined}
                             >
                               {interest}
+                              {communityMatch && <span className="ml-1 opacity-60 text-xs">👥</span>}
                             </button>
                           );
                         })}
@@ -1428,6 +1387,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-900/20 rounded-lg border">
                         {ADDITIONAL_INTERESTS.map((interest) => {
                           const isSelected = editFormData.interests.includes(interest);
+                          const communityMatch = hasCommunityMapping(interest);
                           return (
                             <button
                               key={interest}
@@ -1437,6 +1397,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                   setEditFormData(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
                                 } else {
                                   setEditFormData(prev => ({ ...prev, interests: [...prev.interests, interest] }));
+                                  communityPrompt.checkInterest(interest);
                                 }
                               }}
                               className={`h-8 px-3 rounded-full text-sm font-medium transition-all border ${
@@ -1444,8 +1405,10 @@ export function ProfileTabs(props: ProfilePageProps) {
                                   ? 'bg-white text-gray-900 border-gray-200 ring-1 ring-gray-900/10 shadow-none dark:bg-gradient-to-r dark:from-blue-500 dark:to-orange-500 dark:text-black dark:shadow-md dark:border-0 dark:ring-0'
                                   : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-50 shadow-none dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600'
                               }`}
+                              title={communityMatch ? `Community: ${communityMatch.communityDisplayName}` : undefined}
                             >
                               {interest}
+                              {communityMatch && <span className="ml-1 opacity-60 text-xs">👥</span>}
                             </button>
                           );
                         })}
@@ -1754,7 +1717,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                             
                             queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
                             setIsEditingPublicInterests(false);
-                            checkCouchSurfingPrompt(editFormData.interests);
+                            communityPrompt.checkInterests(editFormData.interests);
                             setTimeout(() => {
                               const section = document.getElementById('interests-activities-section');
                               if (section) {

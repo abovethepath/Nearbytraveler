@@ -143,6 +143,8 @@ export default function Explore() {
   const [ccDesc, setCcDesc] = useState("");
   const [ccIsPrivate, setCcIsPrivate] = useState(false);
   const [ccPassword, setCcPassword] = useState("");
+  // Duplicate community prompt — shown when creation finds an existing match
+  const [duplicateCommunity, setDuplicateCommunity] = useState<{ id: number; displayName: string; icon?: string } | null>(null);
   const [privateCommunityId, setPrivateCommunityId] = useState<number | null>(null);
   const [privatePassword, setPrivatePassword] = useState("");
   const [flagCommunityId, setFlagCommunityId] = useState<number | null>(null);
@@ -326,6 +328,14 @@ export default function Explore() {
   const createCommunityMutation = useMutation({
     mutationFn: async (data: any) => {
       const res = await apiRequest("POST", "/api/community-tags", data);
+      if (res.status === 409) {
+        // Duplicate found — extract existing community info for the prompt
+        const d = await res.json();
+        if (d.existingCommunity) {
+          setDuplicateCommunity(d.existingCommunity);
+        }
+        throw new Error(d.error || "Community already exists");
+      }
       if (!res.ok) {
         const d = await res.json();
         throw new Error(d.error || "Failed to create community");
@@ -340,7 +350,10 @@ export default function Explore() {
       toast({ title: "Community created!" });
     },
     onError: (error: any) => {
-      toast({ title: "Error", description: error?.message || "Failed to create community", variant: "destructive" });
+      // Don't show a destructive toast if we're showing the duplicate prompt instead
+      if (!duplicateCommunity) {
+        toast({ title: "Error", description: error?.message || "Failed to create community", variant: "destructive" });
+      }
     },
   });
 
@@ -658,6 +671,38 @@ export default function Explore() {
                       });
                     }} className="w-full bg-orange-500 hover:bg-orange-600" disabled={createCommunityMutation.isPending}>
                       {createCommunityMutation.isPending ? "Creating..." : "Create Community"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              {/* Duplicate community prompt — join existing instead of creating */}
+              <Dialog open={!!duplicateCommunity} onOpenChange={(open) => { if (!open) setDuplicateCommunity(null); }}>
+                <DialogContent className="sm:max-w-sm bg-white dark:bg-gray-900">
+                  <DialogHeader>
+                    <DialogTitle className="text-base">
+                      {duplicateCommunity?.icon || "🏷️"} Community Already Exists
+                    </DialogTitle>
+                  </DialogHeader>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    A community called <strong>{duplicateCommunity?.displayName}</strong> already exists. Would you like to join it instead?
+                  </p>
+                  <div className="flex gap-2 mt-2">
+                    <Button
+                      onClick={() => {
+                        if (duplicateCommunity) {
+                          joinCommunityMutation.mutate({ tagId: duplicateCommunity.id });
+                          setShowCreateCommunity(false);
+                          setCcName("");
+                        }
+                        setDuplicateCommunity(null);
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
+                    >
+                      Join
+                    </Button>
+                    <Button variant="outline" onClick={() => setDuplicateCommunity(null)} className="flex-1">
+                      Cancel
                     </Button>
                   </div>
                 </DialogContent>

@@ -328,12 +328,30 @@ function Router() {
   // Instantly hydrate from localStorage so the UI renders with no blank loading screen.
   const cachedUser = readSessionCache();
   const [user, setUser] = useState<User | null>(cachedUser);
-  // If we have a cached user we can skip the initial loading gate entirely.
-  const [isLoading, setIsLoading] = useState(cachedUser === null);
+
+  // Determine if the initial URL is a public/auth route that doesn't need the auth gate.
+  // For logged-out users (no cache) on these routes, skip all loading gates so the page
+  // renders in a single frame with zero intermediate screens.
+  const [initialPath] = useState(() => window.location.pathname);
+  const isInitialPublicRoute = !cachedUser && (() => {
+    const p = initialPath;
+    return p === '/' || p === '/auth' || p === '/signin' || p === '/join'
+      || p.startsWith('/signup') || p.startsWith('/landing')
+      || p === '/about' || p === '/privacy' || p === '/terms'
+      || p === '/forgot-password' || p.startsWith('/reset-password')
+      || p === '/events-landing' || p === '/business-landing'
+      || p === '/locals-landing' || p === '/travelers-landing'
+      || p === '/couchsurfing' || p === '/cs'
+      || p === '/welcome' || p === '/welcome-business';
+  })();
+
+  // Skip the loading gate if we have a cached user OR if we're a logged-out user on a public route.
+  const skipGate = !!cachedUser || !!isInitialPublicRoute;
+  const [isLoading, setIsLoading] = useState(!skipGate);
   // Web: explicit auth hydration/loading gate to prevent redirect/layout flashes.
-  const [authLoading, setAuthLoading] = useState(cachedUser === null);
+  const [authLoading, setAuthLoading] = useState(!skipGate);
   // Auth init/verification gates to prevent landing/login flashes during nav.
-  const [authInitialized, setAuthInitialized] = useState(cachedUser !== null);
+  const [authInitialized, setAuthInitialized] = useState(skipGate);
   const [isVerifyingAuth, setIsVerifyingAuth] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const loginSucceededAtRef = React.useRef<number>(0);
@@ -789,21 +807,20 @@ function Router() {
   }, [syncAuthFromServer]);
 
   useEffect(() => {
-    // Explicit auth gate (web only): don't render protected routes (or "/") until
-    // we have confirmed session state with the server.
-    // Skip the loading gate if we already hydrated from cache — do a silent background check instead.
-    if (!isNativeIOSApp() && !readSessionCache()) setAuthLoading(true);
-
-    // Skip auth check for signup routes and public pages (but not root '/' which needs auth check for redirect)
-    if (isSignupRoute || (isLandingPage && location !== '/')) {
-      console.log('🔥 PUBLIC PAGE - skipping auth check:', location);
+    // Skip auth check entirely for logged-out users on public/landing/signup routes.
+    // These pages don't need auth — rendering them immediately avoids all loading flashes.
+    // Root "/" is included: if no session cache exists, the user is logged out, so show
+    // the landing page instantly instead of gating behind a server round-trip.
+    if (isSignupRoute || isLandingPage) {
       setIsLoading(false);
       setAuthInitialized(true);
       setAuthLoading(false);
-      return;
+      // If we have a cached session, still do a background auth check to hydrate user data.
+      if (!readSessionCache()) return;
     }
 
-    console.log('🚀 PRODUCTION CACHE BUST v2025-08-17-17-28 - Starting authentication check');
+    // For protected routes without a cached session, set the loading gate.
+    if (!isNativeIOSApp() && !readSessionCache()) setAuthLoading(true);
 
     // Check server-side session first (cookie/session is source of truth)
     const checkServerAuth = async () => {
