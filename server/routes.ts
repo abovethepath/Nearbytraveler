@@ -28708,7 +28708,15 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       if (!communityBackfillDone) {
         communityBackfillDone = true;
-      const systemUserId = 2; // nearbytrav admin account
+      // Use the first available admin user; fall back to user 1 if user 2 doesn't exist
+      let systemUserId = 2;
+      try {
+        const [u2] = await db.select({ id: users.id }).from(users).where(eq(users.id, 2)).limit(1);
+        if (!u2) {
+          const [u1] = await db.select({ id: users.id }).from(users).orderBy(users.id).limit(1);
+          systemUserId = u1?.id ?? 1;
+        }
+      } catch { systemUserId = 1; }
       // Ensure default communities exist (idempotent)
       for (const c of DEFAULT_COMMUNITIES) {
         try {

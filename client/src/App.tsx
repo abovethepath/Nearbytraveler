@@ -1078,8 +1078,17 @@ function Router() {
         invalidateUserCache();
         clearSessionInvalid();
         markSessionVerified();
+        // Write cache synchronously BEFORE setUser — so readSessionCache()
+        // returns this user immediately for route guards that run before
+        // React processes the state update.
+        writeSessionCache(userData);
         loginSucceededAtRef.current = Date.now();
         setUser(userData);
+        // Clear the authenticating/pending flags immediately so the transition
+        // screen doesn't linger for an extra render cycle. Without this,
+        // setLocation('/home') in auth.tsx races ahead of React's state batch,
+        // and the route guard sees isAuthenticating=true with user still null.
+        stopAuthenticating();
       },
       isAuthenticated: actualAuth,
       // IMPORTANT: authLoading should reflect only initial hydration, not background re-verification.
