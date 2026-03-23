@@ -21543,30 +21543,39 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(404).json({ message: "Chatroom not found" });
       }
 
-      // Check if user is already a member
+      // Check if user is already a member (active or inactive)
       const existingMembership = await db.select()
         .from(chatroomMembers)
         .where(and(
           eq(chatroomMembers.chatroomId, roomId),
-          eq(chatroomMembers.userId, userId),
-          eq(chatroomMembers.isActive, true)
+          eq(chatroomMembers.userId, userId)
         ))
         .limit(1);
 
-      if (existingMembership.length > 0) {
+      if (existingMembership.length > 0 && existingMembership[0].isActive) {
         if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM JOIN: User ${userId} already member of chatroom ${roomId}`);
-        return res.json({ success: true, message: "Already a member", alreadyMember: true });
+        return res.json({ success: true, message: "You're already a member of this community!", alreadyMember: true });
       }
 
-      // Add user to chatroom
-      await db.insert(chatroomMembers).values({
-        chatroomId: roomId,
-        userId: userId,
-        role: 'member',
-        joinedAt: new Date(),
-        isActive: true,
-        isMuted: false
-      });
+      // Upsert membership - insert if not exists, or reactivate if previously left
+      await db
+        .insert(chatroomMembers)
+        .values({
+          chatroomId: roomId,
+          userId: userId,
+          role: 'member',
+          joinedAt: new Date(),
+          isActive: true,
+          isMuted: false
+        })
+        .onConflictDoUpdate({
+          target: [chatroomMembers.chatroomId, chatroomMembers.userId],
+          set: {
+            isActive: true,
+            joinedAt: sql`NOW()`,
+            role: 'member'
+          }
+        });
 
       // Award 1 aura for joining chatroom
       await storage.awardAura(userId, 1, 'joining chatroom');
@@ -21610,7 +21619,7 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM JOIN: User ${userId} successfully joined chatroom ${roomId}`);
       res.json({ success: true, message: "Successfully joined chatroom!", newMember: true });
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("🔥 Error joining room:", error);
+      console.error("Error joining chatroom:", error);
       res.status(500).json({ message: "Failed to join chatroom", error: error.message });
     }
   });
@@ -29051,11 +29060,12 @@ Questions? Just reply to this message. Welcome aboard!
   // Join a community tag
   app.post("/api/community-tags/:id/join", async (req: any, res) => {
     try {
-      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
-      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const userId = Number(req.session?.user?.id || req.headers['x-user-id']);
+      if (!userId || isNaN(userId)) return res.status(401).json({ error: "Not authenticated" });
 
       const tagId = parseInt(req.params.id);
-      const visibility = req.body.visibility || "public";
+      if (!tagId || isNaN(tagId)) return res.status(400).json({ error: "Invalid community ID" });
+
       const password = req.body.password;
 
       // Check the community exists
@@ -29074,24 +29084,28 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (existing) return res.status(400).json({ error: "Already joined" });
 
-      await db.insert(userCommunityTags).values({ userId, tagId, visibility });
+      await db.insert(userCommunityTags).values({ userId, tagId }).onConflictDoNothing();
 
       // Update member count
       await db.update(communityTags)
         .set({ memberCount: sql`COALESCE(${communityTags.memberCount}, 0) + 1` })
         .where(eq(communityTags.id, tagId));
 
-      // Add user to community chatroom if one exists
+      // Add user to community chatroom if one exists (non-fatal if this fails)
       if (tag.chatroomId) {
-        const [alreadyMember] = await db.select().from(chatroomMembers)
-          .where(and(eq(chatroomMembers.chatroomId, tag.chatroomId), eq(chatroomMembers.userId, userId)));
-        if (!alreadyMember) {
-          await db.insert(chatroomMembers).values({
-            chatroomId: tag.chatroomId,
-            userId,
-            role: "member",
-            isActive: true,
-          });
+        try {
+          const [alreadyMember] = await db.select().from(chatroomMembers)
+            .where(and(eq(chatroomMembers.chatroomId, tag.chatroomId), eq(chatroomMembers.userId, userId)));
+          if (!alreadyMember) {
+            await db.insert(chatroomMembers).values({
+              chatroomId: tag.chatroomId,
+              userId,
+              role: "member",
+              isActive: true,
+            }).onConflictDoNothing();
+          }
+        } catch (chatErr: any) {
+          console.error("⚠️ Failed to add user to community chatroom (non-fatal):", chatErr?.message);
         }
       }
 
