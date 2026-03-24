@@ -89,6 +89,7 @@ export default function Home() {
   const [showDestinationModal, setShowDestinationModal] = useState(false);
   const [showConnectModal, setShowConnectModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [sidebarCityView, setSidebarCityView] = useState<'home' | 'trip'>('home');
   const [activeLocationFilter, setActiveLocationFilter] = useState<string>("");
   const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
   const [connectTargetUser, setConnectTargetUser] = useState<any>(null);
@@ -2236,30 +2237,46 @@ export default function Home() {
               <AvailableNowWidget currentUser={effectiveUser} />
             )}
 
-            {/* Tonight in hometown — ALWAYS shows, never replaced */}
-            {effectiveUser?.hometownCity && (
-              <TonightWidget city={effectiveUser.hometownCity} />
-            )}
+            {/* City toggle + widgets — hometown by default, toggle to trip destination */}
+            {effectiveUser?.hometownCity && (() => {
+              const destCity = effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination
+                ? String(effectiveUser.travelDestination).split(',')[0]?.trim()
+                : null;
+              const hasTripCity = destCity && destCity.toLowerCase() !== (effectiveUser.hometownCity || '').toLowerCase();
+              const activeCity = sidebarCityView === 'trip' && hasTripCity ? destCity : effectiveUser.hometownCity;
 
-            {/* Who's in your hometown — ALWAYS shows */}
-            {effectiveUser?.hometownCity && (
-              <CityArrivalsWidget cityName={effectiveUser.hometownCity} />
-            )}
-
-            {/* Destination city widgets — only when user has an active travel plan */}
-            {effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination && (() => {
-              const destCity = String(effectiveUser.travelDestination).split(',')[0]?.trim();
-              // Don't duplicate if destination is same metro as hometown
-              if (!destCity || destCity.toLowerCase() === (effectiveUser.hometownCity || '').toLowerCase()) return null;
               return (
                 <>
-                  <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
-                    <p className="text-xs font-semibold text-orange-500 mb-2 flex items-center gap-1">
-                      ✈️ Your trip to {destCity}
-                    </p>
-                    <TonightWidget city={destCity} />
-                  </div>
-                  <CityArrivalsWidget cityName={destCity} />
+                  {/* Toggle — only shown when user has a trip to a different city */}
+                  {hasTripCity && (
+                    <div className="flex items-center gap-1 p-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-xs font-medium">
+                      <button
+                        type="button"
+                        onClick={() => setSidebarCityView('home')}
+                        className={`flex-1 px-3 py-1.5 rounded-md transition-colors ${
+                          sidebarCityView === 'home'
+                            ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                        }`}
+                      >
+                        🏠 {effectiveUser.hometownCity.split(',')[0]}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSidebarCityView('trip')}
+                        className={`flex-1 px-3 py-1.5 rounded-md transition-colors ${
+                          sidebarCityView === 'trip'
+                            ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                        }`}
+                      >
+                        ✈️ {destCity}
+                      </button>
+                    </div>
+                  )}
+
+                  <TonightWidget city={activeCity!} />
+                  <CityArrivalsWidget cityName={activeCity!} />
                 </>
               );
             })()}
