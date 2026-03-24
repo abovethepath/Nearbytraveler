@@ -84,14 +84,14 @@ export default function BusinessEventsWidget({ userId }: BusinessEventsWidgetPro
           {businessEvents.map((event: Event) => (
             <Card key={event.id} className="border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800">
               <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-black dark:text-white mb-1">{event.title}</h4>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                <div className="flex justify-between items-start mb-3 min-w-0">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-black dark:text-white mb-1 line-clamp-2 break-words">{event.title}</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-2 line-clamp-2">
                       {event.description}
                     </p>
                   </div>
-                  <div className="flex gap-1 ml-4">
+                  <div className="flex gap-1 ml-4 shrink-0">
                     <Button
                       size="sm"
                       variant="outline"
@@ -114,22 +114,20 @@ export default function BusinessEventsWidget({ userId }: BusinessEventsWidgetPro
                 </div>
 
                 {/* Event Details */}
-                <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    <span>
+                <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400 min-w-0">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Calendar className="w-4 h-4 shrink-0" />
+                    <span className="truncate">
                       {event.date ? formatDateForDisplay(event.date, 'UTC') : 'Date TBD'}
-                      {event.endDate && event.endDate !== event.date && 
+                      {event.endDate && event.endDate !== event.date &&
                         ` - ${formatDateForDisplay(event.endDate, 'UTC')}`
                       }
                     </span>
                   </div>
-                  
-                  {/* Time is included in the date field, no separate startTime field */}
-                  
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    <span>{event.location || event.city}</span>
+
+                  <div className="flex items-center gap-2 min-w-0">
+                    <MapPin className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{event.location || event.city}</span>
                   </div>
 
                   <div className="flex items-center gap-2">

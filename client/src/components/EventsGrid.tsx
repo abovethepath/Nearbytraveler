@@ -220,16 +220,16 @@ const EventsGrid = ({
                 )}
               </div>
 
-              <CardContent className="p-4">
+              <CardContent className="p-4 min-w-0 overflow-hidden">
                 {/* Event Title - Prominent like business name */}
-                <h3 className="text-white font-bold text-lg mb-2 leading-tight">
+                <h3 className="text-white font-bold text-lg mb-2 leading-tight line-clamp-2 break-words">
                   {eventTitle}
                 </h3>
-                
+
                 {/* Date and Time - Clean text with icon */}
-                <div className="flex items-center gap-2 text-gray-300 text-sm mb-3">
+                <div className="flex items-center gap-2 text-gray-300 text-sm mb-3 min-w-0">
                   <Calendar className="h-4 w-4 flex-shrink-0" />
-                  <span>
+                  <span className="truncate">
                     {eventDate}
                     {startTime && (
                       <span className="ml-2">at {startTime}</span>
@@ -259,9 +259,9 @@ const EventsGrid = ({
                 )}
 
                 {/* Location - Like business location */}
-                <div className="flex items-start gap-2 text-gray-300 text-sm mb-3">
+                <div className="flex items-start gap-2 text-gray-300 text-sm mb-3 min-w-0">
                   <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <span>{event.location}</span>
+                  <span className="line-clamp-2 break-words">{event.location}</span>
                 </div>
 
                 {/* Attendee count - Like business contact info */}

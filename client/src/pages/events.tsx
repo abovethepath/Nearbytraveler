@@ -997,19 +997,21 @@ export default function Events() {
                             </div>
                           </CardHeader>
                           <CardContent className="px-3 sm:px-4">
-                            <div className="space-y-3">
-                              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white">
-                                <Calendar className="w-4 h-4 text-gray-600 dark:text-white" />
-                                {new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} at{" "}
-                                {new Date(event.date).toLocaleTimeString([], { 
-                                  hour: '2-digit', 
-                                  minute: '2-digit' 
-                                })}
+                            <div className="space-y-3 min-w-0">
+                              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white min-w-0">
+                                <Calendar className="w-4 h-4 text-gray-600 dark:text-white shrink-0" />
+                                <span className="truncate">
+                                  {new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} at{" "}
+                                  {new Date(event.date).toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </span>
                               </div>
 
-                              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white">
-                                <MapPin className="w-4 h-4 text-gray-600 dark:text-white" />
-                                {formatEventLocation(event)}
+                              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white min-w-0">
+                                <MapPin className="w-4 h-4 text-gray-600 dark:text-white shrink-0" />
+                                <span className="truncate">{formatEventLocation(event)}</span>
                               </div>
 
                               {event.description && (

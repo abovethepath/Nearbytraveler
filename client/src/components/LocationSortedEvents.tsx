@@ -163,14 +163,14 @@ export default function LocationSortedEvents({
         </div>
       )}
       
-      <CardContent className="p-4">
+      <CardContent className="p-4 min-w-0">
         {/* Event title */}
-        <h3 className="font-semibold text-gray-900 dark:text-white text-base break-words mb-2">
+        <h3 className="font-semibold text-gray-900 dark:text-white text-base break-words line-clamp-2 mb-2">
           {event.title}
         </h3>
 
         {/* Address */}
-        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-2">
+        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-2 min-w-0">
           <MapPin className="h-4 w-4 shrink-0" />
           <span className="truncate">{formatEventLocation(event)}</span>
         </div>
