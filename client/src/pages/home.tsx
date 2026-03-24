@@ -18,7 +18,7 @@ import { EmbeddedChatWidget } from "@/components/EmbeddedChatWidget";
 
 
 import { datesOverlap, formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
-import { getMetroContext } from "@shared/metro-areas";
+import { getMetroContext, getMetroAreaName } from "@shared/metro-areas";
 import { format } from "date-fns";
 import { getVersionedCityImage } from "@/lib/imageVersioning";
 import { Button } from "@/components/ui/button";
@@ -2259,7 +2259,7 @@ export default function Home() {
                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                         }`}
                       >
-                        🏠 {effectiveUser.hometownCity.split(',')[0]}
+                        🏠 {getMetroAreaName(effectiveUser.hometownCity)}
                       </button>
                       <button
                         type="button"
@@ -2270,7 +2270,7 @@ export default function Home() {
                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                         }`}
                       >
-                        ✈️ {destCity}
+                        ✈️ {getMetroAreaName(destCity!)}
                       </button>
                     </div>
                   )}

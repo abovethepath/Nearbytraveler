@@ -15,6 +15,7 @@ import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell,
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { useToast } from "@/hooks/use-toast";
 import { websocketService } from "@/services/websocketService";
+import { getMetroAreaName } from "@shared/metro-areas";
 
 interface AvailableEntry {
   id: number;
@@ -1208,7 +1209,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                         : 'text-gray-500 dark:text-gray-400'
                     }`}
                   >
-                    <MapPin className="w-3 h-3" /> {homeCity.split(',')[0]}
+                    <MapPin className="w-3 h-3" /> {getMetroAreaName(homeCity)}
                   </button>
                   <button
                     type="button"
@@ -1226,7 +1227,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             ) : (
               <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                 <MapPin className="w-3 h-3" />
-                <span>Visible in {userCity || "your city"}</span>
+                <span>Visible in {userCity ? getMetroAreaName(userCity) : "your city"}</span>
               </div>
             )}
             <button

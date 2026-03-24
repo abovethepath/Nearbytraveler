@@ -4,6 +4,7 @@ import { Calendar, Users, Plane, Zap, ChevronRight } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { useAuth } from "@/App";
+import { getMetroAreaName } from "@shared/metro-areas";
 
 interface TonightEvent {
   id: number;
@@ -68,7 +69,7 @@ export function TonightWidget({ city }: Props) {
 
   if (!hasEvents && !hasAvailable && !hasTravelers) return null;
 
-  const displayCity = city.split(",")[0].trim();
+  const displayCity = getMetroAreaName(city.split(",")[0].trim());
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl border border-orange-200 dark:border-orange-900/40 overflow-hidden shadow-sm">

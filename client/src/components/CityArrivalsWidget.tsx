@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Heart, MapPin, Plane, Home, Clock, ChevronRight } from "lucide-react";
@@ -6,6 +6,7 @@ import { SimpleAvatar } from "@/components/simple-avatar";
 import { abbreviateCity } from "@/lib/displayName";
 import { getApiBaseUrl, apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/App";
+import { getMetroAreaName } from "@shared/metro-areas";
 
 interface CityUser {
   userId: number;
@@ -89,26 +90,39 @@ function ArrivalRow({
   isLast: boolean;
 }) {
   const auth = useAuth();
-  const qc = useQueryClient();
   const isLoggedIn = !!auth.user;
   const [optimisticSaved, setOptimisticSaved] = useState(user.saved);
   const [showSayHi, setShowSayHi] = useState(false);
+  const isMutating = useRef(false);
+
+  // Sync with server state when not mid-mutation (e.g. on first load or page revisit)
+  useEffect(() => {
+    if (!isMutating.current) {
+      setOptimisticSaved(user.saved);
+    }
+  }, [user.saved]);
 
   const saveMutation = useMutation({
     mutationFn: async (save: boolean) => {
+      isMutating.current = true;
       if (save) {
         await apiRequest("POST", "/api/saved-travelers", { savedUserId: user.userId, cityName });
       } else {
         await apiRequest("DELETE", `/api/saved-travelers/${user.userId}?cityName=${encodeURIComponent(cityName)}`);
       }
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["/api/cities", cityName, "arrivals"] });
+    onSettled: () => {
+      isMutating.current = false;
+    },
+    onError: () => {
+      // Revert optimistic update on failure
+      setOptimisticSaved((prev) => !prev);
     },
   });
 
-  const handleHeart = (e: React.MouseEvent) => {
+  const handleHeart = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     if (!isLoggedIn) return;
     const next = !optimisticSaved;
     setOptimisticSaved(next);
@@ -129,8 +143,8 @@ function ArrivalRow({
         isLast ? "" : "border-b border-gray-100 dark:border-gray-800/60"
       } hover:bg-sky-50/50 dark:hover:bg-sky-900/10`}
       onClick={onProfileClick}
-      onMouseEnter={() => setShowSayHi(true)}
-      onMouseLeave={() => setShowSayHi(false)}
+      onPointerEnter={(e) => { if (e.pointerType === "mouse") setShowSayHi(true); }}
+      onPointerLeave={() => setShowSayHi(false)}
     >
       {/* Avatar with status dot */}
       <div className="relative flex-shrink-0">
@@ -165,8 +179,6 @@ function ArrivalRow({
             onClick={handleHeart}
             title={optimisticSaved ? "Remove reminder" : "Save — get notified when they arrive"}
             className={`flex-shrink-0 p-1 rounded-full transition-all ${
-              showSayHi ? "opacity-0 w-0 overflow-hidden p-0" : ""
-            } ${
               optimisticSaved
                 ? "text-rose-500"
                 : "text-gray-300 dark:text-gray-600 hover:text-rose-400 dark:hover:text-rose-400"
@@ -340,7 +352,7 @@ export function CityArrivalsWidget({ cityName }: Props) {
           <span className="text-base leading-none">✈️</span>
           <div>
             <p className="text-white font-bold text-sm leading-tight tracking-tight">
-              In {cityName}
+              In {getMetroAreaName(cityName)}
             </p>
             <p className="text-slate-400 text-[10px] leading-tight font-medium tracking-wide">
               {[
