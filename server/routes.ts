@@ -6386,6 +6386,29 @@ Questions? Just reply here — I read every message.
           console.error('❌ BACKGROUND: Error sending welcome message:', error);
         }
 
+        // 7b. Send "Add to Home Screen" follow-up DM after 1 minute delay
+        setTimeout(async () => {
+          try {
+            const pwaMessage = `📱 Add NearbyTraveler to your phone's home screen for the best experience!
+
+iPhone (Safari):
+1. Tap the Share button (box with arrow) at the bottom of your screen
+2. Scroll down and tap 'Add to Home Screen'
+3. Tap 'Add' — done! 🎉
+
+Android (Chrome):
+1. Tap the 3 dots menu in the top right
+2. Tap 'Add to Home screen'
+3. Tap 'Add' — done! 🎉
+
+It works like a real app — no app store needed!`;
+            await storage.sendSystemMessage(NEARBYTRAV_USER_ID, user.id, pwaMessage);
+            console.log(`✅ BACKGROUND: Sent PWA install DM to ${user.username}`);
+          } catch (error) {
+            console.error('❌ BACKGROUND: Error sending PWA install DM:', error);
+          }
+        }, 60000); // 1 minute after welcome message
+
         // 8. Award aura points
         try {
           const signupAuraPoints = (userData.userType === 'traveler' || userData.userType === 'currently_traveling' || userData.isCurrentlyTraveling) ? 2 : 1;
