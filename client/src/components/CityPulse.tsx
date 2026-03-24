@@ -113,9 +113,8 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
     }
   };
 
-  if (!data) return null;
-
-  const arrivingCount = data.newTravelers || 0;
+  // Don't hide the entire bar if city-pulse API fails — non-city pills (messages, connections) should still show
+  const arrivingCount = data?.newTravelers || 0;
 
   // Pills definition — popoverType signals which pills get a popover; null = navigate as before
   type PillDef = {
@@ -138,7 +137,7 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
           {
             emoji: "✈️",
             count: arrivingCount,
-            label: `traveler${arrivingCount === 1 ? "" : "s"} arriving in ${data.city} today →`,
+            label: `traveler${arrivingCount === 1 ? "" : "s"} arriving in ${data?.city || city} today →`,
             highlight: true,
             popoverType: "travelers" as PillPopoverType,
           },
@@ -218,36 +217,36 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
     // 🟢 Open to meet now → popover
     {
       emoji: "🟢",
-      count: data.openToMeet,
+      count: data?.openToMeet || 0,
       label: "open to meet now",
       popoverType: "available-now" as PillPopoverType,
     },
     // 📅 Events this week → navigate
     {
       emoji: "📅",
-      count: data.eventsThisWeek,
+      count: data?.eventsThisWeek || 0,
       label: "events this week",
       onClick: () => setLocation("/events"),
     },
     // ✨ Events created today → navigate
     {
       emoji: "✨",
-      count: data.eventsCreatedToday,
+      count: data?.eventsCreatedToday || 0,
       label: "events created today",
       onClick: () => setLocation("/events"),
     },
     // 🤝 New connections today → popover
     {
       emoji: "🤝",
-      count: data.connectionsToday,
+      count: data?.connectionsToday || 0,
       label: "new connections today",
       popoverType: "connections-today" as PillPopoverType,
     },
     // 👥 New members today → popover
     {
       emoji: "👥",
-      count: data.newMembersToday,
-      label: `joined today in ${data.city}`,
+      count: data?.newMembersToday || 0,
+      label: `joined today in ${data?.city || city}`,
       popoverType: "new-members" as PillPopoverType,
     },
   ];
