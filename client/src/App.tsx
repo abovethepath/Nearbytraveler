@@ -438,7 +438,7 @@ function Router() {
     location.startsWith('/quick-meetup-chat/') ||
     location.startsWith('/meetup-chatroom-chat/') ||
     location.startsWith('/whatsapp-chatroom/') ||
-    (location.startsWith('/messages/') && location.split('/')[2])
+    (location.startsWith('/messages/') && !!location.split('/')[2])
   );
 
   // On desktop we render chat pages in the normal navbar flow so both navbars stay visible.

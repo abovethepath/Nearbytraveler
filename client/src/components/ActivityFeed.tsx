@@ -455,6 +455,7 @@ function MeetRequestModal({
 export default function ActivityFeed() {
   const [, setLocation] = useLocation();
   const qc = useQueryClient();
+  const { toast } = useToast();
   const auth = useAuth();
   const currentUser = auth.user;
 

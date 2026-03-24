@@ -832,8 +832,8 @@ export default function Explore() {
           </TabsContent>
         </Tabs>
 
-        {/* People in city — only for Live / Communities tabs, not Activity */}
-        {userCity && activeTab !== "activity" && (
+        {/* People in city */}
+        {userCity && (
           <div className="mt-8 mb-6">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">

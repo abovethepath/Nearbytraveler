@@ -115,7 +115,7 @@ export default function Events() {
   });
 
   // Use API user data if available, fallback to localStorage
-  const user = apiUser || currentUser;
+  const user = (apiUser || currentUser) as any;
 
 
 

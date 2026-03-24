@@ -43,6 +43,7 @@ function timeAgo(dateStr: string) {
 function PostReplies({ postId, currentUser }: { postId: number; currentUser: any }) {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [replyText, setReplyText] = useState("");
 
   const { data: replies = [] } = useQuery<any[]>({

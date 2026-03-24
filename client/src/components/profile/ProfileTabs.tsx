@@ -134,8 +134,7 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
           {/* Avatar with gold ring */}
           <div className="rounded-full ring-4 ring-white ring-offset-2 ring-offset-amber-400 shadow-xl">
             <SimpleAvatar
-              src={profileImage || undefined}
-              username={username}
+              user={{ id: 0, username: username || '', profileImage: profileImage || null }}
               size="xl"
               className="rounded-full"
             />
