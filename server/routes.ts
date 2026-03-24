@@ -22617,7 +22617,23 @@ Questions? Just reply to this message. Welcome aboard!
         { city: 'New York City', state: 'New York', country: 'United States' },
         { city: 'Miami', state: 'Florida', country: 'United States' },
         { city: 'Las Vegas', state: 'Nevada', country: 'United States' },
-        { city: 'Austin', state: 'Texas', country: 'United States' }
+        { city: 'Austin', state: 'Texas', country: 'United States' },
+        { city: 'San Francisco', state: 'California', country: 'United States' },
+        { city: 'Nashville', state: 'Tennessee', country: 'United States' },
+        { city: 'New Orleans', state: 'Louisiana', country: 'United States' },
+        { city: 'Brooklyn', state: 'New York', country: 'United States' },
+        { city: 'Tokyo', state: '', country: 'Japan' },
+        { city: 'Paris', state: '', country: 'France' },
+        { city: 'London', state: '', country: 'United Kingdom' },
+        { city: 'Barcelona', state: '', country: 'Spain' },
+        { city: 'Berlin', state: '', country: 'Germany' },
+        { city: 'Amsterdam', state: '', country: 'Netherlands' },
+        { city: 'Bangkok', state: '', country: 'Thailand' },
+        { city: 'Rome', state: '', country: 'Italy' },
+        { city: 'Lisbon', state: '', country: 'Portugal' },
+        { city: 'Dubai', state: '', country: 'United Arab Emirates' },
+        { city: 'Sydney', state: 'New South Wales', country: 'Australia' },
+        { city: 'Mexico City', state: '', country: 'Mexico' },
       ];
 
       // Ensure major cities exist in cityPages table
