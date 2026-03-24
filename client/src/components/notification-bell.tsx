@@ -101,7 +101,23 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     mutationFn: async () => {
       return await apiRequest("PUT", `/api/notifications/${userId}/read-all`);
     },
-    onSuccess: () => {
+    onMutate: async () => {
+      // Optimistic update: immediately mark all as read in cache so badge clears instantly
+      const key = [`/api/notifications/${userId}`];
+      await queryClient.cancelQueries({ queryKey: key });
+      const prev = queryClient.getQueryData<Notification[]>(key);
+      if (prev) {
+        queryClient.setQueryData(key, prev.map(n => ({ ...n, isRead: true })));
+      }
+      return { prev };
+    },
+    onError: (_err, _vars, context) => {
+      // Revert on failure
+      if (context?.prev) {
+        queryClient.setQueryData([`/api/notifications/${userId}`], context.prev);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/notifications/${userId}`] });
     },
   });
@@ -136,9 +152,9 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     (n) => !n.isRead && n.type === 'new_message'
   );
 
-  // Filter chatroom invite notifications
+  // Chatroom invites stay visible even after marking all as read — they need user action (accept/decline)
   const chatroomInviteNotifications = notifications.filter(
-    (n) => !n.isRead && n.type === 'chatroom_invite'
+    (n) => n.type === 'chatroom_invite'
   );
 
   // Catch-all: any other unread notification type not handled by a specific group above
@@ -178,7 +194,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
   // Avoid double-counting: if we have new_message notifications, use those for the message count
   const rawUnreadCount = messageNotifications.length > 0 ? 0 : unreadMessages.length;
   const totalNotifications = rawUnreadCount + unreadNotificationCount;
-  const hasAnyDropdownItems = totalNotifications > 0 || connectionRequests.length > 0 || generalNotifications.length > 0;
+  const hasAnyDropdownItems = totalNotifications > 0 || connectionRequests.length > 0 || generalNotifications.length > 0 || chatroomInviteNotifications.length > 0;
 
   // Real-time: when server pushes a notification via WebSocket, refetch so bell updates immediately
   const queryClientRef = useRef(queryClient);
@@ -216,19 +232,9 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
       onOpenChange={(nextOpen) => {
         setOpen(nextOpen);
         if (nextOpen && userId) {
-          const hasPendingInvites = notifications.some(
-            (n) => !n.isRead && n.type === 'chatroom_invite'
-          );
-          if (!hasPendingInvites) {
-            markAllAsReadMutation.mutate();
-          } else {
-            const nonActionableUnread = notifications.filter(
-              (n) => !n.isRead && n.type !== 'chatroom_invite'
-            );
-            for (const n of nonActionableUnread) {
-              markAsReadMutation.mutate(n.id);
-            }
-          }
+          // Mark all notifications as read immediately — badge clears to 0
+          // Chatroom invites remain visible in the panel for the user to accept/decline
+          markAllAsReadMutation.mutate();
         }
       }}
       modal={false}
