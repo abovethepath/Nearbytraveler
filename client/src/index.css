@@ -2,19 +2,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
 
-/* Hide scrollbars visually but keep scroll functionality */
-* {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
+/* Hide scrollbars visually but keep scroll functionality.
+   IMPORTANT: Do NOT use * selector — Samsung Internet / older Android WebViews
+   can interpret scrollbar-width:none on all elements as disabling touch scroll.
+   Only target containers that need hidden scrollbars. */
+.scrollbar-hide,
+.overflow-x-auto,
+.overflow-y-auto {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar {
+  display: none;
 }
 
-*::-webkit-scrollbar {
-  display: none !important;
-}
-
-/* Ensure scroll still works everywhere */
+/* Ensure scroll works everywhere — critical for Android */
 html, body {
-  overflow-y: scroll !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Allow Radix UI dialogs/modals to lock body scroll (overrides the rule above) */
