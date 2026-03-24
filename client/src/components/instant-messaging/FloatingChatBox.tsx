@@ -64,12 +64,15 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
   });
 
   // Mark messages as read mutation
+  // IMPORTANT: Query key format must match CityPulse and messages.tsx — use array format
+  // ['/api/messages', userId, 'unread-count'], NOT template string, or badges won't clear.
   const markAsReadMutation = useMutation({
     mutationFn: async (senderId: number) => {
       return apiRequest('POST', `/api/messages/${user?.id}/mark-read`, { senderId });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}/unread-count`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id, 'unread-count'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id] });
     },
     onError: () => {
         toast({ title: "Something went wrong", description: "Please try again", variant: "destructive" });
@@ -88,19 +91,28 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
     return allMessages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   }, [messages, instantMessages, user?.id, targetUser.id]);
 
-  // Mark messages from target user as read when chat opens
+  // Mark messages from target user as read when chat opens or new messages arrive.
+  // IMPORTANT: Depend on full conversationMessages (not just .length) so new messages
+  // with isRead=false are caught even when the count doesn't change. Use optimistic
+  // update so badges clear instantly without waiting for server round-trip.
   useEffect(() => {
-    if (user?.id && targetUser.id && conversationMessages.length > 0) {
-      // Check if there are unread messages from target user
-      const unreadFromTarget = conversationMessages.some((msg: any) => 
-        msg.senderId === targetUser.id && !msg.isRead
+    if (!user?.id || !targetUser.id) return;
+    const hasUnread = conversationMessages.some((msg: any) =>
+      msg.senderId === targetUser.id && !msg.isRead
+    );
+    if (!hasUnread) return;
+
+    // Optimistic update — clear isRead in cache so badges update instantly
+    queryClient.setQueryData(['/api/messages', user.id], (old: any) => {
+      if (!Array.isArray(old)) return old;
+      return old.map((m: any) =>
+        Number(m.senderId) === targetUser.id && Number(m.receiverId) === user.id && !m.isRead
+          ? { ...m, isRead: true }
+          : m
       );
-      
-      if (unreadFromTarget) {
-        markAsReadMutation.mutate(targetUser.id);
-      }
-    }
-  }, [user?.id, targetUser.id, conversationMessages.length]);
+    });
+    markAsReadMutation.mutate(targetUser.id);
+  }, [user?.id, targetUser.id, conversationMessages]);
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -108,7 +120,7 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
       return apiRequest('POST', '/api/messages', messageData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messages', user?.id] });
       setNewMessage('');
     },
     onError: () => {
@@ -129,8 +141,9 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
           senderId: data.message.senderId,
           receiverId: data.message.receiverId,
           content: data.message.content,
+          mediaUrl: data.message.mediaUrl || null,
+          messageType: data.message.messageType || 'text',
           createdAt: data.message.timestamp || new Date().toISOString(),
-          messageType: 'instant'
         }]);
       }
     };
@@ -264,7 +277,26 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
                     : undefined
                 }
               >
-                {msg.content}
+                {(() => {
+                  const isImage =
+                    msg.messageType === 'image' ||
+                    msg.messageType === 'photo' ||
+                    (!!msg.mediaUrl && String(msg.mediaUrl).length > 0) ||
+                    (typeof msg.content === 'string' && msg.content.startsWith('data:image'));
+                  const src = (msg.mediaUrl && String(msg.mediaUrl)) || (isImage ? msg.content : '');
+                  if (isImage && src) {
+                    return (
+                      <img
+                        src={src}
+                        alt="Photo"
+                        className="rounded-lg max-w-full max-h-[200px] object-cover"
+                        loading="lazy"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    );
+                  }
+                  return msg.content;
+                })()}
               </div>
             </div>
           ))

@@ -52,7 +52,27 @@ export function MessageBubble({ message, isSender, showAvatar = true, onAvatarCl
           }`}
           data-testid={`message-content-${message.id}`}
         >
-          <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">{message.content}</p>
+          {(() => {
+            const msg = message as any;
+            const isImage =
+              msg.messageType === 'image' ||
+              msg.messageType === 'photo' ||
+              (!!msg.mediaUrl && String(msg.mediaUrl).length > 0) ||
+              (typeof msg.content === 'string' && msg.content.startsWith('data:image'));
+            const src = (msg.mediaUrl && String(msg.mediaUrl)) || (isImage ? msg.content : '');
+            if (isImage && src) {
+              return (
+                <img
+                  src={src}
+                  alt="Photo"
+                  className="rounded-lg max-w-[240px] max-h-[280px] object-cover"
+                  loading="lazy"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                />
+              );
+            }
+            return <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">{message.content}</p>;
+          })()}
           
           {/* Timestamp */}
           <p 

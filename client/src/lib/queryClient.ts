@@ -290,13 +290,13 @@ export const queryClient = new QueryClient({
     },
     mutations: {
       onError: (error: any) => {
-        // Global mutation error handler — log for debugging
+        // Global mutation error handler — log for debugging.
+        // IMPORTANT: Do NOT redirect to /auth on 401. Mobile PWA users get transient
+        // 401s when resuming from background (cookie not yet re-attached). The
+        // apiRequest() function already retries via tryRefreshSession(). A hard redirect
+        // here causes the "signed out when switching apps" bug. The auth sync in App.tsx
+        // handles real session expiry gracefully without logout.
         const msg = error?.message || 'Something went wrong';
-        if (msg.includes('401') || msg.includes('Unauthorized')) {
-          // Session expired — redirect to auth
-          window.location.href = '/auth';
-          return;
-        }
         console.error('[Mutation Error]', msg);
       },
       retry: (failureCount, error: any) => {

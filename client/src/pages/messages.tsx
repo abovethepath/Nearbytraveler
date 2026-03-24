@@ -1648,13 +1648,52 @@ export default function Messages() {
                                     </div>
                                   )}
 
-                                  <p className={`text-sm whitespace-pre-wrap break-words ${
-                                    isOwnMessage
-                                      ? 'text-gray-900 dark:text-white'
-                                      : 'text-gray-900 dark:text-gray-100'
-                                  }`}>
-                                    {msg.content}
-                                  </p>
+                                  {/* Render photo if message has mediaUrl or is an image type */}
+                                  {(() => {
+                                    const isImage =
+                                      msg.messageType === 'image' ||
+                                      msg.messageType === 'photo' ||
+                                      (!!msg.mediaUrl && String(msg.mediaUrl).length > 0) ||
+                                      (typeof msg.content === 'string' && msg.content.startsWith('data:image'));
+                                    const src = (msg.mediaUrl && String(msg.mediaUrl)) || (isImage ? msg.content : '');
+
+                                    if (isImage && src) {
+                                      return (
+                                        <div className="mt-1">
+                                          <img
+                                            src={src}
+                                            alt="Photo"
+                                            className="rounded-lg max-w-[240px] sm:max-w-[320px] max-h-[320px] object-cover cursor-pointer border border-white/10"
+                                            loading="lazy"
+                                            onError={(e) => {
+                                              const target = e.target as HTMLImageElement;
+                                              target.style.display = 'none';
+                                              const fallback = document.createElement('p');
+                                              fallback.textContent = '[Photo unavailable]';
+                                              fallback.className = 'text-xs text-gray-400 italic';
+                                              target.parentElement?.appendChild(fallback);
+                                            }}
+                                          />
+                                          {/* Show caption text below image if content is not just "[Photo]" */}
+                                          {msg.content && msg.content !== '[Photo]' && !msg.content.startsWith('data:image') && (
+                                            <p className={`text-sm mt-1 whitespace-pre-wrap break-words ${
+                                              isOwnMessage ? 'text-gray-900 dark:text-white' : 'text-gray-900 dark:text-gray-100'
+                                            }`}>{msg.content}</p>
+                                          )}
+                                        </div>
+                                      );
+                                    }
+
+                                    return (
+                                      <p className={`text-sm whitespace-pre-wrap break-words ${
+                                        isOwnMessage
+                                          ? 'text-gray-900 dark:text-white'
+                                          : 'text-gray-900 dark:text-gray-100'
+                                      }`}>
+                                        {msg.content}
+                                      </p>
+                                    );
+                                  })()}
                                   <div className="flex items-center justify-end gap-1 mt-1">
                                     <p className={`text-xs opacity-70 ${
                                       isOwnMessage
