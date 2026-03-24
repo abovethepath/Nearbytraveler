@@ -3027,10 +3027,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const comingSoon: any[] = [];
       const seenUsers = new Set<number>();
 
-      // Process locals
+      // Process locals — include current user so they see themselves listed
       for (const r of rawLocalRows) {
         if (seenUsers.has(r.userId)) continue;
-        if (uid && r.userId === uid) { seenUsers.add(r.userId); continue; }
         locals.push({
           userId: r.userId,
           username: r.username,
@@ -3046,10 +3045,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         seenUsers.add(r.userId);
       }
 
-      // Process travelers
+      // Process travelers — include current user so they see themselves as "coming to town"
       for (const r of rawRows) {
         if (seenUsers.has(r.userId)) continue;
-        if (uid && r.userId === uid) { seenUsers.add(r.userId); continue; }
         const start = r.startDate ? new Date(r.startDate) : null;
         const end = r.endDate ? new Date(r.endDate) : null;
         const user = {
