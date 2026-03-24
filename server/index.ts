@@ -14,6 +14,7 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 import { RedisStore } from "connect-redis";
 import { Redis } from "ioredis";
+import connectPg from "connect-pg-simple";
 // Vite imports are dynamic - only loaded in development to avoid production crash
 // See: setupVite and serveStatic are dynamically imported below
 
@@ -543,7 +544,7 @@ if (process.env.REDIS_URL) {
   }
 } else {
   console.log(
-    "⚠️ Redis: No REDIS_URL configured - using in-memory session store",
+    "⚠️ Redis: No REDIS_URL configured - will use PostgreSQL session store",
   );
 }
 
@@ -589,11 +590,30 @@ const redisSessionClient = redis
     } as any)
   : null;
 
+// Session store: Redis (if available) → PostgreSQL (persistent across deploys) → Memory (dev only)
+const sessionStore = (() => {
+  if (redis) {
+    console.log("🗄️ Session store: Redis");
+    return new RedisStore({ client: redisSessionClient, ttl: 365 * 24 * 60 * 60 });
+  }
+  const dbUrl = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
+  if (dbUrl) {
+    console.log("🗄️ Session store: PostgreSQL (persistent across deploys)");
+    const PgStore = connectPg(session);
+    return new PgStore({
+      conString: dbUrl,
+      createTableIfMissing: true,
+      ttl: 30 * 24 * 60 * 60, // 30 days in seconds
+      pruneSessionInterval: 60 * 15, // prune expired sessions every 15 minutes
+    });
+  }
+  console.log("⚠️ Session store: Memory (sessions lost on restart)");
+  return undefined;
+})();
+
 app.use(
   session({
-    store: redis
-      ? new RedisStore({ client: redisSessionClient, ttl: 365 * 24 * 60 * 60 })
-      : undefined,
+    store: sessionStore,
     secret: process.env.SESSION_SECRET || "nearby-traveler-secret-key-dev",
     resave: false,
     saveUninitialized: false,
