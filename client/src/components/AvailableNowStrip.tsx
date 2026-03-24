@@ -4,14 +4,13 @@ import { useLocation } from "wouter";
 import { getApiBaseUrl, apiRequest } from "@/lib/queryClient";
 import { Zap, UserPlus, MessageCircle, ChevronLeft, ChevronRight, ChevronRight as ArrowRight, Check, Loader2, XCircle } from "lucide-react";
 
-function timeAgo(dateStr: string): string {
-  const ms = Date.now() - new Date(dateStr).getTime();
+function timeLeft(expiresAt: string): string | null {
+  const ms = new Date(expiresAt).getTime() - Date.now();
+  if (ms <= 0) return null;
   const mins = Math.floor(ms / 60000);
-  if (mins < 60) return mins <= 1 ? "just now" : `${mins}m ago`;
+  if (mins < 60) return `${Math.max(mins, 1)}m left`;
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return hrs === 1 ? "1h ago" : `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  return days === 1 ? "1 day ago" : `${days}d ago`;
+  return `${hrs}h left`;
 }
 
 function getIntent(entry: any): string {
@@ -31,8 +30,21 @@ const SCROLL_AMOUNT = 170;
 export default function AvailableNowStrip({ currentUserId, userCity }: AvailableNowStripProps) {
   const [, setLocation] = useLocation();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [sentRequests, setSentRequests] = useState<Set<number>>(new Set());
   const [sendingTo, setSendingTo] = useState<number | null>(null);
+
+  // Fetch sent requests from API so state reflects cancellations
+  const { data: sentRequestsData } = useQuery<{ sentToUserIds: number[] }>({
+    queryKey: ["/api/available-now/sent-requests"],
+    enabled: !!currentUserId,
+    staleTime: 10000,
+    refetchInterval: 20000,
+  });
+  const [localSent, setLocalSent] = useState<Set<number>>(new Set());
+  const sentRequests = React.useMemo(() => {
+    const set = new Set(sentRequestsData?.sentToUserIds || []);
+    for (const id of localSent) set.add(id);
+    return set;
+  }, [sentRequestsData, localSent]);
 
   const sendJoinRequest = async (toUserId: number) => {
     if (!currentUserId || sentRequests.has(toUserId) || sendingTo) return;
@@ -45,7 +57,7 @@ export default function AvailableNowStrip({ currentUserId, userCity }: Available
         body: JSON.stringify({ toUserId }),
       });
       if (res.ok || res.status === 409) {
-        setSentRequests(prev => new Set(prev).add(toUserId));
+        setLocalSent(prev => new Set(prev).add(toUserId));
       }
     } catch { /* silent */ }
     setSendingTo(null);
@@ -179,21 +191,27 @@ export default function AvailableNowStrip({ currentUserId, userCity }: Available
                       {initial}
                     </div>
                   )}
-                  {/* Name + city overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
-                    <p className="text-white text-xs font-bold leading-tight truncate">{name}</p>
-                    {city && <p className="text-white/80 text-[10px] leading-tight truncate">{city}</p>}
-                  </div>
-                  {/* Time ago */}
-                  <div className="absolute top-1.5 right-1.5">
-                    <span className="text-[9px] font-medium text-white bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
-                      {timeAgo(entry.expiresAt ? new Date(Date.now() - (new Date(entry.expiresAt).getTime() - Date.now())).toISOString() : new Date().toISOString())}
-                    </span>
-                  </div>
+                  {/* Time left */}
+                  {(() => {
+                    const remaining = entry.expiresAt ? timeLeft(entry.expiresAt) : null;
+                    return remaining ? (
+                      <div className="absolute top-1.5 right-1.5">
+                        <span className="text-[9px] font-medium text-white bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
+                          {remaining}
+                        </span>
+                      </div>
+                    ) : null;
+                  })()}
+                </div>
+
+                {/* Name + city below photo */}
+                <div className="px-2.5 pt-1.5">
+                  <p className="text-gray-900 dark:text-white text-xs font-bold leading-tight truncate">{name}</p>
+                  {city && <p className="text-gray-500 dark:text-gray-400 text-[10px] leading-tight truncate">{city}</p>}
                 </div>
 
                 {/* Intent */}
-                <div className="px-2.5 pt-2 pb-1.5">
+                <div className="px-2.5 pt-1 pb-1.5">
                   <p className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 leading-tight line-clamp-2 min-h-[28px]">
                     {intent}
                   </p>

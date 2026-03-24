@@ -7,14 +7,13 @@ import { Zap, UserPlus, MessageCircle, ArrowLeft, MapPin, Check, Loader2 } from 
 import { Button } from "@/components/ui/button";
 import { AvailableNowWidget } from "@/components/AvailableNowWidget";
 
-function timeAgo(dateStr: string): string {
-  const ms = Date.now() - new Date(dateStr).getTime();
+function timeLeft(expiresAt: string): string | null {
+  const ms = new Date(expiresAt).getTime() - Date.now();
+  if (ms <= 0) return null;
   const mins = Math.floor(ms / 60000);
-  if (mins < 60) return mins <= 1 ? "just now" : `${mins}m ago`;
+  if (mins < 60) return `${Math.max(mins, 1)}m left`;
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return hrs === 1 ? "1h ago" : `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  return days === 1 ? "1 day ago" : `${days}d ago`;
+  return `${hrs}h left`;
 }
 
 function getIntent(entry: any): string {
@@ -44,8 +43,21 @@ export default function AvailableNowPage() {
   });
 
   const filtered = availableUsers.filter((e) => e.user?.id !== user?.id && e.isAvailable);
-  const [sentRequests, setSentRequests] = useState<Set<number>>(new Set());
   const [sendingTo, setSendingTo] = useState<number | null>(null);
+
+  // Fetch sent requests from API so state survives refresh and reflects cancellations
+  const { data: sentRequestsData } = useQuery<{ sentToUserIds: number[] }>({
+    queryKey: ["/api/available-now/sent-requests"],
+    enabled: !!user?.id,
+    staleTime: 10000,
+    refetchInterval: 20000,
+  });
+  const [localSent, setLocalSent] = useState<Set<number>>(new Set());
+  const sentRequests = React.useMemo(() => {
+    const set = new Set(sentRequestsData?.sentToUserIds || []);
+    for (const id of localSent) set.add(id);
+    return set;
+  }, [sentRequestsData, localSent]);
 
   const { data: myGroupChats } = useQuery<{ chatrooms: any[] }>({
     queryKey: ["/api/available-now/my-group-chats"],
@@ -71,7 +83,7 @@ export default function AvailableNowPage() {
         body: JSON.stringify({ toUserId }),
       });
       if (res.ok || res.status === 409) {
-        setSentRequests(prev => new Set(prev).add(toUserId));
+        setLocalSent(prev => new Set(prev).add(toUserId));
       }
     } catch { /* silent */ }
     setSendingTo(null);
@@ -133,12 +145,14 @@ export default function AvailableNowPage() {
             const intent = getIntent(entry);
             const activities = entry.activities || [];
 
+            const remaining = entry.expiresAt ? timeLeft(entry.expiresAt) : null;
+
             return (
               <div
                 key={entry.id}
                 className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm"
               >
-                {/* Full bleed photo */}
+                {/* Photo */}
                 <div
                   className="relative w-full h-[200px] cursor-pointer"
                   onClick={() => setLocation(`/profile/${u.id}`)}
@@ -150,17 +164,14 @@ export default function AvailableNowPage() {
                       {initial}
                     </div>
                   )}
-                  {/* Name + city bottom-left */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <p className="text-white text-lg font-bold leading-tight">{name}</p>
-                    {city && <p className="text-white/80 text-sm leading-tight">{city}</p>}
-                  </div>
-                  {/* Time ago top-right */}
-                  <div className="absolute top-3 right-3">
-                    <span className="text-xs font-medium text-white bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">
-                      {timeAgo(entry.createdAt || new Date().toISOString())}
-                    </span>
-                  </div>
+                  {/* Time left top-right */}
+                  {remaining && (
+                    <div className="absolute top-3 right-3">
+                      <span className="text-xs font-medium text-white bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                        {remaining}
+                      </span>
+                    </div>
+                  )}
                   {/* Green dot top-left */}
                   <div className="absolute top-3 left-3">
                     <span className="flex items-center gap-1.5 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
@@ -168,6 +179,12 @@ export default function AvailableNowPage() {
                       Available
                     </span>
                   </div>
+                </div>
+
+                {/* Name + city below photo */}
+                <div className="px-4 pt-3 cursor-pointer" onClick={() => setLocation(`/profile/${u.id}`)}>
+                  <p className="text-gray-900 dark:text-white text-lg font-bold leading-tight">{name}</p>
+                  {city && <p className="text-gray-500 dark:text-gray-400 text-sm leading-tight">{city}</p>}
                 </div>
 
                 {/* Content below photo */}

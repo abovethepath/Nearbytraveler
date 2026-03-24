@@ -25786,6 +25786,15 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
+      // Decline all pending requests to this user so other users
+      // don't see stale "Requested" state on a future session
+      await db.update(availableNowRequests)
+        .set({ status: "declined" })
+        .where(and(
+          eq(availableNowRequests.toUserId, Number(userId)),
+          eq(availableNowRequests.status, "pending")
+        ));
+
       res.json({ ok: true });
     } catch (error: any) {
       console.error("Error clearing availability:", error);
@@ -25908,9 +25917,15 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
+      // Only return pending requests where the target still has an active session
       const sent = await db
         .select({ toUserId: availableNowRequests.toUserId })
         .from(availableNowRequests)
+        .innerJoin(availableNow, and(
+          eq(availableNow.userId, availableNowRequests.toUserId),
+          eq(availableNow.isAvailable, true),
+          gt(availableNow.expiresAt, new Date())
+        ))
         .where(and(
           eq(availableNowRequests.fromUserId, Number(userId)),
           eq(availableNowRequests.status, "pending")
