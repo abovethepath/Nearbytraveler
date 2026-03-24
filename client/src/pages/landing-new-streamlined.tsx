@@ -176,7 +176,7 @@ export default function LandingStreamlined() {
             <video
               key={index}
               src={video.src}
-              className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+              className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out pointer-events-none ${
                 index === currentVideo ? 'opacity-100' : 'opacity-0'
               }`}
               autoPlay
@@ -188,8 +188,8 @@ export default function LandingStreamlined() {
             </video>
           ))}
           
-          {/* Dark overlay for text readability */}
-          <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
+          {/* Dark overlay for text readability — pointer-events:none so it never blocks taps on Android */}
+          <div className="absolute top-0 left-0 w-full h-full bg-black/50 pointer-events-none"></div>
           
           {/* Content overlay */}
           <div className="relative z-10 pt-8 pb-12 sm:pt-12 sm:pb-16">

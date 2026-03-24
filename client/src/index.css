@@ -18,10 +18,11 @@
   display: none;
 }
 
-/* Ensure scroll works everywhere — critical for Android */
+/* Ensure scroll works everywhere — critical for Android/Samsung */
 html, body {
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y pan-x;
 }
 
 /* Allow Radix UI dialogs/modals to lock body scroll (overrides the rule above) */
@@ -154,8 +155,12 @@ input:-webkit-autofill {
 /* Mobile web: prevent body bounce — only content between navbars scrolls */
 @media (max-width: 767px) {
   html, body {
-    overscroll-behavior: none;
     overflow-x: hidden;
+    /* overscroll-behavior:none removed from html/body — it blocks scroll
+       initiation on Samsung Internet. Scoped to .main-with-bottom-nav instead. */
+  }
+  .main-with-bottom-nav {
+    overscroll-behavior-y: contain;
   }
 }
 
