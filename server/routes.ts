@@ -22645,7 +22645,7 @@ Questions? Just reply to this message. Welcome aboard!
               city: majorCity.city,
               state: majorCity.state,
               country: majorCity.country,
-              createdById: 1, // System user ID
+              createdById: 2, // nearbytrav system account
               title: `${majorCity.city} Travel Guide`,
               description: `Discover the best of ${majorCity.city} with curated local experiences and activities.`,
               isPublished: true,
@@ -28763,9 +28763,9 @@ Questions? Just reply to this message. Welcome aboard!
         const [u2] = await db.select({ id: users.id }).from(users).where(eq(users.id, 2)).limit(1);
         if (!u2) {
           const [u1] = await db.select({ id: users.id }).from(users).orderBy(users.id).limit(1);
-          systemUserId = u1?.id ?? 1;
+          systemUserId = u1?.id ?? 2;
         }
-      } catch { systemUserId = 1; }
+      } catch { systemUserId = 2; }
       // Ensure default communities exist (idempotent)
       for (const c of DEFAULT_COMMUNITIES) {
         try {

@@ -855,7 +855,7 @@ export class DatabaseStorage implements IStorage {
             state: chatroomData.state,
             country: chatroomData.country,
             description: chatroomData.description,
-            createdById: 1, // System user creates these chatrooms
+            createdById: 2, // nearbytrav system account
             isActive: true,
             isPublic: true,
             maxMembers: 500
@@ -5333,7 +5333,7 @@ export class DatabaseStorage implements IStorage {
             city,
             state: state || '',
             country,
-            createdById: 1, // System user creates initial city pages
+            createdById: 2, // nearbytrav system account
             description: `Discover ${city} - Connect with locals and travelers, find events, and explore amazing experiences.`,
             coverImage: null,
             createdAt: new Date(),
@@ -5377,7 +5377,7 @@ export class DatabaseStorage implements IStorage {
                 city,
                 state: state || '',
                 country,
-                createdById: 1, // System user (prevents notification spam)
+                createdById: 2, // nearbytrav system account
                 isActive: true,
                 isPublic: true,
                 maxMembers: 500,
