@@ -336,7 +336,7 @@ export default function SettingsPage() {
                       />
                     </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Show when you've read DM messages. If turned off, others won't see blue checkmarks on messages they send you, and you won't see theirs.
+                      Let others know when you've read their messages. If turned off, you won't send read receipts and won't see others' read status.
                     </p>
                   </div>
 

@@ -9605,9 +9605,13 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // GET /api/users/blocked - Get list of blocked users for current user
-  app.get("/api/users/blocked", async (req, res) => {
+  // Also handles /api/users/:id/blocked (client sends userId in URL for cache keying)
+  const handleGetBlockedUsers = async (req: any, res: any) => {
     try {
-      const blockerId = req.session?.user?.id;
+      const sessionUserId = req.session?.user?.id as number | undefined;
+      const headerUserIdRaw = req.headers["x-user-id"] as string | undefined;
+      const headerUserId = headerUserIdRaw ? parseInt(headerUserIdRaw, 10) : undefined;
+      const blockerId = sessionUserId || headerUserId;
 
       if (!blockerId) {
         return res.status(401).json({ error: "Authentication required" });
@@ -9626,19 +9630,39 @@ Questions? Just reply to this message. Welcome aboard!
       .where(eq(blockedUsers.blockerId, blockerId))
       .orderBy(desc(blockedUsers.blockedAt));
 
-      res.json(blocks);
+      // Transform to match BlockedUser interface expected by the client:
+      // { id, blockedUser: { id, username, name, profileImage }, reason, createdAt }
+      const transformed = blocks.map((b: any) => ({
+        id: b.id,
+        blockedUser: {
+          id: b.blockedId,
+          username: b.username,
+          name: b.name,
+          profileImage: b.profileImage,
+        },
+        reason: b.reason || null,
+        createdAt: b.blockedAt,
+      }));
+
+      res.json(transformed);
 
     } catch (error) {
       console.error("❌ Error fetching blocked users:", error);
       res.status(500).json({ error: "Failed to fetch blocked users" });
     }
-  });
+  };
+  app.get("/api/users/blocked", handleGetBlockedUsers);
+  app.get("/api/users/:id/blocked", handleGetBlockedUsers);
 
   // DELETE /api/users/block/:blockedUserId - Unblock a user
-  app.delete("/api/users/block/:blockedUserId", async (req, res) => {
+  // Also handles /api/users/:id/block/:blockedUserId (client sends userId in URL)
+  const handleUnblockUser = async (req: any, res: any) => {
     try {
       const blockedUserId = parseInt(req.params.blockedUserId);
-      const blockerId = req.session?.user?.id;
+      const sessionUserId = req.session?.user?.id as number | undefined;
+      const headerUserIdRaw = req.headers["x-user-id"] as string | undefined;
+      const headerUserId = headerUserIdRaw ? parseInt(headerUserIdRaw, 10) : undefined;
+      const blockerId = sessionUserId || headerUserId;
 
       if (!blockerId) {
         return res.status(401).json({ error: "Authentication required" });
@@ -9665,7 +9689,9 @@ Questions? Just reply to this message. Welcome aboard!
       console.error("❌ Error unblocking user:", error);
       res.status(500).json({ error: "Failed to unblock user" });
     }
-  });
+  };
+  app.delete("/api/users/block/:blockedUserId", handleUnblockUser);
+  app.delete("/api/users/:id/block/:blockedUserId", handleUnblockUser);
 
   // ---------- STEALTH MODE - Hide from specific users ----------
 
