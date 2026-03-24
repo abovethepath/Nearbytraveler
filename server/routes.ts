@@ -3460,84 +3460,92 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const weekEnd = new Date(todayStart.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-      // Metro-aware: expand city to all metro cities so Manhattan Beach sees LA Metro data
-      // Metro-aware: expand "Manhattan Beach" → all 80+ LA Metro cities
+      // Metro-aware: expand city to all metro cities
       const allCities = getExpandedCityList(city);
-      // Build reusable SQL match fragments for each table's city column
-      const tpMatch = allCities.length === 1
-        ? sql`LOWER(destination_city) = ${allCities[0].toLowerCase()}`
-        : sql`LOWER(destination_city) IN (${sql.join(allCities.map(c => sql`${c.toLowerCase()}`), sql`,`)})`;
-      const anMatch = allCities.length === 1
-        ? sql`LOWER(city) = ${allCities[0].toLowerCase()}`
-        : sql`LOWER(city) IN (${sql.join(allCities.map(c => sql`${c.toLowerCase()}`), sql`,`)})`;
-      const evMatch = anMatch; // events also use 'city' column
-      const hmMatch = allCities.length === 1
-        ? sql`LOWER(hometown_city) = ${allCities[0].toLowerCase()}`
-        : sql`LOWER(hometown_city) IN (${sql.join(allCities.map(c => sql`${c.toLowerCase()}`), sql`,`)})`;
+      const cityLower = city.toLowerCase();
+
+      // Build a simple SQL array literal for IN clauses — avoids 80+ parameter bindings
+      const cityListSql = allCities.map(c => `'${c.toLowerCase().replace(/'/g, "''")}'`).join(',');
+
+      // Run each count independently so one failing table doesn't kill the whole response
+      const safeCount = async (label: string, query: string): Promise<number> => {
+        try {
+          const r = await pool.query(query);
+          return parseInt(r.rows[0]?.count || '0', 10);
+        } catch (e: any) {
+          console.error(`CityPulse ${label} query failed:`, e?.message);
+          return 0;
+        }
+      };
 
       const [
-        newTravelersResult,
-        openToMeetResult,
-        eventsThisWeekResult,
-        eventsCreatedTodayResult,
-        connectionsResult,
-        newMembersResult
+        newTravelers,
+        openToMeet,
+        eventsThisWeek,
+        eventsCreatedToday,
+        connectionsToday,
+        newMembersToday,
       ] = await Promise.all([
-        db.execute(sql`
+        safeCount('newTravelers', `
           SELECT COUNT(*)::int as count FROM travel_plans
-          WHERE ${tpMatch}
-            AND start_date >= ${todayStart.toISOString()}
-            AND start_date < ${new Date(todayStart.getTime() + 24 * 60 * 60 * 1000).toISOString()}
-            AND end_date >= ${now.toISOString()}
+          WHERE LOWER(destination_city) IN (${cityListSql})
+            AND start_date >= '${todayStart.toISOString()}'
+            AND start_date < '${new Date(todayStart.getTime() + 24 * 60 * 60 * 1000).toISOString()}'
+            AND end_date >= '${now.toISOString()}'
         `),
-        db.execute(sql`
+        safeCount('openToMeet', `
           SELECT COUNT(*)::int as count FROM available_now
-          WHERE ${anMatch}
+          WHERE LOWER(city) IN (${cityListSql})
             AND is_available = true
-            AND expires_at > ${now.toISOString()}
+            AND expires_at > '${now.toISOString()}'
         `),
-        db.execute(sql`
+        safeCount('eventsThisWeek', `
           SELECT COUNT(*)::int as count FROM events
-          WHERE ${evMatch}
-            AND date < ${weekEnd.toISOString()}
+          WHERE LOWER(city) IN (${cityListSql})
+            AND date < '${weekEnd.toISOString()}'
             AND COALESCE(end_date, date + INTERVAL '4 hours') > NOW()
         `),
-        db.execute(sql`
+        safeCount('eventsCreatedToday', `
           SELECT COUNT(*)::int as count FROM events
-          WHERE ${evMatch}
-            AND created_at >= ${todayStart.toISOString()}
+          WHERE LOWER(city) IN (${cityListSql})
+            AND created_at >= '${todayStart.toISOString()}'
         `),
-        db.execute(sql`
+        safeCount('connectionsToday', `
           SELECT COUNT(*)::int as count FROM connections
           WHERE status = 'accepted'
-            AND created_at >= ${todayStart.toISOString()}
+            AND created_at >= '${todayStart.toISOString()}'
             AND (
-              requester_id IN (SELECT id FROM users WHERE ${hmMatch})
-              OR receiver_id IN (SELECT id FROM users WHERE ${hmMatch})
+              requester_id IN (SELECT id FROM users WHERE LOWER(hometown_city) IN (${cityListSql}))
+              OR receiver_id IN (SELECT id FROM users WHERE LOWER(hometown_city) IN (${cityListSql}))
             )
         `),
-        db.execute(sql`
+        safeCount('newMembersToday', `
           SELECT COUNT(*)::int as count FROM users
-          WHERE ${hmMatch}
-            AND created_at >= ${todayStart.toISOString()}
-        `)
+          WHERE LOWER(hometown_city) IN (${cityListSql})
+            AND created_at >= '${todayStart.toISOString()}'
+        `),
       ]);
 
       const result = {
         city,
-        newTravelers: (newTravelersResult as any).rows?.[0]?.count || 0,
-        openToMeet: (openToMeetResult as any).rows?.[0]?.count || 0,
-        eventsThisWeek: (eventsThisWeekResult as any).rows?.[0]?.count || 0,
-        eventsCreatedToday: (eventsCreatedTodayResult as any).rows?.[0]?.count || 0,
-        connectionsToday: (connectionsResult as any).rows?.[0]?.count || 0,
-        newMembersToday: (newMembersResult as any).rows?.[0]?.count || 0,
+        newTravelers,
+        openToMeet,
+        eventsThisWeek,
+        eventsCreatedToday,
+        connectionsToday,
+        newMembersToday,
       };
 
       await cache.set(cacheKey, result, CACHE_TTL.MEDIUM);
       res.json(result);
     } catch (error: any) {
-      console.error("Error fetching city pulse:", error);
-      res.status(500).json({ message: "Failed to fetch city pulse" });
+      console.error("Error fetching city pulse:", error?.message);
+      // Return zeros instead of 500 so widgets don't disappear
+      res.json({
+        city,
+        newTravelers: 0, openToMeet: 0, eventsThisWeek: 0,
+        eventsCreatedToday: 0, connectionsToday: 0, newMembersToday: 0,
+      });
     }
   });
 
@@ -3753,8 +3761,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       await cache.set(cacheKey, result, 10 * 60);
       res.json(result);
     } catch (error: any) {
-      console.error("Error fetching tonight data:", error);
-      res.status(500).json({ message: "Failed to fetch tonight data" });
+      console.error("Error fetching tonight data:", error?.message);
+      // Return empty data instead of 500 so widget renders gracefully
+      res.json({ tonightEvents: [], availableNowCount: 0, hereNowTravelers: [] });
     }
   });
 
