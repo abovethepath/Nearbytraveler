@@ -291,6 +291,7 @@ export const messages = pgTable("messages", {
   isEdited: boolean("is_edited").default(false),
   editedAt: timestamp("edited_at"),
   isRead: boolean("is_read").default(false),
+  readAt: timestamp("read_at"), // When the recipient opened the conversation and read this message
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -2587,7 +2588,8 @@ export const userNotificationSettings = pgTable("user_notification_settings", {
   messageRequests: boolean("message_requests").default(true),
   eventInvitations: boolean("event_invitations").default(true),
   connectionRequests: boolean("connection_requests").default(true),
-  
+  showReadReceipts: boolean("show_read_receipts").default(true), // WhatsApp-style: show/send DM read receipts
+
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

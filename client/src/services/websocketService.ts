@@ -218,6 +218,15 @@ class WebSocketService {
         });
         break;
 
+      case 'messages_read':
+        // Real-time read receipt: recipient opened conversation, all DMs now read
+        this.emit('messages_read', {
+          readBy: data.readBy,
+          senderId: data.senderId,
+          readAt: data.readAt,
+        });
+        break;
+
       case 'error':
         console.error('WebSocket server error:', data.message);
         break;

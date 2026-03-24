@@ -232,6 +232,21 @@ export default function Messages() {
     refetchInterval: 30000,
   });
 
+  // Read receipt privacy setting — controls whether blue checkmarks are shown
+  const { data: privacySettings } = useQuery({
+    queryKey: [`/api/users/${userId}/notification-settings`],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/users/${userId}/notification-settings`, {
+        credentials: 'include',
+      });
+      if (!res.ok) return { showReadReceipts: true };
+      return res.json();
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+  });
+  const showReadReceipts = privacySettings?.showReadReceipts !== false;
+
   const { data: meetupChatrooms = [], isLoading: meetupChatsLoading } = useQuery({
     queryKey: ['/api/meetup-chatrooms/mine'],
     queryFn: async () => {
@@ -412,11 +427,28 @@ export default function Messages() {
       setTimeout(() => refetchMessages(), 300);
     };
 
+    // Real-time read receipts: when the recipient reads our messages,
+    // update the local cache so checkmarks turn blue without a refetch.
+    const handleMessagesRead = (data: any) => {
+      if (data.senderId === userId) {
+        queryClient.setQueryData(['/api/messages', userId], (old: any) => {
+          if (!Array.isArray(old)) return old;
+          return old.map((m: any) =>
+            Number(m.senderId) === userId && Number(m.receiverId) === data.readBy && !m.readAt
+              ? { ...m, isRead: true, readAt: data.readAt }
+              : m
+          );
+        });
+      }
+    };
+
     // Register event handlers
     websocketService.on('instant_message_received', handleInstantMessage);
+    websocketService.on('messages_read', handleMessagesRead);
 
     return () => {
       websocketService.off('instant_message_received', handleInstantMessage);
+      websocketService.off('messages_read', handleMessagesRead);
     };
   }, [userId, refetchMessages]);
 
@@ -1705,6 +1737,18 @@ export default function Messages() {
                                     {msg.isEdited && (
                                       <span className={`text-xs opacity-60 italic ${isOwnMessage ? 'text-black/50 dark:text-white/60' : 'text-gray-400'}`}>
                                         Edited
+                                      </span>
+                                    )}
+                                    {/* Read receipt checkmarks — only on sent messages.
+                                        Blue ✓✓ = read (has readAt), gray ✓✓ = delivered.
+                                        If user has showReadReceipts OFF, always gray (privacy). */}
+                                    {isOwnMessage && (
+                                      <span className={`text-[11px] ml-0.5 ${
+                                        showReadReceipts && msg.readAt
+                                          ? 'text-[#53bdeb]'
+                                          : 'text-black/40 dark:text-white/40'
+                                      }`}>
+                                        ✓✓
                                       </span>
                                     )}
                                   </div>

@@ -12636,6 +12636,7 @@ Questions? Just reply to this message. Welcome aboard!
           messageType: messageData?.messageType,
           mediaUrl: messageData?.mediaUrl,
           isRead: messageData?.isRead,
+          readAt: messageData?.readAt,
           isEdited: messageData?.isEdited,
           reactions: messageData?.reactions,
           replyToId: messageData?.replyToId,
@@ -12732,10 +12733,11 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`📧 MARK-READ: Marking messages as read between users ${senderId} and ${userId}`);
       
-      // Mark all messages from senderId to userId as read
+      // Mark all messages from senderId to userId as read, setting readAt timestamp
+      const readAt = new Date();
       const result = await db
         .update(messages)
-        .set({ isRead: true })
+        .set({ isRead: true, readAt })
         .where(
           and(
             eq(messages.senderId, parseInt(senderId)),
@@ -12743,9 +12745,38 @@ Questions? Just reply to this message. Welcome aboard!
             eq(messages.isRead, false)
           )
         );
-      
+
       if (process.env.NODE_ENV === 'development') console.log(`📧 MARK-READ: Updated ${result.rowCount} messages to read`);
-      
+
+      // Send real-time read receipt to the sender via WebSocket so their
+      // checkmarks turn blue without a page refresh. Respects privacy:
+      // only sends if the READER has showReadReceipts enabled.
+      if (result.rowCount && result.rowCount > 0) {
+        try {
+          const [readerSettings] = await db
+            .select({ showReadReceipts: userNotificationSettings.showReadReceipts })
+            .from(userNotificationSettings)
+            .where(eq(userNotificationSettings.userId, userId));
+          // Default to true if no settings row exists
+          const sendReceipt = readerSettings?.showReadReceipts !== false;
+          if (sendReceipt) {
+            const wsUsers = app.get('wsConnectedUsers') as Map<number, any> | undefined;
+            const senderWs = wsUsers?.get(parseInt(senderId));
+            if (senderWs && senderWs.readyState === 1 /* WebSocket.OPEN */) {
+              senderWs.send(JSON.stringify({
+                type: 'messages_read',
+                readBy: userId,
+                senderId: parseInt(senderId),
+                readAt: readAt.toISOString(),
+              }));
+            }
+          }
+        } catch (e) {
+          // Non-critical — don't fail the mark-read response
+          if (process.env.NODE_ENV === 'development') console.error('Read receipt WS error:', e);
+        }
+      }
+
       return res.json({ success: true, markedCount: result.rowCount });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error marking messages as read:", error);
@@ -12775,7 +12806,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       const result = await db
         .update(messages)
-        .set({ isRead: true })
+        .set({ isRead: true, readAt: new Date() })
         .where(and(eq(messages.receiverId, userId), eq(messages.isRead, false)));
 
       return res.json({ success: true, markedCount: result.rowCount || 0 });

@@ -323,6 +323,23 @@ export default function SettingsPage() {
                     </p>
                   </div>
 
+                  {/* Read Receipts */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-base font-medium flex items-center gap-2">
+                        <Eye className="h-4 w-4" />
+                        Read Receipts
+                      </Label>
+                      <Switch
+                        checked={notificationSettings?.showReadReceipts !== false}
+                        onCheckedChange={(value) => handlePrivacyToggle("showReadReceipts", value)}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Show when you've read DM messages. If turned off, others won't see blue checkmarks on messages they send you, and you won't see theirs.
+                    </p>
+                  </div>
+
                   {/* Event Invitations */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">

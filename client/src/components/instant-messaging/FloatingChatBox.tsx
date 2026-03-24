@@ -154,12 +154,28 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
       }
     };
 
+    // Real-time read receipts: update cache when recipient reads our messages
+    const handleMessagesRead = (data: any) => {
+      if (data.senderId === user?.id && data.readBy === targetUser.id) {
+        queryClient.setQueryData(['/api/messages', user?.id], (old: any) => {
+          if (!Array.isArray(old)) return old;
+          return old.map((m: any) =>
+            Number(m.senderId) === user?.id && Number(m.receiverId) === targetUser.id && !m.readAt
+              ? { ...m, isRead: true, readAt: data.readAt }
+              : m
+          );
+        });
+      }
+    };
+
     websocketService.on('instant_message_received', handleInstantMessage);
     websocketService.on('typing_indicator', handleTypingIndicator);
+    websocketService.on('messages_read', handleMessagesRead);
 
     return () => {
       websocketService.off('instant_message_received', handleInstantMessage);
       websocketService.off('typing_indicator', handleTypingIndicator);
+      websocketService.off('messages_read', handleMessagesRead);
     };
   }, [user?.id, targetUser.id]);
 
@@ -297,6 +313,19 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
                   }
                   return msg.content;
                 })()}
+                {/* Timestamp + read receipt checkmarks */}
+                <div className="flex items-center justify-end gap-1 mt-0.5">
+                  <span className="text-[10px] opacity-60">
+                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                  {msg.senderId === user?.id && (
+                    <span className={`text-[10px] ${
+                      msg.readAt ? 'text-[#53bdeb]' : 'opacity-40'
+                    }`}>
+                      {msg.readAt ? '✓✓' : '✓✓'}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           ))

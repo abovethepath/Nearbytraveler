@@ -46,6 +46,7 @@ interface Message {
   createdAt: string;
   isEdited?: boolean;
   editedAt?: string;
+  readAt?: string | null;
   sender?: {
     id: number;
     username: string;
@@ -3636,6 +3637,14 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         <div className="flex items-center justify-end gap-1 mt-0.5">
                           <span className="text-[11px] opacity-70">{formatTimestamp(message.createdAt)}</span>
                           {message.isEdited && <span className="text-[11px] opacity-60 italic" data-testid="text-edited-indicator">Edited</span>}
+                          {/* Read receipt checkmarks — DM sent messages only */}
+                          {chatType === 'dm' && isOwnMessage && (
+                            <span className={`text-[11px] ml-0.5 ${
+                              message.readAt ? 'text-[#53bdeb]' : 'opacity-40'
+                            }`}>
+                              {message.readAt ? '✓✓' : '✓✓'}
+                            </span>
+                          )}
                         </div>
                       </div>
                     )}
