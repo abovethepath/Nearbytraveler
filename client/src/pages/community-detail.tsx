@@ -343,23 +343,32 @@ export default function CommunityDetail({ communityId }: { communityId: number }
     );
   }
 
+  const isChatActive = activeSection === "chat";
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      <div className="bg-gradient-to-r from-orange-600 to-pink-500 text-white py-6 px-4">
+    <div className={`bg-gray-50 dark:bg-gray-950 ${isChatActive ? 'h-[100dvh] flex flex-col overflow-hidden' : 'min-h-screen'}`}>
+      <div className={`bg-gradient-to-r from-orange-600 to-pink-500 text-white px-4 shrink-0 ${isChatActive ? 'py-3' : 'py-6'}`}>
         <div className="max-w-3xl mx-auto">
-          <Button variant="ghost" onClick={() => setLocation("/explore")} className="text-white/80 hover:text-white mb-2 -ml-2 px-2">
-            <ArrowLeft className="w-4 h-4 mr-1" /> Explore
-          </Button>
+          {!isChatActive && (
+            <Button variant="ghost" onClick={() => setLocation("/explore")} className="text-white/80 hover:text-white mb-2 -ml-2 px-2">
+              <ArrowLeft className="w-4 h-4 mr-1" /> Explore
+            </Button>
+          )}
           <div className="flex items-center gap-3">
-            <div className="text-4xl">{community.icon}</div>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold flex items-center gap-2">
-                {community.displayName}
-                {community.isPrivate && <Lock className="w-5 h-5 text-white/70" />}
+            {isChatActive && (
+              <Button variant="ghost" onClick={() => setActiveSection("feed")} className="text-white/80 hover:text-white -ml-2 px-2 shrink-0">
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+            )}
+            <div className={isChatActive ? "text-2xl" : "text-4xl"}>{community.icon}</div>
+            <div className="flex-1 min-w-0">
+              <h1 className={`font-bold flex items-center gap-2 ${isChatActive ? 'text-lg' : 'text-2xl'}`}>
+                <span className="truncate">{community.displayName}</span>
+                {community.isPrivate && <Lock className="w-5 h-5 text-white/70 shrink-0" />}
               </h1>
               <p className="text-white/70 text-sm">{community.memberCount || 0} members · {community.category}</p>
             </div>
-            {canEdit && (
+            {canEdit && !isChatActive && (
               <Button
                 type="button"
                 size="sm"
@@ -372,7 +381,7 @@ export default function CommunityDetail({ communityId }: { communityId: number }
               </Button>
             )}
           </div>
-          {community.description && (
+          {community.description && !isChatActive && (
             <p className="text-white/80 text-sm mt-2">{community.description}</p>
           )}
         </div>
@@ -409,8 +418,8 @@ export default function CommunityDetail({ communityId }: { communityId: number }
         </DialogContent>
       </Dialog>
 
-      <div className="max-w-3xl mx-auto px-4 py-4">
-        <div className="flex gap-2 mb-4">
+      <div className={`max-w-3xl mx-auto px-4 ${isChatActive ? 'flex-1 flex flex-col min-h-0 overflow-hidden py-2' : 'py-4'}`}>
+        <div className="flex gap-2 mb-2 shrink-0">
           <Button variant={activeSection === "feed" ? "default" : "outline"} size="sm"
             onClick={() => setActiveSection("feed")}
             className={activeSection === "feed" ? "bg-orange-500 hover:bg-orange-600" : ""}>
@@ -651,13 +660,14 @@ export default function CommunityDetail({ communityId }: { communityId: number }
 
         {activeSection === "chat" && community.chatroomId && (
           isMember ? (
-            <div className="h-[calc(100dvh-408px)] md:h-[calc(100dvh-320px)] min-h-[300px]">
+            <div className="flex-1 min-h-0 overflow-hidden">
               <WhatsAppChat
                 chatId={community.chatroomId}
                 chatType="chatroom"
                 title={community.name}
                 subtitle={`${community.memberCount || 0} members`}
                 currentUserId={currentUser?.id}
+                embedded
               />
             </div>
           ) : (

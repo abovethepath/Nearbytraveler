@@ -89,11 +89,13 @@ interface WhatsAppChatProps {
   readOnly?: boolean;
   readOnlyBanner?: string;
   graceBanner?: string;
+  /** When true, disables mobile fixed positioning so the chat can be embedded inside another page layout. */
+  embedded?: boolean;
 }
 
 
 export default function WhatsAppChat(props: WhatsAppChatProps) {
-  const { chatId, chatType, title, subtitle, chatLocation, currentUserId, onBack, eventId, eventImageUrl, meetupId, readOnly, readOnlyBanner, graceBanner } = props;
+  const { chatId, chatType, title, subtitle, chatLocation, currentUserId, onBack, eventId, eventImageUrl, meetupId, readOnly, readOnlyBanner, graceBanner, embedded } = props;
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const isOnline = useIsOnline();
@@ -278,8 +280,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   }, []);
 
   // VisualViewport API — resize chat container when iOS/Android keyboard opens
+  // Skip for embedded mode — the parent flex layout handles sizing.
   useEffect(() => {
-    if (!isMobileWeb || typeof window === 'undefined') return;
+    if (embedded || !isMobileWeb || typeof window === 'undefined') return;
     const vv = window.visualViewport;
     if (!vv) return;
 
@@ -2461,8 +2464,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   return (
     <div 
       ref={chatContainerRef} 
-      className={`flex bg-gray-900 text-white overflow-hidden w-full h-full min-h-0 ${isMobileWeb ? 'fixed left-0 right-0 z-50' : ''}`} 
-      style={isMobileWeb ? {
+      className={`flex bg-gray-900 text-white overflow-hidden w-full h-full min-h-0 ${isMobileWeb && !embedded ? 'fixed left-0 right-0 z-50' : ''}`}
+      style={isMobileWeb && !embedded ? {
         top: 0,
         height: viewportHeight ? `${viewportHeight}px` : '100vh',
         maxHeight: viewportHeight ? `${viewportHeight}px` : '100vh',
