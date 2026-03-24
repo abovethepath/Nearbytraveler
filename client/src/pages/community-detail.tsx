@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Users, MessageSquare, Send, Lock, Trash2, Clock, Heart, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Users, MessageSquare, Send, Lock, Trash2, Clock, Heart, MessageCircle, ChevronDown, ChevronUp, MapPin, Zap, ChevronRight } from "lucide-react";
 import { SkeletonList, SkeletonUserCard } from "@/components/ui/skeleton-loaders";
 import WhatsAppChat from "@/components/WhatsAppChat";
 
@@ -201,6 +201,40 @@ export default function CommunityDetail({ communityId }: { communityId: number }
   });
 
   const isMember = members.some((m: any) => m.id === currentUser?.id);
+
+  // Chatroom messages for preview widget
+  const { data: chatMessages = [] } = useQuery<any[]>({
+    queryKey: ["/api/chatrooms", community?.chatroomId, "messages-preview"],
+    queryFn: async () => {
+      if (!community?.chatroomId) return [];
+      const res = await fetch(`${getApiBaseUrl()}/api/chatrooms/${community.chatroomId}/messages?limit=3`, {
+        credentials: "include",
+        headers: currentUser?.id ? { "x-user-id": String(currentUser.id) } : {},
+      });
+      if (!res.ok) return [];
+      const msgs = await res.json();
+      return Array.isArray(msgs) ? msgs.slice(0, 3) : [];
+    },
+    enabled: !!community?.chatroomId && activeSection === "feed",
+  });
+
+  // Compute community stats from member data
+  const memberStats = (() => {
+    const countries = new Set<string>();
+    const cities = new Set<string>();
+    let nearbyCount = 0;
+    const userCity = currentUser?.hometownCity || currentUser?.destinationCity || "";
+    for (const m of members) {
+      if (m.hometownCountry) countries.add(m.hometownCountry);
+      if (m.hometownCity) {
+        cities.add(m.hometownCity);
+        if (userCity && m.hometownCity.toLowerCase() === userCity.toLowerCase() && m.id !== currentUser?.id) {
+          nearbyCount++;
+        }
+      }
+    }
+    return { countries: countries.size, cities: cities.size, nearbyCount, userCity };
+  })();
 
   const postIds = posts.map((p: any) => p.id);
 
@@ -396,103 +430,222 @@ export default function CommunityDetail({ communityId }: { communityId: number }
 
         {activeSection === "feed" && (
           <div className="space-y-4">
-            <Card className="border border-gray-200 dark:border-gray-700">
+
+            {/* WIDGET 1 — Community Pulse */}
+            <Card className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
               <CardContent className="p-4">
-                <Textarea
-                  placeholder="Share something with the community..."
-                  value={newPost}
-                  onChange={(e) => setNewPost(e.target.value)}
-                  className="min-h-[60px] resize-none"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey && newPost.trim()) {
-                      e.preventDefault();
-                      createPostMutation.mutate(newPost.trim());
-                    }
-                  }}
-                />
-                <div className="flex justify-end mt-2">
-                  <Button size="sm" className="bg-orange-500 hover:bg-orange-600"
-                    onClick={() => { if (newPost.trim()) createPostMutation.mutate(newPost.trim()); }}
-                    disabled={!newPost.trim() || createPostMutation.isPending}>
-                    <Send className="w-4 h-4 mr-1" /> {createPostMutation.isPending ? "Posting..." : "Post"}
-                  </Button>
+                <div className="flex items-center gap-2 mb-3">
+                  <Zap className="w-4 h-4 text-orange-500" />
+                  <h3 className="font-bold text-sm">Community Pulse</h3>
                 </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="text-center p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="text-lg font-bold text-orange-500">{community.memberCount || members.length}</div>
+                    <div className="text-[11px] text-gray-500 dark:text-gray-400">Members</div>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="text-lg font-bold text-blue-500">{memberStats.countries || 1}</div>
+                    <div className="text-[11px] text-gray-500 dark:text-gray-400">Countries</div>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="text-lg font-bold text-emerald-500">{memberStats.cities || 1}</div>
+                    <div className="text-[11px] text-gray-500 dark:text-gray-400">Cities</div>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="text-lg font-bold text-purple-500">{memberStats.nearbyCount}</div>
+                    <div className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                      {memberStats.userCity ? `Near you` : "Nearby"}
+                    </div>
+                  </div>
+                </div>
+                {memberStats.nearbyCount > 0 && memberStats.userCity && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-1">
+                    <MapPin className="w-3 h-3" /> {memberStats.nearbyCount} member{memberStats.nearbyCount !== 1 ? "s" : ""} near you in {memberStats.userCity}
+                  </p>
+                )}
               </CardContent>
             </Card>
 
-            {loadingPosts ? (
-              <SkeletonList count={3} />
-            ) : posts.length === 0 ? (
-              <div className="text-center py-12">
-                <MessageSquare className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                <p className="text-gray-500 dark:text-gray-400 font-medium">No posts yet</p>
-                <p className="text-gray-400 text-sm">Be the first to share something!</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {posts.map((post: any) => {
-                  const likeInfo = likesData[post.id] || { count: 0, liked: false };
-                  const replyCount = replyCounts[post.id] || 0;
-                  const showReplies = expandedReplies.has(post.id);
+            {/* WIDGET 2 — Members Strip */}
+            {members.length > 0 && (
+              <Card className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-blue-500" />
+                      <h3 className="font-bold text-sm">Members</h3>
+                    </div>
+                    <Button variant="ghost" size="sm" className="text-xs text-gray-500 h-6 px-2" onClick={() => setActiveSection("members")}>
+                      View all <ChevronRight className="w-3 h-3 ml-1" />
+                    </Button>
+                  </div>
+                  <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
+                    {members.slice(0, 8).map((member: any) => (
+                      <div key={member.id} className="flex flex-col items-center gap-1 shrink-0 cursor-pointer" onClick={() => setLocation(`/profile/${member.username || member.id}`)}>
+                        <UserAvatar user={member} size="md" />
+                        <span className="text-[11px] font-medium truncate max-w-[60px]">{member.name || member.username}</span>
+                        <span className="text-[10px] text-gray-400 truncate max-w-[60px]">{member.hometownCity || ""}</span>
+                      </div>
+                    ))}
+                    {members.length > 8 && (
+                      <div className="flex flex-col items-center justify-center gap-1 shrink-0 cursor-pointer" onClick={() => setActiveSection("members")}>
+                        <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs font-bold text-gray-500">
+                          +{members.length - 8}
+                        </div>
+                        <span className="text-[11px] text-gray-400">more</span>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-                  return (
-                    <Card key={post.id} className="border border-gray-200 dark:border-gray-700">
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="cursor-pointer" onClick={() => setLocation(`/profile/${post.userId}`)}>
-                            <UserAvatar user={{ profileImage: post.profileImage, username: post.username, avatarColor: post.avatarColor }} size="md" />
-                          </div>
+            {/* WIDGET 3 — Chat Preview */}
+            {community.chatroomId && (
+              <Card className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <MessageCircle className="w-4 h-4 text-emerald-500" />
+                      <h3 className="font-bold text-sm">Community Chat</h3>
+                    </div>
+                    <Button variant="ghost" size="sm" className="text-xs text-gray-500 h-6 px-2" onClick={() => setActiveSection("chat")}>
+                      Open Chat <ChevronRight className="w-3 h-3 ml-1" />
+                    </Button>
+                  </div>
+                  {chatMessages.length === 0 ? (
+                    <div className="text-center py-4">
+                      <p className="text-xs text-gray-400">No messages yet — start the conversation!</p>
+                      <Button size="sm" variant="outline" className="mt-2 text-xs h-7" onClick={() => setActiveSection("chat")}>
+                        Open Chat
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {chatMessages.map((msg: any) => (
+                        <div key={msg.id} className="flex items-start gap-2">
+                          <UserAvatar user={{ profileImage: msg.senderProfileImage || msg.profileImage, username: msg.senderUsername || msg.username, avatarColor: msg.avatarColor }} size="sm" />
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-sm cursor-pointer hover:underline" onClick={() => setLocation(`/profile/${post.userId}`)}>
-                                  {post.username}
-                                </span>
-                                <span className="text-xs text-gray-400 flex items-center gap-1">
-                                  <Clock className="w-3 h-3" /> {timeAgo(post.createdAt)}
-                                </span>
-                              </div>
-                              {(post.userId === currentUser?.id) && (
-                                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-500 h-6 w-6 p-0"
-                                  onClick={() => deletePostMutation.mutate(post.id)}>
-                                  <Trash2 className="w-3 h-3" />
-                                </Button>
-                              )}
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-semibold">{msg.senderUsername || msg.username}</span>
+                              <span className="text-[10px] text-gray-400">{timeAgo(msg.createdAt)}</span>
                             </div>
-                            <p className="text-sm text-gray-700 dark:text-gray-300 mt-1 whitespace-pre-wrap">{post.content}</p>
-
-                            <div className="flex items-center gap-4 mt-3 pt-2 border-t border-gray-200 dark:border-gray-800">
-                              <button
-                                className={`flex items-center gap-1.5 text-xs transition-colors ${likeInfo.liked ? "text-red-500" : "text-gray-400 hover:text-red-400"}`}
-                                onClick={() => likeMutation.mutate(post.id)}
-                              >
-                                <Heart className={`w-4 h-4 ${likeInfo.liked ? "fill-red-500" : ""}`} />
-                                <span>{likeInfo.count > 0 ? likeInfo.count : ""}</span>
-                              </button>
-
-                              <button
-                                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-orange-500 transition-colors"
-                                onClick={() => toggleReplies(post.id)}
-                              >
-                                <MessageCircle className="w-4 h-4" />
-                                <span>{replyCount > 0 ? replyCount : ""}</span>
-                                {replyCount > 0 && (
-                                  showReplies ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
-                                )}
-                              </button>
-                            </div>
-
-                            {showReplies && (
-                              <PostReplies postId={post.id} currentUser={currentUser} />
-                            )}
+                            <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{msg.content}</p>
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             )}
+
+            {/* WIDGET 4 — Recent Posts */}
+            <Card className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <MessageSquare className="w-4 h-4 text-orange-500" />
+                  <h3 className="font-bold text-sm">Community Posts</h3>
+                </div>
+
+                {/* Post box */}
+                <div className="mb-4">
+                  <Textarea
+                    placeholder="Share something with the community..."
+                    value={newPost}
+                    onChange={(e) => setNewPost(e.target.value)}
+                    className="min-h-[60px] resize-none"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey && newPost.trim()) {
+                        e.preventDefault();
+                        createPostMutation.mutate(newPost.trim());
+                      }
+                    }}
+                  />
+                  <div className="flex justify-end mt-2">
+                    <Button size="sm" className="bg-orange-500 hover:bg-orange-600"
+                      onClick={() => { if (newPost.trim()) createPostMutation.mutate(newPost.trim()); }}
+                      disabled={!newPost.trim() || createPostMutation.isPending}>
+                      <Send className="w-4 h-4 mr-1" /> {createPostMutation.isPending ? "Posting..." : "Post"}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Posts list */}
+                {loadingPosts ? (
+                  <SkeletonList count={3} />
+                ) : posts.length === 0 ? (
+                  <div className="text-center py-6">
+                    <MessageSquare className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                    <p className="text-gray-500 dark:text-gray-400 font-medium text-sm">No posts yet</p>
+                    <p className="text-gray-400 text-xs">Be the first to share something!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {posts.map((post: any) => {
+                      const likeInfo = likesData[post.id] || { count: 0, liked: false };
+                      const replyCount = replyCounts[post.id] || 0;
+                      const showReplies = expandedReplies.has(post.id);
+
+                      return (
+                        <div key={post.id} className="border border-gray-100 dark:border-gray-800 rounded-lg p-3">
+                          <div className="flex items-start gap-3">
+                            <div className="cursor-pointer" onClick={() => setLocation(`/profile/${post.userId}`)}>
+                              <UserAvatar user={{ profileImage: post.profileImage, username: post.username, avatarColor: post.avatarColor }} size="md" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-sm cursor-pointer hover:underline" onClick={() => setLocation(`/profile/${post.userId}`)}>
+                                    {post.username}
+                                  </span>
+                                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                                    <Clock className="w-3 h-3" /> {timeAgo(post.createdAt)}
+                                  </span>
+                                </div>
+                                {(post.userId === currentUser?.id) && (
+                                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-500 h-6 w-6 p-0"
+                                    onClick={() => deletePostMutation.mutate(post.id)}>
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-700 dark:text-gray-300 mt-1 whitespace-pre-wrap">{post.content}</p>
+
+                              <div className="flex items-center gap-4 mt-3 pt-2 border-t border-gray-100 dark:border-gray-800">
+                                <button
+                                  className={`flex items-center gap-1.5 text-xs transition-colors ${likeInfo.liked ? "text-red-500" : "text-gray-400 hover:text-red-400"}`}
+                                  onClick={() => likeMutation.mutate(post.id)}
+                                >
+                                  <Heart className={`w-4 h-4 ${likeInfo.liked ? "fill-red-500" : ""}`} />
+                                  <span>{likeInfo.count > 0 ? likeInfo.count : ""}</span>
+                                </button>
+
+                                <button
+                                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-orange-500 transition-colors"
+                                  onClick={() => toggleReplies(post.id)}
+                                >
+                                  <MessageCircle className="w-4 h-4" />
+                                  <span>{replyCount > 0 ? replyCount : ""}</span>
+                                  {replyCount > 0 && (
+                                    showReplies ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                                  )}
+                                </button>
+                              </div>
+
+                              {showReplies && (
+                                <PostReplies postId={post.id} currentUser={currentUser} />
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
           </div>
         )}
 
