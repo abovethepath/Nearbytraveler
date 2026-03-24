@@ -831,7 +831,7 @@ function Navbar() {
           <div
             id="mobile-menu"
           >
-            <div className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
+            <div className="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 shadow-lg max-h-[calc(100dvh-4rem)] overflow-y-auto">
               <div className="px-4 py-6 space-y-4">
                 {navItems.map((item) => (
                   <Link

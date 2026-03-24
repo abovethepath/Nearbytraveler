@@ -2467,8 +2467,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       className={`flex bg-gray-900 text-white overflow-hidden w-full h-full min-h-0 ${isMobileWeb && !embedded ? 'fixed left-0 right-0 z-50' : ''}`}
       style={isMobileWeb && !embedded ? {
         top: 0,
-        height: viewportHeight ? `${viewportHeight}px` : '100vh',
-        maxHeight: viewportHeight ? `${viewportHeight}px` : '100vh',
+        height: viewportHeight ? `${viewportHeight}px` : '100dvh',
+        maxHeight: viewportHeight ? `${viewportHeight}px` : '100dvh',
         position: 'fixed',
         left: 0,
         right: 0,
@@ -3122,7 +3122,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                   data-testid="input-member-search"
                 />
               </div>
-              <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-180px)]">
+              <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100dvh-180px)]">
                 {isMembersAccessDenied ? (
                   <div className="text-center py-6 px-4">
                     <p className="text-amber-400 text-sm font-medium mb-1">Meetup has ended</p>

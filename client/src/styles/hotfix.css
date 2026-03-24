@@ -81,6 +81,14 @@ html, body { overflow-x: hidden; }
   body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed .profile-tabbar.profile-tabbar-hero > [role="tab"] {
     flex: 0 0 auto !important;
     white-space: nowrap !important;
+    margin-right: 14px; /* fallback for Android WebViews that don't support flex gap */
+  }
+  /* Remove margin fallback when gap is supported */
+  @supports (gap: 14px) {
+    body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed .profile-tabbar.profile-tabbar-hero > button,
+    body:not([data-native-ios="true"]):not(.native-ios-app) .profile-hero-fixed .profile-tabbar.profile-tabbar-hero > [role="tab"] {
+      margin-right: 0;
+    }
   }
 }
 

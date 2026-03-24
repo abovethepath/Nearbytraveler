@@ -2629,8 +2629,8 @@ body.native-ios-app .native-ios-messages {
     box-sizing: border-box !important;
     overflow: hidden !important;
     z-index: 50 !important;
-    touch-action: none;
-    -webkit-overflow-scrolling: auto;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
   }
   body:not([data-native-ios="true"]):not(.native-ios-app) [data-chat-page="true"] .chat-input-area {
     /* Stick input above iPhone home bar; both navbars are hidden via is-chat-page */
