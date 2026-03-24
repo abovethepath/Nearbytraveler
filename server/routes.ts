@@ -22131,6 +22131,7 @@ Questions? Just reply to this message. Welcome aboard!
         messageRequests: true,
         eventInvitations: true,
         connectionRequests: true,
+        showReadReceipts: true,
       });
     } catch (error: any) {
       console.error("Error fetching notification settings:", error);
@@ -22141,14 +22142,21 @@ Questions? Just reply to this message. Welcome aboard!
   app.put("/api/users/:id/notification-settings", async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
-      const sessionUserId = (req.session as any)?.user?.id;
+      const sessionUserId = (req.session as any)?.user?.id as number | undefined;
+      const headerUserIdRaw = req.headers["x-user-id"] as string | undefined;
+      const headerUserId = headerUserIdRaw ? parseInt(headerUserIdRaw, 10) : undefined;
+      const authUserId = sessionUserId || headerUserId;
 
       if (isNaN(userId)) {
         return res.status(400).json({ message: "Invalid user ID" });
       }
 
+      if (!authUserId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
       // Verify user is updating their own settings
-      if (sessionUserId !== userId) {
+      if (authUserId !== userId) {
         return res.status(403).json({ message: "Cannot update other user's settings" });
       }
 
@@ -22186,7 +22194,10 @@ Questions? Just reply to this message. Welcome aboard!
   // Legacy notification settings endpoint (for backward compatibility)
   app.put("/api/users/notification-settings", async (req, res) => {
     try {
-      const userId = (req.session as any)?.user?.id;
+      const sessionUserId = (req.session as any)?.user?.id as number | undefined;
+      const headerUserIdRaw = req.headers["x-user-id"] as string | undefined;
+      const headerUserId = headerUserIdRaw ? parseInt(headerUserIdRaw, 10) : undefined;
+      const userId = sessionUserId || headerUserId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
