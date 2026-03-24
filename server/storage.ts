@@ -477,26 +477,8 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   // Metropolitan area consolidation data
-  private GLOBAL_METROPOLITAN_AREAS = [
-    {
-      mainCity: 'Los Angeles Metro',
-      state: 'California',
-      country: 'United States',
-      cities: ['Los Angeles', 'Santa Monica', 'Venice', 'Beverly Hills', 'West Hollywood', 'Pasadena', 'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 'Playa del Rey', 'Culver City', 'Marina del Rey']
-    },
-    {
-      mainCity: 'Nashville Metro', 
-      state: 'Tennessee',
-      country: 'United States',
-      cities: ['Nashville', 'Franklin', 'Murfreesboro', 'Clarksville', 'Hendersonville', 'Smyrna', 'Brentwood']
-    },
-    {
-      mainCity: 'New York City',
-      state: 'New York',
-      country: 'United States', 
-      cities: ['New York City', 'New York', 'Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island']
-    }
-  ];
+  // Metro area mapping is now delegated to shared/metro-areas.ts (76+ LA cities, 60+ NY, etc.)
+  // See consolidateToMetropolitanArea() below which calls getMetroAreaName().
 
   // Helper method to format dates for API responses to prevent timezone shifts
   private formatDateForAPI(date: Date): string {
@@ -508,35 +490,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   // LA METRO CONSOLIDATION ENABLED: Consolidate LA cities to "Los Angeles Metro" as required
-  private consolidateToMetropolitanArea(city: string, state?: string | null, country?: string | null): string {
+  private consolidateToMetropolitanArea(city: string, _state?: string | null, _country?: string | null): string {
     if (!city) return city;
-    
-    const cityLower = city.toLowerCase();
-    
-    // LA Metro consolidation - this IS the correct behavior per user requirements
-    for (const metro of this.GLOBAL_METROPOLITAN_AREAS) {
-      if (metro.cities.some(metroCity => metroCity.toLowerCase() === cityLower)) {
-        return metro.mainCity;
-      }
-    }
-    
-    return city;
-    const stateLower = (state || '').toLowerCase();
-    const countryLower = (country || '').toLowerCase();
-    
-    for (const metro of this.GLOBAL_METROPOLITAN_AREAS) {
-      const metroState = (metro.state || '').toLowerCase();
-      const metroCountry = metro.country.toLowerCase();
-      
-      if (country && metroCountry !== countryLower) continue;
-      if (state && metro.state && metroState !== stateLower) continue;
-      
-      if (metro.cities.some(metroCity => metroCity.toLowerCase() === cityLower)) {
-        return metro.mainCity;
-      }
-    }
-    
-    return city;
+    // Delegate to the canonical metro mapping in shared/metro-areas.ts (76+ LA cities, etc.)
+    return getMetroAreaName(city);
   }
   // User methods
   async getUser(id: number): Promise<User | undefined> {
