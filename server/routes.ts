@@ -471,17 +471,6 @@ function getMetropolitanAreaCities(mainCity: string, state?: string, country?: s
   return [mainCity];
 }
 
-// DISABLED: Legacy functions for backwards compatibility  
-function consolidateToLAMetro(city: string, state?: string): string {
-  // DISABLED: Return original city without consolidation
-  return city || '';
-}
-
-function getLAMetroCities(): string[] {
-  // DISABLED: Return empty array - no more LA metro consolidation
-  return [];
-}
-
 // Helper: Get all cities to search for a given city (includes metro area expansion)
 // If city is part of a metro area OR IS a metro area name, returns all cities in that metro
 // If not a metro city, returns just the original city
