@@ -25707,8 +25707,10 @@ Questions? Just reply to this message. Welcome aboard!
             linkUrl: "/quick-meetups",
           });
 
-          // Find other users in the same city who want city activity alerts
-          const cityLower = city.toLowerCase();
+          // Find other users in the same city/metro who want city activity alerts
+          const metroCities = getExpandedCityList(city);
+          const cityMatchValues = metroCities.map(c => c.toLowerCase());
+          const cityInList = cityMatchValues.map(c => sql`${c}`);
           const recipientRows = await db.execute(sql`
             SELECT u.id, u.expo_push_token
             FROM users u
@@ -25718,11 +25720,11 @@ Questions? Just reply to this message. Welcome aboard!
               AND u.expo_push_token != ''
               AND (uns.city_activity_alerts IS NULL OR uns.city_activity_alerts = true)
               AND (
-                LOWER(u.hometown_city) = ${cityLower}
+                LOWER(u.hometown_city) IN (${sql.join(cityInList, sql`,`)})
                 OR EXISTS (
                   SELECT 1 FROM travel_plans tp
                   WHERE tp.user_id = u.id
-                    AND LOWER(tp.destination_city) = ${cityLower}
+                    AND LOWER(tp.destination_city) IN (${sql.join(cityInList, sql`,`)})
                     AND tp.start_date <= NOW()
                     AND tp.end_date >= NOW()
                 )
@@ -26211,12 +26213,20 @@ Questions? Just reply to this message. Welcome aboard!
       const { city } = req.query;
       if (!city) return res.status(400).json({ count: 0 });
 
+      const normalizedCity = (city as string).split(',')[0].trim();
       const now = new Date();
+
+      // Metro-aware: expand to all metro cities so "Manhattan Beach" counts all LA Metro
+      const allCities = getExpandedCityList(normalizedCity);
+      const cityCondition = allCities.length === 1
+        ? ilike(availableNow.city, allCities[0])
+        : or(...allCities.flatMap(c => [ilike(availableNow.city, c), ilike(availableNow.city, `${c},%`)]));
+
       const [result] = await db.select({ count: count() })
         .from(availableNow)
         .where(and(
           eq(availableNow.isAvailable, true),
-          ilike(availableNow.city, city as string),
+          cityCondition,
           gte(availableNow.expiresAt, now)
         ));
 
