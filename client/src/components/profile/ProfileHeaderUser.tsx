@@ -400,7 +400,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 <div className="text-sm sm:text-base font-semibold crisp-hero-text flex items-center gap-2 flex-wrap text-white" style={{ color: '#ffffff' }}>
                   Nearby Local · <span style={{ color: '#ffffff' }}>{hometown}</span>
                   {isNewToTown && (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800 dark:bg-green-900 dark:border-green-700 dark:text-green-200">
                       New to Town
                     </span>
                   )}
@@ -446,7 +446,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             <div className="lg:hidden mt-2 space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 {isNewToTown && (
-                  <span className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm text-green-800">
+                  <span className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm text-green-800 dark:bg-green-900 dark:border-green-700 dark:text-green-200">
                     New to Town
                   </span>
                 )}
@@ -591,7 +591,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         {isMobileWeb && (
                           <div className="flex flex-col gap-1 min-w-0 w-full max-w-[280px] sm:max-w-none mt-4">
                             {isNewToTown && (
-                              <span className="inline-flex items-center self-start whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm text-green-800 mb-1">
+                              <span className="inline-flex items-center self-start whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm text-green-800 dark:bg-green-900 dark:border-green-700 dark:text-green-200 mb-1">
                                 New to Town
                               </span>
                             )}
@@ -637,7 +637,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 <div className="text-sm sm:text-base font-semibold crisp-hero-text flex items-center gap-2 flex-wrap text-white" style={{ color: '#ffffff' }}>
                                   Nearby Local · <span style={{ color: '#ffffff' }}>{hometown}</span>
                                   {isNewToTown && (
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800 dark:bg-green-900 dark:border-green-700 dark:text-green-200">
                                       New to Town
                                     </span>
                                   )}
@@ -1010,7 +1010,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     <span style={{ color: "#ffffff" }}>{hometown}</span>
                   </span>
                   {!isMobileWeb && isNewToTown && (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 border border-green-300 text-green-800 dark:bg-green-900 dark:border-green-700 dark:text-green-200">
                       New to Town
                     </span>
                   )}
@@ -1089,7 +1089,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               </div>
               {/* Mobile web: keep badge centered under avatar */}
               {isMobileWeb && isNewToTown && (
-                <span className="mt-2 inline-flex items-center self-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm text-green-800">
+                <span className="mt-2 inline-flex items-center self-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-green-100 border border-green-300 shadow-sm text-green-800 dark:bg-green-900 dark:border-green-700 dark:text-green-200">
                   New to Town
                 </span>
               )}
