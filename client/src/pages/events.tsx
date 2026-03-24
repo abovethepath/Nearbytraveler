@@ -1274,28 +1274,28 @@ export default function Events() {
                         )}
                       </div>
 
-                      <CardContent className="p-3 sm:p-4">
+                      <CardContent className="p-3 sm:p-4 min-w-0 overflow-hidden">
                         {/* Title */}
-                        <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-lg line-clamp-2 mb-1.5 sm:mb-2 group-hover:text-orange-600 transition-colors">
+                        <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-lg line-clamp-2 mb-1.5 sm:mb-2 group-hover:text-orange-600 transition-colors break-words [overflow-wrap:anywhere]">
                           {event.title}
                         </h3>
 
                         {/* Location */}
-                        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1 sm:mb-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1 sm:mb-2 min-w-0">
                           <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-                          <span className="line-clamp-1">{formatEventLocation(event)}</span>
+                          <span className="truncate min-w-0">{formatEventLocation(event)}</span>
                         </div>
 
                         {/* Time */}
-                        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2 sm:mb-3">
+                        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2 sm:mb-3 min-w-0">
                           <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-                          <span>
+                          <span className="truncate">
                             {new Date(event.date).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                           </span>
                         </div>
 
                         {/* Attendees Row */}
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700 min-w-0">
                           <div className="flex items-center gap-2">
                             {/* Attendee Avatars */}
                             <div className="flex -space-x-2">
@@ -1351,12 +1351,12 @@ export default function Events() {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Past Events</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                   {filteredPastEvents.map((event) => (
-                    <Card 
-                      key={event.id} 
-                      className="cursor-pointer hover:shadow-lg transition-shadow duration-200 opacity-75 w-full overflow-hidden"
+                    <Card
+                      key={event.id}
+                      className="cursor-pointer hover:shadow-lg transition-shadow duration-200 opacity-75 w-full max-w-full min-w-0 overflow-hidden"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
-                      <CardHeader className="pb-3">
+                      <CardHeader className="pb-3 min-w-0 overflow-hidden">
                         {event.imageUrl && (
                           <img
                             src={event.imageUrl}
@@ -1364,33 +1364,35 @@ export default function Events() {
                             className="w-full h-40 object-cover rounded-lg mb-3"
                           />
                         )}
-                        <div className="flex items-start justify-between">
-                          <CardTitle className="text-base font-semibold line-clamp-2 dark:text-white">{event.title}</CardTitle>
-                          <div className="flex flex-col gap-1 ml-2">
+                        <div className="flex items-start justify-between min-w-0">
+                          <CardTitle className="text-base font-semibold line-clamp-2 dark:text-white min-w-0 break-words [overflow-wrap:anywhere]">{event.title}</CardTitle>
+                          <div className="flex flex-col gap-1 ml-2 shrink-0">
                             <Badge variant="outline" className="shrink-0 text-xs">
                               Ended
                             </Badge>
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent>
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                            <Calendar className="w-4 h-4" />
-                            {new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} at{" "}
-                            {new Date(event.date).toLocaleTimeString([], { 
-                              hour: '2-digit', 
-                              minute: '2-digit' 
-                            })}
+                      <CardContent className="min-w-0 overflow-hidden">
+                        <div className="space-y-3 min-w-0">
+                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 min-w-0">
+                            <Calendar className="w-4 h-4 shrink-0" />
+                            <span className="truncate">
+                              {new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} at{" "}
+                              {new Date(event.date).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </span>
                           </div>
 
-                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                            <MapPin className="w-4 h-4" />
-                            {formatEventLocation(event)}
+                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 min-w-0">
+                            <MapPin className="w-4 h-4 shrink-0" />
+                            <span className="truncate">{formatEventLocation(event)}</span>
                           </div>
 
                           {event.description && (
-                            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 break-words">
                               {event.description}
                             </p>
                           )}
