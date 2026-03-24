@@ -120,11 +120,15 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const destState   = (currentUser as any)?.destinationState  || (currentUser as any)?.destination_state  || rawDestParts[1]?.trim() || null;
   const destCountry = (currentUser as any)?.destinationCountry || (currentUser as any)?.destination_country || rawDestParts[2]?.trim() || null;
 
-  // Available Now ALWAYS uses hometown — the user is physically at home until
-  // they actually travel. Never use the travel destination for Available Now.
-  const userCity    = currentUser?.hometownCity    || currentUser?.city    || "";
-  const userState   = currentUser?.hometownState   || currentUser?.state   || "";
-  const userCountry = currentUser?.hometownCountry || currentUser?.country || "USA";
+  // Available Now location: default to hometown, let user switch to destination if traveling
+  const homeCity    = currentUser?.hometownCity    || currentUser?.city    || "";
+  const homeState   = currentUser?.hometownState   || currentUser?.state   || "";
+  const homeCountry = currentUser?.hometownCountry || currentUser?.country || "USA";
+  const hasDestination = isTraveling && !!destCity && destCity.toLowerCase() !== homeCity.toLowerCase();
+  const [availCity, setAvailCity] = useState<'home' | 'trip'>('home');
+  const userCity    = (availCity === 'trip' && hasDestination) ? destCity!    : homeCity;
+  const userState   = (availCity === 'trip' && hasDestination) ? (destState || "")  : homeState;
+  const userCountry = (availCity === 'trip' && hasDestination) ? (destCountry || "USA") : homeCountry;
 
   const { data: myStatus } = useQuery<MyStatus | null>({
     queryKey: ["/api/available-now/my-status"],
@@ -1188,10 +1192,43 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-              <MapPin className="w-3 h-3" />
-              <span>Visible in {userCity || "your city"}</span>
-            </div>
+            {/* City selector — shown when user has a travel destination */}
+            {hasDestination ? (
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">
+                  Where are you right now?
+                </label>
+                <div className="flex gap-1 p-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-xs font-medium">
+                  <button
+                    type="button"
+                    onClick={() => setAvailCity('home')}
+                    className={`flex-1 px-3 py-2 rounded-md transition-colors flex items-center justify-center gap-1.5 ${
+                      availCity === 'home'
+                        ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                        : 'text-gray-500 dark:text-gray-400'
+                    }`}
+                  >
+                    <MapPin className="w-3 h-3" /> {homeCity.split(',')[0]}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAvailCity('trip')}
+                    className={`flex-1 px-3 py-2 rounded-md transition-colors flex items-center justify-center gap-1.5 ${
+                      availCity === 'trip'
+                        ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                        : 'text-gray-500 dark:text-gray-400'
+                    }`}
+                  >
+                    ✈️ {destCity}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                <MapPin className="w-3 h-3" />
+                <span>Visible in {userCity || "your city"}</span>
+              </div>
+            )}
             <button
               type="button"
               className="w-full py-3 rounded-xl bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 shadow-sm font-bold text-sm text-center cursor-pointer disabled:opacity-50 dark:border-transparent dark:bg-gradient-to-r dark:from-purple-600 dark:via-orange-500 dark:to-green-500 dark:hover:from-purple-700 dark:hover:via-orange-600 dark:hover:to-green-600 dark:text-white dark:shadow-lg dark:shadow-orange-500/30"
