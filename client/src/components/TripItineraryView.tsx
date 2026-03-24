@@ -15,8 +15,8 @@ import { SkeletonList } from '@/components/ui/skeleton-loaders';
 import { TravelCrew } from './TravelCrew';
 import { ShareModal } from '@/components/ShareModal';
 import { getTripShareText, getTripRedditText } from '@/lib/shareUtils';
-import {
 import { SITE_URL } from "@/lib/constants";
+import {
   Calendar,
   Clock,
   MapPin,
