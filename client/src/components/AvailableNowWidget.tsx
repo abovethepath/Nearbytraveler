@@ -120,9 +120,11 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const destState   = (currentUser as any)?.destinationState  || (currentUser as any)?.destination_state  || rawDestParts[1]?.trim() || null;
   const destCountry = (currentUser as any)?.destinationCountry || (currentUser as any)?.destination_country || rawDestParts[2]?.trim() || null;
 
-  const userCity    = (isTraveling && destCity)    ? destCity    : (currentUser?.hometownCity    || currentUser?.city    || "");
-  const userState   = (isTraveling && destState)   ? destState   : (currentUser?.hometownState   || currentUser?.state   || "");
-  const userCountry = (isTraveling && destCountry) ? destCountry : (currentUser?.hometownCountry || currentUser?.country || "USA");
+  // Available Now ALWAYS uses hometown — the user is physically at home until
+  // they actually travel. Never use the travel destination for Available Now.
+  const userCity    = currentUser?.hometownCity    || currentUser?.city    || "";
+  const userState   = currentUser?.hometownState   || currentUser?.state   || "";
+  const userCountry = currentUser?.hometownCountry || currentUser?.country || "USA";
 
   const { data: myStatus } = useQuery<MyStatus | null>({
     queryKey: ["/api/available-now/my-status"],
