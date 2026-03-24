@@ -543,7 +543,7 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                       <p className="font-bold text-sm">{member.username}</p>
                       <p className="text-xs text-gray-500">{member.hometownCity}{member.hometownCountry ? `, ${member.hometownCountry}` : ""}</p>
                     </div>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
                       {member.userType === "business" ? "Business" : member.userType === "traveling" ? "Traveler" : "Local"}
                     </Badge>
                   </CardContent>
