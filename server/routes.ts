@@ -3459,7 +3459,21 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const now = new Date();
       const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const weekEnd = new Date(todayStart.getTime() + 7 * 24 * 60 * 60 * 1000);
-      const cityLower = city.toLowerCase();
+
+      // Metro-aware: expand city to all metro cities so Manhattan Beach sees LA Metro data
+      // Metro-aware: expand "Manhattan Beach" → all 80+ LA Metro cities
+      const allCities = getExpandedCityList(city);
+      // Build reusable SQL match fragments for each table's city column
+      const tpMatch = allCities.length === 1
+        ? sql`LOWER(destination_city) = ${allCities[0].toLowerCase()}`
+        : sql`LOWER(destination_city) IN (${sql.join(allCities.map(c => sql`${c.toLowerCase()}`), sql`,`)})`;
+      const anMatch = allCities.length === 1
+        ? sql`LOWER(city) = ${allCities[0].toLowerCase()}`
+        : sql`LOWER(city) IN (${sql.join(allCities.map(c => sql`${c.toLowerCase()}`), sql`,`)})`;
+      const evMatch = anMatch; // events also use 'city' column
+      const hmMatch = allCities.length === 1
+        ? sql`LOWER(hometown_city) = ${allCities[0].toLowerCase()}`
+        : sql`LOWER(hometown_city) IN (${sql.join(allCities.map(c => sql`${c.toLowerCase()}`), sql`,`)})`;
 
       const [
         newTravelersResult,
@@ -3471,26 +3485,26 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       ] = await Promise.all([
         db.execute(sql`
           SELECT COUNT(*)::int as count FROM travel_plans
-          WHERE LOWER(destination_city) = ${cityLower}
+          WHERE ${tpMatch}
             AND start_date >= ${todayStart.toISOString()}
             AND start_date < ${new Date(todayStart.getTime() + 24 * 60 * 60 * 1000).toISOString()}
             AND end_date >= ${now.toISOString()}
         `),
         db.execute(sql`
           SELECT COUNT(*)::int as count FROM available_now
-          WHERE LOWER(city) = ${cityLower}
+          WHERE ${anMatch}
             AND is_available = true
             AND expires_at > ${now.toISOString()}
         `),
         db.execute(sql`
           SELECT COUNT(*)::int as count FROM events
-          WHERE LOWER(city) = ${cityLower}
+          WHERE ${evMatch}
             AND date < ${weekEnd.toISOString()}
             AND COALESCE(end_date, date + INTERVAL '4 hours') > NOW()
         `),
         db.execute(sql`
           SELECT COUNT(*)::int as count FROM events
-          WHERE LOWER(city) = ${cityLower}
+          WHERE ${evMatch}
             AND created_at >= ${todayStart.toISOString()}
         `),
         db.execute(sql`
@@ -3498,13 +3512,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           WHERE status = 'accepted'
             AND created_at >= ${todayStart.toISOString()}
             AND (
-              requester_id IN (SELECT id FROM users WHERE LOWER(hometown_city) = ${cityLower})
-              OR receiver_id IN (SELECT id FROM users WHERE LOWER(hometown_city) = ${cityLower})
+              requester_id IN (SELECT id FROM users WHERE ${hmMatch})
+              OR receiver_id IN (SELECT id FROM users WHERE ${hmMatch})
             )
         `),
         db.execute(sql`
           SELECT COUNT(*)::int as count FROM users
-          WHERE LOWER(hometown_city) = ${cityLower}
+          WHERE ${hmMatch}
             AND created_at >= ${todayStart.toISOString()}
         `)
       ]);
