@@ -731,101 +731,7 @@ export default function Explore() {
               </div>
             )}
 
-            {/* Featured preset communities (rows/columns) */}
-            {featuredCommunities.length > 0 && (
-              <div className="mb-2">
-                <h4 className="font-bold text-sm text-gray-700 dark:text-gray-300 mb-2">Featured Communities</h4>
-                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
-                  {featuredCommunities.map((tag: any) => {
-                    const isJoined = myTagIds.has(tag.id);
-                    return (
-                      <Card
-                        key={`featured-${tag.id}`}
-                        className={`border transition-all cursor-pointer ${
-                          isJoined
-                            ? "border-orange-400 dark:border-orange-600 bg-orange-50/50 dark:bg-orange-950/20"
-                            : "border-gray-200 dark:border-gray-700 hover:border-orange-300"
-                        }`}
-                        onClick={() => {
-                          if (isJoined) setLocation(`/community/${tag.id}`);
-                        }}
-                      >
-                        <CardContent className="p-3">
-                          <div className="flex items-center gap-2">
-                            <div className="text-xl shrink-0">{tag.icon}</div>
-                            <div className="min-w-0">
-                              <div className="text-sm font-bold truncate flex items-center gap-1">
-                                {tag.displayName}
-                                {tag.isPrivate && <Lock className="w-3 h-3 text-gray-400 shrink-0" />}
-                              </div>
-                              <div className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
-                                {tag.memberCount || 0} members
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="mt-2 flex gap-1">
-                            {isJoined ? (
-                              <>
-                                <Button
-                                  size="sm"
-                                  className="flex-1 h-7 text-xs bg-orange-500 hover:bg-orange-600 text-white"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setLocation(`/community/${tag.id}`);
-                                  }}
-                                >
-                                  Open
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-7 text-xs px-2"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    leaveCommunityMutation.mutate(tag.id);
-                                  }}
-                                >
-                                  Leave
-                                </Button>
-                              </>
-                            ) : tag.isPrivate ? (
-                              <Button
-                                size="sm"
-                                className="w-full h-7 text-xs bg-orange-500 hover:bg-orange-600 text-white"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setPrivateCommunityId(tag.id);
-                                }}
-                              >
-                                <Lock className="w-3 h-3 mr-1" /> Join
-                              </Button>
-                            ) : (
-                              <Button
-                                size="sm"
-                                className="w-full h-7 text-xs bg-orange-500 hover:bg-orange-600 text-white"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  joinCommunityMutation.mutate({ tagId: tag.id });
-                                }}
-                              >
-                                Join
-                              </Button>
-                            )}
-                          </div>
-
-                          {tag.color && (
-                            <div className="mt-2 h-1 rounded-full" style={{ backgroundColor: tag.color }} />
-                          )}
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Browse communities */}
+            {/* All communities — joined first, then unjoined */}
             {loadingTags ? (
               <div className="text-center py-12">
                 <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
@@ -838,7 +744,11 @@ export default function Explore() {
               </div>
             ) : (
             <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {communityTagsList.map((tag: any) => {
+              {[...communityTagsList].sort((a: any, b: any) => {
+                const aJoined = myTagIds.has(a.id) ? 0 : 1;
+                const bJoined = myTagIds.has(b.id) ? 0 : 1;
+                return aJoined - bJoined;
+              }).map((tag: any) => {
                 const isJoined = myTagIds.has(tag.id);
                 return (
                   <Card key={tag.id} className={`border transition-all ${isJoined ? "border-orange-400 dark:border-orange-600 bg-orange-50/50 dark:bg-orange-950/20" : "border-gray-200 dark:border-gray-700 hover:border-orange-300"}`}>
@@ -850,7 +760,7 @@ export default function Explore() {
                             {tag.displayName}
                             {tag.isPrivate && <Lock className="w-3 h-3 text-gray-400 shrink-0" />}
                           </h4>
-                          <p className="text-xs text-gray-500">{tag.memberCount || 0} members{tag.isUserCreated && " · User created"}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{tag.memberCount || 0} members{tag.isUserCreated && " · User created"}</p>
                         </div>
                         <div className="flex items-center gap-1 shrink-0">
                           {isJoined ? (
