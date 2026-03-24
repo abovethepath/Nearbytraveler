@@ -16,11 +16,14 @@ function timeLeft(expiresAt: string): string | null {
   return `${hrs}h left`;
 }
 
-function getIntent(entry: any): string {
-  const activities = entry.activities || [];
-  if (entry.customNote) return entry.customNote;
-  if (activities.length > 0) return activities.join(", ");
-  return "Available to hang out";
+const ACTIVITY_LABELS: Record<string, string> = {
+  coffee: "Coffee", food: "Food", drinks: "Drinks", explore: "Explore",
+  music: "Music", fitness: "Fitness", hike: "Hike", bike: "Bike",
+  beach: "Beach", sightseeing: "Sightseeing",
+};
+
+function getActivityLabel(act: string): string {
+  return ACTIVITY_LABELS[act] || act;
 }
 
 export default function AvailableNowPage() {
@@ -142,8 +145,8 @@ export default function AvailableNowPage() {
             const photo = u.profilePhoto || u.profileImage;
             const initial = (name[0] || "?").toUpperCase();
             const city = entry.city || "";
-            const intent = getIntent(entry);
             const activities = entry.activities || [];
+            const customNote = entry.customNote || "";
 
             const remaining = entry.expiresAt ? timeLeft(entry.expiresAt) : null;
 
@@ -189,20 +192,29 @@ export default function AvailableNowPage() {
 
                 {/* Content below photo */}
                 <div className="p-4 space-y-3">
-                  {/* Intent */}
-                  <p className="text-blue-600 dark:text-blue-400 font-bold text-base leading-snug">
-                    {intent}
-                  </p>
+                  {/* Custom note */}
+                  {customNote && (
+                    <p className="text-blue-600 dark:text-blue-400 font-bold text-base leading-snug">
+                      {customNote}
+                    </p>
+                  )}
 
-                  {/* Activities pills */}
+                  {/* Activity pills */}
                   {activities.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
-                      {activities.slice(0, 4).map((act: string, i: number) => (
+                      {activities.slice(0, 6).map((act: string, i: number) => (
                         <span key={i} className="text-[11px] font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-full">
-                          {act}
+                          {getActivityLabel(act)}
                         </span>
                       ))}
                     </div>
+                  )}
+
+                  {/* Fallback when no custom note and no activities */}
+                  {!customNote && activities.length === 0 && (
+                    <p className="text-blue-600 dark:text-blue-400 font-bold text-base leading-snug">
+                      Available to hang out
+                    </p>
                   )}
 
                   {/* Username */}

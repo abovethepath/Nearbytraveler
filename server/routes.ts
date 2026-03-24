@@ -26126,17 +26126,26 @@ Questions? Just reply to this message. Welcome aboard!
               ? `${activityLabel} with @${acceptorName}`
               : `Hangout with @${acceptorName}`;
             const activitiesStr = sessionActivities.map((a: string) => activityLabels[a] || a).join(', ') || 'Meetup';
+            // Store all activities comma-separated so they survive session expiry
+            const allActivities = sessionActivities.join(',');
+
+            // Build description including custom note if present
+            const customNote = activeSession.customNote;
+            const descParts = [`Group chat for everyone meeting up with @${acceptorName}`];
+            if (customNote) descParts.push(customNote);
+            if (activitiesStr !== 'Meetup') descParts.push(activitiesStr);
+            const description = descParts.join(' — ');
 
             const result = await createOrJoinMeetupChatroom({
               availableNowId: activeSession.id,
               hostUserId: Number(userId),
               joinerUserId: updated.fromUserId,
               chatroomName,
-              description: `Group chat for everyone meeting up with @${acceptorName} — ${activitiesStr}`,
+              description,
               city: activeSession.city || 'Unknown',
               state: activeSession.state,
               country: activeSession.country || 'USA',
-              activityType: primaryActivity,
+              activityType: allActivities || primaryActivity,
               expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
             });
             groupChatroomId = result.chatroomId;

@@ -204,13 +204,19 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   }, [pinnedMsgData]);
 
   const meetupActivityTags = useMemo(() => {
+    const activityLabels: Record<string, string> = {
+      coffee: "Coffee", food: "Food", drinks: "Drinks", explore: "Explore",
+      music: "Music", fitness: "Fitness", hike: "Hike", bike: "Bike",
+      beach: "Beach", sightseeing: "Sightseeing",
+    };
+    const toLabel = (s: string) => activityLabels[s] || (s.charAt(0).toUpperCase() + s.slice(1));
     const fromArray = Array.isArray(meetupChatInfo?.activities) ? meetupChatInfo?.activities : [];
     if (fromArray.length > 0) {
-      return [...new Set(fromArray.map((s) => String(s || "").trim()).filter(Boolean))].slice(0, 8);
+      return [...new Set(fromArray.map((s) => toLabel(String(s || "").trim())).filter(Boolean))].slice(0, 8);
     }
     const activityType = String(meetupChatInfo?.activityType || "").trim();
     if (!activityType) return [];
-    return [...new Set(activityType.split(",").map((s) => s.trim()).filter(Boolean))].slice(0, 8);
+    return [...new Set(activityType.split(",").map((s) => toLabel(s.trim())).filter(Boolean))].slice(0, 8);
   }, [meetupChatInfo?.activities, meetupChatInfo?.activityType]);
 
   // Chatroom settings query — city chatrooms only, gives us adminsOnly flag
