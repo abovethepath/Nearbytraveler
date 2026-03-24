@@ -1872,14 +1872,11 @@ export default function Home() {
 
       {effectiveUser && <ChatInviteAlertBar />}
 
+      {/* CityPulse — ALWAYS shows hometown, never replaced by destination */}
       {effectiveUser && (
         <CityPulse
-          city={
-            (effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination)
-              ? effectiveUser.travelDestination.split(',')[0].trim()
-              : (effectiveUser.hometownCity || undefined)
-          }
-          isLocal={!effectiveUser.isCurrentlyTraveling}
+          city={effectiveUser.hometownCity || undefined}
+          isLocal={true}
         />
       )}
 
@@ -1898,9 +1895,9 @@ export default function Home() {
               <MeetupAlertBanner userId={effectiveUser.id} />
             )}
 
-            {/* Available Now strip */}
+            {/* Available Now strip — always hometown */}
             {effectiveUser?.userType !== 'business' && (
-              <AvailableNowStrip currentUserId={effectiveUser?.id} userCity={effectiveUser?.isCurrentlyTraveling ? ((effectiveUser as any)?.destinationCity || effectiveUser?.hometownCity || '') : (effectiveUser?.hometownCity || '')} />
+              <AvailableNowStrip currentUserId={effectiveUser?.id} userCity={effectiveUser?.hometownCity || ''} />
             )}
 
             {/* Invite Friends banner — mobile only */}
@@ -2239,20 +2236,32 @@ export default function Home() {
               <AvailableNowWidget currentUser={effectiveUser} />
             )}
 
-            {/* Tonight in [City] — server expands metro cities automatically */}
-            {effectiveUser && (() => {
-              const rawCity = effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination
-                ? String(effectiveUser.travelDestination).split(',')[0]?.trim()
-                : effectiveUser.hometownCity;
-              return rawCity ? <TonightWidget city={rawCity} /> : null;
-            })()}
+            {/* Tonight in hometown — ALWAYS shows, never replaced */}
+            {effectiveUser?.hometownCity && (
+              <TonightWidget city={effectiveUser.hometownCity} />
+            )}
 
-            {/* Who's Coming to Town — server expands metro cities automatically */}
-            {effectiveUser && (() => {
-              const rawCity = effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination
-                ? String(effectiveUser.travelDestination).split(',')[0]?.trim()
-                : effectiveUser.hometownCity;
-              return rawCity ? <CityArrivalsWidget cityName={rawCity} /> : null;
+            {/* Who's in your hometown — ALWAYS shows */}
+            {effectiveUser?.hometownCity && (
+              <CityArrivalsWidget cityName={effectiveUser.hometownCity} />
+            )}
+
+            {/* Destination city widgets — only when user has an active travel plan */}
+            {effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination && (() => {
+              const destCity = String(effectiveUser.travelDestination).split(',')[0]?.trim();
+              // Don't duplicate if destination is same metro as hometown
+              if (!destCity || destCity.toLowerCase() === (effectiveUser.hometownCity || '').toLowerCase()) return null;
+              return (
+                <>
+                  <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                    <p className="text-xs font-semibold text-orange-500 mb-2 flex items-center gap-1">
+                      ✈️ Your trip to {destCity}
+                    </p>
+                    <TonightWidget city={destCity} />
+                  </div>
+                  <CityArrivalsWidget cityName={destCity} />
+                </>
+              );
             })()}
 
             {/* Saved Travelers */}
