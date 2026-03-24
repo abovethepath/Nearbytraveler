@@ -12132,6 +12132,7 @@ Questions? Just reply to this message. Welcome aboard!
               requesterId: parseInt(finalRequesterId || "0"),
               receiverId: parseInt(finalTargetUserId || "0"),
               status: "pending",
+              connectionNote: req.body.connectionNote || existingConnection.connectionNote || null,
               createdAt: new Date(),
             })
             .where(eq(connections.id, existingConnection.id))
@@ -12224,11 +12225,12 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`CONNECTION: Creating new connection request...`);
 
-      // Create new connection request
+      // Create new connection request (include connectionNote from QR code flow if provided)
       const newConnection = await storage.createConnection({
         requesterId: parseInt(finalRequesterId || '0'),
         receiverId: parseInt(finalTargetUserId || '0'),
         status: 'pending',
+        connectionNote: req.body.connectionNote || null,
         createdAt: new Date()
       });
 

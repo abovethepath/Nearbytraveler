@@ -14,12 +14,12 @@ import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 interface Referrer {
   id: number;
   name: string;
+  firstName?: string;
   username: string;
   profileImage?: string;
   userType: string;
   isCurrentlyTraveling?: boolean;
   location?: string;
-  bio?: string;
 }
 
 interface CurrentUser {
@@ -153,17 +153,11 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
     
     setIsConnecting(true);
     try {
-      const response = await fetch(`${getApiBaseUrl()}/api/connections/request`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': currentUser.id.toString()
-        },
-        body: JSON.stringify({
-          requesterId: currentUser.id,
-          receiverId: referrer.id,
-          connectionNote: connectionNote.trim() || `Connected via QR code scan`
-        })
+      const response = await apiRequest('POST', '/api/connections', {
+        requesterId: currentUser.id,
+        receiverId: referrer.id,
+        connectionNote: connectionNote.trim() || 'Connected via QR code scan',
+        referralCode: referralCode,
       });
 
       // Handle auth failure - session expired
@@ -174,15 +168,20 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Request failed: ${response.status}`);
+        throw new Error(errorData.message || errorData.error || `Request failed: ${response.status}`);
       }
 
       setConnectionStatus('pending');
       toast({
-        title: "Connection Request Sent!",
-        description: `${referrer.name} will be notified of your connection request.`,
-        duration: 4000,
+        title: "Connected!",
+        description: `Opening a chat with ${referrer.name?.split(' ')[0]}...`,
+        duration: 3000,
       });
+
+      // Open DM with the referrer after a short delay
+      setTimeout(() => {
+        setLocation(`/dm-chat/${referrer.id}`);
+      }, 1000);
     } catch (error: any) {
       // Check if already connected
       if (error.message?.includes('already')) {
@@ -357,11 +356,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
                 </div>
                 
                 {referrer?.location && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">📍 {referrer.location}</p>
-                )}
-                
-                {referrer?.bio && (
-                  <p className="text-sm text-gray-700 dark:text-gray-300 italic">"{referrer.bio}"</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">📍 {referrer.location}</p>
                 )}
               </div>
 
@@ -512,9 +507,6 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">📍 {referrer.location}</p>
               )}
               
-              {referrer?.bio && (
-                <p className="text-sm text-gray-700 dark:text-gray-300 italic">"{referrer.bio}"</p>
-              )}
             </div>
 
             {/* Already have account? */}
