@@ -26,7 +26,7 @@ import express from "express";
 import path from "path";
 import { storage } from "./storage";
 import appleSignin from "apple-signin-auth";
-import { db, withRetry } from "./db";
+import { db, pool, withRetry } from "./db";
 import { sendBrevoEmail } from "./email/brevoSend";
 import { cache, cachedQuery, CACHE_TTL } from "./cache";
 import { eventReminderService } from "./services/eventReminderService";
@@ -3268,7 +3268,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Get city page info
       const cityPage = await db.select().from(cityPages)
         .where(and(
-          eq(cityPages.cityName, city),
+          eq(cityPages.city, city),
           eq(cityPages.state, (state as string) || ''),
           eq(cityPages.country, (country as string) || '')
         )).limit(1);
@@ -7910,7 +7910,7 @@ Questions? Just reply to this message. Welcome aboard!
           // Check if city page already exists
           const existingCity = await db.select().from(cityPages)
             .where(and(
-              eq(cityPages.cityName, cityName),
+              eq(cityPages.city, cityName),
               eq(cityPages.state, stateName),
               eq(cityPages.country, countryName)
             )).limit(1);
@@ -10128,26 +10128,34 @@ Questions? Just reply to this message. Welcome aboard!
           const state = travelPlanData.destinationState || '';
           const country = travelPlanData.destinationCountry;
           
-          // Check if city page already exists
-          const existingCity = await db.select().from(cityPages)
-            .where(and(
-              eq(cityPages.cityName, city),
-              eq(cityPages.state, state),
-              eq(cityPages.country, country)
-            )).limit(1);
-          
-          if (existingCity.length === 0) {
-            // Create city page
+          // Create city page (upsert — skip if already exists)
+          try {
             await db.insert(cityPages).values({
-              cityName: city,
-              state: state,
+              city: city,
+              state: state || '',
               country: country,
+              createdById: travelPlanData.userId,
+              title: city,
               description: `Discover ${city} and connect with locals and travelers`,
-              heroImage: null,
-              createdAt: new Date(),
-              updatedAt: new Date()
-            });
-            console.log(`🏙️ CREATED CITY PAGE: ${city}`);
+              isPublished: true,
+            }).onConflictDoNothing();
+            console.log(`🏙️ ENSURED CITY PAGE: ${city}`);
+          } catch (cpErr: any) {
+            console.error(`⚠️ City page creation warning (non-fatal):`, cpErr?.message);
+          }
+
+          // Update city stats — increment traveler count
+          try {
+            await pool.query(
+              `INSERT INTO city_stats (city, state, country, total_travelers, total_locals, first_seen_at, last_activity_at)
+               VALUES ($1, $2, $3, 1, 0, NOW(), NOW())
+               ON CONFLICT (city, state, country)
+               DO UPDATE SET total_travelers = city_stats.total_travelers + 1, last_activity_at = NOW()`,
+              [city, state || '', country]
+            );
+            console.log(`📊 CITY STATS: Incremented traveler count for ${city}`);
+          } catch (csErr: any) {
+            console.error(`⚠️ City stats update warning (non-fatal):`, csErr?.message);
           }
           
           // Ensure city has basic activities
@@ -10181,13 +10189,15 @@ Questions? Just reply to this message. Welcome aboard!
           }
           
           console.log(`✅ CITY INFRASTRUCTURE COMPLETE: ${city}`);
-          await storage.ensureCityPageExists(
-            travelPlanData.destinationCity,
-            travelPlanData.destinationState || null,
-            travelPlanData.destinationCountry,
-            travelPlanData.userId
-          );
-          console.log(`✅ AUTO-SETUP: City page and infrastructure ready for ${travelPlanData.destinationCity}`);
+          try {
+            await storage.ensureCityPageExists(
+              travelPlanData.destinationCity,
+              travelPlanData.destinationState || null,
+              travelPlanData.destinationCountry,
+              travelPlanData.userId
+            );
+          } catch {}
+          console.log(`✅ AUTO-SETUP: City infrastructure ready for ${travelPlanData.destinationCity}`);
         } catch (error) {
           console.error('❌ AUTO-SETUP: Failed to set up city infrastructure:', error);
         }

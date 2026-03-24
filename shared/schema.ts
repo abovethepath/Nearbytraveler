@@ -349,6 +349,19 @@ export const cityPages = pgTable("city_pages", {
   };
 });
 
+export const cityStats = pgTable("city_stats", {
+  id: serial("id").primaryKey(),
+  city: text("city").notNull(),
+  state: text("state"),
+  country: text("country").notNull(),
+  totalTravelers: integer("total_travelers").default(0),
+  totalLocals: integer("total_locals").default(0),
+  firstSeenAt: timestamp("first_seen_at").defaultNow(),
+  lastActivityAt: timestamp("last_activity_at").defaultNow(),
+}, (table) => ({
+  cityStatsUnique: unique().on(table.city, table.state, table.country),
+}));
+
 // Secret Local Experiences for each city
 export const secretLocalExperiences = pgTable("secret_local_experiences", {
   id: serial("id").primaryKey(),
