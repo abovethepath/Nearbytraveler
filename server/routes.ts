@@ -3464,19 +3464,21 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const allCities = getExpandedCityList(city);
       const cityLower = city.toLowerCase();
 
-      // Build a simple SQL array literal for IN clauses — avoids 80+ parameter bindings
-      const cityListSql = allCities.map(c => `'${c.toLowerCase().replace(/'/g, "''")}'`).join(',');
+      // Build SQL-safe city list using sql.raw() for the IN clause
+      const cityListLiteral = allCities.map(c => `'${c.toLowerCase().replace(/'/g, "''")}'`).join(',');
 
-      // Run each count independently so one failing table doesn't kill the whole response
-      const safeCount = async (label: string, query: string): Promise<number> => {
+      // Each query wrapped in try/catch so one failing table doesn't kill the others
+      const safeExecute = async (label: string, query: any): Promise<number> => {
         try {
-          const r = await pool.query(query);
-          return parseInt(r.rows[0]?.count || '0', 10);
+          const r = await db.execute(query);
+          return parseInt((r as any).rows?.[0]?.count || '0', 10);
         } catch (e: any) {
-          console.error(`CityPulse ${label} query failed:`, e?.message);
+          console.error(`CityPulse ${label} failed:`, e?.message);
           return 0;
         }
       };
+
+      const tomorrowStart = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
 
       const [
         newTravelers,
@@ -3486,44 +3488,24 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         connectionsToday,
         newMembersToday,
       ] = await Promise.all([
-        safeCount('newTravelers', `
-          SELECT COUNT(*)::int as count FROM travel_plans
-          WHERE LOWER(destination_city) IN (${cityListSql})
-            AND start_date >= '${todayStart.toISOString()}'
-            AND start_date < '${new Date(todayStart.getTime() + 24 * 60 * 60 * 1000).toISOString()}'
-            AND end_date >= '${now.toISOString()}'
-        `),
-        safeCount('openToMeet', `
-          SELECT COUNT(*)::int as count FROM available_now
-          WHERE LOWER(city) IN (${cityListSql})
-            AND is_available = true
-            AND expires_at > '${now.toISOString()}'
-        `),
-        safeCount('eventsThisWeek', `
-          SELECT COUNT(*)::int as count FROM events
-          WHERE LOWER(city) IN (${cityListSql})
-            AND date < '${weekEnd.toISOString()}'
-            AND COALESCE(end_date, date + INTERVAL '4 hours') > NOW()
-        `),
-        safeCount('eventsCreatedToday', `
-          SELECT COUNT(*)::int as count FROM events
-          WHERE LOWER(city) IN (${cityListSql})
-            AND created_at >= '${todayStart.toISOString()}'
-        `),
-        safeCount('connectionsToday', `
-          SELECT COUNT(*)::int as count FROM connections
-          WHERE status = 'accepted'
-            AND created_at >= '${todayStart.toISOString()}'
-            AND (
-              requester_id IN (SELECT id FROM users WHERE LOWER(hometown_city) IN (${cityListSql}))
-              OR receiver_id IN (SELECT id FROM users WHERE LOWER(hometown_city) IN (${cityListSql}))
-            )
-        `),
-        safeCount('newMembersToday', `
-          SELECT COUNT(*)::int as count FROM users
-          WHERE LOWER(hometown_city) IN (${cityListSql})
-            AND created_at >= '${todayStart.toISOString()}'
-        `),
+        safeExecute('newTravelers',
+          sql.raw(`SELECT COUNT(*)::int as count FROM travel_plans WHERE LOWER(destination_city) IN (${cityListLiteral}) AND start_date >= '${todayStart.toISOString()}' AND start_date < '${tomorrowStart.toISOString()}' AND end_date >= '${now.toISOString()}'`)
+        ),
+        safeExecute('openToMeet',
+          sql.raw(`SELECT COUNT(*)::int as count FROM available_now WHERE LOWER(city) IN (${cityListLiteral}) AND is_available = true AND expires_at > '${now.toISOString()}'`)
+        ),
+        safeExecute('eventsThisWeek',
+          sql.raw(`SELECT COUNT(*)::int as count FROM events WHERE LOWER(city) IN (${cityListLiteral}) AND date < '${weekEnd.toISOString()}' AND COALESCE(end_date, date + INTERVAL '4 hours') > NOW()`)
+        ),
+        safeExecute('eventsCreatedToday',
+          sql.raw(`SELECT COUNT(*)::int as count FROM events WHERE LOWER(city) IN (${cityListLiteral}) AND created_at >= '${todayStart.toISOString()}'`)
+        ),
+        safeExecute('connectionsToday',
+          sql.raw(`SELECT COUNT(*)::int as count FROM connections WHERE status = 'accepted' AND created_at >= '${todayStart.toISOString()}' AND (requester_id IN (SELECT id FROM users WHERE LOWER(hometown_city) IN (${cityListLiteral})) OR receiver_id IN (SELECT id FROM users WHERE LOWER(hometown_city) IN (${cityListLiteral})))`)
+        ),
+        safeExecute('newMembersToday',
+          sql.raw(`SELECT COUNT(*)::int as count FROM users WHERE LOWER(hometown_city) IN (${cityListLiteral}) AND created_at >= '${todayStart.toISOString()}'`)
+        ),
       ]);
 
       const result = {
