@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Globe, Users, MapPin, Briefcase, Calendar, Filter, X, ChevronDown, ChevronRight, MessageCircle, Camera, Search, Store, Hash, Tag, AlertCircle, ArrowUpDown, Clock, Zap, Star, Coffee, Phone, Plane, Sparkles, Package } from "lucide-react";
+import { Globe, Users, MapPin, Briefcase, Calendar, Filter, X, ChevronDown, ChevronRight, MessageCircle, Camera, Search, Store, Hash, Tag, AlertCircle, ArrowUpDown, Clock, Zap, Star, Coffee, Phone, Plane, Sparkles, Package, Share2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
@@ -1901,6 +1901,26 @@ export default function Home() {
             {/* Available Now strip */}
             {effectiveUser?.userType !== 'business' && (
               <AvailableNowStrip currentUserId={effectiveUser?.id} userCity={effectiveUser?.isCurrentlyTraveling ? ((effectiveUser as any)?.destinationCity || effectiveUser?.hometownCity || '') : (effectiveUser?.hometownCity || '')} />
+            )}
+
+            {/* Invite Friends banner — mobile only */}
+            {effectiveUser?.userType !== 'business' && (
+              <button
+                type="button"
+                onClick={() => setLocation('/share-qr')}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/30 hover:bg-orange-100 dark:hover:bg-orange-950/50 transition-colors cursor-pointer md:hidden"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center shrink-0">
+                    <Share2 className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">Invite Friends</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Share your QR code or referral link</div>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
+              </button>
             )}
 
             {/* Recently Joined — global new members strip */}
