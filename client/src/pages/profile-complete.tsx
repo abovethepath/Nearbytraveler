@@ -50,6 +50,7 @@ import { openPrivateChatWithUser } from "@/lib/iosPrivateChat";
 import { NativeAppProfileMenu } from "@/components/NativeAppProfileMenu";
 import { METRO_AREAS } from "@shared/constants";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
+import { US_STATE_NAMES, CANADIAN_PROVINCES as SHARED_CA_PROVINCES, AUSTRALIAN_STATES as SHARED_AU_STATES } from "../../../shared/locationData";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
 import { isTopChoiceInterest } from "@/lib/topChoicesUtils";
@@ -154,28 +155,10 @@ function getMetroAreaName(cityName: string): string {
   return cityName; // Return original city name if not in a metro area
 }
 
-// State/Province arrays - consistent with signup forms
-const US_STATES = [
-  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
-  "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
-  "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
-  "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
-  "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
-  "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
-  "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
-  "Wisconsin", "Wyoming"
-];
-
-const CANADIAN_PROVINCES = [
-  "Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador",
-  "Northwest Territories", "Nova Scotia", "Nunavut", "Ontario", "Prince Edward Island",
-  "Quebec", "Saskatchewan", "Yukon"
-];
-
-const AUSTRALIAN_STATES = [
-  "Australian Capital Territory", "New South Wales", "Northern Territory", "Queensland",
-  "South Australia", "Tasmania", "Victoria", "Western Australia"
-];
+// State/Province arrays — imported from shared/locationData.ts (single source of truth)
+const US_STATES = US_STATE_NAMES;
+const CANADIAN_PROVINCES = SHARED_CA_PROVINCES;
+const AUSTRALIAN_STATES = SHARED_AU_STATES;
 
 import WorldMap from "@/components/world-map";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";

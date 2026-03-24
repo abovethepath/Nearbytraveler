@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getRegionForCity, isStateOptionalForCountry } from "@/lib/locationHelpers";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
+import { US_STATE_NAMES, CANADIAN_PROVINCES } from "../../../shared/locationData";
 
 type SmartLocationInputProps = {
   city?: string;
@@ -119,13 +120,9 @@ export function SmartLocationInput({
     emit({ city, state: newState, country });
   };
 
-  // US/CA lists
-  const US_STATES = [
-    "California","New York","Texas","Florida","Nevada","Illinois","Washington","Colorado","Georgia","Tennessee","Arizona","Massachusetts","Oregon","Pennsylvania","Louisiana","North Carolina","Virginia","Ohio","Michigan","New Jersey","Hawaii","Maryland","Minnesota","South Carolina","Connecticut","Indiana","Missouri","Wisconsin","Alabama","Alaska","Arkansas","Delaware","Idaho","Iowa","Kansas","Kentucky","Maine","Mississippi","Montana","Nebraska","New Hampshire","New Mexico","North Dakota","Oklahoma","Rhode Island","South Dakota","Utah","Vermont","West Virginia","Wyoming"
-  ];
-  const CA_PROVINCES = [
-    "Alberta","British Columbia","Manitoba","New Brunswick","Newfoundland and Labrador","Northwest Territories","Nova Scotia","Nunavut","Ontario","Prince Edward Island","Quebec","Saskatchewan","Yukon"
-  ];
+  // US/CA lists — imported from shared/locationData.ts (single source of truth)
+  const US_STATES = US_STATE_NAMES;
+  const CA_PROVINCES = CANADIAN_PROVINCES;
 
   const selectStyles = {
     backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iIzk5OTk5OSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==')",

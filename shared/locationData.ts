@@ -58,7 +58,7 @@ export const US_CITIES_BY_STATE: Record<string, string[]> = {
   "Alaska": ["Anchorage", "Fairbanks", "Juneau", "Sitka", "Ketchikan"],
   "Arizona": ["Phoenix", "Tucson", "Mesa", "Chandler", "Scottsdale", "Glendale", "Tempe"],
   "Arkansas": ["Little Rock", "Fort Smith", "Fayetteville", "Springdale", "Jonesboro"],
-  "California": ["Los Angeles", "San Francisco", "San Diego", "Sacramento", "San Jose", "Oakland", "Fresno", "Long Beach", "Santa Ana", "Riverside", "Stockton", "Irvine", "Fremont", "San Bernardino", "Modesto", "Fontana", "Oxnard", "Moreno Valley", "Huntington Beach", "Glendale", "Santa Clarita", "Garden Grove", "Santa Rosa", "Oceanside", "Rancho Cucamonga", "Ontario", "Lancaster", "Elk Grove", "Corona", "Palmdale", "Salinas", "Pomona", "Hayward", "Escondido", "Torrance", "Sunnyvale", "Orange", "Fullerton", "Pasadena", "Thousand Oaks", "Visalia", "Simi Valley", "Concord", "Roseville", "Santa Clara", "Vallejo", "Victorville", "El Monte", "Berkeley", "Downey", "Costa Mesa", "Inglewood"],
+  "California": ["Los Angeles", "San Francisco", "San Diego", "Sacramento", "San Jose", "Oakland", "Fresno", "Long Beach", "Santa Ana", "Riverside", "Stockton", "Irvine", "Fremont", "San Bernardino", "Modesto", "Fontana", "Oxnard", "Moreno Valley", "Huntington Beach", "Glendale", "Santa Clarita", "Garden Grove", "Santa Rosa", "Oceanside", "Rancho Cucamonga", "Ontario", "Lancaster", "Elk Grove", "Corona", "Palmdale", "Salinas", "Pomona", "Hayward", "Escondido", "Torrance", "Sunnyvale", "Orange", "Fullerton", "Pasadena", "Thousand Oaks", "Visalia", "Simi Valley", "Concord", "Roseville", "Santa Clara", "Vallejo", "Victorville", "El Monte", "Berkeley", "Downey", "Costa Mesa", "Inglewood", "Buena Park", "Alhambra", "West Covina", "Whittier", "Compton", "Hawthorne", "Carson", "Lakewood", "Bellflower", "Norwalk", "Cerritos", "La Mirada", "Diamond Bar", "Walnut", "Azusa", "Glendora", "Covina", "Claremont", "Upland", "Redlands", "Chino", "Chino Hills", "La Verne", "Monrovia", "Arcadia", "Temple City", "Monterey Park", "Rosemead", "West Hollywood", "Culver City", "Santa Monica", "Venice", "Manhattan Beach", "Hermosa Beach", "Redondo Beach", "Palos Verdes", "San Dimas", "La Habra", "Brea", "Yorba Linda", "Placentia", "Cypress", "Stanton", "Westminster", "Fountain Valley", "Laguna Beach", "Dana Point", "San Clemente", "Mission Viejo", "Lake Forest", "Rancho Santa Margarita", "Aliso Viejo", "Laguna Niguel", "Tustin", "Newport Beach"],
   "Colorado": ["Denver", "Colorado Springs", "Aurora", "Fort Collins", "Lakewood", "Thornton", "Arvada", "Westminster", "Pueblo"],
   "Connecticut": ["Bridgeport", "New Haven", "Hartford", "Stamford", "Waterbury", "Norwalk", "Danbury"],
   "Delaware": ["Wilmington", "Dover", "Newark"],
@@ -105,6 +105,20 @@ export const US_CITIES_BY_STATE: Record<string, string[]> = {
   "Wisconsin": ["Milwaukee", "Madison", "Green Bay", "Kenosha", "Racine", "Appleton"],
   "Wyoming": ["Cheyenne", "Casper", "Laramie", "Gillette", "Rock Springs"]
 };
+
+export const CANADIAN_PROVINCES = [
+  "Alberta", "British Columbia", "Manitoba", "New Brunswick",
+  "Newfoundland and Labrador", "Northwest Territories", "Nova Scotia",
+  "Nunavut", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan", "Yukon"
+];
+
+export const AUSTRALIAN_STATES = [
+  "New South Wales", "Victoria", "Queensland", "Western Australia",
+  "South Australia", "Tasmania", "Australian Capital Territory", "Northern Territory"
+];
+
+/** Simple flat list of US state names for dropdowns. */
+export const US_STATE_NAMES = US_STATES.map(s => s.value);
 
 export const COUNTRIES = [
   // Most popular travel destinations first
