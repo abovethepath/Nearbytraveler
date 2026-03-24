@@ -9620,6 +9620,7 @@ Questions? Just reply to this message. Welcome aboard!
       const blocks = await db.select({
         id: blockedUsers.id,
         blockedId: blockedUsers.blockedId,
+        reason: blockedUsers.reason,
         blockedAt: blockedUsers.blockedAt,
         username: users.username,
         name: users.name,
