@@ -805,10 +805,10 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 <button
                   type="button"
                   onClick={() => setShowPicker(true)}
-                  className="available-now-primary-cta w-full py-3.5 px-4 rounded-xl bg-white hover:bg-gray-50 text-gray-900 font-bold text-base text-center border border-gray-200 shadow-sm cursor-pointer active:scale-[0.98] transition-all relative z-30 dark:border-transparent dark:bg-gradient-to-r dark:from-purple-600 dark:via-orange-500 dark:to-green-500 dark:hover:from-purple-700 dark:hover:via-orange-600 dark:hover:to-green-600 dark:text-white dark:shadow-lg dark:shadow-orange-500/30"
+                  className="available-now-primary-cta available-now-heartbeat w-full py-3.5 px-4 rounded-xl bg-white hover:bg-gray-50 text-gray-900 font-bold text-base text-center border border-gray-200 shadow-sm cursor-pointer active:scale-[0.98] transition-all relative z-30 dark:border-transparent dark:bg-gradient-to-r dark:from-purple-600 dark:via-orange-500 dark:to-green-500 dark:hover:from-purple-700 dark:hover:via-orange-600 dark:hover:to-green-600 dark:text-white dark:shadow-lg dark:shadow-orange-500/30"
                 >
                   <span className="flex items-center justify-center gap-2 pointer-events-none">
-                    <Zap className="w-5 h-5 text-yellow-300" />
+                    <Zap className="w-5 h-5 text-yellow-300 available-now-zap" />
                     ⚡ Available Now
                   </span>
                 </button>

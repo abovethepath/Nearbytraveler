@@ -150,3 +150,29 @@ html, body { overflow-x: hidden; }
   flex-direction: column !important;
   align-items: center !important;
 }
+
+/* Available Now button heartbeat + glow */
+@keyframes available-now-heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.025); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.015); }
+  60% { transform: scale(1); }
+}
+@keyframes available-now-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(168,85,247,0.3), 0 4px 12px rgba(249,115,22,0.2); }
+  50% { box-shadow: 0 0 18px rgba(168,85,247,0.6), 0 4px 20px rgba(249,115,22,0.4); }
+}
+@keyframes available-now-zap-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.85; }
+}
+.available-now-heartbeat {
+  animation: available-now-heartbeat 2s ease-in-out infinite, available-now-glow 2.5s ease-in-out infinite;
+}
+.available-now-heartbeat:hover {
+  animation: none;
+}
+.available-now-zap {
+  animation: available-now-zap-pulse 1.4s ease-in-out infinite;
+}
