@@ -3008,13 +3008,18 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Fetch which users the current user has hearted for this city
       let savedSet = new Set<number>();
       if (uid) {
-        const saved = await db.select({ savedUserId: savedTravelers.savedUserId })
-          .from(savedTravelers)
-          .where(and(
-            eq(savedTravelers.userId, uid),
-            sql`LOWER(${savedTravelers.cityName}) = LOWER(${city})`
-          ));
-        savedSet = new Set(saved.map(s => s.savedUserId));
+        try {
+          const saved = await db.select({ savedUserId: savedTravelers.savedUserId })
+            .from(savedTravelers)
+            .where(and(
+              eq(savedTravelers.userId, uid),
+              sql`LOWER(${savedTravelers.cityName}) = LOWER(${city})`
+            ));
+          savedSet = new Set(saved.map(s => s.savedUserId));
+        } catch (e: any) {
+          // saved_travelers table may not exist yet — non-fatal
+          console.error("Arrivals saved query failed (non-fatal):", e?.message);
+        }
       }
 
       const locals: any[] = [];
@@ -3703,33 +3708,35 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           .orderBy(events.date)
           .limit(5),
 
-        // Count users currently open to meet
-        db.execute(sql`
-          SELECT COUNT(*)::int AS count FROM available_now
-          WHERE LOWER(city) = ${cityLower}
-            AND is_available = true
-            AND expires_at > ${now.toISOString()}
-        `),
+        // Count users currently open to meet (metro-aware)
+        db.execute(sql.raw(
+          `SELECT COUNT(*)::int AS count FROM available_now WHERE LOWER(city) IN (${expandedCities.map(c => `'${c}'`).join(',')}) AND is_available = true AND expires_at > '${now.toISOString()}'`
+        )),
 
-        // Travelers here right now (active travel plan)
-        db.select({
-          userId: travelPlans.userId,
-          username: users.username,
-          firstName: users.firstName,
-          profileImage: users.profileImage,
-          hometownCity: users.hometownCity,
-          hometownCountry: users.hometownCountry,
-          startDate: travelPlans.startDate,
-          endDate: travelPlans.endDate,
-        })
-          .from(travelPlans)
-          .innerJoin(users, eq(travelPlans.userId, users.id))
-          .where(and(
-            sql`LOWER(${travelPlans.destinationCity}) = ${cityLower}`,
-            lte(travelPlans.startDate, now),
-            gte(travelPlans.endDate, now),
-          ))
-          .limit(8),
+        // Travelers here right now — active travel plan (metro-aware)
+        (() => {
+          const tpCityMatch = expandedCities.length === 1
+            ? sql`LOWER(${travelPlans.destinationCity}) = ${expandedCities[0]}`
+            : or(...expandedCities.map(c => sql`LOWER(${travelPlans.destinationCity}) = ${c}`));
+          return db.select({
+            userId: travelPlans.userId,
+            username: users.username,
+            firstName: users.firstName,
+            profileImage: users.profileImage,
+            hometownCity: users.hometownCity,
+            hometownCountry: users.hometownCountry,
+            startDate: travelPlans.startDate,
+            endDate: travelPlans.endDate,
+          })
+            .from(travelPlans)
+            .innerJoin(users, eq(travelPlans.userId, users.id))
+            .where(and(
+              tpCityMatch!,
+              lte(travelPlans.startDate, now),
+              gte(travelPlans.endDate, now),
+            ))
+            .limit(8);
+        })(),
       ]);
 
       const result = {
