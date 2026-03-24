@@ -124,7 +124,12 @@ export default function Explore() {
   const userCity = rawCity ? getMetroAreaName(rawCity) : "";
   const userCountry = resolved.country;
 
-  const [activeTab, setActiveTab] = useState<"live" | "communities">("live");
+  const [activeTab, setActiveTab] = useState<"live" | "communities">(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("tab") === "communities" ? "communities" : "live";
+    } catch { return "live"; }
+  });
   const [showCreateLiveShare, setShowCreateLiveShare] = useState(false);
 
   // Live share form state
