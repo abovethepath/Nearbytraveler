@@ -3,6 +3,7 @@ import React, { useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { getApiBaseUrl, apiRequest } from "@/lib/queryClient";
 import { Zap, UserPlus, MessageCircle, ChevronLeft, ChevronRight, ChevronRight as ArrowRight, Check, Loader2, XCircle } from "lucide-react";
+import { getMetroAreaName } from "@shared/metro-areas";
 
 function timeLeft(expiresAt: string): string | null {
   const ms = new Date(expiresAt).getTime() - Date.now();
@@ -26,14 +27,24 @@ function getActivityLabel(act: string): string {
 interface AvailableNowStripProps {
   currentUserId?: number;
   userCity?: string;
+  isCurrentlyTraveling?: boolean;
+  travelDestination?: string;
 }
 
 const SCROLL_AMOUNT = 170;
 
-export default function AvailableNowStrip({ currentUserId, userCity }: AvailableNowStripProps) {
+export default function AvailableNowStrip({ currentUserId, userCity, isCurrentlyTraveling, travelDestination }: AvailableNowStripProps) {
   const [, setLocation] = useLocation();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [sendingTo, setSendingTo] = useState<number | null>(null);
+
+  // City switcher: default to travel destination if traveling
+  const homeCity = userCity || "";
+  const destCity = travelDestination || "";
+  const hasTwoLocations = isCurrentlyTraveling && !!destCity && destCity.toLowerCase() !== homeCity.toLowerCase();
+  const defaultView = (isCurrentlyTraveling && destCity) ? 'trip' : 'home';
+  const [cityView, setCityView] = useState<'home' | 'trip'>(defaultView);
+  const activeCity = (cityView === 'trip' && hasTwoLocations) ? destCity : homeCity;
 
   // Fetch sent requests from API so state reflects cancellations
   const { data: sentRequestsData } = useQuery<{ sentToUserIds: number[] }>({
@@ -98,10 +109,9 @@ export default function AvailableNowStrip({ currentUserId, userCity }: Available
   });
 
   const { data: availableUsers = [] } = useQuery<any[]>({
-    queryKey: ["/api/available-now", userCity || ""],
+    queryKey: ["/api/available-now", activeCity],
     queryFn: async () => {
-      const city = userCity || "";
-      const res = await fetch(`${getApiBaseUrl()}/api/available-now?city=${encodeURIComponent(city)}`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/available-now?city=${encodeURIComponent(activeCity)}`, {
         credentials: "include",
       });
       if (!res.ok) return [];
@@ -138,23 +148,49 @@ export default function AvailableNowStrip({ currentUserId, userCity }: Available
           </button>
         </div>
       )}
-      <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Zap className="w-4 h-4 text-green-500 shrink-0" />
-          <h2 className="text-sm font-bold text-gray-900 dark:text-white">
-            Available Now Near You
-          </h2>
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-          </span>
+      <div className="px-4 pt-4 pb-2 space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Zap className="w-4 h-4 text-green-500 shrink-0" />
+            <h2 className="text-sm font-bold text-gray-900 dark:text-white">
+              Available Now Near You
+            </h2>
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+            </span>
+          </div>
+          <button
+            onClick={() => setLocation("/available-now")}
+            className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
+          >
+            See all <ArrowRight className="w-3 h-3" />
+          </button>
         </div>
-        <button
-          onClick={() => setLocation("/available-now")}
-          className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
-        >
-          See all <ArrowRight className="w-3 h-3" />
-        </button>
+        {hasTwoLocations && (
+          <div className="flex gap-1">
+            <button
+              onClick={() => setCityView('trip')}
+              className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${
+                cityView === 'trip'
+                  ? 'bg-orange-500 text-white'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+              }`}
+            >
+              {getMetroAreaName(destCity)}
+            </button>
+            <button
+              onClick={() => setCityView('home')}
+              className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${
+                cityView === 'home'
+                  ? 'bg-orange-500 text-white'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+              }`}
+            >
+              {getMetroAreaName(homeCity)}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="relative">

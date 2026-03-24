@@ -1896,9 +1896,14 @@ export default function Home() {
               <MeetupAlertBanner userId={effectiveUser.id} />
             )}
 
-            {/* Available Now strip — always hometown */}
+            {/* Available Now strip — defaults to travel city if traveling */}
             {effectiveUser?.userType !== 'business' && (
-              <AvailableNowStrip currentUserId={effectiveUser?.id} userCity={effectiveUser?.hometownCity || ''} />
+              <AvailableNowStrip
+                currentUserId={effectiveUser?.id}
+                userCity={effectiveUser?.hometownCity || ''}
+                isCurrentlyTraveling={!!effectiveUser?.isCurrentlyTraveling}
+                travelDestination={effectiveUser?.travelDestination ? String(effectiveUser.travelDestination).split(',')[0]?.trim() : undefined}
+              />
             )}
 
             {/* Invite Friends banner — mobile only */}

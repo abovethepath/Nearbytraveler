@@ -6,6 +6,7 @@ import { getApiBaseUrl } from "@/lib/queryClient";
 import { Zap, UserPlus, MessageCircle, ArrowLeft, MapPin, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AvailableNowWidget } from "@/components/AvailableNowWidget";
+import { getMetroAreaName } from "@shared/metro-areas";
 
 function timeLeft(expiresAt: string): string | null {
   const ms = new Date(expiresAt).getTime() - Date.now();
@@ -30,12 +31,21 @@ export default function AvailableNowPage() {
   const [, setLocation] = useLocation();
   const authContext = useContext(AuthContext);
   const user = authContext?.user;
-  const userCity = user?.hometownCity || user?.destinationCity || "";
+
+  // City switcher: default to travel destination if currently traveling
+  const homeCity = user?.hometownCity || "";
+  const isTraveling = (user as any)?.isCurrentlyTraveling;
+  const rawDest = (user as any)?.travelDestination || "";
+  const destCity = (user as any)?.destinationCity || (user as any)?.destination_city || (rawDest ? rawDest.split(',')[0]?.trim() : "") || "";
+  const hasTwoLocations = isTraveling && !!destCity && destCity.toLowerCase() !== homeCity.toLowerCase();
+  const defaultView = (isTraveling && destCity) ? 'trip' : 'home';
+  const [cityView, setCityView] = useState<'home' | 'trip'>(defaultView);
+  const activeCity = (cityView === 'trip' && hasTwoLocations) ? destCity : homeCity;
 
   const { data: availableUsers = [], isLoading } = useQuery<any[]>({
-    queryKey: ["/api/available-now", userCity],
+    queryKey: ["/api/available-now", activeCity],
     queryFn: async () => {
-      const res = await fetch(`${getApiBaseUrl()}/api/available-now?city=${encodeURIComponent(userCity)}`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/available-now?city=${encodeURIComponent(activeCity)}`, {
         credentials: "include",
       });
       if (!res.ok) return [];
@@ -108,12 +118,36 @@ export default function AvailableNowPage() {
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
             </span>
           </div>
-          {userCity && (
+          {activeCity && !hasTwoLocations && (
             <span className="text-sm text-gray-500 dark:text-gray-400 ml-auto flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5" /> {userCity}
+              <MapPin className="w-3.5 h-3.5" /> {getMetroAreaName(activeCity)}
             </span>
           )}
         </div>
+        {hasTwoLocations && (
+          <div className="max-w-2xl mx-auto flex gap-1.5 mt-2">
+            <button
+              onClick={() => setCityView('trip')}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                cityView === 'trip'
+                  ? 'bg-orange-500 text-white'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+              }`}
+            >
+              {getMetroAreaName(destCity)}
+            </button>
+            <button
+              onClick={() => setCityView('home')}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                cityView === 'home'
+                  ? 'bg-orange-500 text-white'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+              }`}
+            >
+              {getMetroAreaName(homeCity)}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
