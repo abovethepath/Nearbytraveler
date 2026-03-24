@@ -107,16 +107,24 @@ function PostReplies({ postId, currentUser }: { postId: number; currentUser: any
         </div>
       ))}
 
-      <div className="flex gap-2 items-center">
-        <Input
+      <div className="flex gap-2 items-end">
+        <Textarea
           placeholder="Write a reply..."
           value={replyText}
           onChange={(e) => setReplyText(e.target.value)}
-          className="text-xs h-8"
+          onInput={(e) => {
+            const el = e.currentTarget;
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+          }}
+          className="text-xs resize-none"
+          style={{ minHeight: '32px', maxHeight: '100px', overflowY: 'auto' }}
+          rows={1}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && replyText.trim()) {
+            if (e.key === "Enter" && !e.shiftKey && replyText.trim()) {
               e.preventDefault();
               createReplyMutation.mutate(replyText.trim());
+              e.currentTarget.style.height = 'auto';
             }
           }}
         />
@@ -596,11 +604,19 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                     placeholder="Share something with the community..."
                     value={newPost}
                     onChange={(e) => setNewPost(e.target.value)}
-                    className="min-h-[60px] resize-none"
+                    onInput={(e) => {
+                      const el = e.currentTarget;
+                      el.style.height = 'auto';
+                      el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+                    }}
+                    className="resize-none"
+                    style={{ minHeight: '60px', maxHeight: '160px', overflowY: 'auto' }}
+                    rows={2}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey && newPost.trim()) {
                         e.preventDefault();
                         createPostMutation.mutate(newPost.trim());
+                        e.currentTarget.style.height = 'auto';
                       }
                     }}
                   />

@@ -3526,8 +3526,14 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                         <Textarea
                           value={editText}
                           onChange={(e) => setEditText(e.target.value)}
+                          onInput={(e) => {
+                            const el = e.currentTarget;
+                            el.style.height = 'auto';
+                            el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+                          }}
                           className="w-full mb-2 bg-gray-800 border-gray-600 text-white resize-none"
-                          rows={3}
+                          style={{ minHeight: '40px', maxHeight: '120px', overflowY: 'auto' }}
+                          rows={1}
                           data-testid="textarea-edit-message"
                         />
                         <div className="flex gap-2">
@@ -3766,9 +3772,23 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               ref={inputRef}
               value={messageText}
               onChange={(e) => handleTyping(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+              onInput={(e) => {
+                const el = e.currentTarget;
+                el.style.height = 'auto';
+                el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                  // Reset height after send
+                  const el = e.currentTarget;
+                  requestAnimationFrame(() => { el.style.height = 'auto'; });
+                }
+              }}
               placeholder="Message"
-              className="flex-1 min-h-[36px] max-h-[100px] bg-gray-700 border-gray-600 text-white resize-none rounded-full px-3 py-2 text-sm"
+              className="flex-1 bg-gray-700 border-gray-600 text-white resize-none rounded-2xl px-3 py-2 text-sm"
+              style={{ minHeight: '36px', maxHeight: '120px', overflowY: 'auto' }}
               rows={1}
               disabled={chatType !== 'dm' && !messagesLoaded && !isWsConnected}
               autoCorrect="on"

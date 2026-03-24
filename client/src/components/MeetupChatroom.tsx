@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Send, MapPin, Clock, Users, X } from "lucide-react";
@@ -226,12 +227,26 @@ export function MeetupChatroom({ meetupId, meetupTitle, isOpen, onClose, current
             </ScrollArea>
 
             {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="flex gap-2 mt-4 mb-4">
-              <Input
+            <form onSubmit={handleSendMessage} className="flex gap-2 items-end mt-4 mb-4">
+              <Textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                onInput={(e) => {
+                  const el = e.currentTarget;
+                  el.style.height = 'auto';
+                  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (message.trim()) handleSendMessage(e as any);
+                    e.currentTarget.style.height = 'auto';
+                  }
+                }}
                 placeholder="Type your message..."
-                className="flex-1"
+                className="flex-1 resize-none"
+                style={{ minHeight: '40px', maxHeight: '120px', overflowY: 'auto' }}
+                rows={1}
                 disabled={sendMessageMutation.isPending}
               />
               <Button

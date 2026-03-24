@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { Send, MessageCircle, X } from 'lucide-react';
@@ -135,13 +136,26 @@ export function TravelCrewChat({ travelPlanId, userId, onClose }: TravelCrewChat
         </div>
 
         <div className="p-4 pb-6 mb-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex gap-2">
-            <Input
+          <div className="flex gap-2 items-end">
+            <Textarea
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onInput={(e) => {
+                const el = e.currentTarget;
+                el.style.height = 'auto';
+                el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  if (newMessage.trim()) handleSend();
+                  e.currentTarget.style.height = 'auto';
+                }
+              }}
               placeholder="Type a message..."
-              className="flex-1"
+              className="flex-1 resize-none"
+              style={{ minHeight: '40px', maxHeight: '120px', overflowY: 'auto' }}
+              rows={1}
               disabled={sendMessageMutation.isPending}
             />
             <Button
