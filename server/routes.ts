@@ -20555,20 +20555,8 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`🗺️ CITY MAP DATA: Fetching map data for ${city}, ${state || 'N/A'}, ${country}`);
 
-      // Metropolitan area consolidation for Los Angeles - use same logic as city pages  
-      let metroAreaCities = [city];
-      const laCities = ['Los Angeles', 'LA', 'Playa del Rey', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 'Culver City', 'Marina del Rey', 'Hermosa Beach', 'Redondo Beach', 'Hawthorne', 'Hollywood', 'Studio City', 'Sherman Oaks', 'Encino', 'Van Nuys', 'Northridge'];
-      
-      // Check if current city is in LA metro area (same logic as city pages)
-      if (process.env.NODE_ENV === 'development') console.log(`🗺️ METRO CHECK: Testing "${city}" against LA cities`);
-      const isLAMetro = laCities.some(laCity => city.toLowerCase().includes(laCity.toLowerCase()) || laCity.toLowerCase().includes(city.toLowerCase()));
-      if (process.env.NODE_ENV === 'development') console.log(`🗺️ METRO RESULT: ${city} is LA metro: ${isLAMetro}`);
-      
-      if (isLAMetro) {
-        metroAreaCities = [...laCities, 'Los Angeles'];
-        if (process.env.NODE_ENV === 'development') console.log(`🗺️ METRO CONSOLIDATION: ${city} → Los Angeles metro area`);
-      }
-      if (process.env.NODE_ENV === 'development') console.log(`🗺️ METRO: Searching for users in cities: ${metroAreaCities.join(', ')}`);
+      // Metro area consolidation — uses canonical shared/metro-areas.ts (all metros)
+      const metroAreaCities = getExpandedCityList(city);
       
       // Fetch users with location sharing enabled for this city
       let mapUsers = [];
@@ -24070,14 +24058,11 @@ Questions? Just reply to this message. Welcome aboard!
       
       // Apply LA Metro consolidation to fix "City" vs "Los Angeles Metro" display issue
       const consolidatedInterests = interests.map(interest => {
-        // Simple metro area consolidation without external dependency
-        const isLAMetroCity = ['Playa del Rey', 'Santa Monica', 'Venice', 'Culver City', 'Beverly Hills', 'West Hollywood', 'Malibu'].includes(interest.cityName);
-        const metroArea = isLAMetroCity ? 'Los Angeles Metro' : null;
-        
+        // Metro consolidation via canonical shared/metro-areas.ts
+        const metroName = getMetroAreaName(interest.cityName || '');
         return {
           ...interest,
-          // Use metro area if available, otherwise keep original city name
-          cityName: metroArea || interest.cityName
+          cityName: metroName !== interest.cityName ? metroName : interest.cityName
         };
       });
       

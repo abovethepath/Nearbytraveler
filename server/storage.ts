@@ -592,25 +592,8 @@ export class DatabaseStorage implements IStorage {
       hometownCountryIsEmptyString: insertUser.hometownCountry === ''
     });
     
-    // LA Metro cities that should consolidate to "Los Angeles Metro"
-    const laMetroCities = [
-      'Los Angeles', 'Playa del Rey', 'Santa Monica', 'Venice', 'Culver City',
-      'Marina del Rey', 'Manhattan Beach', 'Hermosa Beach', 'Redondo Beach',
-      'El Segundo', 'Torrance', 'Hawthorne', 'Inglewood', 'West Hollywood',
-      'Beverly Hills', 'Century City', 'Brentwood', 'Westwood', 'Pacific Palisades',
-      'Malibu', 'Pasadena', 'Glendale', 'Burbank', 'North Hollywood', 'Studio City',
-      'Sherman Oaks', 'Encino', 'Tarzana', 'Woodland Hills', 'Calabasas',
-      'Agoura Hills', 'Thousand Oaks', 'Simi Valley', 'Northridge', 'Van Nuys',
-      'Reseda', 'Canoga Park', 'Chatsworth', 'Granada Hills', 'Sylmar',
-      'San Fernando', 'Pacoima', 'Sun Valley', 'La Crescenta', 'La Canada',
-      'Montrose', 'Eagle Rock', 'Highland Park', 'Silver Lake', 'Los Feliz',
-      'Echo Park', 'Downtown Los Angeles', 'Chinatown', 'Little Tokyo', 'Koreatown',
-      'Mid-Wilshire', 'Hancock Park', 'Fairfax', 'West LA', 'Sawtelle',
-      'Mar Vista', 'Del Rey', 'Palms', 'Cheviot Hills', 'Pico-Robertson',
-      'Baldwin Hills', 'Leimert Park', 'Hyde Park', 'Watts', 'Compton',
-      'Lynwood', 'South Gate', 'Downey', 'Norwalk', 'Whittier',
-      'Long Beach', 'Venice Beach'
-    ];
+    // LA Metro detection — uses canonical shared/metro-areas.ts (76+ cities)
+    const isLAMetroCity = (city: string) => getMetroAreaName(city) === 'Los Angeles Metro';
 
     // Clean the user data to ensure we only include defined values and handle dates properly
     const cleanUserData: any = {};
@@ -635,7 +618,7 @@ export class DatabaseStorage implements IStorage {
 
     // PRESERVE ACTUAL CITY: User's hometown city is kept as-is (e.g., "Culver City" not "Los Angeles Metro")
     // Metro area consolidation is only used for SEARCH purposes, not stored in user profiles
-    if (cleanUserData.hometownCity && laMetroCities.includes(cleanUserData.hometownCity)) {
+    if (cleanUserData.hometownCity && isLAMetroCity(cleanUserData.hometownCity)) {
       if (process.env.NODE_ENV === 'development') console.log(`🏙️ LA METRO: Preserving actual city "${cleanUserData.hometownCity}" (metro consolidation only used for searches)`);
     }
     
@@ -3054,22 +3037,13 @@ export class DatabaseStorage implements IStorage {
       // 1. HOMETOWN BUCKET - Users whose permanent hometown is this location (ALWAYS in bucket)
       // 2. TRAVELING BUCKET - Users currently traveling to this location (TEMPORARY in bucket)
 
-      // CRITICAL FIX: Build metropolitan area search logic
-      // For Los Angeles, include all metro cities like Playa del Rey, Santa Monica, etc.
-      let citySearchConditions = [eq(users.hometownCity, searchCity)];
-      
-      // Los Angeles Metropolitan Area expansion
-      if (searchCity.toLowerCase().includes('los angeles') && searchState?.toLowerCase().includes('california')) {
-        const laMetroCities = [
-          'Playa del Rey', 'Santa Monica', 'Beverly Hills', 'Hollywood', 'Venice', 
-          'Culver City', 'Manhattan Beach', 'Redondo Beach', 'El Segundo', 
-          'Inglewood', 'Torrance', 'Long Beach', 'Pasadena', 'Burbank', 
-          'Glendale', 'Marina del Rey', 'Hermosa Beach', 'Malibu', 
-          'West Hollywood', 'Westwood', 'Los Angeles'
-        ];
-        
-        citySearchConditions = laMetroCities.map(city => eq(users.hometownCity, city));
-        console.log(`🌍 METRO: Expanding Los Angeles search to include ${laMetroCities.length} metro cities`);
+      // Metro area expansion: use canonical shared/metro-areas.ts for ALL metros (LA, NYC, SF, Chicago)
+      const metroName = getMetroAreaName(searchCity);
+      const metroCities = metroName !== searchCity ? getMetroCities(metroName) : [];
+      const allSearchCities = metroCities.length > 0 ? [...new Set([searchCity, metroName, ...metroCities])] : [searchCity];
+      let citySearchConditions = allSearchCities.map(city => eq(users.hometownCity, city));
+      if (metroCities.length > 0) {
+        console.log(`🌍 METRO: Expanding ${searchCity} search to include ${allSearchCities.length} metro cities`);
       }
 
       // Get hometown locals (PERMANENT BUCKET MEMBERS)
@@ -7997,112 +7971,24 @@ export class DatabaseStorage implements IStorage {
       // COMPLETELY REWRITTEN: Pull from users.secretActivities field so profile changes immediately show on city pages
       let experiences = [];
       
-      // Metro consolidation function - matches the backend logic
+      // Metro consolidation — canonical shared/metro-areas.ts (76+ LA, 60+ NY, etc.)
       const consolidateToMetroArea = (city: string): string => {
         if (!city) return city;
-        
-        const LA_METRO_CITIES = [
-          'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 
-          'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 
-          'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 
-          'Compton', 'Downey', 'Pomona', 'Playa del Rey', 'Redondo Beach',
-          'Culver City', 'Marina del Rey', 'Hermosa Beach', 'Hawthorne',
-          'Gardena', 'Carson', 'Lakewood', 'Norwalk', 'Whittier', 'Montebello',
-          'East Los Angeles', 'Monterey Park', 'Alhambra', 'South Pasadena',
-          'San Fernando', 'North Hollywood', 'Hollywood', 'Studio City',
-          'Sherman Oaks', 'Encino', 'Reseda', 'Van Nuys', 'Northridge',
-          'Malibu', 'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City',
-          'West LA', 'Koreatown', 'Mid-City', 'Miracle Mile', 'Los Feliz',
-          'Silver Lake', 'Echo Park', 'Downtown LA', 'Arts District', 'Little Tokyo',
-          'Chinatown', 'Boyle Heights', 'East LA', 'Highland Park', 'Eagle Rock',
-          'Atwater Village', 'Glassell Park', 'Mount Washington', 'Cypress Park',
-          'Sun Valley', 'Pacoima', 'Sylmar', 'Granada Hills', 'Porter Ranch',
-          'Chatsworth', 'Canoga Park', 'Woodland Hills', 'Tarzana', 'Panorama City',
-          'Mission Hills', 'Sepulveda', 'Arleta', 'San Pedro', 'Wilmington',
-          'Harbor City', 'Harbor Gateway', 'Watts', 'South LA', 'Crenshaw',
-          'Leimert Park', 'View Park', 'Baldwin Hills', 'Ladera Heights'
-        ];
-        
-        const isLAMetro = LA_METRO_CITIES.some(metroCity => 
-          metroCity.toLowerCase() === city.toLowerCase()
-        );
-        
-        if (isLAMetro) {
-          console.log(`🌍 SECRET METRO CONSOLIDATION: ${city} → Los Angeles Metro`);
-          return 'Los Angeles';
-        }
-
-        // Nashville Metro consolidation
-        const NASHVILLE_METRO_CITIES = [
-          'Nashville', 'Nashville Metro', 'Brentwood', 'Franklin', 'Murfreesboro', 'Hendersonville', 
-          'Gallatin', 'Lebanon', 'Mount Juliet', 'Goodlettsville', 'White House',
-          'Springfield', 'Clarksville', 'Smyrna', 'La Vergne', 'Antioch',
-          'Hermitage', 'Old Hickory', 'Madison', 'Belle Meade', 'Forest Hills',
-          'Oak Hill', 'Berry Hill', 'Lakewood', 'Bellevue', 'Green Hills',
-          'Music Row', 'The Gulch', 'Downtown Nashville', 'East Nashville',
-          'West Nashville', 'South Nashville', 'North Nashville', 'Greenhills'
-        ];
-        
-        const isNashvilleMetro = NASHVILLE_METRO_CITIES.some(metroCity => 
-          metroCity.toLowerCase() === city.toLowerCase()
-        );
-        
-        if (isNashvilleMetro) {
-          console.log(`🌍 SECRET METRO CONSOLIDATION: ${city} → Nashville Metro`);
-          return 'Nashville';
-        }
-        
+        const metro = getMetroAreaName(city);
+        if (metro !== city) return metro === 'Los Angeles Metro' ? 'Los Angeles' : metro;
         return city;
       };
 
       // Consolidate metro areas first
       const consolidatedCity = consolidateToMetroArea(city);
       
-      // Query users whose hometown matches this city and have secret activities
+      // Query users whose hometown matches this city (metro-aware via shared/metro-areas.ts)
       const conditions = [];
-      
-      if (city.toLowerCase() === 'los angeles metro') {
-        // For LA metro, search all LA metro cities
-        const LA_METRO_CITIES = [
-          'Los Angeles', 'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 
-          'Manhattan Beach', 'Beverly Hills', 'West Hollywood', 'Pasadena', 
-          'Burbank', 'Glendale', 'Long Beach', 'Torrance', 'Inglewood', 
-          'Compton', 'Downey', 'Pomona', 'Playa del Rey', 'Redondo Beach',
-          'Culver City', 'Marina del Rey', 'Hermosa Beach', 'Hawthorne',
-          'Gardena', 'Carson', 'Lakewood', 'Norwalk', 'Whittier', 'Montebello',
-          'East Los Angeles', 'Monterey Park', 'Alhambra', 'South Pasadena',
-          'San Fernando', 'North Hollywood', 'Hollywood', 'Studio City',
-          'Sherman Oaks', 'Encino', 'Reseda', 'Van Nuys', 'Northridge',
-          'Malibu', 'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City',
-          'West LA', 'Koreatown', 'Mid-City', 'Miracle Mile', 'Los Feliz',
-          'Silver Lake', 'Echo Park', 'Downtown LA', 'Arts District', 'Little Tokyo',
-          'Chinatown', 'Boyle Heights', 'East LA', 'Highland Park', 'Eagle Rock',
-          'Atwater Village', 'Glassell Park', 'Mount Washington', 'Cypress Park',
-          'Sun Valley', 'Pacoima', 'Sylmar', 'Granada Hills', 'Porter Ranch',
-          'Chatsworth', 'Canoga Park', 'Woodland Hills', 'Tarzana', 'Panorama City',
-          'Mission Hills', 'Sepulveda', 'Arleta', 'San Pedro', 'Wilmington',
-          'Harbor City', 'Harbor Gateway', 'Watts', 'South LA', 'Crenshaw',
-          'Leimert Park', 'View Park', 'Baldwin Hills', 'Ladera Heights'
-        ];
-        
-        conditions.push(or(...LA_METRO_CITIES.map(cityName => eq(users.hometownCity, cityName))));
-        
-      } else if (city.toLowerCase() === 'nashville metro') {
-        // For Nashville metro, search all Nashville metro cities
-        const NASHVILLE_METRO_CITIES = [
-          'Nashville', 'Nashville Metro', 'Brentwood', 'Franklin', 'Murfreesboro', 'Hendersonville', 
-          'Gallatin', 'Lebanon', 'Mount Juliet', 'Goodlettsville', 'White House',
-          'Springfield', 'Clarksville', 'Smyrna', 'La Vergne', 'Antioch',
-          'Hermitage', 'Old Hickory', 'Madison', 'Belle Meade', 'Forest Hills',
-          'Oak Hill', 'Berry Hill', 'Lakewood', 'Bellevue', 'Green Hills',
-          'Music Row', 'The Gulch', 'Downtown Nashville', 'East Nashville',
-          'West Nashville', 'South Nashville', 'North Nashville', 'Greenhills'
-        ];
-        
-        conditions.push(or(...NASHVILLE_METRO_CITIES.map(cityName => eq(users.hometownCity, cityName))));
-        
+      const metroForCity = getMetroAreaName(city);
+      const metroCitiesForSearch = metroForCity !== city ? getMetroCities(metroForCity) : [];
+      if (metroCitiesForSearch.length > 0) {
+        conditions.push(or(...metroCitiesForSearch.map(cityName => eq(users.hometownCity, cityName))));
       } else {
-        // For other cities, match the city name
         conditions.push(ilike(users.hometownCity, `%${city}%`));
       }
       

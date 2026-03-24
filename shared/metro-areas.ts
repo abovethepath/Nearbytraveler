@@ -42,9 +42,12 @@ export const METRO_AREAS = {
     'Glendora', 'Covina', 'West Covina', 'La Puente', 'Baldwin Park',
     'La Verne', 'San Dimas', 'Claremont', 'Diamond Bar', 'Pomona',
     'Walnut', 'Industry', 'La Canada Flintridge', 'La Habra Heights',
+    // Harbor/Port
+    'San Pedro', 'Wilmington', 'Harbor City', 'Harbor Gateway',
     // Inland/North
     'Beverly Hills', 'Inglewood', 'Whittier', 'Santa Clarita', 'Lancaster',
     'Palmdale', 'Hidden Hills', 'Westlake Village', 'Vernon', 'Irwindale',
+    'East LA',
   ],
   
   "New York Metro": [
