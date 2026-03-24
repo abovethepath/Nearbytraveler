@@ -187,9 +187,9 @@ const EventsGrid = ({
           const attendeeCount = Math.max(event.attendeeCount || 0, 1);
           
           return (
-            <Card 
-              key={event.id} 
-              className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors overflow-hidden cursor-pointer hover:shadow-lg"
+            <Card
+              key={event.id}
+              className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors overflow-hidden cursor-pointer hover:shadow-lg w-full max-w-full min-w-0"
               onClick={() => {
                 // Check if it's an external event (has eventUrl)
                 if ((event as any).eventUrl && (event as any).eventUrl.startsWith('http')) {

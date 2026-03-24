@@ -80,7 +80,7 @@ export default function ExternalEventCard({ event }: { event: CommunityEvent }) 
 
   return (
     <Card
-      className={`rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 cursor-pointer text-left`}
+      className={`rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 cursor-pointer text-left w-full max-w-full min-w-0`}
       onClick={handleClick}
     >
       {event.imageUrl && (

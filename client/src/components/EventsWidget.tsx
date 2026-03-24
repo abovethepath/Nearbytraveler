@@ -238,10 +238,10 @@ function EventsWidget({ userId }: EventsWidgetProps) {
               <div className="p-4 min-w-0">
                 <div className="flex items-start gap-3 min-w-0">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 min-w-0">
-                    <h4 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-2 min-w-0">{event.title}</h4>
+                  <div className="flex items-start gap-2 mb-1 min-w-0">
+                    <h4 className="text-base font-semibold text-gray-900 dark:text-white min-w-0 break-words line-clamp-2 [overflow-wrap:anywhere]">{event.title}</h4>
                     {event.isUserAttending && (
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 shrink-0">
                         ✓ Attending
                       </span>
                     )}

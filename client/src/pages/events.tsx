@@ -962,7 +962,7 @@ export default function Events() {
                           className="cursor-pointer hover:shadow-lg transition-shadow duration-200 border-2 border-blue-200 bg-blue-50/30 dark:border-blue-700 dark:bg-blue-900/20 w-full overflow-hidden"
                           onClick={() => setLocation(`/events/${event.id}`)}
                         >
-                          <CardHeader className="pb-3">
+                          <CardHeader className="pb-3 min-w-0 overflow-hidden">
                             {event.imageUrl && (
                               <div className="relative h-40 bg-gray-100 dark:bg-gray-700 rounded-lg mb-3 overflow-hidden">
                                 <img
@@ -973,9 +973,9 @@ export default function Events() {
                                 />
                               </div>
                             )}
-                            <div className="flex items-start justify-between">
-                              <CardTitle className="text-base font-semibold line-clamp-2 dark:text-white">{event.title}</CardTitle>
-                              <div className="flex flex-col gap-1 ml-2">
+                            <div className="flex items-start justify-between min-w-0">
+                              <CardTitle className="text-base font-semibold line-clamp-2 dark:text-white min-w-0 break-words [overflow-wrap:anywhere]">{event.title}</CardTitle>
+                              <div className="flex flex-col gap-1 ml-2 shrink-0">
                                 <Badge variant="secondary" className={`shrink-0 ${
                                   createdEvents.some(e => e.id === event.id) 
                                     ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'

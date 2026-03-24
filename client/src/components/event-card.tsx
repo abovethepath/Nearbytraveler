@@ -240,8 +240,8 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
   if (compact) {
     return (
-      <div 
-        className="pl-2 py-2 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+      <div
+        className="pl-2 py-2 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors cursor-pointer w-full max-w-full overflow-hidden"
         onClick={() => setLocation(`/events/${event.id}`)}
       >
         <div className="flex items-start justify-between">
@@ -303,7 +303,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
   return (
     <>
-      <article className="event-card rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 cursor-pointer text-left flex flex-col h-full max-w-full box-border"
+      <article className="event-card rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 cursor-pointer text-left flex flex-col h-full w-full max-w-full min-w-0 box-border"
                onClick={() => setLocation(`/events/${event.id}`)}>
         {event.imageUrl && (
           <div className="relative overflow-hidden h-[180px] md:h-[200px] lg:h-[220px]">

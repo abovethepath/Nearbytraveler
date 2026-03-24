@@ -82,8 +82,8 @@ export default function BusinessEventsWidget({ userId }: BusinessEventsWidgetPro
       {businessEvents.length > 0 ? (
         <div className="space-y-3">
           {businessEvents.map((event: Event) => (
-            <Card key={event.id} className="border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800">
-              <CardContent className="p-4">
+            <Card key={event.id} className="border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 w-full max-w-full overflow-hidden">
+              <CardContent className="p-4 min-w-0">
                 <div className="flex justify-between items-start mb-3 min-w-0">
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-black dark:text-white mb-1 line-clamp-2 break-words">{event.title}</h4>
