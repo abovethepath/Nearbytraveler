@@ -15,10 +15,14 @@ const ONESIGNAL_APP_ID = import.meta.env.VITE_ONESIGNAL_APP_ID || "";
  * current user. Rendered once after login — handles SDK init + player reg.
  */
 export function OneSignalInit({ userId }: { userId: number | null | undefined }) {
-  const registered = useRef(false);
+  const registered = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!ONESIGNAL_APP_ID || !userId || registered.current) return;
+    // Re-register when userId changes (new login) — ensures the correct user
+    // owns this device's push subscription even if a different account was
+    // previously logged in on the same device.
+    if (!ONESIGNAL_APP_ID || !userId) return;
+    if (registered.current === userId) return;
 
     // iOS Safari only supports Web Push when running as an installed PWA (standalone).
     // Skip OneSignal init entirely on iOS if not in standalone mode.
@@ -80,7 +84,7 @@ export function OneSignalInit({ userId }: { userId: number | null | undefined })
     };
 
     init();
-    registered.current = true;
+    registered.current = userId;
   }, [userId]);
 
   return null;
