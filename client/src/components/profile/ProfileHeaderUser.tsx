@@ -429,8 +429,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                     onClick={() => {
                       if (openTab) openTab('travel');
                       setTimeout(() => {
-                        document.getElementById('travel-plans-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      }, 200);
+                        const el = document.getElementById('travel-plans-section');
+                        if (el) {
+                          const y = el.getBoundingClientRect().top + window.scrollY - 80;
+                          window.scrollTo({ top: y, behavior: 'smooth' });
+                        }
+                      }, 350);
                     }}
                     className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 border border-blue-300 text-blue-800 cursor-pointer hover:bg-blue-200 transition-colors mt-0.5"
                   >
@@ -464,8 +468,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 <button
                   type="button"
                   onClick={() => {
-                    const el = document.getElementById('travel-plans-section');
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (openTab) openTab('travel');
+                    setTimeout(() => {
+                      const el = document.getElementById('travel-plans-section');
+                      if (el) {
+                        const y = el.getBoundingClientRect().top + window.scrollY - 80;
+                        window.scrollTo({ top: y, behavior: 'smooth' });
+                      }
+                    }, 350);
                   }}
                   className="inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 border border-blue-300 shadow-sm text-blue-800 cursor-pointer mt-1"
                 >
@@ -653,8 +663,14 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   <button
                                     type="button"
                                     onClick={() => {
-                                      const el = document.getElementById('travel-plans-section');
-                                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                      if (openTab) openTab('travel');
+                                      setTimeout(() => {
+                                        const el = document.getElementById('travel-plans-section');
+                                        if (el) {
+                                          const y = el.getBoundingClientRect().top + window.scrollY - 80;
+                                          window.scrollTo({ top: y, behavior: 'smooth' });
+                                        }
+                                      }, 350);
                                     }}
                                     className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 border border-blue-300 text-blue-800 cursor-pointer hover:bg-blue-200 transition-colors mt-0.5"
                                   >
