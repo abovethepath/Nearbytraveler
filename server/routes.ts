@@ -29264,6 +29264,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       res.json(post);
     } catch (error: any) {
+      console.error("Failed to create community post:", error);
       res.status(500).json({ error: "Failed to create post" });
     }
   });

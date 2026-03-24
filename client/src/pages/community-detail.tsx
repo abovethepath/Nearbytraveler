@@ -202,6 +202,23 @@ export default function CommunityDetail({ communityId }: { communityId: number }
 
   const isMember = members.some((m: any) => m.id === currentUser?.id);
 
+  const leaveMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("DELETE", `/api/community-tags/${communityId}/leave`);
+      if (!res.ok) throw new Error("Failed to leave");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/community-tags"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/community-tags/mine"] });
+      toast({ title: "Left community" });
+      setLocation("/explore?tab=communities");
+    },
+    onError: () => {
+      toast({ title: "Failed to leave", variant: "destructive" });
+    },
+  });
+
   // Chatroom messages for preview widget
   const { data: chatMessages = [] } = useQuery<any[]>({
     queryKey: ["/api/chatrooms", community?.chatroomId, "messages-preview"],
@@ -368,17 +385,33 @@ export default function CommunityDetail({ communityId }: { communityId: number }
               </h1>
               <p className="text-white/70 text-sm">{community.memberCount || 0} members · {community.category}</p>
             </div>
-            {canEdit && !isChatActive && (
-              <Button
-                type="button"
-                size="sm"
-                variant="secondary"
-                className="bg-white/15 hover:bg-white/20 text-white border border-white/20"
-                onClick={() => setEditOpen(true)}
-                data-testid="button-edit-community"
-              >
-                Edit
-              </Button>
+            {!isChatActive && (
+              <div className="flex gap-1.5 shrink-0">
+                {canEdit && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    className="bg-white/15 hover:bg-white/20 text-white border border-white/20"
+                    onClick={() => setEditOpen(true)}
+                    data-testid="button-edit-community"
+                  >
+                    Edit
+                  </Button>
+                )}
+                {isMember && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    className="bg-white/15 hover:bg-red-500/30 text-white/80 border border-white/20"
+                    onClick={() => leaveMutation.mutate()}
+                    disabled={leaveMutation.isPending}
+                  >
+                    {leaveMutation.isPending ? "..." : "Leave"}
+                  </Button>
+                )}
+              </div>
             )}
           </div>
           {community.description && !isChatActive && (
@@ -447,22 +480,22 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                   <Zap className="w-4 h-4 text-orange-500" />
                   <h3 className="font-bold text-sm">Community Pulse</h3>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <div className="text-center p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <div className="text-lg font-bold text-orange-500">{community.memberCount || members.length}</div>
-                    <div className="text-[11px] text-gray-500 dark:text-gray-400">Members</div>
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="text-center py-1.5 px-1 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="text-base font-bold text-orange-500">{community.memberCount || members.length}</div>
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400">Members</div>
                   </div>
-                  <div className="text-center p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <div className="text-lg font-bold text-blue-500">{memberStats.countries || 1}</div>
-                    <div className="text-[11px] text-gray-500 dark:text-gray-400">Countries</div>
+                  <div className="text-center py-1.5 px-1 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="text-base font-bold text-blue-500">{memberStats.countries || 1}</div>
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400">Countries</div>
                   </div>
-                  <div className="text-center p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <div className="text-lg font-bold text-emerald-500">{memberStats.cities || 1}</div>
-                    <div className="text-[11px] text-gray-500 dark:text-gray-400">Cities</div>
+                  <div className="text-center py-1.5 px-1 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="text-base font-bold text-emerald-500">{memberStats.cities || 1}</div>
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400">Cities</div>
                   </div>
-                  <div className="text-center p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <div className="text-lg font-bold text-purple-500">{memberStats.nearbyCount}</div>
-                    <div className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                  <div className="text-center py-1.5 px-1 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="text-base font-bold text-purple-500">{memberStats.nearbyCount}</div>
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 truncate">
                       {memberStats.userCity ? `Near you` : "Nearby"}
                     </div>
                   </div>

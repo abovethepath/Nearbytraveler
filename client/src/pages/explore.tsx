@@ -720,7 +720,7 @@ export default function Explore() {
                 <h4 className="font-bold text-sm text-gray-700 dark:text-gray-300 mb-2">Your Communities</h4>
                 <div className="flex flex-wrap gap-2">
                   {myCommunityTags.map((tag: any) => (
-                    <Badge key={tag.id} variant="outline" className="py-1.5 px-3 text-sm cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-950"
+                    <Badge key={tag.id} variant="outline" className="py-1.5 px-3 text-sm cursor-pointer bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-orange-950"
                       onClick={() => setLocation(`/community/${tag.id}`)}>
                       {tag.isPrivate && <Lock className="w-3 h-3 mr-1" />}
                       {tag.icon} {tag.displayName}
