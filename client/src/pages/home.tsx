@@ -74,7 +74,7 @@ import { CityArrivalsWidget } from "@/components/CityArrivalsWidget";
 import { TonightWidget } from "@/components/TonightWidget";
 import { PeopleAlmostMet } from "@/components/PeopleAlmostMet";
 import { SavedTravelersWidget } from "@/components/SavedTravelersWidget";
-import { isLAMetroCity } from "@shared/constants";
+// Metro expansion is handled server-side by getExpandedCityList() — no client-side consolidation needed
 
 
 // Import centralized constants for consistency
@@ -2239,22 +2239,20 @@ export default function Home() {
               <AvailableNowWidget currentUser={effectiveUser} />
             )}
 
-            {/* Tonight in [City] */}
+            {/* Tonight in [City] — server expands metro cities automatically */}
             {effectiveUser && (() => {
               const rawCity = effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination
                 ? String(effectiveUser.travelDestination).split(',')[0]?.trim()
                 : effectiveUser.hometownCity;
-              const tonightCity = rawCity && isLAMetroCity(rawCity) ? 'Los Angeles' : rawCity;
-              return tonightCity ? <TonightWidget city={tonightCity} /> : null;
+              return rawCity ? <TonightWidget city={rawCity} /> : null;
             })()}
 
-            {/* Who's Coming to Town */}
+            {/* Who's Coming to Town — server expands metro cities automatically */}
             {effectiveUser && (() => {
               const rawCity = effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination
                 ? String(effectiveUser.travelDestination).split(',')[0]?.trim()
                 : effectiveUser.hometownCity;
-              const arrivalsCity = rawCity && isLAMetroCity(rawCity) ? 'Los Angeles' : rawCity;
-              return arrivalsCity ? <CityArrivalsWidget cityName={arrivalsCity} /> : null;
+              return rawCity ? <CityArrivalsWidget cityName={rawCity} /> : null;
             })()}
 
             {/* Saved Travelers */}
