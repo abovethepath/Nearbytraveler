@@ -703,19 +703,6 @@ function Navbar() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => {
-                          setLocation("/meetups");
-                          setTimeout(
-                            () =>
-                              window.scrollTo({ top: 0, behavior: "smooth" }),
-                            100,
-                          );
-                        }}
-                      >
-                        <Users className="mr-2 h-4 w-4" />
-                        <span>Available Now</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => {
                           setLocation("/city-chatrooms");
                           setTimeout(
                             () =>
@@ -876,20 +863,6 @@ function Navbar() {
                       }}
                     >
                       <span className="mr-3">🌍</span>Discover Cities
-                    </Link>
-                    <Link
-                      href="/quick-meetups"
-                      className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
-                        location === "/quick-meetups"
-                          ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                          : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
-                      }`}
-                      onClick={() => {
-                        
-                        setLocation("/quick-meetups");
-                      }}
-                    >
-                      <span className="mr-3">⚡</span>Available Now
                     </Link>
                     <Link
                       href="/city-chatrooms"
