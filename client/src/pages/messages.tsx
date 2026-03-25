@@ -225,11 +225,12 @@ export default function Messages() {
       return res.json();
     },
     enabled: !!userId,
-    staleTime: 0,
+    staleTime: 30000,
     gcTime: 60000,
     refetchOnMount: 'always' as const,
     refetchOnWindowFocus: true,
     refetchInterval: 30000,
+    placeholderData: (previousData: any) => previousData,
   });
 
   // Read receipt privacy setting — controls whether blue checkmarks are shown
@@ -260,6 +261,7 @@ export default function Messages() {
     enabled: !!userId,
     staleTime: 30000,
     refetchInterval: 30000,
+    placeholderData: (previousData: any) => previousData,
   });
 
   const { data: userChatrooms = [] } = useQuery<any[]>({
@@ -282,6 +284,7 @@ export default function Messages() {
     enabled: !!userId && !!selectedMeetupChat,
     staleTime: 30000,
     refetchInterval: 30000,
+    placeholderData: (previousData: any) => previousData,
   });
 
   const sendMeetupMessageMutation = useMutation({
