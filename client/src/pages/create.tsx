@@ -13,7 +13,7 @@ export default function Create() {
       title: "Available Now",
       description: "Let others know you're out and about — join up!",
       color: "bg-blue-500",
-      path: "/quick-meetups"
+      path: "/available-now" // NAV FIX: do not change — /available-now is the correct page
     },
     {
       icon: Calendar,
