@@ -9,7 +9,7 @@ interface UniversalBackButtonProps {
 }
 
 export function UniversalBackButton({ 
-  destination = "/discover", 
+  destination = "/", // NAV FIX: do not change this navigation target
   label = "Back",
   className = ""
 }: UniversalBackButtonProps) {
