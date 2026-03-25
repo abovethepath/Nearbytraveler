@@ -107,7 +107,7 @@ export default function AvailableNowPage() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center gap-3">
-          <button onClick={() => setLocation("/home")} className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+          <button onClick={() => setLocation("/")} className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
