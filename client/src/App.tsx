@@ -838,10 +838,11 @@ function Router() {
         let response = await doCheck();
         clearTimeout(timeoutId);
 
-        // iOS WebView can sometimes lag cookie propagation; retry a few times before
-        // concluding the session is missing. This does NOT trust localStorage as auth.
-        if (isNativeIOSApp() && response.status === 401) {
-          for (const delayMs of [200, 500, 800]) {
+        // Cookie propagation can lag on cold start (iOS WebView, mobile PWA after
+        // browser close, Render cold boot). Retry before concluding session is missing.
+        // This does NOT trust localStorage as auth — only the server cookie/session.
+        if (response.status === 401) {
+          for (const delayMs of [200, 500, 1000]) {
             await new Promise((r) => setTimeout(r, delayMs));
             response = await doCheck();
             if (response.ok) break;

@@ -600,12 +600,23 @@ const sessionStore = (() => {
   if (dbUrl) {
     console.log("🗄️ Session store: PostgreSQL (persistent across deploys)");
     const PgStore = connectPg(session);
-    return new PgStore({
-      conString: dbUrl,
+    // Pass an explicit pg.Pool so connect-pg-simple doesn't silently fail
+    // when the Neon connection string needs specific SSL handling.
+    const pg = require("pg");
+    const sessionPool = new pg.Pool({
+      connectionString: dbUrl,
+      ssl: { rejectUnauthorized: false },
+      max: 5,
+    });
+    sessionPool.on("error", (err: any) => console.error("🔴 Session pool error:", err.message));
+    const store = new PgStore({
+      pool: sessionPool,
       createTableIfMissing: true,
       ttl: 30 * 24 * 60 * 60, // 30 days in seconds
       pruneSessionInterval: 60 * 15, // prune expired sessions every 15 minutes
     });
+    store.on?.("error", (err: any) => console.error("🔴 PgStore error:", err.message));
+    return store;
   }
   console.log("⚠️ Session store: Memory (sessions lost on restart)");
   return undefined;
