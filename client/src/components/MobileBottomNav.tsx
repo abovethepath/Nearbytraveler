@@ -172,7 +172,6 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
   ] : [
     { label: "Create Event", path: "/create-event", icon: Calendar, color: "#f97316" },
     { label: "Plan Trip", path: "/plan-trip", icon: MapPin, color: "#3b82f6" },
-    { label: "Available Now", path: "/quick-meetups", icon: Users, color: "#10b981" },
     { label: "Communities", path: "/explore?tab=communities", icon: Globe, color: "#8b5cf6" },
   ];
 
@@ -499,9 +498,17 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
                     return (
                       <button
                         key={index}
-                        onClick={() => {
-                          setLocation(action.path);
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
                           setShowActionMenu(false);
+                          // Use window.location for paths with query strings (wouter
+                          // can drop query params on some mobile browsers)
+                          if (action.path.includes('?')) {
+                            window.location.href = action.path;
+                          } else {
+                            setLocation(action.path);
+                          }
                         }}
                         style={{
                           display: 'flex',
@@ -531,7 +538,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
                         }}>
                           <ActionIcon style={{ width: '24px', height: '24px', color: 'white' }} />
                         </div>
-                        <span style={{ fontSize: '11px', fontWeight: 500, color: isDark ? '#d1d1d6' : '#374151', textAlign: 'center', lineHeight: '14px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 500, color: isDark ? '#d1d1d6' : '#374151', textAlign: 'center', lineHeight: '14px', whiteSpace: 'nowrap' }}>
                           {action.label}
                         </span>
                       </button>
