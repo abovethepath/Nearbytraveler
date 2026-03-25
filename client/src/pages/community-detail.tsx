@@ -489,7 +489,7 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                   <Zap className="w-4 h-4 text-orange-500" />
                   <h3 className="font-bold text-sm">Community Pulse</h3>
                 </div>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   <div className="text-center py-1.5 px-1 rounded-lg bg-gray-50 dark:bg-gray-800">
                     <div className="text-base font-bold text-orange-500">{community.memberCount || members.length}</div>
                     <div className="text-[10px] text-gray-500 dark:text-gray-400">Members</div>
