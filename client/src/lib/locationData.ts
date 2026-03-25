@@ -1,3 +1,5 @@
+import { METRO_AREAS } from "@shared/metro-areas";
+
 // Location data for international travel - popular countries first, then remaining alphabetically
 export const COUNTRIES: string[] = [
   // Most popular travel destinations first
@@ -413,6 +415,19 @@ export const CITIES_BY_COUNTRY: Record<string, string[]> = {
     "Kazan", "Chelyabinsk", "Omsk", "Samara", "Rostov-on-Don"
   ]
 };
+
+// Merge all metro area suburbs/neighborhoods into the US city list so every city
+// picker across the app (SmartLocationInput) can find them. Deduplicates by lowercase.
+(() => {
+  const existing = new Set(CITIES_BY_COUNTRY["United States"].map(c => c.toLowerCase()));
+  const metroCities = Object.values(METRO_AREAS).flat();
+  for (const city of metroCities) {
+    if (!existing.has(city.toLowerCase())) {
+      CITIES_BY_COUNTRY["United States"].push(city);
+      existing.add(city.toLowerCase());
+    }
+  }
+})();
 
 // Location normalization for matching purposes
 export function normalizeLocationForMatching(location: string): string[] {
