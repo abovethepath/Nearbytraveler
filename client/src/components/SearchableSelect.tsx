@@ -41,12 +41,9 @@ export function SearchableSelect({
         formatCreateLabel={(input) => `Use "${input}"`}
         isValidNewOption={allowCustom ? undefined : () => false}
         filterOption={(option, input) => {
-          if (!input) return false;
+          if (!input) return true;
           return option.label.toLowerCase().includes(input.toLowerCase());
         }}
-        noOptionsMessage={({ inputValue }) =>
-          inputValue ? "No matches" : "Type to search..."
-        }
         menuPlacement="auto"
         maxMenuHeight={280}
         styles={{
