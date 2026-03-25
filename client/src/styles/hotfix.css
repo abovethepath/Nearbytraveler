@@ -184,3 +184,22 @@ html, body { overflow-x: hidden; }
 .available-now-zap {
   animation: available-now-zap-pulse 1.4s ease-in-out infinite;
 }
+
+/* MOBILE FIX: Event card overflow prevention — do not remove.
+   Ensures event card text never overflows off-screen on any device. */
+.event-card {
+  max-width: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+.event-card * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.event-card h3,
+.event-card p,
+.event-card a,
+.event-card span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
