@@ -684,11 +684,12 @@ function Router() {
 
         let res = await doCheck();
 
-        // Auth-transition hardening:
-        // Immediately after login/signup, the session cookie can lag briefly.
-        // During this window, a single 401 should NOT clear state or redirect to landing.
-        if (res.status === 401 && (loginPending || isAuthenticating)) {
-          for (const delayMs of [150, 300, 600]) {
+        // Auth-transition & resume hardening:
+        // After login/signup OR when resuming from background (mobile PWA, tab switch),
+        // the session cookie can lag briefly. Retry before concluding session is gone.
+        // This prevents the "signed out when switching apps" bug on mobile.
+        if (res.status === 401 && (loginPending || isAuthenticating || reason === "focus" || reason === "visible" || reason === "pageshow")) {
+          for (const delayMs of [150, 400, 800]) {
             await new Promise((r) => setTimeout(r, delayMs));
             res = await doCheck();
             if (res.ok) break;
