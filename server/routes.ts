@@ -23434,6 +23434,12 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // ---------- AI EVENT DRAFT FROM NATURAL LANGUAGE ----------
+  // Startup check: log whether Anthropic API key is configured
+  if (process.env.ANTHROPIC_API_KEY) {
+    console.log("✅ ANTHROPIC_API_KEY is set — AI Voice features enabled");
+  } else {
+    console.warn("⚠️ ANTHROPIC_API_KEY is NOT set — AI Voice/Draft features will return errors");
+  }
   
   // POST extract structured event data from natural language description
   app.post("/api/ai/event-draft", async (req, res) => {

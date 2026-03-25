@@ -214,10 +214,13 @@ Extract the event details and return ONLY valid JSON. Use today's date to calcul
       };
 
     } catch (error: any) {
-      console.error("AI event draft extraction failed:", error);
+      console.error("AI event draft extraction failed:", error?.message || error);
       const rawMessage = error?.message || "Failed to process your event description.";
       // Never expose API key details or technical auth errors to users
-      const sanitized = rawMessage.toLowerCase().includes("api key") || rawMessage.toLowerCase().includes("incorrect") || rawMessage.includes("401")
+      if (rawMessage.includes("401") || rawMessage.includes("api_key") || rawMessage.includes("authentication")) {
+        console.error("🔴 ANTHROPIC AUTH ERROR: Check ANTHROPIC_API_KEY env var on Render");
+      }
+      const sanitized = rawMessage.toLowerCase().includes("api key") || rawMessage.toLowerCase().includes("incorrect") || rawMessage.includes("401") || rawMessage.includes("authentication")
         ? "AI service is not configured correctly. Please contact support or try again later."
         : rawMessage;
       return {

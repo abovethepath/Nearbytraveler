@@ -172,14 +172,24 @@ Extract the meetup details and return ONLY valid JSON.`;
       };
 
     } catch (error: any) {
-      console.error("AI meetup draft error:", error);
-      
+      console.error("AI meetup draft error:", error?.message || error);
+
       if (error.message?.includes("JSON")) {
         return {
           draft: null,
           success: false,
           error: "Failed to parse AI response. Please try rephrasing your description."
         };
+      }
+
+      // Surface Anthropic-specific errors so they appear in Render logs
+      const msg = error?.message || String(error);
+      if (msg.includes("401") || msg.includes("authentication") || msg.includes("api_key")) {
+        console.error("🔴 ANTHROPIC AUTH ERROR: Check ANTHROPIC_API_KEY env var on Render");
+        return { draft: null, success: false, error: "AI service authentication error. Please contact support." };
+      }
+      if (msg.includes("rate") || msg.includes("429")) {
+        return { draft: null, success: false, error: "AI service is busy. Please try again in a moment." };
       }
 
       return {
