@@ -427,8 +427,20 @@ export const CITIES_BY_COUNTRY: Record<string, string[]> = {
       existing.add(city.toLowerCase());
     }
   }
-  // Sort alphabetically so users can scroll to any letter on the native picker
-  CITIES_BY_COUNTRY["United States"].sort((a, b) => a.localeCompare(b));
+  // Keep top priority cities first (same order as the original hardcoded list),
+  // then sort the rest alphabetically so users can scroll to any letter.
+  const TOP_CITIES = new Set([
+    "Los Angeles", "Las Vegas", "Miami", "Nashville", "New Orleans", "Austin", "Chicago", "New York City",
+    "San Francisco", "San Diego", "Seattle", "Denver", "Portland", "Honolulu", "Boston",
+  ]);
+  const top: string[] = [];
+  const rest: string[] = [];
+  for (const c of CITIES_BY_COUNTRY["United States"]) {
+    if (TOP_CITIES.has(c)) top.push(c);
+    else rest.push(c);
+  }
+  rest.sort((a, b) => a.localeCompare(b));
+  CITIES_BY_COUNTRY["United States"] = [...top, ...rest];
 })();
 
 // Location normalization for matching purposes
