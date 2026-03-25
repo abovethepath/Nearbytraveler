@@ -1750,7 +1750,7 @@ export default function Home() {
 
 {/* HERO SECTION — Standardized Layout */}
 {!isNativeIOSApp() && effectiveHeroVisible && (
-<section className="relative py-4 sm:py-6 lg:py-3 overflow-hidden bg-white dark:bg-gray-900" style={{ minHeight: 200 }}>
+<section className="relative py-4 sm:py-6 lg:py-3 overflow-hidden bg-white dark:bg-gray-900">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
     <button
       onClick={toggleHeroVisibility}
@@ -1896,17 +1896,14 @@ export default function Home() {
               <MeetupAlertBanner userId={effectiveUser.id} />
             )}
 
-            {/* Available Now strip — defaults to travel city if traveling.
-                min-h reserves space so the layout doesn't jump when data arrives. */}
+            {/* Available Now strip — defaults to travel city if traveling */}
             {effectiveUser?.userType !== 'business' && (
-              <div style={{ minHeight: 120 }}>
               <AvailableNowStrip
                 currentUserId={effectiveUser?.id}
                 userCity={effectiveUser?.hometownCity || ''}
                 isCurrentlyTraveling={!!effectiveUser?.isCurrentlyTraveling}
                 travelDestination={effectiveUser?.travelDestination ? String(effectiveUser.travelDestination).split(',')[0]?.trim() : undefined}
               />
-              </div>
             )}
 
             {/* Invite Friends banner — mobile only */}
@@ -1934,7 +1931,7 @@ export default function Home() {
               <RecentlyJoined currentUserId={effectiveUser?.id} messagedUserIds={messagedUserIds} />
             )}
 
-            <div className="home-discover-people relative z-10 bg-white dark:bg-gray-900 rounded-3xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 shadow-sm" style={{ minHeight: 250 }}>
+            <div className="home-discover-people relative z-10 bg-white dark:bg-gray-900 rounded-3xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
             
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3" data-testid="discover-people-section">
               <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -2149,9 +2146,7 @@ export default function Home() {
             </div>
             {/* End Glass Morphism Content Panel */}
 
-            {shouldDeferSecondarySections ? (
-              <div style={{ minHeight: 200 }} />
-            ) : (
+            {shouldDeferSecondarySections ? null : (
             <>
             {/* Local Events Section - UNDER Discover People */}
             <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm" data-testid="local-events-section">
@@ -2299,23 +2294,19 @@ export default function Home() {
 
 
             {/* Weather Widget */}
-            <div style={{ minHeight: 100 }}>
             {!shouldDeferSecondarySections && loadedSections.has('weather') && (
               <div className="relative min-w-0 max-w-full overflow-hidden">
                 <CurrentLocationWeatherWidget />
               </div>
             )}
-            </div>
 
             {/* Messages Widget */}
-            <div style={{ minHeight: 150 }}>
             {!shouldDeferSecondarySections && loadedSections.has('messages') && (
               <div className="relative pt-2 min-w-0 max-w-full overflow-hidden">
                 <div className="absolute -top-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent"></div>
                 <MessagesWidget userId={currentUserId} />
               </div>
             )}
-            </div>
             
             {/* Quick Meetup Widget moved to Local Events section for better discoverability */}
 

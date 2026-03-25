@@ -33,7 +33,7 @@ body[data-scroll-locked="1"] {
 
 /* iOS NATIVE FEEL - System font stack + Safe Area Support */
 :root {
-  --sat: env(safe-area-inset-top);
+  --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom);
   --sal: env(safe-area-inset-left);
   --sar: env(safe-area-inset-right);
