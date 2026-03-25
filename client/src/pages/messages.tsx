@@ -597,9 +597,14 @@ export default function Messages() {
       );
   }, [connections, messages, allUsers, targetUserId, userId]);
 
+  // A chat is "ended" only when it reaches readonly state (24h+ after session/expiry ended).
+  // "grace" means the AN session expired but the chat is still usable for 24h — keep it
+  // in the active Meetup Chats tab so users can still message each other after meeting.
   const isEndedChat = (mc: any) => {
-    const ended = mc.lifecycleState === 'grace' || mc.lifecycleState === 'readonly' || (mc.expiresAt && new Date(mc.expiresAt) <= new Date());
-    return !!ended;
+    if (mc.lifecycleState === 'readonly') return true;
+    // For chats without a lifecycle state, fall back to checking expiresAt
+    if (!mc.lifecycleState && mc.expiresAt && new Date(mc.expiresAt) <= new Date()) return true;
+    return false;
   };
 
   const activeMeetups = React.useMemo(() =>
