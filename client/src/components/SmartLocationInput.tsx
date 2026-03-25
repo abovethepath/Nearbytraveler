@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getRegionForCity, isStateOptionalForCountry } from "@/lib/locationHelpers";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { US_STATE_NAMES, CANADIAN_PROVINCES } from "../../../shared/locationData";
+import { SearchableSelect } from "@/components/SearchableSelect";
 
 type SmartLocationInputProps = {
   city?: string;
@@ -17,13 +17,6 @@ type SmartLocationInputProps = {
   className?: string;
   "data-testid"?: string;
 };
-
-function norm(o: any): { value: string; label: string } {
-  if (typeof o === "string") return { value: o, label: o };
-  if (o?.value && o?.label) return { value: String(o.value), label: String(o.label) };
-  if (o?.name) return { value: String(o.name), label: String(o.name) };
-  return { value: String(o), label: String(o) };
-}
 
 export function SmartLocationInput({
   city: propCity = "",
@@ -65,202 +58,116 @@ export function SmartLocationInput({
     else setStateLabel(optional ? "Region (Optional)" : "Region");
   }, [country, required]);
 
-  const countries = useMemo(
-    () => (Array.isArray(COUNTRIES) ? COUNTRIES.map(norm) : []),
-    []
-  );
-  const citiesForCountry = useMemo(() => {
+  const countryList = useMemo(() => (Array.isArray(COUNTRIES) ? [...COUNTRIES] : []), []);
+
+  const cityList = useMemo(() => {
     if (!country) return [];
     const raw = (CITIES_BY_COUNTRY as any)[country] || [];
-    return (Array.isArray(raw) ? raw : []).map(norm);
+    return Array.isArray(raw) ? raw.map((c: any) => (typeof c === "string" ? c : String(c?.name || c?.value || c))) : [];
   }, [country]);
 
-  const phCountry =
-    typeof placeholder === "string" ? "Select country" : placeholder?.country || "Select country";
-  const phCity =
-    typeof placeholder === "string" ? "Select city" : placeholder?.city || "Select city";
-  const phState =
-    typeof placeholder === "string"
-      ? "Select state/region"
-      : placeholder?.state || "Select state/region";
+  const stateList = useMemo(() => {
+    if (country === "United States") return [...US_STATE_NAMES];
+    if (country === "Canada") return [...CANADIAN_PROVINCES];
+    return [];
+  }, [country]);
+
+  const phCountry = typeof placeholder === "string" ? "Select country" : placeholder?.country || "Select country";
+  const phCity = typeof placeholder === "string" ? "Select city" : placeholder?.city || "Select city";
+  const phState = typeof placeholder === "string" ? "Select state/region" : placeholder?.state || "Select state/region";
 
   const emit = (loc: { city: string; state: string; country: string }) => {
-    console.log('📍 SmartLocationInput emitting:', loc);
     onLocationChange?.(loc);
     onLocationSelect?.(loc);
   };
 
-  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newCountry = e.target.value;
+  const handleCountryChange = (newCountry: string) => {
     setCountry(newCountry);
     setCity("");
     setState("");
     emit({ city: "", state: "", country: newCountry });
   };
 
-  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement> | React.ChangeEvent<HTMLInputElement>) => {
-    const newCity = e.target.value;
+  const handleCityChange = (newCity: string) => {
     setCity(newCity);
-
-    // Try to auto-fill region/state from lookup - ALWAYS clear old state when city changes
     let nextState = "";
     if (country) {
       const auto = getRegionForCity(newCity, country);
-      if (auto) {
-        nextState = auto;
-      }
+      if (auto) nextState = auto;
     }
     setState(nextState);
     emit({ city: newCity, state: nextState, country });
   };
 
-  const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement> | React.ChangeEvent<HTMLInputElement>) => {
-    const newState = e.target.value;
+  const handleStateChange = (newState: string) => {
     setState(newState);
     emit({ city, state: newState, country });
   };
-
-  // US/CA lists — imported from shared/locationData.ts (single source of truth)
-  const US_STATES = US_STATE_NAMES;
-  const CA_PROVINCES = CANADIAN_PROVINCES;
-
-  const selectStyles = {
-    backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iIzk5OTk5OSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==')",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "right 12px center",
-    backgroundSize: "16px 16px",
-    appearance: "none" as const
-  };
-
-  const selectClassName = `mt-1 block w-full rounded-xl border-2 border-orange-200 dark:border-orange-600 
-    bg-gradient-to-r from-white to-orange-50 dark:from-gray-800 dark:to-gray-700
-    text-gray-900 dark:text-white px-4 py-3.5 pr-10 text-base
-    shadow-sm hover:border-orange-400 dark:hover:border-orange-500
-    focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:outline-none
-    transition-all duration-200 cursor-pointer font-medium`;
 
   return (
     <div className={`space-y-3 sm:space-y-4 ${className}`} data-testid={dataTestId}>
       {label && <h3 className="text-lg font-semibold">{label}</h3>}
 
-      {/* Country (native select) */}
+      {/* Country — searchable with custom entry */}
       <div>
-        <Label htmlFor="country-native" className="text-left text-gray-900 dark:text-white font-semibold mb-1 flex items-center gap-2">
+        <Label htmlFor="country-search" className="text-left text-gray-900 dark:text-white font-semibold mb-1 flex items-center gap-2">
           <span className="text-orange-500">🌍</span> Country {required ? "*" : ""}
         </Label>
-        <select
-          id="country-native"
+        <SearchableSelect
+          id="country-search"
           value={country}
+          options={countryList}
           onChange={handleCountryChange}
-          className={selectClassName}
-          style={selectStyles}
-        >
-          <option value="" disabled>
-            {phCountry}
-          </option>
-          {countries.map((c) => (
-            <option key={c.value} value={c.value}>
-              {c.label}
-            </option>
-          ))}
-        </select>
+          placeholder={phCountry}
+          allowCustom={true}
+        />
       </div>
 
-      {/* City (native select when we have data; otherwise free text) */}
+      {/* City — searchable with custom entry */}
       {country && (
         <div>
-          <Label htmlFor="city-native" className="text-left text-gray-900 dark:text-white font-semibold mb-1 flex items-center gap-2">
+          <Label htmlFor="city-search" className="text-left text-gray-900 dark:text-white font-semibold mb-1 flex items-center gap-2">
             <span className="text-orange-500">📍</span> City {required ? "*" : ""}
           </Label>
-
-          {citiesForCountry.length > 0 ? (
-            <select
-              id="city-native"
-              value={city}
-              onChange={handleCityChange}
-              className={selectClassName}
-              style={selectStyles}
-            >
-              <option value="" disabled>
-                {phCity}
-              </option>
-              {citiesForCountry.map((c) => (
-                <option key={c.value} value={c.value}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <Input
-              id="city-native"
-              value={city}
-              onChange={handleCityChange}
-              placeholder="Type your city"
-              className="mt-1 rounded-xl border-2 border-orange-200 dark:border-orange-600 
-                bg-gradient-to-r from-white to-orange-50 dark:from-gray-800 dark:to-gray-700
-                text-gray-900 dark:text-white px-4 py-3.5 text-base
-                shadow-sm hover:border-orange-400 dark:hover:border-orange-500
-                focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 font-medium"
-              autoCapitalize="words"
-              autoComplete="address-level2"
-              inputMode="text"
-            />
-          )}
+          <SearchableSelect
+            id="city-search"
+            value={city}
+            options={cityList}
+            onChange={handleCityChange}
+            placeholder={phCity}
+            allowCustom={true}
+          />
         </div>
       )}
 
-      {/* State/Region (native select for US/CA; otherwise free text) */}
+      {/* State/Region — searchable for US/CA, free text for others */}
       {country && city && (
         <div>
-          <Label htmlFor="state-native" className="text-left text-gray-900 dark:text-white font-semibold mb-1 flex items-center gap-2">
+          <Label htmlFor="state-search" className="text-left text-gray-900 dark:text-white font-semibold mb-1 flex items-center gap-2">
             <span className="text-orange-500">🗺️</span> {stateLabel}
           </Label>
-
-          {country === "United States" ? (
-            <select
-              id="state-native"
+          {stateList.length > 0 ? (
+            <SearchableSelect
+              id="state-search"
               value={state}
+              options={stateList}
               onChange={handleStateChange}
-              className={selectClassName}
-              style={selectStyles}
-            >
-              <option value="" disabled>
-                {phState}
-              </option>
-              {US_STATES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          ) : country === "Canada" ? (
-            <select
-              id="state-native"
-              value={state}
-              onChange={handleStateChange}
-              className={selectClassName}
-              style={selectStyles}
-            >
-              <option value="" disabled>
-                {phState}
-              </option>
-              {CA_PROVINCES.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
+              placeholder={phState}
+              allowCustom={true}
+            />
           ) : (
-            <Input
-              id="state-native"
+            <input
+              id="state-search"
+              type="text"
               value={state}
-              onChange={handleStateChange}
+              onChange={(e) => handleStateChange(e.target.value)}
               placeholder={isStateOptional ? "Region (optional)" : "Region"}
-              className="mt-1 rounded-xl border-2 border-orange-200 dark:border-orange-600 
+              className="mt-1 w-full rounded-xl border-2 border-orange-200 dark:border-orange-600
                 bg-gradient-to-r from-white to-orange-50 dark:from-gray-800 dark:to-gray-700
                 text-gray-900 dark:text-white px-4 py-3.5 text-base
                 shadow-sm hover:border-orange-400 dark:hover:border-orange-500
-                focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 font-medium"
+                focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:outline-none
+                transition-all duration-200 font-medium"
               autoCapitalize="words"
               autoComplete="address-level1"
               inputMode="text"
