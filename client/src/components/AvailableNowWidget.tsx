@@ -127,7 +127,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const homeCountry = currentUser?.hometownCountry || currentUser?.country || "USA";
   const hasDestination = isTraveling && !!destCity && destCity.toLowerCase() !== homeCity.toLowerCase();
   const [availCity, setAvailCity] = useState<'home' | 'trip'>('home');
-  const userCity    = (availCity === 'trip' && hasDestination) ? destCity!    : homeCity;
+  const userCity    = getMetroAreaName((availCity === 'trip' && hasDestination) ? destCity!    : homeCity);
   const userState   = (availCity === 'trip' && hasDestination) ? (destState || "")  : homeState;
   const userCountry = (availCity === 'trip' && hasDestination) ? (destCountry || "USA") : homeCountry;
 

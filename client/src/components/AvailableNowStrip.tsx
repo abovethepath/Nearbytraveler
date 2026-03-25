@@ -44,7 +44,7 @@ export default function AvailableNowStrip({ currentUserId, userCity, isCurrently
   const hasTwoLocations = isCurrentlyTraveling && !!destCity && destCity.toLowerCase() !== homeCity.toLowerCase();
   const defaultView = (isCurrentlyTraveling && destCity) ? 'trip' : 'home';
   const [cityView, setCityView] = useState<'home' | 'trip'>(defaultView);
-  const activeCity = (cityView === 'trip' && hasTwoLocations) ? destCity : homeCity;
+  const activeCity = getMetroAreaName((cityView === 'trip' && hasTwoLocations) ? destCity : homeCity);
 
   // Fetch sent requests from API so state reflects cancellations
   const { data: sentRequestsData } = useQuery<{ sentToUserIds: number[] }>({

@@ -40,7 +40,7 @@ export default function AvailableNowPage() {
   const hasTwoLocations = isTraveling && !!destCity && destCity.toLowerCase() !== homeCity.toLowerCase();
   const defaultView = (isTraveling && destCity) ? 'trip' : 'home';
   const [cityView, setCityView] = useState<'home' | 'trip'>(defaultView);
-  const activeCity = (cityView === 'trip' && hasTwoLocations) ? destCity : homeCity;
+  const activeCity = getMetroAreaName((cityView === 'trip' && hasTwoLocations) ? destCity : homeCity);
 
   const { data: availableUsers = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/available-now", activeCity],
