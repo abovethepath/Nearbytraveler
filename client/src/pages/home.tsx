@@ -1703,6 +1703,41 @@ export default function Home() {
     }
   };
 
+  // Skeleton placeholder for widgets — reserves space while data loads to prevent layout shift.
+  // `delay` staggers the pulse animation so widgets don't all flash in sync.
+  const WidgetSkeleton = ({ height = 120, delay = 0, className = "" }: { height?: number; delay?: number; className?: string }) => (
+    <div
+      className={`rounded-2xl bg-gray-100 dark:bg-gray-800 overflow-hidden ${className}`}
+      style={{ minHeight: height }}
+      aria-hidden="true"
+    >
+      <div className="animate-pulse h-full w-full" style={{ animationDelay: `${delay}ms` }}>
+        <div className="p-4 space-y-3 h-full">
+          <div className="h-3 w-1/3 bg-gray-200 dark:bg-gray-700 rounded" />
+          <div className="h-3 w-2/3 bg-gray-200 dark:bg-gray-700 rounded" />
+          <div className="h-3 w-1/2 bg-gray-200 dark:bg-gray-700 rounded" />
+        </div>
+      </div>
+    </div>
+  );
+
+  // Skeleton for the events section — matches the card shape
+  const EventsSkeleton = () => (
+    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 sm:p-6" style={{ minHeight: 300 }} aria-hidden="true">
+      <div className="animate-pulse" style={{ animationDelay: '200ms' }}>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-6 h-6 rounded bg-gray-200 dark:bg-gray-700" />
+          <div className="h-5 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} className="rounded-lg bg-gray-100 dark:bg-gray-700 h-28" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 w-full max-w-full overflow-x-hidden">
 
@@ -1896,14 +1931,17 @@ export default function Home() {
               <MeetupAlertBanner userId={effectiveUser.id} />
             )}
 
-            {/* Available Now strip — defaults to travel city if traveling */}
+            {/* Available Now strip — defaults to travel city if traveling.
+                min-h reserves space so the layout doesn't jump when data arrives. */}
             {effectiveUser?.userType !== 'business' && (
+              <div style={{ minHeight: 48 }}>
               <AvailableNowStrip
                 currentUserId={effectiveUser?.id}
                 userCity={effectiveUser?.hometownCity || ''}
                 isCurrentlyTraveling={!!effectiveUser?.isCurrentlyTraveling}
                 travelDestination={effectiveUser?.travelDestination ? String(effectiveUser.travelDestination).split(',')[0]?.trim() : undefined}
               />
+              </div>
             )}
 
             {/* Invite Friends banner — mobile only */}
@@ -2146,7 +2184,9 @@ export default function Home() {
             </div>
             {/* End Glass Morphism Content Panel */}
 
-            {!shouldDeferSecondarySections && (
+            {shouldDeferSecondarySections ? (
+              <EventsSkeleton />
+            ) : (
             <>
             {/* Local Events Section - UNDER Discover People */}
             <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm" data-testid="local-events-section">
@@ -2294,19 +2334,23 @@ export default function Home() {
 
 
             {/* Weather Widget */}
-            {!shouldDeferSecondarySections && loadedSections.has('weather') && (
+            {!shouldDeferSecondarySections && loadedSections.has('weather') ? (
               <div className="relative min-w-0 max-w-full overflow-hidden">
                 <CurrentLocationWeatherWidget />
               </div>
-            )}
-            
+            ) : shouldDeferSecondarySections ? (
+              <WidgetSkeleton height={100} delay={300} />
+            ) : null}
+
             {/* Messages Widget */}
-            {!shouldDeferSecondarySections && loadedSections.has('messages') && (
+            {!shouldDeferSecondarySections && loadedSections.has('messages') ? (
               <div className="relative pt-2 min-w-0 max-w-full overflow-hidden">
                 <div className="absolute -top-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent"></div>
                 <MessagesWidget userId={currentUserId} />
               </div>
-            )}
+            ) : shouldDeferSecondarySections ? (
+              <WidgetSkeleton height={150} delay={450} />
+            ) : null}
             
             {/* Quick Meetup Widget moved to Local Events section for better discoverability */}
 
