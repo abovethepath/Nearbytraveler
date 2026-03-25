@@ -15,6 +15,7 @@ import rateLimit from "express-rate-limit";
 import { RedisStore } from "connect-redis";
 import { Redis } from "ioredis";
 import connectPg from "connect-pg-simple";
+import pg from "pg";
 // Vite imports are dynamic - only loaded in development to avoid production crash
 // See: setupVite and serveStatic are dynamically imported below
 
@@ -600,22 +601,28 @@ const sessionStore = (() => {
   if (dbUrl) {
     console.log("🗄️ Session store: PostgreSQL (persistent across deploys)");
     const PgStore = connectPg(session);
-    // Pass an explicit pg.Pool so connect-pg-simple doesn't silently fail
-    // when the Neon connection string needs specific SSL handling.
-    const pg = require("pg");
+    // IMPORTANT: Use standard pg.Pool (NOT @neondatabase/serverless Pool).
+    // connect-pg-simple requires the native pg module's Pool interface.
+    // The Neon serverless Pool from db.ts is WebSocket-based and incompatible.
     const sessionPool = new pg.Pool({
       connectionString: dbUrl,
       ssl: { rejectUnauthorized: false },
       max: 5,
     });
     sessionPool.on("error", (err: any) => console.error("🔴 Session pool error:", err.message));
+    // Verify connectivity at startup so silent failures are caught immediately
+    sessionPool.query("SELECT 1").then(() => {
+      console.log("✅ Session store PostgreSQL connection verified");
+    }).catch((err: any) => {
+      console.error("🔴 Session store PostgreSQL connection FAILED:", err.message);
+    });
     const store = new PgStore({
       pool: sessionPool,
+      tableName: "session",
       createTableIfMissing: true,
       ttl: 30 * 24 * 60 * 60, // 30 days in seconds
       pruneSessionInterval: 60 * 15, // prune expired sessions every 15 minutes
     });
-    store.on?.("error", (err: any) => console.error("🔴 PgStore error:", err.message));
     return store;
   }
   console.log("⚠️ Session store: Memory (sessions lost on restart)");
