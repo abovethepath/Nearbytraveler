@@ -1,7 +1,9 @@
+import React from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, getApiBaseUrl, queryClient } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { Check, X, MessageCircle } from "lucide-react";
+import { AuthContext } from "@/App";
 
 interface ChatInviteNotification {
   id: number;
@@ -24,9 +26,17 @@ interface ParsedInviteData {
 
 export function ChatInviteAlertBar() {
   const [, setLocation] = useLocation();
+  const authContext = React.useContext(AuthContext);
+  const userId = authContext?.user?.id;
 
   const { data: notifications } = useQuery<ChatInviteNotification[]>({
-    queryKey: ["/api/notifications"],
+    queryKey: ["/api/notifications", userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      const res = await apiRequest("GET", `/api/notifications/${userId}`);
+      return res.json();
+    },
+    enabled: !!userId,
     refetchInterval: 15000,
     staleTime: 10000,
   });
@@ -42,7 +52,7 @@ export function ChatInviteAlertBar() {
       return res.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/notifications", userId] });
       queryClient.invalidateQueries({ queryKey: ["/api/meetup-chatrooms/mine"] });
       if (data.chatroomId) {
         const type = data.chatroomType || "meetup";
@@ -61,7 +71,7 @@ export function ChatInviteAlertBar() {
       await apiRequest("POST", `${base}/api/chatroom-invites/${notificationId}/decline`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/notifications", userId] });
     },
   });
 
