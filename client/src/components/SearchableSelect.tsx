@@ -1,5 +1,4 @@
-import { useMemo } from "react";
-import CreatableSelect from "react-select/creatable";
+import { useState, useRef, useEffect, useMemo } from "react";
 
 interface SearchableSelectProps {
   id?: string;
@@ -11,6 +10,8 @@ interface SearchableSelectProps {
   allowCustom?: boolean;
 }
 
+const MAX_VISIBLE = 15;
+
 export function SearchableSelect({
   id,
   value,
@@ -20,94 +21,102 @@ export function SearchableSelect({
   className = "",
   allowCustom = true,
 }: SearchableSelectProps) {
-  const selectOptions = useMemo(
-    () => options.map((o) => ({ value: o, label: o })),
-    [options]
-  );
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const selected = value ? { value, label: value } : null;
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent | TouchEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    document.addEventListener("touchstart", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("touchstart", handler);
+    };
+  }, [open]);
+
+  // Show NOTHING until user types at least 1 character — prevents rendering
+  // 500+ items on open which freezes mobile. Then show max 15 matches.
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    if (!q) return [] as string[];
+    return options.filter((o) => o.toLowerCase().includes(q)).slice(0, MAX_VISIBLE);
+  }, [options, search]);
+
+  const hasExactMatch = filtered.some((o) => o.toLowerCase() === search.toLowerCase().trim());
+  const showCustom = allowCustom && search.trim().length > 0 && !hasExactMatch;
+
+  const handleSelect = (val: string) => {
+    onChange(val);
+    setSearch("");
+    setOpen(false);
+  };
+
+  const inputClass = `w-full mt-1 rounded-xl border-2 border-orange-200 dark:border-orange-600
+    bg-gradient-to-r from-white to-orange-50 dark:from-gray-800 dark:to-gray-700
+    text-gray-900 dark:text-white px-4 py-3.5 text-base
+    shadow-sm hover:border-orange-400 dark:hover:border-orange-500
+    focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:outline-none
+    transition-all duration-200 font-medium`;
 
   return (
-    <div className={className}>
-      <CreatableSelect
-        inputId={id}
-        value={selected}
-        options={selectOptions}
-        onChange={(opt) => onChange(opt?.value || "")}
-        onCreateOption={(input) => onChange(input)}
-        placeholder={placeholder}
-        isClearable
-        isSearchable
-        formatCreateLabel={(input) => `Use "${input}"`}
-        isValidNewOption={allowCustom ? undefined : () => false}
-        filterOption={(option, input) => {
-          if (!input) return true;
-          return option.label.toLowerCase().includes(input.toLowerCase());
-        }}
-        menuPlacement="auto"
-        maxMenuHeight={280}
-        styles={{
-          control: (base, state) => ({
-            ...base,
-            marginTop: 4,
-            borderRadius: 12,
-            borderWidth: 2,
-            borderColor: state.isFocused ? "#f97316" : "#fed7aa",
-            backgroundColor: "var(--rs-bg, #fff)",
-            padding: "6px 4px",
-            fontSize: 16,
-            fontWeight: 500,
-            boxShadow: state.isFocused ? "0 0 0 2px rgba(249,115,22,0.3)" : "0 1px 2px rgba(0,0,0,0.05)",
-            "&:hover": { borderColor: "#fb923c" },
-            minHeight: 50,
-          }),
-          menu: (base) => ({
-            ...base,
-            borderRadius: 12,
-            border: "2px solid #fed7aa",
-            overflow: "hidden",
-            zIndex: 9999,
-            backgroundColor: "var(--rs-bg, #fff)",
-          }),
-          menuList: (base) => ({
-            ...base,
-            maxHeight: 280,
-          }),
-          option: (base, state) => ({
-            ...base,
-            backgroundColor: state.isSelected
-              ? "#fed7aa"
-              : state.isFocused
-              ? "#fff7ed"
-              : "transparent",
-            color: state.isSelected ? "#9a3412" : "inherit",
-            fontWeight: state.isSelected ? 600 : 400,
-            fontSize: 14,
-            padding: "10px 16px",
-            cursor: "pointer",
-          }),
-          singleValue: (base) => ({
-            ...base,
-            color: "inherit",
-            fontWeight: 500,
-          }),
-          input: (base) => ({
-            ...base,
-            color: "inherit",
-          }),
-          placeholder: (base) => ({
-            ...base,
-            color: "#9ca3af",
-          }),
-        }}
-        classNames={{
-          control: () => "dark:!bg-gray-800 dark:!border-orange-600",
-          menu: () => "dark:!bg-gray-800 dark:!border-orange-600",
-          option: () => "dark:!text-white dark:hover:!bg-gray-700 dark:!bg-gray-800",
-          singleValue: () => "dark:!text-white",
-          input: () => "dark:!text-white",
-        }}
+    <div ref={containerRef} className={`relative ${className}`}>
+      <input
+        id={id}
+        type="text"
+        value={open ? search : value}
+        placeholder={value || placeholder}
+        onChange={(e) => setSearch(e.target.value)}
+        onFocus={() => { setOpen(true); setSearch(""); }}
+        className={inputClass}
+        autoComplete="off"
+        autoCapitalize="words"
+        inputMode="text"
       />
+
+      {open && (
+        <div
+          className="absolute z-[9999] mt-1 w-full bg-white dark:bg-gray-800 border-2 border-orange-200 dark:border-orange-600 rounded-xl shadow-xl overflow-y-auto"
+          style={{ maxHeight: "min(320px, 50vh)" }}
+        >
+          {showCustom && (
+            <button
+              type="button"
+              className="w-full text-left px-4 py-3 text-sm font-semibold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/40 border-b border-orange-100 dark:border-orange-800"
+              onClick={() => handleSelect(search.trim())}
+            >
+              Use '{search.trim()}'
+            </button>
+          )}
+
+          {filtered.map((item) => (
+            <button
+              key={item}
+              type="button"
+              className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                item === value
+                  ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 font-semibold"
+                  : "text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+              }`}
+              onClick={() => handleSelect(item)}
+            >
+              {item}
+            </button>
+          ))}
+
+          {filtered.length === 0 && !showCustom && (
+            <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+              {search.trim() ? "No matches found" : "Start typing to search..."}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
