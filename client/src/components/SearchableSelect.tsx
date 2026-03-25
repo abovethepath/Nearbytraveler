@@ -41,11 +41,10 @@ export function SearchableSelect({
     };
   }, [open]);
 
-  // Show NOTHING until user types at least 1 character — prevents rendering
-  // 500+ items on open which freezes mobile. Then show max 15 matches.
+  // Only render max 15 items at a time — filters narrow the list as user types
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    if (!q) return [] as string[];
+    if (!q) return options.slice(0, MAX_VISIBLE);
     return options.filter((o) => o.toLowerCase().includes(q)).slice(0, MAX_VISIBLE);
   }, [options, search]);
 
@@ -112,7 +111,13 @@ export function SearchableSelect({
 
           {filtered.length === 0 && !showCustom && (
             <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-              {search.trim() ? "No matches found" : "Start typing to search..."}
+              {search.trim() ? "No matches found" : "Type to search..."}
+            </div>
+          )}
+
+          {!search.trim() && options.length > MAX_VISIBLE && (
+            <div className="px-4 py-2 text-xs text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-gray-700">
+              Type to search {options.length} options...
             </div>
           )}
         </div>
