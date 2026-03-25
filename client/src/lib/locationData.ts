@@ -416,8 +416,8 @@ export const CITIES_BY_COUNTRY: Record<string, string[]> = {
   ]
 };
 
-// Merge all metro area suburbs/neighborhoods into the US city list so every city
-// picker across the app (SmartLocationInput) can find them. Deduplicates by lowercase.
+// Merge all metro area suburbs/neighborhoods into the US city list, deduplicate,
+// then sort alphabetically so the native iOS picker wheel works (flick to "A" → Alhambra).
 (() => {
   const existing = new Set(CITIES_BY_COUNTRY["United States"].map(c => c.toLowerCase()));
   const metroCities = Object.values(METRO_AREAS).flat();
@@ -427,6 +427,8 @@ export const CITIES_BY_COUNTRY: Record<string, string[]> = {
       existing.add(city.toLowerCase());
     }
   }
+  // Sort alphabetically so users can scroll to any letter on the native picker
+  CITIES_BY_COUNTRY["United States"].sort((a, b) => a.localeCompare(b));
 })();
 
 // Location normalization for matching purposes
