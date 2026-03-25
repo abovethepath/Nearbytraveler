@@ -186,7 +186,7 @@ export default function Auth() {
               <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Back</span>
             </button>
             
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center mb-6 pt-10">
               <Logo variant="auth" />
             </div>
             <CardTitle className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
