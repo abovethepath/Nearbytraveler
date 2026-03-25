@@ -1472,8 +1472,8 @@ function Router() {
         return <Auth />;
       }
       if (location === '/launching-soon' || location === '/waitlist') {
-        console.log('Showing Launching Soon / Waitlist page');
-        return <LaunchingSoon />;
+        window.location.replace('/');
+        return null;
       }
       // Public trip invite landing (must work when logged out)
       if (location.startsWith('/join-trip/') || location.startsWith('/invite/')) {

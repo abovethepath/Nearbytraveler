@@ -1,17 +1,12 @@
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Footer from "@/components/footer";
 import LandingCTA from "@/components/LandingCTA";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import { Mail, User, CheckCircle } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
 // Import images as URLs - using JPG/PNG for iPhone compatibility
 const localsHeaderImage = "/landing-images/locals_1756777112458.png";
 const travelersHeaderImage = "/travlersonastreet.jpg";
@@ -99,40 +94,6 @@ export default function LandingStreamlined() {
     return () => observer.disconnect();
   }, []);
 
-  const { toast } = useToast();
-  const [waitlistName, setWaitlistName] = useState("");
-  const [waitlistEmail, setWaitlistEmail] = useState("");
-  const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
-
-  const waitlistMutation = useMutation({
-    mutationFn: async (data: { name: string; email: string }) => {
-      const response = await apiRequest("POST", "/api/waitlist", data);
-      return response;
-    },
-    onSuccess: () => {
-      setWaitlistSubmitted(true);
-      trackEvent('waitlist_signup', 'landing_page', 'hero_waitlist');
-      toast({
-        title: "You're on the list!",
-        description: "We'll notify you when we launch.",
-        variant: "default",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Something went wrong",
-        description: error.message || "Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleWaitlistSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (waitlistName.trim().length < 2 || !waitlistEmail.includes("@")) return;
-    waitlistMutation.mutate({ name: waitlistName.trim(), email: waitlistEmail.trim() });
-  };
-
   const handleGetStarted = () => {
     trackEvent('landing_page_cta_clicked', 'hero_section', 'Get Started');
     setLocation('/join');
@@ -145,13 +106,13 @@ export default function LandingStreamlined() {
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <Button 
           onClick={() => {
-            trackEvent('signup_cta_click', 'landing_page', 'floating_join_waitlist');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            trackEvent('signup_cta_click', 'landing_page', 'floating_get_started');
+            handleGetStarted();
           }}
           className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
-          data-testid="button-floating-join-waitlist"
+          data-testid="button-floating-get-started"
         >
-          Join Waitlist
+          Get Started
         </Button>
       </div>
 
@@ -160,11 +121,11 @@ export default function LandingStreamlined() {
 
       <div className="w-full">
         
-        {/* Social Proof Banner */}
-        <div className="bg-gradient-to-r from-orange-600 to-red-600 py-4 sm:py-5 px-4 text-center">
+        {/* Live Banner */}
+        <div className="bg-gradient-to-r from-blue-600 to-orange-500 py-4 sm:py-5 px-4 text-center">
           <div className="max-w-4xl mx-auto">
             <p className="text-xl sm:text-2xl text-white font-bold">
-              Coming Soon — Join the Waitlist for Early Access
+              Now Live — Join for Free and Start Connecting
             </p>
           </div>
         </div>
@@ -212,63 +173,28 @@ export default function LandingStreamlined() {
                   Nearby Traveler connects travelers and locals through <span className="landing-gradient-text text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400 font-semibold">shared interests, activities, and events</span>. We also let you know when you cross paths with friends in another city — making it easy to meet people, reconnect, and build friendships that last a lifetime.
                 </p>
                 
-                {/* Waitlist Signup */}
-                <div className="w-full max-w-lg mx-auto">
-                  {waitlistSubmitted ? (
-                    <div className="bg-white dark:bg-gray-900/15 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <CheckCircle className="w-6 h-6 text-green-400" />
-                        <span className="text-xl font-bold text-white">You're on the list!</span>
-                      </div>
-                      <p className="text-white/80 text-sm">We'll notify you as soon as we launch.</p>
-                    </div>
-                  ) : (
-                    <div className="bg-white dark:bg-gray-900/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-                      <p className="text-orange-300 font-semibold text-lg mb-4">Coming Soon — Join the Waitlist</p>
-                      <form onSubmit={handleWaitlistSubmit} className="space-y-3">
-                        <div className="flex flex-col sm:flex-row gap-3">
-                          <div className="relative flex-1">
-                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <Input
-                              placeholder="Your name"
-                              value={waitlistName}
-                              onChange={(e) => setWaitlistName(e.target.value)}
-                              className="pl-10 bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 h-12 rounded-lg"
-                              data-testid="input-hero-waitlist-name"
-                            />
-                          </div>
-                          <div className="relative flex-1">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <Input
-                              placeholder="Your email"
-                              type="email"
-                              value={waitlistEmail}
-                              onChange={(e) => setWaitlistEmail(e.target.value)}
-                              className="pl-10 bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 h-12 rounded-lg"
-                              data-testid="input-hero-waitlist-email"
-                            />
-                          </div>
-                        </div>
-                        <Button
-                          type="submit"
-                          size="lg"
-                          className="w-full bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white py-5 rounded-xl text-lg font-semibold shadow-2xl transition-all duration-200"
-                          disabled={waitlistMutation.isPending}
-                          data-testid="button-hero-join-waitlist"
-                        >
-                          {waitlistMutation.isPending ? (
-                            <span className="flex items-center gap-2">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                              Joining...
-                            </span>
-                          ) : (
-                            "Join the Waitlist"
-                          )}
-                        </Button>
-                      </form>
-                      <p className="text-white/50 text-xs mt-3">We respect your privacy. No spam, ever.</p>
-                    </div>
-                  )}
+                {/* Primary CTA Buttons */}
+                <div className="w-full max-w-lg mx-auto flex flex-col sm:flex-row gap-4">
+                  <Button
+                    size="lg"
+                    onClick={handleGetStarted}
+                    className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white py-5 rounded-xl text-lg font-semibold shadow-2xl transition-all duration-200"
+                    data-testid="button-hero-get-started"
+                  >
+                    Join for Free
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => {
+                      trackEvent('signin_cta_click', 'landing_page', 'hero_sign_in');
+                      setLocation('/auth');
+                    }}
+                    className="flex-1 border-white text-white hover:bg-white/10 py-5 rounded-xl text-lg font-semibold transition-all duration-200"
+                    data-testid="button-hero-sign-in"
+                  >
+                    Sign In
+                  </Button>
                 </div>
                 
                 <div className="mt-6">
