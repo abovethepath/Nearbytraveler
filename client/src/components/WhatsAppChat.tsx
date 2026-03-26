@@ -694,7 +694,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         chatType === "event"
           ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
           : chatType === "meetup"
-            ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
+            ? `${getApiBaseUrl()}/api/available-now/group-chat/${chatId}/messages`
             : (chatType === "dm" && isMobileWeb)
               ? `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=dm&format=whatsapp`
               : chatType === "dm"
@@ -1271,7 +1271,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           chatType === "event"
             ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
             : chatType === "meetup"
-              ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
+              ? `${getApiBaseUrl()}/api/available-now/group-chat/${chatId}/messages`
               : (chatType === "dm" && isMobileWeb)
                 ? `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=dm&format=whatsapp`
                 : chatType === "dm"
@@ -1706,7 +1706,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           chatType === "event"
             ? `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`
             : chatType === "meetup"
-              ? `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`
+              ? `${getApiBaseUrl()}/api/available-now/group-chat/${chatId}/messages`
               : (chatType === "dm" && isMobileWeb)
                 ? `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=dm&format=whatsapp`
                 : chatType === "dm"
@@ -1936,7 +1936,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           endpoint = `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`;
           body = { content };
         } else if (chatType === 'meetup') {
-          endpoint = `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`;
+          endpoint = `${getApiBaseUrl()}/api/available-now/group-chat/${chatId}/messages`;
           body = { content };
         } else {
           // For chatrooms/events/meetups
@@ -2097,7 +2097,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       } else if (chatType === 'event') {
         endpoint = `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`;
       } else if (chatType === 'meetup') {
-        endpoint = `${getApiBaseUrl()}/api/quick-meetup-chatrooms/${chatId}/messages`;
+        endpoint = `${getApiBaseUrl()}/api/available-now/group-chat/${chatId}/messages`;
       } else {
         endpoint = `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages`;
       }
