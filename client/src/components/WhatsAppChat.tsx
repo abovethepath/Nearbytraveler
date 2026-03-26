@@ -683,12 +683,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     
     console.log('📡 WhatsApp Chat: Fetching messages via HTTP fallback for chatId:', chatId, 'chatType:', chatType);
     try {
-      let user: any = {};
-      try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('current_user') || '{}'); } catch { user = {}; }
-      const uidNum = Number(currentUserId || user.id || 0);
+      // CRITICAL: Always use the currentUserId prop from auth context — never localStorage
+      // which can have stale data from a different user session
+      const uidNum = Number(currentUserId || 0);
       const uid = uidNum.toString();
       const headers: Record<string, string> = { 'x-user-id': uid };
-      if (user?.id) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name });
       const chatroomsChatTypeParam = chatType === "chatroom" ? "city" : chatType;
       const historyUrl =
         chatType === "event"
