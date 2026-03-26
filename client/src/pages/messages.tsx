@@ -252,17 +252,23 @@ export default function Messages() {
   const { data: meetupChatrooms = [], isLoading: meetupChatsLoading } = useQuery({
     queryKey: ['/api/meetup-chatrooms/mine'],
     queryFn: async () => {
+      console.log('📬 FRONTEND: Fetching /api/meetup-chatrooms/mine for userId', userId);
       const res = await fetch(`${getApiBaseUrl()}/api/meetup-chatrooms/mine`, {
         credentials: 'include',
         headers: { 'x-user-id': String(userId) },
       });
-      if (!res.ok) return [];
-      return res.json();
+      if (!res.ok) {
+        console.log('📬 FRONTEND: /api/meetup-chatrooms/mine returned', res.status);
+        return [];
+      }
+      const data = await res.json();
+      console.log('📬 FRONTEND: /api/meetup-chatrooms/mine returned', data.length, 'chatrooms');
+      return data;
     },
     enabled: !!userId,
-    staleTime: 30000,
-    refetchInterval: 30000,
-    placeholderData: (previousData: any) => previousData,
+    staleTime: 10000,
+    refetchInterval: 15000,
+    refetchOnMount: 'always' as const,
   });
 
   const { data: userChatrooms = [] } = useQuery<any[]>({
