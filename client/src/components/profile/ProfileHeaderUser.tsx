@@ -741,7 +741,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                 <span className="text-lg">🤝</span>
                                 <span className="text-[11px] font-extrabold text-white uppercase tracking-widest leading-none">What You Have in Common</span>
                                 <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-extrabold bg-[#FF6B35] text-white shadow-md">
-                                  {totalCommon} in common
+                                  {totalCommon} {totalCommon === 1 ? "thing" : "things"} in common
                                 </span>
                               </div>
 
@@ -874,7 +874,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           <span className="text-lg">🤝</span>
                           <span className="text-[11px] font-extrabold text-white uppercase tracking-widest leading-none">What You Have in Common</span>
                           <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-extrabold bg-[#FF6B35] text-white shadow-md">
-                            {totalCommon} in common
+                            {totalCommon} {totalCommon === 1 ? "thing" : "things"} in common
                           </span>
                         </div>
                         {allSharedTags.length > 0 && (
