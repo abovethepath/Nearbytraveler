@@ -488,15 +488,14 @@ export function QuickMeetupWidget({
     createMutation.mutate(newMeetup);
   };
 
-  if (isLoading) {
+  // Only block on loading if the create form is NOT requested — when the user
+  // opens "I'm Out" they want the form instantly, not a loading gate.
+  if (isLoading && !initialShowCreateForm) {
     return (
       <div className="w-full relative overflow-hidden rounded-3xl" data-testid="quick-meetup-widget">
-        {/* Animated Gradient Orbs Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-orange-300 to-amber-400 rounded-full opacity-25 blur-3xl animate-float"></div>
         </div>
-        
-        {/* Glass Morphism Card */}
         <Card className="relative backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/30 shadow-2xl">
           <CardContent className="p-4 bg-transparent">
             <div className="flex items-center gap-2">
