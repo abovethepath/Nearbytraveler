@@ -368,7 +368,12 @@ export function QuickMeetupWidget({
       return await apiRequest('POST', '/api/quick-meet', meetupPayload);
     },
     onSuccess: () => {
+      // Invalidate all related queries so the home page updates immediately
       queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/available-now'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/available-now/my-status'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/available-now/active-ids'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/meetup-chatrooms/mine'] });
       setShowCreateForm(false);
       setIsCustomActivity(false);
       setNewMeetup({

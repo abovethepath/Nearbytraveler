@@ -17980,7 +17980,32 @@ Questions? Just reply to this message. Welcome aboard!
       const newMeetup = await storage.createQuickMeetup(meetupData);
       if (process.env.NODE_ENV === 'development') console.log(`✅ QUICK MEET CREATED: ID ${newMeetup.id}, expires at ${newMeetup.expiresAt}`);
       if (process.env.NODE_ENV === 'development') console.log(`🏠 STREET ADDRESS SAVED:`, newMeetup.street);
-      
+
+      // Also create an Available Now session so the user shows as "live" on the home page.
+      // The "I'm Out" flow (QuickMeetupWidget) and "I'm Free" flow (AvailableNowWidget)
+      // should both result in the user being visible in the Available Now widget.
+      try {
+        const uid = parseInt(userId as string || '0');
+        const expiresAt = newMeetup.expiresAt ? new Date(newMeetup.expiresAt) : new Date(Date.now() + 60 * 60 * 1000);
+        // Upsert: deactivate any existing session first, then create new
+        await db.update(availableNow)
+          .set({ isAvailable: false })
+          .where(and(eq(availableNow.userId, uid), eq(availableNow.isAvailable, true)));
+        await db.insert(availableNow).values({
+          userId: uid,
+          city: newMeetup.city || meetupData.city || '',
+          state: newMeetup.state || meetupData.state || null,
+          country: newMeetup.country || meetupData.country || 'USA',
+          isAvailable: true,
+          activities: [],
+          customNote: newMeetup.title || '',
+          expiresAt,
+        });
+        console.log(`✅ AVAILABLE NOW: User ${uid} set as available until ${expiresAt.toISOString()}`);
+      } catch (anError: any) {
+        console.error(`⚠️ AVAILABLE NOW: Failed to set user as available:`, anError.message);
+      }
+
       // Award 1 aura point for creating a quick meet
       await awardAuraPoints(parseInt(userId as string || '0'), 1, 'creating a quick meet');
       
