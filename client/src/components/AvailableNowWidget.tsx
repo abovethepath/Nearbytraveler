@@ -844,6 +844,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 </div>
                 <button
                   type="button"
+                  // MODAL FIX: do not change this modal target — opens "I'm Free" setup modal
                   onClick={() => { setShowPicker(false); setShowSetup(true); }}
                   className="w-full py-3 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-gray-900 font-semibold text-sm text-left border border-emerald-200 cursor-pointer active:scale-[0.98] transition-all dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 dark:text-white dark:border-emerald-700"
                 >
@@ -851,8 +852,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 </button>
                 <button
                   type="button"
-                  // NAV FIX: opens inline modal, do NOT navigate to /quick-meetups
-                  onClick={() => { setShowPicker(false); setShowSetup(true); }}
+                  // MODAL FIX: do not change this modal target — opens "I'm Out" page with location sharing form
+                  onClick={() => { setShowPicker(false); setLocation('/available-now'); }}
                   className="w-full py-3 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-gray-900 font-semibold text-sm text-left border border-blue-200 cursor-pointer active:scale-[0.98] transition-all dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-white dark:border-blue-700"
                 >
                   📍 I'm Out — come join me
