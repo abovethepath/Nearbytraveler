@@ -194,7 +194,9 @@ export default function UserCard({
   const matchPercent = getMatchPercent();
   const { data: compatibilityFromApi } = useQuery<any>({
     queryKey: currentUserId ? [`/api/compatibility/${currentUserId}/${user.id}`] : [],
-    enabled: !!currentUserId && !isCurrentUser,
+    // Only fetch if no compatibility data was passed as prop (avoids N+1 on home page)
+    enabled: !!currentUserId && !isCurrentUser && !compatibilityData,
+    staleTime: 5 * 60 * 1000, // 5 min — compatibility scores don't change often
   });
 
   // Self-fetch connection degree from source of truth endpoint.
