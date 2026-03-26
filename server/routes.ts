@@ -26764,17 +26764,14 @@ Questions? Just reply to this message. Welcome aboard!
 
   app.get("/api/meetup-chatrooms/mine", async (req: any, res) => {
     try {
-      const userId = req.session?.user?.id || req.headers['x-user-id'];
-      if (!userId) return res.status(401).json({ error: "Not authenticated" });
-      const uid = Number(userId);
+      const sessionUserId = req.session?.user?.id;
+      const headerUserId = req.headers['x-user-id'] ? Number(req.headers['x-user-id']) : undefined;
+      const uid = Number(sessionUserId || headerUserId);
+      if (!uid || isNaN(uid)) return res.status(401).json({ error: "Not authenticated" });
 
       const now = new Date();
 
       // Use chatroom_members as the single source of truth.
-      // Only show meetup chatrooms this user is explicitly seeded into,
-      // and only those that are still active and not yet expired.
-      // This prevents: (a) showing expired rooms, (b) showing rooms the user
-      // was never a member of, (c) bleeding old conversations into new sessions.
       const memberRows = await db.select({ chatroomId: chatroomMembers.chatroomId, lastReadAt: chatroomMembers.lastReadAt })
         .from(chatroomMembers)
         .where(and(
@@ -26783,6 +26780,7 @@ Questions? Just reply to this message. Welcome aboard!
         ));
 
       const myChatroomIds = memberRows.map(r => r.chatroomId);
+      console.log(`📬 MEETUP-CHATROOMS/MINE: uid=${uid} (session=${sessionUserId}, header=${headerUserId}), memberRows=${memberRows.length}, chatroomIds=[${myChatroomIds.join(',')}]`);
       // Build lastReadAt lookup per chatroom for this user
       const lastReadByRoom: Record<number, Date> = {};
       for (const row of memberRows) {
@@ -26799,6 +26797,8 @@ Questions? Just reply to this message. Welcome aboard!
           inArray(meetupChatrooms.id, myChatroomIds)
         )
         .orderBy(desc(meetupChatrooms.createdAt));
+
+      console.log(`📬 MEETUP-CHATROOMS/MINE: found ${chatrooms.length} chatrooms from meetup_chatrooms table:`, chatrooms.map(c => ({ id: c.id, name: c.chatroomName, anId: c.availableNowId, eventId: c.eventId, meetupId: c.meetupId, groupType: c.groupType, isActive: c.isActive })));
 
       // Get latest message for each chatroom
       const chatroomIds = chatrooms.map(c => c.id);
@@ -26901,6 +26901,7 @@ Questions? Just reply to this message. Welcome aboard!
         });
       }
 
+      console.log(`📬 MEETUP-CHATROOMS/MINE: returning ${result.length} chatrooms (filtered from ${chatrooms.length}):`, result.map(r => ({ id: r.id, chatType: r.chatType, lifecycle: r.lifecycleState, name: r.chatroomName })));
       res.json(result);
     } catch (error: any) {
       console.error("Error fetching my meetup chatrooms:", error);
