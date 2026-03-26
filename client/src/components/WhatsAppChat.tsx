@@ -835,7 +835,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 : undefined,
             } as Message;
           });
-          console.log("📬 WhatsApp Chat: Quick meetup HTTP fallback loaded", mapped.length, "messages, senderIds:", mapped.map(m => m.senderId), "currentUserId:", currentUserId);
+          console.log("📬 WhatsApp Chat: Quick meetup HTTP fallback loaded", mapped.length, "messages");
+          console.log("📬 ALIGNMENT DEBUG — currentUserId:", currentUserId, "typeof:", typeof currentUserId);
+          mapped.slice(0, 5).forEach((m, i) => console.log(`📬 msg[${i}] id=${m.id} senderId=${m.senderId} typeof=${typeof m.senderId} isOwn=${m.senderId == currentUserId} content="${String(m.content).slice(0,30)}"`));
           setMessages(mapped);
           setMessagesLoaded(true);
           scrollToBottom();
@@ -1709,12 +1711,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
     const pollMessages = async () => {
       try {
-        let user: any = {};
-        try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('current_user') || '{}'); } catch { user = {}; }
-        const uidNum = Number(currentUserId || user.id || 0);
-        const uid = uidNum.toString();
+        // CRITICAL: use currentUserId prop only, not stale localStorage
+        const uid = String(currentUserId || 0);
         const headers: Record<string, string> = { 'x-user-id': uid };
-        if (user?.id) headers['x-user-data'] = JSON.stringify({ id: user.id, username: user.username, email: user.email, name: user.name });
         const chatroomsChatTypeParam = chatType === "chatroom" ? "city" : chatType;
         const url =
           chatType === "event"
@@ -1940,15 +1939,12 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       // HTTP fallback when WebSocket not ready
       console.log('📡 Sending message via HTTP fallback...');
       try {
-        let user: any = {};
-        try { user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('current_user') || '{}'); } catch { user = {}; }
         let endpoint = '';
         let body: any = { content, messageType: 'text', replyToId };
-        
+
         if (chatType === 'dm') {
-          // For DMs, use the direct messages endpoint (senderId required by API)
           endpoint = `${getApiBaseUrl()}/api/messages`;
-          body = { senderId: currentUserId || user.id, receiverId: chatId, content, messageType: 'text', replyToId };
+          body = { senderId: currentUserId, receiverId: chatId, content, messageType: 'text', replyToId };
         } else if (chatType === 'event') {
           endpoint = `${getApiBaseUrl()}/api/event-chatrooms/${chatId}/messages`;
           body = { content };
@@ -1964,7 +1960,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-user-id': (currentUserId || user.id || '').toString()
+            'x-user-id': String(currentUserId || '')
           },
           body: JSON.stringify(body)
         });
