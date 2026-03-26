@@ -26822,23 +26822,30 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      // Batch count unread messages per chatroom in a single query
+      // Batch count unread messages per chatroom using Drizzle inArray
+      // (raw SQL ANY() crashes with "requires array on right side" on Neon serverless)
       const unreadByRoom: Record<number, number> = {};
       if (chatroomIds.length > 0) {
-        // Build a single SQL query that counts unread per chatroom
-        const unreadRows = await db.execute(sql`
-          SELECT mcm.meetup_chatroom_id AS cid, COUNT(*)::int AS cnt
-          FROM meetup_chatroom_messages mcm
-          WHERE mcm.meetup_chatroom_id = ANY(${chatroomIds})
-            AND mcm.user_id != ${uid}
-            AND mcm.sent_at > COALESCE(
-              (SELECT last_read_at FROM chatroom_members WHERE chatroom_id = mcm.meetup_chatroom_id AND user_id = ${uid} LIMIT 1),
-              '1970-01-01'::timestamp
-            )
-          GROUP BY mcm.meetup_chatroom_id
-        `);
-        for (const row of (unreadRows as any).rows || []) {
-          unreadByRoom[row.cid] = Number(row.cnt);
+        try {
+          const unreadRows = await db.select({
+            cid: meetupChatroomMessages.meetupChatroomId,
+            cnt: sql<number>`COUNT(*)::int`,
+          })
+            .from(meetupChatroomMessages)
+            .where(and(
+              inArray(meetupChatroomMessages.meetupChatroomId, chatroomIds),
+              sql`${meetupChatroomMessages.userId} != ${uid}`,
+              sql`${meetupChatroomMessages.sentAt} > COALESCE(
+                (SELECT last_read_at FROM chatroom_members WHERE chatroom_id = ${meetupChatroomMessages.meetupChatroomId} AND user_id = ${uid} LIMIT 1),
+                '1970-01-01'::timestamp
+              )`
+            ))
+            .groupBy(meetupChatroomMessages.meetupChatroomId);
+          for (const row of unreadRows) {
+            unreadByRoom[row.cid] = Number(row.cnt);
+          }
+        } catch (unreadErr: any) {
+          console.error('📬 MEETUP-CHATROOMS/MINE: unread count query failed (non-fatal):', unreadErr.message);
         }
       }
 
