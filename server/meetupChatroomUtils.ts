@@ -114,19 +114,28 @@ export async function createOrJoinMeetupChatroom(params: CreateOrJoinChatroomPar
   if (!isSameUser) {
     memberRows.push({ chatroomId: newChatroom.id, userId: joinerUserId, role: 'member' as const, isActive: true });
   }
-  await db.insert(chatroomMembers).values(memberRows).onConflictDoNothing();
+  // Use raw SQL upsert so re-joining reactivates a previously deactivated membership.
+  // onConflictDoNothing would silently skip the insert, leaving is_active=false from a prior session.
+  for (const row of memberRows) {
+    await db.execute(sql`
+      INSERT INTO chatroom_members (chatroom_id, user_id, role, is_active)
+      VALUES (${row.chatroomId}, ${row.userId}, ${row.role}, true)
+      ON CONFLICT (chatroom_id, user_id) DO UPDATE SET is_active = true, role = ${row.role}
+    `);
+  }
 
   return { chatroomId: newChatroom.id, isNew: true, chatroom: newChatroom };
 }
 
 export async function addMemberToChatroom(chatroomId: number, userId: number, role: string = 'member'): Promise<boolean> {
-  const result = await db.insert(chatroomMembers).values({
-    chatroomId,
-    userId,
-    role,
-    isActive: true,
-  }).onConflictDoNothing().returning();
-  return result.length > 0;
+  // Use raw SQL upsert to reactivate previously deactivated memberships
+  const result = await db.execute(sql`
+    INSERT INTO chatroom_members (chatroom_id, user_id, role, is_active)
+    VALUES (${chatroomId}, ${userId}, ${role}, true)
+    ON CONFLICT (chatroom_id, user_id) DO UPDATE SET is_active = true, role = ${role}
+    RETURNING id
+  `);
+  return ((result as any).rows?.length || (result as any).length || 0) > 0;
 }
 
 export async function getUserMeetupChatrooms(userId: number): Promise<any[]> {

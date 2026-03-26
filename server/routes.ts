@@ -14550,12 +14550,11 @@ Questions? Just reply to this message. Welcome aboard!
       try {
         const eventChatroom = await storage.getEventChatroom(eventId);
         if (eventChatroom?.id) {
-          await db.insert(chatroomMembers).values({
-            chatroomId: eventChatroom.id,
-            userId,
-            role: 'member',
-            isActive: true,
-          }).onConflictDoNothing();
+          await db.execute(sql`
+            INSERT INTO chatroom_members (chatroom_id, user_id, role, is_active)
+            VALUES (${eventChatroom.id}, ${userId}, 'member', true)
+            ON CONFLICT (chatroom_id, user_id) DO UPDATE SET is_active = true
+          `);
           await db.update(meetupChatrooms).set({ participantCount: sql`(SELECT COUNT(*) FROM chatroom_members WHERE chatroom_id = ${eventChatroom.id} AND is_active = true)` }).where(eq(meetupChatrooms.id, eventChatroom.id));
           if (process.env.NODE_ENV === 'development') console.log(`💬 EVENT-CHAT: Added user ${userId} to chatroom_members for event chatroom ${eventChatroom.id}`);
         }
@@ -15615,12 +15614,11 @@ Questions? Just reply to this message. Welcome aboard!
         
         if (eventChatroom?.id) {
           try {
-            await db.insert(chatroomMembers).values({
-              chatroomId: eventChatroom.id,
-              userId: newEvent.organizerId,
-              role: 'admin',
-              isActive: true,
-            }).onConflictDoNothing();
+            await db.execute(sql`
+              INSERT INTO chatroom_members (chatroom_id, user_id, role, is_active)
+              VALUES (${eventChatroom.id}, ${newEvent.organizerId}, 'admin', true)
+              ON CONFLICT (chatroom_id, user_id) DO UPDATE SET is_active = true, role = 'admin'
+            `);
             await db.update(meetupChatrooms).set({ participantCount: sql`${meetupChatrooms.participantCount} + 1` }).where(eq(meetupChatrooms.id, eventChatroom.id));
             console.log(`✅ AUTO-CHATROOM: Added creator ${newEvent.organizerId} to chatroom_members for event chatroom ${eventChatroom.id}`);
           } catch (memberError: any) {
