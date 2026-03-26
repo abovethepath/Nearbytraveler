@@ -1566,12 +1566,11 @@ export default function Messages() {
               />
             );
           })() :
-        /* Loading state when conversation is selected but user data not loaded yet */
-        selectedConversation && !selectedUser && (connectionsLoading || messagesLoading || conversations.length === 0) ? (
+        /* Loading state — only show when conversation is selected but user truly not found yet.
+           Use a minimal spinner, not a full skeleton, to avoid jarring flash. */
+        selectedConversation && !selectedUser ? (
           <div className="flex-1 flex items-center justify-center">
-            <div className="text-center text-gray-600 dark:text-gray-400">
-              <div className="animate-pulse">Loading conversation...</div>
-            </div>
+            <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-blue-500" />
           </div>
         ) : selectedConversation && selectedUser ? (
           <>
