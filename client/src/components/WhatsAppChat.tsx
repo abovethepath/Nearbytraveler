@@ -807,13 +807,25 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         } else if (chatType === 'meetup') {
           const all = Array.isArray(data) ? data : [];
           const mapped = all.map((m: any) => {
-            const senderUser = m?.sender || null;
+            // Meetup messages have flat fields (userId, username, userProfileImage)
+            // not a nested sender object — build one from flat fields
+            const sid = m?.userId ?? m?.senderId;
+            const senderUser = m?.sender || (sid ? {
+              id: sid,
+              username: m?.username || null,
+              name: m?.username || null,
+              profileImage: m?.userProfileImage || m?.profileImage || null,
+            } : null);
             return {
               id: m?.id,
-              senderId: m?.userId ?? m?.senderId,
+              senderId: sid,
               content: m?.message ?? m?.content ?? "",
               messageType: m?.messageType || "text",
+              mediaUrl: m?.mediaUrl || null,
+              replyToId: m?.replyToId,
+              reactions: m?.reactions,
               createdAt: m?.sentAt || m?.createdAt || new Date().toISOString(),
+              isEdited: m?.isEdited,
               sender: senderUser?.id
                 ? {
                     id: senderUser.id,
@@ -824,7 +836,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 : undefined,
             } as Message;
           });
-          console.log("📬 WhatsApp Chat: Quick meetup HTTP fallback loaded", mapped.length, "messages");
+          console.log("📬 WhatsApp Chat: Quick meetup HTTP fallback loaded", mapped.length, "messages, senderIds:", mapped.map(m => m.senderId), "currentUserId:", currentUserId);
           setMessages(mapped);
           setMessagesLoaded(true);
           scrollToBottom();
@@ -1385,20 +1397,23 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           } else if (chatType === 'meetup') {
             const all = Array.isArray(data) ? data : [];
             const mapped = all.map((m: any) => {
-              const senderUser = m?.sender || null;
+              const sid = m?.userId ?? m?.senderId;
+              const senderUser = m?.sender || (sid ? {
+                id: sid, username: m?.username || null, name: m?.username || null,
+                profileImage: m?.userProfileImage || m?.profileImage || null,
+              } : null);
               return {
                 id: m?.id,
-                senderId: m?.userId ?? m?.senderId,
+                senderId: sid,
                 content: m?.message ?? m?.content ?? "",
                 messageType: m?.messageType || "text",
+                mediaUrl: m?.mediaUrl || null,
+                replyToId: m?.replyToId,
+                reactions: m?.reactions,
                 createdAt: m?.sentAt || m?.createdAt || new Date().toISOString(),
+                isEdited: m?.isEdited,
                 sender: senderUser?.id
-                  ? {
-                      id: senderUser.id,
-                      username: senderUser.username,
-                      name: senderUser.name,
-                      profileImage: senderUser.profileImage,
-                    }
+                  ? { id: senderUser.id, username: senderUser.username, name: senderUser.name, profileImage: senderUser.profileImage }
                   : undefined,
               } as Message;
             });
@@ -1729,14 +1744,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             return (s == uidNumLocal && r == cidNumLocal) || (s == cidNumLocal && r == uidNumLocal);
           }).reverse();
         } else if (chatType === 'meetup' && Array.isArray(data)) {
-          incoming = data.map((m: any) => ({
-            id: m?.id,
-            senderId: m?.userId ?? m?.senderId,
-            content: m?.message ?? m?.content ?? '',
-            messageType: m?.messageType || 'text',
-            createdAt: m?.sentAt || m?.createdAt || new Date().toISOString(),
-            sender: m?.sender || null,
-          }));
+          incoming = data.map((m: any) => {
+            const sid = m?.userId ?? m?.senderId;
+            return {
+              id: m?.id,
+              senderId: sid,
+              content: m?.message ?? m?.content ?? '',
+              messageType: m?.messageType || 'text',
+              createdAt: m?.sentAt || m?.createdAt || new Date().toISOString(),
+              sender: m?.sender || (sid ? { id: sid, username: m?.username, name: m?.username, profileImage: m?.userProfileImage || m?.profileImage } : null),
+            };
+          });
         } else if (Array.isArray(data)) {
           incoming = data;
         } else if (data?.messages && Array.isArray(data.messages)) {
