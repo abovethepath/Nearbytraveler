@@ -601,32 +601,41 @@ export default function Messages() {
       );
   }, [connections, messages, allUsers, targetUserId, userId]);
 
-  // A chat is "ended" only when it reaches readonly state (24h+ after session/expiry ended).
-  // "grace" means the AN session expired but the chat is still usable for 24h — keep it
-  // in the active Meetup Chats tab so users can still message each other after meeting.
+  // Chat lifecycle helpers
   const isEndedChat = (mc: any) => {
     if (mc.lifecycleState === 'readonly') return true;
-    // For chats without a lifecycle state, fall back to checking expiresAt
+    if (mc.lifecycleState === 'grace') return true;
     if (!mc.lifecycleState && mc.expiresAt && new Date(mc.expiresAt) <= new Date()) return true;
     return false;
   };
+  // Auto-hide: chats expired more than 48h ago are completely filtered out
+  const isHiddenExpired = (mc: any) => {
+    if (!mc.expiresAt) return false;
+    const hoursExpired = (Date.now() - new Date(mc.expiresAt).getTime()) / (1000 * 60 * 60);
+    return hoursExpired > 48;
+  };
+  const isMeetupType = (mc: any) => mc.chatType !== 'group_dm' && mc.chatType !== 'event';
 
+  // Active Quick Meets (not ended, not hidden)
   const activeMeetups = React.useMemo(() =>
-    (meetupChatrooms as any[]).filter((mc: any) => mc.chatType !== 'group_dm' && mc.chatType !== 'event' && !isEndedChat(mc)),
+    (meetupChatrooms as any[]).filter((mc: any) => isMeetupType(mc) && !isEndedChat(mc) && !isHiddenExpired(mc)),
+    [meetupChatrooms]
+  );
+  // Ended Quick Meets (ended but within 48h — shown under "Ended Meets" divider)
+  const endedMeetups = React.useMemo(() =>
+    (meetupChatrooms as any[]).filter((mc: any) => isMeetupType(mc) && isEndedChat(mc) && !isHiddenExpired(mc)),
     [meetupChatrooms]
   );
   const eventChats = React.useMemo(() =>
-    (meetupChatrooms as any[]).filter((mc: any) => mc.chatType === 'event' && !isEndedChat(mc)),
+    (meetupChatrooms as any[]).filter((mc: any) => mc.chatType === 'event' && !isHiddenExpired(mc)),
     [meetupChatrooms]
   );
   const groupDMs = React.useMemo(() =>
-    (meetupChatrooms as any[]).filter((mc: any) => mc.chatType === 'group_dm' && !isEndedChat(mc)),
+    (meetupChatrooms as any[]).filter((mc: any) => mc.chatType === 'group_dm' && !isHiddenExpired(mc)),
     [meetupChatrooms]
   );
-  const expiredChats = React.useMemo(() =>
-    (meetupChatrooms as any[]).filter((mc: any) => isEndedChat(mc)),
-    [meetupChatrooms]
-  );
+  // Legacy: expiredChats used for tab badge count (all ended meetups within 48h)
+  const expiredChats = endedMeetups;
 
   const dmUnread = React.useMemo(() => {
     const convUnread = conversations.reduce((sum: number, c: any) => sum + (c.unreadCount || 0), 0);
@@ -961,7 +970,7 @@ export default function Messages() {
         <div className="flex border-b border-gray-200 dark:border-gray-700 bg-[#f0f2f5] dark:bg-gray-800 shrink-0">
           {([
             { key: 'dms' as const, label: 'DMs', icon: MessageCircle, count: dmUnread },
-            { key: 'meetups' as const, label: 'Meetup Chats', icon: Zap, count: meetupUnread },
+            { key: 'meetups' as const, label: 'Quick Meets', icon: Zap, count: meetupUnread },
             { key: 'events' as const, label: 'Event Chats', icon: Calendar, count: eventUnread },
             { key: 'chatrooms' as const, label: 'Chatrooms', icon: MessageCircle, count: 0 },
           ]).map(tab => {
@@ -996,12 +1005,12 @@ export default function Messages() {
             </div>
           ) : (
             <>
-              {/* Active Meetup Chats (non-expired) */}
+              {/* Active Quick Meets (non-expired) */}
               {activeTab === 'meetups' && activeMeetups.length > 0 && (
                 <>
                   <div className="px-3 py-2 bg-orange-50 dark:bg-orange-900/20 border-b border-orange-200 dark:border-orange-800">
                     <p className="text-xs font-semibold text-orange-700 dark:text-orange-300 flex items-center gap-1">
-                      <Zap className="w-3 h-3" /> Meetup Chats
+                      <Zap className="w-3 h-3" /> Quick Meets
                     </p>
                   </div>
                   {activeMeetups
@@ -1047,10 +1056,16 @@ export default function Messages() {
                               <Users className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-orange-600 dark:text-orange-400'}`} />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h3 className={`text-sm leading-snug ${
+                              <h3 className={`text-sm leading-snug flex items-center gap-1.5 ${
                                 isSelected ? 'text-white font-semibold' : mc.unreadCount > 0 ? 'text-gray-900 dark:text-white font-extrabold' : 'text-gray-900 dark:text-white font-semibold'
                               }`}>
                                 {mc.chatroomName || 'Meetup Chat'}
+                                {mc.lifecycleState === 'active' && (
+                                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-green-600 dark:text-green-400">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                    Active
+                                  </span>
+                                )}
                               </h3>
                               <div className="flex items-center gap-1.5 mt-1">
                                 <span className={`text-[10px] px-2 py-0.5 rounded-full shrink-0 font-bold text-white shadow-sm ${
@@ -1101,15 +1116,15 @@ export default function Messages() {
                 </>
               )}
 
-              {/* Ended meetup chats — shown below active meetups with divider */}
-              {activeTab === 'meetups' && expiredChats.length > 0 && (
+              {/* Ended meetup chats — shown below active meetups at reduced opacity */}
+              {activeTab === 'meetups' && endedMeetups.length > 0 && (
                 <div style={{ opacity: 0.6 }}>
                   <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800/50 border-b border-t border-gray-200 dark:border-gray-700">
                     <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> Ended Chats
+                      <Clock className="w-3 h-3" /> Ended Meets
                     </p>
                   </div>
-                  {expiredChats
+                  {endedMeetups
                     .filter((mc: any) =>
                       !connectionSearch ||
                       (mc.chatroomName || '').toLowerCase().includes(connectionSearch.toLowerCase())
@@ -1469,7 +1484,7 @@ export default function Messages() {
                 </>
               )}
 
-              {/* Expired Meetup Chats (Ended) */}
+              {/* Expired Quick Meets (Ended) */}
               {/* Chatrooms Tab */}
               {activeTab === 'chatrooms' && (
                 <>
@@ -1520,7 +1535,7 @@ export default function Messages() {
                   <p className="text-sm">No direct messages yet</p>
                 </div>
               )}
-              {activeTab === 'meetups' && activeMeetups.length === 0 && expiredChats.length === 0 && (
+              {activeTab === 'meetups' && activeMeetups.length === 0 && endedMeetups.length === 0 && (
                 <div className="p-6 text-center text-gray-500 dark:text-gray-400">
                   <Zap className="w-8 h-8 mx-auto mb-2 opacity-40" />
                   <p className="text-sm">No meetup chats</p>

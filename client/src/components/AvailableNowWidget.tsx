@@ -850,7 +850,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                   onClick={() => { setShowPicker(false); setShowSetup(true); }}
                   className="w-full py-3 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-gray-900 font-semibold text-sm text-left border border-emerald-200 cursor-pointer active:scale-[0.98] transition-all dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 dark:text-white dark:border-emerald-700"
                 >
-                  🏠 I'm Free — open to plans
+                  🏠 I'm Free — Open to Plans
                 </button>
                 <button
                   type="button"
@@ -858,7 +858,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                   onClick={() => { setShowPicker(false); setShowImOut(true); }}
                   className="w-full py-3 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-gray-900 font-semibold text-sm text-left border border-blue-200 cursor-pointer active:scale-[0.98] transition-all dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-white dark:border-blue-700"
                 >
-                  📍 I'm Out — come join me
+                  📍 I'm Out — Come Join Me
                 </button>
               </div>
             )}
