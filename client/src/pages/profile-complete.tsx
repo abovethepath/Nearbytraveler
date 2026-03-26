@@ -1345,8 +1345,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       const data = await response.json();
       return Array.isArray(data) ? data : [];
     },
-    enabled: isOwnProfile ? !!currentUser?.id : !!effectiveUserId,
-    staleTime: 30 * 1000, // 30 seconds
+    // Lazy load: only fetch when chatrooms tab is opened
+    enabled: (isOwnProfile ? !!currentUser?.id : !!effectiveUserId) && loadedTabs.has('chatrooms'),
+    staleTime: 60 * 1000,
   });
 
   // BUNDLE-DERIVED: Compatibility score from profile bundle
@@ -1598,23 +1599,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       if (connectionFilters.sexualPreference?.trim() && connectionFilters.sexualPreference !== 'all') params.append('sexualPreference', connectionFilters.sexualPreference.trim());
       if (connectionFilters.minAge?.trim()) params.append('minAge', connectionFilters.minAge.trim());
       if (connectionFilters.maxAge?.trim()) params.append('maxAge', connectionFilters.maxAge.trim());
-      
+
       const queryString = params.toString();
       const url = `/api/connections/${effectiveUserId}${queryString ? `?${queryString}` : ''}`;
-      
-      console.log('Fetching connections with filters:', connectionFilters);
-      console.log('Request URL:', url);
-      
+
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const result = await response.json();
-      console.log('Filtered connections result:', result);
-      return result;
+      return response.json();
     },
-    enabled: !!effectiveUserId,
-    staleTime: 0, // Always refetch when filters change
+    // Lazy load: only fetch when contacts tab is opened
+    enabled: !!effectiveUserId && loadedTabs.has('contacts'),
+    staleTime: 30 * 1000,
   });
 
   // Sort connections to show mutual connections first (when viewing someone else's profile)
@@ -1676,8 +1673,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // This bypasses any issues with the profile bundle and ensures the badge always shows
   const { data: referencesData } = useQuery<{ references: any[]; counts: { total: number; positive: number; negative: number; neutral: number } }>({
     queryKey: [`/api/users/${effectiveUserId}/references`],
-    enabled: !!effectiveUserId,
-    staleTime: 0, // Always fresh
+    // Lazy load: only fetch when references tab is opened
+    enabled: !!effectiveUserId && loadedTabs.has('references'),
+    staleTime: 60 * 1000,
     refetchOnMount: true,
   });
   const userReferences = referencesData?.references || [];

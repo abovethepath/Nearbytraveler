@@ -49,6 +49,7 @@ export default function ProfilePageResponsive() {
     queryKey: ['/api/available-now/active-ids'],
     refetchInterval: 30000,
     enabled: !!userId,
+    staleTime: 60000,
   });
 
   const { data: cityInterests = [] } = useQuery<any[]>({
@@ -62,6 +63,7 @@ export default function ProfilePageResponsive() {
       return res.json();
     },
     enabled: !!userId,
+    staleTime: 60000,
   });
 
   if (!isReady) {
