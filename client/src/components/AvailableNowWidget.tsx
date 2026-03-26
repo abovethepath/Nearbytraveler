@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, Beer, ChevronDown, ChevronUp, Mountain, Bike, Waves, Compass, MessageCircle, Users, LogOut, ThumbsUp, Reply, Heart } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
+import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { useToast } from "@/hooks/use-toast";
 import { websocketService } from "@/services/websocketService";
 import { getMetroAreaName } from "@shared/metro-areas";
@@ -80,6 +81,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const [, setLocation] = useLocation();
   const [showPicker, setShowPicker] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
+  const [showImOut, setShowImOut] = useState(false);
   const [dismissedChats, setDismissedChats] = useState<Set<number>>(() => {
     try {
       const stored = localStorage.getItem('nt_dismissed_meetup_chats');
@@ -852,8 +854,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 </button>
                 <button
                   type="button"
-                  // MODAL FIX: do not change this modal target — opens "I'm Out" page with location sharing form
-                  onClick={() => { setShowPicker(false); setLocation('/available-now'); }}
+                  // MODAL FIX: do not change — opens "I'm Out" QuickMeetupWidget directly inline
+                  onClick={() => { setShowPicker(false); setShowImOut(true); }}
                   className="w-full py-3 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-gray-900 font-semibold text-sm text-left border border-blue-200 cursor-pointer active:scale-[0.98] transition-all dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-white dark:border-blue-700"
                 >
                   📍 I'm Out — come join me
@@ -1523,6 +1525,37 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       </>,
       document.body
     )}
+    {/* "I'm Out — Share Where You Are" modal — QuickMeetupWidget rendered inline */}
+    {showImOut && createPortal(
+      <div
+        className="fixed inset-0 flex items-center justify-center"
+        style={{ zIndex: 999999 }}
+        onClick={() => setShowImOut(false)}
+      >
+        <div className="absolute inset-0 bg-black/95" />
+        <div
+          className="relative w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-4 border border-gray-200 dark:border-gray-700"
+          style={{ zIndex: 1000000, WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            className="absolute right-3 top-3 rounded-full w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 z-10"
+            onClick={() => setShowImOut(false)}
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <QuickMeetupWidget
+            city={userCity}
+            currentUser={currentUser}
+            initialShowCreateForm={true}
+            onCreateSuccess={() => setShowImOut(false)}
+          />
+        </div>
+      </div>,
+      document.body
+    )}
+
     </>
   );
 }
