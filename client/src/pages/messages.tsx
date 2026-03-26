@@ -230,7 +230,8 @@ export default function Messages() {
     refetchOnMount: 'always' as const,
     refetchOnWindowFocus: true,
     refetchInterval: 30000,
-    placeholderData: (previousData: any) => previousData,
+    // Do NOT use placeholderData here — it can flash messages from a
+    // previous conversation when switching between DMs (privacy issue).
   });
 
   // Read receipt privacy setting — controls whether blue checkmarks are shown
@@ -707,17 +708,19 @@ export default function Messages() {
     }
   }, [targetUserId, conversations]);
 
-  // Get messages for selected conversation (simplified to avoid duplication)
-  const conversationMessages = selectedConversation
-    ? (messages as any[]).filter((message: any) =>
-        message.messageType !== 'conversation_opened' && (
-          (Number(message.senderId) === userId && Number(message.receiverId) === selectedConversation) ||
-          (Number(message.receiverId) === userId && Number(message.senderId) === selectedConversation)
-        )
-      ).sort((a: any, b: any) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  // Get messages for selected conversation — keyed on both userId AND selectedConversation
+  // so it never shows messages from a different conversation during re-renders.
+  const conversationMessages = React.useMemo(() => {
+    if (!selectedConversation || !userId) return [];
+    return (messages as any[]).filter((message: any) =>
+      message.messageType !== 'conversation_opened' && (
+        (Number(message.senderId) === userId && Number(message.receiverId) === selectedConversation) ||
+        (Number(message.receiverId) === userId && Number(message.senderId) === selectedConversation)
       )
-    : [];
+    ).sort((a: any, b: any) =>
+      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+  }, [messages, userId, selectedConversation]);
 
   // Mark messages as read mutation
   const markAsReadMutation = useMutation({
